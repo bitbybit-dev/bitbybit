@@ -17,6 +17,16 @@ export class MockVec2 {
         this.x = x;
         this.y = y;
     }
+    mulScalar(scalar: number) {
+        this.x *= scalar;
+        this.y *= scalar;
+        return this;
+    }
+    copy(other: MockVec2) {
+        this.x = other.x;
+        this.y = other.y;
+        return this;
+    }
 }
 
 export class MockVec3 {
@@ -43,6 +53,12 @@ export class MockVec3 {
         this.x -= other.x;
         this.y -= other.y;
         this.z -= other.z;
+        return this;
+    }
+    sub2(a: MockVec3, b: MockVec3) {
+        this.x = a.x - b.x;
+        this.y = a.y - b.y;
+        this.z = a.z - b.z;
         return this;
     }
     add(other: MockVec3) {

@@ -55,7 +55,6 @@ describe("DrawHelper unit tests", () => {
     let mockJscadWorkerManager: JSCADWorkerManager;
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
-    let mockScene: pc.Entity;
 
     beforeEach(() => {
         const mocks = createDrawHelperMocks();
@@ -65,7 +64,6 @@ describe("DrawHelper unit tests", () => {
         mockJscadWorkerManager = mocks.mockJscadWorkerManager;
         mockManifoldWorkerManager = mocks.mockManifoldWorkerManager;
         mockOccWorkerManager = mocks.mockOccWorkerManager;
-        mockScene = mocks.mockScene;
 
         drawHelper = new DrawHelper(
             mockContext,
@@ -113,7 +111,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoint(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -136,7 +134,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoint(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBe(existingMesh);
         });
     });
@@ -154,6 +152,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
+            expect(result.children.length).toBe(3);
             expect(result.name).toContain("pointsMesh");
         });
 
@@ -166,7 +165,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoints(inputs);
-
+            expect(result.children.length).toBe(3);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -180,7 +179,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoints(inputs);
-
+            expect(result.children.length).toBe(4);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -206,7 +205,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoints(updateInputs);
-
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -231,7 +230,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoints(updateInputs);
-
+            expect(result.children.length).toBe(3);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -251,7 +250,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylineClose(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.name).toContain("polyline");
@@ -270,7 +269,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylineClose(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -296,7 +295,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylineClose(inputs);
-
+        expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -315,7 +314,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.name).toContain("polylines");
@@ -334,7 +333,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -350,7 +349,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -375,8 +374,8 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
-
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
         });
     });
 
@@ -394,9 +393,9 @@ describe("DrawHelper unit tests", () => {
                 2
             );
 
-            const result = drawHelper.drawCurve(inputs);
-
+            const result = drawHelper.drawCurve(inputs);            
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(pc.Entity);
             expect(mockCurve.tessellate).toHaveBeenCalled();
         });
@@ -423,7 +422,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawCurve(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -442,7 +441,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawCurves(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -470,6 +469,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawSurface(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(pc.Entity);
             expect(mockSurface.tessellate).toHaveBeenCalled();
         });
@@ -491,7 +491,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawSurface(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result.enabled).toBe(false);
         });
@@ -517,7 +517,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawSurface(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -538,7 +538,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawSurface(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -569,7 +569,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
-
+            
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.children.length).toBe(2);
@@ -644,6 +644,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBe(existingMesh);
         });
     });
@@ -663,6 +664,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
+            expect(result.children.length).toBe(1);
             expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
         });
 
@@ -678,6 +680,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -700,6 +703,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result.enabled).toBe(false);
         });
@@ -720,6 +724,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBe(existingMesh);
         });
 
@@ -735,6 +740,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -757,6 +763,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
 
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -778,6 +785,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
 
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -798,6 +806,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
 
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -821,6 +830,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBe(existingMesh);
         });
     });
@@ -845,6 +855,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
@@ -870,6 +881,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -891,6 +903,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -914,6 +927,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawShapes(inputs as Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>);
 
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
@@ -935,6 +949,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
@@ -967,7 +982,7 @@ describe("DrawHelper unit tests", () => {
             inputs.crossSectionWidth = 2;
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -988,7 +1003,7 @@ describe("DrawHelper unit tests", () => {
             inputs.faceColour = "#ff0000";
 
             const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
-
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -1007,7 +1022,7 @@ describe("DrawHelper unit tests", () => {
             inputs.faceColour = "#ff0000";
 
             const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -1057,6 +1072,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.name).toContain("surface");
         });
@@ -1081,6 +1097,7 @@ describe("DrawHelper unit tests", () => {
                 false
             );
 
+            expect(result.children.length).toBe(1);
             expect(result).toBe(existingGroup);
             expect(result.children.length).toBeGreaterThan(0);
         });
@@ -1102,6 +1119,7 @@ describe("DrawHelper unit tests", () => {
                 true // hidden
             );
 
+            expect(result.children.length).toBe(1);
             expect(result.enabled).toBe(false);
         });
 
@@ -1123,6 +1141,7 @@ describe("DrawHelper unit tests", () => {
                 false
             );
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -1141,6 +1160,7 @@ describe("DrawHelper unit tests", () => {
                 "#ff0000"
             );
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.name).toContain("polyline");
@@ -1164,6 +1184,7 @@ describe("DrawHelper unit tests", () => {
                 "#00ff00"
             );
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -1342,23 +1363,23 @@ describe("DrawHelper unit tests", () => {
 
             // Since materials may or may not be cached depending on implementation
             // Just verify method completes successfully
-            expect(cacheSize).toBeGreaterThanOrEqual(0);
+            expect(cacheSize).toBe(2);
         });
 
         it("should create new material for different opacity", () => {
             const inputs1 = new Inputs.Point.DrawPointDto<pc.Entity>(
-                [1, 2, 3],
-                1,
-                1.0,
-                "#ff0000",
-                false
+                [1, 2, 3],     // point
+                1.0,           // opacity
+                1,             // size
+                "#ff0000",     // colours
+                false          // updatable
             );
             const inputs2 = new Inputs.Point.DrawPointDto<pc.Entity>(
-                [4, 5, 6],
-                1,
-                0.5,
-                "#ff0000",
-                false
+                [4, 5, 6],     // point
+                0.5,           // opacity
+                1,             // size
+                "#ff0000",     // colours
+                false          // updatable
             );
 
             drawHelper.drawPoint(inputs1);
@@ -1366,8 +1387,8 @@ describe("DrawHelper unit tests", () => {
 
             const cacheSize = drawHelper["materialCache"].size;
 
-            // Verify operations complete successfully
-            expect(cacheSize).toBeGreaterThanOrEqual(0);
+            // Two different materials should be cached (different opacities)
+            expect(cacheSize).toBe(2);
         });
 
         it("should not exceed cache limit", () => {
@@ -1415,7 +1436,8 @@ describe("DrawHelper unit tests", () => {
 
             const result2 = drawHelper.drawPoint(inputs2);
             const child2 = result2.children[0];
-
+            expect(result1.children.length).toBe(1);
+            expect(result2.children.length).toBe(1);
             expect(result2).toBe(result1);
             expect(child2).toBe(child1);
         });
@@ -1465,6 +1487,8 @@ describe("DrawHelper unit tests", () => {
 
             const result2 = drawHelper.drawPolylinesWithColours(inputs2);
 
+            expect(result1.children.length).toBe(1);
+            expect(result2.children.length).toBe(1);
             expect(result2.children.length).toBeLessThanOrEqual(2);
         });
     });
@@ -1483,6 +1507,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoints(inputs);
 
             expect(result).toBeDefined();
+
             expect(result.children.length).toBe(0);
         });
 
@@ -1512,6 +1537,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylineClose(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -1541,6 +1567,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -1555,6 +1582,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -1569,6 +1597,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -1583,6 +1612,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -1597,6 +1627,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -1615,7 +1646,7 @@ describe("DrawHelper unit tests", () => {
 
             // Verify entity structure
             expect(result.children).toBeDefined();
-            expect(result.children.length).toBeGreaterThan(0);
+            expect(result.children.length).toBe(1);
 
             const mesh = result.children[0];
             expect(mesh).toBeInstanceOf(pc.Entity);
@@ -1632,7 +1663,7 @@ describe("DrawHelper unit tests", () => {
 
             // Verify multiple children created
             expect(result.children).toBeDefined();
-            expect(result.children.length).toBeGreaterThan(0);
+            expect(result.children.length).toBe(1);
         });
 
         it("should accept opacity parameter", () => {
@@ -1643,7 +1674,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
 
             expect(result).toBeDefined();
-            expect(result.children.length).toBeGreaterThan(0);
+            expect(result.children.length).toBe(1);
         });
 
         it("should handle multiple colors for multiple points", () => {
@@ -1670,7 +1701,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
 
             expect(result).toBeDefined();
-            expect(result.children.length).toBeGreaterThan(0);
+            expect(result.children.length).toBe(1);
 
             const mesh = result.children[0];
             expect(mesh).toBeInstanceOf(pc.Entity);
@@ -1684,6 +1715,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             const mesh = result.children[0];
             expect(mesh).toBeDefined();
             // Verify it's a valid entity (name format may vary)
@@ -1699,7 +1731,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
             expect(result).toBeDefined();
-            expect(result.children.length).toBeGreaterThan(0);
+            expect(result.children.length).toBe(1);
         });
 
         it("should handle closed polyline parameter", () => {
@@ -1711,6 +1743,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result.name).toBeDefined();
+            expect(result.children.length).toBe(1);
         });
 
         it("should create geometry for sized point", () => {
@@ -1721,6 +1754,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             const mesh = result.children[0];
             expect(mesh).toBeDefined();
         });
