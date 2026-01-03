@@ -583,7 +583,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#ff0000",
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -620,7 +622,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#0000ff",
                 false,
-                true // hidden
+                true, // hidden
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -646,7 +650,8 @@ describe("DrawHelper unit tests", () => {
                 "#00ff00",
                 true,
                 false,
-                existingMesh
+                existingMesh,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -667,7 +672,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 ["#ff0000", "#00ff00", "#0000ff"],
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -696,7 +703,9 @@ describe("DrawHelper unit tests", () => {
                 0.6,
                 "#0000ff",
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -712,6 +721,138 @@ describe("DrawHelper unit tests", () => {
             if (material && material.diffuse) {
                 const expectedColor = hexToRgb("#0000ff");
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
+            }
+        });
+
+        it("should draw surface with two-sided rendering enabled by default", () => {
+            const mockSurface = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+            const inputs = new Inputs.Verb.DrawSurfaceDto<pc.Entity>(
+                mockSurface,
+                1,
+                "#ff0000",
+                false,
+                false
+            );
+
+            const result = drawHelper.drawSurface(inputs);
+
+            expect(result).toBeDefined();
+            // With two-sided rendering, there should be 2 children: front and back face
+            expect(result.children.length).toBe(2);
+            expect(result).toBeInstanceOf(pc.Entity);
+
+            // Validate front face material color
+            const frontSurfaceEntity = result.children[0];
+            const frontMaterial = getMaterialFromEntity(frontSurfaceEntity);
+            if (frontMaterial && frontMaterial.diffuse) {
+                const expectedColor = hexToRgb("#ff0000");
+                expect(colorsAreEqual(frontMaterial.diffuse, expectedColor)).toBe(true);
+            }
+
+            // Validate back face material color (default blue)
+            const backSurfaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backSurfaceEntity);
+            if (backMaterial && backMaterial.diffuse) {
+                const expectedBackColor = hexToRgb("#0000ff");
+                expect(colorsAreEqual(backMaterial.diffuse, expectedBackColor)).toBe(true);
+            }
+        });
+
+        it("should draw surface without back face when drawTwoSided is false", () => {
+            const mockSurface = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+            const inputs = new Inputs.Verb.DrawSurfaceDto<pc.Entity>(
+                mockSurface,
+                1,
+                "#ff0000",
+                false,
+                false,
+                undefined,
+                false // drawTwoSided = false
+            );
+
+            const result = drawHelper.drawSurface(inputs);
+
+            expect(result).toBeDefined();
+            // With two-sided rendering disabled, there should be only 1 child (front face)
+            expect(result.children.length).toBe(1);
+            expect(result).toBeInstanceOf(pc.Entity);
+        });
+
+        it("should draw surface with custom back face colour", () => {
+            const mockSurface = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+            const inputs = new Inputs.Verb.DrawSurfaceDto<pc.Entity>(
+                mockSurface,
+                1,
+                "#ff0000",
+                false,
+                false,
+                undefined,
+                true, // drawTwoSided = true
+                "#00ff00" // custom backFaceColour
+            );
+
+            const result = drawHelper.drawSurface(inputs);
+
+            expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
+
+            // Validate back face has custom green color
+            const backSurfaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backSurfaceEntity);
+            if (backMaterial && backMaterial.diffuse) {
+                const expectedBackColor = hexToRgb("#00ff00");
+                expect(colorsAreEqual(backMaterial.diffuse, expectedBackColor)).toBe(true);
+            }
+        });
+
+        it("should draw surface with custom back face opacity", () => {
+            const mockSurface = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+            const inputs = new Inputs.Verb.DrawSurfaceDto<pc.Entity>(
+                mockSurface,
+                1,
+                "#ff0000",
+                false,
+                false,
+                undefined,
+                true, // drawTwoSided = true
+                "#0000ff", // backFaceColour
+                0.5 // backFaceOpacity
+            );
+
+            const result = drawHelper.drawSurface(inputs);
+
+            expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
+
+            // Validate back face has custom opacity
+            const backSurfaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backSurfaceEntity);
+            if (backMaterial) {
+                expect(backMaterial.opacity).toBe(0.5);
             }
         });
     });
@@ -738,7 +879,9 @@ describe("DrawHelper unit tests", () => {
                 ["#ff0000", "#00ff00"],
                 1,
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -777,7 +920,9 @@ describe("DrawHelper unit tests", () => {
                 ["#ff0000"], // Only one colour for 3 surfaces
                 1,
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -800,7 +945,9 @@ describe("DrawHelper unit tests", () => {
                 ["#ff0000"], // Array colour
                 1,
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -827,7 +974,8 @@ describe("DrawHelper unit tests", () => {
                 1,
                 true,
                 false,
-                existingMesh
+                existingMesh,
+                false // drawTwoSided disabled for this test
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -845,7 +993,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#ff0000",
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -876,7 +1026,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#0000ff",
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -899,7 +1051,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#ff0000",
                 false,
-                true // hidden
+                true, // hidden
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -920,7 +1074,8 @@ describe("DrawHelper unit tests", () => {
                 "#00ff00",
                 true,
                 false,
-                existingMesh
+                existingMesh,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -936,7 +1091,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 ["#ff0000", "#00ff00"],
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -960,7 +1117,9 @@ describe("DrawHelper unit tests", () => {
                 0.4,
                 "#00ff00",
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -980,6 +1139,114 @@ describe("DrawHelper unit tests", () => {
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
             }
         });
+
+        it("should draw JSCAD mesh with two-sided rendering enabled by default", async () => {
+            const mockMesh = { type: "solid" };
+            const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
+                mockMesh,
+                1,
+                "#ff0000",
+                false,
+                false
+            );
+
+            const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
+
+            expect(result).toBeDefined();
+            // With two-sided rendering, there should be 2 children: front and back face
+            expect(result.children.length).toBe(2);
+            expect(result).toBeInstanceOf(pc.Entity);
+
+            // Validate front face material color
+            const frontFaceEntity = result.children[0];
+            const frontMaterial = getMaterialFromEntity(frontFaceEntity);
+            if (frontMaterial && frontMaterial.diffuse) {
+                const expectedColor = hexToRgb("#ff0000");
+                expect(colorsAreEqual(frontMaterial.diffuse, expectedColor)).toBe(true);
+            }
+
+            // Validate back face material color (default blue)
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial && backMaterial.diffuse) {
+                const expectedBackColor = hexToRgb("#0000ff");
+                expect(colorsAreEqual(backMaterial.diffuse, expectedBackColor)).toBe(true);
+            }
+        });
+
+        it("should draw JSCAD mesh without back face when drawTwoSided is false", async () => {
+            const mockMesh = { type: "solid" };
+            const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
+                mockMesh,
+                1,
+                "#ff0000",
+                false,
+                false,
+                undefined,
+                false // drawTwoSided = false
+            );
+
+            const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
+
+            expect(result).toBeDefined();
+            // With two-sided rendering disabled, there should be only 1 child
+            expect(result.children.length).toBe(1);
+            expect(result).toBeInstanceOf(pc.Entity);
+        });
+
+        it("should draw JSCAD mesh with custom back face colour", async () => {
+            const mockMesh = { type: "solid" };
+            const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
+                mockMesh,
+                1,
+                "#ff0000",
+                false,
+                false,
+                undefined,
+                true, // drawTwoSided = true
+                "#00ff00" // custom backFaceColour
+            );
+
+            const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
+
+            expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
+
+            // Validate back face has custom green color
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial && backMaterial.diffuse) {
+                const expectedBackColor = hexToRgb("#00ff00");
+                expect(colorsAreEqual(backMaterial.diffuse, expectedBackColor)).toBe(true);
+            }
+        });
+
+        it("should draw JSCAD mesh with custom back face opacity", async () => {
+            const mockMesh = { type: "solid" };
+            const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
+                mockMesh,
+                1,
+                "#ff0000",
+                false,
+                false,
+                undefined,
+                true, // drawTwoSided = true
+                "#0000ff", // backFaceColour
+                0.5 // backFaceOpacity
+            );
+
+            const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
+
+            expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
+
+            // Validate back face has custom opacity
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial) {
+                expect(backMaterial.opacity).toBe(0.5);
+            }
+        });
     });
 
     describe("drawSolidOrPolygonMeshes", () => {
@@ -995,7 +1262,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#ff0000",
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1031,7 +1300,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#0000ff",
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1052,7 +1323,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 ["#ff0000", "#00ff00"], // Matching colours
                 false,
-                false
+                false,
+                undefined,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1086,7 +1359,8 @@ describe("DrawHelper unit tests", () => {
                 "#ff0000",
                 true,
                 false,
-                existingMesh
+                existingMesh,
+                false // drawTwoSided disabled for this test
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1113,6 +1387,7 @@ describe("DrawHelper unit tests", () => {
             inputs.drawVertices = false;
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
@@ -1139,6 +1414,7 @@ describe("DrawHelper unit tests", () => {
             inputs.edgeColour = "#00ff00";
             inputs.edgeWidth = 2;
             inputs.edgeOpacity = 1;
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
@@ -1161,11 +1437,146 @@ describe("DrawHelper unit tests", () => {
             inputs.drawVertices = true;
             inputs.vertexColour = "#0000ff";
             inputs.vertexSize = 0.1;
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
+        });
+
+        it("should draw OCCT shape with two-sided rendering enabled by default", async () => {
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                faceList: [
+                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                ],
+                edgeList: [],
+                pointsList: []
+            });
+
+            const inputs = new Inputs.OCCT.DrawShapeDto();
+            inputs.shape = { hash: "abc123", type: "solid" };
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawVertices = false;
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            // drawTwoSided defaults to true
+
+            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+
+            expect(result).toBeDefined();
+            // With two-sided rendering, there should be 2 children: front and back face
+            expect(result.children.length).toBe(2);
+            expect(result).toBeInstanceOf(pc.Entity);
+
+            // Validate front face material color
+            const frontFaceEntity = result.children[0];
+            const frontMaterial = getMaterialFromEntity(frontFaceEntity);
+            if (frontMaterial && frontMaterial.diffuse) {
+                const expectedColor = hexToRgb("#ff0000");
+                expect(colorsAreEqual(frontMaterial.diffuse, expectedColor)).toBe(true);
+            }
+
+            // Validate back face material color (default blue)
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial && backMaterial.diffuse) {
+                const expectedBackColor = hexToRgb("#0000ff");
+                expect(colorsAreEqual(backMaterial.diffuse, expectedBackColor)).toBe(true);
+            }
+        });
+
+        it("should draw OCCT shape without back face when drawTwoSided is false", async () => {
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                faceList: [
+                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                ],
+                edgeList: [],
+                pointsList: []
+            });
+
+            const inputs = new Inputs.OCCT.DrawShapeDto();
+            inputs.shape = { hash: "abc123", type: "solid" };
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawVertices = false;
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+
+            expect(result).toBeDefined();
+            // With two-sided rendering disabled, there should be only 1 child
+            expect(result.children.length).toBe(1);
+            expect(result).toBeInstanceOf(pc.Entity);
+        });
+
+        it("should draw OCCT shape with custom back face colour", async () => {
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                faceList: [
+                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                ],
+                edgeList: [],
+                pointsList: []
+            });
+
+            const inputs = new Inputs.OCCT.DrawShapeDto();
+            inputs.shape = { hash: "abc123", type: "solid" };
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawVertices = false;
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            inputs.drawTwoSided = true;
+            inputs.backFaceColour = "#00ff00";
+
+            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+
+            expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
+
+            // Validate back face has custom green color
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial && backMaterial.diffuse) {
+                const expectedBackColor = hexToRgb("#00ff00");
+                expect(colorsAreEqual(backMaterial.diffuse, expectedBackColor)).toBe(true);
+            }
+        });
+
+        it("should draw OCCT shape with custom back face opacity", async () => {
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                faceList: [
+                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                ],
+                edgeList: [],
+                pointsList: []
+            });
+
+            const inputs = new Inputs.OCCT.DrawShapeDto();
+            inputs.shape = { hash: "abc123", type: "solid" };
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawVertices = false;
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            inputs.drawTwoSided = true;
+            inputs.backFaceColour = "#0000ff";
+            inputs.backFaceOpacity = 0.5;
+
+            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+
+            expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
+
+            // Validate back face has custom opacity
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial) {
+                expect(backMaterial.opacity).toBe(0.5);
+            }
         });
     });
 
@@ -1185,6 +1596,7 @@ describe("DrawHelper unit tests", () => {
             inputs.drawEdges = false;
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawShapes(inputs as Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>);
 
@@ -1207,6 +1619,7 @@ describe("DrawHelper unit tests", () => {
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs);
 
@@ -1224,6 +1637,7 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs);
 
@@ -1241,11 +1655,122 @@ describe("DrawHelper unit tests", () => {
             inputs.crossSectionColour = "#00ff00";
             inputs.crossSectionOpacity = 1;
             inputs.crossSectionWidth = 2;
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs);
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
+        });
+
+        it("should draw manifold with two-sided rendering enabled by default", async () => {
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                triVerts: new Uint32Array([0, 1, 2])
+            });
+
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            // drawTwoSided defaults to true
+
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+
+            expect(result).toBeDefined();
+            // With two-sided rendering, there should be 2 children: front and back face
+            expect(result.children.length).toBe(2);
+            expect(result).toBeInstanceOf(pc.Entity);
+
+            // Validate front face material color
+            const frontFaceEntity = result.children[0];
+            const frontMaterial = getMaterialFromEntity(frontFaceEntity);
+            if (frontMaterial && frontMaterial.diffuse) {
+                const expectedColor = hexToRgb("#ff0000");
+                expect(colorsAreEqual(frontMaterial.diffuse, expectedColor)).toBe(true);
+            }
+
+            // Validate back face material color (default blue)
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial && backMaterial.diffuse) {
+                const expectedBackColor = hexToRgb("#0000ff");
+                expect(colorsAreEqual(backMaterial.diffuse, expectedBackColor)).toBe(true);
+            }
+        });
+
+        it("should draw manifold without back face when drawTwoSided is false", async () => {
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                triVerts: new Uint32Array([0, 1, 2])
+            });
+
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+
+            expect(result).toBeDefined();
+            // With two-sided rendering disabled, there should be only 1 child
+            expect(result.children.length).toBe(1);
+            expect(result).toBeInstanceOf(pc.Entity);
+        });
+
+        it("should draw manifold with custom back face colour", async () => {
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                triVerts: new Uint32Array([0, 1, 2])
+            });
+
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            inputs.drawTwoSided = true;
+            inputs.backFaceColour = "#00ff00";
+
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+
+            expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
+
+            // Validate back face has custom green color
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial && backMaterial.diffuse) {
+                const expectedBackColor = hexToRgb("#00ff00");
+                expect(colorsAreEqual(backMaterial.diffuse, expectedBackColor)).toBe(true);
+            }
+        });
+
+        it("should draw manifold with custom back face opacity", async () => {
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                triVerts: new Uint32Array([0, 1, 2])
+            });
+
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            inputs.drawTwoSided = true;
+            inputs.backFaceColour = "#0000ff";
+            inputs.backFaceOpacity = 0.5;
+
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+
+            expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
+
+            // Validate back face has custom opacity
+            const backFaceEntity = result.children[1];
+            const backMaterial = getMaterialFromEntity(backFaceEntity);
+            if (backMaterial) {
+                expect(backMaterial.opacity).toBe(0.5);
+            }
         });
     });
 
@@ -1262,6 +1787,7 @@ describe("DrawHelper unit tests", () => {
                 { hash: 456, type: "manifold" }
             ];
             inputs.faceColour = "#ff0000";
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
             expect(result.children.length).toBe(2);
@@ -1281,6 +1807,7 @@ describe("DrawHelper unit tests", () => {
                 { hash: 456, type: "manifold" }
             ];
             inputs.faceColour = "#ff0000";
+            inputs.drawTwoSided = false; // disable two-sided rendering for this test
 
             const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
             expect(result.children.length).toBe(1);

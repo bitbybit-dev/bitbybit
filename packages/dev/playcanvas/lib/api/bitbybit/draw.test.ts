@@ -639,6 +639,7 @@ describe("Draw unit tests", () => {
                 size: 4,
                 colours: "#ff0000",
                 updatable: true,
+                drawTwoSided: false,
             };
             const res = await draw.drawAnyAsync({ entity: surfaceMock, options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.verbSurface);
@@ -657,6 +658,7 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
                 hidden: true,
+                drawTwoSided: false,
             };
             const res = await draw.drawAnyAsync({ entity: surfaceMock, options });
             expect(res.enabled).toBe(false);
@@ -670,6 +672,7 @@ describe("Draw unit tests", () => {
                 size: 4,
                 colours: "#ff0000",
                 updatable: true,
+                drawTwoSided: false,
             };
             const res = await draw.drawAnyAsync({ entity: surfaceMock1, options });
             const res2 = await draw.drawAnyAsync({ entity: surfaceMock2, options, group: res });
@@ -693,6 +696,7 @@ describe("Draw unit tests", () => {
                 size: 4,
                 colours: ["#ff0000", "#00ff00"],
                 updatable: true,
+                drawTwoSided: false,
             };
             const res = await draw.drawAnyAsync({ entity: [surfaceMock1, surfaceMock2], options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
@@ -712,6 +716,7 @@ describe("Draw unit tests", () => {
 
         it("should draw a cube mesh with default options", async () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
+            options.drawTwoSided = false;
             occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
 
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
@@ -723,6 +728,7 @@ describe("Draw unit tests", () => {
 
         it("should draw a cube mesh with custom material", async () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
+            options.drawTwoSided = false;
             const customMaterial = new pc.StandardMaterial();
             customMaterial.diffuse.set(1, 0, 1);
             options.faceMaterial = customMaterial;
@@ -786,6 +792,7 @@ describe("Draw unit tests", () => {
 
         it("should draw a JSCAD mesh with default options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            options.drawTwoSided = false;
             jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockJSCADBoxDecomposedMesh());
             const res = await draw.drawAnyAsync({ entity: { polygons: [] }, options } as any);
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
@@ -796,6 +803,7 @@ describe("Draw unit tests", () => {
 
         it("should draw a JSCAD mesh with specified color options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            options.drawTwoSided = false;
             jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
             const res = await draw.drawAnyAsync({ entity: { polygons: [], color: [0, 1, 0] }, options } as any);
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
@@ -809,6 +817,7 @@ describe("Draw unit tests", () => {
         it("should draw a JSCAD mesh with specified color options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.colours = "#00ffff";
+            options.drawTwoSided = false;
             jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
             const res = await draw.drawAnyAsync({ entity: { polygons: [] }, options } as any);
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
@@ -822,6 +831,7 @@ describe("Draw unit tests", () => {
         it("should draw jscad mesh with native color and ignor options color", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.colours = "#00ffff";
+            options.drawTwoSided = false;
             jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
             const res = await draw.drawAnyAsync({ entity: { polygons: [], color: [0, 0, 1] }, options } as any);
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
@@ -834,6 +844,7 @@ describe("Draw unit tests", () => {
 
         it("should draw multiple JSCAD meshes with default options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            options.drawTwoSided = false;
             jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), mockJSCADBoxDecomposedMesh()]);
             const res = await draw.drawAnyAsync({ entity: [{ polygons: [] }, { polygons: [] }], options } as any);
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
@@ -844,6 +855,7 @@ describe("Draw unit tests", () => {
 
         it("should draw multiple JSCAD meshes with custom color", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            options.drawTwoSided = false;
             jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), { ...mockJSCADBoxDecomposedMesh(), color: [0, 0, 1] }]);
             const res = await draw.drawAnyAsync({ entity: [{ polygons: [] }, { polygons: [] }], options } as any);
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
