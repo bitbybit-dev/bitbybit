@@ -296,6 +296,7 @@ describe("Draw unit tests", () => {
             };
             const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
             const mesh = res.children[0] as pc.Entity;
+            expect(mesh).toBeDefined();
         });
 
         it("should create less detailed points if there are more then 1000 points in the list", async () => {
@@ -310,6 +311,7 @@ describe("Draw unit tests", () => {
             }
             const res = await draw.drawAnyAsync({ entity: points, options });
             const mesh = res.children[0] as pc.Entity;
+            expect(mesh).toBeDefined();
         });
 
         it("should create coloured points", async () => {
@@ -368,6 +370,7 @@ describe("Draw unit tests", () => {
 
             const ptMesh = res.children[0] as pc.Entity;
             expect(res.name).toContain("polylines");
+            expect(ptMesh).toBeDefined();
         });
 
         it("should draw lines via draw any with options", () => {
@@ -383,6 +386,7 @@ describe("Draw unit tests", () => {
 
             const ptMesh = res.children[0] as pc.Entity;
             expect(res.name).toContain("polylines");
+            expect(ptMesh).toBeDefined();
         });
 
         it("should update lines via draw any with options", () => {
@@ -398,6 +402,7 @@ describe("Draw unit tests", () => {
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.lines);
             expect(res2.name).toEqual(res.name);
             const ptMesh = res.children[0] as pc.Entity;
+            expect(ptMesh).toBeDefined();
             expect(res.name).toContain("polylines");
         });
 
@@ -532,6 +537,7 @@ describe("Draw unit tests", () => {
             expect(res.name).toContain("polyline");
             expect(res.children.length).toBe(1);
             const lineSegments = res.children[0] as pc.Entity;
+            expect(lineSegments).toBeDefined();
         });
 
         it("should draw curves", async () => {
@@ -558,6 +564,7 @@ describe("Draw unit tests", () => {
             expect(res).toBeDefined();
             expect(res.name).toContain("polyline");
             const lineSegments = res.children[0] as pc.Entity;
+            expect(lineSegments).toBeDefined();
         });
 
         it("should update drawn curves", async () => {
@@ -587,6 +594,7 @@ describe("Draw unit tests", () => {
             expect(res.name).toContain("polyline");
             expect(res.name).toEqual(res2.name);
             const lineSegments = res.children[0] as pc.Entity;
+            expect(lineSegments).toBeDefined();
         });
 
         it("should create new verb curve", async () => {
@@ -1074,13 +1082,14 @@ describe("Draw unit tests", () => {
             // NaN coordinates may result in undefined or a valid entity
             // depending on implementation - just verify no crash
             expect(true).toBe(true);
+            expect(res).toBeDefined();
         });
 
         it("should handle Infinity in coordinates", () => {
             const invalidCoords = [Infinity, 2, 3];
             const res = draw.drawAny({ entity: invalidCoords } as any);
             
-            expect(res).toBeDefined();
+            expect(res).toBeUndefined();
         });
 
         it("should handle very large coordinate values", () => {
