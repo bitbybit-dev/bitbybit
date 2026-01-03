@@ -65,7 +65,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, faceMaterial?: Base.Material, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean) {
+        constructor(faceOpacity?: number, faceMaterial?: Base.Material, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
             if (faceColour !== undefined) { this.faceColour = faceColour; }
@@ -73,6 +73,9 @@ export namespace Draw {
             if (crossSectionWidth !== undefined) { this.crossSectionWidth = crossSectionWidth; }
             if (crossSectionOpacity !== undefined) { this.crossSectionOpacity = crossSectionOpacity; }
             if (computeNormals !== undefined) { this.computeNormals = computeNormals; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Face opacity value between 0 and 1
@@ -116,12 +119,30 @@ export namespace Draw {
          * @default false
          */
         computeNormals = false;
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     export class DrawOcctShapeOptions {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -140,6 +161,9 @@ export namespace Draw {
             if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
             if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
             if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Face opacity value between 0 and 1
@@ -253,18 +277,39 @@ export namespace Draw {
          * @default #0000ff
          */
         faceIndexColour: Base.Color = "#0000ff";
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
 
     /**
      * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
      */
     export class DrawBasicGeometryOptions {
-        constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean) {
+        constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (colours !== undefined) { this.colours = colours; }
             if (size !== undefined) { this.size = size; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (updatable !== undefined) { this.updatable = updatable; }
             if (hidden !== undefined) { this.hidden = hidden; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Basic geometry colours to use for lines, points, polylines, surfaces, jscad meshes.
@@ -297,6 +342,24 @@ export namespace Draw {
          * @default false
          */
         hidden = false;
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation. Only applies to surfaces.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true and drawing surfaces.
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true and drawing surfaces.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
 
     export enum drawingTypes {

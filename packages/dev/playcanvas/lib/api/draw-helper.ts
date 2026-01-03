@@ -126,7 +126,13 @@ export class DrawHelper extends DrawHelperCore {
                 colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
             }
             
-            const s = this.makeMesh({ ...inputs, colour }, meshToUpdate, res);
+            const s = this.makeMesh({ 
+                ...inputs, 
+                colour,
+                drawTwoSided: inputs.drawTwoSided,
+                backFaceColour: inputs.backFaceColour,
+                backFaceOpacity: inputs.backFaceOpacity
+            }, meshToUpdate, res);
             inputs.jscadMesh = s;
             return s;
         } catch (error) {
@@ -168,7 +174,13 @@ export class DrawHelper extends DrawHelperCore {
                 } else {
                     colour = inputs.colours;
                 }
-                const m = this.makeMesh({ ...inputs, colour }, meshToUpdate, r);
+                const m = this.makeMesh({ 
+                    ...inputs, 
+                    colour,
+                    drawTwoSided: inputs.drawTwoSided,
+                    backFaceColour: inputs.backFaceColour,
+                    backFaceOpacity: inputs.backFaceOpacity
+                }, meshToUpdate, r);
                 localOrigin.addChild(m);
             });
             
@@ -327,6 +339,9 @@ export class DrawHelper extends DrawHelperCore {
                     updatable: inputs.updatable,
                     opacity: inputs.opacity,
                     hidden: inputs.hidden,
+                    drawTwoSided: inputs.drawTwoSided,
+                    backFaceColour: inputs.backFaceColour,
+                    backFaceOpacity: inputs.backFaceOpacity,
                 });
                 inputs.surfacesMesh.addChild(srf);
             });
@@ -338,6 +353,9 @@ export class DrawHelper extends DrawHelperCore {
                     updatable: inputs.updatable,
                     opacity: inputs.opacity,
                     hidden: inputs.hidden,
+                    drawTwoSided: inputs.drawTwoSided,
+                    backFaceColour: inputs.backFaceColour,
+                    backFaceOpacity: inputs.backFaceOpacity,
                 });
                 inputs.surfacesMesh.addChild(srf);
             });
@@ -416,6 +434,94 @@ export class DrawHelper extends DrawHelperCore {
         return group;
     }
 
+    /**
+     * Create a back face mesh with flipped normals and reversed winding order
+     * This is used for two-sided rendering where back faces have a different color
+     * @param meshDataConverted - Original mesh data
+     * @param backFaceColour - Color for the back face
+     * @param backFaceOpacity - Opacity for the back face
+     * @param zOffset - Depth bias to prevent z-fighting
+     * @returns Entity containing the back face mesh
+     */
+    private createBackFaceMesh(
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
+        backFaceColour: string,
+        backFaceOpacity: number,
+        zOffset: number
+    ): pc.Entity {
+        // Create material for back face
+        const backMaterial = this.getOrCreateMaterial(backFaceColour + "-back", backFaceOpacity, zOffset + 0.1, () => {
+            const mat = new pc.StandardMaterial();
+            mat.name = this.generateEntityId("backFaceMaterial");
+            mat.diffuse = this.hexToColor(backFaceColour);
+            mat.metalness = 0.4;
+            mat.gloss = 0.2;
+            mat.opacity = backFaceOpacity;
+            mat.depthBias = zOffset + 0.1;
+            mat.slopeDepthBias = zOffset + 0.1;
+            mat.update();
+            return mat;
+        });
+
+        // Merge all geometries into one with flipped normals and reversed indices
+        const totalPositions: number[] = [];
+        let totalNormals: number[] = [];
+        const totalIndices: number[] = [];
+        const totalUvs: number[] = [];
+        let indexOffset = 0;
+
+        meshDataConverted.forEach(meshItem => {
+            totalPositions.push(...meshItem.positions);
+            
+            // Flip normals for back face
+            if (meshItem.normals && meshItem.normals.length > 0) {
+                for (let i = 0; i < meshItem.normals.length; i++) {
+                    totalNormals.push(-meshItem.normals[i]);
+                }
+            }
+            
+            if (meshItem.uvs) {
+                totalUvs.push(...meshItem.uvs);
+            }
+            
+            // Reverse winding order for back face (swap second and third vertex of each triangle)
+            for (let i = 0; i < meshItem.indices.length; i += 3) {
+                totalIndices.push(
+                    meshItem.indices[i] + indexOffset,
+                    meshItem.indices[i + 2] + indexOffset,  // Swapped
+                    meshItem.indices[i + 1] + indexOffset   // Swapped
+                );
+            }
+            indexOffset += meshItem.positions.length / 3;
+        });
+
+        // Compute normals if they're missing
+        if (totalNormals.length === 0 && totalPositions.length > 0) {
+            const computedNormals = this.computeNormals(totalPositions, totalIndices);
+            // Normals will already point in the correct direction due to reversed winding
+            totalNormals = computedNormals;
+        }
+
+        const mesh = new pc.Mesh(this.context.app.graphicsDevice);
+        mesh.setPositions(totalPositions);
+        mesh.setNormals(totalNormals);
+        mesh.setIndices(totalIndices);
+        if (totalUvs.length > 0) {
+            mesh.setUvs(0, totalUvs);
+        }
+        mesh.update(pc.PRIMITIVE_TRIANGLES);
+
+        const group = new pc.Entity(this.generateEntityId("backFaceSurface"));
+        const meshInstance = new pc.MeshInstance(mesh, backMaterial);
+        const entity = new pc.Entity(this.generateEntityId("backFaceSurfaceChild"));
+        entity.addComponent("render", {
+            meshInstances: [meshInstance]
+        });
+        group.addChild(entity);
+
+        return group;
+    }
+
     drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<pc.Entity>): pc.Entity {
         const meshData = inputs.surface.tessellate();
 
@@ -442,7 +548,7 @@ export class DrawHelper extends DrawHelperCore {
             return material;
         });
 
-        return this.createOrUpdateSurfacesMesh(
+        const surfaceEntity = this.createOrUpdateSurfacesMesh(
             [meshDataConverted],
             inputs.surfaceMesh,
             inputs.updatable,
@@ -450,6 +556,19 @@ export class DrawHelper extends DrawHelperCore {
             true,
             inputs.hidden,
         );
+
+        // Draw back faces with different color when two-sided rendering is enabled
+        if (inputs.drawTwoSided !== false) {
+            const backFaceMesh = this.createBackFaceMesh(
+                [meshDataConverted],
+                inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                inputs.backFaceOpacity ?? inputs.opacity,
+                0
+            );
+            surfaceEntity.addChild(backFaceMesh);
+        }
+
+        return surfaceEntity;
     }
 
     private parseFaces(
@@ -468,7 +587,7 @@ export class DrawHelper extends DrawHelperCore {
         return countIndices;
     }
 
-    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: pc.Entity, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }): pc.Entity {
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number }, meshToUpdate: pc.Entity, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }): pc.Entity {
         const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, 0, () => {
             const material = new pc.StandardMaterial();
             material.name = this.generateEntityId("jscadMaterial");
@@ -481,6 +600,18 @@ export class DrawHelper extends DrawHelperCore {
         });
 
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable, pbr);
+
+        // Draw back faces with different color when two-sided rendering is enabled
+        if (inputs.drawTwoSided !== false) {
+            const backFaceMesh = this.createBackFaceMesh(
+                [{ positions: res.positions, indices: res.indices, normals: res.normals }],
+                inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                inputs.backFaceOpacity ?? inputs.opacity,
+                0
+            );
+            meshToUpdate.addChild(backFaceMesh);
+        }
+
         if (inputs.hidden) {
             meshToUpdate.enabled = false;
         }
@@ -640,6 +771,17 @@ export class DrawHelper extends DrawHelperCore {
 
             const mesh = this.createOrUpdateSurfacesMesh(meshData, undefined, false, pbr, false, false);
             shapeGroup.addChild(mesh);
+
+            // Draw back faces with different color when two-sided rendering is enabled
+            if (options.drawTwoSided !== false) {
+                const backFaceMesh = this.createBackFaceMesh(
+                    meshData, 
+                    options.backFaceColour || DEFAULT_COLORS.BACK_FACE, 
+                    options.backFaceOpacity ?? options.faceOpacity,
+                    inputs.drawEdges ? 2 : 0
+                );
+                shapeGroup.addChild(backFaceMesh);
+            }
         }
         if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
 
@@ -1006,6 +1148,17 @@ export class DrawHelper extends DrawHelperCore {
                     meshInstances: [meshInstance]
                 });
                 group.addChild(childEntity);
+
+                // Draw back faces with different color when two-sided rendering is enabled
+                if (options.drawTwoSided !== false) {
+                    const backFaceMesh = this.createBackFaceMesh(
+                        [{ positions, indices, normals }],
+                        options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                        options.backFaceOpacity ?? options.faceOpacity,
+                        0
+                    );
+                    group.addChild(backFaceMesh);
+                }
                 
                 this.context.scene.addChild(group);
                 return group;

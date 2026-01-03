@@ -70,6 +70,8 @@ export const DEFAULT_COLORS = {
     VERTEX: "#ffaaff",
     /** Default face color for OCCT shapes */
     FACE: "#ff0000",
+    /** Default back face color - blue to distinguish face orientation */
+    BACK_FACE: "#0000ff",
     /** Default edge index label color */
     EDGE_INDEX: "#ff00ff",
     /** Default face index label color */

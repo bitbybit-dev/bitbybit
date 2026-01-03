@@ -77,13 +77,16 @@ export namespace JSCAD {
         /**
          * Provide options without default values
          */
-        constructor(mesh?: JSCADEntity, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T) {
+        constructor(mesh?: JSCADEntity, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number) {
             if (mesh !== undefined) { this.mesh = mesh; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
             if (updatable !== undefined) { this.updatable = updatable; }
             if (hidden !== undefined) { this.hidden = hidden; }
             if (jscadMesh !== undefined) { this.jscadMesh = jscadMesh; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Solid Jscad mesh
@@ -119,18 +122,39 @@ export namespace JSCAD {
          * @ignore true
          */
         jscadMesh?: T;
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * @default #0000ff
+         */
+        backFaceColour = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     export class DrawSolidMeshesDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(meshes?: JSCADEntity[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T) {
+        constructor(meshes?: JSCADEntity[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number) {
             if (meshes !== undefined) { this.meshes = meshes; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
             if (updatable !== undefined) { this.updatable = updatable; }
             if (hidden !== undefined) { this.hidden = hidden; }
             if (jscadMesh !== undefined) { this.jscadMesh = jscadMesh; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Solid Jscad meshes
@@ -168,6 +192,24 @@ export namespace JSCAD {
          * @ignore true
          */
         jscadMesh?: T;
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * @default #0000ff
+         */
+        backFaceColour = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     export class DrawPathDto<T> {
         /**
