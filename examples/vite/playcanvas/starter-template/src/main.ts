@@ -499,7 +499,7 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
     
     // Loft the curves to create a surface
     const surface = bitbybit.verb.surface.createSurfaceByLoftingCurves({
-        curves: [curve1, curve2, curve3],
+        curves: [curve3, curve2, curve1],
         degreeV: 2,
     });
     

@@ -457,7 +457,7 @@ export class DrawHelper extends DrawHelperCore {
         meshData: { points: number[][]; normals: number[][]; },
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
         countIndices: number): number {
-        faceIndices.reverse().forEach((x) => {
+        faceIndices.forEach((x) => {
             const vn = meshData.normals[x];
             meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
             const pt = meshData.points[x];
