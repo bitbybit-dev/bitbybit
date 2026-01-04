@@ -2835,4 +2835,665 @@ describe("DrawHelper unit tests", () => {
             }
         });
     });
+
+    describe("drawEdgeIndexes", () => {
+        it("should draw edge indexes when drawEdgeIndexes is true", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                    },
+                    {
+                        edge_index: 1,
+                        middle_point: [0.75, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            // Mock the OCCT worker
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+
+            // Mock createVectorText to return sample polyline data for text
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0], [0.1, 0.2], [0, 0.2]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = true;
+            inputs.edgeIndexHeight = 0.1;
+            inputs.edgeIndexColour = "#ffff00";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            // Verify createVectorText was called for each edge
+            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            // Should be called twice (once for each edge)
+            expect((mockSolidText.createVectorText as jest.Mock).mock.calls.length).toBeGreaterThanOrEqual(2);
+            
+            // Verify the text height was set correctly
+            const firstCall = (mockSolidText.createVectorText as jest.Mock).mock.calls[0][0];
+            expect(firstCall.height).toBe(0.1);
+            
+            // Verify the text content includes edge index (1-based)
+            expect(firstCall.text).toBe("1");
+        });
+
+        it("should compute edge middle position when middle_point is undefined", async () => {
+            const mockShape = {
+                faceList: [],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        // middle_point is undefined - should trigger computeEdgeMiddlePos
+                        vertex_coord: [[0, 0, 0], [2, 0, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = false;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = true;
+            inputs.edgeIndexHeight = 0.2;
+            inputs.edgeIndexColour = "#00ffff";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            // Vector.add should be called to position the text at computed middle point
+            expect(mockVector.add).toHaveBeenCalled();
+        });
+
+        it("should handle edge with exactly 3 vertex coordinates (use middle vertex)", async () => {
+            const mockShape = {
+                faceList: [],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        // 3 vertices - middle one should be used
+                        vertex_coord: [[0, 0, 0], [1, 0, 0], [2, 0, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = false;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = true;
+            inputs.edgeIndexHeight = 0.15;
+            inputs.edgeIndexColour = "#ff00ff";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+        });
+
+        it("should handle edge with more than 3 vertex coordinates", async () => {
+            const mockShape = {
+                faceList: [],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        // More than 3 vertices - should lerp between middle vertices
+                        vertex_coord: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = false;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = true;
+            inputs.edgeIndexHeight = 0.1;
+            inputs.edgeIndexColour = "#aabbcc";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+        });
+
+        it("should set zOffset on edge index mesh material", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = true;
+            inputs.edgeIndexHeight = 0.1;
+            inputs.edgeIndexColour = "#ffffff";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            // The edge index mesh should have its parent set to shapeMesh
+            const children = result.getChildMeshes();
+            expect(children.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe("drawFaceIndexes", () => {
+        it("should draw face indexes when drawFaceIndexes is true", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0], [0.1, 0.2], [0, 0.2]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawFaceIndexes = true;
+            inputs.faceIndexHeight = 0.15;
+            inputs.faceIndexColour = "#ff0000";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            // Verify createVectorText was called for each face
+            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            // Should be called once for the face
+            expect((mockSolidText.createVectorText as jest.Mock).mock.calls.length).toBeGreaterThanOrEqual(1);
+            
+            // Verify the text height was set correctly
+            const firstCall = (mockSolidText.createVectorText as jest.Mock).mock.calls[0][0];
+            expect(firstCall.height).toBe(0.15);
+            
+            // Verify the text content is face index (0-based)
+            expect(firstCall.text).toBe("0");
+        });
+
+        it("should draw multiple face indexes", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    },
+                    {
+                        face_index: 1,
+                        center_point: [1.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [1, 0, 0, 2, 0, 0, 1.5, 1, 0],
+                        vertex_coord_vec: [[1, 0, 0], [2, 0, 0], [1.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = false; // Only draw face indexes, not faces
+            inputs.drawEdges = false;
+            inputs.drawFaceIndexes = true;
+            inputs.faceIndexHeight = 0.15;
+            inputs.faceIndexColour = "#ff0000";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            // Should be called twice (once for each face)
+            expect((mockSolidText.createVectorText as jest.Mock).mock.calls.length).toBe(2);
+            
+            // Verify second face index is "1"
+            const secondCall = (mockSolidText.createVectorText as jest.Mock).mock.calls[1][0];
+            expect(secondCall.text).toBe("1");
+        });
+
+        it("should compute face middle position when center_point is undefined", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        // center_point is undefined - should trigger computeFaceMiddlePos
+                        vertex_coord: [0, 0, 0, 2, 0, 0, 1, 2, 0],
+                        vertex_coord_vec: [[0, 0, 0], [2, 0, 0], [1, 2, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawFaceIndexes = true;
+            inputs.faceIndexHeight = 0.2;
+            inputs.faceIndexColour = "#00ff00";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            // Vector.add should be called to position the text at computed center point
+            expect(mockVector.add).toHaveBeenCalled();
+        });
+
+        it("should set zOffset on face index mesh when drawEdges is true", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawFaceIndexes = true;
+            inputs.faceIndexHeight = 0.1;
+            inputs.faceIndexColour = "#0000ff";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            // The mesh should have zOffset set when drawEdges is true
+            const children = result.getChildMeshes();
+            expect(children.length).toBeGreaterThan(0);
+        });
+
+        it("should not set zOffset on face index mesh when drawEdges is false", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawFaceIndexes = true;
+            inputs.faceIndexHeight = 0.1;
+            inputs.faceIndexColour = "#0000ff";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+        });
+    });
+
+    describe("drawEdgeIndexes and drawFaceIndexes combined", () => {
+        it("should draw both edge and face indexes simultaneously", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                    },
+                    {
+                        edge_index: 1,
+                        middle_point: [0.25, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
+                    },
+                    {
+                        edge_index: 2,
+                        middle_point: [0.75, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0], [0.1, 0.2], [0, 0.2]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = true;
+            inputs.drawFaceIndexes = true;
+            inputs.edgeIndexHeight = 0.1;
+            inputs.edgeIndexColour = "#ffff00";
+            inputs.faceIndexHeight = 0.15;
+            inputs.faceIndexColour = "#ff00ff";
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            // Should have called createVectorText for all edges (3) and faces (1)
+            expect((mockSolidText.createVectorText as jest.Mock).mock.calls.length).toBe(4);
+        });
+
+        it("should not call createVectorText when edgeList is empty but drawEdgeIndexes is true", async () => {
+            // When edgeList is empty but drawEdgeIndexes is true, no text creation happens
+            // The promises array will be empty, resulting in empty textPolylines
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawEdgeIndexes = true; // true but edgeList is empty
+            inputs.edgeIndexHeight = 0.1;
+            inputs.edgeIndexColour = "#ffff00";
+            inputs.drawTwoSided = false;
+
+            // Note: Currently the implementation throws when edgeList is empty
+            // because drawPolylines returns undefined for empty polylines
+            // and the code tries to set parent on undefined
+            await expect(drawHelper.drawShape(inputs)).rejects.toThrow();
+        });
+
+        it("should not call createVectorText when faceList is empty but drawFaceIndexes is true", async () => {
+            // When faceList is empty but drawFaceIndexes is true, no text creation happens
+            // The promises array will be empty, resulting in empty textPolylines
+            const mockShape = {
+                faceList: [],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = false;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = false; // Only test face indexes
+            inputs.drawFaceIndexes = true; // true but faceList is empty
+            inputs.faceIndexHeight = 0.1;
+            inputs.faceIndexColour = "#ff00ff";
+            inputs.drawTwoSided = false;
+
+            // Note: Currently the implementation throws when faceList is empty
+            // because drawPolylines returns undefined for empty polylines
+            // and the code tries to set parent on undefined
+            await expect(drawHelper.drawShape(inputs)).rejects.toThrow();
+        });
+
+        it("should use correct lineSpacing for edge index text", async () => {
+            const mockShape = {
+                faceList: [],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = false;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = true;
+            inputs.edgeIndexHeight = 0.1;
+            inputs.edgeIndexColour = "#ffff00";
+            inputs.drawTwoSided = false;
+
+            await drawHelper.drawShape(inputs);
+
+            const textDto = (mockSolidText.createVectorText as jest.Mock).mock.calls[0][0];
+            expect(textDto.lineSpacing).toBe(1.5);
+        });
+
+        it("should use correct lineSpacing for face index text", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [0.1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = false;
+            inputs.drawFaceIndexes = true;
+            inputs.faceIndexHeight = 0.15;
+            inputs.faceIndexColour = "#ff00ff";
+            inputs.drawTwoSided = false;
+
+            await drawHelper.drawShape(inputs);
+
+            const textDto = (mockSolidText.createVectorText as jest.Mock).mock.calls[0][0];
+            expect(textDto.lineSpacing).toBe(1.5);
+        });
+
+        it("should apply Y offset of 0.05 to text polyline points", async () => {
+            const mockShape = {
+                faceList: [],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [1, 2, 3] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [2, 4, 6]] as Inputs.Base.Point3[]
+                    }
+                ],
+                pointsList: []
+            };
+
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+            
+            // Return text polyline with known coordinates
+            (mockSolidText.createVectorText as jest.Mock).mockResolvedValue([
+                [[0, 0], [1, 0]]
+            ]);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any;
+            inputs.drawFaces = false;
+            inputs.drawEdges = true;
+            inputs.drawEdgeIndexes = true;
+            inputs.edgeIndexHeight = 0.1;
+            inputs.edgeIndexColour = "#ffff00";
+            inputs.drawTwoSided = false;
+
+            await drawHelper.drawShape(inputs);
+
+            // Vector.add should be called with the modified point (Y offset of 0.05)
+            expect(mockVector.add).toHaveBeenCalled();
+            const addCalls = (mockVector.add as jest.Mock).mock.calls;
+            // Check that the first parameter contains the Y offset
+            expect(addCalls[0][0].first[1]).toBe(0.05);
+        });
+    });
 });

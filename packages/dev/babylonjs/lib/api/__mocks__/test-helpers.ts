@@ -88,7 +88,14 @@ export function createMockJSCADText(): JSCADText {
  */
 export function createMockVector(): Vector {
     return {
-        add: jest.fn().mockReturnValue([0, 0, 0])
+        add: jest.fn().mockReturnValue([0, 0, 0]),
+        lerp: jest.fn().mockImplementation(({ first, second, fraction }) => {
+            return [
+                first[0] + (second[0] - first[0]) * fraction,
+                first[1] + (second[1] - first[1]) * fraction,
+                first[2] + (second[2] - first[2]) * fraction
+            ];
+        })
     } as unknown as Vector;
 }
 
