@@ -163,6 +163,24 @@ export namespace Draw {
          * @default false
          */
         hidden = false;
+        /**
+         * Whether to draw two-sided geometry with back face rendering
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for the back face when drawing two-sided geometry
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Opacity of the back face when drawing two-sided geometry
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
 
     /**
@@ -253,6 +271,24 @@ export namespace Draw {
          * @default false
          */
         computeNormals = false;
+        /**
+         * Whether to draw two-sided geometry with back face rendering
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for the back face when drawing two-sided geometry
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Opacity of the back face when drawing two-sided geometry
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     /**
      * Draw options for OCCT shapes
@@ -393,15 +429,36 @@ export namespace Draw {
          * @default #0000ff
          */
         faceIndexColour: Base.Color = "#0000ff";
+        /**
+         * Whether to draw two-sided geometry with back face rendering
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for the back face when drawing two-sided geometry
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Opacity of the back face when drawing two-sided geometry
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     export class DrawOcctShapeSimpleOptions {
-        constructor(precision?: number, drawFaces?: boolean, faceColour?: Base.Color, drawEdges?: boolean, edgeColour?: Base.Color, edgeWidth?: number) {
+        constructor(precision?: number, drawFaces?: boolean, faceColour?: Base.Color, drawEdges?: boolean, edgeColour?: Base.Color, edgeWidth?: number, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (precision !== undefined) { this.precision = precision; }
             if (drawFaces !== undefined) { this.drawFaces = drawFaces; }
             if (faceColour !== undefined) { this.faceColour = faceColour; }
             if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
             if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Precision
@@ -437,6 +494,24 @@ export namespace Draw {
          * @maximum Infinity
          */
         edgeWidth = 2;
+        /**
+         * Whether to draw two-sided geometry with back face rendering
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for the back face when drawing two-sided geometry
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Opacity of the back face when drawing two-sided geometry
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
 
     export class DrawOcctShapeMaterialOptions {

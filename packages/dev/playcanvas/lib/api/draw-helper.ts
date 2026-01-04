@@ -201,7 +201,7 @@ export class DrawHelper extends DrawHelperCore {
     drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<pc.Entity>): pc.Entity {
         // Normalize inputs
         const colors = this.normalizePolylineColors(inputs.polylines, inputs.colours);
-        const processedPoints = this.processPolylinePoints(inputs.polylines);
+        const processedPoints = this.processPolylinePoints(inputs.polylines as Inputs.Base.Polyline3[]);
         
         // Determine if we should update existing mesh
         const existingMesh = (inputs.updatable && inputs.polylinesMesh) 
@@ -457,57 +457,25 @@ export class DrawHelper extends DrawHelperCore {
             mat.metalness = 0.4;
             mat.gloss = 0.2;
             mat.opacity = backFaceOpacity;
+            // Enable alpha blending for transparency when opacity < 1
+            if (backFaceOpacity < 1) {
+                mat.blendType = pc.BLEND_NORMAL;
+            }
             mat.depthBias = zOffset + 0.1;
             mat.slopeDepthBias = zOffset + 0.1;
             mat.update();
             return mat;
         });
 
-        // Merge all geometries into one with flipped normals and reversed indices
-        const totalPositions: number[] = [];
-        let totalNormals: number[] = [];
-        const totalIndices: number[] = [];
-        const totalUvs: number[] = [];
-        let indexOffset = 0;
-
-        meshDataConverted.forEach(meshItem => {
-            totalPositions.push(...meshItem.positions);
-            
-            // Flip normals for back face
-            if (meshItem.normals && meshItem.normals.length > 0) {
-                for (let i = 0; i < meshItem.normals.length; i++) {
-                    totalNormals.push(-meshItem.normals[i]);
-                }
-            }
-            
-            if (meshItem.uvs) {
-                totalUvs.push(...meshItem.uvs);
-            }
-            
-            // Reverse winding order for back face (swap second and third vertex of each triangle)
-            for (let i = 0; i < meshItem.indices.length; i += 3) {
-                totalIndices.push(
-                    meshItem.indices[i] + indexOffset,
-                    meshItem.indices[i + 2] + indexOffset,  // Swapped
-                    meshItem.indices[i + 1] + indexOffset   // Swapped
-                );
-            }
-            indexOffset += meshItem.positions.length / 3;
-        });
-
-        // Compute normals if they're missing
-        if (totalNormals.length === 0 && totalPositions.length > 0) {
-            const computedNormals = this.computeNormals(totalPositions, totalIndices);
-            // Normals will already point in the correct direction due to reversed winding
-            totalNormals = computedNormals;
-        }
+        // Use inherited method to prepare back face mesh data
+        const backFaceData = this.prepareBackFaceMeshData(meshDataConverted);
 
         const mesh = new pc.Mesh(this.context.app.graphicsDevice);
-        mesh.setPositions(totalPositions);
-        mesh.setNormals(totalNormals);
-        mesh.setIndices(totalIndices);
-        if (totalUvs.length > 0) {
-            mesh.setUvs(0, totalUvs);
+        mesh.setPositions(backFaceData.positions);
+        mesh.setNormals(backFaceData.normals);
+        mesh.setIndices(backFaceData.indices);
+        if (backFaceData.uvs && backFaceData.uvs.length > 0) {
+            mesh.setUvs(0, backFaceData.uvs);
         }
         mesh.update(pc.PRIMITIVE_TRIANGLES);
 
@@ -544,6 +512,10 @@ export class DrawHelper extends DrawHelperCore {
             material.metalness = 0.5;
             material.gloss = 0.3;
             material.opacity = inputs.opacity;
+            // Enable alpha blending for transparency when opacity < 1
+            if (inputs.opacity < 1) {
+                material.blendType = pc.BLEND_NORMAL;
+            }
             material.update();
             return material;
         });
@@ -595,6 +567,10 @@ export class DrawHelper extends DrawHelperCore {
             material.metalness = 0.4;
             material.gloss = 0.4;
             material.opacity = inputs.opacity;
+            // Enable alpha blending for transparency when opacity < 1
+            if (inputs.opacity < 1) {
+                material.blendType = pc.BLEND_NORMAL;
+            }
             material.update();
             return material;
         });
@@ -658,76 +634,6 @@ export class DrawHelper extends DrawHelperCore {
             jscadMesh.setLocalRotation(rot);
             jscadMesh.setLocalScale(scale);
         }
-    }
-
-    /**
-     * Compute flat normals for a mesh when normals are not provided
-     */
-    private computeNormals(positions: number[], indices: number[]): number[] {
-        const numVertices = positions.length / 3;
-        const normals = new Float32Array(positions.length);
-        
-        // For each triangle, compute face normal and accumulate
-        for (let i = 0; i < indices.length; i += 3) {
-            const i0 = indices[i];
-            const i1 = indices[i + 1];
-            const i2 = indices[i + 2];
-            
-            // Get vertices
-            const v0x = positions[i0 * 3];
-            const v0y = positions[i0 * 3 + 1];
-            const v0z = positions[i0 * 3 + 2];
-            
-            const v1x = positions[i1 * 3];
-            const v1y = positions[i1 * 3 + 1];
-            const v1z = positions[i1 * 3 + 2];
-            
-            const v2x = positions[i2 * 3];
-            const v2y = positions[i2 * 3 + 1];
-            const v2z = positions[i2 * 3 + 2];
-            
-            // Compute edge vectors
-            const e1x = v1x - v0x;
-            const e1y = v1y - v0y;
-            const e1z = v1z - v0z;
-            
-            const e2x = v2x - v0x;
-            const e2y = v2y - v0y;
-            const e2z = v2z - v0z;
-            
-            // Cross product
-            const nx = e1y * e2z - e1z * e2y;
-            const ny = e1z * e2x - e1x * e2z;
-            const nz = e1x * e2y - e1y * e2x;
-            
-            // Accumulate normals for each vertex
-            normals[i0 * 3] += nx;
-            normals[i0 * 3 + 1] += ny;
-            normals[i0 * 3 + 2] += nz;
-            
-            normals[i1 * 3] += nx;
-            normals[i1 * 3 + 1] += ny;
-            normals[i1 * 3 + 2] += nz;
-            
-            normals[i2 * 3] += nx;
-            normals[i2 * 3 + 1] += ny;
-            normals[i2 * 3 + 2] += nz;
-        }
-        
-        // Normalize all normals
-        for (let i = 0; i < numVertices; i++) {
-            const x = normals[i * 3];
-            const y = normals[i * 3 + 1];
-            const z = normals[i * 3 + 2];
-            const len = Math.sqrt(x * x + y * y + z * z);
-            if (len > 0) {
-                normals[i * 3] = x / len;
-                normals[i * 3 + 1] = y / len;
-                normals[i * 3 + 2] = z / len;
-            }
-        }
-        
-        return Array.from(normals);
     }
 
     private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions): Promise<pc.Entity> {
@@ -867,16 +773,6 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
-     * Compute a signature string representing polyline structure
-     * This is used to determine if existing geometry can be updated
-     * @param polylinePoints - Array of polylines
-     * @returns Signature string
-     */
-    private computePolylineSignature(polylinePoints: Inputs.Base.Vector3[][]): string {
-        return polylinePoints.map(line => line.length).join(",");
-    }
-
-    /**
      * Check if a polyline entity can be updated with new point data
      * @param entity - Entity to check
      * @param polylinePoints - New polyline points
@@ -893,7 +789,7 @@ export class DrawHelper extends DrawHelperCore {
         }
         
         const polylineEntity = entity as PolylineEntity;
-        const newSignature = this.computePolylineSignature(polylinePoints);
+        const newSignature = super.computePolylineSignature(polylinePoints);
         const oldSignature = polylineEntity.bitbybitMeta?.linesForRenderLengths;
         
         return oldSignature === newSignature;
@@ -1200,23 +1096,11 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private hexToColor(hex: string): pc.Color {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        if (result) {
-            return new pc.Color(
-                parseInt(result[1], 16) / 255,
-                parseInt(result[2], 16) / 255,
-                parseInt(result[3], 16) / 255
-            );
+        const rgb = this.hexToRgb(hex);
+        if (rgb) {
+            return new pc.Color(rgb.r, rgb.g, rgb.b);
         }
         return new pc.Color(1, 0, 0);
-    }
-
-    private colorToHex(r: number, g: number, b: number): string {
-        const toHex = (n: number) => {
-            const hex = Math.round(n * 255).toString(16);
-            return hex.length === 1 ? "0" + hex : hex;
-        };
-        return "#" + toHex(r) + toHex(g) + toHex(b);
     }
 
     // sometimes we must delete face material property for the web worker not to complain about complex (circular) objects and use cloned object later
@@ -1240,19 +1124,6 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
-     * Generate a unique key for material caching
-     * Uses fixed decimal precision to handle floating-point comparison
-     * @param hex - Hex color string
-     * @param alpha - Alpha value (0-1)
-     * @param zOffset - Z-offset value for depth bias
-     * @returns Unique cache key
-     */
-    private getMaterialKey(hex: string, alpha: number, zOffset: number): string {
-        const normalizedAlpha = alpha.toFixed(CACHE_CONFIG.ALPHA_PRECISION);
-        return `${hex}-${normalizedAlpha}-${zOffset}`;
-    }
-
-    /**
      * Get or create a cached material with the specified properties
      * Implements LRU-like eviction when cache is full
      * @param hex - Hex color string
@@ -1267,7 +1138,7 @@ export class DrawHelper extends DrawHelperCore {
         zOffset: number,
         createFn: () => pc.StandardMaterial
     ): pc.StandardMaterial {
-        const key = this.getMaterialKey(hex, alpha, zOffset);
+        const key = super.getMaterialKey(hex, alpha, zOffset);
 
         // Check cache first
         const cached = this.materialCache.get(key);
@@ -1290,38 +1161,6 @@ export class DrawHelper extends DrawHelperCore {
         const material = createFn();
         this.materialCache.set(key, material);
         return material;
-    }
-
-    /**
-     * Normalize color input to hex string with validation
-     * @param color - Color as number array, hex string, or undefined
-     * @param fallback - Fallback color if input is invalid
-     * @returns Normalized hex color string
-     */
-    private normalizeColor(color: number[] | string | undefined, fallback: string): string {
-        if (!color) {
-            return fallback;
-        }
-
-        if (Array.isArray(color)) {
-            if (color.length < 3) {
-                console.warn(`Invalid color array length: ${color.length}, expected at least 3. Using fallback: ${fallback}`);
-                return fallback;
-            }
-            return this.colorToHex(color[0], color[1], color[2]);
-        }
-
-        if (typeof color === "string") {
-            // Validate hex format
-            if (!/^#[0-9A-F]{6}$/i.test(color)) {
-                console.warn(`Invalid hex color: ${color}. Using fallback: ${fallback}`);
-                return fallback;
-            }
-            return color;
-        }
-
-        console.warn(`Unknown color format: ${typeof color}. Using fallback: ${fallback}`);
-        return fallback;
     }
 
     /**
@@ -1363,7 +1202,7 @@ export class DrawHelper extends DrawHelperCore {
             // Priority 1: Polyline-specific color
             if (polyline.color) {
                 const color = typeof polyline.color === "string" ? polyline.color : polyline.color.join(",");
-                return this.normalizeColor(color, defaultColor);
+                return super.normalizeColor(color, defaultColor);
             }
             
             // Priority 2: Array of colors
@@ -1374,23 +1213,6 @@ export class DrawHelper extends DrawHelperCore {
             
             // Priority 3: Single color for all
             return inputColors as string;
-        });
-    }
-
-    /**
-     * Process polyline points, handling closed polylines
-     * @param polylines - Array of polylines
-     * @returns Array of processed point arrays
-     */
-    private processPolylinePoints(polylines: Inputs.Polyline.PolylinePropertiesDto[]): Inputs.Base.Point3[][] {
-        return polylines.map(polyline => {
-            const points = polyline.points ? [...polyline.points] : []; // Don't mutate input
-            
-            if (polyline.isClosed && points.length > 0) {
-                points.push(points[0]);
-            }
-            
-            return points;
         });
     }
 
@@ -1436,6 +1258,10 @@ export class DrawHelper extends DrawHelperCore {
                 const material = new pc.StandardMaterial();
                 material.name = this.generateEntityId("mat");
                 material.opacity = opacity;
+                // Enable alpha blending for transparency when opacity < 1
+                if (opacity < 1) {
+                    material.blendType = pc.BLEND_NORMAL;
+                }
                 material.emissive = this.hexToColor(colour);
                 material.diffuse = this.hexToColor(colour);
                 material.useLighting = false;

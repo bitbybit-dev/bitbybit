@@ -1,21 +1,21 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore } from "@bitbybit-dev/core";
+import { DrawHelperCore, MeshData } from "@bitbybit-dev/core";
 import { Vector } from "@bitbybit-dev/base";
 import { JSCADWorkerManager, JSCADText } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./constants";
 
 export class DrawHelper extends DrawHelperCore {
 
-    private usedMaterials: {
-        sceneId: string,
-        hex: string,
-        alpha: number,
-        zOffset: number,
-        material: BABYLON.PBRMetallicRoughnessMaterial
-    }[] = [];
+    // Map-based material cache for better performance
+    private readonly materialCache = new Map<string, BABYLON.PBRMetallicRoughnessMaterial>();
+
+    // Entity ID generation
+    private entityIdCounter = 0;
+    private readonly instanceId = `babylon-${Date.now()}`;
 
     constructor(
         private readonly context: Context,
@@ -25,6 +25,209 @@ export class DrawHelper extends DrawHelperCore {
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager) {
         super(vector);
+    }
+
+    /**
+     * Check if DrawHelper has been disposed
+     * @returns True if disposed, false otherwise
+     */
+    public isDisposed(): boolean {
+        return this.materialCache.size === 0;
+    }
+
+    /**
+     * Cleanup method to dispose of cached materials and prevent memory leaks
+     * Should be called when the DrawHelper instance is no longer needed
+     */
+    public dispose(): void {
+        // Dispose cached materials
+        this.materialCache.forEach((material, key) => {
+            try {
+                if (material.dispose) {
+                    material.dispose();
+                }
+            } catch (error) {
+                console.warn(`Error disposing material ${key}:`, error);
+            }
+        });
+        this.materialCache.clear();
+
+        // Reset counters
+        this.entityIdCounter = 0;
+
+        console.log("DrawHelper disposed successfully");
+    }
+
+    /**
+     * Generate a unique entity ID with semantic naming
+     * @param type - The type of entity (e.g., 'manifoldMeshContainer', 'jscadMesh')
+     * @param parentId - Optional parent ID for hierarchical naming
+     * @returns Unique entity ID string
+     */
+    private generateEntityId(type: string, parentId?: string): string {
+        const id = `${this.instanceId}-${type}-${++this.entityIdCounter}`;
+        return parentId ? `${parentId}/${id}` : id;
+    }
+
+    /**
+     * Get or create a cached material with the specified properties
+     * Implements LRU-like eviction when cache is full
+     * @param hex - Hex color string
+     * @param alpha - Alpha value (0-1)
+     * @param zOffset - Z-offset value
+     * @param createFn - Function to create new material if not cached
+     * @returns Cached or newly created material
+     */
+    private getOrCreateMaterial(
+        hex: string,
+        alpha: number,
+        zOffset: number,
+        createFn: () => BABYLON.PBRMetallicRoughnessMaterial
+    ): BABYLON.PBRMetallicRoughnessMaterial {
+        const key = this.getMaterialKey(hex, alpha, zOffset);
+
+        // Check cache first - material is automatically removed from cache via onDispose callback
+        const cached = this.materialCache.get(key);
+        if (cached) {
+            return cached;
+        }
+
+        // Evict oldest if at capacity (simple FIFO)
+        if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
+            const firstKey = this.materialCache.keys().next().value;
+            const material = this.materialCache.get(firstKey);
+            if (material && material.dispose) {
+                material.dispose();
+            }
+            // Note: dispose() will trigger onDispose callback which removes from cache
+        }
+
+        // Create new material
+        const material = createFn();
+        
+        // Register onDispose callback to automatically remove from cache when material is disposed externally
+        material.onDispose = () => {
+            this.materialCache.delete(key);
+        };
+        
+        this.materialCache.set(key, material);
+        return material;
+    }
+
+    /**
+     * Create a back face mesh with flipped normals and optionally reversed winding order
+     * This is used for two-sided rendering of CAD geometries
+     * @param meshDataConverted - Original mesh data
+     * @param backFaceColour - Color for the back face
+     * @param backFaceOpacity - Opacity for the back face
+     * @param zOffset - Depth bias to prevent z-fighting
+     * @param useClockWiseSideOrientation - Whether to set sideOrientation to ClockWise (default true, false for JSCAD)
+     * @param skipWindingReversal - Whether to skip reversing winding order (default false, true for JSCAD in left-handed scenes)
+     * @returns Mesh containing the back face geometry
+     */
+    private createBackFaceMesh(
+        meshDataConverted: MeshData[],
+        backFaceColour: string,
+        backFaceOpacity: number,
+        zOffset: number,
+        useClockWiseSideOrientation = true,
+        skipWindingReversal = false
+    ): BABYLON.Mesh {
+        // Check if the scene uses right-handed coordinate system
+        const isRightHanded = this.context.scene.useRightHandedSystem === true;
+        
+        // Create material for back face using the caching system
+        // Include coordinate system in cache key to avoid reusing wrong material
+        const materialKey = `${backFaceColour}-back${useClockWiseSideOrientation ? "" : "-jscad"}${isRightHanded ? "-scene-rh" : ""}`;
+        const backMaterial = this.getOrCreateMaterial(materialKey, backFaceOpacity, zOffset + 0.1, () => {
+            const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("backFaceMaterial"), this.context.scene);
+            mat.baseColor = BABYLON.Color3.FromHexString(backFaceColour);
+            mat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
+            mat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            mat.alpha = backFaceOpacity;
+            mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
+            mat.backFaceCulling = true;
+            mat.doubleSided = false;
+            
+            // Determine side orientation based on coordinate system and geometry type
+            if (isRightHanded) {
+                // Right-handed scene: use CounterClockWise for back faces
+                mat.sideOrientation = BABYLON.Material.CounterClockWiseSideOrientation;
+            } else if (useClockWiseSideOrientation) {
+                // Left-handed scene with left-handed geometry (OCCT, Manifold): use ClockWise
+                mat.sideOrientation = BABYLON.Material.ClockWiseSideOrientation;
+            }
+            // For JSCAD in left-handed scene: don't set sideOrientation, rely on geometry winding
+            
+            mat.zOffset = zOffset + 0.1;
+            return mat;
+        });
+
+        // Prepare back face mesh data
+        let backFaceMeshData: MeshData;
+        if (skipWindingReversal) {
+            // For JSCAD: only flip normals, don't reverse winding order
+            // This is because JSCAD geometry is right-handed and the main mesh already has correct winding
+            backFaceMeshData = this.prepareBackFaceMeshDataNoWindingReversal(meshDataConverted);
+        } else {
+            // Standard case: flip normals and reverse winding
+            backFaceMeshData = this.prepareBackFaceMeshData(meshDataConverted);
+        }
+
+        // Create mesh from the combined mesh data
+        const mesh = new BABYLON.Mesh(this.generateEntityId("backFaceSurface"), this.context.scene);
+        const vertexData = new BABYLON.VertexData();
+        vertexData.positions = backFaceMeshData.positions;
+        vertexData.indices = backFaceMeshData.indices;
+        vertexData.normals = backFaceMeshData.normals;
+        if (backFaceMeshData.uvs) {
+            vertexData.uvs = backFaceMeshData.uvs;
+        }
+        vertexData.applyToMesh(mesh, false);
+        mesh.material = backMaterial;
+        mesh.isPickable = false;
+
+        return mesh;
+    }
+    
+    /**
+     * Prepare back face mesh data by only flipping normals (no winding reversal)
+     * Used for JSCAD geometry which is right-handed
+     */
+    private prepareBackFaceMeshDataNoWindingReversal(meshDataArray: MeshData[]): MeshData {
+        const totalPositions: number[] = [];
+        const totalNormals: number[] = [];
+        const totalIndices: number[] = [];
+        const totalUvs: number[] = [];
+        let indexOffset = 0;
+
+        meshDataArray.forEach(meshItem => {
+            totalPositions.push(...meshItem.positions);
+            
+            // Flip normals for back face
+            if (meshItem.normals && meshItem.normals.length > 0) {
+                for (let i = 0; i < meshItem.normals.length; i++) {
+                    totalNormals.push(-meshItem.normals[i]);
+                }
+            }
+            
+            if (meshItem.uvs) {
+                totalUvs.push(...meshItem.uvs);
+            }
+            
+            // Keep original winding order (don't swap indices)
+            for (let i = 0; i < meshItem.indices.length; i++) {
+                totalIndices.push(meshItem.indices[i] + indexOffset);
+            }
+            indexOffset += meshItem.positions.length / 3;
+        });
+
+        return {
+            positions: totalPositions,
+            indices: totalIndices,
+            normals: totalNormals,
+            uvs: totalUvs.length > 0 ? totalUvs : undefined
+        };
     }
 
     createOrUpdateSurfacesMesh(
@@ -63,7 +266,7 @@ export class DrawHelper extends DrawHelperCore {
             if (addToScene) {
                 scene = this.context.scene;
             }
-            mesh = new BABYLON.Mesh(`surface${Math.random()}`, scene);
+            mesh = new BABYLON.Mesh(this.generateEntityId("surface"), scene);
             createMesh();
             mesh.flipFaces(false);
             if (material) {
@@ -165,7 +368,7 @@ export class DrawHelper extends DrawHelperCore {
     drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<BABYLON.Mesh>): BABYLON.Mesh {
         const meshData = inputs.surface.tessellate();
 
-        const meshDataConverted = {
+        const meshDataConverted: MeshData = {
             positions: [],
             indices: [],
             normals: [],
@@ -176,17 +379,31 @@ export class DrawHelper extends DrawHelperCore {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        const pbr = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
+        const color = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        const pbr = this.getOrCreateMaterial(color, inputs.opacity, 0, () => {
+            const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("surfaceMaterial"), this.context.scene);
+            mat.baseColor = BABYLON.Color3.FromHexString(color);
+            mat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
+            mat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            mat.alpha = inputs.opacity;
+            mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
+            mat.backFaceCulling = true;
+            mat.doubleSided = false;
+            return mat;
+        });
 
-        pbr.baseColor = BABYLON.Color3.FromHexString(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
-        pbr.metallic = 1.0;
-        pbr.roughness = 0.6;
-        pbr.alpha = inputs.opacity;
-        pbr.alphaMode = 1;
-        pbr.backFaceCulling = false;
-        pbr.doubleSided = true;
+        // Draw back faces FIRST (before createOrUpdateSurfacesMesh which mutates the array)
+        let backFaceMesh: BABYLON.Mesh | undefined;
+        if (inputs.drawTwoSided !== false) {
+            backFaceMesh = this.createBackFaceMesh(
+                [meshDataConverted],
+                inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                inputs.backFaceOpacity ?? inputs.opacity,
+                0
+            );
+        }
 
-        return this.createOrUpdateSurfacesMesh(
+        const surfaceMesh = this.createOrUpdateSurfacesMesh(
             [meshDataConverted],
             inputs.surfaceMesh,
             inputs.updatable,
@@ -194,6 +411,13 @@ export class DrawHelper extends DrawHelperCore {
             true,
             inputs.hidden,
         );
+
+        // Attach back face mesh to surface mesh
+        if (backFaceMesh) {
+            backFaceMesh.parent = surfaceMesh;
+        }
+
+        return surfaceMesh;
     }
 
     drawSurfaces(inputs: Inputs.Verb.DrawSurfacesDto<BABYLON.Mesh>): BABYLON.Mesh {
@@ -202,7 +426,7 @@ export class DrawHelper extends DrawHelperCore {
             tessellatedSurfaces.push(srf.tessellate());
         });
 
-        const meshDataConverted = {
+        const meshDataConverted: MeshData = {
             positions: [],
             indices: [],
             normals: [],
@@ -215,17 +439,31 @@ export class DrawHelper extends DrawHelperCore {
             });
         });
 
-        const pbr = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
+        const color = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        const pbr = this.getOrCreateMaterial(color, inputs.opacity, 0, () => {
+            const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("surfacesMaterial"), this.context.scene);
+            mat.baseColor = BABYLON.Color3.FromHexString(color);
+            mat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
+            mat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            mat.alpha = inputs.opacity;
+            mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
+            mat.backFaceCulling = true;
+            mat.doubleSided = false;
+            return mat;
+        });
 
-        pbr.baseColor = BABYLON.Color3.FromHexString(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
-        pbr.metallic = 1.0;
-        pbr.roughness = 0.6;
-        pbr.alpha = inputs.opacity;
-        pbr.alphaMode = 1;
-        pbr.backFaceCulling = true;
-        pbr.doubleSided = false;
+        // Draw back faces FIRST (before createOrUpdateSurfacesMesh which mutates the array)
+        let backFaceMesh: BABYLON.Mesh | undefined;
+        if (inputs.drawTwoSided !== false) {
+            backFaceMesh = this.createBackFaceMesh(
+                [meshDataConverted],
+                inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                inputs.backFaceOpacity ?? inputs.opacity,
+                0
+            );
+        }
 
-        return this.createOrUpdateSurfacesMesh(
+        const surfacesMesh = this.createOrUpdateSurfacesMesh(
             [meshDataConverted],
             inputs.surfacesMesh,
             inputs.updatable,
@@ -233,6 +471,13 @@ export class DrawHelper extends DrawHelperCore {
             true,
             inputs.hidden
         );
+
+        // Attach back face mesh to surface mesh
+        if (backFaceMesh) {
+            backFaceMesh.parent = surfacesMesh;
+        }
+
+        return surfacesMesh;
     }
 
     drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>): BABYLON.Mesh {
@@ -240,7 +485,7 @@ export class DrawHelper extends DrawHelperCore {
             inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
         }
 
-        inputs.surfacesMesh = new BABYLON.Mesh(`ColouredSurfaces${Math.random()}`, this.context.scene);
+        inputs.surfacesMesh = new BABYLON.Mesh(this.generateEntityId("colouredSurfaces"), this.context.scene);
         if (Array.isArray(inputs.colours)) {
             inputs.surfaces.forEach((surface, index) => {
                 const srf = this.drawSurface({
@@ -249,17 +494,23 @@ export class DrawHelper extends DrawHelperCore {
                     updatable: inputs.updatable,
                     opacity: inputs.opacity,
                     hidden: inputs.hidden,
+                    drawTwoSided: inputs.drawTwoSided,
+                    backFaceColour: inputs.backFaceColour,
+                    backFaceOpacity: inputs.backFaceOpacity,
                 });
                 inputs.surfacesMesh.addChild(srf);
             });
         } else {
-            inputs.surfaces.forEach((surface, index) => {
+            inputs.surfaces.forEach((surface) => {
                 const srf = this.drawSurface({
                     surface,
                     colours: inputs.colours,
                     updatable: inputs.updatable,
                     opacity: inputs.opacity,
                     hidden: inputs.hidden,
+                    drawTwoSided: inputs.drawTwoSided,
+                    backFaceColour: inputs.backFaceColour,
+                    backFaceOpacity: inputs.backFaceOpacity,
                 });
                 inputs.surfacesMesh.addChild(srf);
             });
@@ -365,7 +616,7 @@ export class DrawHelper extends DrawHelperCore {
 
     createGreasedPolylines(updatable: boolean, lines: number[][], width: number, color: BABYLON.Color3, visibility: number): BABYLON.GreasedLineMesh {
         const result = BABYLON.CreateGreasedLine(
-            `lineSystem${Math.random()}`,
+            this.generateEntityId("lineSystem"),
             {
                 points: lines,
                 updatable,
@@ -453,7 +704,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     localAxes(size: number, scene: BABYLON.Scene, colorXHex: string, colorYHex: string, colorZHex: string): BABYLON.Mesh {
-        const pilotLocalAxisX = BABYLON.MeshBuilder.CreateLines("pilot_local_axisX" + Math.random(), {
+        const pilotLocalAxisX = BABYLON.MeshBuilder.CreateLines(this.generateEntityId("pilotLocalAxisX"), {
             points: [
                 BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
                 new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
@@ -462,7 +713,7 @@ export class DrawHelper extends DrawHelperCore {
         const colorX = BABYLON.Color3.FromHexString(colorXHex);
         pilotLocalAxisX.color = colorX;
 
-        const pilotLocalAxisY = BABYLON.MeshBuilder.CreateLines("pilot_local_axisY" + Math.random(), {
+        const pilotLocalAxisY = BABYLON.MeshBuilder.CreateLines(this.generateEntityId("pilotLocalAxisY"), {
             points: [
                 BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
                 new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
@@ -471,7 +722,7 @@ export class DrawHelper extends DrawHelperCore {
         const colorY = BABYLON.Color3.FromHexString(colorYHex);
         pilotLocalAxisY.color = colorY;
 
-        const pilotLocalAxisZ = BABYLON.MeshBuilder.CreateLines("pilot_local_axisZ" + Math.random(), {
+        const pilotLocalAxisZ = BABYLON.MeshBuilder.CreateLines(this.generateEntityId("pilotLocalAxisZ"), {
             points: [
                 BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
                 new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
@@ -480,7 +731,7 @@ export class DrawHelper extends DrawHelperCore {
         const colorZ = BABYLON.Color3.FromHexString(colorZHex);
         pilotLocalAxisZ.color = colorZ;
 
-        const localOrigin = new BABYLON.Mesh("local_origin" + Math.random(), scene);
+        const localOrigin = new BABYLON.Mesh(this.generateEntityId("localOrigin"), scene);
         localOrigin.isVisible = false;
 
         pilotLocalAxisX.parent = localOrigin;
@@ -504,7 +755,7 @@ export class DrawHelper extends DrawHelperCore {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
         } else {
             inputs.pointMesh = this.createPointSpheresMesh(
-                `poinsMesh${Math.random()}`, vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
+                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
             );
         }
         return inputs.pointMesh;
@@ -527,12 +778,12 @@ export class DrawHelper extends DrawHelperCore {
             } else {
                 inputs.pointsMesh.dispose();
                 inputs.pointsMesh = this.createPointSpheresMesh(
-                    `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
                 );
             }
         } else {
             inputs.pointsMesh = this.createPointSpheresMesh(
-                `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
             );
         }
         return inputs.pointsMesh;
@@ -564,7 +815,7 @@ export class DrawHelper extends DrawHelperCore {
         const colorSet = Array.from(new Set(colors));
         const materialSet = colorSet.map((colour, index) => {
 
-            const mat = new BABYLON.StandardMaterial(`mat${Math.random()}`, this.context.scene);
+            const mat = new BABYLON.StandardMaterial(this.generateEntityId("pointMaterial"), this.context.scene);
 
             mat.disableLighting = true;
             mat.emissiveColor = BABYLON.Color3.FromHexString(colour);
@@ -580,15 +831,15 @@ export class DrawHelper extends DrawHelperCore {
             const segments = ms.positions.length > 1000 ? 1 : 6;
             let pointMesh;
             if (ms.positions.length < 10000) {
-                pointMesh = BABYLON.MeshBuilder.CreateSphere(`point${Math.random()}`, { diameter: size, segments, updatable }, this.context.scene);
+                pointMesh = BABYLON.MeshBuilder.CreateSphere(this.generateEntityId("pointSphere"), { diameter: size, segments, updatable }, this.context.scene);
             } else {
-                pointMesh = BABYLON.MeshBuilder.CreateBox(`point${Math.random()}`, { size, updatable }, this.context.scene);
+                pointMesh = BABYLON.MeshBuilder.CreateBox(this.generateEntityId("pointBox"), { size, updatable }, this.context.scene);
             }
             pointMesh.material = ms.material;
             pointMesh.isVisible = false;
 
             ms.positions.forEach((pos, index) => {
-                const instance = pointMesh.createInstance(`point-${index}-${Math.random()}`);
+                const instance = pointMesh.createInstance(this.generateEntityId(`pointInstance-${index}`));
                 instance.position = new BABYLON.Vector3(pos.position[0], pos.position[1], pos.position[2]);
                 instance.metadata = { index: pos.index };
                 instance.parent = pointsMesh;
@@ -610,7 +861,7 @@ export class DrawHelper extends DrawHelperCore {
         if (inputs.jscadMesh && inputs.updatable) {
             meshToUpdate = inputs.jscadMesh;
         } else {
-            meshToUpdate = new BABYLON.Mesh(`jscadMesh${Math.random()}`, this.context.scene);
+            meshToUpdate = new BABYLON.Mesh(this.generateEntityId("jscadMesh"), this.context.scene);
         }
         let colour;
         if (inputs.mesh.color && inputs.mesh.color.length > 0) {
@@ -625,22 +876,63 @@ export class DrawHelper extends DrawHelperCore {
         return s;
     }
 
-    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: BABYLON.Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawFaces?: boolean, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number }, meshToUpdate: BABYLON.Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable);
-        meshToUpdate.material = new BABYLON.PBRMetallicRoughnessMaterial(`jscadMaterial${Math.random()}`, this.context.scene);
+        
+        // Use material cache instead of creating new material every time
+        const zOffset = 0;
+        const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, zOffset, () => {
+            const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("jscadMaterial"), this.context.scene);
+            mat.baseColor = BABYLON.Color3.FromHexString(inputs.colour);
+            mat.metallic = 1.0;
+            mat.roughness = 0.6;
+            mat.alpha = inputs.opacity;
+            mat.alphaMode = 1;
+            mat.backFaceCulling = true;
+            mat.zOffset = zOffset;
+            return mat;
+        });
+        
+        meshToUpdate.material = pbr;
         meshToUpdate.flipFaces(false);
-        const pbr = meshToUpdate.material as BABYLON.PBRMetallicRoughnessMaterial;
-        pbr.baseColor = BABYLON.Color3.FromHexString(inputs.colour);
-        pbr.metallic = 1.0;
-        pbr.roughness = 0.6;
-        pbr.alpha = inputs.opacity;
-        pbr.alphaMode = 1;
-        pbr.backFaceCulling = true;
-        pbr.zOffset = 0;
         meshToUpdate.isPickable = false;
         if (inputs.hidden) {
             meshToUpdate.isVisible = false;
         }
+        
+        // Add two-sided rendering if enabled using shared createBackFaceMesh method
+        const drawTwoSided = inputs.drawTwoSided ?? true;
+        if (drawTwoSided) {
+            const backFaceColour = inputs.backFaceColour ?? inputs.colour;
+            const backFaceOpacity = inputs.backFaceOpacity ?? inputs.opacity;
+            
+            // Check if scene uses right-handed coordinate system
+            const isRightHanded = this.context.scene.useRightHandedSystem === true;
+            
+            // Use the shared createBackFaceMesh method
+            // JSCAD uses right-handed geometry, so handling differs based on scene coordinate system:
+            // - Left-handed scene: use winding reversal, no special sideOrientation
+            // - Right-handed scene: skip winding reversal, use CounterClockWise sideOrientation
+            const meshDataArray: MeshData[] = [{
+                positions: res.positions,
+                normals: res.normals,
+                indices: res.indices
+            }];
+            const backFaceMesh = this.createBackFaceMesh(
+                meshDataArray,
+                backFaceColour,
+                backFaceOpacity,
+                zOffset,
+                false,           // JSCAD uses right-handed geometry, don't use ClockWise sideOrientation
+                isRightHanded    // Skip winding reversal only in right-handed scenes
+            );
+            backFaceMesh.parent = meshToUpdate;
+            
+            if (inputs.hidden) {
+                backFaceMesh.isVisible = false;
+            }
+        }
+        
         return meshToUpdate;
     }
 
@@ -659,7 +951,7 @@ export class DrawHelper extends DrawHelperCore {
                 const children = localOrigin.getChildMeshes();
                 children.forEach(mesh => { mesh.dispose(); localOrigin.removeChild(mesh); });
             } else {
-                localOrigin = new BABYLON.Mesh("local_origin" + Math.random(), this.context.scene);
+                localOrigin = new BABYLON.Mesh(this.generateEntityId("localOrigin"), this.context.scene);
             }
 
             localOrigin.isVisible = false;
@@ -668,7 +960,7 @@ export class DrawHelper extends DrawHelperCore {
             const colorsAreArrays = Array.isArray(inputs.colours);
 
             res.map((r, index) => {
-                const meshToUpdate = new BABYLON.Mesh(`jscadMesh${Math.random()}`, this.context.scene);
+                const meshToUpdate = new BABYLON.Mesh(this.generateEntityId("jscadMesh"), this.context.scene);
                 let colour;
                 if (r.color) {
                     colour = BABYLON.Color3.FromArray(r.color).toHexString();
@@ -717,7 +1009,7 @@ export class DrawHelper extends DrawHelperCore {
         const options = this.deleteFaceMaterialForWorker(inputs);
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
         const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options));
-        const manifoldMeshContainer = new BABYLON.Mesh("manifoldMeshContainer" + Math.random(), this.context.scene);
+        const manifoldMeshContainer = new BABYLON.Mesh(this.generateEntityId("manifoldMeshContainer"), this.context.scene);
         meshes.filter(s => s !== undefined).forEach(mesh => {
             mesh.parent = manifoldMeshContainer;
         });
@@ -740,7 +1032,7 @@ export class DrawHelper extends DrawHelperCore {
         const options = this.deleteFaceMaterialForWorker(inputs);
         const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
         const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
-        const shapesMeshContainer = new BABYLON.Mesh("shapesMeshContainer" + Math.random(), this.context.scene);
+        const shapesMeshContainer = new BABYLON.Mesh(this.generateEntityId("shapesMeshContainer"), this.context.scene);
         meshesSolved.forEach(mesh => {
             mesh.parent = shapesMeshContainer;
         });
@@ -748,13 +1040,13 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions): Promise<BABYLON.Mesh> {
-        const shapeMesh = new BABYLON.Mesh("brepMesh" + Math.random(), this.context.scene);
+        const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         let dummy;
 
         if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 
-            let pbr;
+            let pbr: BABYLON.PBRMetallicRoughnessMaterial;
 
             if (options.faceMaterial) {
                 pbr = options.faceMaterial;
@@ -762,32 +1054,22 @@ export class DrawHelper extends DrawHelperCore {
                 const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
                 const alpha = inputs.faceOpacity;
                 const zOffset = inputs.drawEdges ? 2 : 0;
-                const materialCached = this.usedMaterials.find(s => s.sceneId === this.context.scene.uid && s.hex === hex && s.alpha === alpha && s.zOffset === zOffset);
-                this.usedMaterials = this.usedMaterials.filter(s => s.sceneId === this.context.scene.uid);
-                if (materialCached) {
-                    pbr = materialCached.material;
-                } else {
-                    const pbmat = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
+                
+                pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
+                    const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepMaterial"), this.context.scene);
                     pbmat.baseColor = BABYLON.Color3.FromHexString(hex);
-                    pbmat.metallic = 1.0;
-                    pbmat.roughness = 0.6;
+                    pbmat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
+                    pbmat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT;
                     pbmat.alpha = alpha;
-                    pbmat.alphaMode = 1;
+                    pbmat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
                     pbmat.backFaceCulling = true;
                     pbmat.doubleSided = false;
                     pbmat.zOffset = zOffset;
-                    this.usedMaterials.push({
-                        sceneId: this.context.scene.uid,
-                        hex,
-                        alpha: alpha,
-                        zOffset: zOffset,
-                        material: pbmat
-                    });
-                    pbr = pbmat;
-                }
+                    return pbmat;
+                });
             }
 
-            const meshData = decomposedMesh.faceList.map(face => {
+            const meshData: MeshData[] = decomposedMesh.faceList.map(face => {
                 return {
                     positions: face.vertex_coord,
                     normals: face.normal_coord,
@@ -796,8 +1078,24 @@ export class DrawHelper extends DrawHelperCore {
                 };
             });
 
+            // Draw back faces FIRST (before createOrUpdateSurfacesMesh which mutates the array)
+            let backFaceMesh: BABYLON.Mesh | undefined;
+            if (inputs.drawTwoSided !== false) {
+                backFaceMesh = this.createBackFaceMesh(
+                    meshData,
+                    inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                    inputs.backFaceOpacity ?? inputs.faceOpacity,
+                    inputs.drawEdges ? 2 : 0
+                );
+            }
+
             const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
             mesh.parent = shapeMesh;
+
+            // Attach back face mesh to shape mesh
+            if (backFaceMesh) {
+                backFaceMesh.parent = shapeMesh;
+            }
         }
         if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
             const evs = [];
@@ -890,7 +1188,7 @@ export class DrawHelper extends DrawHelperCore {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             if (decomposedMesh.triVerts.length > 0) {
-                const mesh = new BABYLON.Mesh(`manifoldMesh-${Math.random()}`, this.context.scene);
+                const mesh = new BABYLON.Mesh(this.generateEntityId("manifoldMesh"), this.context.scene);
 
                 const vertexData = new BABYLON.VertexData();
 
@@ -919,24 +1217,52 @@ export class DrawHelper extends DrawHelperCore {
                     offset += component.stride;
                 }
                 if (options.computeNormals) {
-                    const normals = [];
+                    const normals: number[] = [];
                     BABYLON.VertexData.ComputeNormals(vertexData.positions, vertexData.indices, normals);
                     vertexData.normals = normals;
                 }
                 vertexData.applyToMesh(mesh, false);
 
                 if (options.faceMaterial === undefined) {
-                    const material = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
-                    material.baseColor = BABYLON.Color3.FromHexString(options.faceColour);
-                    material.metallic = 1.0;
-                    material.roughness = 0.6;
-                    material.alpha = options.faceOpacity;
-                    material.alphaMode = 1;
-                    material.backFaceCulling = true;
-                    material.doubleSided = false;
+                    const material = this.getOrCreateMaterial(options.faceColour, options.faceOpacity, 0, () => {
+                        const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("manifoldMaterial"), this.context.scene);
+                        mat.baseColor = BABYLON.Color3.FromHexString(options.faceColour);
+                        mat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
+                        mat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.MANIFOLD;
+                        mat.alpha = options.faceOpacity;
+                        mat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
+                        mat.backFaceCulling = true;
+                        mat.doubleSided = false;
+                        return mat;
+                    });
                     mesh.material = material;
                 } else {
                     mesh.material = options.faceMaterial;
+                }
+
+                // Draw back faces with different color when two-sided rendering is enabled
+                if (options.drawTwoSided !== false) {
+                    // Prepare mesh data for back face mesh creation
+                    // IMPORTANT: Use original triVerts (not vertexData.indices which has reversed winding)
+                    // so that prepareBackFaceMeshData reverses the winding correctly for back faces
+                    const positions = vertexData.positions as number[];
+                    const indices = Array.from(decomposedMesh.triVerts);
+                    const normals = (vertexData.normals || []) as number[];
+
+                    const meshDataArray: MeshData[] = [{
+                        positions,
+                        indices,
+                        normals
+                    }];
+
+                    const backFaceMesh = this.createBackFaceMesh(
+                        meshDataArray,
+                        options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                        options.backFaceOpacity ?? options.faceOpacity,
+                        0,
+                        true  // Use ClockWise sideOrientation for Manifold (left-handed)
+                    );
+                    backFaceMesh.parent = mesh;
                 }
 
                 return mesh;
@@ -945,7 +1271,7 @@ export class DrawHelper extends DrawHelperCore {
             }
         } else {
             if ((decomposedManifold as Inputs.Base.Vector2[][]).length > 0) {
-                const mesh = new BABYLON.Mesh(`manifoldCrossSection-${Math.random()}`, this.context.scene);
+                const mesh = new BABYLON.Mesh(this.generateEntityId("manifoldCrossSection"), this.context.scene);
                 const decompsoedPolygons = decomposedManifold as Inputs.Base.Vector2[][];
                 const polylines = decompsoedPolygons.map(polygon => ({
                     points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
@@ -968,7 +1294,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private createLineSystemMesh(updatable: boolean, lines: BABYLON.Vector3[][], colors: BABYLON.Color4[][]): BABYLON.LinesMesh {
-        return BABYLON.MeshBuilder.CreateLineSystem(`lines${Math.random()}`,
+        return BABYLON.MeshBuilder.CreateLineSystem(this.generateEntityId("lines"),
             {
                 lines,
                 colors,
@@ -996,7 +1322,7 @@ export class DrawHelper extends DrawHelperCore {
         meshData: any,
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
         countIndices: number): number {
-        faceIndices.reverse().forEach((x) => {
+        faceIndices.forEach((x) => {
             const vn = meshData.normals[x];
             meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
             const pt = meshData.points[x];

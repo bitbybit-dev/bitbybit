@@ -298,7 +298,7 @@ export class Draw extends DrawCore {
     }
 
     private handleTag(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
-        const options = this.resolveOptions(inputs, { ...this.defaultBasicOptions, updatable: false });
+        const options = this.resolveDrawOptions(inputs, { ...this.defaultBasicOptions, updatable: false });
         
         // Validate entity is a TagDto
         if (!this.isTagDto(inputs.entity)) {
@@ -306,8 +306,8 @@ export class Draw extends DrawCore {
         }
         
         const result = this.tag.drawTag({
-            tagVariable: inputs.group && this.isTagDto(inputs.group) ? inputs.group : undefined,
-            tag: inputs.entity,
+            tagVariable: inputs.group && this.isTagDto(inputs.group) ? inputs.group as unknown as Inputs.Tag.TagDto : undefined,
+            tag: inputs.entity as unknown as Inputs.Tag.TagDto,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         
@@ -315,7 +315,7 @@ export class Draw extends DrawCore {
     }
 
     private handleTags(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
-        const options = this.resolveOptions(inputs, { ...this.defaultBasicOptions, updatable: false });
+        const options = this.resolveDrawOptions(inputs, { ...this.defaultBasicOptions, updatable: false });
         
         // Validate entity is a TagDto array
         if (!this.isTagDtoArray(inputs.entity)) {
@@ -323,8 +323,8 @@ export class Draw extends DrawCore {
         }
         
         const result = this.tag.drawTags({
-            tagsVariable: inputs.group && this.isTagDtoArray(inputs.group) ? inputs.group : undefined,
-            tags: inputs.entity,
+            tagsVariable: inputs.group && this.isTagDtoArray(inputs.group) ? inputs.group as unknown as Inputs.Tag.TagDto[] : undefined,
+            tags: inputs.entity as unknown as Inputs.Tag.TagDto[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
@@ -395,7 +395,7 @@ export class Draw extends DrawCore {
         type: Inputs.Draw.drawingTypes
     ): pc.Entity {
         try {
-            const options = this.resolveOptions(inputs, defaultOptions);
+            const options = this.resolveDrawOptions(inputs, defaultOptions);
             const result = action(options);
             
             if (result) {
@@ -425,7 +425,7 @@ export class Draw extends DrawCore {
         type: Inputs.Draw.drawingTypes
     ): Promise<pc.Entity> {
         try {
-            const options = this.resolveOptions(inputs, defaultOptions);
+            const options = this.resolveDrawOptions(inputs, defaultOptions);
             const result = await action(options);
             
             if (result) {
@@ -454,25 +454,6 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Validate if draw input contains valid entity data
-     * @param entity - Entity to validate
-     * @returns True if valid, false otherwise
-     */
-    private isValidDrawInput(entity: unknown): boolean {
-        // Null or undefined
-        if (entity === null || entity === undefined) {
-            return false;
-        }
-        
-        // Empty array
-        if (Array.isArray(entity) && entity.length === 0) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    /**
      * Type guard to check if value is a PlayCanvas Entity
      * @param value - Value to check
      * @returns True if value is pc.Entity
@@ -482,44 +463,12 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Type guard to check if value is a BitByBit entity with metadata
-     * @param value - Value to check
-     * @returns True if value is BitByBitEntity
-     */
-    private isBitByBitEntity(value: unknown): value is BitByBitEntity {
-        return this.isEntity(value) && "bitbybitMeta" in value;
-    }
-
-    /**
-     * Type guard for Tag DTO
-     * @param value - Value to check
-     * @returns True if value is TagDto
-     */
-    private isTagDto(value: unknown): value is Inputs.Tag.TagDto {
-        return value !== null && 
-               value !== undefined && 
-               typeof value === "object" && 
-               "text" in value;
-    }
-
-    /**
-     * Type guard for Tag DTO array
-     * @param value - Value to check
-     * @returns True if value is TagDto array
-     */
-    private isTagDtoArray(value: unknown): value is Inputs.Tag.TagDto[] {
-        return Array.isArray(value) && 
-               value.length > 0 && 
-               this.isTagDto(value[0]);
-    }
-
-    /**
      * Extract options from inputs with proper fallback chain
      * @param inputs - Draw inputs
      * @param defaultOptions - Default options to use as fallback
      * @returns Resolved options
      */
-    private resolveOptions(
+    private resolveDrawOptions(
         inputs: Inputs.Draw.DrawAny<pc.Entity>,
         defaultOptions: Inputs.Draw.DrawOptions
     ): Inputs.Draw.DrawOptions {

@@ -1,24 +1,23 @@
 
 import { Context } from "./context";
 import * as Inputs from "./inputs/inputs";
-import { DrawHelperCore } from "@bitbybit-dev/core";
+import { DrawHelperCore, MeshData } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
 import { Vector } from "@bitbybit-dev/base";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as THREEJS from "three";
-import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
 
 export class DrawHelper extends DrawHelperCore {
 
-    private usedMaterials: {
-        sceneId: number,
-        hex: string,
-        alpha: number,
-        zOffset: number,
-        material: THREEJS.MeshPhysicalMaterial
-    }[] = [];
+    // Map-based material cache for better performance
+    private readonly materialCache = new Map<string, THREEJS.MeshPhysicalMaterial>();
+
+    // Entity ID generation
+    private entityIdCounter = 0;
+    private readonly instanceId = `three-${Date.now()}`;
 
     constructor(
         private readonly context: Context,
@@ -31,80 +30,143 @@ export class DrawHelper extends DrawHelperCore {
         super(vector);
     }
 
-    async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
-        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options)).filter(s => s !== undefined);
-        const manifoldMeshContainer = new THREEJS.Group();
-        manifoldMeshContainer.name = "manifoldMeshContainer-" + Math.random();
-        meshes.forEach(mesh => {
-            mesh.parent = manifoldMeshContainer;
+    /**
+     * Check if DrawHelper has been disposed
+     * @returns True if disposed, false otherwise
+     */
+    public isDisposed(): boolean {
+        return this.materialCache.size === 0;
+    }
+
+    /**
+     * Cleanup method to dispose of cached materials and prevent memory leaks
+     * Should be called when the DrawHelper instance is no longer needed
+     */
+    public dispose(): void {
+        // Dispose cached materials
+        this.materialCache.forEach((material, key) => {
+            try {
+                if (material.dispose) {
+                    material.dispose();
+                }
+            } catch (error) {
+                console.warn(`Error disposing material ${key}:`, error);
+            }
         });
-        this.context.scene.add(manifoldMeshContainer);
-        return manifoldMeshContainer;
+        this.materialCache.clear();
+
+        // Reset counters
+        this.entityIdCounter = 0;
+
+        console.log("DrawHelper disposed successfully");
+    }
+
+    async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group> {
+        try {
+            const options = this.deleteFaceMaterialForWorker(inputs);
+            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
+            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options)).filter(s => s !== undefined);
+            const manifoldMeshContainer = new THREEJS.Group();
+            manifoldMeshContainer.name = this.generateEntityId("manifoldMeshContainer");
+            meshes.forEach(mesh => {
+                mesh.parent = manifoldMeshContainer;
+            });
+            this.context.scene.add(manifoldMeshContainer);
+            return manifoldMeshContainer;
+        } catch (error) {
+            console.error("Error drawing manifolds or cross sections:", error);
+            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
-        return this.handleDecomposedManifold(decomposedMesh, options);
+        try {
+            const options = this.deleteFaceMaterialForWorker(inputs);
+            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
+            return this.handleDecomposedManifold(decomposedMesh, options);
+        } catch (error) {
+            console.error("Error drawing manifold or cross section:", error);
+            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<THREEJS.Group> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
-        return this.handleDecomposedMesh(inputs, decomposedMesh, options);
+        try {
+            const options = this.deleteFaceMaterialForWorker(inputs);
+            const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+            return this.handleDecomposedMesh(inputs, decomposedMesh, options);
+        } catch (error) {
+            console.error("Error drawing OCCT shape:", error);
+            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<THREEJS.Group> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
-        const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
-        const shapesMeshContainer = new THREEJS.Group();
-        shapesMeshContainer.name = "shapesMeshContainer-" + Math.random();
-        this.context.scene.add(shapesMeshContainer);
-        meshesSolved.forEach(mesh => {
-            shapesMeshContainer.add(mesh);
-        });
-        return shapesMeshContainer;
+        try {
+            const options = this.deleteFaceMaterialForWorker(inputs);
+            const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
+            const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
+            const shapesMeshContainer = new THREEJS.Group();
+            shapesMeshContainer.name = this.generateEntityId("shapesMeshContainer");
+            this.context.scene.add(shapesMeshContainer);
+            meshesSolved.forEach(mesh => {
+                shapesMeshContainer.add(mesh);
+            });
+            return shapesMeshContainer;
+        } catch (error) {
+            console.error("Error drawing OCCT shapes:", error);
+            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>): Promise<THREEJS.Group> {
-        const res: {
-            positions: number[],
-            normals: number[],
-            indices: number[],
-            transforms: [],
-        } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
-        let meshToUpdate;
-        if (inputs.jscadMesh && inputs.updatable) {
-            meshToUpdate = inputs.jscadMesh;
-        } else {
-            meshToUpdate = new THREEJS.Group();
-            meshToUpdate.name = `jscadMesh-${Math.random()}`;
-            this.context.scene.add(meshToUpdate);
+        try {
+            const res: {
+                positions: number[],
+                normals: number[],
+                indices: number[],
+                transforms: [],
+            } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+            let meshToUpdate;
+            if (inputs.jscadMesh && inputs.updatable) {
+                meshToUpdate = inputs.jscadMesh;
+            } else {
+                meshToUpdate = new THREEJS.Group();
+                meshToUpdate.name = this.generateEntityId("jscadMesh");
+                this.context.scene.add(meshToUpdate);
+            }
+            let colour;
+            if (inputs.mesh.color && inputs.mesh.color.length > 0) {
+                // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
+                const c = inputs.mesh.color;
+                colour = "#" + new THREEJS.Color(c[0], c[1], c[2]).getHexString();
+            } else {
+                colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+            }
+            const s = this.makeMesh({ 
+                ...inputs, 
+                colour,
+                drawTwoSided: inputs.drawTwoSided,
+                backFaceColour: inputs.backFaceColour,
+                backFaceOpacity: inputs.backFaceOpacity
+            }, meshToUpdate, res);
+            inputs.jscadMesh = s;
+            return s;
+        } catch (error) {
+            console.error("Error drawing JSCAD solid or polygon mesh:", error);
+            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`);
         }
-        let colour;
-        if (inputs.mesh.color && inputs.mesh.color.length > 0) {
-            // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
-            const c = inputs.mesh.color;
-            colour = "#" + new THREEJS.Color(c[0], c[1], c[2]).getHexString();
-        } else {
-            colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
-        }
-        const s = this.makeMesh({ ...inputs, colour }, meshToUpdate, res);
-        inputs.jscadMesh = s;
-        return s;
     }
 
     async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto<THREEJS.Group>): Promise<THREEJS.Group> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
-            positions: number[],
-            normals: number[],
-            indices: number[],
-            transforms: [],
-            color?: number[]
-        }[]) => {
+        try {
+            const res: {
+                positions: number[],
+                normals: number[],
+                indices: number[],
+                transforms: [],
+                color?: number[]
+            }[] = await this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
 
             let localOrigin: THREEJS.Group;
             if (inputs.jscadMesh && inputs.updatable) {
@@ -112,7 +174,7 @@ export class DrawHelper extends DrawHelperCore {
                 localOrigin.clear();
             } else {
                 localOrigin = new THREEJS.Group();
-                localOrigin.name = `jscadMeshes-${Math.random()}`;
+                localOrigin.name = this.generateEntityId("jscadMeshes");
             }
 
             const colourIsArrayAndMatches = Array.isArray(inputs.colours) && inputs.colours.length === res.length;
@@ -120,7 +182,7 @@ export class DrawHelper extends DrawHelperCore {
 
             res.map((r, index) => {
                 const meshToUpdate = new THREEJS.Group();
-                meshToUpdate.name = `jscadMeshes-${Math.random()}`;
+                meshToUpdate.name = this.generateEntityId("jscadMesh", localOrigin.name);
                 let colour;
                 if (r.color) {
                     const c = r.color;
@@ -132,13 +194,22 @@ export class DrawHelper extends DrawHelperCore {
                 } else {
                     colour = inputs.colours;
                 }
-                const m = this.makeMesh({ ...inputs, colour }, meshToUpdate, r);
+                const m = this.makeMesh({ 
+                    ...inputs, 
+                    colour,
+                    drawTwoSided: inputs.drawTwoSided,
+                    backFaceColour: inputs.backFaceColour,
+                    backFaceOpacity: inputs.backFaceOpacity
+                }, meshToUpdate, r);
                 localOrigin.add(m);
             });
             this.context.scene.add(localOrigin);
             inputs.jscadMesh = localOrigin;
             return localOrigin;
-        });
+        } catch (error) {
+            console.error("Error drawing JSCAD solid or polygon meshes:", error);
+            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group>) {
@@ -178,7 +249,7 @@ export class DrawHelper extends DrawHelperCore {
         if (inputs.polylinesMesh && inputs.updatable) {
             if (inputs.polylinesMesh.children[0].name !== polylines.name) {
                 const group = new THREEJS.Group();
-                group.name = `polylines-${Math.random()}`;
+                group.name = this.generateEntityId("polylines");
                 group.add(polylines);
                 this.context.scene.add(group);
                 return group;
@@ -187,7 +258,7 @@ export class DrawHelper extends DrawHelperCore {
             }
         } else {
             const group = new THREEJS.Group();
-            group.name = `polylines-${Math.random()}`;
+            group.name = this.generateEntityId("polylines");
             group.add(polylines);
             this.context.scene.add(group);
             return group;
@@ -207,7 +278,7 @@ export class DrawHelper extends DrawHelperCore {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
         } else {
             inputs.pointMesh = this.createPointSpheresMesh(
-                `pointMesh-${Math.random()}`, vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
+                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
             );
         }
         return inputs.pointMesh;
@@ -238,7 +309,7 @@ export class DrawHelper extends DrawHelperCore {
         const polylines = this.drawPolylines(lineSegments, [pointsToDraw], updatable, size, opacity, colours);
         if (!mesh) {
             mesh = new THREEJS.Group();
-            mesh.name = `polyline-${Math.random()}`;
+            mesh.name = this.generateEntityId("polyline");
             mesh.add(polylines);
             this.context.scene.add(mesh);
         }
@@ -274,12 +345,12 @@ export class DrawHelper extends DrawHelperCore {
             } else {
                 inputs.pointsMesh.remove();
                 inputs.pointsMesh = this.createPointSpheresMesh(
-                    `pointsMesh-${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
                 );
             }
         } else {
             inputs.pointsMesh = this.createPointSpheresMesh(
-                `pointsMesh-${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
             );
         }
         return inputs.pointsMesh;
@@ -309,7 +380,7 @@ export class DrawHelper extends DrawHelperCore {
             inputs.surfacesMesh.clear();
         } else {
             inputs.surfacesMesh = new THREEJS.Group();
-            inputs.surfacesMesh.name = `colouredSurfaces-${Math.random()}`;
+            inputs.surfacesMesh.name = this.generateEntityId("colouredSurfaces");
             this.context.scene.add(inputs.surfacesMesh);
         }
 
@@ -321,6 +392,9 @@ export class DrawHelper extends DrawHelperCore {
                     updatable: inputs.updatable,
                     opacity: inputs.opacity,
                     hidden: inputs.hidden,
+                    drawTwoSided: inputs.drawTwoSided,
+                    backFaceColour: inputs.backFaceColour,
+                    backFaceOpacity: inputs.backFaceOpacity,
                 });
                 inputs.surfacesMesh.add(srf);
             });
@@ -332,6 +406,9 @@ export class DrawHelper extends DrawHelperCore {
                     updatable: inputs.updatable,
                     opacity: inputs.opacity,
                     hidden: inputs.hidden,
+                    drawTwoSided: inputs.drawTwoSided,
+                    backFaceColour: inputs.backFaceColour,
+                    backFaceOpacity: inputs.backFaceOpacity,
                 });
                 inputs.surfacesMesh.add(srf);
             });
@@ -340,66 +417,45 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.surfacesMesh;
     }
 
-    private createPointSpheresMesh(
-        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): THREEJS.Group {
-        const positionsModel = positions.map((pos, index) => {
-            return {
-                position: pos,
-                color: colors[index],
-                index
-            };
-        });
-
-        const colorSet = Array.from(new Set(colors));
-        const materialSet = colorSet.map((colour, index) => {
-
-            const mat = new THREEJS.MeshBasicMaterial({ name: `mat-${Math.random()}` });
-            mat.opacity = opacity;
-            mat.color = new THREEJS.Color(colour);
-            const positions = positionsModel.filter(s => s.color === colour);
-
-            return { hex: colorSet, material: mat, positions };
-        });
-
-        const pointsGroup = new THREEJS.Group();
-        pointsGroup.name = meshName;
-        this.context.scene.add(pointsGroup);
-        materialSet.forEach(ms => {
-            const segments = ms.positions.length > 1000 ? 1 : 6;
-            const geom = new THREEJS.SphereGeometry(size, segments, segments);
-
-            ms.positions.forEach((pos, index) => {
-                const instance = new THREEJS.InstancedMesh(geom, ms.material, 1);
-                instance.name = `point-${index}-${Math.random()}`;
-                instance.position.set(pos.position[0], pos.position[1], pos.position[2]);
-                instance.userData = { index: pos.index };
-                instance.visible = true;
-                pointsGroup.add(instance);
-            });
-        });
-
-        return pointsGroup;
-    }
-
     createOrUpdateSurfacesMesh(
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
         group: THREEJS.Group, updatable: boolean, material: THREEJS.MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
     ): THREEJS.Group {
         const createMesh = () => {
-            const geometries: THREEJS.BufferGeometry[] = [];
+            // Merge all geometries into one
+            const totalPositions: number[] = [];
+            let totalNormals: number[] = [];
+            const totalIndices: number[] = [];
+            const totalUvs: number[] = [];
+            let indexOffset = 0;
 
-            meshDataConverted.forEach(mesh => {
-                const geometry = new THREEJS.BufferGeometry();
-                geometry.setAttribute("position", new THREEJS.BufferAttribute(Float32Array.from(mesh.positions), 3));
-                geometry.setAttribute("normal", new THREEJS.BufferAttribute(Float32Array.from(mesh.normals), 3));
-                if (mesh.uvs) {
-                    geometry.setAttribute("uv", new THREEJS.BufferAttribute(Uint32Array.from(mesh.uvs), 2));
-                    geometry.setAttribute("uv2", new THREEJS.BufferAttribute(Uint32Array.from(mesh.uvs), 2));
+            meshDataConverted.forEach(meshItem => {
+                totalPositions.push(...meshItem.positions);
+                if (meshItem.normals && meshItem.normals.length > 0) {
+                    totalNormals.push(...meshItem.normals);
                 }
-                geometry.setIndex(new THREEJS.BufferAttribute(Uint32Array.from(mesh.indices), 1));
-                geometries.push(geometry);
+                if (meshItem.uvs) {
+                    totalUvs.push(...meshItem.uvs);
+                }
+                // Offset indices
+                const offsetIndices = meshItem.indices.map(i => i + indexOffset);
+                totalIndices.push(...offsetIndices);
+                indexOffset += meshItem.positions.length / 3;
             });
-            const geometry = mergeGeometries(geometries, false);
+
+            // Compute normals if they're missing
+            if (totalNormals.length === 0 && totalPositions.length > 0) {
+                totalNormals = Array.from(this.computeNormals(totalPositions, totalIndices));
+            }
+
+            const geometry = new THREEJS.BufferGeometry();
+            geometry.setAttribute("position", new THREEJS.BufferAttribute(Float32Array.from(totalPositions), 3));
+            geometry.setAttribute("normal", new THREEJS.BufferAttribute(Float32Array.from(totalNormals), 3));
+            if (totalUvs.length > 0) {
+                geometry.setAttribute("uv", new THREEJS.BufferAttribute(Float32Array.from(totalUvs), 2));
+                geometry.setAttribute("uv2", new THREEJS.BufferAttribute(Float32Array.from(totalUvs), 2));
+            }
+            geometry.setIndex(new THREEJS.BufferAttribute(Uint32Array.from(totalIndices), 1));
             return geometry;
         };
 
@@ -418,7 +474,7 @@ export class DrawHelper extends DrawHelperCore {
             }
 
             group = new THREEJS.Group();
-            group.name = `surface-${Math.random()}`;
+            group.name = this.generateEntityId("surface");
             scene.add(group);
             const geometry = createMesh();
             if (material) {
@@ -436,27 +492,33 @@ export class DrawHelper extends DrawHelperCore {
     drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<THREEJS.Group>): THREEJS.Group {
         const meshData = inputs.surface.tessellate();
 
-        const meshDataConverted = {
+        const meshDataConverted: MeshData = {
             positions: [],
             indices: [],
             normals: [],
         };
 
         let countIndices = 0;
-        meshData.faces.forEach((faceIndices) => {
+        meshData.faces.forEach((faceIndices: number[]) => {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        const pbr = new THREEJS.MeshPhysicalMaterial();
-        pbr.name = `pbr-${Math.random()}`;
+        const hex = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        const pbr = this.getOrCreateMaterial(hex, inputs.opacity, 0, () => {
+            const mat = new THREEJS.MeshPhysicalMaterial();
+            mat.name = this.generateEntityId("surfaceMaterial");
+            mat.color = new THREEJS.Color(hex);
+            mat.metalness = MATERIAL_DEFAULTS.METALNESS.SURFACE;
+            mat.roughness = MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            mat.opacity = inputs.opacity;
+            // Enable transparency for semi-transparent materials
+            if (inputs.opacity < 1) {
+                mat.transparent = true;
+            }
+            return mat;
+        });
 
-        pbr.color = new THREEJS.Color(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
-        pbr.metalness = 0.5;
-        pbr.roughness = 0.7;
-        pbr.opacity = inputs.opacity;
-        pbr.alphaTest = 1;
-
-        return this.createOrUpdateSurfacesMesh(
+        const surfaceGroup = this.createOrUpdateSurfacesMesh(
             [meshDataConverted],
             inputs.surfaceMesh,
             inputs.updatable,
@@ -464,14 +526,27 @@ export class DrawHelper extends DrawHelperCore {
             true,
             inputs.hidden,
         );
+
+        // Draw back faces with different color when two-sided rendering is enabled
+        if (inputs.drawTwoSided !== false) {
+            const backFaceMesh = this.createBackFaceMesh(
+                [meshDataConverted],
+                inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                inputs.backFaceOpacity ?? inputs.opacity,
+                0
+            );
+            surfaceGroup.add(backFaceMesh);
+        }
+
+        return surfaceGroup;
     }
 
     private parseFaces(
-        faceIndices: any,
-        meshData: any,
+        faceIndices: number[],
+        meshData: { points: number[][]; normals: number[][]; },
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
         countIndices: number): number {
-        faceIndices.reverse().forEach((x) => {
+        faceIndices.forEach((x) => {
             const vn = meshData.normals[x];
             meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
             const pt = meshData.points[x];
@@ -482,16 +557,37 @@ export class DrawHelper extends DrawHelperCore {
         return countIndices;
     }
 
-    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: THREEJS.Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
-        const pbr = new THREEJS.MeshPhysicalMaterial();
-        pbr.name = `jscadMaterial-${Math.random()}`;
-        pbr.color = new THREEJS.Color(inputs.colour);
-        pbr.metalness = 0.4;
-        pbr.roughness = 0.6;
-        pbr.alphaTest = inputs.opacity;
-        pbr.polygonOffsetFactor = 0;
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number }, meshToUpdate: THREEJS.Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
+        const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, 0, () => {
+            const mat = new THREEJS.MeshPhysicalMaterial();
+            mat.name = this.generateEntityId("jscadMaterial");
+            mat.color = new THREEJS.Color(inputs.colour);
+            mat.metalness = MATERIAL_DEFAULTS.METALNESS.JSCAD;
+            mat.roughness = MATERIAL_DEFAULTS.ROUGHNESS.JSCAD;
+            mat.alphaTest = inputs.opacity;
+            mat.polygonOffsetFactor = 0;
+            return mat;
+        });
 
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable, pbr);
+
+        // Draw back faces with different color when two-sided rendering is enabled
+        if (inputs.drawTwoSided !== false) {
+            const meshData: MeshData[] = [{
+                positions: res.positions,
+                indices: res.indices,
+                normals: res.normals
+            }];
+
+            const backFaceMesh = this.createBackFaceMesh(
+                meshData,
+                inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                inputs.backFaceOpacity ?? inputs.opacity,
+                0
+            );
+            meshToUpdate.add(backFaceMesh);
+        }
+
         if (inputs.hidden) {
             meshToUpdate.visible = false;
         }
@@ -514,13 +610,13 @@ export class DrawHelper extends DrawHelperCore {
 
     private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions) {
         const shapeGroup = new THREEJS.Group();
-        shapeGroup.name = "brepMesh-" + Math.random();
+        shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
         let dummy;
 
         if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 
-            let pbr;
+            let pbr: THREEJS.MeshPhysicalMaterial;
 
             if (options.faceMaterial) {
                 pbr = options.faceMaterial;
@@ -528,31 +624,21 @@ export class DrawHelper extends DrawHelperCore {
                 const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
                 const alpha = inputs.faceOpacity;
                 const zOffset = inputs.drawEdges ? 2 : 0;
-                const materialCached = this.usedMaterials.find(s => s.sceneId === this.context.scene.id && s.hex === hex && s.alpha === alpha && s.zOffset === zOffset);
-                this.usedMaterials = this.usedMaterials.filter(s => s.sceneId === this.context.scene.id);
-                if (materialCached) {
-                    pbr = materialCached.material;
-                } else {
+                
+                pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new THREEJS.MeshPhysicalMaterial();
-
+                    pbmat.name = this.generateEntityId("brepMaterial");
                     pbmat.color = new THREEJS.Color(hex);
-                    pbmat.metalness = 0.4;
-                    pbmat.roughness = 0.8;
+                    pbmat.metalness = MATERIAL_DEFAULTS.METALNESS.OCCT;
+                    pbmat.roughness = MATERIAL_DEFAULTS.ROUGHNESS.OCCT;
                     pbmat.alphaTest = alpha;
                     pbmat.polygonOffset = true;
                     pbmat.polygonOffsetFactor = zOffset;
-                    this.usedMaterials.push({
-                        sceneId: this.context.scene.id,
-                        hex,
-                        alpha: alpha,
-                        zOffset: zOffset,
-                        material: pbmat
-                    });
-                    pbr = pbmat;
-                }
+                    return pbmat;
+                });
             }
 
-            const meshData = decomposedMesh.faceList.map(face => {
+            const meshData: MeshData[] = decomposedMesh.faceList.map(face => {
                 return {
                     positions: face.vertex_coord,
                     normals: face.normal_coord,
@@ -563,6 +649,17 @@ export class DrawHelper extends DrawHelperCore {
 
             const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
             shapeGroup.add(mesh);
+
+            // Draw back faces with different color when two-sided rendering is enabled
+            if (inputs.drawTwoSided !== false) {
+                const backFaceMesh = this.createBackFaceMesh(
+                    meshData,
+                    inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                    inputs.backFaceOpacity ?? inputs.faceOpacity,
+                    inputs.drawEdges ? 2 : 0
+                );
+                shapeGroup.add(backFaceMesh);
+            }
         }
         if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
 
@@ -706,7 +803,7 @@ export class DrawHelper extends DrawHelperCore {
             color: 0xffffff, linewidth: size, vertexColors: true
         });
         const line = new THREEJS.LineSegments(lineGeometry, lineMaterial);
-        line.name = "lines-" + Math.random();
+        line.name = this.generateEntityId("lines");
         return line;
     }
 
@@ -722,24 +819,54 @@ export class DrawHelper extends DrawHelperCore {
                 geometry.computeVertexNormals();
 
                 const group = new THREEJS.Group();
-                group.name = `manifoldMesh-${Math.random()}`;
+                group.name = this.generateEntityId("manifoldMesh");
 
+                let material: THREEJS.MeshPhysicalMaterial;
                 if (options.faceMaterial === undefined) {
-                    const material = new THREEJS.MeshPhysicalMaterial();
-                    material.name = `pbr-${Math.random()}`;
-
-                    material.color = new THREEJS.Color(options.faceColour);
-                    material.metalness = 0.5;
-                    material.roughness = 0.7;
-                    material.opacity = options.faceOpacity;
-                    material.alphaTest = 1;
-                    if (!options.computeNormals) {
-                        material.flatShading = true;
-                    }
-                    group.add(new THREEJS.Mesh(geometry, material));
+                    material = this.getOrCreateMaterial(options.faceColour, options.faceOpacity, 0, () => {
+                        const mat = new THREEJS.MeshPhysicalMaterial();
+                        mat.name = this.generateEntityId("manifoldMaterial");
+                        mat.color = new THREEJS.Color(options.faceColour);
+                        mat.metalness = MATERIAL_DEFAULTS.METALNESS.MANIFOLD;
+                        mat.roughness = MATERIAL_DEFAULTS.ROUGHNESS.MANIFOLD;
+                        mat.opacity = options.faceOpacity;
+                        mat.alphaTest = 1;
+                        if (!options.computeNormals) {
+                            mat.flatShading = true;
+                        }
+                        return mat;
+                    });
                 } else {
-                    group.add(new THREEJS.Mesh(geometry, options.faceMaterial));
+                    material = options.faceMaterial as THREEJS.MeshPhysicalMaterial;
                 }
+
+                group.add(new THREEJS.Mesh(geometry, material));
+
+                // Draw back faces with different color when two-sided rendering is enabled
+                if (options.drawTwoSided !== false) {
+                    // Prepare mesh data for back face mesh creation
+                    const positions = Array.from(decomposedMesh.vertProperties);
+                    const indices = Array.from(decomposedMesh.triVerts);
+                    
+                    // Get normals from the geometry (they were computed above)
+                    const normalAttribute = geometry.getAttribute("normal");
+                    const normals = normalAttribute ? Array.from(normalAttribute.array as Float32Array) : [];
+
+                    const meshData: MeshData[] = [{
+                        positions,
+                        indices,
+                        normals
+                    }];
+
+                    const backFaceMesh = this.createBackFaceMesh(
+                        meshData,
+                        options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                        options.backFaceOpacity ?? options.faceOpacity,
+                        0
+                    );
+                    group.add(backFaceMesh);
+                }
+
                 this.context.scene.add(group);
                 return group;
             } else {
@@ -750,7 +877,7 @@ export class DrawHelper extends DrawHelperCore {
             if (decompsoedPolygons.length > 0) {
 
                 const group = new THREEJS.Group();
-                group.name = `manifoldCrossSection-${Math.random()}`;
+                group.name = this.generateEntityId("manifoldCrossSection");
                 const polylines = decompsoedPolygons.map(polygon => ({
                     points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
                     isClosed: true
@@ -782,4 +909,147 @@ export class DrawHelper extends DrawHelperCore {
         }
         return options;
     }
+
+    /**
+     * Generate a unique entity ID with semantic naming
+     * @param type - The type of entity (e.g., 'manifoldMeshContainer', 'jscadMesh')
+     * @param parentId - Optional parent ID for hierarchical naming
+     * @returns Unique entity ID string
+     */
+    private generateEntityId(type: string, parentId?: string): string {
+        const id = `${this.instanceId}-${type}-${++this.entityIdCounter}`;
+        return parentId ? `${parentId}/${id}` : id;
+    }
+
+    /**
+     * Get or create a cached material with the specified properties
+     * Implements LRU-like eviction when cache is full
+     * @param hex - Hex color string
+     * @param alpha - Alpha value (0-1)
+     * @param zOffset - Z-offset value
+     * @param createFn - Function to create new material if not cached
+     * @returns Cached or newly created material
+     */
+    private getOrCreateMaterial(
+        hex: string,
+        alpha: number,
+        zOffset: number,
+        createFn: () => THREEJS.MeshPhysicalMaterial
+    ): THREEJS.MeshPhysicalMaterial {
+        const key = this.getMaterialKey(hex, alpha, zOffset);
+
+        // Check cache first
+        const cached = this.materialCache.get(key);
+        if (cached) {
+            return cached;
+        }
+
+        // Evict oldest if at capacity (simple FIFO)
+        if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
+            const firstKey = this.materialCache.keys().next().value;
+            const material = this.materialCache.get(firstKey);
+            if (material && material.dispose) {
+                material.dispose();
+            }
+            this.materialCache.delete(firstKey);
+            console.warn(`Material cache full, evicted: ${firstKey}`);
+        }
+
+        // Create new material
+        const material = createFn();
+        this.materialCache.set(key, material);
+        return material;
+    }
+
+    /**
+     * Create a back face mesh with flipped normals and reversed winding order
+     * This is used for two-sided rendering of CAD geometries
+     * @param meshDataConverted - Original mesh data
+     * @param backFaceColour - Color for the back face
+     * @param backFaceOpacity - Opacity for the back face
+     * @param zOffset - Depth bias to prevent z-fighting
+     * @returns Group containing the back face mesh
+     */
+    private createBackFaceMesh(
+        meshDataConverted: MeshData[],
+        backFaceColour: string,
+        backFaceOpacity: number,
+        zOffset: number
+    ): THREEJS.Group {
+        // Create material for back face using the caching system
+        const backMaterial = this.getOrCreateMaterial(backFaceColour + "-back", backFaceOpacity, zOffset + 0.1, () => {
+            const mat = new THREEJS.MeshPhysicalMaterial();
+            mat.name = this.generateEntityId("backFaceMaterial");
+            mat.color = new THREEJS.Color(backFaceColour);
+            mat.metalness = MATERIAL_DEFAULTS.METALNESS.SURFACE;
+            mat.roughness = MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
+            mat.opacity = backFaceOpacity;
+            mat.polygonOffset = true;
+            mat.polygonOffsetFactor = zOffset + 0.1;
+            return mat;
+        });
+
+        // Use base class to prepare back face mesh data (flip normals, reverse winding)
+        // prepareBackFaceMeshData merges all mesh data into one combined mesh
+        const backFaceMeshData = this.prepareBackFaceMeshData(meshDataConverted);
+
+        // Create geometry from the combined mesh data
+        const geometry = new THREEJS.BufferGeometry();
+        geometry.setAttribute("position", new THREEJS.BufferAttribute(Float32Array.from(backFaceMeshData.positions), 3));
+        geometry.setAttribute("normal", new THREEJS.BufferAttribute(Float32Array.from(backFaceMeshData.normals), 3));
+        if (backFaceMeshData.uvs && backFaceMeshData.uvs.length > 0) {
+            geometry.setAttribute("uv", new THREEJS.BufferAttribute(Float32Array.from(backFaceMeshData.uvs), 2));
+        }
+        geometry.setIndex(new THREEJS.BufferAttribute(Uint32Array.from(backFaceMeshData.indices), 1));
+
+        const group = new THREEJS.Group();
+        group.name = this.generateEntityId("backFaceSurface");
+        const mesh = new THREEJS.Mesh(geometry, backMaterial);
+        mesh.name = this.generateEntityId("backFaceSurfaceChild");
+        group.add(mesh);
+
+        return group;
+    }
+
+    private createPointSpheresMesh(
+        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): THREEJS.Group {
+        const positionsModel = positions.map((pos, index) => {
+            return {
+                position: pos,
+                color: colors[index],
+                index
+            };
+        });
+
+        const colorSet = Array.from(new Set(colors));
+        const materialSet = colorSet.map((colour, index) => {
+
+            const mat = new THREEJS.MeshBasicMaterial({ name: this.generateEntityId("pointMaterial") });
+            mat.opacity = opacity;
+            mat.color = new THREEJS.Color(colour);
+            const positions = positionsModel.filter(s => s.color === colour);
+
+            return { hex: colorSet, material: mat, positions };
+        });
+
+        const pointsGroup = new THREEJS.Group();
+        pointsGroup.name = meshName;
+        this.context.scene.add(pointsGroup);
+        materialSet.forEach(ms => {
+            const segments = ms.positions.length > 1000 ? 1 : 6;
+            const geom = new THREEJS.SphereGeometry(size, segments, segments);
+
+            ms.positions.forEach((pos, index) => {
+                const instance = new THREEJS.InstancedMesh(geom, ms.material, 1);
+                instance.name = this.generateEntityId(`point-${index}`);
+                instance.position.set(pos.position[0], pos.position[1], pos.position[2]);
+                instance.userData = { index: pos.index };
+                instance.visible = true;
+                pointsGroup.add(instance);
+            });
+        });
+
+        return pointsGroup;
+    }
+
 }
