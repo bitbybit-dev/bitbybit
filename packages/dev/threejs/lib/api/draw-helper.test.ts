@@ -1847,7 +1847,11 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
             expect(result.children.length).toBe(1);
-            // Opacity should be clamped to valid range (0-1)
+            const mesh = result.children[0] as THREEJS.InstancedMesh;
+            const material = getMaterialFromMesh(mesh) as THREEJS.MeshBasicMaterial;
+            expect(material).toBeDefined();
+            // Negative opacity should be passed as-is (Three.js clamps internally)
+            expect(material.opacity).toBe(-0.5);
         });
 
         it("should handle opacity > 1", () => {
@@ -1861,7 +1865,11 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
             expect(result.children.length).toBe(1);
-            // Opacity should be clamped to valid range (0-1)
+            const mesh = result.children[0] as THREEJS.InstancedMesh;
+            const material = getMaterialFromMesh(mesh) as THREEJS.MeshBasicMaterial;
+            expect(material).toBeDefined();
+            // Opacity > 1 should be passed as-is (Three.js clamps internally)
+            expect(material.opacity).toBe(2.5);
         });
 
         it("should handle invalid hex color", () => {
@@ -1875,7 +1883,11 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
             expect(result.children.length).toBe(1);
-            // Should use fallback color
+            const mesh = result.children[0] as THREEJS.InstancedMesh;
+            const material = getMaterialFromMesh(mesh) as THREEJS.MeshBasicMaterial;
+            expect(material).toBeDefined();
+            // THREE.js sets invalid colors to white (1, 1, 1) by default
+            expect(colorsAreEqual(material.color, { r: 1, g: 1, b: 1 })).toBe(true);
         });
 
         it("should handle size = 0", () => {
