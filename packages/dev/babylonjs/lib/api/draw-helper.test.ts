@@ -3496,4 +3496,279 @@ describe("DrawHelper unit tests", () => {
             expect(addCalls[0][0].first[1]).toBe(0.05);
         });
     });
+
+    describe("prepareBackFaceMeshDataNoWindingReversal", () => {
+        it("should flip normals without reversing winding order", () => {
+            const meshData = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2],
+                    uvs: [0, 0, 1, 0, 0, 1]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+
+            // Positions should remain the same
+            expect(result.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+            
+            // Normals should be flipped (negated)
+            expect(result.normals.length).toBe(9);
+            expect(Math.abs(result.normals[0])).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[1])).toBe(0); // Handle -0 vs 0
+            expect(result.normals[2]).toBe(-1);
+            expect(Math.abs(result.normals[3])).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[4])).toBe(0); // Handle -0 vs 0
+            expect(result.normals[5]).toBe(-1);
+            expect(Math.abs(result.normals[6])).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[7])).toBe(0); // Handle -0 vs 0
+            expect(result.normals[8]).toBe(-1);
+            
+            // Indices should NOT be reversed (this is the key difference from prepareBackFaceMeshData)
+            expect(result.indices).toEqual([0, 1, 2]);
+            
+            // UVs should be preserved
+            expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1]);
+        });
+
+        it("should handle multiple mesh data items", () => {
+            const meshDataArray = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2]
+                },
+                {
+                    positions: [2, 0, 0, 3, 0, 0, 2, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshDataArray);
+
+            // Positions should be combined
+            expect(result.positions).toEqual([
+                0, 0, 0, 1, 0, 0, 0, 1, 0,
+                2, 0, 0, 3, 0, 0, 2, 1, 0
+            ]);
+            
+            // Normals should all be flipped
+            expect(result.normals.length).toBe(18);
+            // Check only the non-zero values
+            expect(result.normals[2]).toBe(-1);
+            expect(result.normals[5]).toBe(-1);
+            expect(result.normals[8]).toBe(-1);
+            expect(result.normals[11]).toBe(-1);
+            expect(result.normals[14]).toBe(-1);
+            expect(result.normals[17]).toBe(-1);
+            
+            // Indices should be combined with proper offsets (no winding reversal)
+            expect(result.indices).toEqual([0, 1, 2, 3, 4, 5]);
+        });
+
+        it("should correctly apply index offset for multiple meshes", () => {
+            const meshDataArray = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], // 3 vertices
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2]
+                },
+                {
+                    positions: [2, 0, 0, 3, 0, 0, 2, 1, 0, 3, 1, 0], // 4 vertices
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2, 1, 3, 2]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshDataArray);
+
+            // Second mesh indices should be offset by 3 (first mesh had 3 vertices)
+            expect(result.indices).toEqual([
+                0, 1, 2,        // First mesh
+                3, 4, 5, 4, 6, 5 // Second mesh with offset of 3
+            ]);
+        });
+
+        it("should handle normals with mixed positive and negative values", () => {
+            const meshData = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0.5, -0.5, 0.707, -0.3, 0.8, -0.5, 1, 0, 0],
+                    indices: [0, 1, 2]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+
+            // All normals should be negated
+            expect(result.normals.length).toBe(9);
+            expect(result.normals[0]).toBe(-0.5);
+            expect(result.normals[1]).toBe(0.5);
+            expect(result.normals[2]).toBe(-0.707);
+            expect(result.normals[3]).toBe(0.3);
+            expect(result.normals[4]).toBe(-0.8);
+            expect(result.normals[5]).toBe(0.5);
+            expect(result.normals[6]).toBe(-1);
+            expect(result.normals[7]).toBeCloseTo(0, 10); // Handle -0 vs 0
+            expect(result.normals[8]).toBeCloseTo(0, 10); // Handle -0 vs 0
+        });
+
+        it("should handle mesh data without UVs", () => {
+            const meshData = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+
+            // UVs should be undefined when not provided
+            expect(result.uvs).toBeUndefined();
+        });
+
+        it("should handle mesh data with UVs", () => {
+            const meshData = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2],
+                    uvs: [0, 0, 1, 0, 0.5, 1]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+
+            // UVs should be preserved
+            expect(result.uvs).toEqual([0, 0, 1, 0, 0.5, 1]);
+        });
+
+        it("should combine UVs from multiple meshes", () => {
+            const meshDataArray = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2],
+                    uvs: [0, 0, 1, 0, 0, 1]
+                },
+                {
+                    positions: [2, 0, 0, 3, 0, 0, 2, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2],
+                    uvs: [0, 0, 1, 0, 0.5, 0.5]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshDataArray);
+
+            // UVs should be combined
+            expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0.5, 0.5]);
+        });
+
+        it("should handle empty normals array", () => {
+            const meshData = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [],
+                    indices: [0, 1, 2]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+
+            // Normals should remain empty (not flipped)
+            expect(result.normals.length).toBe(0);
+        });
+
+        it("should handle complex triangle mesh", () => {
+            const meshData = [
+                {
+                    positions: [
+                        0, 0, 0,  // vertex 0
+                        1, 0, 0,  // vertex 1
+                        0, 1, 0,  // vertex 2
+                        1, 1, 0   // vertex 3
+                    ],
+                    normals: [
+                        0, 0, 1,
+                        0, 0, 1,
+                        0, 0, 1,
+                        0, 0, 1
+                    ],
+                    indices: [0, 1, 2, 1, 3, 2], // Two triangles forming a quad
+                    uvs: [0, 0, 1, 0, 0, 1, 1, 1]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+
+            // Normals should all be flipped
+            expect(result.normals.length).toBe(12);
+            // Check the z-components which should be -1
+            expect(result.normals[2]).toBe(-1);
+            expect(result.normals[5]).toBe(-1);
+            expect(result.normals[8]).toBe(-1);
+            expect(result.normals[11]).toBe(-1);
+            
+            // Winding order should NOT be reversed
+            expect(result.indices).toEqual([0, 1, 2, 1, 3, 2]);
+        });
+
+        it("should handle mesh data with only some items having UVs", () => {
+            const meshDataArray = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2],
+                    uvs: [0, 0, 1, 0, 0, 1]
+                },
+                {
+                    positions: [2, 0, 0, 3, 0, 0, 2, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2]
+                    // No UVs in second mesh
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshDataArray);
+
+            // Only the first mesh's UVs should be present
+            expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1]);
+        });
+
+        it("should preserve zero normals", () => {
+            const meshData = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    indices: [0, 1, 2]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+
+            // Zero normals should remain zero after negation (note: -0 == 0 in JavaScript)
+            expect(result.normals.length).toBe(9);
+            // All values should be zero (or -0, which is mathematically equal to 0)
+            result.normals.forEach(val => expect(Math.abs(val)).toBe(0));
+        });
+
+        it("should correctly handle very small normal values", () => {
+            const meshData = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0.001, -0.002, 0.003, -0.001, 0.002, -0.003, 0.0001, -0.0002, 0.0003],
+                    indices: [0, 1, 2]
+                }
+            ];
+
+            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+
+            // Small values should be properly negated
+            expect(result.normals).toEqual([-0.001, 0.002, -0.003, 0.001, -0.002, 0.003, -0.0001, 0.0002, -0.0003]);
+        });
+    });
 });
