@@ -585,11 +585,11 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurface);
             expect(res).toBeDefined();
             expect(res.name).toContain("surface");
-            expect(res.children.length).toBe(1);
+            expect(res.children.length).toBe(2); // Front face + back face
             const faceMesh = res.children[0] as Mesh;
             const material = faceMesh.material as MeshPhongMaterial;
             expect(material.color.getHex()).toBe(0xff0000);
-            expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("3,4,5,2,3,4,1,2,3,4,5,6,3,4,5,2,3,4,34,-5,3,4,5,6,3,4,5");
+            expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("1,2,3,2,3,4,3,4,5,2,3,4,3,4,5,4,5,6,3,4,5,4,5,6,34,-5,3");
         });
 
         it("should draw verb surface and hide it", async () => {
@@ -620,12 +620,12 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurface);
             expect(res).toBeDefined();
             expect(res.name).toContain("surface");
-            expect(res.children.length).toBe(1);
+            expect(res.children.length).toBe(2); // Front face + back face
             expect(res2.name).toEqual(res.name);
             const faceMesh = res.children[0] as Mesh;
             const material = faceMesh.material as MeshPhongMaterial;
             expect(material.color.getHex()).toBe(0xff0000);
-            expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("3,6,5,2,5,4,1,3,3,3,5,6,3,6,5,2,5,4,3,-5,3,3,5,6,3,6,5");
+            expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("1,3,3,2,5,4,3,6,5,2,5,4,3,6,5,3,5,6,3,6,5,3,5,6,3,-5,3");
         });
 
         it.skip("should draw verb surfaces", async () => {
@@ -667,7 +667,7 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
-            expect(res.children.length).toBe(2);
+            expect(res.children.length).toBe(3); // Front faces + back faces + edges
         });
 
         it("should draw a cube mesh with custom material", async () => {
@@ -681,7 +681,7 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
-            expect(res.children.length).toBe(2);
+            expect(res.children.length).toBe(3); // Front faces + back faces + edges
             const face = res.children[0].children[0] as Mesh;
             const material = face.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("ff00ff");
@@ -699,7 +699,7 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
-            expect(res.children.length).toBe(4);
+            expect(res.children.length).toBe(5); // Front faces + back faces + edges + vertices + edge indexes
         });
 
         it("should draw multiple cubes mesh with default options", async () => {
@@ -740,7 +740,7 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
-            expect(res.children.length).toBe(1);
+            expect(res.children.length).toBe(2); // Main mesh + back face
         });
 
         it("should draw a JSCAD mesh with specified color options", async () => {
@@ -750,7 +750,7 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
-            expect(res.children.length).toBe(1);
+            expect(res.children.length).toBe(2); // Main mesh + back face
             const mesh = res.children[0] as Mesh;
             const material = mesh.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("00ff00");
@@ -764,7 +764,7 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
-            expect(res.children.length).toBe(1);
+            expect(res.children.length).toBe(2); // Main mesh + back face
             const mesh = res.children[0] as Mesh;
             const material = mesh.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("00ffff");
@@ -778,7 +778,7 @@ describe("Draw unit tests", () => {
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
-            expect(res.children.length).toBe(1);
+            expect(res.children.length).toBe(2); // Main mesh + back face
             const mesh = res.children[0] as Mesh;
             const material = mesh.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("0000ff");
