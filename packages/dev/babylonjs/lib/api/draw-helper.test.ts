@@ -69,7 +69,6 @@ describe("DrawHelper unit tests", () => {
                Math.abs(color1.b - color2.b) < tolerance;
     };
 
-    // ==================== Phase 2: Point Drawing Tests ====================
 
     describe("drawPoint", () => {
         it("should draw a point with default options", () => {
@@ -87,6 +86,22 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(BABYLON.Mesh);
             expect(result.name).toContain("pointMesh");
             expect(result.getChildMeshes().length).toBe(1);
+            
+            // Validate material properties
+            const childMesh = result.getChildMeshes()[0] as BABYLON.InstancedMesh;
+            expect(childMesh).toBeInstanceOf(BABYLON.InstancedMesh);
+            const material = childMesh.sourceMesh.material as BABYLON.StandardMaterial;
+            expect(material).toBeDefined();
+            expect(material.alpha).toBe(1);
+            
+            // Validate color
+            const expectedColor = hexToRgb("#ff0000");
+            const actualColor = {
+                r: material.emissiveColor.r,
+                g: material.emissiveColor.g,
+                b: material.emissiveColor.b
+            };
+            expect(colorsAreEqual(actualColor, expectedColor)).toBe(true);
         });
 
         it("should draw a point with array of colours", () => {
@@ -147,6 +162,22 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(BABYLON.Mesh);
             expect(result.name).toContain("pointsMesh");
             expect(result.getChildMeshes().length).toBe(3);
+            
+            // Validate all points have correct material
+            const children = result.getChildMeshes();
+            children.forEach((child) => {
+                const instance = child as BABYLON.InstancedMesh;
+                const material = instance.sourceMesh.material as BABYLON.StandardMaterial;
+                expect(material.alpha).toBe(1);
+                
+                const expectedColor = hexToRgb("#ff0000");
+                const actualColor = {
+                    r: material.emissiveColor.r,
+                    g: material.emissiveColor.g,
+                    b: material.emissiveColor.b
+                };
+                expect(colorsAreEqual(actualColor, expectedColor)).toBe(true);
+            });
         });
 
         it("should draw points with per-point colours", () => {
@@ -162,6 +193,29 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
             expect(result.getChildMeshes().length).toBe(3);
+            
+            // Validate each point has its corresponding color
+            const expectedColors = ["#ff0000", "#00ff00", "#0000ff"];
+            const children = result.getChildMeshes();
+            
+            // Group children by their metadata index to match original point order
+            const sortedChildren = children.sort((a, b) => {
+                const indexA = (a as BABYLON.InstancedMesh).metadata?.index ?? 0;
+                const indexB = (b as BABYLON.InstancedMesh).metadata?.index ?? 0;
+                return indexA - indexB;
+            });
+            
+            sortedChildren.forEach((child, index) => {
+                const instance = child as BABYLON.InstancedMesh;
+                const material = instance.sourceMesh.material as BABYLON.StandardMaterial;
+                const expectedColor = hexToRgb(expectedColors[index]);
+                const actualColor = {
+                    r: material.emissiveColor.r,
+                    g: material.emissiveColor.g,
+                    b: material.emissiveColor.b
+                };
+                expect(colorsAreEqual(actualColor, expectedColor)).toBe(true);
+            });
         });
 
         it("should handle mismatched colour array length", () => {
@@ -255,8 +309,6 @@ describe("DrawHelper unit tests", () => {
             expect(mesh.getChildMeshes().length).toBe(2);
         });
     });
-
-    // ==================== Phase 3: Polyline & Curve Tests ====================
 
     describe("drawPolylineClose", () => {
         it("should draw a polyline", () => {
@@ -540,9 +592,52 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
         });
+
+        it("should use first colour when colour array is shorter than lines", () => {
+            const inputs = new Inputs.Line.DrawLinesDto<BABYLON.LinesMesh>(
+                [
+                    { start: [0, 0, 0], end: [1, 0, 0] },
+                    { start: [0, 1, 0], end: [1, 1, 0] },
+                    { start: [0, 2, 0], end: [1, 2, 0] }
+                ],
+                1,
+                ["#ff0000"], // Only one color for 3 lines
+                2
+            );
+
+            const result = drawHelper.drawLines(inputs);
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.LinesMesh);
+        });
+
+        it("should recreate lines mesh when vertex count changes during update", () => {
+            const initialInputs = new Inputs.Line.DrawLinesDto<BABYLON.LinesMesh>(
+                [{ start: [0, 0, 0], end: [1, 0, 0] }],
+                1,
+                "#ff0000",
+                2
+            );
+            const existingMesh = drawHelper.drawLines(initialInputs);
+
+            const updateInputs = new Inputs.Line.DrawLinesDto<BABYLON.LinesMesh>(
+                [
+                    { start: [0, 0, 0], end: [1, 0, 0] },
+                    { start: [0, 1, 0], end: [1, 1, 0] }
+                ],
+                1,
+                "#ff0000",
+                2,
+                true,
+                existingMesh
+            );
+
+            const result = drawHelper.drawLines(updateInputs);
+
+            expect(result).toBeDefined();
+        });
     });
 
-    // ==================== Phase 4: Surface Tests ====================
 
     describe("drawSurface", () => {
         it("should draw a surface", () => {
@@ -945,7 +1040,6 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
-    // ==================== Phase 5: JSCAD Mesh Tests ====================
 
     describe("drawSolidOrPolygonMesh", () => {
         it("should draw JSCAD solid mesh", async () => {
@@ -1228,7 +1322,6 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
-    // ===== PHASE 6: OCCT Shape Tests =====
 
     describe("drawShape (OCCT)", () => {
         it("should draw OCCT shape with faces", async () => {
@@ -1437,7 +1530,6 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
-    // ===== PHASE 7: Manifold Tests =====
 
     describe("drawManifoldOrCrossSection", () => {
         it("should draw manifold or cross section", async () => {
@@ -1624,7 +1716,240 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
-    // ===== PHASE 8: Infrastructure and Edge Case Tests =====
+
+    describe("drawPath (JSCAD)", () => {
+        it("should draw JSCAD path", async () => {
+            const mockPath = {
+                points: [[0, 0], [1, 0], [1, 1], [0, 1]],
+                isClosed: false
+            };
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath,
+                "#ff0000", // colour
+                1,          // opacity
+                2,          // width
+                false       // updatable
+            );
+
+            const result = await drawHelper.drawPath(inputs);
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
+        });
+
+        it("should close JSCAD path when isClosed is true", async () => {
+            const mockPath = {
+                points: [[0, 0], [1, 0], [1, 1]],
+                isClosed: true
+            };
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath,
+                "#00ff00", // colour
+                1,          // opacity
+                2,          // width
+                false       // updatable
+            );
+
+            const result = await drawHelper.drawPath(inputs);
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
+        });
+
+        it("should use baked color from path if available", async () => {
+            const mockPath = {
+                points: [[0, 0], [1, 0]],
+                isClosed: false,
+                color: [1, 0, 0, 1] // Red
+            };
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath,
+                "#0000ff", // colour - Blue, should be overridden by baked color
+                1,          // opacity
+                2,          // width
+                false       // updatable
+            );
+
+            const result = await drawHelper.drawPath(inputs);
+
+            expect(result).toBeDefined();
+        });
+    });
+
+    describe("localAxes", () => {
+        it("should create local axis visualization", () => {
+            const result = drawHelper.localAxes(
+                1,
+                mockContext.scene,
+                "#ff0000", // X axis - red
+                "#00ff00", // Y axis - green
+                "#0000ff"  // Z axis - blue
+            );
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.Mesh);
+            expect(result.isVisible).toBe(false); // Origin should be invisible
+            
+            // Should have 3 children (X, Y, Z axes)
+            const children = result.getChildMeshes();
+            expect(children.length).toBe(3);
+            
+            // Verify each axis is a LinesMesh
+            children.forEach(child => {
+                expect(child).toBeInstanceOf(BABYLON.LinesMesh);
+            });
+        });
+
+        it("should create local axes with custom size", () => {
+            const size = 5;
+            const result = drawHelper.localAxes(
+                size,
+                mockContext.scene,
+                "#ff0000",
+                "#00ff00",
+                "#0000ff"
+            );
+
+            expect(result).toBeDefined();
+            expect(result.getChildMeshes().length).toBe(3);
+        });
+    });
+
+    describe("drawShape with edge and vertex options", () => {
+        it("should draw OCCT shape with faces and edges", async () => {
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                faceList: [
+                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                ],
+                edgeList: [
+                    { vertex_coord: [0, 0, 0, 1, 0, 0], edge_index: 0 }
+                ],
+                pointsList: []
+            });
+
+            const inputs = new Inputs.OCCT.DrawShapeDto();
+            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawVertices = false;
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            inputs.edgeColour = "#00ff00";
+            inputs.edgeWidth = 2;
+            inputs.edgeOpacity = 1;
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+
+            expect(result).toBeDefined();
+            // Should have both face mesh and edge mesh as children
+            expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(2);
+        });
+
+        it("should draw OCCT shape with all options (faces, edges, vertices)", async () => {
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                faceList: [
+                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                ],
+                edgeList: [
+                    { vertex_coord: [0, 0, 0, 1, 0, 0], edge_index: 0 }
+                ],
+                pointsList: [[0, 0, 0], [1, 0, 0], [0, 1, 0]]
+            });
+
+            const inputs = new Inputs.OCCT.DrawShapeDto();
+            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawVertices = true;
+            inputs.faceColour = "#ff0000";
+            inputs.faceOpacity = 1;
+            inputs.edgeColour = "#00ff00";
+            inputs.edgeWidth = 2;
+            inputs.edgeOpacity = 1;
+            inputs.vertexColour = "#0000ff";
+            inputs.vertexSize = 0.1;
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+
+            expect(result).toBeDefined();
+            // Should have face, edge, and vertex meshes
+            expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(3);
+        });
+
+        it("should handle empty decomposed mesh", async () => {
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+                faceList: [],
+                edgeList: [],
+                pointsList: []
+            });
+
+            const inputs = new Inputs.OCCT.DrawShapeDto();
+            inputs.shape = { hash: "empty", type: "solid" } as any;
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawVertices = true;
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+
+            expect(result).toBeDefined();
+            // Empty mesh should have no visible children
+            expect(result.getChildMeshes().length).toBe(0);
+        });
+    });
+
+    describe("createOrUpdateSurfacesMesh with various options", () => {
+        it("should handle surfaces with different material", () => {
+            const meshData = [{
+                positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                indices: [0, 1, 2]
+            }];
+            const customMaterial = new BABYLON.PBRMetallicRoughnessMaterial(
+                "customMat",
+                mockContext.scene
+            );
+            customMaterial.baseColor = BABYLON.Color3.FromHexString("#ff00ff");
+
+            const result = drawHelper.createOrUpdateSurfacesMesh(
+                meshData,
+                undefined as any,
+                false,
+                customMaterial,
+                true,
+                false
+            );
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.Mesh);
+            // Result is the surface mesh itself, not a container
+            expect(result.material).toBe(customMaterial);
+        });
+
+        it("should create updatable mesh when specified", () => {
+            const meshData = [{
+                positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                indices: [0, 1, 2]
+            }];
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("mat", mockContext.scene);
+
+            const result = drawHelper.createOrUpdateSurfacesMesh(
+                meshData,
+                undefined as any,
+                true, // updatable
+                material,
+                true,
+                false
+            );
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.Mesh);
+            expect(result.material).toBe(material);
+        });
+    });
 
     describe("Worker validation", () => {
         it("should call JSCAD worker with correct parameters", async () => {
@@ -1889,6 +2214,24 @@ describe("DrawHelper unit tests", () => {
 
             const cacheSizeAfterDispose = drawHelper["materialCache"].size;
             expect(cacheSizeAfterDispose).toBe(0);
+        });
+
+        it("should handle error during material disposal", () => {
+            // Create a material that will throw error on dispose
+            const mockErrorMaterial = {
+                dispose: jest.fn().mockImplementation(() => {
+                    throw new Error("Disposal error");
+                })
+            } as any;
+            
+            // Manually add error-prone material to cache
+            const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
+            drawHelper["materialCache"].set("error-material", mockErrorMaterial);
+            
+            drawHelper.dispose();
+            
+            expect(consoleWarnSpy).toHaveBeenCalled();
+            consoleWarnSpy.mockRestore();
         });
 
         it("should not leak polyline meshes on update", () => {
@@ -2187,6 +2530,309 @@ describe("DrawHelper unit tests", () => {
 
             const executionTime = endTime - startTime;
             expect(executionTime).toBeLessThan(200);
+        });
+    });
+
+    describe("drawSurfaces", () => {
+        it("should draw multiple surfaces as single mesh", () => {
+            const mockSurface1 = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+            const mockSurface2 = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[1, 0, 0], [2, 0, 0], [1, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+
+            const inputs = new Inputs.Verb.DrawSurfacesDto<BABYLON.Mesh>(
+                [mockSurface1, mockSurface2],
+                1,
+                "#ff0000",
+                false,
+                false
+            );
+
+            const result = drawHelper.drawSurfaces(inputs);
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.Mesh);
+            expect(result.material).toBeDefined();
+            expect(result.material).toBeInstanceOf(BABYLON.PBRMetallicRoughnessMaterial);
+            const material = result.material as BABYLON.PBRMetallicRoughnessMaterial;
+            expect(colorsAreEqual(material.baseColor, hexToRgb("#ff0000"))).toBe(true);
+            expect(material.alpha).toBe(1);
+        });
+
+        it("should handle drawSurfaces with two-sided rendering", () => {
+            const mockSurface = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+
+            const inputs = new Inputs.Verb.DrawSurfacesDto<BABYLON.Mesh>(
+                [mockSurface],
+                1,
+                "#ff0000",
+                false,
+                false,
+                undefined,
+                true, // drawTwoSided
+                "#00ff00",
+                0.8
+            );
+
+            const result = drawHelper.drawSurfaces(inputs);
+
+            expect(result).toBeDefined();
+            expect(result.material).toBeDefined();
+            const children = result.getChildMeshes();
+            expect(children.length).toBe(1); // Should have back face mesh
+            // Check main mesh material
+            const mainMaterial = result.material as BABYLON.PBRMetallicRoughnessMaterial;
+            expect(colorsAreEqual(mainMaterial.baseColor, hexToRgb("#ff0000"))).toBe(true);
+            expect(mainMaterial.alpha).toBe(1);
+            // Check back face mesh exists and has correct material
+            const backFaceMesh = children[0];
+            expect(backFaceMesh.material).toBeDefined();
+            const backMaterial = backFaceMesh.material as BABYLON.PBRMetallicRoughnessMaterial;
+            expect(colorsAreEqual(backMaterial.baseColor, hexToRgb("#00ff00"))).toBe(true);
+            expect(backMaterial.alpha).toBe(0.8);
+        });
+
+        it("should handle array of colours in drawSurfaces", () => {
+            const mockSurface = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+
+            const inputs = new Inputs.Verb.DrawSurfacesDto<BABYLON.Mesh>(
+                [mockSurface],
+                1,
+                ["#ff0000", "#00ff00"],
+                false,
+                false
+            );
+
+            const result = drawHelper.drawSurfaces(inputs);
+
+            expect(result).toBeDefined();
+            expect(result.material).toBeDefined();
+            const material = result.material as BABYLON.PBRMetallicRoughnessMaterial;
+            // Should use first color from array
+            expect(colorsAreEqual(material.baseColor, hexToRgb("#ff0000"))).toBe(true);
+        });
+    });
+
+    describe("drawSurfacesMultiColour - single colour branch", () => {
+        it("should handle single colour for all surfaces", () => {
+            const mockSurface1 = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+            const mockSurface2 = {
+                tessellate: jest.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[1, 0, 0], [2, 0, 0], [1, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+
+            const inputs = new Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>(
+                [mockSurface1, mockSurface2],
+                ["#ff0000"], // Single colour in array
+                1,
+                false,
+                false,
+                undefined,
+                false
+            );
+
+            const result = drawHelper.drawSurfacesMultiColour(inputs);
+
+            expect(result).toBeDefined();
+            const children = result.getChildMeshes();
+            expect(children.length).toBe(2);
+            // Each child should have the same material since we passed single colour
+            children.forEach(child => {
+                expect(child.material).toBeDefined();
+                const material = child.material as BABYLON.PBRMetallicRoughnessMaterial;
+                expect(colorsAreEqual(material.baseColor, hexToRgb("#ff0000"))).toBe(true);
+            });
+        });
+    });
+
+    describe("createOrUpdateSurfacesMesh - multiple meshData", () => {
+        it("should merge multiple meshData into single mesh", () => {
+            const meshData = [
+                {
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2]
+                },
+                {
+                    positions: [1, 0, 0, 2, 0, 0, 1, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2]
+                },
+                {
+                    positions: [2, 0, 0, 3, 0, 0, 2, 1, 0],
+                    normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    indices: [0, 1, 2],
+                    uvs: [0, 0, 1, 0, 0.5, 1]
+                }
+            ];
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("testMaterial");
+
+            const result = drawHelper.createOrUpdateSurfacesMesh(
+                meshData,
+                undefined as unknown as BABYLON.Mesh,
+                false,
+                material,
+                true,
+                false
+            );
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.Mesh);
+            expect(result.material).toBe(material);
+            // Verify mesh has vertex data from all three sources merged
+            expect(result.getTotalVertices()).toBeGreaterThan(0);
+        });
+    });
+
+    describe("OCCT Shape - Additional Tests", () => {
+        it("should draw shape with edges", async () => {
+            const mockShape = {
+                faceList: [],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] // Edge vertices as array of Point3
+                    }
+                ],
+                pointsList: []
+            };
+
+            // Mock the OCCT worker to return our shape with edges
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any; // Shape pointer (will be sent to worker)
+            inputs.drawFaces = false;
+            inputs.drawEdges = true;
+            inputs.edgeColour = "#ff0000";
+            inputs.edgeWidth = 2;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            const children = result.getChildMeshes();
+            // Should have edge mesh as child (GreasedLineMesh for edges)
+            expect(children.length).toBeGreaterThan(0);
+            const edgeMesh = children.find(child => child instanceof BABYLON.GreasedLineMesh);
+            expect(edgeMesh).toBeDefined();
+        });
+
+        it("should draw shape with faces", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [],
+                pointsList: []
+            };
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = mockShape;
+            inputs.drawFaces = true;
+            inputs.faceColour = "#00ff00";
+            inputs.drawEdges = false;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            const children = result.getChildMeshes();
+            // Should have face mesh as child
+            expect(children.length).toBeGreaterThan(0);
+            const faceMesh = children.find(child => child.material);
+            expect(faceMesh).toBeDefined();
+            if (faceMesh && faceMesh.material) {
+                const material = faceMesh.material as BABYLON.PBRMetallicRoughnessMaterial;
+                expect(colorsAreEqual(material.baseColor, hexToRgb("#00ff00"))).toBe(true);
+            }
+        });
+
+        it("should draw shape with both edges and faces", async () => {
+            const mockShape = {
+                faceList: [
+                    {
+                        face_index: 0,
+                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertex_coord: [],
+                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normal_coord: [],
+                        tri_indexes: [0, 1, 2]
+                    }
+                ],
+                edgeList: [
+                    {
+                        edge_index: 0,
+                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] // Edge vertices as array of Point3
+                    }
+                ],
+                pointsList: []
+            };
+
+            // Mock the OCCT worker to return our shape with edges and faces
+            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValueOnce(mockShape);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
+            inputs.shape = {} as any; // Shape pointer (will be sent to worker)
+            inputs.drawFaces = true;
+            inputs.faceColour = "#00ff00";
+            inputs.drawEdges = true;
+            inputs.edgeColour = "#ff0000";
+            inputs.edgeWidth = 2;
+
+            const result = await drawHelper.drawShape(inputs);
+
+            expect(result).toBeDefined();
+            const children = result.getChildMeshes();
+            // Should have both face and edge meshes
+            expect(children.length).toBeGreaterThan(0);
+            const faceMesh = children.find(child => child.material instanceof BABYLON.PBRMetallicRoughnessMaterial);
+            const edgeMesh = children.find(child => child instanceof BABYLON.GreasedLineMesh);
+            expect(faceMesh).toBeDefined();
+            expect(edgeMesh).toBeDefined();
+            // Verify face material color
+            if (faceMesh && faceMesh.material) {
+                const faceMaterial = faceMesh.material as BABYLON.PBRMetallicRoughnessMaterial;
+                expect(colorsAreEqual(faceMaterial.baseColor, hexToRgb("#00ff00"))).toBe(true);
+            }
         });
     });
 });
