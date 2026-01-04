@@ -92,7 +92,7 @@
     ],
     "collectCoverageFrom": [
       "lib/workers/**/*",
-      "lib/api/bitbybit/**/*"
+      "lib/api/**/*"
     ]
   }
 }
