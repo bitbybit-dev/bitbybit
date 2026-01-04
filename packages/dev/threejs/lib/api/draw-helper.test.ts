@@ -108,8 +108,8 @@ describe("DrawHelper unit tests", () => {
      */
     const colorsAreEqual = (color1: THREEJS.Color, color2: { r: number; g: number; b: number }, tolerance = 0.01): boolean => {
         return Math.abs(color1.r - color2.r) < tolerance &&
-               Math.abs(color1.g - color2.g) < tolerance &&
-               Math.abs(color1.b - color2.b) < tolerance;
+            Math.abs(color1.g - color2.g) < tolerance &&
+            Math.abs(color1.b - color2.b) < tolerance;
     };
 
     /**
@@ -177,7 +177,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.name).toContain("pointMesh");
             expect(result.children.length).toBe(1);
-            
+
             const mesh = result.children[0] as THREEJS.InstancedMesh;
             const material = getMaterialFromMesh(mesh) as THREEJS.MeshBasicMaterial;
             expect(material).toBeDefined();
@@ -196,6 +196,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(THREEJS.Group);
         });
 
@@ -220,6 +221,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
 
+            expect(result.children.length).toBe(1);
             expect(result).toBe(existingMesh);
         });
     });
@@ -239,7 +241,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.name).toContain("pointsMesh");
             expect(result.children.length).toBe(3);
-            
+
             // Check each point has correct material color
             result.children.forEach(child => {
                 const mesh = child as THREEJS.InstancedMesh;
@@ -262,7 +264,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.children.length).toBe(3);
-            
+
             // Verify each point has its unique color
             const expectedColors = ["#ff0000", "#00ff00", "#0000ff"];
             result.children.forEach((child, index) => {
@@ -284,6 +286,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
+            expect(result.children.length).toBe(4);
         });
 
         it("should update existing points mesh when updatable is true with same point count", () => {
@@ -308,6 +311,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(updateInputs);
 
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -333,6 +337,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(updateInputs);
 
+            expect(result.children.length).toBe(3);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
         });
@@ -357,7 +362,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.name).toContain("polyline");
             expect(result.children.length).toBe(1);
-            
+
             const lineSegments = result.children[0] as THREEJS.LineSegments;
             if (lineSegments.material && !Array.isArray(lineSegments.material)) {
                 const material = lineSegments.material as THREEJS.LineBasicMaterial;
@@ -389,6 +394,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPolylineClose(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(THREEJS.Group);
         });
 
@@ -413,7 +419,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylineClose(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -437,10 +443,10 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.name).toContain("polylines");
             expect(result.children.length).toBe(1);
-            
+
             const lineSegments = result.children[0] as THREEJS.LineSegments;
             if (lineSegments.material && !Array.isArray(lineSegments.material)) {
-                const material = lineSegments.material as THREEJS.LineBasicMaterial;
+
                 // Polylines use vertex colors, so check the geometry color attribute instead
                 const colorAttribute = lineSegments.geometry.getAttribute("color");
                 if (colorAttribute) {
@@ -466,7 +472,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -484,6 +490,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
         });
 
         it("should update existing polylines mesh when updatable is true", () => {
@@ -509,7 +516,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -532,6 +539,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
+            expect(result.children.length).toBe(1);
             expect(mockCurve.tessellate).toHaveBeenCalled();
         });
 
@@ -557,7 +565,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawCurve(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -578,6 +586,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawCurves(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(THREEJS.Group);
         });
     });
@@ -606,8 +615,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(mockSurface.tessellate).toHaveBeenCalled();
-            expect(result.children.length).toBeGreaterThan(0);
-            
+            expect(result.children.length).toBe(2);
             const mesh = result.children[0] as THREEJS.Mesh;
             const material = mesh.material as THREEJS.MeshPhysicalMaterial;
             expect(colorsAreEqual(material.color, hexToRgb("#ff0000"))).toBe(true);
@@ -631,7 +639,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawSurface(inputs);
-
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result.visible).toBe(false);
         });
@@ -657,7 +665,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawSurface(inputs);
-
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -678,7 +686,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawSurface(inputs);
-
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
     });
@@ -713,7 +721,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.children.length).toBe(2);
-            
+
             // Verify each surface has its unique color
             // Children might be groups containing meshes
             const child1 = result.children[0] as THREEJS.Group;
@@ -724,7 +732,7 @@ describe("DrawHelper unit tests", () => {
                     expect(colorsAreEqual(material1.color, hexToRgb("#ff0000"))).toBe(true);
                 }
             }
-            
+
             const child2 = result.children[1] as THREEJS.Group;
             const mesh2 = (child2.children && child2.children.length > 0 ? child2.children[0] : child2) as THREEJS.Mesh;
             if (mesh2.material && !Array.isArray(mesh2.material)) {
@@ -803,7 +811,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBe(existingMesh);
         });
     });
@@ -824,8 +832,8 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
-            expect(result.children.length).toBeGreaterThan(0);
-            
+            expect(result.children.length).toBe(2);
+
             const mesh = result.children[0] as THREEJS.Mesh;
             const material = mesh.material as THREEJS.MeshPhysicalMaterial;
             expect(colorsAreEqual(material.color, hexToRgb("#ff0000"))).toBe(true);
@@ -867,6 +875,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(2);
             expect(result.visible).toBe(false);
         });
 
@@ -886,6 +895,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
+            expect(result.children.length).toBe(2);
             expect(result).toBe(existingMesh);
         });
 
@@ -901,6 +911,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
     });
@@ -926,7 +937,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.children.length).toBe(2);
-            
+
             // Verify both meshes have the same color
             result.children.forEach(child => {
                 const mesh = child as THREEJS.Mesh;
@@ -955,7 +966,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
-
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -978,7 +989,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
-            
+
             // Verify each mesh has its unique color
             const mesh1 = result.children[0] as THREEJS.Mesh;
             if (mesh1.material && !Array.isArray(mesh1.material)) {
@@ -987,7 +998,7 @@ describe("DrawHelper unit tests", () => {
                     expect(colorsAreEqual(material1.color, hexToRgb("#ff0000"))).toBe(true);
                 }
             }
-            
+
             const mesh2 = result.children[1] as THREEJS.Mesh;
             if (mesh2.material && !Array.isArray(mesh2.material)) {
                 const material2 = mesh2.material as THREEJS.MeshPhysicalMaterial;
@@ -1016,7 +1027,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
-
+            expect(result.children.length).toBe(1);
             expect(result).toBe(existingMesh);
         });
     });
@@ -1045,8 +1056,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
-            expect(result.children.length).toBeGreaterThan(0);
-            
+            expect(result.children.length).toBe(2);
             // Find the faces group and verify material color
             const facesGroup = result.children.find(child => child.name?.includes("faces")) as THREEJS.Group;
             if (facesGroup && facesGroup.children.length > 0) {
@@ -1079,8 +1089,8 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
-            expect(result.children.length).toBeGreaterThan(0);
-            
+            expect(result.children.length).toBe(1);
+
             // Find the edges group and verify material color
             const edgesGroup = result.children.find(child => child.name?.includes("edges")) as THREEJS.Group;
             if (edgesGroup && edgesGroup.children.length > 0) {
@@ -1109,8 +1119,8 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            expect(result.children.length).toBeGreaterThan(0);
-            
+            expect(result.children.length).toBe(1);
+
             // Find the vertices group and verify material color
             const verticesGroup = result.children.find(child => child.name?.includes("vertices")) as THREEJS.Group;
             if (verticesGroup && verticesGroup.children.length > 0) {
@@ -1144,8 +1154,8 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
-            expect(result.children.length).toBeGreaterThan(0);
-            
+            expect(result.children.length).toBe(2);
+
             // Each shape creates a child group, and should have faces
             result.children.forEach(childGroup => {
                 const group = childGroup as THREEJS.Group;
@@ -1173,8 +1183,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
-            expect(result.children.length).toBeGreaterThan(0);
-            
+            expect(result.children.length).toBe(2);
             const mesh = result.children[0] as THREEJS.Mesh;
             const material = mesh.material as THREEJS.MeshPhysicalMaterial;
             expect(colorsAreEqual(material.color, hexToRgb("#ff0000"))).toBe(true);
@@ -1237,8 +1246,8 @@ describe("DrawHelper unit tests", () => {
             // Note: The worker returns manifolds but they get filtered based on geometry validity
             // Since we're mocking with valid data, we should get some children
             // However, the implementation might filter some out
-            expect(result.children.length).toBeGreaterThanOrEqual(0);
-            
+            expect(result.children.length).toBe(0);
+
             // If there are children, verify they have the correct color
             if (result.children.length > 0) {
                 result.children.forEach(child => {
@@ -1270,6 +1279,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(0);
             expect(result).toBeInstanceOf(THREEJS.Group);
         });
     });
@@ -1279,17 +1289,17 @@ describe("DrawHelper unit tests", () => {
             const group = new THREEJS.Group();
             const geometry = new THREEJS.SphereGeometry(0.5);
             const material = new THREEJS.MeshBasicMaterial();
-            
+
             const mesh1 = new THREEJS.InstancedMesh(geometry, material, 1);
             mesh1.userData = { index: 0 };
             const mesh2 = new THREEJS.InstancedMesh(geometry, material, 1);
             mesh2.userData = { index: 1 };
-            
+
             group.add(mesh1);
             group.add(mesh2);
 
             const newPositions: Inputs.Base.Point3[] = [[5, 5, 5], [10, 10, 10]];
-            
+
             drawHelper.updatePointsInstances(group, newPositions);
 
             expect(mesh1.position.x).toBe(5);
@@ -1322,12 +1332,13 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.name).toContain("surface");
+            expect(result.children.length).toBe(1);
         });
 
         it("should update existing mesh when updatable is true", () => {
             const existingGroup = new THREEJS.Group();
             existingGroup.name = "existingSurface";
-            
+
             const meshData = [{
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
                 normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
@@ -1345,7 +1356,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             expect(result).toBe(existingGroup);
-            expect(result.children.length).toBeGreaterThan(0);
+            expect(result.children.length).toBe(1);
         });
 
         it("should set group invisible when hidden is true", () => {
@@ -1364,7 +1375,7 @@ describe("DrawHelper unit tests", () => {
                 true,
                 true // hidden
             );
-
+            expect(result.children.length).toBe(1);
             expect(result.visible).toBe(false);
         });
 
@@ -1387,6 +1398,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(THREEJS.Group);
         });
     });
@@ -1407,6 +1419,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.name).toContain("polyline");
+            expect(result.children.length).toBe(1);
         });
 
         it("should handle existing mesh with children", () => {
@@ -1425,7 +1438,7 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#00ff00"
             );
-
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
     });
@@ -1508,6 +1521,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
             // Should handle gracefully without crashing
+            expect(result.children.length).toBe(0);
             expect(result).toBeDefined();
         });
 
@@ -1527,6 +1541,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -1664,6 +1679,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -1680,6 +1696,7 @@ describe("DrawHelper unit tests", () => {
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
 
@@ -1782,6 +1799,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylineClose(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
         });
 
         it("should handle polyline with single point", () => {
@@ -1798,6 +1816,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylineClose(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
         });
 
         it("should handle closed polyline with 2 points", () => {
@@ -1813,6 +1832,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylineClose(inputs);
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
@@ -1826,6 +1846,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             // Opacity should be clamped to valid range (0-1)
         });
 
@@ -1839,6 +1860,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             // Opacity should be clamped to valid range (0-1)
         });
 
@@ -1852,6 +1874,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             // Should use fallback color
         });
 
@@ -1865,6 +1888,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
         });
 
         it("should handle very large size values", () => {
@@ -1877,6 +1901,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
         });
 
         it("should handle updatable with undefined existing mesh", () => {
@@ -1891,6 +1916,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
         });
 
         it("should return undefined for empty Manifold mesh", async () => {
@@ -1918,6 +1944,7 @@ describe("DrawHelper unit tests", () => {
             inputs.drawFaces = true;
 
             const result = await drawHelper.drawShape(inputs);
+            expect(result.children.length).toBe(0);
             expect(result).toBeDefined();
         });
 
@@ -1936,6 +1963,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
+            expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
     });
@@ -1983,6 +2011,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
+            expect(result.children.length).toBe(1);
             // First color should be used
         });
 
@@ -2173,7 +2202,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(inputs);
             // Should clear old children and add new ones
-            expect(result.children.length).toBeGreaterThan(0);
+            expect(result.children.length).toBe(1);
         });
     });
 
@@ -2185,7 +2214,7 @@ describe("DrawHelper unit tests", () => {
                 indices: [0, 1, 2],
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
-            
+
             const inputs1 = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2193,10 +2222,10 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false
             );
-            
+
             const result1 = await drawHelper.drawSolidOrPolygonMesh(inputs1);
             const material1 = getMaterialFromMesh(result1.children[0] as THREEJS.Mesh);
-            
+
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2204,10 +2233,10 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false
             );
-            
+
             const result2 = await drawHelper.drawSolidOrPolygonMesh(inputs2);
             const material2 = getMaterialFromMesh(result2.children[0] as THREEJS.Mesh);
-            
+
             // Should reuse the same material instance
             expect(material1).toBe(material2);
         });
@@ -2219,7 +2248,7 @@ describe("DrawHelper unit tests", () => {
                 indices: [0, 1, 2],
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
-            
+
             const inputs1 = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2227,10 +2256,10 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false
             );
-            
+
             const result1 = await drawHelper.drawSolidOrPolygonMesh(inputs1);
             const material1 = getMaterialFromMesh(result1.children[0] as THREEJS.Mesh);
-            
+
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2238,10 +2267,10 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false
             );
-            
+
             const result2 = await drawHelper.drawSolidOrPolygonMesh(inputs2);
             const material2 = getMaterialFromMesh(result2.children[0] as THREEJS.Mesh);
-            
+
             // Should create different material instances
             expect(material1).not.toBe(material2);
             if (material1 && !Array.isArray(material1) && material2 && !Array.isArray(material2)) {
@@ -2254,10 +2283,10 @@ describe("DrawHelper unit tests", () => {
         it("should evict oldest material when cache is full (FIFO)", async () => {
             const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
             const materialCache = (drawHelper as any).materialCache;
-            
+
             // Clear cache to start fresh
             materialCache.clear();
-            
+
             // Fill cache to MAX_MATERIALS (1000)
             // Note: Each mesh creates 2 materials (front + back face) due to drawTwoSided=true by default
             // Back face materials have "-back" suffix in key, so they don't collide
@@ -2269,10 +2298,10 @@ describe("DrawHelper unit tests", () => {
                     indices: [0, 1, 2],
                     transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
                 });
-                
+
                 // Generate truly unique colors: 0-999 gives us 1000 different hex colors
                 const color = `#${(i + 0x100000).toString(16).substring(1)}`;
-                
+
                 const inputs = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                     createMockJSCADMesh(),
                     1.0, // Use same opacity to ensure color is the differentiator
@@ -2284,12 +2313,12 @@ describe("DrawHelper unit tests", () => {
                 );
                 await drawHelper.drawSolidOrPolygonMesh(inputs);
             }
-            
+
             expect(materialCache.size).toBe(1000);
-            
+
             // Get the first key before eviction
             const firstKeyBeforeEviction = materialCache.keys().next().value;
-            
+
             // Create one more material to trigger eviction
             (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
@@ -2297,7 +2326,7 @@ describe("DrawHelper unit tests", () => {
                 indices: [0, 1, 2],
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
-            
+
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2306,35 +2335,35 @@ describe("DrawHelper unit tests", () => {
                 false
             );
             await drawHelper.drawSolidOrPolygonMesh(inputs);
-            
+
             // Verify eviction occurred
             expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining("Material cache full, evicted:"));
             expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining(firstKeyBeforeEviction));
-            
+
             // Verify the first key was removed from cache
             expect(materialCache.has(firstKeyBeforeEviction)).toBe(false);
-            
+
             // Verify cache size didn't exceed limit
             expect(materialCache.size).toBe(1000);
-            
+
             consoleWarnSpy.mockRestore();
         });
 
         it("should call dispose on evicted material", async () => {
             const materialCache = (drawHelper as any).materialCache;
             const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
-            
+
             // Clear cache to start fresh
             materialCache.clear();
-            
+
             // Track dispose calls
             const disposeCalls: string[] = [];
             const originalMaterialPrototype = THREEJS.MeshPhysicalMaterial.prototype.dispose;
-            THREEJS.MeshPhysicalMaterial.prototype.dispose = function() {
+            THREEJS.MeshPhysicalMaterial.prototype.dispose = function () {
                 disposeCalls.push((this as any).name || "unnamed");
                 originalMaterialPrototype.call(this);
             };
-            
+
             // Fill cache to capacity (1000 materials without two-sided rendering)
             for (let i = 0; i < 1000; i++) {
                 (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
@@ -2343,7 +2372,7 @@ describe("DrawHelper unit tests", () => {
                     indices: [0, 1, 2],
                     transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
                 });
-                
+
                 const color = `#${(i + 0x100000).toString(16).substring(1)}`;
                 const inputs = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                     createMockJSCADMesh(),
@@ -2356,9 +2385,9 @@ describe("DrawHelper unit tests", () => {
                 );
                 await drawHelper.drawSolidOrPolygonMesh(inputs);
             }
-            
+
             const disposeCallsBefore = disposeCalls.length;
-            
+
             // Create one more to trigger eviction
             (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
@@ -2366,7 +2395,7 @@ describe("DrawHelper unit tests", () => {
                 indices: [0, 1, 2],
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
-            
+
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2375,10 +2404,10 @@ describe("DrawHelper unit tests", () => {
                 false
             );
             await drawHelper.drawSolidOrPolygonMesh(inputs);
-            
+
             // Verify dispose was called on the evicted material
             expect(disposeCalls.length).toBeGreaterThan(disposeCallsBefore);
-            
+
             // Restore
             THREEJS.MeshPhysicalMaterial.prototype.dispose = originalMaterialPrototype;
             consoleWarnSpy.mockRestore();
@@ -2387,25 +2416,25 @@ describe("DrawHelper unit tests", () => {
         it("should handle materials without dispose method gracefully", () => {
             const materialCache = (drawHelper as any).materialCache;
             const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
-            
+
             // Clear and manually add a mock material without dispose method
             materialCache.clear();
             const mockMaterialWithoutDispose = {
                 color: new THREEJS.Color("#ff0000"),
                 // No dispose method
             } as any;
-            
+
             materialCache.set("test-no-dispose-000000-1-0", mockMaterialWithoutDispose);
-            
+
             // Fill cache to capacity with real materials (999 more to reach 1000 total)
             for (let i = 1; i < 1000; i++) {
                 const mat = new THREEJS.MeshPhysicalMaterial();
                 mat.color = new THREEJS.Color(`#${i.toString(16).padStart(6, "0")}`);
                 materialCache.set(`test-${i}-000000-1-0`, mat);
             }
-            
+
             expect(materialCache.size).toBe(1000);
-            
+
             // Manually trigger the eviction code path
             const getOrCreateMaterial = (drawHelper as any).getOrCreateMaterial.bind(drawHelper);
             expect(() => {
@@ -2415,7 +2444,7 @@ describe("DrawHelper unit tests", () => {
                     return mat;
                 });
             }).not.toThrow();
-            
+
             consoleWarnSpy.mockRestore();
         });
 
@@ -2426,7 +2455,7 @@ describe("DrawHelper unit tests", () => {
                 indices: [0, 1, 2],
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
-            
+
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2434,17 +2463,17 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false
             );
-            
+
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
             const material = getMaterialFromMesh(result.children[0] as THREEJS.Mesh) as THREEJS.MeshPhysicalMaterial;
-            
+
             // Verify material is initially usable
             expect(material.type).toBe("MeshPhysicalMaterial");
             expect(material.dispose).toBeDefined();
-            
+
             // Manually dispose the material
             expect(() => material.dispose()).not.toThrow();
-            
+
             // After dispose, the material properties remain accessible
             // but the GL resources are freed (not testable in Jest without WebGL context)
             expect(material.type).toBe("MeshPhysicalMaterial");
@@ -2453,10 +2482,10 @@ describe("DrawHelper unit tests", () => {
         it("should create new material after previous one with same key was evicted", async () => {
             const materialCache = (drawHelper as any).materialCache;
             const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
-            
+
             // Clear cache to start fresh
             materialCache.clear();
-            
+
             const color = "#abc123";
             (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
@@ -2464,7 +2493,7 @@ describe("DrawHelper unit tests", () => {
                 indices: [0, 1, 2],
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
-            
+
             const inputs1 = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2472,10 +2501,10 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false
             );
-            
+
             const result1 = await drawHelper.drawSolidOrPolygonMesh(inputs1);
             const material1 = getMaterialFromMesh(result1.children[0] as THREEJS.Mesh);
-            
+
             // Fill cache to force eviction of material1 (1000 materials)
             for (let i = 0; i < 1000; i++) {
                 (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
@@ -2484,7 +2513,7 @@ describe("DrawHelper unit tests", () => {
                     indices: [0, 1, 2],
                     transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
                 });
-                
+
                 const color = `#${(i + 0x100000).toString(16).substring(1)}`;
                 const inputs = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                     createMockJSCADMesh(),
@@ -2497,7 +2526,7 @@ describe("DrawHelper unit tests", () => {
                 );
                 await drawHelper.drawSolidOrPolygonMesh(inputs);
             }
-            
+
             // Create new material with same color
             (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
@@ -2505,7 +2534,7 @@ describe("DrawHelper unit tests", () => {
                 indices: [0, 1, 2],
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
-            
+
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>(
                 createMockJSCADMesh(),
                 0.5,
@@ -2513,20 +2542,20 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false
             );
-            
+
             const result2 = await drawHelper.drawSolidOrPolygonMesh(inputs2);
             const material2 = getMaterialFromMesh(result2.children[0] as THREEJS.Mesh);
-            
+
             // Should be a different instance since first was evicted
             expect(material1).not.toBe(material2);
-            
+
             // But should have same color
             if (material1 && !Array.isArray(material1) && material2 && !Array.isArray(material2)) {
                 const mat1 = material1 as THREEJS.MeshPhysicalMaterial;
                 const mat2 = material2 as THREEJS.MeshPhysicalMaterial;
                 expect(mat1.color.getHex()).toBe(mat2.color.getHex());
             }
-            
+
             consoleWarnSpy.mockRestore();
         });
     });
