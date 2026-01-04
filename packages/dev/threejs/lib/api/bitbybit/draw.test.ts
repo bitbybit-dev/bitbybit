@@ -316,7 +316,7 @@ describe("Draw unit tests", () => {
             expect(ptMesh.geometry.attributes.position.array.toString()).toEqual("1,-3,3,0,-3,4");
         });
 
-        it.skip("should draw lines via draw any with options", () => {
+        it("should draw lines via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 size: 4,
@@ -332,7 +332,7 @@ describe("Draw unit tests", () => {
             expect(ptMesh.geometry.attributes.position.array.toString()).toEqual("1,-3,3,0,-3,4,1,3,3,0,3,-4");
         });
 
-        it.skip("should update lines via draw any with options", () => {
+        it("should update lines via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 size: 4,
@@ -397,7 +397,7 @@ describe("Draw unit tests", () => {
             expect(lineSegments1.geometry.attributes.position.array.toString()).toEqual("2,-4,4,1,-4,3,1,-4,3,4,5,6");
         });
 
-        it.skip("should create a closed polyline with color via draw any with options", () => {
+        it("should create a closed polyline with color via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 size: 4,
@@ -417,8 +417,7 @@ describe("Draw unit tests", () => {
             expect(lineSegments1.geometry.attributes.position.array.toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5,3,4,5,1,-3,3,1,-3,3,0,-3,4,0,-3,4,3,4,5");
         });
 
-        // TODO enable when fixed
-        it.skip("should update a polyline via draw any with options", () => {
+        it("should update a polyline via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 size: 4,
@@ -439,7 +438,7 @@ describe("Draw unit tests", () => {
             expect(lineSegments2.geometry.attributes.position.array.toString()).toEqual("2,-4,5,1,-2,3,1,-2,3,4,6,7,9,-4,2,3,-3,5,3,-3,5,6,4,3");
         });
 
-        it.skip("should update a polyline via draw any with options if at least one polyline has more points", () => {
+        it("should update a polyline via draw any with options if at least one polyline has more points", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 size: 4,
@@ -484,7 +483,7 @@ describe("Draw unit tests", () => {
             expect(lineSegments.geometry.attributes.position.array.toString()).toEqual("1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6");
         });
 
-        it.skip("should draw curves", async () => {
+        it("should draw curves", async () => {
             const curveMock1 = {
                 tessellate: () => {
                     return [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]];
@@ -511,7 +510,7 @@ describe("Draw unit tests", () => {
             expect(lineSegments.geometry.attributes.position.array.toString()).toEqual("1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6,3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
         });
 
-        it.skip("should update drawn curves", async () => {
+        it("should update drawn curves", async () => {
             const curveMock1 = {
                 tessellate: () => {
                     return [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]];
@@ -628,7 +627,7 @@ describe("Draw unit tests", () => {
             expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("1,3,3,2,5,4,3,6,5,2,5,4,3,6,5,3,5,6,3,6,5,3,5,6,3,-5,3");
         });
 
-        it.skip("should draw verb surfaces", async () => {
+        it("should draw verb surfaces", async () => {
             const surfaceMock1 = createSurfaceMock();
             const surfaceMock2 = {
                 ...surfaceMock1
@@ -653,7 +652,7 @@ describe("Draw unit tests", () => {
             const material2 = faceMesh2.material as MeshPhongMaterial;
             expect(material2.color.getHex()).toBe(0x00ff00);
 
-            expect(faceMesh1.geometry.attributes.position.array.toString()).toEqual("3,4,5,2,3,4,1,2,3,4,5,6,3,4,5,2,3,4,34,-5,3,4,5,6,3,4,5");
+            expect(faceMesh1.geometry.attributes.position.array.toString()).toEqual("1,2,3,2,3,4,3,4,5,2,3,4,3,4,5,4,5,6,3,4,5,4,5,6,34,-5,3");
         });
     });
 

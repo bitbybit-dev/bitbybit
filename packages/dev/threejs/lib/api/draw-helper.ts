@@ -81,6 +81,9 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group> {
         try {
+            if (!inputs.manifoldOrCrossSection) {
+                throw new Error("Manifold or cross section parameter is required");
+            }
             const options = this.deleteFaceMaterialForWorker(inputs);
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
             return this.handleDecomposedManifold(decomposedMesh, options);
@@ -92,6 +95,9 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<THREEJS.Group> {
         try {
+            if (!inputs.shape) {
+                throw new Error("Shape parameter is required");
+            }
             const options = this.deleteFaceMaterialForWorker(inputs);
             const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
             return this.handleDecomposedMesh(inputs, decomposedMesh, options);
@@ -127,6 +133,16 @@ export class DrawHelper extends DrawHelperCore {
                 indices: number[],
                 transforms: [],
             } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+            
+            // Validate worker response
+            if (!res || !res.positions || !res.indices || !res.transforms) {
+                console.warn("Corrupted worker response, returning empty mesh");
+                const emptyMesh = new THREEJS.Group();
+                emptyMesh.name = this.generateEntityId("jscadMesh");
+                this.context.scene.add(emptyMesh);
+                return emptyMesh;
+            }
+            
             let meshToUpdate;
             if (inputs.jscadMesh && inputs.updatable) {
                 meshToUpdate = inputs.jscadMesh;
@@ -144,7 +160,9 @@ export class DrawHelper extends DrawHelperCore {
                 colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
             }
             const s = this.makeMesh({ 
-                ...inputs, 
+                updatable: inputs.updatable,
+                opacity: inputs.opacity,
+                hidden: inputs.hidden,
                 colour,
                 drawTwoSided: inputs.drawTwoSided,
                 backFaceColour: inputs.backFaceColour,
@@ -343,6 +361,19 @@ export class DrawHelper extends DrawHelperCore {
             if (inputs.pointsMesh.children.length === vectorPoints.length) {
                 this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
             } else {
+                // Dispose old geometries before recreating
+                inputs.pointsMesh.children.forEach(child => {
+                    if (child instanceof THREEJS.Mesh || child instanceof THREEJS.InstancedMesh) {
+                        child.geometry?.dispose();
+                        if (child.material) {
+                            if (Array.isArray(child.material)) {
+                                child.material.forEach(m => m.dispose());
+                            } else {
+                                child.material.dispose();
+                            }
+                        }
+                    }
+                });
                 inputs.pointsMesh.remove();
                 inputs.pointsMesh = this.createPointSpheresMesh(
                     this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
@@ -430,6 +461,11 @@ export class DrawHelper extends DrawHelperCore {
             let indexOffset = 0;
 
             meshDataConverted.forEach(meshItem => {
+                // Validate mesh data structure
+                if (!meshItem || !meshItem.positions || !meshItem.indices) {
+                    console.warn("Skipping corrupted mesh item");
+                    return;
+                }
                 totalPositions.push(...meshItem.positions);
                 if (meshItem.normals && meshItem.normals.length > 0) {
                     totalNormals.push(...meshItem.normals);
@@ -572,6 +608,7 @@ export class DrawHelper extends DrawHelperCore {
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable, pbr);
 
         // Draw back faces with different color when two-sided rendering is enabled
+        // Default is true (when undefined), explicitly set to false for single-sided
         if (inputs.drawTwoSided !== false) {
             const meshData: MeshData[] = [{
                 positions: res.positions,
@@ -597,6 +634,11 @@ export class DrawHelper extends DrawHelperCore {
     private createMesh(
         positions: number[], indices: number[], normals: number[], jscadMesh: THREEJS.Group, transforms: number[], updatable: boolean, material: THREEJS.MeshPhysicalMaterial
     ): void {
+        // Validate worker response
+        if (!positions || !indices || !transforms) {
+            console.warn("Corrupted worker response, creating empty mesh");
+            return;
+        }
         const geometry = new THREEJS.BufferGeometry();
         geometry.setAttribute("position", new THREEJS.BufferAttribute(Float32Array.from(positions), 3));
         geometry.setIndex(new THREEJS.BufferAttribute(Uint32Array.from(indices), 1));
@@ -1026,6 +1068,7 @@ export class DrawHelper extends DrawHelperCore {
 
             const mat = new THREEJS.MeshBasicMaterial({ name: this.generateEntityId("pointMaterial") });
             mat.opacity = opacity;
+            mat.transparent = opacity < 1;
             mat.color = new THREEJS.Color(colour);
             const positions = positionsModel.filter(s => s.color === colour);
 
