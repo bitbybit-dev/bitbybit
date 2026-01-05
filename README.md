@@ -34,6 +34,8 @@ https://github.com/bitbybit-dev/bitbybit
 BabylonJS game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
 [@bitbybit-dev/threejs](https://www.npmjs.com/package/@bitbybit-dev/threejs)   
 ThreeJS game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
+[@bitbybit-dev/playcanvas](https://www.npmjs.com/package/@bitbybit-dev/playcanvas)   
+PlayCanvas game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
 [@bitbybit-dev/core](https://www.npmjs.com/package/@bitbybit-dev/core)   
 Assembles various packages and provides additional features that may combine all CAD kernels   
 [@bitbybit-dev/jscad](https://www.npmjs.com/package/@bitbybit-dev/jscad)   
@@ -132,6 +134,8 @@ You can also run tests for individual packages:
 - `npm run test-jscad` - Test JSCAD package
 - `npm run test-manifold` - Test Manifold package
 - `npm run test-threejs` - Test ThreeJS package
+- `npm run test-playcanvas` - Test PlayCanvas package
+- `npm run test-babylonjs` - Test BabylonJS package
 
 ### Troubleshooting
 If you encounter issues during setup:
@@ -140,4 +144,4 @@ If you encounter issues during setup:
 3. Delete node_modules and package-lock.json, then run `npm install`
 
 ## Major Dependencies
-BabylonJS, ThreeJS, OpenCascade, Manifold, JSCAD, Verbnurbs
+BabylonJS, ThreeJS, PlayCanvas, OpenCascade, Manifold, JSCAD, Verbnurbs

@@ -5,7 +5,7 @@
  */
 
 import { Context } from "../context";
-import { MockScene, MockPBRMetallicRoughnessMaterial } from "./babylonjs.mock";
+import { MockScene } from "./babylonjs.mock";
 import * as BABYLON from "@babylonjs/core";
 import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
