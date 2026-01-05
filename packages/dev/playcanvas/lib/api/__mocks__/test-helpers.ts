@@ -21,7 +21,9 @@ export function createMockContext(): Context {
         scene: mockScene,
         app: {
             graphicsDevice: {
-                vram: { vb: 0, ib: 0, tex: 0, total: 0 }
+                vram: { vb: 0, ib: 0, tex: 0, total: 0 },
+                createVertexBufferImpl: jest.fn(() => ({})),
+                createIndexBufferImpl: jest.fn(() => ({})),
             },
             systems: {}
         } as unknown as pc.AppBase

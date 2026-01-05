@@ -125,18 +125,28 @@ export namespace Draw {
      * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
      */
     export class DrawBasicGeometryOptions {
-        constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean) {
+        constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean, colorMapStrategy?: Base.colorMapStrategyEnum) {
             if (colours !== undefined) { this.colours = colours; }
             if (size !== undefined) { this.size = size; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (updatable !== undefined) { this.updatable = updatable; }
             if (hidden !== undefined) { this.hidden = hidden; }
+            if (colorMapStrategy !== undefined) { this.colorMapStrategy = colorMapStrategy; }
         }
         /**
          * Basic geometry colours to use for lines, points, polylines, surfaces, jscad meshes.
          * @default #ff0000
          */
         colours: string | string[] = "#ff0000";
+        /**
+         * Strategy for mapping colors to entities when there are more entities than colors.
+         * - firstColorForAll: Uses the first color for all entities (legacy behavior)
+         * - lastColorRemainder: Maps colors 1:1, then uses last color for remaining entities
+         * - repeatColors: Cycles through colors in a repeating pattern
+         * - reversedColors: After exhausting colors, reverses direction (ping-pong pattern)
+         * @default lastColorRemainder
+         */
+        colorMapStrategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder;
         /**
          * Size affect how big the drawn points are and how wide lines are.
          * @default 0.1

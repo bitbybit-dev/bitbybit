@@ -10,8 +10,11 @@ import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./con
 
 export class DrawHelper extends DrawHelperCore {
 
-    // Map-based material cache for better performance
+    // Map-based material cache for better performance (PBR materials for lit surfaces)
     private readonly materialCache = new Map<string, BABYLON.PBRMetallicRoughnessMaterial>();
+
+    // Separate cache for unlit materials (StandardMaterial for points/lines)
+    private readonly unlitMaterialCache = new Map<string, BABYLON.StandardMaterial>();
 
     // Entity ID generation
     private entityIdCounter = 0;
@@ -32,7 +35,7 @@ export class DrawHelper extends DrawHelperCore {
      * @returns True if disposed, false otherwise
      */
     public isDisposed(): boolean {
-        return this.materialCache.size === 0;
+        return this.materialCache.size === 0 && this.unlitMaterialCache.size === 0;
     }
 
     /**
@@ -40,7 +43,7 @@ export class DrawHelper extends DrawHelperCore {
      * Should be called when the DrawHelper instance is no longer needed
      */
     public dispose(): void {
-        // Dispose cached materials
+        // Dispose cached PBR materials
         this.materialCache.forEach((material, key) => {
             try {
                 if (material.dispose) {
@@ -51,6 +54,18 @@ export class DrawHelper extends DrawHelperCore {
             }
         });
         this.materialCache.clear();
+
+        // Dispose cached unlit materials (StandardMaterial for points)
+        this.unlitMaterialCache.forEach((material, key) => {
+            try {
+                if (material.dispose) {
+                    material.dispose();
+                }
+            } catch (error) {
+                console.warn(`Error disposing unlit material ${key}:`, error);
+            }
+        });
+        this.unlitMaterialCache.clear();
 
         // Reset counters
         this.entityIdCounter = 0;
@@ -76,15 +91,17 @@ export class DrawHelper extends DrawHelperCore {
      * @param alpha - Alpha value (0-1)
      * @param zOffset - Z-offset value
      * @param createFn - Function to create new material if not cached
+     * @param unlit - Whether the material is unlit (no lighting, for points/lines)
      * @returns Cached or newly created material
      */
     private getOrCreateMaterial(
         hex: string,
         alpha: number,
         zOffset: number,
-        createFn: () => BABYLON.PBRMetallicRoughnessMaterial
+        createFn: () => BABYLON.PBRMetallicRoughnessMaterial,
+        unlit = false
     ): BABYLON.PBRMetallicRoughnessMaterial {
-        const key = this.getMaterialKey(hex, alpha, zOffset);
+        const key = this.getMaterialKey(hex, alpha, zOffset, unlit);
 
         // Check cache first - material is automatically removed from cache via onDispose callback
         const cached = this.materialCache.get(key);
@@ -111,6 +128,49 @@ export class DrawHelper extends DrawHelperCore {
         };
         
         this.materialCache.set(key, material);
+        return material;
+    }
+
+    /**
+     * Get or create a cached unlit material (StandardMaterial) for points and lines.
+     * Uses a separate cache from PBR materials since these have different types.
+     * @param hex - Hex color string
+     * @param alpha - Alpha value (0-1)
+     * @param createFn - Function to create new material if not cached
+     * @returns Cached or newly created StandardMaterial
+     */
+    private getOrCreateUnlitMaterial(
+        hex: string,
+        alpha: number,
+        createFn: () => BABYLON.StandardMaterial
+    ): BABYLON.StandardMaterial {
+        const key = this.getMaterialKey(hex, alpha, 0, true); // unlit=true, zOffset=0
+
+        // Check cache first
+        const cached = this.unlitMaterialCache.get(key);
+        if (cached) {
+            return cached;
+        }
+
+        // Evict oldest if at capacity (simple FIFO)
+        if (this.unlitMaterialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
+            const firstKey = this.unlitMaterialCache.keys().next().value;
+            const material = this.unlitMaterialCache.get(firstKey);
+            if (material && material.dispose) {
+                material.dispose();
+            }
+            // Note: dispose() will trigger onDispose callback which removes from cache
+        }
+
+        // Create new material
+        const material = createFn();
+        
+        // Register onDispose callback to automatically remove from cache when material is disposed externally
+        material.onDispose = () => {
+            this.unlitMaterialCache.delete(key);
+        };
+        
+        this.unlitMaterialCache.set(key, material);
         return material;
     }
 
@@ -480,41 +540,28 @@ export class DrawHelper extends DrawHelperCore {
         return surfacesMesh;
     }
 
-    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>): BABYLON.Mesh {
+    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): BABYLON.Mesh {
         if (inputs.surfacesMesh && inputs.updatable) {
             inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
         }
 
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        const resolvedColours = this.resolveAllColors(inputs.colours, inputs.surfaces.length, strategy);
+
         inputs.surfacesMesh = new BABYLON.Mesh(this.generateEntityId("colouredSurfaces"), this.context.scene);
-        if (Array.isArray(inputs.colours)) {
-            inputs.surfaces.forEach((surface, index) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours[index] ? inputs.colours[index] : inputs.colours[0],
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                    drawTwoSided: inputs.drawTwoSided,
-                    backFaceColour: inputs.backFaceColour,
-                    backFaceOpacity: inputs.backFaceOpacity,
-                });
-                inputs.surfacesMesh.addChild(srf);
+        inputs.surfaces.forEach((surface, index) => {
+            const srf = this.drawSurface({
+                surface,
+                colours: resolvedColours[index],
+                updatable: inputs.updatable,
+                opacity: inputs.opacity,
+                hidden: inputs.hidden,
+                drawTwoSided: inputs.drawTwoSided,
+                backFaceColour: inputs.backFaceColour,
+                backFaceOpacity: inputs.backFaceOpacity,
             });
-        } else {
-            inputs.surfaces.forEach((surface) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours,
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                    drawTwoSided: inputs.drawTwoSided,
-                    backFaceColour: inputs.backFaceColour,
-                    backFaceOpacity: inputs.backFaceOpacity,
-                });
-                inputs.surfacesMesh.addChild(srf);
-            });
-        }
+            inputs.surfacesMesh.addChild(srf);
+        });
 
         return inputs.surfacesMesh;
     }
@@ -538,8 +585,10 @@ export class DrawHelper extends DrawHelperCore {
         return mesh;
     }
 
-    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>) {
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }) {
         let colours = inputs.colours;
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        
         const points = inputs.polylines.map((s, index) => {
             const pts = s.points;
             //handle jscad
@@ -568,13 +617,15 @@ export class DrawHelper extends DrawHelperCore {
             inputs.opacity,
             colours,
             1e-7,
-            true
+            true,
+            strategy
         );
     }
 
     drawPolylines(
         mesh: BABYLON.GreasedLineMesh, polylinePoints: number[][][], updatable: boolean,
-        size: number, opacity: number, colours: string | string[], tolerance = 1e-7, segmentize = false
+        size: number, opacity: number, colours: string | string[], tolerance = 1e-7, segmentize = false,
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
     ): BABYLON.GreasedLineMesh | undefined {
         const linesForRender: number[][] = [];
         if (polylinePoints && polylinePoints.length > 0) {
@@ -591,7 +642,10 @@ export class DrawHelper extends DrawHelperCore {
                 }
             });
             const width = size / 100;
-            const color = Array.isArray(colours) ? BABYLON.Color3.FromHexString(colours[0]) : BABYLON.Color3.FromHexString(colours);
+            
+            // Resolve colors for each polyline using the color mapping strategy
+            const resolvedColors = this.resolveAllColors(colours, polylinePoints.length, colorMapStrategy);
+            const babylonColors = resolvedColors.map(c => BABYLON.Color3.FromHexString(c));
 
             if (mesh && updatable) {
                 // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
@@ -600,11 +654,11 @@ export class DrawHelper extends DrawHelperCore {
                     return mesh as BABYLON.GreasedLineMesh;
                 } else {
                     mesh.dispose();
-                    mesh = this.createGreasedPolylines(updatable, linesForRender, width, color, opacity);
+                    mesh = this.createGreasedPolylines(updatable, linesForRender, width, babylonColors, opacity);
                     mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
                 }
             } else {
-                mesh = this.createGreasedPolylines(updatable, linesForRender, width, color, opacity);
+                mesh = this.createGreasedPolylines(updatable, linesForRender, width, babylonColors, opacity);
                 mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
             }
 
@@ -614,7 +668,22 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    createGreasedPolylines(updatable: boolean, lines: number[][], width: number, color: BABYLON.Color3, visibility: number): BABYLON.GreasedLineMesh {
+    createGreasedPolylines(updatable: boolean, lines: number[][], width: number, colors: BABYLON.Color3[], visibility: number): BABYLON.GreasedLineMesh {
+        // Expand colors to per-point colors for each line
+        // BabylonJS GreasedLine needs one color per point (not per line)
+        const expandedColors: BABYLON.Color3[] = [];
+        lines.forEach((line, lineIndex) => {
+            const lineColor = colors[lineIndex] || colors[0];
+            // Each point in the line (line.length / 3 points since it's flat [x,y,z,x,y,z,...])
+            const numPoints = line.length / 3;
+            for (let i = 0; i < numPoints; i++) {
+                expandedColors.push(lineColor);
+            }
+        });
+        
+        // Only enable useColors when we have multiple different colors
+        const hasMultipleColors = colors.length > 1 || (colors.length === 1 && lines.length > 1);
+        
         const result = BABYLON.CreateGreasedLine(
             this.generateEntityId("lineSystem"),
             {
@@ -624,12 +693,14 @@ export class DrawHelper extends DrawHelperCore {
             {
                 width,
                 materialType: BABYLON.GreasedLineMeshMaterialType.MATERIAL_TYPE_PBR,
-                color,
+                color: colors[0],
+                colors: hasMultipleColors ? expandedColors : undefined,
+                useColors: hasMultipleColors,
+                colorMode: BABYLON.GreasedLineMeshColorMode.COLOR_MODE_SET,
                 createAndAssignMaterial: true,
             },
             this.context.scene
         );
-        (result.material as BABYLON.PBRMaterial).albedoColor = color;
         result.material.alpha = visibility;
         return result as BABYLON.GreasedLineMesh;
     }
@@ -761,20 +832,19 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.pointMesh;
     }
 
-    drawPoints(inputs: Inputs.Point.DrawPointsDto<BABYLON.Mesh>): BABYLON.Mesh {
+    drawPoints(inputs: Inputs.Point.DrawPointsDto<BABYLON.Mesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): BABYLON.Mesh {
         const vectorPoints = inputs.points;
-        let coloursHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            coloursHex = inputs.colours;
-            if (coloursHex.length === 1) {
-                coloursHex = inputs.points.map(() => coloursHex[0]);
-            }
-        } else {
-            coloursHex = inputs.points.map(() => inputs.colours as string);
-        }
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        
+        // Resolve colors for all points using the color mapping strategy
+        const coloursHex = this.resolveAllColors(inputs.colours, vectorPoints.length, strategy);
+        
         if (inputs.pointsMesh && inputs.updatable) {
-            if (inputs.pointsMesh.getChildMeshes().length === vectorPoints.length) {
+            // Check if we can update existing mesh by comparing stored point count in metadata
+            const storedPointCount = inputs.pointsMesh.metadata?.originalPointCount;
+            if (storedPointCount === vectorPoints.length && inputs.pointsMesh.metadata?.canUpdate) {
                 this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
+                return inputs.pointsMesh;
             } else {
                 inputs.pointsMesh.dispose();
                 inputs.pointsMesh = this.createPointSpheresMesh(
@@ -789,15 +859,32 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.pointsMesh;
     }
 
-    updatePointsInstances(mesh: BABYLON.Mesh, positions: any[]): void {
-        const children = mesh.getChildMeshes();
-        const po = {};
+    updatePointsInstances(mesh: BABYLON.Mesh, positions: Inputs.Base.Point3[]): void {
+        const children = mesh.getChildMeshes() as BABYLON.Mesh[];
+        
+        // Build a map of original index to new position
+        const positionMap = new Map<number, Inputs.Base.Point3>();
         positions.forEach((pos, index) => {
-            po[index] = new BABYLON.Vector3(pos[0], pos[1], pos[2]);
+            positionMap.set(index, pos);
         });
 
-        children.forEach((child: BABYLON.InstancedMesh) => {
-            child.position = po[child.metadata.index];
+        // Each child mesh uses thin instances - update the matrix buffer
+        children.forEach((child: BABYLON.Mesh) => {
+            const pointIndices = child.metadata?.pointIndices as number[];
+            const matricesData = child.metadata?.matricesData as Float32Array;
+            
+            if (pointIndices && matricesData) {
+                pointIndices.forEach((originalIndex, instanceIndex) => {
+                    const newPos = positionMap.get(originalIndex);
+                    if (newPos) {
+                        const matrix = BABYLON.Matrix.Translation(newPos[0], newPos[1], newPos[2]);
+                        matrix.copyToArray(matricesData, instanceIndex * 16);
+                    }
+                });
+                
+                // Update the thin instance buffer
+                child.thinInstanceSetBuffer("matrix", matricesData, 16, false);
+            }
         });
     }
 
@@ -813,38 +900,60 @@ export class DrawHelper extends DrawHelperCore {
         });
 
         const colorSet = Array.from(new Set(colors));
-        const materialSet = colorSet.map((colour, index) => {
-
-            const mat = new BABYLON.StandardMaterial(this.generateEntityId("pointMaterial"), this.context.scene);
-
-            mat.disableLighting = true;
-            mat.emissiveColor = BABYLON.Color3.FromHexString(colour);
-            mat.alpha = opacity;
-
-            const positions = positionsModel.filter(s => s.color === colour);
-
-            return { hex: colorSet, material: mat, positions };
+        const materialSet = colorSet.map((colour) => {
+            // Use cached unlit material for points
+            const mat = this.getOrCreateUnlitMaterial(colour, opacity, () => {
+                const material = new BABYLON.StandardMaterial(this.generateEntityId("pointMaterial"), this.context.scene);
+                material.disableLighting = true;
+                material.emissiveColor = BABYLON.Color3.FromHexString(colour);
+                material.alpha = opacity;
+                return material;
+            });
+            const filteredPositions = positionsModel.filter(s => s.color === colour);
+            return { hex: colour, material: mat, positions: filteredPositions };
         });
 
         const pointsMesh = new BABYLON.Mesh(meshName, this.context.scene);
+        
+        // Store metadata for update checking
+        pointsMesh.metadata = {
+            originalPointCount: positions.length,
+            canUpdate: updatable
+        };
+        
         materialSet.forEach(ms => {
-            const segments = ms.positions.length > 1000 ? 1 : 6;
-            let pointMesh;
-            if (ms.positions.length < 10000) {
-                pointMesh = BABYLON.MeshBuilder.CreateSphere(this.generateEntityId("pointSphere"), { diameter: size, segments, updatable }, this.context.scene);
-            } else {
-                pointMesh = BABYLON.MeshBuilder.CreateBox(this.generateEntityId("pointBox"), { size, updatable }, this.context.scene);
-            }
-            pointMesh.material = ms.material;
-            pointMesh.isVisible = false;
-
-            ms.positions.forEach((pos, index) => {
-                const instance = pointMesh.createInstance(this.generateEntityId(`pointInstance-${index}`));
-                instance.position = new BABYLON.Vector3(pos.position[0], pos.position[1], pos.position[2]);
-                instance.metadata = { index: pos.index };
-                instance.parent = pointsMesh;
-                instance.isVisible = true;
+            const pointCount = ms.positions.length;
+            if (pointCount === 0) return;
+            
+            // Use fewer segments for large point counts to improve performance
+            const segments = pointCount > 1000 ? 1 : 6;
+            
+            // Create a single sphere mesh that will be rendered many times via thin instances
+            const sphereMesh = BABYLON.MeshBuilder.CreateSphere(
+                this.generateEntityId(`pointSphere-${ms.hex}`), 
+                { diameter: size, segments, updatable: false }, 
+                this.context.scene
+            );
+            sphereMesh.material = ms.material;
+            sphereMesh.parent = pointsMesh;
+            
+            // Use thin instances for GPU instancing (much faster than createInstance)
+            // Build the instance matrix buffer
+            const matricesData = new Float32Array(pointCount * 16);
+            const pointIndices: number[] = [];
+            
+            ms.positions.forEach((pos, instanceIndex) => {
+                // Create translation matrix for this instance
+                const matrix = BABYLON.Matrix.Translation(pos.position[0], pos.position[1], pos.position[2]);
+                matrix.copyToArray(matricesData, instanceIndex * 16);
+                pointIndices.push(pos.index);
             });
+            
+            // Apply thin instances - this is the key for performance
+            sphereMesh.thinInstanceSetBuffer("matrix", matricesData, 16, false);
+            
+            // Store metadata for potential updates
+            sphereMesh.metadata = { pointIndices, matricesData };
         });
 
         return pointsMesh;

@@ -107,6 +107,15 @@ export class MockQuat {
     setFromEulerAngles(x: number, y: number, z: number) {
         return this;
     }
+    setFromMat4(mat: any) {
+        // Simplified matrix to quaternion conversion for testing
+        // This is a mock implementation that just sets identity quaternion
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.w = 1;
+        return this;
+    }
     transformVector(vec: MockVec3, out?: MockVec3) {
         const result = out || vec;
         return result;
@@ -267,7 +276,9 @@ export class MockApp {
     on = jest.fn();
     off = jest.fn();
     graphicsDevice = {
-        vram: { vb: 0, ib: 0, tex: 0, total: 0 }
+        vram: { vb: 0, ib: 0, tex: 0, total: 0 },
+        createVertexBufferImpl: jest.fn(() => ({})),
+        createIndexBufferImpl: jest.fn(() => ({})),
     };
     systems = {};
 
@@ -300,6 +311,13 @@ export function createPlayCanvasMock() {
     const actual = jest.requireActual("playcanvas");
     const mockNode = createMockNode();
     
+    // Mock graphics device for instancing
+    const mockGraphicsDevice = {
+        vram: { vb: 0, ib: 0, tex: 0, total: 0 },
+        createVertexBufferImpl: jest.fn(() => ({})),
+        createIndexBufferImpl: jest.fn(() => ({})),
+    };
+    
     return {
         ...actual,
         Vec2: MockVec2,
@@ -311,17 +329,54 @@ export function createPlayCanvasMock() {
         GraphNode: MockGraphNode,
         Mesh: class MockMesh extends actual.Mesh {
             constructor(graphicsDevice?: any) {
-                const mockDevice = graphicsDevice || { vram: { vb: 0, ib: 0, tex: 0, total: 0 } };
+                const mockDevice = graphicsDevice || mockGraphicsDevice;
                 super(mockDevice);
             }
             update() {
                 return this;
             }
+            // Mock fromGeometry static method for GPU instancing
+            static fromGeometry(graphicsDevice: any, geometry: any) {
+                return new MockMesh(graphicsDevice);
+            }
+        },
+        // Mock SphereGeometry for point rendering
+        SphereGeometry: class MockSphereGeometry {
+            constructor(options?: any) {
+                // Store options for potential validation
+            }
+        },
+        // Mock VertexFormat for instancing
+        VertexFormat: class MockVertexFormat {
+            constructor() {}
+            static getDefaultInstancingFormat(graphicsDevice: any) {
+                return new MockVertexFormat();
+            }
+        },
+        // Mock VertexBuffer for instancing
+        VertexBuffer: class MockVertexBuffer {
+            private data: ArrayBuffer;
+            constructor(graphicsDevice: any, format: any, numVertices: number, options?: any) {
+                // Allocate buffer for instance data (16 floats per instance for Mat4)
+                this.data = new ArrayBuffer(numVertices * 16 * 4); // 4 bytes per float
+            }
+            lock() {
+                return this.data;
+            }
+            unlock() {}
+            setData(data: Float32Array) {
+                // Mock data storage
+            }
+            destroy() {
+                // Mock cleanup
+            }
         },
         MeshInstance: jest.fn((mesh: any, material: any, node: any = mockNode) => ({
             mesh,
             material,
-            node
+            node,
+            // Mock setInstancing method for GPU instancing
+            setInstancing: jest.fn((vertexBuffer: any) => {}),
         })),
         math: {
             lerp: (a: number, b: number, t: number) => {
@@ -331,6 +386,8 @@ export function createPlayCanvasMock() {
                 return Math.min(Math.max(value, min), max);
             },
         },
+        // Add BUFFER_STATIC constant for VertexBuffer usage
+        BUFFER_STATIC: 0,
         MOUSEBUTTON_LEFT: 0,
         MOUSEBUTTON_MIDDLE: 1,
         MOUSEBUTTON_RIGHT: 2,
@@ -338,5 +395,9 @@ export function createPlayCanvasMock() {
         EVENT_MOUSEUP: "mouseup",
         EVENT_MOUSEMOVE: "mousemove",
         EVENT_MOUSEWHEEL: "mousewheel",
+        EVENT_TOUCHSTART: "touchstart",
+        EVENT_TOUCHEND: "touchend",
+        EVENT_TOUCHMOVE: "touchmove",
+        EVENT_TOUCHCANCEL: "touchcancel",
     };
 }

@@ -345,10 +345,14 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
         [60, 10, 0],
         [60, 15, 0],
         [60, 20, 0],
+        [60, 25, 0],
+        [60, 30, 0],
+        [60, 35, 0],
     ] as Inputs.Base.Point3[];
     const pointsDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
-    pointsDrawOptions.colours = ["#ff00ff", "#ff00ff", "#ff00ff", "#ff00ff"]; // Magenta
+    pointsDrawOptions.colours = ["#ff00ff", "#ff0000", "#00ff00", "#0000ff"]; // Magenta
     pointsDrawOptions.size = 1.5;
+    pointsDrawOptions.colorMapStrategy = Inputs.Base.colorMapStrategyEnum.repeatColors;
     await bitbybit.draw.drawAnyAsync({
         entity: points,
         options: pointsDrawOptions,
@@ -511,6 +515,126 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
         options: surfaceDrawOptions,
     });
     console.log("Verb surface drawn.");
+
+    // Example 8: Draw a 30x30x30 grid of points with alternating blue and white colors
+    // This tests GPU instancing performance with 27,000 points
+    console.log("Creating 30x30x30 point grid (27,000 points)...");
+    const gridSize = 30;
+    const spacing = 1.5;
+    const gridOffset = [-150, 0, 0]; // Move grid away from other geometry
+    
+    const gridPoints: Inputs.Base.Point3[] = [];
+    const gridColors: string[] = [];
+    
+    for (let x = 0; x < gridSize; x++) {
+        for (let y = 0; y < gridSize; y++) {
+            for (let z = 0; z < gridSize; z++) {
+                gridPoints.push([
+                    gridOffset[0] + x * spacing,
+                    gridOffset[1] + y * spacing,
+                    gridOffset[2] + z * spacing
+                ]);
+                // Alternating blue and white based on checkerboard pattern
+                const isBlue = (x + y + z) % 2 === 0;
+                gridColors.push(isBlue ? "#0066ff" : "#ffffff");
+            }
+        }
+    }
+    
+    const gridDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    gridDrawOptions.colours = gridColors;
+    gridDrawOptions.size = 0.4;
+    gridDrawOptions.colorMapStrategy = Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+    
+    console.time("Draw 27,000 points");
+    await bitbybit.draw.drawAnyAsync({
+        entity: gridPoints,
+        options: gridDrawOptions,
+    });
+    console.timeEnd("Draw 27,000 points");
+    console.log("30x30x30 point grid drawn with GPU instancing.");
+
+    // Example 9: Draw a 30x30x30 grid of polylines with alternating colors
+    // Creates lines along X, Y, and Z axes forming a 3D grid
+    console.log("Creating 30x30x30 polyline grid...");
+    const polylineGridSize = 30;
+    const polylineSpacing = 1.5;
+    const polylineGridOffset = [-150, -60, 0]; // Position below the point grid
+    
+    const gridPolylines: Inputs.Base.Polyline3[] = [];
+    const polylineColors: string[] = [];
+    
+    // Create lines along X axis (for each Y,Z position)
+    for (let y = 0; y < polylineGridSize; y++) {
+        for (let z = 0; z < polylineGridSize; z++) {
+            const startX = polylineGridOffset[0];
+            const endX = polylineGridOffset[0] + (polylineGridSize - 1) * polylineSpacing;
+            const posY = polylineGridOffset[1] + y * polylineSpacing;
+            const posZ = polylineGridOffset[2] + z * polylineSpacing;
+            
+            gridPolylines.push({
+                points: [
+                    [startX, posY, posZ],
+                    [endX, posY, posZ]
+                ]
+            });
+            // Alternating colors based on position
+            const isOrange = (y + z) % 2 === 0;
+            polylineColors.push(isOrange ? "#ff6600" : "#00ffcc");
+        }
+    }
+    
+    // Create lines along Y axis (for each X,Z position)
+    for (let x = 0; x < polylineGridSize; x++) {
+        for (let z = 0; z < polylineGridSize; z++) {
+            const posX = polylineGridOffset[0] + x * polylineSpacing;
+            const startY = polylineGridOffset[1];
+            const endY = polylineGridOffset[1] + (polylineGridSize - 1) * polylineSpacing;
+            const posZ = polylineGridOffset[2] + z * polylineSpacing;
+            
+            gridPolylines.push({
+                points: [
+                    [posX, startY, posZ],
+                    [posX, endY, posZ]
+                ]
+            });
+            const isPurple = (x + z) % 2 === 0;
+            polylineColors.push(isPurple ? "#9933ff" : "#ffff00");
+        }
+    }
+    
+    // Create lines along Z axis (for each X,Y position)
+    for (let x = 0; x < polylineGridSize; x++) {
+        for (let y = 0; y < polylineGridSize; y++) {
+            const posX = polylineGridOffset[0] + x * polylineSpacing;
+            const posY = polylineGridOffset[1] + y * polylineSpacing;
+            const startZ = polylineGridOffset[2];
+            const endZ = polylineGridOffset[2] + (polylineGridSize - 1) * polylineSpacing;
+            
+            gridPolylines.push({
+                points: [
+                    [posX, posY, startZ],
+                    [posX, posY, endZ]
+                ]
+            });
+            const isPink = (x + y) % 2 === 0;
+            polylineColors.push(isPink ? "#ff0099" : "#00ff66");
+        }
+    }
+    
+    const polylineGridDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    polylineGridDrawOptions.colours = polylineColors;
+    polylineGridDrawOptions.size = 1;
+    polylineGridDrawOptions.colorMapStrategy = Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+    
+    console.log(`Drawing ${gridPolylines.length} polylines...`);
+    console.time("Draw polyline grid");
+    await bitbybit.draw.drawAnyAsync({
+        entity: gridPolylines,
+        options: polylineGridDrawOptions,
+    });
+    console.timeEnd("Draw polyline grid");
+    console.log("30x30x30 polyline grid drawn with per-polyline colors.");
 
     console.log("All drawing examples completed.");
 }

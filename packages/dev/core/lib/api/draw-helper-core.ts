@@ -74,6 +74,90 @@ export class DrawHelperCore {
     // ============== Color Utility Methods ==============
 
     /**
+     * Resolve a color for a specific entity index based on the color mapping strategy
+     * @param colors - Single color string or array of colors
+     * @param entityIndex - Index of the entity that needs a color
+     * @param totalEntities - Total number of entities being drawn
+     * @param strategy - Color mapping strategy to use
+     * @returns Resolved color for the entity
+     */
+    protected resolveColorForEntity(
+        colors: string | string[],
+        entityIndex: number,
+        totalEntities: number,
+        strategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder
+    ): string {
+        // If single color or empty array, return it directly
+        if (!Array.isArray(colors)) {
+            return colors;
+        }
+        
+        if (colors.length === 0) {
+            return DEFAULT_COLORS.FACE;
+        }
+        
+        if (colors.length === 1) {
+            return colors[0];
+        }
+        
+        // If we have enough colors for all entities, use direct mapping
+        if (colors.length >= totalEntities) {
+            return colors[entityIndex];
+        }
+        
+        // Apply strategy when there are more entities than colors
+        switch (strategy) {
+            case Base.colorMapStrategyEnum.firstColorForAll:
+                return colors[0];
+                
+            case Base.colorMapStrategyEnum.lastColorRemainder:
+                // Use corresponding color if available, otherwise use last color
+                return entityIndex < colors.length ? colors[entityIndex] : colors[colors.length - 1];
+                
+            case Base.colorMapStrategyEnum.repeatColors:
+                // Cycle through colors in repeating pattern
+                return colors[entityIndex % colors.length];
+                
+            case Base.colorMapStrategyEnum.reversedColors: {
+                // Ping-pong pattern: 0,1,2,1,0,1,2,1,0...
+                const cycleLength = (colors.length - 1) * 2;
+                if (cycleLength <= 0) {
+                    return colors[0];
+                }
+                const position = entityIndex % cycleLength;
+                if (position < colors.length) {
+                    return colors[position];
+                } else {
+                    return colors[cycleLength - position];
+                }
+            }
+                
+            default:
+                // Default to lastColorRemainder for safety
+                return entityIndex < colors.length ? colors[entityIndex] : colors[colors.length - 1];
+        }
+    }
+
+    /**
+     * Resolve all colors for a set of entities based on the color mapping strategy
+     * @param colors - Single color string or array of colors
+     * @param totalEntities - Total number of entities being drawn
+     * @param strategy - Color mapping strategy to use
+     * @returns Array of colors, one for each entity
+     */
+    protected resolveAllColors(
+        colors: string | string[],
+        totalEntities: number,
+        strategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder
+    ): string[] {
+        const result: string[] = [];
+        for (let i = 0; i < totalEntities; i++) {
+            result.push(this.resolveColorForEntity(colors, i, totalEntities, strategy));
+        }
+        return result;
+    }
+
+    /**
      * Convert RGB values (0-255) to hex color string
      * @param r - Red component (0-255)
      * @param g - Green component (0-255)
@@ -158,11 +242,13 @@ export class DrawHelperCore {
      * @param hex - Hex color string
      * @param alpha - Alpha value (0-1)
      * @param zOffset - Z-offset value for depth bias
+     * @param unlit - Whether the material is unlit (no lighting)
      * @returns Unique cache key
      */
-    protected getMaterialKey(hex: string, alpha: number, zOffset: number): string {
+    protected getMaterialKey(hex: string, alpha: number, zOffset: number, unlit = false): string {
         const normalizedAlpha = alpha.toFixed(CACHE_CONFIG.ALPHA_PRECISION);
-        return `${hex}-${normalizedAlpha}-${zOffset}`;
+        const unlitSuffix = unlit ? "-unlit" : "";
+        return `${hex}-${normalizedAlpha}-${zOffset}${unlitSuffix}`;
     }
 
     // ============== Polyline Utility Methods ==============

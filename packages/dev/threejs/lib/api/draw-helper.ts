@@ -12,8 +12,11 @@ import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
 
 export class DrawHelper extends DrawHelperCore {
 
-    // Map-based material cache for better performance
+    // Map-based material cache for better performance (MeshPhysicalMaterial for lit surfaces)
     private readonly materialCache = new Map<string, THREEJS.MeshPhysicalMaterial>();
+
+    // Separate cache for unlit materials (MeshBasicMaterial for points/lines)
+    private readonly unlitMaterialCache = new Map<string, THREEJS.MeshBasicMaterial>();
 
     // Entity ID generation
     private entityIdCounter = 0;
@@ -35,7 +38,7 @@ export class DrawHelper extends DrawHelperCore {
      * @returns True if disposed, false otherwise
      */
     public isDisposed(): boolean {
-        return this.materialCache.size === 0;
+        return this.materialCache.size === 0 && this.unlitMaterialCache.size === 0;
     }
 
     /**
@@ -43,7 +46,7 @@ export class DrawHelper extends DrawHelperCore {
      * Should be called when the DrawHelper instance is no longer needed
      */
     public dispose(): void {
-        // Dispose cached materials
+        // Dispose cached PBR materials
         this.materialCache.forEach((material, key) => {
             try {
                 if (material.dispose) {
@@ -54,6 +57,18 @@ export class DrawHelper extends DrawHelperCore {
             }
         });
         this.materialCache.clear();
+
+        // Dispose cached unlit materials (MeshBasicMaterial for points)
+        this.unlitMaterialCache.forEach((material, key) => {
+            try {
+                if (material.dispose) {
+                    material.dispose();
+                }
+            } catch (error) {
+                console.warn(`Error disposing unlit material ${key}:`, error);
+            }
+        });
+        this.unlitMaterialCache.clear();
 
         // Reset counters
         this.entityIdCounter = 0;
@@ -230,8 +245,10 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group>) {
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }) {
         let colours = inputs.colours;
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        
         const points = inputs.polylines.map((s, index) => {
             const pts = s.points;
             //handle jscad
@@ -262,7 +279,8 @@ export class DrawHelper extends DrawHelperCore {
             inputs.updatable,
             inputs.size,
             inputs.opacity,
-            colours
+            colours,
+            strategy
         );
         if (inputs.polylinesMesh && inputs.updatable) {
             if (inputs.polylinesMesh.children[0].name !== polylines.name) {
@@ -346,19 +364,23 @@ export class DrawHelper extends DrawHelperCore {
         );
     }
 
-    drawPoints(inputs: Inputs.Point.DrawPointsDto<THREEJS.Group>): THREEJS.Group {
+    drawPoints(inputs: Inputs.Point.DrawPointsDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): THREEJS.Group {
         const vectorPoints = inputs.points;
-        let coloursHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            coloursHex = inputs.colours;
-            if (coloursHex.length !== inputs.points.length) {
-                coloursHex = inputs.points.map(() => coloursHex[0]);
-            }
-        } else {
-            coloursHex = inputs.points.map(() => inputs.colours as string);
-        }
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        
+        // Resolve colors for all points using the color mapping strategy
+        const coloursHex = this.resolveAllColors(inputs.colours, vectorPoints.length, strategy);
+        
         if (inputs.pointsMesh && inputs.updatable) {
-            if (inputs.pointsMesh.children.length === vectorPoints.length) {
+            // Calculate the total number of points currently in the mesh
+            const currentPointCount = inputs.pointsMesh.children.reduce((sum, child) => {
+                if (child instanceof THREEJS.InstancedMesh) {
+                    return sum + child.count;
+                }
+                return sum + 1; // Regular mesh counts as 1 point
+            }, 0);
+            
+            if (currentPointCount === vectorPoints.length) {
                 this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
             } else {
                 // Dispose old geometries before recreating
@@ -388,16 +410,30 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     updatePointsInstances(group: THREEJS.Group, positions: Inputs.Base.Point3[]): void {
+        // The group contains InstancedMesh children, each handling multiple points of the same color
+        // We need to update the instance matrices based on the new positions
         const children = group.children as THREEJS.InstancedMesh[];
-        const po = {};
+        
+        // Build a map of original index to new position
+        const positionMap = new Map<number, THREEJS.Vector3>();
         positions.forEach((pos, index) => {
-            po[index] = new THREEJS.Vector3(pos[0], pos[1], pos[2]);
+            positionMap.set(index, new THREEJS.Vector3(pos[0], pos[1], pos[2]));
         });
 
-        children.forEach((child: THREEJS.InstancedMesh) => {
-            const index = child.userData.index;
-            const p = po[index];
-            child.position.set(p.x, p.y, p.z);
+        // Each InstancedMesh has metadata with the original indices of points it contains
+        children.forEach((instancedMesh: THREEJS.InstancedMesh) => {
+            const indices = instancedMesh.userData.pointIndices as number[];
+            if (indices) {
+                const matrix = new THREEJS.Matrix4();
+                indices.forEach((originalIndex, instanceIndex) => {
+                    const newPos = positionMap.get(originalIndex);
+                    if (newPos) {
+                        matrix.setPosition(newPos);
+                        instancedMesh.setMatrixAt(instanceIndex, matrix);
+                    }
+                });
+                instancedMesh.instanceMatrix.needsUpdate = true;
+            }
         });
     }
 
@@ -406,7 +442,7 @@ export class DrawHelper extends DrawHelperCore {
         return this.drawPolylinesWithColours({ polylines: points, polylinesMesh: inputs.curvesMesh, ...inputs });
     }
 
-    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<THREEJS.Group>): THREEJS.Group {
+    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): THREEJS.Group {
         if (inputs.surfacesMesh && inputs.updatable) {
             inputs.surfacesMesh.clear();
         } else {
@@ -415,35 +451,22 @@ export class DrawHelper extends DrawHelperCore {
             this.context.scene.add(inputs.surfacesMesh);
         }
 
-        if (Array.isArray(inputs.colours)) {
-            inputs.surfaces.forEach((surface, index) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours[index] ? inputs.colours[index] : inputs.colours[0],
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                    drawTwoSided: inputs.drawTwoSided,
-                    backFaceColour: inputs.backFaceColour,
-                    backFaceOpacity: inputs.backFaceOpacity,
-                });
-                inputs.surfacesMesh.add(srf);
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        const resolvedColours = this.resolveAllColors(inputs.colours, inputs.surfaces.length, strategy);
+
+        inputs.surfaces.forEach((surface, index) => {
+            const srf = this.drawSurface({
+                surface,
+                colours: resolvedColours[index],
+                updatable: inputs.updatable,
+                opacity: inputs.opacity,
+                hidden: inputs.hidden,
+                drawTwoSided: inputs.drawTwoSided,
+                backFaceColour: inputs.backFaceColour,
+                backFaceOpacity: inputs.backFaceOpacity,
             });
-        } else {
-            inputs.surfaces.forEach((surface, index) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours,
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                    drawTwoSided: inputs.drawTwoSided,
-                    backFaceColour: inputs.backFaceColour,
-                    backFaceOpacity: inputs.backFaceOpacity,
-                });
-                inputs.surfacesMesh.add(srf);
-            });
-        }
+            inputs.surfacesMesh.add(srf);
+        });
 
         return inputs.surfacesMesh;
     }
@@ -660,8 +683,8 @@ export class DrawHelper extends DrawHelperCore {
 
             let pbr: THREEJS.MeshPhysicalMaterial;
 
-            if (options.faceMaterial) {
-                pbr = options.faceMaterial;
+            if (inputs.faceMaterial) {
+                pbr = inputs.faceMaterial;
             } else {
                 const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
                 const alpha = inputs.faceOpacity;
@@ -788,11 +811,14 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private drawPolylines(lineSegments: THREEJS.LineSegments, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
-        size: number, opacity: number, colours: string | string[]) {
+        size: number, opacity: number, colours: string | string[], colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder) {
         if (polylinesPoints && polylinesPoints.length > 0) {
             const lineVertices = [];
+            // Track how many line segments (pairs of vertices) each polyline has
+            const polylineSegmentCounts: number[] = [];
 
             polylinesPoints.forEach(pts => {
+                let segmentCount = 0;
                 for (let i = 0; i < pts.length - 1; i++) {
                     const c = pts[i];
                     const n = pts[i + 1];
@@ -807,21 +833,26 @@ export class DrawHelper extends DrawHelperCore {
                         n[1],
                         n[2]
                     ));
+                    segmentCount++;
                 }
+                polylineSegmentCounts.push(segmentCount);
             });
             let lines: THREEJS.LineSegments;
             if (lineSegments && updatable) {
                 if (lineSegments?.userData?.linesForRenderLengths === polylinesPoints.map(l => l.length).toString()) {
                     lineSegments.geometry.clearGroups();
                     lineSegments.geometry.setFromPoints(lineVertices);
+                    // Update colors when updating geometry
+                    const lineColors = this.computePolylineColors(colours, polylineSegmentCounts, colorMapStrategy);
+                    lineSegments.geometry.setAttribute("color", new THREEJS.Float32BufferAttribute(lineColors, 3));
                     return lineSegments;
                 } else {
-                    lines = this.createLineGeometry(lineVertices, colours, size);
+                    lines = this.createLineGeometry(lineVertices, colours, size, polylineSegmentCounts, colorMapStrategy);
                     lines.userData = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
                     return lines;
                 }
             } else {
-                lines = this.createLineGeometry(lineVertices, colours, size);
+                lines = this.createLineGeometry(lineVertices, colours, size, polylineSegmentCounts, colorMapStrategy);
                 lines.userData = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
                 return lines;
             }
@@ -830,14 +861,55 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    private createLineGeometry(lineVertices: any[], colours: string | string[], size: number) {
+    /**
+     * Compute per-vertex colors for polylines based on color mapping strategy
+     * @param colours - Single color or array of colors
+     * @param polylineSegmentCounts - Number of line segments per polyline
+     * @param colorMapStrategy - Strategy for mapping colors to polylines
+     * @returns Flat array of RGB values for each vertex
+     */
+    private computePolylineColors(
+        colours: string | string[], 
+        polylineSegmentCounts: number[], 
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum
+    ): number[] {
+        const lineColors: number[] = [];
+        const totalPolylines = polylineSegmentCounts.length;
+        
+        polylineSegmentCounts.forEach((segmentCount, polylineIndex) => {
+            // Get the color for this polyline using the strategy
+            const colorHex = this.resolveColorForEntity(colours, polylineIndex, totalPolylines, colorMapStrategy);
+            const color = new THREEJS.Color(colorHex);
+            
+            // Each segment has 2 vertices, apply the same color to both
+            for (let i = 0; i < segmentCount * 2; i++) {
+                lineColors.push(color.r, color.g, color.b);
+            }
+        });
+        
+        return lineColors;
+    }
+
+    private createLineGeometry(
+        lineVertices: THREEJS.Vector3[], 
+        colours: string | string[], 
+        size: number, 
+        polylineSegmentCounts: number[] = [], 
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
+    ) {
         const lineGeometry = new THREEJS.BufferGeometry().setFromPoints(lineVertices);
 
-        const color = Array.isArray(colours) ? new THREEJS.Color(colours[0]) : new THREEJS.Color(colours);
-
-        const lineColors = [];
-        for (let i = 0; i < lineVertices.length; i++) {
-            lineColors.push(color.r, color.g, color.b);
+        let lineColors: number[];
+        if (polylineSegmentCounts.length > 0) {
+            // Use per-polyline coloring with the specified strategy
+            lineColors = this.computePolylineColors(colours, polylineSegmentCounts, colorMapStrategy);
+        } else {
+            // Fallback: single color for all vertices
+            const color = Array.isArray(colours) ? new THREEJS.Color(colours[0]) : new THREEJS.Color(colours);
+            lineColors = [];
+            for (let i = 0; i < lineVertices.length; i++) {
+                lineColors.push(color.r, color.g, color.b);
+            }
         }
 
         lineGeometry.setAttribute("color", new THREEJS.Float32BufferAttribute(lineColors, 3));
@@ -944,10 +1016,10 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     // sometimes we must delete face material property for the web worker not to complain about complex (circular) objects and use cloned object later
-    private deleteFaceMaterialForWorker(inputs: any) {
+    private deleteFaceMaterialForWorker<T extends { faceMaterial?: THREEJS.Material }>(inputs: T): T {
         const options = { ...inputs };
         if (inputs.faceMaterial) {
-            delete inputs.faceMaterial;
+            delete options.faceMaterial;
         }
         return options;
     }
@@ -970,15 +1042,17 @@ export class DrawHelper extends DrawHelperCore {
      * @param alpha - Alpha value (0-1)
      * @param zOffset - Z-offset value
      * @param createFn - Function to create new material if not cached
+     * @param unlit - Whether the material is unlit (no lighting, for points/lines)
      * @returns Cached or newly created material
      */
     private getOrCreateMaterial(
         hex: string,
         alpha: number,
         zOffset: number,
-        createFn: () => THREEJS.MeshPhysicalMaterial
+        createFn: () => THREEJS.MeshPhysicalMaterial,
+        unlit = false
     ): THREEJS.MeshPhysicalMaterial {
-        const key = this.getMaterialKey(hex, alpha, zOffset);
+        const key = this.getMaterialKey(hex, alpha, zOffset, unlit);
 
         // Check cache first
         const cached = this.materialCache.get(key);
@@ -1000,6 +1074,44 @@ export class DrawHelper extends DrawHelperCore {
         // Create new material
         const material = createFn();
         this.materialCache.set(key, material);
+        return material;
+    }
+
+    /**
+     * Get or create a cached unlit material (MeshBasicMaterial) for points and lines.
+     * Uses a separate cache from MeshPhysicalMaterial since these have different types.
+     * @param hex - Hex color string
+     * @param alpha - Alpha value (0-1)
+     * @param createFn - Function to create new material if not cached
+     * @returns Cached or newly created MeshBasicMaterial
+     */
+    private getOrCreateUnlitMaterial(
+        hex: string,
+        alpha: number,
+        createFn: () => THREEJS.MeshBasicMaterial
+    ): THREEJS.MeshBasicMaterial {
+        const key = this.getMaterialKey(hex, alpha, 0, true); // unlit=true, zOffset=0
+
+        // Check cache first
+        const cached = this.unlitMaterialCache.get(key);
+        if (cached) {
+            return cached;
+        }
+
+        // Evict oldest if at capacity (simple FIFO)
+        if (this.unlitMaterialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
+            const firstKey = this.unlitMaterialCache.keys().next().value;
+            const material = this.unlitMaterialCache.get(firstKey);
+            if (material && material.dispose) {
+                material.dispose();
+            }
+            this.unlitMaterialCache.delete(firstKey);
+            console.warn(`Unlit material cache full, evicted: ${firstKey}`);
+        }
+
+        // Create new material
+        const material = createFn();
+        this.unlitMaterialCache.set(key, material);
         return material;
     }
 
@@ -1054,42 +1166,60 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private createPointSpheresMesh(
-        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): THREEJS.Group {
-        const positionsModel = positions.map((pos, index) => {
+        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, _updatable: boolean): THREEJS.Group {
+        const positionsModel = positions.map((pos, posIndex) => {
             return {
                 position: pos,
-                color: colors[index],
-                index
+                color: colors[posIndex],
+                posIndex
             };
         });
 
         const colorSet = Array.from(new Set(colors));
-        const materialSet = colorSet.map((colour, index) => {
+        const materialSet = colorSet.map((colour) => {
+            // Use cached unlit material for points
+            const mat = this.getOrCreateUnlitMaterial(colour, opacity, () => {
+                const material = new THREEJS.MeshBasicMaterial({ name: this.generateEntityId("pointMaterial") });
+                material.opacity = opacity;
+                material.transparent = opacity < 1;
+                material.color = new THREEJS.Color(colour);
+                return material;
+            });
+            const filteredPositions = positionsModel.filter(s => s.color === colour);
 
-            const mat = new THREEJS.MeshBasicMaterial({ name: this.generateEntityId("pointMaterial") });
-            mat.opacity = opacity;
-            mat.transparent = opacity < 1;
-            mat.color = new THREEJS.Color(colour);
-            const positions = positionsModel.filter(s => s.color === colour);
-
-            return { hex: colorSet, material: mat, positions };
+            return { hex: colour, material: mat, positions: filteredPositions };
         });
 
         const pointsGroup = new THREEJS.Group();
         pointsGroup.name = meshName;
         this.context.scene.add(pointsGroup);
+        
+        // Create one InstancedMesh per unique color for efficient rendering
         materialSet.forEach(ms => {
-            const segments = ms.positions.length > 1000 ? 1 : 6;
+            const pointCount = ms.positions.length;
+            if (pointCount === 0) return;
+            
+            // Use fewer segments for large point counts to improve performance
+            const segments = pointCount > 1000 ? 1 : 6;
             const geom = new THREEJS.SphereGeometry(size, segments, segments);
 
-            ms.positions.forEach((pos, index) => {
-                const instance = new THREEJS.InstancedMesh(geom, ms.material, 1);
-                instance.name = this.generateEntityId(`point-${index}`);
-                instance.position.set(pos.position[0], pos.position[1], pos.position[2]);
-                instance.userData = { index: pos.index };
-                instance.visible = true;
-                pointsGroup.add(instance);
+            // Create a single InstancedMesh for all points of this color
+            const instancedMesh = new THREEJS.InstancedMesh(geom, ms.material, pointCount);
+            instancedMesh.name = this.generateEntityId(`points-${ms.hex}`);
+            
+            // Store the original point indices for updating later
+            const pointIndices: number[] = [];
+            const matrix = new THREEJS.Matrix4();
+            
+            ms.positions.forEach((pos, instanceIndex) => {
+                matrix.setPosition(pos.position[0], pos.position[1], pos.position[2]);
+                instancedMesh.setMatrixAt(instanceIndex, matrix);
+                pointIndices.push(pos.posIndex);
             });
+            
+            instancedMesh.instanceMatrix.needsUpdate = true;
+            instancedMesh.userData = { pointIndices };
+            pointsGroup.add(instancedMesh);
         });
 
         return pointsGroup;

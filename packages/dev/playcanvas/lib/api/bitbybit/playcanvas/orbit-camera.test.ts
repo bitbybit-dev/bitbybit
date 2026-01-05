@@ -8,65 +8,8 @@ import { createOrbitCameraMocks } from "../../__mocks__/test-helpers";
 
 // Mock the entire playcanvas module
 jest.mock("playcanvas", () => {
-    const actual = jest.requireActual("playcanvas");
-    
-    const mockNode = {
-        scene: {
-            layers: {
-                getLayerById: jest.fn(() => ({
-                    addMeshInstances: jest.fn(),
-                    removeMeshInstances: jest.fn()
-                }))
-            }
-        }
-    };
-    
-    // Use the centralized mocks from playcanvas.mock.ts
-    const { MockVec2, MockVec3, MockQuat, MockBoundingBox, MockColor, MockGraphNode, MockEntity } = jest.requireActual("../../__mocks__/playcanvas.mock");
-    
-    return {
-        ...actual,
-        Vec2: MockVec2,
-        Vec3: MockVec3,
-        Quat: MockQuat,
-        BoundingBox: MockBoundingBox,
-        Entity: MockEntity,
-        Color: MockColor,
-        GraphNode: MockGraphNode,
-        Mesh: class MockMesh extends actual.Mesh {
-            constructor(graphicsDevice?: any) {
-                const mockDevice = graphicsDevice || { vram: { vb: 0, ib: 0, tex: 0, total: 0 } };
-                super(mockDevice);
-            }
-            update() {
-                return this;
-            }
-        },
-        MeshInstance: jest.fn((mesh: any, material: any, node: any = mockNode) => ({
-            mesh,
-            material,
-            node
-        })),
-        math: {
-            lerp: (a: number, b: number, t: number) => {
-                return a + (b - a) * t;
-            },
-            clamp: (value: number, min: number, max: number) => {
-                return Math.min(Math.max(value, min), max);
-            },
-        },
-        MOUSEBUTTON_LEFT: 0,
-        MOUSEBUTTON_MIDDLE: 1,
-        MOUSEBUTTON_RIGHT: 2,
-        EVENT_MOUSEDOWN: "mousedown",
-        EVENT_MOUSEUP: "mouseup",
-        EVENT_MOUSEMOVE: "mousemove",
-        EVENT_MOUSEWHEEL: "mousewheel",
-        EVENT_TOUCHSTART: "touchstart",
-        EVENT_TOUCHEND: "touchend",
-        EVENT_TOUCHMOVE: "touchmove",
-        EVENT_TOUCHCANCEL: "touchcancel",
-    };
+    const { createPlayCanvasMock } = jest.requireActual("../../__mocks__/playcanvas.mock");
+    return createPlayCanvasMock();
 });
 
 describe("PlayCanvasOrbitCamera unit tests", () => {

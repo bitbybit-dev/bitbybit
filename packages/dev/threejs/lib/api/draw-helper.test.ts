@@ -1,3 +1,4 @@
+import { createDrawHelperMocks, hexToRgb, colorsAreEqual, getMaterialFromMesh, createMockJSCADMesh, createMockOCCTShape, mockWorkerError } from "./__mocks__/test-helpers";
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
 import * as Inputs from "./inputs/inputs";
@@ -15,46 +16,16 @@ describe("DrawHelper unit tests", () => {
     let mockJscadWorkerManager: JSCADWorkerManager;
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
-    let mockScene: THREEJS.Scene;
 
     beforeEach(() => {
-        mockScene = new THREEJS.Scene();
-        mockContext = {
-            scene: mockScene
-        } as Context;
-
-        mockSolidText = {
-            createVectorText: jest.fn().mockResolvedValue([])
-        } as unknown as JSCADText;
-
-        mockVector = {
-            add: jest.fn().mockReturnValue([0, 0, 0])
-        } as unknown as Vector;
-
-        mockJscadWorkerManager = {
-            genericCallToWorkerPromise: jest.fn().mockResolvedValue({
-                positions: [],
-                normals: [],
-                indices: [],
-                transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-            })
-        } as unknown as JSCADWorkerManager;
-
-        mockManifoldWorkerManager = {
-            genericCallToWorkerPromise: jest.fn().mockResolvedValue({
-                positions: [],
-                normals: [],
-                indices: []
-            })
-        } as unknown as ManifoldWorkerManager;
-
-        mockOccWorkerManager = {
-            genericCallToWorkerPromise: jest.fn().mockResolvedValue({
-                faceList: [],
-                edgeList: [],
-                pointsList: []
-            })
-        } as unknown as OCCTWorkerManager;
+        const mocks = createDrawHelperMocks();
+        mockContext = mocks.mockContext;
+        mockSolidText = mocks.mockSolidText;
+        mockVector = mocks.mockVector;
+        mockJscadWorkerManager = mocks.mockJscadWorkerManager;
+        mockManifoldWorkerManager = mocks.mockManifoldWorkerManager;
+        mockOccWorkerManager = mocks.mockOccWorkerManager;
+        mockScene = mocks.mockScene;
 
         drawHelper = new DrawHelper(
             mockContext,
@@ -69,95 +40,6 @@ describe("DrawHelper unit tests", () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
-
-    // ==================== TEST HELPER FUNCTIONS ====================
-    // Inspired by PlayCanvas comprehensive testing patterns
-
-    /**
-     * Converts hex color string to RGB object with values 0-1
-     * @param hex - Hex color string (e.g., "#ff0000" or "#f00")
-     * @returns RGB object with r, g, b values between 0 and 1
-     */
-    const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
-        // Handle 3-digit hex colors
-        if (hex.length === 4) {
-            const r = hex[1];
-            const g = hex[2];
-            const b = hex[3];
-            hex = `#${r}${r}${g}${g}${b}${b}`;
-        }
-
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        if (!result) {
-            return { r: 1, g: 0, b: 0 }; // Default to red if parsing fails
-        }
-
-        return {
-            r: parseInt(result[1], 16) / 255,
-            g: parseInt(result[2], 16) / 255,
-            b: parseInt(result[3], 16) / 255
-        };
-    };
-
-    /**
-     * Checks if two colors are approximately equal within a tolerance
-     * @param color1 - THREE.Color object
-     * @param color2 - RGB object with r, g, b values
-     * @param tolerance - Maximum difference per channel (default 0.01)
-     * @returns true if colors are within tolerance
-     */
-    const colorsAreEqual = (color1: THREEJS.Color, color2: { r: number; g: number; b: number }, tolerance = 0.01): boolean => {
-        return Math.abs(color1.r - color2.r) < tolerance &&
-            Math.abs(color1.g - color2.g) < tolerance &&
-            Math.abs(color1.b - color2.b) < tolerance;
-    };
-
-    /**
-     * Extracts material from a Three.js mesh or line segments
-     * @param mesh - Three.js Mesh or LineSegments object
-     * @returns Material object or undefined
-     */
-    const getMaterialFromMesh = (mesh: THREEJS.Mesh | THREEJS.LineSegments | THREEJS.Points): THREEJS.Material | THREEJS.Material[] | undefined => {
-        if (!mesh || !mesh.material) return undefined;
-        return mesh.material;
-    };
-
-    /**
-     * Creates mock JSCAD mesh data for testing
-     */
-    const createMockJSCADMesh = (overrides = {}) => ({
-        type: "solid" as const,
-        polygons: [],
-        ...overrides
-    });
-
-    /**
-     * Creates mock OCCT shape data for testing
-     */
-    const createMockOCCTShape = (overrides = {}) => ({
-        hash: 123,
-        type: "solid" as const,
-        ...overrides
-    });
-
-    /**
-     * Simulates worker error for testing error handling
-     */
-    const mockWorkerError = (workerManager: any, method: string, error: Error) => {
-        (workerManager.genericCallToWorkerPromise as jest.Mock)
-            .mockImplementation((methodName) => {
-                if (methodName === method) {
-                    return Promise.reject(error);
-                }
-                // Return normal response for other methods
-                return Promise.resolve({
-                    positions: [],
-                    normals: [],
-                    indices: [],
-                    transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-                });
-            });
-    };
 
     // ==================== EXISTING TESTS ====================
 
@@ -240,15 +122,15 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.name).toContain("pointsMesh");
-            expect(result.children.length).toBe(3);
-
-            // Check each point has correct material color
-            result.children.forEach(child => {
-                const mesh = child as THREEJS.InstancedMesh;
-                const material = getMaterialFromMesh(mesh) as THREEJS.MeshBasicMaterial;
-                expect(colorsAreEqual(material.color, hexToRgb("#ff0000"))).toBe(true);
-                expect(material.opacity).toBeCloseTo(1, 2);
-            });
+            // With GPU instancing and same color, all points are in one InstancedMesh
+            expect(result.children.length).toBe(1);
+            expect(result.children[0]).toBeInstanceOf(THREEJS.InstancedMesh);
+            
+            const instancedMesh = result.children[0] as THREEJS.InstancedMesh;
+            expect(instancedMesh.count).toBe(3);
+            const material = getMaterialFromMesh(instancedMesh) as THREEJS.MeshBasicMaterial;
+            expect(colorsAreEqual(material.color, hexToRgb("#ff0000"))).toBe(true);
+            expect(material.opacity).toBeCloseTo(1, 2);
         });
 
         it("should draw points with per-point colours", () => {
@@ -263,12 +145,14 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
+            // With GPU instancing, 3 different colors = 3 InstancedMesh children
             expect(result.children.length).toBe(3);
 
-            // Verify each point has its unique color
+            // Verify each InstancedMesh has its unique color
             const expectedColors = ["#ff0000", "#00ff00", "#0000ff"];
             result.children.forEach((child, index) => {
                 const mesh = child as THREEJS.InstancedMesh;
+                expect(mesh.count).toBe(1); // Each color has 1 point
                 const material = getMaterialFromMesh(mesh) as THREEJS.MeshBasicMaterial;
                 expect(colorsAreEqual(material.color, hexToRgb(expectedColors[index]))).toBe(true);
             });
@@ -286,7 +170,9 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
-            expect(result.children.length).toBe(4);
+            // With GPU instancing and colorMapStrategy lastColorRemainder:
+            // 4 points with 2 colors = 2 InstancedMesh children (grouped by color)
+            expect(result.children.length).toBe(2);
         });
 
         it("should update existing points mesh when updatable is true with same point count", () => {
@@ -311,8 +197,10 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(updateInputs);
 
-            expect(result.children.length).toBe(2);
+            // With GPU instancing and same color, all points are in one InstancedMesh
+            expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
+            expect(result).toBe(existingMesh); // Should reuse the same mesh
         });
 
         it("should recreate points mesh when point count changes during update", () => {
@@ -337,7 +225,10 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(updateInputs);
 
-            expect(result.children.length).toBe(3);
+            // With GPU instancing and same color, all points are in one InstancedMesh
+            expect(result.children.length).toBe(1);
+            const instancedMesh = result.children[0] as THREEJS.InstancedMesh;
+            expect(instancedMesh.count).toBe(3);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
         });
@@ -1291,9 +1182,9 @@ describe("DrawHelper unit tests", () => {
             const material = new THREEJS.MeshBasicMaterial();
 
             const mesh1 = new THREEJS.InstancedMesh(geometry, material, 1);
-            mesh1.userData = { index: 0 };
+            mesh1.userData = { pointIndices: [0] };
             const mesh2 = new THREEJS.InstancedMesh(geometry, material, 1);
-            mesh2.userData = { index: 1 };
+            mesh2.userData = { pointIndices: [1] };
 
             group.add(mesh1);
             group.add(mesh2);
@@ -1302,12 +1193,23 @@ describe("DrawHelper unit tests", () => {
 
             drawHelper.updatePointsInstances(group, newPositions);
 
-            expect(mesh1.position.x).toBe(5);
-            expect(mesh1.position.y).toBe(5);
-            expect(mesh1.position.z).toBe(5);
-            expect(mesh2.position.x).toBe(10);
-            expect(mesh2.position.y).toBe(10);
-            expect(mesh2.position.z).toBe(10);
+            // With GPU instancing, verify instance matrices were updated
+            const matrix1 = new THREEJS.Matrix4();
+            const matrix2 = new THREEJS.Matrix4();
+            mesh1.getMatrixAt(0, matrix1);
+            mesh2.getMatrixAt(0, matrix2);
+            
+            const pos1 = new THREEJS.Vector3();
+            const pos2 = new THREEJS.Vector3();
+            matrix1.decompose(pos1, new THREEJS.Quaternion(), new THREEJS.Vector3());
+            matrix2.decompose(pos2, new THREEJS.Quaternion(), new THREEJS.Vector3());
+            
+            expect(pos1.x).toBe(5);
+            expect(pos1.y).toBe(5);
+            expect(pos1.z).toBe(5);
+            expect(pos2.x).toBe(10);
+            expect(pos2.y).toBe(10);
+            expect(pos2.z).toBe(10);
         });
     });
 
@@ -1760,16 +1662,20 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle colors array shorter than points array", () => {
-            const inputs = new Inputs.Point.DrawPointsDto<THREEJS.Group>(
-                [[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]],
-                1,
-                0.3,
-                ["#ff0000", "#00ff00"]
-            );
+            const inputs: Inputs.Point.DrawPointsDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum } = {
+                points: [[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]],
+                opacity: 1,
+                size: 0.3,
+                colours: ["#ff0000", "#00ff00"],
+                colorMapStrategy: Inputs.Base.colorMapStrategyEnum.repeatColors
+            };
 
             const result = drawHelper.drawPoints(inputs);
             expect(result).toBeDefined();
-            expect(result.children.length).toBe(4);
+            // With GPU instancing and repeatColors: 4 points with 2 colors (red, green, red, green) = 2 unique colors = 2 InstancedMesh children
+            expect(result.children.length).toBe(2);
+            expect((result.children[0] as THREEJS.InstancedMesh).count).toBe(2);
+            expect((result.children[1] as THREEJS.InstancedMesh).count).toBe(2);
         });
 
         it("should handle colors array longer than points array", () => {
@@ -1782,7 +1688,10 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(inputs);
             expect(result).toBeDefined();
+            // With GPU instancing: 2 points use first 2 colors (red, green) = 2 unique colors = 2 InstancedMesh children
             expect(result.children.length).toBe(2);
+            expect((result.children[0] as THREEJS.InstancedMesh).count).toBe(1);
+            expect((result.children[1] as THREEJS.InstancedMesh).count).toBe(1);
         });
 
         it("should handle empty polyline points", () => {
@@ -2060,11 +1969,17 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoint(inputs);
-            const mesh = result.children[0];
+            const mesh = result.children[0] as THREEJS.InstancedMesh;
 
-            expect(mesh.position.x).toBeCloseTo(1.5, 2);
-            expect(mesh.position.y).toBeCloseTo(2.5, 2);
-            expect(mesh.position.z).toBeCloseTo(3.5, 2);
+            // With GPU instancing, position is in instance matrix
+            const matrix = new THREEJS.Matrix4();
+            mesh.getMatrixAt(0, matrix);
+            const position = new THREEJS.Vector3();
+            matrix.decompose(position, new THREEJS.Quaternion(), new THREEJS.Vector3());
+            
+            expect(position.x).toBeCloseTo(1.5, 2);
+            expect(position.y).toBeCloseTo(2.5, 2);
+            expect(position.z).toBeCloseTo(3.5, 2);
         });
 
         it("should validate two-sided rendering creates 2 children", async () => {

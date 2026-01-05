@@ -143,6 +143,20 @@ export class MockMatrix {
     static Identity() {
         return new MockMatrix();
     }
+    
+    static Translation(x: number, y: number, z: number) {
+        const m = new MockMatrix();
+        m._m[12] = x;
+        m._m[13] = y;
+        m._m[14] = z;
+        return m;
+    }
+    
+    copyToArray(target: Float32Array, offset = 0) {
+        for (let i = 0; i < 16; i++) {
+            target[offset + i] = this._m[i];
+        }
+    }
 }
 
 export class MockVertexData {
@@ -226,7 +240,6 @@ export class MockStandardMaterial extends MockMaterial {
 
 export class MockMesh {
     name: string;
-    private _parent: MockMesh | null = null;
     children: MockMesh[] = [];
     material: MockMaterial | null = null;
     isVisible = true;
@@ -235,7 +248,6 @@ export class MockMesh {
     scaling: MockVector3 = new MockVector3(1, 1, 1);
     metadata: any = null;
     _vertexData: MockVertexData | null = null;
-    _scene: MockScene | null = null;
     edgesWidth = 0;
     edgesColor: MockColor4 | null = null;
     color: MockColor3 | null = null;
@@ -243,25 +255,38 @@ export class MockMesh {
     
     constructor(name: string, scene?: MockScene | null) {
         this.name = name;
-        this._scene = scene || null;
+        // Make _parent and _scene non-enumerable to avoid circular reference in JSON serialization
+        Object.defineProperty(this, '_parent', {
+            value: null,
+            writable: true,
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(this, '_scene', {
+            value: scene || null,
+            writable: true,
+            enumerable: false,
+            configurable: true
+        });
         if (scene) {
             scene._meshes.push(this);
         }
     }
     
     get parent(): MockMesh | null {
-        return this._parent;
+        return (this as any)._parent;
     }
     
     set parent(value: MockMesh | null) {
         // Remove from old parent
-        if (this._parent) {
-            const index = this._parent.children.indexOf(this);
+        const oldParent = (this as any)._parent;
+        if (oldParent) {
+            const index = oldParent.children.indexOf(this);
             if (index > -1) {
-                this._parent.children.splice(index, 1);
+                oldParent.children.splice(index, 1);
             }
         }
-        this._parent = value;
+        (this as any)._parent = value;
         // Add to new parent
         if (value && !value.children.includes(this)) {
             value.children.push(this);
@@ -270,10 +295,11 @@ export class MockMesh {
     
     dispose() {
         // Remove from parent
-        if (this._parent) {
-            const index = this._parent.children.indexOf(this);
+        const parent = (this as any)._parent;
+        if (parent) {
+            const index = parent.children.indexOf(this);
             if (index > -1) {
-                this._parent.children.splice(index, 1);
+                parent.children.splice(index, 1);
             }
         }
         // Dispose children
@@ -281,10 +307,11 @@ export class MockMesh {
         childrenCopy.forEach(child => child.dispose());
         this.children = [];
         // Remove from scene
-        if (this._scene) {
-            const index = this._scene._meshes.indexOf(this);
+        const scene = (this as any)._scene;
+        if (scene) {
+            const index = scene._meshes.indexOf(this);
             if (index > -1) {
-                this._scene._meshes.splice(index, 1);
+                scene._meshes.splice(index, 1);
             }
         }
     }
@@ -332,8 +359,16 @@ export class MockMesh {
         const index = this.children.indexOf(child);
         if (index > -1) {
             this.children.splice(index, 1);
-            child._parent = null;
+            (child as any)._parent = null;
         }
+    }
+    
+    thinInstanceSetBuffer(kind: string, buffer: Float32Array, stride: number, staticBuffer: boolean) {
+        // Mock implementation for thin instances
+        if (!this.metadata) {
+            this.metadata = {};
+        }
+        this.metadata.thinInstanceBuffer = buffer;
     }
 }
 
@@ -428,6 +463,11 @@ export function createBabylonJSMock() {
         GreasedLineMeshMaterialType: {
             MATERIAL_TYPE_PBR: 0,
             MATERIAL_TYPE_STANDARD: 1
+        },
+        GreasedLineMeshColorMode: {
+            COLOR_MODE_SET: 0,
+            COLOR_MODE_ADD: 1,
+            COLOR_MODE_MULTIPLY: 2
         },
         Texture: {
             NEAREST_SAMPLINGMODE: 1,

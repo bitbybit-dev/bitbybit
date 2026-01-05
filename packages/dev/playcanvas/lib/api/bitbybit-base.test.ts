@@ -1,38 +1,6 @@
 jest.mock("playcanvas", () => {
-    const actual = jest.requireActual("playcanvas");
-    
-    const mockNode = {
-        scene: {
-            layers: {
-                getLayerById: jest.fn(() => ({
-                    addMeshInstances: jest.fn(),
-                    removeMeshInstances: jest.fn()
-                }))
-            }
-        }
-    };
-    
-    // Use the centralized MockEntity from playcanvas.mock.ts
-    const { MockEntity } = jest.requireActual("./__mocks__/playcanvas.mock");
-    
-    return {
-        ...actual,
-        Mesh: class MockMesh extends actual.Mesh {
-            constructor(graphicsDevice?: any) {
-                const mockDevice = graphicsDevice || { vram: { vb: 0, ib: 0, tex: 0, total: 0 } };
-                super(mockDevice);
-            }
-            update() {
-                return this;
-            }
-        },
-        Entity: MockEntity,
-        MeshInstance: jest.fn((mesh, material, node = mockNode) => ({
-            mesh,
-            material,
-            node
-        }))
-    };
+    const { createPlayCanvasMock } = jest.requireActual("./__mocks__/playcanvas.mock");
+    return createPlayCanvasMock();
 });
 
 import { BitByBitBase } from "./bitbybit-base";

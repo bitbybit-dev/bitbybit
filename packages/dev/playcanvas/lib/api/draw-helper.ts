@@ -1,6 +1,6 @@
 
 import { Context } from "./context";
-import * as Inputs from "./inputs/inputs";
+import * as Inputs from "./inputs";
 import { DrawHelperCore } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
 import { Vector } from "@bitbybit-dev/base";
@@ -198,9 +198,9 @@ export class DrawHelper extends DrawHelperCore {
      * @param inputs - Polyline drawing inputs
      * @returns Entity containing all polylines
      */
-    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<pc.Entity>): pc.Entity {
-        // Normalize inputs
-        const colors = this.normalizePolylineColors(inputs.polylines, inputs.colours);
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<pc.Entity> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): pc.Entity {
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        
         const processedPoints = this.processPolylinePoints(inputs.polylines as Inputs.Base.Polyline3[]);
         
         // Determine if we should update existing mesh
@@ -208,14 +208,15 @@ export class DrawHelper extends DrawHelperCore {
             ? inputs.polylinesMesh.children[0] as pc.Entity
             : undefined;
         
-        // Draw the polylines
+        // Draw the polylines with per-polyline colors
         const polylineEntity = this.drawPolylines(
             existingMesh,
             processedPoints,
             inputs.updatable,
             inputs.size,
             inputs.opacity,
-            colors
+            inputs.colours,
+            strategy
         );
         
         // Wrap in container group
@@ -280,17 +281,13 @@ export class DrawHelper extends DrawHelperCore {
         );
     }
 
-    drawPoints(inputs: Inputs.Point.DrawPointsDto<pc.Entity>): pc.Entity {
+    drawPoints(inputs: Inputs.Point.DrawPointsDto<pc.Entity> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): pc.Entity {
         const vectorPoints = inputs.points;
-        let coloursHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            coloursHex = inputs.colours;
-            if (coloursHex.length !== inputs.points.length) {
-                coloursHex = inputs.points.map(() => coloursHex[0]);
-            }
-        } else {
-            coloursHex = inputs.points.map(() => inputs.colours as string);
-        }
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        
+        // Resolve colors for all points using the color mapping strategy
+        const coloursHex = this.resolveAllColors(inputs.colours, vectorPoints.length, strategy);
+        
         if (inputs.pointsMesh && inputs.updatable) {
             const children = inputs.pointsMesh.children;
             if (children.length === vectorPoints.length) {
@@ -310,10 +307,46 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     updatePointsInstances(group: pc.Entity, positions: Inputs.Base.Point3[]): void {
+        // The group contains entities with instanced meshes - each entity has an instanceBuffer
         const children = group.children;
+        
+        // Build a map of original index to new position
+        const positionMap = new Map<number, Inputs.Base.Point3>();
         positions.forEach((pos, index) => {
-            if (children[index]) {
-                children[index].setLocalPosition(pos[0], pos[1], pos[2]);
+            positionMap.set(index, pos);
+        });
+
+        children.forEach((child: pc.Entity) => {
+            // Handle GPU-instanced points
+            if (child.tags?.has("instancedPoints")) {
+                const extendedChild = child as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] };
+                const instanceBuffer = extendedChild.instanceBuffer;
+                const pointIndices = extendedChild.pointIndices;
+                
+                if (instanceBuffer && pointIndices) {
+                    const instanceData = instanceBuffer.lock();
+                    if (instanceData) {
+                        const floatView = new Float32Array(instanceData);
+                        const tempMat = new pc.Mat4();
+                        
+                        pointIndices.forEach((originalIndex, instanceIndex) => {
+                            const newPos = positionMap.get(originalIndex);
+                            if (newPos) {
+                                tempMat.setTranslate(newPos[0], newPos[1], newPos[2]);
+                                floatView.set(tempMat.data, instanceIndex * 16);
+                            }
+                        });
+                        
+                        instanceBuffer.unlock();
+                    }
+                }
+            }
+            // Handle fallback single-point entities
+            else if (child.tags?.has("singlePoint")) {
+                const idx = parseInt(child.name.split("-").pop() || "0");
+                if (positions[idx]) {
+                    child.setLocalPosition(positions[idx][0], positions[idx][1], positions[idx][2]);
+                }
             }
         });
     }
@@ -323,7 +356,7 @@ export class DrawHelper extends DrawHelperCore {
         return this.drawPolylinesWithColours({ polylines: points, polylinesMesh: inputs.curvesMesh, ...inputs });
     }
 
-    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<pc.Entity>): pc.Entity {
+    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<pc.Entity> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): pc.Entity {
         if (inputs.surfacesMesh && inputs.updatable) {
             this.clearEntity(inputs.surfacesMesh);
         } else {
@@ -331,35 +364,22 @@ export class DrawHelper extends DrawHelperCore {
             this.context.scene.addChild(inputs.surfacesMesh);
         }
 
-        if (Array.isArray(inputs.colours)) {
-            inputs.surfaces.forEach((surface, index) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours[index] ? inputs.colours[index] : inputs.colours[0],
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                    drawTwoSided: inputs.drawTwoSided,
-                    backFaceColour: inputs.backFaceColour,
-                    backFaceOpacity: inputs.backFaceOpacity,
-                });
-                inputs.surfacesMesh.addChild(srf);
+        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+        const resolvedColours = this.resolveAllColors(inputs.colours, inputs.surfaces.length, strategy);
+
+        inputs.surfaces.forEach((surface, index) => {
+            const srf = this.drawSurface({
+                surface,
+                colours: resolvedColours[index],
+                updatable: inputs.updatable,
+                opacity: inputs.opacity,
+                hidden: inputs.hidden,
+                drawTwoSided: inputs.drawTwoSided,
+                backFaceColour: inputs.backFaceColour,
+                backFaceOpacity: inputs.backFaceOpacity,
             });
-        } else {
-            inputs.surfaces.forEach((surface) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours,
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                    drawTwoSided: inputs.drawTwoSided,
-                    backFaceColour: inputs.backFaceColour,
-                    backFaceOpacity: inputs.backFaceOpacity,
-                });
-                inputs.surfacesMesh.addChild(srf);
-            });
-        }
+            inputs.surfacesMesh.addChild(srf);
+        });
 
         return inputs.surfacesMesh;
     }
@@ -825,22 +845,63 @@ export class DrawHelper extends DrawHelperCore {
     /**
      * Compute line positions array from polyline points
      * @param polylinesPoints - Array of polylines
-     * @returns Flat array of line positions
+     * @returns Object containing flat array of line positions and segment counts per polyline
      */
-    private computeLinePositions(polylinesPoints: Inputs.Base.Vector3[][]): number[] {
+    private computeLinePositionsWithSegmentCounts(polylinesPoints: Inputs.Base.Vector3[][]): {
+        positions: number[];
+        segmentCounts: number[];
+    } {
         const linePositions: number[] = [];
+        const segmentCounts: number[] = [];
         
         for (const points of polylinesPoints) {
+            let segmentCount = 0;
             for (let i = 0; i < points.length - 1; i++) {
                 const current = points[i];
                 const next = points[i + 1];
                 
                 linePositions.push(current[0], current[1], current[2]);
                 linePositions.push(next[0], next[1], next[2]);
+                segmentCount++;
             }
+            segmentCounts.push(segmentCount);
         }
         
-        return linePositions;
+        return { positions: linePositions, segmentCounts };
+    }
+
+    /**
+     * Compute per-vertex colors for polylines based on color mapping strategy
+     * @param colours - Single color or array of colors
+     * @param segmentCounts - Number of line segments per polyline
+     * @param colorMapStrategy - Strategy for mapping colors to polylines
+     * @returns Flat array of RGBA values (0-255) for each vertex
+     */
+    private computePolylineColors(
+        colours: string | string[],
+        segmentCounts: number[],
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum
+    ): number[] {
+        const lineColors: number[] = [];
+        const totalPolylines = segmentCounts.length;
+        
+        segmentCounts.forEach((segmentCount, polylineIndex) => {
+            // Get the color for this polyline using the strategy
+            const colorHex = this.resolveColorForEntity(colours, polylineIndex, totalPolylines, colorMapStrategy);
+            const color = this.hexToColor(colorHex);
+            
+            // Each segment has 2 vertices, apply the same color to both (RGBA as 0-255)
+            for (let i = 0; i < segmentCount * 2; i++) {
+                lineColors.push(
+                    Math.round(color.r * 255),
+                    Math.round(color.g * 255),
+                    Math.round(color.b * 255),
+                    255 // Full opacity
+                );
+            }
+        });
+        
+        return lineColors;
     }
 
     /**
@@ -849,15 +910,19 @@ export class DrawHelper extends DrawHelperCore {
      * @param colours - Colors for the lines
      * @param size - Line width
      * @param polylinePoints - Original polyline points for signature
+     * @param segmentCounts - Number of segments per polyline
+     * @param colorMapStrategy - Strategy for mapping colors to polylines
      * @returns New polyline entity with metadata
      */
     private createPolylineEntityWithMetadata(
         linePositions: number[],
         colours: string | string[],
         size: number,
-        polylinePoints: Inputs.Base.Vector3[][]
+        polylinePoints: Inputs.Base.Vector3[][],
+        segmentCounts: number[] = [],
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
     ): PolylineEntity {
-        const entity = this.createLineEntity(linePositions, colours) as PolylineEntity;
+        const entity = this.createLineEntity(linePositions, colours, segmentCounts, colorMapStrategy) as PolylineEntity;
         entity.bitbybitMeta = {
             linesForRenderLengths: this.computePolylineSignature(polylinePoints)
         };
@@ -872,6 +937,7 @@ export class DrawHelper extends DrawHelperCore {
      * @param size - Line width
      * @param opacity - Line opacity
      * @param colours - Line colors
+     * @param colorMapStrategy - Strategy for mapping colors to polylines
      * @returns Entity containing rendered polylines, or undefined
      */
     private drawPolylines(
@@ -880,14 +946,15 @@ export class DrawHelper extends DrawHelperCore {
         updatable: boolean,
         size: number, 
         opacity: number, 
-        colours: string | string[]
+        colours: string | string[],
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
     ): pc.Entity {
         // Validate input
         if (!polylinesPoints || polylinesPoints.length === 0) {
             return undefined;
         }
         
-        const linePositions = this.computeLinePositions(polylinesPoints);
+        const { positions: linePositions, segmentCounts } = this.computeLinePositionsWithSegmentCounts(polylinesPoints);
         
         // Try to update existing entity
         if (this.canUpdatePolylineEntity(existingEntity, polylinesPoints, updatable)) {
@@ -898,33 +965,54 @@ export class DrawHelper extends DrawHelperCore {
             console.warn("Polyline update failed, creating new entity");
         }
         
-        // Create new entity
+        // Create new entity with per-polyline colors
         return this.createPolylineEntityWithMetadata(
             linePositions, 
             colours, 
             size, 
-            polylinesPoints
+            polylinesPoints,
+            segmentCounts,
+            colorMapStrategy
         );
     }
 
-    private createLineEntity(linePositions: number[], colours: string | string[]): pc.Entity {
-        const color = Array.isArray(colours) ? this.hexToColor(colours[0]) : this.hexToColor(colours);
-
+    private createLineEntity(
+        linePositions: number[], 
+        colours: string | string[],
+        segmentCounts: number[] = [],
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
+    ): pc.Entity {
         const mesh = new pc.Mesh(this.context.app.graphicsDevice);
         mesh.setPositions(linePositions);
+        
+        // Use vertex colors if we have segment counts (multiple polylines)
+        const useVertexColors = segmentCounts.length > 0;
+        
+        if (useVertexColors) {
+            const vertexColors = this.computePolylineColors(colours, segmentCounts, colorMapStrategy);
+            mesh.setColors32(vertexColors);
+        }
+        
         mesh.update(pc.PRIMITIVE_LINES);
 
-        const hexColor = this.colorToHex(color.r * 255, color.g * 255, color.b * 255);
-        const material = this.getOrCreateMaterial(hexColor, 1.0, 0, () => {
-            const mat = new pc.StandardMaterial();
+        // Create material that uses vertex colors
+        const mat = new pc.StandardMaterial();
+        if (useVertexColors) {
+            // Enable vertex colors in the material
+            mat.diffuseVertexColor = true;
+            mat.emissiveVertexColor = true;
+            mat.diffuse = new pc.Color(1, 1, 1); // White base, vertex colors will tint
+            mat.emissive = new pc.Color(1, 1, 1); // White base for emissive
+        } else {
+            // Single color mode
+            const color = Array.isArray(colours) ? this.hexToColor(colours[0]) : this.hexToColor(colours);
             mat.emissive = color;
             mat.diffuse = color;
-            mat.useLighting = false;
-            mat.update();
-            return mat;
-        });
+        }
+        mat.useLighting = false;
+        mat.update();
 
-        const meshInstance = new pc.MeshInstance(mesh, material);
+        const meshInstance = new pc.MeshInstance(mesh, mat);
         const lineEntity = new pc.Entity(this.generateEntityId("lines"));
         lineEntity.addComponent("render", {
             meshInstances: [meshInstance]
@@ -1130,15 +1218,17 @@ export class DrawHelper extends DrawHelperCore {
      * @param alpha - Alpha value (0-1)
      * @param zOffset - Z-offset value
      * @param createFn - Function to create new material if not cached
+     * @param unlit - Whether the material is unlit (no lighting, for points/lines)
      * @returns Cached or newly created material
      */
     private getOrCreateMaterial(
         hex: string,
         alpha: number,
         zOffset: number,
-        createFn: () => pc.StandardMaterial
+        createFn: () => pc.StandardMaterial,
+        unlit = false
     ): pc.StandardMaterial {
-        const key = super.getMaterialKey(hex, alpha, zOffset);
+        const key = super.getMaterialKey(hex, alpha, zOffset, unlit);
 
         // Check cache first
         const cached = this.materialCache.get(key);
@@ -1190,11 +1280,13 @@ export class DrawHelper extends DrawHelperCore {
      * Normalize polyline colors from multiple sources into a consistent array
      * @param polylines - Array of polylines with potential embedded colors
      * @param inputColors - Input colors (single or array)
+     * @param colorMapStrategy - Strategy for mapping colors to polylines when there are more polylines than colors
      * @returns Array of normalized hex color strings
      */
     private normalizePolylineColors(
         polylines: Inputs.Polyline.PolylinePropertiesDto[], 
-        inputColors: string | string[]
+        inputColors: string | string[],
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
     ): string[] {
         const defaultColor = Array.isArray(inputColors) ? inputColors[0] : inputColors;
         
@@ -1205,14 +1297,8 @@ export class DrawHelper extends DrawHelperCore {
                 return super.normalizeColor(color, defaultColor);
             }
             
-            // Priority 2: Array of colors
-            if (Array.isArray(inputColors)) {
-                const colorIndex = Math.min(index, inputColors.length - 1);
-                return inputColors[colorIndex];
-            }
-            
-            // Priority 3: Single color for all
-            return inputColors as string;
+            // Priority 2: Use color map strategy to resolve color
+            return this.resolveColorForEntity(inputColors, index, polylines.length, colorMapStrategy);
         });
     }
 
@@ -1254,11 +1340,11 @@ export class DrawHelper extends DrawHelperCore {
 
         const colorSet = Array.from(new Set(colors));
         const materialSet = colorSet.map((colour) => {
+            // Use unlit=true to distinguish from lit materials used for surfaces
             const mat = this.getOrCreateMaterial(colour, opacity, 0, () => {
                 const material = new pc.StandardMaterial();
                 material.name = this.generateEntityId("mat");
                 material.opacity = opacity;
-                // Enable alpha blending for transparency when opacity < 1
                 if (opacity < 1) {
                     material.blendType = pc.BLEND_NORMAL;
                 }
@@ -1267,30 +1353,147 @@ export class DrawHelper extends DrawHelperCore {
                 material.useLighting = false;
                 material.update();
                 return material;
-            });
+            }, true); // unlit = true
             const positionsFiltered = positionsModel.filter(s => s.color === colour);
 
-            return { hex: colorSet, material: mat, positions: positionsFiltered };
+            return { hex: colour, material: mat, positions: positionsFiltered };
         });
 
         const pointsGroup = new pc.Entity(meshName);
         this.context.scene.addChild(pointsGroup);
         
+        // Create merged geometry for each unique color - one draw call per color
         materialSet.forEach(ms => {
+            const pointCount = ms.positions.length;
+            if (pointCount === 0) return;
             
-            ms.positions.forEach((pos, index) => {
-                const sphereEntity = new pc.Entity(this.generateEntityId(`point-${index}`, meshName));
-                sphereEntity.addComponent("render", {
-                    type: "sphere",
-                    material: ms.material
-                });
-                sphereEntity.setLocalScale(size * 2, size * 2, size * 2);
-                sphereEntity.setLocalPosition(pos.position[0], pos.position[1], pos.position[2]);
-                pointsGroup.addChild(sphereEntity);
-            });
+            // Use fewer segments for large point counts
+            const segments = pointCount > 1000 ? 4 : 8;
+            
+            // Create instanced mesh for all points of this color
+            const instancedEntity = this.createInstancedSphereMesh(
+                this.generateEntityId(`points-${ms.hex}`, meshName),
+                ms.positions.map(p => ({ position: p.position, index: p.index })),
+                size,
+                segments,
+                ms.material
+            );
+            
+            // Store point indices for potential updates
+            instancedEntity.tags?.add("instancedPoints");
+            pointsGroup.addChild(instancedEntity);
         });
 
         return pointsGroup;
+    }
+
+    /**
+     * Creates an instanced mesh for rendering multiple spheres with a single draw call.
+     * Uses PlayCanvas GPU hardware instancing via setInstancing().
+     */
+    private createInstancedSphereMesh(
+        name: string,
+        positions: { position: Inputs.Base.Point3; index: number }[],
+        radius: number,
+        segments: number,
+        material: pc.StandardMaterial
+    ): pc.Entity {
+        const graphicsDevice = this.context.app?.graphicsDevice;
+        
+        if (!graphicsDevice) {
+            // Fallback to individual spheres if no graphics device available
+            return this.createFallbackPointsMesh(name, positions.map(p => p.position), radius, material);
+        }
+
+        const instanceCount = positions.length;
+        
+        // Create a single sphere mesh to be instanced
+        const sphereMesh = pc.Mesh.fromGeometry(graphicsDevice, new pc.SphereGeometry({
+            radius: radius,
+            latitudeBands: segments,
+            longitudeBands: segments
+        }));
+        
+        // Create instance vertex buffer with world matrices (Mat4 = 16 floats per instance)
+        const instanceFormat = pc.VertexFormat.getDefaultInstancingFormat(graphicsDevice);
+        const instanceBuffer = new pc.VertexBuffer(
+            graphicsDevice,
+            instanceFormat,
+            instanceCount,
+            {
+                usage: pc.BUFFER_STATIC
+            }
+        );
+        
+        // Fill the instance buffer with transformation matrices
+        const instanceData = new Float32Array(instanceCount * 16);
+        const tempMat = new pc.Mat4();
+        
+        positions.forEach((pos, i) => {
+            // Create a translation matrix for each instance
+            tempMat.setTranslate(pos.position[0], pos.position[1], pos.position[2]);
+            // Copy matrix data (16 floats) to the buffer
+            instanceData.set(tempMat.data, i * 16);
+        });
+        
+        // Upload instance data to GPU
+        const lockedData = instanceBuffer.lock();
+        if (lockedData) {
+            new Float32Array(lockedData).set(instanceData);
+            instanceBuffer.unlock();
+        }
+        
+        // Create mesh instance and enable instancing
+        const meshInstance = new pc.MeshInstance(sphereMesh, material);
+        meshInstance.setInstancing(instanceBuffer);
+        meshInstance.instancingCount = instanceCount;
+        
+        // Disable shadows for point spheres (they use emissive/unlit materials)
+        meshInstance.castShadow = false;
+        meshInstance.receiveShadow = false;
+        
+        // Create entity with render component
+        const entity = new pc.Entity(name);
+        entity.addComponent("render", {
+            meshInstances: [meshInstance],
+            castShadows: false,
+            receiveShadows: false
+        });
+        
+        // Store instance data for potential updates
+        entity.tags?.add("instancedPoints");
+        (entity as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] }).instanceBuffer = instanceBuffer;
+        (entity as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] }).pointIndices = positions.map(p => p.index);
+        
+        return entity;
+    }
+
+    /**
+     * Fallback method when graphics device is not available
+     */
+    private createFallbackPointsMesh(
+        name: string,
+        positions: Inputs.Base.Point3[],
+        size: number,
+        material: pc.StandardMaterial
+    ): pc.Entity {
+        const group = new pc.Entity(name);
+        
+        positions.forEach((pos, index) => {
+            const sphereEntity = new pc.Entity(this.generateEntityId(`point-${index}`, name));
+            sphereEntity.addComponent("render", {
+                type: "sphere",
+                material: material,
+                castShadows: false,
+                receiveShadows: false
+            });
+            sphereEntity.setLocalScale(size * 2, size * 2, size * 2);
+            sphereEntity.setLocalPosition(pos[0], pos[1], pos[2]);
+            sphereEntity.tags?.add("singlePoint");
+            group.addChild(sphereEntity);
+        });
+        
+        return group;
     }
 
 }
