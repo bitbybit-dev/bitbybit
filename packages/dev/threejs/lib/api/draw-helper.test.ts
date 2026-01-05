@@ -25,7 +25,6 @@ describe("DrawHelper unit tests", () => {
         mockJscadWorkerManager = mocks.mockJscadWorkerManager;
         mockManifoldWorkerManager = mocks.mockManifoldWorkerManager;
         mockOccWorkerManager = mocks.mockOccWorkerManager;
-        mockScene = mocks.mockScene;
 
         drawHelper = new DrawHelper(
             mockContext,
@@ -1342,6 +1341,209 @@ describe("DrawHelper unit tests", () => {
             );
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
+        });
+    });
+
+    describe("Arrow drawing on polylines", () => {
+        it("should draw a single polyline with arrows", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1], [2, 0, 0], [3, 1, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(THREEJS.Group);
+            expect(result.children.length).toBe(1);
+            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            expect(lineSegments).toBeInstanceOf(THREEJS.LineSegments);
+            
+            // Should have polyline segments + 4 arrow lines (2 per arrow head)
+            // 3 polyline segments (4 points) + 4 arrow segments = 7 segments total = 14 vertices
+            const positions = lineSegments.geometry.attributes.position;
+            expect(positions.count).toBe(14);
+        });
+
+        it("should draw multiple polylines with arrows of different colors", () => {
+            const polylines: Inputs.Base.Polyline3[] = [
+                { points: [[0, 0, 0], [1, 1, 1], [2, 0, 0]] },
+                { points: [[0, 2, 0], [1, 3, 1], [2, 2, 0]] },
+                { points: [[0, 4, 0], [1, 5, 1], [2, 4, 0]] }
+            ];
+
+            const result = drawHelper.drawPolylinesWithColours({
+                polylinesMesh: undefined,
+                polylines,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: ["#ff0000", "#00ff00", "#0000ff"],
+                colorMapStrategy: Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+                arrowSize: 1,
+                arrowAngle: 25
+            });
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(THREEJS.Group);
+            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            
+            // 3 polylines with 2 segments each = 6 segments
+            // 3 polylines with 4 arrow lines each = 12 arrow segments
+            // Total = 18 segments = 36 vertices
+            const positions = lineSegments.geometry.attributes.position;
+            expect(positions.count).toBe(36);
+            
+            // Verify colors are set
+            const colors = lineSegments.geometry.attributes.color;
+            expect(colors).toBeDefined();
+            expect(colors.count).toBe(36);
+        });
+
+        it("should not draw arrows when arrowSize is 0", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1], [2, 0, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 0,
+                arrowAngle: 30
+            });
+
+            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            const positions = lineSegments.geometry.attributes.position;
+            // Only polyline segments, no arrows: 2 segments = 4 vertices
+            expect(positions.count).toBe(4);
+        });
+
+        it("should draw arrows with custom angle", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [5, 0, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 2,
+                arrowAngle: 45
+            });
+
+            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            const positions = lineSegments.geometry.attributes.position;
+            // 1 polyline segment + 4 arrow segments = 5 segments = 10 vertices
+            expect(positions.count).toBe(10);
+        });
+
+        it("should use same color for arrows as their parent polyline", () => {
+            const polylines: Inputs.Base.Polyline3[] = [
+                { points: [[0, 0, 0], [1, 1, 1]] },
+                { points: [[2, 0, 0], [3, 1, 1]] }
+            ];
+
+            const result = drawHelper.drawPolylinesWithColours({
+                polylinesMesh: undefined,
+                polylines,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: ["#ff0000", "#00ff00"],
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            const colors = lineSegments.geometry.attributes.color as THREEJS.BufferAttribute;
+            
+            // First polyline + arrows should be red
+            const red = new THREEJS.Color("#ff0000");
+            // Check first polyline segment (2 vertices)
+            expect(colors.getX(0)).toBeCloseTo(red.r, 2);
+            expect(colors.getY(0)).toBeCloseTo(red.g, 2);
+            expect(colors.getZ(0)).toBeCloseTo(red.b, 2);
+            
+            // Check first arrow line vertices (should also be red)
+            expect(colors.getX(2)).toBeCloseTo(red.r, 2);
+            expect(colors.getY(2)).toBeCloseTo(red.g, 2);
+            expect(colors.getZ(2)).toBeCloseTo(red.b, 2);
+        });
+
+        it("should handle polylines with insufficient points for arrows", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0]] // Only 1 point
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            const positions = lineSegments.geometry.attributes.position;
+            // No segments can be drawn from a single point
+            expect(positions.count).toBe(0);
+        });
+
+        it("should update polyline with arrows when updatable is true", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1]]
+            };
+
+            const firstResult = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: true,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            // Update with new points
+            const updatedPolyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [2, 2, 2]]
+            };
+
+            const secondResult = drawHelper.drawPolylineClose({
+                polylineMesh: firstResult,
+                polyline: updatedPolyline,
+                updatable: true,
+                size: 2,
+                opacity: 1,
+                colours: "#00ff00",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(secondResult).toBe(firstResult);
+            const lineSegments = secondResult.children[0] as THREEJS.LineSegments;
+            const positions = lineSegments.geometry.attributes.position;
+            // 1 segment + 4 arrow segments = 5 segments = 10 vertices
+            expect(positions.count).toBe(10);
         });
     });
 

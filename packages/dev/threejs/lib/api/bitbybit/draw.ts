@@ -151,7 +151,7 @@ export class Draw extends DrawCore {
     }
 
     private handleOcctShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
-        return this.handleAsync(inputs, new Inputs.OCCT.DrawShapeDto(inputs.entity), (options) => {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShape({
                 shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
                 ...new Inputs.Draw.DrawOcctShapeOptions(),
@@ -161,7 +161,7 @@ export class Draw extends DrawCore {
     }
 
     private handleOcctShapes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
-        return this.handleAsync(inputs, new Inputs.OCCT.DrawShapeDto(inputs.entity), (options) => {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShapes({
                 shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
                 ...new Inputs.Draw.DrawOcctShapeOptions(),

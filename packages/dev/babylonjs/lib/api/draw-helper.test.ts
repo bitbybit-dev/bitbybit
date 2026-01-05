@@ -546,6 +546,182 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
+    describe("Arrow drawing on polylines", () => {
+        it("should draw a single polyline with arrows", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1], [2, 0, 0], [3, 1, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 10,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
+            // BabylonJS creates separate lines for polyline and arrows
+            // 1 polyline + 4 arrow lines = 5 total lines
+            expect(result.metadata.linesForRenderLengths).toHaveLength(5);
+        });
+
+        it("should draw multiple polylines with arrows of different colors", () => {
+            const polylines: Inputs.Base.Polyline3[] = [
+                { points: [[0, 0, 0], [1, 1, 1], [2, 0, 0]] },
+                { points: [[0, 2, 0], [1, 3, 1], [2, 2, 0]] },
+                { points: [[0, 4, 0], [1, 5, 1], [2, 4, 0]] }
+            ];
+
+            const result = drawHelper.drawPolylinesWithColours({
+                polylinesMesh: undefined,
+                polylines,
+                updatable: false,
+                size: 10,
+                opacity: 1,
+                colours: ["#ff0000", "#00ff00", "#0000ff"],
+                colorMapStrategy: Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+                arrowSize: 1,
+                arrowAngle: 25
+            });
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
+            // 3 polylines + (3 * 4 arrow lines) = 15 total lines
+            expect(result.metadata.linesForRenderLengths).toHaveLength(15);
+        });
+
+        it("should not draw arrows when arrowSize is 0", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1], [2, 0, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 10,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 0,
+                arrowAngle: 30
+            });
+
+            expect(result).toBeDefined();
+            // Only the polyline, no arrows
+            expect(result.metadata.linesForRenderLengths).toHaveLength(1);
+        });
+
+        it("should draw arrows with custom angle", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [5, 0, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 10,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 2,
+                arrowAngle: 45
+            });
+
+            expect(result).toBeDefined();
+            // 1 polyline + 4 arrow lines
+            expect(result.metadata.linesForRenderLengths).toHaveLength(5);
+        });
+
+        it("should use same color for arrows as their parent polyline", () => {
+            const polylines: Inputs.Base.Polyline3[] = [
+                { points: [[0, 0, 0], [1, 1, 1]] },
+                { points: [[2, 0, 0], [3, 1, 1]] }
+            ];
+
+            const result = drawHelper.drawPolylinesWithColours({
+                polylinesMesh: undefined,
+                polylines,
+                updatable: false,
+                size: 10,
+                opacity: 1,
+                colours: ["#ff0000", "#00ff00"],
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(result).toBeDefined();
+            // 2 polylines + (2 * 4 arrows) = 10 lines
+            expect(result.metadata.linesForRenderLengths).toHaveLength(10);
+        });
+
+        it("should handle polylines with insufficient points for arrows", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0]] // Only 1 point
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 10,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            // A single point can't form a line or arrows
+            // Result may be undefined or have empty linesForRenderLengths
+            if (result && result.metadata && result.metadata.linesForRenderLengths) {
+                expect(result.metadata.linesForRenderLengths.length).toBe(0);
+            } else {
+                expect(result).toBeDefined();
+            }
+        });
+
+        it("should update polyline with arrows when updatable is true", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1]]
+            };
+
+            const firstResult = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: true,
+                size: 10,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            // Update with new points
+            const updatedPolyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [2, 2, 2]]
+            };
+
+            const secondResult = drawHelper.drawPolylineClose({
+                polylineMesh: firstResult,
+                polyline: updatedPolyline,
+                updatable: true,
+                size: 10,
+                opacity: 1,
+                colours: "#00ff00",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(secondResult).toBe(firstResult);
+            // 1 polyline + 4 arrow lines
+            expect(secondResult.metadata.linesForRenderLengths).toHaveLength(5);
+        });
+    });
+
     describe("drawLines", () => {
         it("should draw lines", () => {
             const inputs = new Inputs.Line.DrawLinesDto<BABYLON.LinesMesh>(

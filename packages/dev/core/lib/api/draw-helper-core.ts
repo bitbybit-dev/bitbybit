@@ -263,6 +263,169 @@ export class DrawHelperCore {
         return polylinePoints.map(line => line.length).join(",");
     }
 
+    // ============== Arrow Computation Methods ==============
+
+    /**
+     * Compute arrow head lines for a polyline based on its last segment direction.
+     * Creates 4 lines in 3D space forming an arrow head pointing in the direction of the polyline.
+     * The arrow is constructed using two perpendicular planes through the direction vector.
+     * 
+     * @param polylinePoints - Array of points forming the polyline [x,y,z][]
+     * @param arrowSize - Length of the arrow head lines
+     * @param arrowAngleDeg - Angle of the arrow head in degrees (from direction vector)
+     * @returns Array of 4 line segments, each as [[startX, startY, startZ], [endX, endY, endZ]], or empty array if not enough points
+     */
+    protected computeArrowHeadLines(
+        polylinePoints: Base.Point3[],
+        arrowSize: number,
+        arrowAngleDeg: number
+    ): Base.Point3[][] {
+        if (polylinePoints.length < 2 || arrowSize <= 0) {
+            return [];
+        }
+
+        // Get the last two points to determine direction
+        const endPoint = polylinePoints[polylinePoints.length - 1];
+        const prevPoint = polylinePoints[polylinePoints.length - 2];
+
+        // Compute direction vector (from prev to end)
+        const dx = endPoint[0] - prevPoint[0];
+        const dy = endPoint[1] - prevPoint[1];
+        const dz = endPoint[2] - prevPoint[2];
+
+        const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (length < 1e-10) {
+            return [];
+        }
+
+        // Normalize direction
+        const dirX = dx / length;
+        const dirY = dy / length;
+        const dirZ = dz / length;
+
+        // Convert angle to radians
+        const angleRad = (arrowAngleDeg * Math.PI) / 180;
+        const cosAngle = Math.cos(angleRad);
+        const sinAngle = Math.sin(angleRad);
+
+        // Find a perpendicular vector using cross product with a reference vector
+        // Choose reference vector that is not parallel to direction
+        let refX = 0, refY = 1, refZ = 0;
+        const dotWithY = Math.abs(dirY);
+        if (dotWithY > 0.9) {
+            // Direction is nearly parallel to Y, use X instead
+            refX = 1; refY = 0; refZ = 0;
+        }
+
+        // Cross product: perp1 = dir × ref
+        let perp1X = dirY * refZ - dirZ * refY;
+        let perp1Y = dirZ * refX - dirX * refZ;
+        let perp1Z = dirX * refY - dirY * refX;
+
+        // Normalize perp1
+        const perp1Len = Math.sqrt(perp1X * perp1X + perp1Y * perp1Y + perp1Z * perp1Z);
+        perp1X /= perp1Len;
+        perp1Y /= perp1Len;
+        perp1Z /= perp1Len;
+
+        // Cross product: perp2 = dir × perp1 (second perpendicular)
+        let perp2X = dirY * perp1Z - dirZ * perp1Y;
+        let perp2Y = dirZ * perp1X - dirX * perp1Z;
+        let perp2Z = dirX * perp1Y - dirY * perp1X;
+
+        // Normalize perp2
+        const perp2Len = Math.sqrt(perp2X * perp2X + perp2Y * perp2Y + perp2Z * perp2Z);
+        perp2X /= perp2Len;
+        perp2Y /= perp2Len;
+        perp2Z /= perp2Len;
+
+        // Arrow head points: 4 points at the end of arrow lines
+        // Each line goes from endPoint back along direction with perpendicular offset
+        // The backward component: -dir * arrowSize * cos(angle)
+        // The perpendicular component: perp * arrowSize * sin(angle)
+        const backComponent = arrowSize * cosAngle;
+        const perpComponent = arrowSize * sinAngle;
+
+        // 4 arrow head endpoints using both perpendicular vectors
+        const arrowLines: Base.Point3[][] = [];
+
+        // Arrow line 1: +perp1 direction
+        arrowLines.push([
+            endPoint,
+            [
+                endPoint[0] - dirX * backComponent + perp1X * perpComponent,
+                endPoint[1] - dirY * backComponent + perp1Y * perpComponent,
+                endPoint[2] - dirZ * backComponent + perp1Z * perpComponent
+            ]
+        ]);
+
+        // Arrow line 2: -perp1 direction
+        arrowLines.push([
+            endPoint,
+            [
+                endPoint[0] - dirX * backComponent - perp1X * perpComponent,
+                endPoint[1] - dirY * backComponent - perp1Y * perpComponent,
+                endPoint[2] - dirZ * backComponent - perp1Z * perpComponent
+            ]
+        ]);
+
+        // Arrow line 3: +perp2 direction
+        arrowLines.push([
+            endPoint,
+            [
+                endPoint[0] - dirX * backComponent + perp2X * perpComponent,
+                endPoint[1] - dirY * backComponent + perp2Y * perpComponent,
+                endPoint[2] - dirZ * backComponent + perp2Z * perpComponent
+            ]
+        ]);
+
+        // Arrow line 4: -perp2 direction
+        arrowLines.push([
+            endPoint,
+            [
+                endPoint[0] - dirX * backComponent - perp2X * perpComponent,
+                endPoint[1] - dirY * backComponent - perp2Y * perpComponent,
+                endPoint[2] - dirZ * backComponent - perp2Z * perpComponent
+            ]
+        ]);
+
+        return arrowLines;
+    }
+
+    /**
+     * Compute arrow head lines for multiple polylines
+     * @param polylines - Array of polylines, each as array of points
+     * @param arrowSize - Length of the arrow head lines
+     * @param arrowAngleDeg - Angle of the arrow head in degrees
+     * @returns Array of all arrow line segments from all polylines
+     */
+    protected computeArrowHeadLinesForPolylines(
+        polylines: Base.Point3[][],
+        arrowSize: number,
+        arrowAngleDeg: number
+    ): Base.Point3[][] {
+        const allArrowLines: Base.Point3[][] = [];
+        
+        for (const polyline of polylines) {
+            const arrowLines = this.computeArrowHeadLines(polyline, arrowSize, arrowAngleDeg);
+            allArrowLines.push(...arrowLines);
+        }
+        
+        return allArrowLines;
+    }
+
+    /**
+     * Convert arrow lines to flat polyline format for rendering
+     * Each arrow line is converted to a 2-point polyline (start and end)
+     * @param arrowLines - Array of line segments [[start], [end]]
+     * @returns Array of polylines suitable for drawing
+     */
+    protected arrowLinesToPolylines(arrowLines: Base.Point3[][]): Base.Point3[][] {
+        return arrowLines;
+    }
+
+    // ============== Polyline Processing Methods ==============
+
     /**
      * Process polyline points, handling closed polylines by adding first point to end
      * @param polylines - Array of polylines

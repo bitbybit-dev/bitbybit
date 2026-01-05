@@ -245,7 +245,7 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }) {
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number }) {
         let colours = inputs.colours;
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
@@ -280,7 +280,9 @@ export class DrawHelper extends DrawHelperCore {
             inputs.size,
             inputs.opacity,
             colours,
-            strategy
+            strategy,
+            inputs.arrowSize,
+            inputs.arrowAngle
         );
         if (inputs.polylinesMesh && inputs.updatable) {
             if (inputs.polylinesMesh.children[0].name !== polylines.name) {
@@ -320,7 +322,7 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.pointMesh;
     }
 
-    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<THREEJS.Group>): THREEJS.Group {
+    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<THREEJS.Group> & { arrowSize?: number, arrowAngle?: number }): THREEJS.Group {
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
             points.push(points[0]);
@@ -331,18 +333,22 @@ export class DrawHelper extends DrawHelperCore {
             inputs.updatable,
             inputs.size,
             inputs.opacity,
-            inputs.colours
+            inputs.colours,
+            inputs.arrowSize,
+            inputs.arrowAngle
         );
     }
 
     drawPolyline(mesh: THREEJS.Group,
         pointsToDraw: Inputs.Base.Point3[],
-        updatable: boolean, size: number, opacity: number, colours: string | string[]): THREEJS.Group {
+        updatable: boolean, size: number, opacity: number, colours: string | string[],
+        arrowSize = 0, arrowAngle = 30): THREEJS.Group {
         let lineSegments: THREEJS.LineSegments;
         if (mesh && mesh.children.length > 0) {
             lineSegments = mesh.children[0] as THREEJS.LineSegments;
         }
-        const polylines = this.drawPolylines(lineSegments, [pointsToDraw], updatable, size, opacity, colours);
+        const polylines = this.drawPolylines(lineSegments, [pointsToDraw], updatable, size, opacity, colours, 
+            Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle);
         if (!mesh) {
             mesh = new THREEJS.Group();
             mesh.name = this.generateEntityId("polyline");
@@ -673,7 +679,7 @@ export class DrawHelper extends DrawHelperCore {
         jscadMesh.applyMatrix4(matrix4);
     }
 
-    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions) {
+    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>) {
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
@@ -733,7 +739,17 @@ export class DrawHelper extends DrawHelperCore {
                 const ev = edge.vertex_coord.filter(s => s !== undefined);
                 polylineEdgePoints.push(ev);
             });
-            const line = this.drawPolylines(undefined, polylineEdgePoints, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
+            const line = this.drawPolylines(
+                undefined, 
+                polylineEdgePoints, 
+                false, 
+                inputs.edgeWidth, 
+                inputs.edgeOpacity, 
+                inputs.edgeColour,
+                Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+                options.edgeArrowSize,
+                options.edgeArrowAngle
+            );
             shapeGroup.add(line);
         }
 
@@ -811,13 +827,17 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private drawPolylines(lineSegments: THREEJS.LineSegments, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
-        size: number, opacity: number, colours: string | string[], colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder) {
+        size: number, opacity: number, colours: string | string[], colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+        arrowSize = 0, arrowAngle = 30) {
         if (polylinesPoints && polylinesPoints.length > 0) {
             const lineVertices = [];
-            // Track how many line segments (pairs of vertices) each polyline has
+            // Track how many line segments (pairs of vertices) each polyline/arrow has
             const polylineSegmentCounts: number[] = [];
+            // Track colors in order of segments (polyline, then its arrows, then next polyline, etc.)
+            const allColors: string[] = [];
 
-            polylinesPoints.forEach(pts => {
+            polylinesPoints.forEach((pts, polylineIndex) => {
+                const polylineColor = this.resolveColorForEntity(colours, polylineIndex, polylinesPoints.length, colorMapStrategy);
                 let segmentCount = 0;
                 for (let i = 0; i < pts.length - 1; i++) {
                     const c = pts[i];
@@ -836,23 +856,36 @@ export class DrawHelper extends DrawHelperCore {
                     segmentCount++;
                 }
                 polylineSegmentCounts.push(segmentCount);
+                allColors.push(polylineColor);
+                
+                // Compute arrow head lines if arrowSize > 0
+                if (arrowSize > 0 && pts.length >= 2) {
+                    const arrowLines = this.computeArrowHeadLines(pts as Inputs.Base.Point3[], arrowSize, arrowAngle);
+                    arrowLines.forEach(arrowLine => {
+                        lineVertices.push(new THREEJS.Vector3(arrowLine[0][0], arrowLine[0][1], arrowLine[0][2]));
+                        lineVertices.push(new THREEJS.Vector3(arrowLine[1][0], arrowLine[1][1], arrowLine[1][2]));
+                        polylineSegmentCounts.push(1); // Each arrow line is 1 segment
+                        allColors.push(polylineColor); // Arrow uses same color as its parent polyline
+                    });
+                }
             });
             let lines: THREEJS.LineSegments;
+            
             if (lineSegments && updatable) {
                 if (lineSegments?.userData?.linesForRenderLengths === polylinesPoints.map(l => l.length).toString()) {
                     lineSegments.geometry.clearGroups();
                     lineSegments.geometry.setFromPoints(lineVertices);
                     // Update colors when updating geometry
-                    const lineColors = this.computePolylineColors(colours, polylineSegmentCounts, colorMapStrategy);
+                    const lineColors = this.computePolylineColorsWithExplicit(polylineSegmentCounts, allColors);
                     lineSegments.geometry.setAttribute("color", new THREEJS.Float32BufferAttribute(lineColors, 3));
                     return lineSegments;
                 } else {
-                    lines = this.createLineGeometry(lineVertices, colours, size, polylineSegmentCounts, colorMapStrategy);
+                    lines = this.createLineGeometry(lineVertices, colours, size, polylineSegmentCounts, colorMapStrategy, allColors);
                     lines.userData = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
                     return lines;
                 }
             } else {
-                lines = this.createLineGeometry(lineVertices, colours, size, polylineSegmentCounts, colorMapStrategy);
+                lines = this.createLineGeometry(lineVertices, colours, size, polylineSegmentCounts, colorMapStrategy, allColors);
                 lines.userData = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
                 return lines;
             }
@@ -890,17 +923,46 @@ export class DrawHelper extends DrawHelperCore {
         return lineColors;
     }
 
+    /**
+     * Compute per-vertex colors for polylines using an explicit color array
+     * @param polylineSegmentCounts - Number of line segments per polyline/arrow line
+     * @param explicitColors - Array of colors, one per polyline/arrow line
+     * @returns Flat array of RGB values for each vertex
+     */
+    private computePolylineColorsWithExplicit(
+        polylineSegmentCounts: number[],
+        explicitColors: string[]
+    ): number[] {
+        const lineColors: number[] = [];
+        
+        polylineSegmentCounts.forEach((segmentCount, index) => {
+            const colorHex = explicitColors[index] || explicitColors[0] || "#ff0000";
+            const color = new THREEJS.Color(colorHex);
+            
+            // Each segment has 2 vertices, apply the same color to both
+            for (let i = 0; i < segmentCount * 2; i++) {
+                lineColors.push(color.r, color.g, color.b);
+            }
+        });
+        
+        return lineColors;
+    }
+
     private createLineGeometry(
         lineVertices: THREEJS.Vector3[], 
         colours: string | string[], 
         size: number, 
         polylineSegmentCounts: number[] = [], 
-        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+        explicitColors?: string[]
     ) {
         const lineGeometry = new THREEJS.BufferGeometry().setFromPoints(lineVertices);
 
         let lineColors: number[];
-        if (polylineSegmentCounts.length > 0) {
+        if (explicitColors && explicitColors.length > 0) {
+            // Use explicit colors when provided (includes arrow colors)
+            lineColors = this.computePolylineColorsWithExplicit(polylineSegmentCounts, explicitColors);
+        } else if (polylineSegmentCounts.length > 0) {
             // Use per-polyline coloring with the specified strategy
             lineColors = this.computePolylineColors(colours, polylineSegmentCounts, colorMapStrategy);
         } else {

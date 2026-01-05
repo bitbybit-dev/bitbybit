@@ -397,7 +397,7 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.linesMesh;
     }
 
-    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh>): BABYLON.GreasedLineMesh {
+    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh> & { arrowSize?: number, arrowAngle?: number }): BABYLON.GreasedLineMesh {
         // handle jscad isClosed case
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
@@ -409,7 +409,9 @@ export class DrawHelper extends DrawHelperCore {
             inputs.updatable,
             inputs.size,
             inputs.opacity,
-            inputs.colours
+            inputs.colours,
+            inputs.arrowSize,
+            inputs.arrowAngle
         );
     }
 
@@ -580,12 +582,14 @@ export class DrawHelper extends DrawHelperCore {
 
     drawPolyline(mesh: BABYLON.GreasedLineMesh,
         pointsToDraw: number[][],
-        updatable: boolean, size: number, opacity: number, colours: string | string[]): BABYLON.GreasedLineMesh {
-        mesh = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours, 1e-7, true);
+        updatable: boolean, size: number, opacity: number, colours: string | string[],
+        arrowSize = 0, arrowAngle = 30): BABYLON.GreasedLineMesh {
+        mesh = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours, 1e-7, true,
+            Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle);
         return mesh;
     }
 
-    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }) {
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number }) {
         let colours = inputs.colours;
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
@@ -618,16 +622,21 @@ export class DrawHelper extends DrawHelperCore {
             colours,
             1e-7,
             true,
-            strategy
+            strategy,
+            inputs.arrowSize,
+            inputs.arrowAngle
         );
     }
 
     drawPolylines(
         mesh: BABYLON.GreasedLineMesh, polylinePoints: number[][][], updatable: boolean,
         size: number, opacity: number, colours: string | string[], tolerance = 1e-7, segmentize = false,
-        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+        arrowSize = 0, arrowAngle = 30
     ): BABYLON.GreasedLineMesh | undefined {
         const linesForRender: number[][] = [];
+        const arrowLinesForRender: number[][] = [];
+        
         if (polylinePoints && polylinePoints.length > 0) {
             polylinePoints.forEach(polyline => {
                 const points = polyline.map(p => p.length === 2 ? [p[0], p[1], 0] : p);
@@ -640,26 +649,50 @@ export class DrawHelper extends DrawHelperCore {
                 } else {
                     linesForRender.push(points.flat());
                 }
+                
+                // Compute arrow head lines if arrowSize > 0
+                if (arrowSize > 0 && points.length >= 2) {
+                    const arrowLines = this.computeArrowHeadLines(points as Inputs.Base.Point3[], arrowSize, arrowAngle);
+                    arrowLines.forEach(arrowLine => {
+                        arrowLinesForRender.push(arrowLine.flat());
+                    });
+                }
             });
+            
+            // Add arrow lines to lines for render with matching colors
+            const allLinesForRender = [...linesForRender, ...arrowLinesForRender];
+            
             const width = size / 100;
             
             // Resolve colors for each polyline using the color mapping strategy
             const resolvedColors = this.resolveAllColors(colours, polylinePoints.length, colorMapStrategy);
-            const babylonColors = resolvedColors.map(c => BABYLON.Color3.FromHexString(c));
+            
+            // Extend colors for arrow lines - each polyline has 4 arrow lines, use same color as parent polyline
+            const arrowColors: string[] = [];
+            if (arrowSize > 0) {
+                resolvedColors.forEach(color => {
+                    // 4 arrow lines per polyline, each gets the same color as the polyline
+                    for (let i = 0; i < 4; i++) {
+                        arrowColors.push(color);
+                    }
+                });
+            }
+            const allColors = [...resolvedColors, ...arrowColors];
+            const babylonColors = allColors.map(c => BABYLON.Color3.FromHexString(c));
 
             if (mesh && updatable) {
                 // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
-                if (!mesh?.metadata?.linesForRenderLengths.some((s, i) => s !== linesForRender[i].length)) {
-                    mesh.setPoints(linesForRender);
+                if (!mesh?.metadata?.linesForRenderLengths.some((s, i) => s !== allLinesForRender[i]?.length)) {
+                    mesh.setPoints(allLinesForRender);
                     return mesh as BABYLON.GreasedLineMesh;
                 } else {
                     mesh.dispose();
-                    mesh = this.createGreasedPolylines(updatable, linesForRender, width, babylonColors, opacity);
-                    mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
+                    mesh = this.createGreasedPolylines(updatable, allLinesForRender, width, babylonColors, opacity);
+                    mesh.metadata = { linesForRenderLengths: allLinesForRender.map(l => l.length) };
                 }
             } else {
-                mesh = this.createGreasedPolylines(updatable, linesForRender, width, babylonColors, opacity);
-                mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
+                mesh = this.createGreasedPolylines(updatable, allLinesForRender, width, babylonColors, opacity);
+                mesh.metadata = { linesForRenderLengths: allLinesForRender.map(l => l.length) };
             }
 
             return mesh;
@@ -1212,7 +1245,19 @@ export class DrawHelper extends DrawHelperCore {
                 const ev = edge.vertex_coord.filter(s => s !== undefined);
                 evs.push(ev);
             });
-            const mesh = this.drawPolylines(dummy, evs, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
+            const mesh = this.drawPolylines(
+                dummy, 
+                evs, 
+                false, 
+                inputs.edgeWidth, 
+                inputs.edgeOpacity, 
+                inputs.edgeColour,
+                1e-7,
+                false,
+                Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+                options.edgeArrowSize,
+                options.edgeArrowAngle
+            );
             mesh.parent = shapeMesh;
         }
 

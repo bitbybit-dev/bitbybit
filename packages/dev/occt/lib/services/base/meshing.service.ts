@@ -197,6 +197,15 @@ export class MeshingService {
                 ]);
                 tangDefValues.push(tangDefVal);
             }
+            
+            // Check if the edge orientation is reversed
+            // GCPnts_TangentialDeflection meshes the curve in its natural direction,
+            // so we need to reverse the points if the edge orientation is TopAbs_REVERSED
+            const orientation = myEdge.Orientation_1();
+            if (orientation === this.occ.TopAbs_Orientation.TopAbs_REVERSED) {
+                thisEdge.vertex_coord.reverse();
+            }
+            
             thisEdge.edge_index = index;
 
             edgeList.push(thisEdge);

@@ -636,5 +636,84 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
     console.timeEnd("Draw polyline grid");
     console.log("30x30x30 polyline grid drawn with per-polyline colors.");
 
+    // --- Arrow Examples ---
+    // Example: Draw a single polyline with an arrow at the end
+    const arrowPolyline = {
+        points: [
+            [-80, 0, 0],
+            [-80, 10, 5],
+            [-70, 15, 10],
+            [-60, 10, 5],
+        ],
+    } as Inputs.Base.Polyline3;
+    const arrowPolylineOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    arrowPolylineOptions.colours = "#00ff88"; // Green
+    arrowPolylineOptions.size = 3;
+    arrowPolylineOptions.arrowSize = 3; // Arrow size
+    arrowPolylineOptions.arrowAngle = 25; // Arrow angle in degrees
+    await bitbybit.draw.drawAnyAsync({
+        entity: arrowPolyline,
+        options: arrowPolylineOptions,
+    });
+    console.log("Polyline with arrow drawn.");
+
+    // Example: Draw multiple polylines with arrows (different sizes)
+    const arrowPolylines = [
+        {
+            points: [
+                [-80, -30, 0],
+                [-70, -25, 0],
+                [-60, -30, 0],
+            ],
+        },
+        {
+            points: [
+                [-80, -35, 0],
+                [-70, -30, 0],
+                [-60, -35, 0],
+            ],
+        },
+        {
+            points: [
+                [-80, -40, 0],
+                [-70, -35, 0],
+                [-60, -40, 0],
+            ],
+        },
+    ] as Inputs.Base.Polyline3[];
+    const arrowPolylinesOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    arrowPolylinesOptions.colours = ["#ff0000", "#00ff00", "#0000ff"]; // RGB
+    arrowPolylinesOptions.size = 2;
+    arrowPolylinesOptions.arrowSize = 2.5;
+    arrowPolylinesOptions.arrowAngle = 30;
+    await bitbybit.draw.drawAnyAsync({
+        entity: arrowPolylines,
+        options: arrowPolylinesOptions,
+    });
+    console.log("Multiple polylines with arrows drawn.");
+
+    // Example: Draw OCCT wire with edge arrows to show orientation
+    const wirePoints = [
+        [-80, -60, 0],
+        [-70, -55, 5],
+        [-60, -60, 0],
+        [-50, -65, -5],
+    ] as Inputs.Base.Point3[];
+    const wire = await bitbybit.occt.shapes.wire.createPolylineWire({
+        points: wirePoints,
+    });
+    const wireDrawOptions = new Inputs.Draw.DrawOcctShapeOptions();
+    wireDrawOptions.edgeColour = "#ff8800"; // Orange edges
+    wireDrawOptions.edgeWidth = 3;
+    wireDrawOptions.drawEdges = true;
+    wireDrawOptions.drawFaces = false;
+    wireDrawOptions.edgeArrowSize = 3; // Arrow size on edges
+    wireDrawOptions.edgeArrowAngle = 25; // Arrow angle
+    await bitbybit.draw.drawAnyAsync({
+        entity: wire,
+        options: wireDrawOptions,
+    });
+    console.log("OCCT wire with edge orientation arrows drawn.");
+
     console.log("All drawing examples completed.");
 }

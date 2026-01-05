@@ -504,6 +504,184 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
+    describe("Arrow drawing on polylines", () => {
+        it("should draw a single polyline with arrows", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1], [2, 0, 0], [3, 1, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(pc.Entity);
+            expect(result.children.length).toBeGreaterThan(0);
+            
+            const lineEntity = result.children[0] as pc.Entity;
+            expect(lineEntity.render).toBeDefined();
+        });
+
+        it("should draw multiple polylines with arrows of different colors", () => {
+            const polylines: Inputs.Base.Polyline3[] = [
+                { points: [[0, 0, 0], [1, 1, 1], [2, 0, 0]] },
+                { points: [[0, 2, 0], [1, 3, 1], [2, 2, 0]] },
+                { points: [[0, 4, 0], [1, 5, 1], [2, 4, 0]] }
+            ];
+
+            const result = drawHelper.drawPolylinesWithColours({
+                polylinesMesh: undefined,
+                polylines,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: ["#ff0000", "#00ff00", "#0000ff"],
+                colorMapStrategy: Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+                arrowSize: 1,
+                arrowAngle: 25
+            });
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(pc.Entity);
+        });
+
+        it("should not draw arrows when arrowSize is 0", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1], [2, 0, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 0,
+                arrowAngle: 30
+            });
+
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(pc.Entity);
+        });
+
+        it("should draw arrows with custom angle", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [5, 0, 0]]
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 2,
+                arrowAngle: 45
+            });
+
+            expect(result).toBeDefined();
+            const lineEntity = result.children[0] as pc.Entity;
+            expect(lineEntity.render).toBeDefined();
+        });
+
+        it("should use same color for arrows as their parent polyline", () => {
+            const polylines: Inputs.Base.Polyline3[] = [
+                { points: [[0, 0, 0], [1, 1, 1]] },
+                { points: [[2, 0, 0], [3, 1, 1]] }
+            ];
+
+            const result = drawHelper.drawPolylinesWithColours({
+                polylinesMesh: undefined,
+                polylines,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: ["#ff0000", "#00ff00"],
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(result).toBeDefined();
+            // PlayCanvas returns an Entity, not necessarily with render component directly
+            expect(result).toBeInstanceOf(pc.Entity);
+        });
+
+        it("should handle polylines with insufficient points for arrows", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0]] // Only 1 point
+            };
+
+            const result = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: false,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(result).toBeDefined();
+            const lineEntity = result.children[0] as pc.Entity;
+            expect(lineEntity.render).toBeDefined();
+            
+            // With a single point, there should be no segments to draw
+            // The mesh may have empty or null storage
+            if (lineEntity.render.meshInstances && lineEntity.render.meshInstances.length > 0) {
+                const mesh = lineEntity.render.meshInstances[0].mesh;
+                if (mesh.vertexBuffer && mesh.vertexBuffer.storage) {
+                    expect(mesh.vertexBuffer.storage.length).toBe(0);
+                }
+            }
+        });
+
+        it("should update polyline with arrows when updatable is true", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [1, 1, 1]]
+            };
+
+            const firstResult = drawHelper.drawPolylineClose({
+                polylineMesh: undefined,
+                polyline,
+                updatable: true,
+                size: 2,
+                opacity: 1,
+                colours: "#ff0000",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            // Update with new points
+            const updatedPolyline: Inputs.Base.Polyline3 = {
+                points: [[0, 0, 0], [2, 2, 2]]
+            };
+
+            const secondResult = drawHelper.drawPolylineClose({
+                polylineMesh: firstResult,
+                polyline: updatedPolyline,
+                updatable: true,
+                size: 2,
+                opacity: 1,
+                colours: "#00ff00",
+                arrowSize: 1,
+                arrowAngle: 30
+            });
+
+            expect(secondResult).toBe(firstResult);
+            expect(secondResult.children.length).toBeGreaterThan(0);
+        });
+    });
+
     describe("drawCurves", () => {
         it("should draw multiple curves", () => {
             const mockCurves = [

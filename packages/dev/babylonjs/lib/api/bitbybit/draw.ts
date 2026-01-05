@@ -580,7 +580,7 @@ export class Draw extends DrawCore {
     }
 
     private handleOcctShape(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.OCCT.DrawShapeDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -595,7 +595,7 @@ export class Draw extends DrawCore {
     }
 
     private handleOcctShapes(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.OCCT.DrawShapeDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }

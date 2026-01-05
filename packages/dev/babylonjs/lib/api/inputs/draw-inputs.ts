@@ -125,13 +125,15 @@ export namespace Draw {
      * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
      */
     export class DrawBasicGeometryOptions {
-        constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean, colorMapStrategy?: Base.colorMapStrategyEnum) {
+        constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean, colorMapStrategy?: Base.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number) {
             if (colours !== undefined) { this.colours = colours; }
             if (size !== undefined) { this.size = size; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (updatable !== undefined) { this.updatable = updatable; }
             if (hidden !== undefined) { this.hidden = hidden; }
             if (colorMapStrategy !== undefined) { this.colorMapStrategy = colorMapStrategy; }
+            if (arrowSize !== undefined) { this.arrowSize = arrowSize; }
+            if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
         }
         /**
          * Basic geometry colours to use for lines, points, polylines, surfaces, jscad meshes.
@@ -149,12 +151,12 @@ export namespace Draw {
         colorMapStrategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder;
         /**
          * Size affect how big the drawn points are and how wide lines are.
-         * @default 0.1
+         * @default 1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        size = 0.1;
+        size = 1;
         /**
          * Opacity of the point 0 to 1
          * @default 1
@@ -191,6 +193,22 @@ export namespace Draw {
          * @step 0.1
          */
         backFaceOpacity = 1;
+        /**
+         * Size of the arrow head at the end of lines and polylines. Set to 0 to disable arrows.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        arrowSize = 0;
+        /**
+         * Angle of the arrow head in degrees. Controls how wide the arrow head spreads.
+         * @default 15
+         * @minimum 0
+         * @maximum 90
+         * @step 1
+         */
+        arrowAngle = 15;
     }
 
     /**
@@ -307,7 +325,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, edgeArrowSize?: number, edgeArrowAngle?: number) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -326,6 +344,8 @@ export namespace Draw {
             if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
             if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
             if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
+            if (edgeArrowSize !== undefined) { this.edgeArrowSize = edgeArrowSize; }
+            if (edgeArrowAngle !== undefined) { this.edgeArrowAngle = edgeArrowAngle; }
         }
         /**
          * Face opacity value between 0 and 1
@@ -457,6 +477,22 @@ export namespace Draw {
          * @step 0.1
          */
         backFaceOpacity = 1;
+        /**
+         * Size of arrow heads at the end of edges to indicate edge/wire orientation. Set to 0 to disable arrows.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        edgeArrowSize = 0;
+        /**
+         * Angle of the arrow head in degrees. Controls how wide the arrow head spreads.
+         * @default 30
+         * @minimum 0
+         * @maximum 90
+         * @step 1
+         */
+        edgeArrowAngle = 15;
     }
     export class DrawOcctShapeSimpleOptions {
         constructor(precision?: number, drawFaces?: boolean, faceColour?: Base.Color, drawEdges?: boolean, edgeColour?: Base.Color, edgeWidth?: number, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {

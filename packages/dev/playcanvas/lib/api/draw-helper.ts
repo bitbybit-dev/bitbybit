@@ -198,7 +198,7 @@ export class DrawHelper extends DrawHelperCore {
      * @param inputs - Polyline drawing inputs
      * @returns Entity containing all polylines
      */
-    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<pc.Entity> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): pc.Entity {
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<pc.Entity> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number }): pc.Entity {
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
         const processedPoints = this.processPolylinePoints(inputs.polylines as Inputs.Base.Polyline3[]);
@@ -216,7 +216,9 @@ export class DrawHelper extends DrawHelperCore {
             inputs.size,
             inputs.opacity,
             inputs.colours,
-            strategy
+            strategy,
+            inputs.arrowSize,
+            inputs.arrowAngle
         );
         
         // Wrap in container group
@@ -242,7 +244,7 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.pointMesh;
     }
 
-    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<pc.Entity>): pc.Entity {
+    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<pc.Entity> & { arrowSize?: number, arrowAngle?: number }): pc.Entity {
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
             points.push(points[0]);
@@ -253,14 +255,18 @@ export class DrawHelper extends DrawHelperCore {
             inputs.updatable,
             inputs.size,
             inputs.opacity,
-            inputs.colours
+            inputs.colours,
+            inputs.arrowSize,
+            inputs.arrowAngle
         );
     }
 
     drawPolyline(mesh: pc.Entity,
         pointsToDraw: Inputs.Base.Point3[],
-        updatable: boolean, size: number, opacity: number, colours: string | string[]): pc.Entity {
-        const polylines = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours);
+        updatable: boolean, size: number, opacity: number, colours: string | string[],
+        arrowSize = 0, arrowAngle = 30): pc.Entity {
+        const polylines = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours,
+            Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle);
         if (!mesh) {
             mesh = new pc.Entity(this.generateEntityId("polyline"));
             mesh.addChild(polylines);
@@ -656,7 +662,7 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions): Promise<pc.Entity> {
+    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
 
@@ -716,7 +722,17 @@ export class DrawHelper extends DrawHelperCore {
                 const ev = edge.vertex_coord.filter(s => s !== undefined);
                 polylineEdgePoints.push(ev);
             });
-            const line = this.drawPolylines(undefined, polylineEdgePoints, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
+            const line = this.drawPolylines(
+                undefined, 
+                polylineEdgePoints, 
+                false, 
+                inputs.edgeWidth, 
+                inputs.edgeOpacity, 
+                inputs.edgeColour,
+                Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+                options.edgeArrowSize,
+                options.edgeArrowAngle
+            );
             shapeGroup.addChild(line);
         }
 
@@ -930,6 +946,96 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
+     * Create a new polyline entity with explicit colors (for arrow support)
+     * @param linePositions - Line positions array
+     * @param size - Line width
+     * @param polylinePoints - Original polyline points for signature
+     * @param segmentCounts - Number of segments per polyline/arrow
+     * @param explicitColors - Explicit color for each polyline/arrow segment
+     * @returns New polyline entity with metadata
+     */
+    private createPolylineEntityWithExplicitColors(
+        linePositions: number[],
+        size: number,
+        polylinePoints: Inputs.Base.Vector3[][],
+        segmentCounts: number[],
+        explicitColors: string[]
+    ): PolylineEntity {
+        const entity = this.createLineEntityWithExplicitColors(linePositions, segmentCounts, explicitColors) as PolylineEntity;
+        entity.bitbybitMeta = {
+            linesForRenderLengths: this.computePolylineSignature(polylinePoints)
+        };
+        return entity;
+    }
+
+    /**
+     * Compute per-vertex colors using explicit color array
+     * @param segmentCounts - Number of line segments per polyline/arrow
+     * @param explicitColors - Explicit color for each polyline/arrow
+     * @returns Flat array of RGBA values (0-255) for each vertex
+     */
+    private computePolylineColorsWithExplicit(
+        segmentCounts: number[],
+        explicitColors: string[]
+    ): number[] {
+        const lineColors: number[] = [];
+        
+        segmentCounts.forEach((segmentCount, index) => {
+            const colorHex = explicitColors[index] || explicitColors[0] || "#ff0000";
+            const color = this.hexToColor(colorHex);
+            
+            // Each segment has 2 vertices, apply the same color to both (RGBA as 0-255)
+            for (let i = 0; i < segmentCount * 2; i++) {
+                lineColors.push(
+                    Math.round(color.r * 255),
+                    Math.round(color.g * 255),
+                    Math.round(color.b * 255),
+                    255 // Full opacity
+                );
+            }
+        });
+        
+        return lineColors;
+    }
+
+    /**
+     * Create line entity with explicit colors
+     * @param linePositions - Line positions array
+     * @param segmentCounts - Number of segments per polyline
+     * @param explicitColors - Explicit color for each segment group
+     * @returns Entity containing lines
+     */
+    private createLineEntityWithExplicitColors(
+        linePositions: number[],
+        segmentCounts: number[],
+        explicitColors: string[]
+    ): pc.Entity {
+        const mesh = new pc.Mesh(this.context.app.graphicsDevice);
+        mesh.setPositions(linePositions);
+        
+        const vertexColors = this.computePolylineColorsWithExplicit(segmentCounts, explicitColors);
+        mesh.setColors32(vertexColors);
+        
+        mesh.update(pc.PRIMITIVE_LINES);
+
+        // Create material that uses vertex colors
+        const mat = new pc.StandardMaterial();
+        mat.diffuseVertexColor = true;
+        mat.emissiveVertexColor = true;
+        mat.diffuse = new pc.Color(1, 1, 1);
+        mat.emissive = new pc.Color(1, 1, 1);
+        mat.useLighting = false;
+        mat.update();
+
+        const meshInstance = new pc.MeshInstance(mesh, mat);
+        const lineEntity = new pc.Entity(this.generateEntityId("lines"));
+        lineEntity.addComponent("render", {
+            meshInstances: [meshInstance]
+        });
+        return lineEntity;
+    }
+
+    /**
      * Draw multiple polylines using PlayCanvas line primitives
      * @param existingEntity - Optional existing entity to update
      * @param polylinesPoints - Array of polylines
@@ -947,14 +1053,40 @@ export class DrawHelper extends DrawHelperCore {
         size: number, 
         opacity: number, 
         colours: string | string[],
-        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
+        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+        arrowSize = 0,
+        arrowAngle = 30
     ): pc.Entity {
         // Validate input
         if (!polylinesPoints || polylinesPoints.length === 0) {
             return undefined;
         }
         
-        const { positions: linePositions, segmentCounts } = this.computeLinePositionsWithSegmentCounts(polylinesPoints);
+        // Compute arrow lines if arrowSize > 0
+        const arrowLinePoints: Inputs.Base.Vector3[][] = [];
+        const arrowLineColors: string[] = [];
+        
+        if (arrowSize > 0) {
+            polylinesPoints.forEach((pts, polylineIndex) => {
+                if (pts.length >= 2) {
+                    const arrowLines = this.computeArrowHeadLines(pts as Inputs.Base.Point3[], arrowSize, arrowAngle);
+                    const polylineColor = this.resolveColorForEntity(colours, polylineIndex, polylinesPoints.length, colorMapStrategy);
+                    arrowLines.forEach(arrowLine => {
+                        arrowLinePoints.push(arrowLine);
+                        arrowLineColors.push(polylineColor);
+                    });
+                }
+            });
+        }
+        
+        // Combine original polylines with arrow lines
+        const allPolylinePoints = [...polylinesPoints, ...arrowLinePoints];
+        
+        const { positions: linePositions, segmentCounts } = this.computeLinePositionsWithSegmentCounts(allPolylinePoints);
+        
+        // Compute explicit colors for all polylines + arrows
+        const resolvedPolylineColors = this.resolveAllColors(colours, polylinesPoints.length, colorMapStrategy);
+        const allExplicitColors = [...resolvedPolylineColors, ...arrowLineColors];
         
         // Try to update existing entity
         if (this.canUpdatePolylineEntity(existingEntity, polylinesPoints, updatable)) {
@@ -965,14 +1097,13 @@ export class DrawHelper extends DrawHelperCore {
             console.warn("Polyline update failed, creating new entity");
         }
         
-        // Create new entity with per-polyline colors
-        return this.createPolylineEntityWithMetadata(
+        // Create new entity with per-polyline colors (including arrows)
+        return this.createPolylineEntityWithExplicitColors(
             linePositions, 
-            colours, 
             size, 
-            polylinesPoints,
+            allPolylinePoints,
             segmentCounts,
-            colorMapStrategy
+            allExplicitColors
         );
     }
 
