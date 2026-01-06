@@ -20,7 +20,9 @@ export class CrossSectionOperations {
     revolve(inputs: Inputs.Manifold.RevolveDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
         const res = inputs.crossSection.revolve(inputs.circularSegments, inputs.revolveDegrees);
         if (inputs.matchProfile) {
-            return res.rotate([90, 0, 0]);
+            // Manifold revolves around Y-axis then sets it as Z-axis
+            // We need to rotate -90 degrees around X to make Y point up correctly
+            return res.rotate([-90, 0, 0]);
         } else {
             return res;
         }

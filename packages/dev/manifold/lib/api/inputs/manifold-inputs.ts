@@ -35,7 +35,7 @@ export namespace Manifold {
         /**
          * Provide options without default values
          */
-        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean) {
+        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
@@ -44,6 +44,9 @@ export namespace Manifold {
             if (crossSectionWidth !== undefined) { this.crossSectionWidth = crossSectionWidth; }
             if (crossSectionOpacity !== undefined) { this.crossSectionOpacity = crossSectionOpacity; }
             if (computeNormals !== undefined) { this.computeNormals = computeNormals; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Manifold geometry
@@ -92,12 +95,30 @@ export namespace Manifold {
          * @default false
          */
         computeNormals = false;
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     export class DrawManifoldsOrCrossSectionsDto<T, M> {
         /**
          * Provide options without default values
          */
-        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean) {
+        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
@@ -106,6 +127,9 @@ export namespace Manifold {
             if (crossSectionWidth !== undefined) { this.crossSectionWidth = crossSectionWidth; }
             if (crossSectionOpacity !== undefined) { this.crossSectionOpacity = crossSectionOpacity; }
             if (computeNormals !== undefined) { this.computeNormals = computeNormals; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Manifold geometry
@@ -154,6 +178,24 @@ export namespace Manifold {
          * @default false
          */
         computeNormals = false;
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     export class CreateFromMeshDto {
         constructor(mesh?: DecomposedManifoldMeshDto) {
@@ -172,6 +214,60 @@ export namespace Manifold {
          * Points describing polygons
          */
         polygonPoints?: Base.Point3[][];
+    }
+    export class CrossSectionFromPolygonPointsDto {
+        constructor(points?: Base.Point3[], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (fillRule !== undefined) { this.fillRule = fillRule; }
+            if (removeDuplicates !== undefined) { this.removeDuplicates = removeDuplicates; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Points describing a single polygon
+         */
+        points: Base.Point3[];
+        /**
+         * Fill rule for polygon interpretation
+         * @default positive
+         */
+        fillRule?: fillRuleEnum = fillRuleEnum.positive;
+        /**
+         * Remove consecutive duplicate points before creating polygon
+         * @default false
+         */
+        removeDuplicates?: boolean = false;
+        /**
+         * Tolerance for duplicate removal
+         * @default 1e-7
+         */
+        tolerance?: number = 1e-7;
+    }
+    export class CrossSectionFromPolygonsPointsDto {
+        constructor(polygonPoints?: Base.Point3[][], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number) {
+            if (polygonPoints !== undefined) { this.polygonPoints = polygonPoints; }
+            if (fillRule !== undefined) { this.fillRule = fillRule; }
+            if (removeDuplicates !== undefined) { this.removeDuplicates = removeDuplicates; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Points describing multiple polygons
+         */
+        polygonPoints: Base.Point3[][];
+        /**
+         * Fill rule for polygon interpretation
+         * @default positive
+         */
+        fillRule?: fillRuleEnum = fillRuleEnum.positive;
+        /**
+         * Remove consecutive duplicate points before creating polygons
+         * @default false
+         */
+        removeDuplicates?: boolean = false;
+        /**
+         * Tolerance for duplicate removal
+         * @default 1e-7
+         */
+        tolerance?: number = 1e-7;
     }
     export class CubeDto {
         constructor(center?: boolean, size?: number) {

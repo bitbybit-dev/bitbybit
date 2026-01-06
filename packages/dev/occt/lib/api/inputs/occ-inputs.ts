@@ -650,7 +650,7 @@ export namespace OCCT {
         /**
          * Provide options without default values
          */
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color) {
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (shape !== undefined) { this.shape = shape; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
@@ -670,6 +670,9 @@ export namespace OCCT {
             if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
             if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
             if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Brep OpenCascade geometry
@@ -788,13 +791,31 @@ export namespace OCCT {
          * @default #0000ff
          */
         faceIndexColour: Base.Color = "#0000ff";
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     export class DrawShapesDto<T> {
 
         /**
          * Provide options without default values
          */
-        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color) {
+        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
@@ -814,6 +835,9 @@ export namespace OCCT {
             if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
             if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
             if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
+            if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+            if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+            if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
          * Brep OpenCascade geometry
@@ -932,6 +956,24 @@ export namespace OCCT {
          * @default #0000ff
          */
         faceIndexColour: Base.Color = "#0000ff";
+        /**
+         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * @default true
+         */
+        drawTwoSided = true;
+        /**
+         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * @default #0000ff
+         */
+        backFaceColour: Base.Color = "#0000ff";
+        /**
+         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        backFaceOpacity = 1;
     }
     export class FaceSubdivisionDto<T> {
         /**

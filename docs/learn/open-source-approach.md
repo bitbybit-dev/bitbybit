@@ -35,6 +35,7 @@ We are committed to open-sourcing the foundational elements that empower develop
         *   `bitbybit.text`
         *   `bitbybit.dates`
         *   `bitbybit.json`
+        *   `bitbybit.csv`
         *   `bitbybit.verb`
         *   `bitbybit.tag`
         *   `bitbybit.time`
@@ -83,6 +84,10 @@ To support the development and hosting of the Bitbybit platform, certain compone
 <Admonition type="info" title="Important Distinction">
     Being able to *use* a feature (e.g., running a script with an advanced algorithm via our platform or a Runner) is different from having access to its *source code*.
 </Admonition>
+
+4.  **[3D Bits](/learn/3d-bits/intro) app for Shopify:**
+    *   This E-Commerce application is fully proprietary and is not shared as open-source project. It is meant to serve commercial B2B customers of Bit by bit developers company. 
+    *   There are no plans to open-source any part of this application such as [Viewer Editor](/learn/getting-started/viewer-editor/intro) or other related tools.
 
 ## Our Commitment to Transparency
 

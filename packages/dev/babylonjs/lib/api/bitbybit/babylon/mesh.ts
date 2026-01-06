@@ -682,6 +682,16 @@ export class BabylonMesh {
     }
 
     /**
+     * Scales the BabylonJS mesh or instanced mesh in place by a given factor
+     * @param inputs BabylonJS mesh and scale factor
+     * @group set
+     * @shortname scale in place
+     */
+    setLocalScale(inputs: Inputs.BabylonMesh.ScaleInPlaceDto): void {
+        inputs.babylonMesh.scaling.scaleInPlace(inputs.scale);
+    }
+
+    /**
      * Checks wether mesh intersects another mesh mesh
      * @param inputs Two BabylonJS meshes
      * @group intersects

@@ -3,6 +3,7 @@ import * as Inputs from "./inputs";
 import { Manifold } from "./services/manifold/manifold";
 import { CrossSection } from "./services/cross-section/cross-section";
 import { Mesh } from "./services/mesh/mesh";
+import { BaseBitByBit } from "../base";
 
 // Worker make an instance of this class itself
 export class ManifoldService {
@@ -10,10 +11,12 @@ export class ManifoldService {
 
     public crossSection: CrossSection;
     public manifold: Manifold;
+    private base: BaseBitByBit;
     mesh: Mesh;
 
     constructor(wasm: Manifold3D.ManifoldToplevel) {
-        this.crossSection = new CrossSection(wasm);
+        this.base = new BaseBitByBit();
+        this.crossSection = new CrossSection(wasm, this.base);
         this.manifold = new Manifold(wasm);
         this.mesh = new Mesh(wasm);
     }

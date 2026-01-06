@@ -1,5 +1,22 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace Base {
+    /**
+     * Defines how colors are mapped to entities when there are more entities than colors.
+     * - firstColorForAll: Uses the first color for all entities (legacy behavior)
+     * - lastColorRemainder: Maps colors 1:1, then uses last color for remaining entities
+     * - repeatColors: Cycles through colors in a repeating pattern
+     * - reversedColors: After exhausting colors, reverses direction (ping-pong pattern)
+     */
+    export enum colorMapStrategyEnum {
+        /** Uses the first color for all entities (legacy behavior) */
+        firstColorForAll = "firstColorForAll",
+        /** Maps colors 1:1, then uses last color for remaining entities */
+        lastColorRemainder = "lastColorRemainder",
+        /** Cycles through colors in a repeating pattern */
+        repeatColors = "repeatColors",
+        /** After exhausting colors, reverses direction (ping-pong pattern) */
+        reversedColors = "reversedColors",
+    }
     export enum skyboxEnum {
         default = "default",
         clearSky = "clearSky",
@@ -85,6 +102,7 @@ export namespace Base {
     export type Color = string;
     export type ColorRGB = { r: number, g: number, b: number };
     export type Material = any;
+    export type Texture = any;
     export type Point2 = [number, number];
     export type Vector2 = [number, number];
     export type Point3 = [number, number, number];

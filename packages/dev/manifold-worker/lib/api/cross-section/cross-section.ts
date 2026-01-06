@@ -30,6 +30,30 @@ export class ManifoldCrossSection{
 
 
     /**
+     * Creates a cross section from a single polygon points
+     * @param inputs polygon points
+     * @returns cross section
+     * @group create
+     * @shortname cross section from points
+     * @drawable true
+     */
+    async crossSectionFromPoints(inputs: Inputs.Manifold.CrossSectionFromPolygonPointsDto): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionFromPoints", inputs);
+    }
+
+    /**
+     * Creates a cross section from multiple polygons points
+     * @param inputs polygons points
+     * @returns cross section
+     * @group create
+     * @shortname cross section from polygons
+     * @drawable true
+     */
+    async crossSectionFromPolygons(inputs: Inputs.Manifold.CrossSectionFromPolygonsPointsDto): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionFromPolygons", inputs);
+    }
+
+    /**
      * Turns cross section into polygons
      * @param inputs cross section
      * @returns polygons
@@ -42,6 +66,18 @@ export class ManifoldCrossSection{
     }
 
     /**
+     * Extracts points from a cross section
+     * @param inputs cross section
+     * @returns points
+     * @group decompose
+     * @shortname cross section to points
+     * @drawable false
+     */
+    async crossSectionToPoints(inputs: Inputs.Manifold.CrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<number[][][]> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionToPoints", inputs);
+    }
+
+    /**
      * Turns cross sections into polygons
      * @param inputs cross sections
      * @returns polygons
@@ -51,6 +87,18 @@ export class ManifoldCrossSection{
      */
     async crossSectionsToPolygons(inputs: Inputs.Manifold.CrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Base.Vector2[][][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionsToPolygons", inputs);
+    }
+
+    /**
+     * Extracts points from cross sections
+     * @param inputs cross sections
+     * @returns points
+     * @group decompose
+     * @shortname cross sections to points
+     * @drawable false
+     */
+    async crossSectionsToPoints(inputs: Inputs.Manifold.CrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<number[][][][]> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionsToPoints", inputs);
     }
 
 }

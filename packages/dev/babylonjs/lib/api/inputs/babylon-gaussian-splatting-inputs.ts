@@ -23,5 +23,4 @@ export namespace BabylonGaussianSplatting {
          */
         babylonMesh: BABYLON.GaussianSplattingMesh;
     }
-
 }

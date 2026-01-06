@@ -20,6 +20,7 @@ export class BabylonGaussianSplatting {
             const gs = BABYLON.SceneLoader.ImportMeshAsync(null, inputs.url, undefined, this.context.scene, undefined, ".ply").then((result) => {
                 const gaussianSplattingMesh = result.meshes[0] as BABYLON.GaussianSplattingMesh;
                 gaussianSplattingMesh.name = `gaussian-splatting-${Math.random()}`;
+                this.enableShadows(gaussianSplattingMesh);
                 return gaussianSplattingMesh;
             });
             return gs;
@@ -28,7 +29,6 @@ export class BabylonGaussianSplatting {
             return undefined;
         }
     }
-
 
     /** Clones gaussian splatting mesh
      * @param inputs Contains BabylonJS mesh that should be cloned
@@ -55,5 +55,16 @@ export class BabylonGaussianSplatting {
         }
         return points;
     }
+
+    private enableShadows(mesh: BABYLON.Mesh) {
+        if (this.context.scene.metadata.shadowGenerators) {
+            mesh.receiveShadows = true;
+            const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
+            sgs.forEach(s => {
+                s.addShadowCaster(mesh);
+            });
+        }
+    }
+
 }
 

@@ -35,7 +35,7 @@ The script shown in the editor below is fairly straightforward, but let's break 
 
 <BitByBitRenderCanvas
   requireManualStart={true}
-  script={{"script":"const start = async () => {\n    const size = 10;\n    const cubeOptions = new Bit.Inputs.OCCT.CubeDto();\n    cubeOptions.size = size;\n    const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);\n\n    bitbybit.draw.drawAnyAsync({\n        entity: cube\n    });\n}\n\nstart();\n","version":"0.20.14","type":"typescript"}}
+  script={{"script":"const start = async () => {\n    const size = 10;\n    const cubeOptions = new Bit.Inputs.OCCT.CubeDto();\n    cubeOptions.size = size;\n    const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);\n\n    bitbybit.draw.drawAnyAsync({\n        entity: cube\n    });\n}\n\nstart();\n","version":"0.21.0","type":"typescript"}}
   title="Draw the grid"
   description="Draws the grid mesh with lines in 3D space."
 />

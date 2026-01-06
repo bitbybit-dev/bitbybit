@@ -26,7 +26,7 @@ Check out the script below:
 
 <BitByBitRenderCanvas
   requireManualStart={true}
-  script={{"script":"const start = async () => {\n    const gridOptions = new Bit.Inputs.Draw.SceneDrawGridMeshDto();\n    bitbybit.draw.drawGridMesh(gridOptions);\n}\n\nstart();\n","version":"0.20.14","type":"typescript"}}
+  script={{"script":"const start = async () => {\n    const gridOptions = new Bit.Inputs.Draw.SceneDrawGridMeshDto();\n    bitbybit.draw.drawGridMesh(gridOptions);\n}\n\nstart();\n","version":"0.21.0","type":"typescript"}}
   title="Draw the grid"
   description="Draws the grid mesh with lines in 3D space."
 />
@@ -51,7 +51,7 @@ The script below shows a working example. We've set the `rotation` to -90 degree
 
 <BitByBitRenderCanvas
   requireManualStart={true}
-  script={{"script":"const start = async () => {\n    const gridOptions = new Bit.Inputs.Draw.SceneDrawGridMeshDto();\n    bitbybit.draw.drawGridMesh(gridOptions);\n\n    const textOpt = new Bit.Advanced.Text3D.Text3DDto();\n    textOpt.text = \"Hello World!\";\n    textOpt.rotation = -90;\n    textOpt.originAlignment = Bit.Advanced.Text3D.recAlignmentEnum.centerBottom;\n    textOpt.direction = [0, 0, -1];\n    const text3D = await bitbybit.advanced.text3d.create(textOpt);\n\n    bitbybit.draw.drawAnyAsync({\n        entity: text3D\n    });\n}\n\nstart();\n","version":"0.20.14","type":"typescript"}}
+  script={{"script":"const start = async () => {\n    const gridOptions = new Bit.Inputs.Draw.SceneDrawGridMeshDto();\n    bitbybit.draw.drawGridMesh(gridOptions);\n\n    const textOpt = new Bit.Advanced.Text3D.Text3DDto();\n    textOpt.text = \"Hello World!\";\n    textOpt.rotation = -90;\n    textOpt.originAlignment = Bit.Advanced.Text3D.recAlignmentEnum.centerBottom;\n    textOpt.direction = [0, 0, -1];\n    const text3D = await bitbybit.advanced.text3d.create(textOpt);\n\n    bitbybit.draw.drawAnyAsync({\n        entity: text3D\n    });\n}\n\nstart();\n","version":"0.21.0","type":"typescript"}}
   title="Draw the text & grid"
   description="Draws the grid mesh with text in 3D space."
 />

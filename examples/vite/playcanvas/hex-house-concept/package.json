@@ -1,0 +1,19 @@
+{
+  "name": "vite-playcanvas-hex-house-concept",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@bitbybit-dev/playcanvas": "0.21.0",
+    "lil-gui": "0.20.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "vite": "^6.3.2"
+  }
+}

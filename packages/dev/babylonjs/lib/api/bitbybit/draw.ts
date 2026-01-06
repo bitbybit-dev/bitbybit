@@ -315,6 +315,129 @@ export class Draw extends DrawCore {
         return inputs;
     }
 
+    /**
+     * Creates a generic texture that can be used with PBR materials.
+     * This method provides a cross-engine compatible way to create textures.
+     * @param inputs Texture configuration options
+     * @returns BabylonJS Texture
+     * @group material
+     * @shortname create texture
+     * @disposableOutput true
+     */
+    createTexture(inputs: Inputs.Draw.GenericTextureDto): BABYLON.Texture {
+        const samplingMode = this.getSamplingMode(inputs.samplingMode);
+        const texture = new BABYLON.Texture(
+            inputs.url,
+            this.context.scene,
+            false,
+            inputs.invertY,
+            samplingMode
+        );
+
+        texture.name = inputs.name;
+        texture.uOffset = inputs.uOffset || 0;
+        texture.vOffset = inputs.vOffset || 0;
+        texture.uScale = inputs.uScale || 1;
+        texture.vScale = inputs.vScale || 1;
+        texture.wAng = inputs.wAng || 0;
+
+        return texture;
+    }
+
+    /**
+     * Creates a generic PBR (Physically Based Rendering) material.
+     * This method provides a cross-engine compatible way to create materials
+     * that can be used with draw options for OCCT shapes and other geometry.
+     * @param inputs Material configuration options
+     * @returns BabylonJS PBRMetallicRoughnessMaterial
+     * @group material
+     * @shortname create pbr material
+     * @disposableOutput true
+     */
+    createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): BABYLON.PBRMetallicRoughnessMaterial {
+        const mat = new BABYLON.PBRMetallicRoughnessMaterial(inputs.name, this.context.scene);
+
+        // Base properties
+        if (inputs.baseColor) {
+            mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor);
+        }
+        mat.metallic = inputs.metallic || 1;
+        mat.roughness = inputs.roughness || 1;
+        mat.alpha = inputs.alpha;
+
+        // Emissive properties
+        if (inputs.emissiveColor) {
+            const emissive = BABYLON.Color3.FromHexString(inputs.emissiveColor);
+            if (inputs.emissiveIntensity !== undefined) {
+                mat.emissiveColor = emissive.scale(inputs.emissiveIntensity);
+            } else {
+                mat.emissiveColor = emissive;
+            }
+        }
+
+        // Textures
+        if (inputs.baseColorTexture) {
+            mat.baseTexture = inputs.baseColorTexture as BABYLON.BaseTexture;
+        }
+        if (inputs.metallicRoughnessTexture) {
+            mat.metallicRoughnessTexture = inputs.metallicRoughnessTexture as BABYLON.BaseTexture;
+        }
+        if (inputs.normalTexture) {
+            mat.normalTexture = inputs.normalTexture as BABYLON.BaseTexture;
+        }
+        if (inputs.emissiveTexture) {
+            mat.emissiveTexture = inputs.emissiveTexture as BABYLON.BaseTexture;
+        }
+        if (inputs.occlusionTexture) {
+            mat.occlusionTexture = inputs.occlusionTexture as BABYLON.BaseTexture;
+        }
+
+        // Alpha cutoff for mask/transparency
+        if (inputs.alphaCutoff !== undefined) {
+            mat.alphaCutOff = inputs.alphaCutoff;
+        }
+
+        // Alpha mode handling
+        if (inputs.alphaMode !== undefined) {
+            switch (inputs.alphaMode) {
+                case Inputs.Draw.alphaModeEnum.opaque:
+                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_OPAQUE;
+                    break;
+                case Inputs.Draw.alphaModeEnum.mask:
+                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHATEST;
+                    break;
+                case Inputs.Draw.alphaModeEnum.blend:
+                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHABLEND;
+                    break;
+            }
+        }
+
+        // Double sided rendering (two sided lighting support)
+        if (inputs.doubleSided !== undefined) {
+            mat.doubleSided = inputs.doubleSided;
+        }
+
+        // Unlit mode - disable lighting to simulate unlit material
+        if (inputs.unlit) {
+            mat.disableLighting = true;
+        }
+
+        return mat;
+    }
+
+    private getSamplingMode(mode: Inputs.Draw.samplingModeEnum): number {
+        switch (mode) {
+            case Inputs.Draw.samplingModeEnum.nearest:
+                return BABYLON.Texture.NEAREST_SAMPLINGMODE;
+            case Inputs.Draw.samplingModeEnum.bilinear:
+                return BABYLON.Texture.BILINEAR_SAMPLINGMODE;
+            case Inputs.Draw.samplingModeEnum.trilinear:
+                return BABYLON.Texture.TRILINEAR_SAMPLINGMODE;
+            default:
+                return BABYLON.Texture.TRILINEAR_SAMPLINGMODE;
+        }
+    }
+
     private handleTags(inputs: Inputs.Draw.DrawAny) {
         const options = inputs.options ? inputs.options : {
             updatable: false,
@@ -580,7 +703,7 @@ export class Draw extends DrawCore {
     }
 
     private handleOcctShape(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.OCCT.DrawShapeDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -595,7 +718,7 @@ export class Draw extends DrawCore {
     }
 
     private handleOcctShapes(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.OCCT.DrawShapeDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }

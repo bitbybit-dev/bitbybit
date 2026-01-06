@@ -15,7 +15,14 @@
         "strict": false,
         "allowJs": true,
         "emitDeclarationOnly": false,
-        "paths": {},
+        "paths": {
+            "@bitbybit-dev/base": [
+                "../base/dist"
+            ],
+            "@bitbybit-dev/base/*": [
+                "../base/dist/*"
+            ],
+        },
         "lib": [
             "es2020",
             "dom"
