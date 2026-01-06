@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/playcanvas": "0.20.14",
+    "@bitbybit-dev/playcanvas": "0.21.0",
     "playcanvas": "2.14.4"
   },
   "devDependencies": {

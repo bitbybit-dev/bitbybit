@@ -10,7 +10,7 @@
     },
     "private": true,
     "dependencies": {
-        "@bitbybit-dev/babylonjs": "0.20.14",
+        "@bitbybit-dev/babylonjs": "0.21.0",
         "@angular/animations": "13.3.0",
         "@angular/common": "13.3.0",
         "@angular/compiler": "13.3.0",
