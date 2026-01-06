@@ -182,14 +182,14 @@ export const createShape = async (
       options,
     });
 
-    options.faceColour = "#ff7300ff";
+    options.faceColour = "#ff4800ff";
 
     const groupRoof2 = await bitbybit.draw.drawAnyAsync({
       entity: compRoof2,
       options,
     });
 
-    options.faceColour = "#ffc400ff";
+    options.faceColour = "#ff9100ff";
 
     const groupRoof3 = await bitbybit.draw.drawAnyAsync({
       entity: compRoof3,
