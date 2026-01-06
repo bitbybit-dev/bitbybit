@@ -58,6 +58,11 @@ async function start() {
 
     // --- 4. Create Drawing Examples (Lines, Points, Curves, etc.) ---
     await createDrawingExamples(bitbybit);
+
+    // --- 5. Create Textured OCCT Cube Example ---
+    if (kernelOptions.enableOCCT) {
+        await createTexturedOCCTCube(bitbybit);
+    }
 }
 
 // --- 4. PlayCanvas Scene Initialization ---
@@ -322,6 +327,40 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
         options: drawOptions,
     });
     console.log("JSCAD geometry created and drawn.");
+}
+
+async function createTexturedOCCTCube(bitbybit: BitByBitBase) {
+    console.log("Creating textured OCCT cube...");
+   
+    // Create texture from URL
+    const textureOptions = new Inputs.Draw.GenericTextureDto();
+    textureOptions.url = "https://cdn.polyhaven.com/asset_img/primary/worn_asphalt.png?height=760&quality=95";
+    textureOptions.uScale = 0.05;
+    textureOptions.vScale = 0.05;
+    const texture = await bitbybit.draw.createTexture(textureOptions);
+    
+    // Create material with texture
+    const materialOptions = new Inputs.Draw.GenericPBRMaterialDto();
+    materialOptions.baseColorTexture = texture;
+    materialOptions.baseColor = "#ffffff"; // White to show texture colors accurately
+    const material = await bitbybit.draw.createPBRMaterial(materialOptions);
+    
+    // Create OCCT cube
+    const cubeOptions = new Inputs.OCCT.CubeDto();
+    cubeOptions.size = 20;
+    cubeOptions.center = [-50, 0, -50];
+    const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);
+    
+    // Draw cube with material
+    const drawOptions = new Inputs.Draw.DrawOcctShapeOptions();
+    drawOptions.faceMaterial = material;
+    drawOptions.backFaceOpacity = 1;
+    await bitbybit.draw.drawAnyAsync({
+        entity: cube,
+        options: drawOptions,
+    });
+    
+    console.log("Textured OCCT cube created and drawn.");
 }
 
 // --- 7. Drawing Examples Function ---

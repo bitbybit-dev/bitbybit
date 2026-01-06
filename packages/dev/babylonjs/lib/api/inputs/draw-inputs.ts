@@ -737,7 +737,6 @@ export namespace Draw {
             alpha?: number,
             emissiveColor?: Base.Color,
             emissiveIntensity?: number,
-            backFaceCulling?: boolean,
             zOffset?: number,
             zOffsetUnits?: number,
             baseColorTexture?: Base.Texture,
@@ -758,7 +757,6 @@ export namespace Draw {
             if (alpha !== undefined) { this.alpha = alpha; }
             if (emissiveColor !== undefined) { this.emissiveColor = emissiveColor; }
             if (emissiveIntensity !== undefined) { this.emissiveIntensity = emissiveIntensity; }
-            if (backFaceCulling !== undefined) { this.backFaceCulling = backFaceCulling; }
             if (zOffset !== undefined) { this.zOffset = zOffset; }
             if (zOffsetUnits !== undefined) { this.zOffsetUnits = zOffsetUnits; }
             if (baseColorTexture !== undefined) { this.baseColorTexture = baseColorTexture; }
@@ -819,11 +817,6 @@ export namespace Draw {
          * @step 0.1
          */
         emissiveIntensity = 1;
-        /**
-         * Whether to cull (hide) back-facing polygons
-         * @default false
-         */
-        backFaceCulling = false;
         /**
          * Z-buffer depth offset factor to help with z-fighting on coplanar surfaces
          * @default 0

@@ -44,9 +44,9 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>): Promise<pc.Entity> {
         try {
-            const options = this.deleteFaceMaterialForWorker(inputs);
-            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
-            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options)).filter(s => s !== undefined);
+            const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
+            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, inputs)).filter(s => s !== undefined);
             const containerId = this.generateEntityId("manifoldMeshContainer");
             const manifoldMeshContainer = new pc.Entity(containerId);
             meshes.forEach(mesh => {
@@ -62,9 +62,9 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>): Promise<pc.Entity> {
         try {
-            const options = this.deleteFaceMaterialForWorker(inputs);
-            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
-            return this.handleDecomposedManifold(decomposedMesh, options);
+            const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
+            return this.handleDecomposedManifold(decomposedMesh, inputs);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
             throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`);
@@ -73,9 +73,9 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<pc.Entity> {
         try {
-            const options = this.deleteFaceMaterialForWorker(inputs);
-            const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
-            return this.handleDecomposedMesh(inputs, decomposedMesh, options);
+            const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+            const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", safeWorkerOptions);
+            return this.handleDecomposedMesh(inputs, decomposedMesh, inputs);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
             throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`);
@@ -84,9 +84,9 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<pc.Entity> {
         try {
-            const options = this.deleteFaceMaterialForWorker(inputs);
-            const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
-            const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
+            const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+            const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", safeWorkerOptions);
+            const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, inputs)));
             const containerId = this.generateEntityId("shapesMeshContainer");
             const shapesMeshContainer = new pc.Entity(containerId);
             this.context.scene.addChild(shapesMeshContainer);
@@ -1322,13 +1322,12 @@ export class DrawHelper extends DrawHelperCore {
         return new pc.Color(1, 0, 0);
     }
 
-    // sometimes we must delete face material property for the web worker not to complain about complex (circular) objects and use cloned object later
-    private deleteFaceMaterialForWorker<T extends { faceMaterial?: pc.StandardMaterial }>(inputs: T): T {
-        const options = { ...inputs };
-        if (inputs.faceMaterial) {
-            delete inputs.faceMaterial;
-        }
-        return options;
+    // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
+    // Workers cannot handle complex circular objects like PlayCanvas materials
+    private getSafeWorkerOptions<T extends { faceMaterial?: pc.StandardMaterial }>(inputs: T): Omit<T, "faceMaterial"> {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { faceMaterial, ...safeOptions } = inputs;
+        return safeOptions as Omit<T, "faceMaterial">;
     }
 
     /**

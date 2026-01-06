@@ -9,6 +9,19 @@ import { GEOMETRY_DEFAULTS, DEFAULT_COLORS } from "../constants";
 // Type alias for entity with bitbybitMeta property
 type BitByBitEntity = Inputs.Draw.BitByBitEntity;
 
+// Interface for texture UV transformation data stored on textures
+interface TextureTransformData {
+    uScale: number;
+    vScale: number;
+    uOffset: number;
+    vOffset: number;
+    wAng: number;
+    invertZ: boolean;
+}
+
+// Type for textures with optional BitByBit transform metadata
+type TextureWithTransform = pc.Texture & { _bitbybitTransform?: TextureTransformData };
+
 export class Draw extends DrawCore {
     private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     private defaultPolylineOptions: Inputs.Draw.DrawBasicGeometryOptions = {
@@ -122,8 +135,10 @@ export class Draw extends DrawCore {
     /**
      * Creates a generic texture that can be used with PBR materials.
      * This method provides a cross-engine compatible way to create textures.
+     * Note: In PlayCanvas, UV transformations (scale, offset, rotation) are stored as metadata
+     * on the texture and applied when the texture is assigned to a material via createPBRMaterial.
      * @param inputs Texture configuration options
-     * @returns PlayCanvas Texture
+     * @returns PlayCanvas Texture with attached transformation metadata
      * @group material
      * @shortname create texture
      * @disposableOutput true
@@ -136,7 +151,22 @@ export class Draw extends DrawCore {
             name: inputs.name,
             addressU: pc.ADDRESS_REPEAT,
             addressV: pc.ADDRESS_REPEAT,
+            // PlayCanvas flipY is applied during upload - default is true for WebGL convention
+            // We invert since our API's invertY=false means "don't flip" (standard image orientation)
+            flipY: !inputs.invertY,
         });
+        
+        // Store UV transformation data as metadata on the texture
+        // PlayCanvas handles UV transforms at the material level, so we attach this data
+        // to be applied when the texture is used in createPBRMaterial
+        (texture as pc.Texture & { _bitbybitTransform?: TextureTransformData })._bitbybitTransform = {
+            uScale: inputs.uScale,
+            vScale: inputs.vScale,
+            uOffset: inputs.uOffset,
+            vOffset: inputs.vOffset,
+            wAng: inputs.wAng,
+            invertZ: inputs.invertZ,
+        };
         
         // Load the image asynchronously
         const image = new Image();
@@ -169,6 +199,7 @@ export class Draw extends DrawCore {
      * Creates a generic PBR (Physically Based Rendering) material.
      * This method provides a cross-engine compatible way to create materials
      * that can be used with draw options for OCCT shapes and other geometry.
+     * UV transformations from textures created with createTexture are automatically applied.
      * @param inputs Material configuration options
      * @returns PlayCanvas StandardMaterial
      * @group material
@@ -197,7 +228,7 @@ export class Draw extends DrawCore {
         }
         
         // Back face culling
-        mat.cull = inputs.backFaceCulling ? pc.CULLFACE_BACK : (inputs.doubleSided ? pc.CULLFACE_NONE : pc.CULLFACE_BACK);
+        mat.cull = inputs.doubleSided ? pc.CULLFACE_NONE : pc.CULLFACE_BACK;
         
         // Z offset (depth bias in PlayCanvas)
         if (inputs.zOffset !== 0) {
@@ -205,22 +236,28 @@ export class Draw extends DrawCore {
             mat.slopeDepthBias = inputs.zOffsetUnits;
         }
         
-        // Textures
+        // Textures with UV transform support
         if (inputs.baseColorTexture) {
             mat.diffuseMap = inputs.baseColorTexture as pc.Texture;
+            this.applyTextureTransform(mat, inputs.baseColorTexture as TextureWithTransform, "diffuseMap");
         }
         if (inputs.metallicRoughnessTexture) {
             mat.metalnessMap = inputs.metallicRoughnessTexture as pc.Texture;
             mat.glossMap = inputs.metallicRoughnessTexture as pc.Texture;
+            this.applyTextureTransform(mat, inputs.metallicRoughnessTexture as TextureWithTransform, "metalnessMap");
+            // Note: glossMap shares the same texture, PlayCanvas will use the same UV transforms
         }
         if (inputs.normalTexture) {
             mat.normalMap = inputs.normalTexture as pc.Texture;
+            this.applyTextureTransform(mat, inputs.normalTexture as TextureWithTransform, "normalMap");
         }
         if (inputs.emissiveTexture) {
             mat.emissiveMap = inputs.emissiveTexture as pc.Texture;
+            this.applyTextureTransform(mat, inputs.emissiveTexture as TextureWithTransform, "emissiveMap");
         }
         if (inputs.occlusionTexture) {
             mat.aoMap = inputs.occlusionTexture as pc.Texture;
+            this.applyTextureTransform(mat, inputs.occlusionTexture as TextureWithTransform, "aoMap");
         }
         
         // Alpha mode
@@ -239,6 +276,56 @@ export class Draw extends DrawCore {
         
         mat.update();
         return mat;
+    }
+
+    /**
+     * Applies UV transformation data from a texture to the corresponding material properties.
+     * PlayCanvas handles UV transforms at the material level per texture slot.
+     * @param mat - The material to apply transforms to
+     * @param texture - The texture with potential transform metadata
+     * @param mapType - The type of texture map (e.g., "diffuseMap", "normalMap")
+     */
+    private applyTextureTransform(
+        mat: pc.StandardMaterial, 
+        texture: TextureWithTransform, 
+        mapType: "diffuseMap" | "normalMap" | "emissiveMap" | "metalnessMap" | "aoMap"
+    ): void {
+        const transform = texture._bitbybitTransform;
+        if (!transform) {
+            return;
+        }
+
+        // Map texture slot names to their corresponding material property prefixes
+        // PlayCanvas uses properties like diffuseMapTiling, normalMapOffset, etc.
+        const propertyMap: Record<string, string> = {
+            "diffuseMap": "diffuseMap",
+            "normalMap": "normalMap",
+            "emissiveMap": "emissiveMap",
+            "metalnessMap": "metalnessMap",
+            "aoMap": "aoMap",
+        };
+        
+        const prefix = propertyMap[mapType];
+        if (!prefix) {
+            return;
+        }
+
+        // Apply tiling (scale) - PlayCanvas uses Vec2 for tiling
+        // invertZ affects V scale (flips texture vertically in UV space)
+        const vScaleMultiplier = transform.invertZ ? -1 : 1;
+        (mat as unknown as Record<string, pc.Vec2>)[`${prefix}Tiling`] = new pc.Vec2(
+            transform.uScale, 
+            transform.vScale * vScaleMultiplier
+        );
+        
+        // Apply offset - PlayCanvas uses Vec2 for offset
+        (mat as unknown as Record<string, pc.Vec2>)[`${prefix}Offset`] = new pc.Vec2(
+            transform.uOffset, 
+            transform.vOffset
+        );
+        
+        // Apply rotation (wAng) - PlayCanvas supports texture rotation in radians
+        (mat as unknown as Record<string, number>)[`${prefix}Rotation`] = transform.wAng;
     }
 
     /**

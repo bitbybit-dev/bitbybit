@@ -42,17 +42,17 @@ describe("Draw unit tests", () => {
 
         const drawHelper = new DrawHelper(context, solidText, vector, jscadWorkerManager, manifoldWorkerManager, occtWorkerManager);
         context.scene = new pc.Entity("root");
-        
+
         // Create a mock graphics device with the required methods and vram tracking
         const mockGraphicsDevice = {
             createVertexBufferImpl: jest.fn(),
             createIndexBufferImpl: jest.fn(),
-            createTextureImpl: jest.fn(function() { 
-                return { 
+            createTextureImpl: jest.fn(function () {
+                return {
                     id: Math.random(),
                     propertyChanged: jest.fn(),
                     destroy: jest.fn()
-                }; 
+                };
             }),
             setVertexBuffer: jest.fn(),
             setIndexBuffer: jest.fn(),
@@ -67,7 +67,7 @@ describe("Draw unit tests", () => {
             indexBuffers: [],
             _textureRegistry: []  // Required by PlayCanvas Texture constructor
         };
-        
+
         context.app = {
             graphicsDevice: mockGraphicsDevice,
             systems: {
@@ -76,7 +76,7 @@ describe("Draw unit tests", () => {
                 }
             }
         } as unknown as pc.Application;
-        
+
         tag = new Tag(context);
         draw = new Draw(drawHelper, context, tag);
     });
@@ -87,7 +87,7 @@ describe("Draw unit tests", () => {
             const res = await draw.drawAnyAsync({ entity: [1, -2, 3] });
             expect(res.name).toContain("pointMesh");
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
-            
+
             // Validate structure - with GPU instancing, children represent color groups
             expect(res).toBeInstanceOf(pc.Entity);
             expect(res.children.length).toBe(1); // Single color group
@@ -879,7 +879,7 @@ describe("Draw unit tests", () => {
             };
             const res = draw.drawAny({ entity: [1, 2, 3], options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
-            
+
             const res2 = draw.drawAny({ entity: [4, 5, 6], options, group: res });
             expect(res.name).toEqual(res2.name);
             // With GPU instancing, verify structure exists but skip position validation
@@ -896,7 +896,7 @@ describe("Draw unit tests", () => {
             // Array of two 3D points could be detected as a line (segment) or points
             // The actual type depends on detection order in drawAny
             expect(res.bitbybitMeta.type).toBeDefined();
-            
+
             const res2 = draw.drawAny({ entity: [[7, 8, 9], [10, 11, 12]], options, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -908,7 +908,7 @@ describe("Draw unit tests", () => {
             };
             const res = draw.drawAny({ entity: { start: [0, 0, 0], end: [1, 1, 1] }, options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.line);
-            
+
             const res2 = draw.drawAny({ entity: { start: [2, 2, 2], end: [3, 3, 3] }, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -920,7 +920,7 @@ describe("Draw unit tests", () => {
             };
             const res = draw.drawAny({ entity: { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] }, options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.polyline);
-            
+
             const res2 = draw.drawAny({ entity: { points: [[3, 3, 3], [4, 4, 4], [5, 5, 5]] }, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -940,7 +940,7 @@ describe("Draw unit tests", () => {
             };
             const res = draw.drawAny({ entity: curveMock1, options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.verbCurve);
-            
+
             const res2 = draw.drawAny({ entity: curveMock2, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -954,7 +954,7 @@ describe("Draw unit tests", () => {
             };
             const res = draw.drawAny({ entity: surfaceMock1, options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.verbSurface);
-            
+
             const res2 = draw.drawAny({ entity: surfaceMock2, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -967,7 +967,7 @@ describe("Draw unit tests", () => {
                 updatable: true,
             };
             const res = draw.drawAny({ entity: [1, 2, 3], options: originalOptions });
-            
+
             // Now update without providing options - should use stored options from userData
             const res2 = draw.drawAny({ entity: [4, 5, 6], group: res });
             expect(res.name).toEqual(res2.name);
@@ -980,7 +980,7 @@ describe("Draw unit tests", () => {
             const mockError = new Error("JSCAD worker timeout");
             jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockRejectedValue(mockError);
 
-            const inputs = { 
+            const inputs = {
                 entity: { polygons: [] },
                 options: new Inputs.Draw.DrawBasicGeometryOptions()
             };
@@ -994,7 +994,7 @@ describe("Draw unit tests", () => {
             const mockError = new Error("OCCT wasm module not initialized");
             occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockRejectedValue(mockError);
 
-            const inputs = { 
+            const inputs = {
                 entity: { type: "occ-shape", hash: 12345 },
                 options: new Inputs.Draw.DrawOcctShapeOptions()
             };
@@ -1008,7 +1008,7 @@ describe("Draw unit tests", () => {
             const mockError = new Error("Manifold worker crashed");
             manifoldWorkerManager.genericCallToWorkerPromise = jest.fn().mockRejectedValue(mockError);
 
-            const inputs = { 
+            const inputs = {
                 entity: { type: "manifold-shape", id: "mf123" },
                 options: new Inputs.Manifold.DrawManifoldOrCrossSectionDto({ type: "manifold-shape", id: "mf123" })
             };
@@ -1021,7 +1021,7 @@ describe("Draw unit tests", () => {
         it("should handle invalid point coordinates with NaN", () => {
             const invalidCoords = [NaN, 2, 3];
             const res = draw.drawAny({ entity: invalidCoords } as any);
-            
+
             // NaN coordinates may result in undefined or a valid entity
             // depending on implementation - just verify no crash
             expect(res).toBeUndefined();
@@ -1030,7 +1030,7 @@ describe("Draw unit tests", () => {
         it("should handle Infinity in coordinates", () => {
             const invalidCoords = [Infinity, 2, 3];
             const res = draw.drawAny({ entity: invalidCoords } as any);
-            
+
             expect(res).toBeDefined();
             expect(res.children.length).toBe(1);
             // With GPU instancing, positions are in instance buffer, not entity position
@@ -1040,7 +1040,7 @@ describe("Draw unit tests", () => {
         it("should handle very large coordinate values", () => {
             const largeCoords = [1e10, 2e10, 3e10];
             const res = draw.drawAny({ entity: largeCoords } as any);
-            
+
             expect(res).toBeDefined();
             // With GPU instancing, positions are in instance buffer
             expect(res.children.length).toBe(1);
@@ -1050,14 +1050,14 @@ describe("Draw unit tests", () => {
         it("should handle empty polyline gracefully", () => {
             const emptyPolyline = { points: [] };
             const res = draw.drawAny({ entity: emptyPolyline });
-            
+
             expect(res).toBeDefined();
         });
 
         it("should handle single point polyline", () => {
             const singlePointPolyline = { points: [[1, 2, 3]] };
             const res = draw.drawAny({ entity: singlePointPolyline } as any);
-            
+
             expect(res).toBeDefined();
         });
     });
@@ -1085,15 +1085,15 @@ describe("Draw unit tests", () => {
                 updatable: true
             };
 
-            const res1 = draw.drawAny({ 
-                entity: { start: [0, 0, 0], end: [1, 1, 1] }, 
-                options 
+            const res1 = draw.drawAny({
+                entity: { start: [0, 0, 0], end: [1, 1, 1] },
+                options
             });
-            
-            const res2 = draw.drawAny({ 
-                entity: { start: [2, 2, 2], end: [3, 3, 3] }, 
-                options, 
-                group: res1 
+
+            const res2 = draw.drawAny({
+                entity: { start: [2, 2, 2], end: [3, 3, 3] },
+                options,
+                group: res1
             });
 
             expect(res2.name).toBe(res1.name);
@@ -1107,7 +1107,7 @@ describe("Draw unit tests", () => {
             };
 
             let group = draw.drawAny({ entity: [1, 2, 3], options });
-            
+
             for (let i = 0; i < 50; i++) {
                 group = draw.drawAny({ entity: [i, i, i], options, group });
             }
@@ -1121,16 +1121,16 @@ describe("Draw unit tests", () => {
                 updatable: true
             };
 
-            let group = draw.drawAny({ 
-                entity: { points: [[0, 0, 0], [1, 1, 1]] }, 
-                options 
+            let group = draw.drawAny({
+                entity: { points: [[0, 0, 0], [1, 1, 1]] },
+                options
             });
-            
+
             for (let i = 0; i < 20; i++) {
-                group = draw.drawAny({ 
-                    entity: { points: [[i, i, i], [i+1, i+1, i+1]] }, 
-                    options, 
-                    group 
+                group = draw.drawAny({
+                    entity: { points: [[i, i, i], [i + 1, i + 1, i + 1]] },
+                    options,
+                    group
                 });
             }
 
@@ -1168,12 +1168,12 @@ describe("Draw unit tests", () => {
 
             const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
             // Use correct type string "manifold-shape" for detection
-            const res = await draw.drawAnyAsync({ 
+            const res = await draw.drawAnyAsync({
                 entity: [
                     { type: "manifold-shape", id: 123 } as any,
                     { type: "manifold-shape", id: 456 } as any
-                ], 
-                options 
+                ],
+                options
             });
             expect(res).toBeDefined();
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occt);
@@ -1333,7 +1333,7 @@ describe("Draw unit tests", () => {
             };
             const res = await draw.drawAnyAsync({ entity: [curveMock1], options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.verbCurves);
-            
+
             const res2 = await draw.drawAnyAsync({ entity: [curveMock2], options, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -1384,7 +1384,7 @@ describe("Draw unit tests", () => {
             };
             const res = await draw.drawAnyAsync({ entity: [surfaceMock1], options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
-            
+
             const res2 = await draw.drawAnyAsync({ entity: [surfaceMock2], options, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -1411,7 +1411,7 @@ describe("Draw unit tests", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: {} };
             const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
-            
+
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Test Tag",
                 position: [1, 2, 3],
@@ -1430,9 +1430,9 @@ describe("Draw unit tests", () => {
 
         it("should call tag.drawTag with custom options", () => {
             const mockGroup = new pc.Entity();
-             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: {} };
+            (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: {} };
             const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
-            
+
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Hello World",
                 position: [0, 0, 0],
@@ -1457,7 +1457,7 @@ describe("Draw unit tests", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
             const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
-            
+
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Updated Tag",
                 position: [1, 1, 1],
@@ -1475,7 +1475,7 @@ describe("Draw unit tests", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: {} };
             const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
-            
+
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Tag 1", position: [0, 0, 0], colour: "#ff0000", size: 1, adaptDepth: false },
                 { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 1, adaptDepth: false },
@@ -1494,7 +1494,7 @@ describe("Draw unit tests", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
             const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
-            
+
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Tag C", position: [2, 2, 2], colour: "#0000ff", size: 2, adaptDepth: false },
                 { text: "Tag D", position: [3, 3, 3], colour: "#ffff00", size: 2, adaptDepth: false },
@@ -1509,7 +1509,7 @@ describe("Draw unit tests", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: {} };
             const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
-            
+
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Custom Tag", position: [5, 5, 5], colour: "#ffffff", size: 3, adaptDepth: false },
             ];
@@ -1532,10 +1532,10 @@ describe("Draw unit tests", () => {
             const polylines1 = [{ points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] }];
             const polylines2 = [{ points: [[2, 2, 2], [3, 2, 2]] as Inputs.Base.Point3[] }];
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
-            
+
             const res = draw.drawAny({ entity: polylines1, options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.polylines);
-            
+
             const res2 = draw.drawAny({ entity: polylines2, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -1544,10 +1544,10 @@ describe("Draw unit tests", () => {
             const lines1: Inputs.Base.Line3[] = [{ start: [0, 0, 0], end: [1, 1, 1] }];
             const lines2: Inputs.Base.Line3[] = [{ start: [5, 5, 5], end: [6, 6, 6] }];
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
-            
+
             const res = draw.drawAny({ entity: lines1, options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.lines);
-            
+
             const res2 = draw.drawAny({ entity: lines2, group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -1562,10 +1562,10 @@ describe("Draw unit tests", () => {
                 _data: { controlPoints: [], knots: 3, degree: 3 },
             };
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
-            
+
             const res = draw.drawAny({ entity: [curveMock1], options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.verbCurves);
-            
+
             const res2 = draw.drawAny({ entity: [curveMock2], group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -1574,10 +1574,10 @@ describe("Draw unit tests", () => {
             const surfaceMock1 = createSurfaceMock();
             const surfaceMock2 = createSurfaceMock2();
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
-            
+
             const res = draw.drawAny({ entity: [surfaceMock1], options });
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
-            
+
             const res2 = draw.drawAny({ entity: [surfaceMock2], group: res });
             expect(res.name).toEqual(res2.name);
         });
@@ -1586,9 +1586,9 @@ describe("Draw unit tests", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
             const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
-            
+
             const tag2: Inputs.Tag.TagDto = { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false };
-            
+
             const res = draw.drawAny({ entity: tag2, group: mockGroup });
             expect(drawTagSpy).toHaveBeenCalled();
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.tag);
@@ -1599,9 +1599,9 @@ describe("Draw unit tests", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
             const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
-            
+
             const tags2: Inputs.Tag.TagDto[] = [{ text: "Tag B", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false }];
-            
+
             const res = draw.drawAny({ entity: tags2, group: mockGroup });
             expect(drawTagsSpy).toHaveBeenCalled();
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.tags);
@@ -1626,7 +1626,7 @@ describe("Draw unit tests", () => {
         it("should correctly identify pc.Entity instances", () => {
             // Using drawAny to test internal type guard behavior
             const result = draw.drawAny({ entity: [1, 2, 3], options });
-            
+
             // Result should be a valid Entity
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.name).toBeDefined();
@@ -1634,7 +1634,7 @@ describe("Draw unit tests", () => {
 
         it("should correctly identify BitByBit entities with metadata", () => {
             const entity = draw.drawAny({ entity: [1, 2, 3], options });
-            
+
             // Should have bitbybitMeta attached
             expect(entity.bitbybitMeta).toBeDefined();
             expect(entity.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
@@ -1647,7 +1647,7 @@ describe("Draw unit tests", () => {
                 size: 12,
                 colour: "#ff0000"
             } as any;
-            
+
             // Tag should be recognized and handled
             expect(tagDto.text).toBe("Test Tag");
             expect(tagDto.position).toEqual([1, 2, 3]);
@@ -1655,11 +1655,11 @@ describe("Draw unit tests", () => {
 
         it("should correctly differentiate between point and point array", () => {
             const singlePoint = draw.drawAny({ entity: [1, 2, 3], options });
-            const multiplePoints = draw.drawAny({ 
-                entity: [[1, 2, 3], [4, 5, 6]], 
-                options 
+            const multiplePoints = draw.drawAny({
+                entity: [[1, 2, 3], [4, 5, 6]],
+                options
             });
-            
+
             expect(singlePoint.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
             // Multiple points could be interpreted as polylines depending on structure
             expect(multiplePoints.bitbybitMeta).toBeDefined();
@@ -1669,7 +1669,7 @@ describe("Draw unit tests", () => {
         it("should correctly identify polyline DTO", () => {
             const polylineDto = { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] } as Inputs.Base.Polyline3;
             const result = draw.drawAny({ entity: polylineDto, options });
-            
+
             expect(result.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.polyline);
         });
 
@@ -1679,7 +1679,7 @@ describe("Draw unit tests", () => {
                 { points: [[2, 2, 2], [3, 3, 3]] }
             ] as Inputs.Base.Polyline3[];
             const result = draw.drawAny({ entity: polylinesDto, options });
-            
+
             expect(result.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.polylines);
             expect(result.children.length).toBeGreaterThan(0);
         });
@@ -1687,7 +1687,7 @@ describe("Draw unit tests", () => {
         it("should handle undefined and null gracefully", async () => {
             const resultUndefined = await draw.drawAnyAsync({ entity: undefined });
             const resultNull = await draw.drawAnyAsync({ entity: null });
-            
+
             expect(resultUndefined).toBeUndefined();
             expect(resultNull).toBeUndefined();
         });
@@ -1695,7 +1695,7 @@ describe("Draw unit tests", () => {
         it("should correctly identify entity group for updates", () => {
             const initial = draw.drawAny({ entity: [1, 2, 3], options });
             const updated = draw.drawAny({ entity: [4, 5, 6], options, group: initial });
-            
+
             // Should reuse the same entity
             expect(initial.name).toEqual(updated.name);
             expect(updated.bitbybitMeta).toBeDefined();
@@ -1816,7 +1816,7 @@ describe("Draw unit tests", () => {
 
             // Arrange & Act - with back face culling enabled
             const backFaceCullingInputs = new Inputs.Draw.GenericPBRMaterialDto();
-            backFaceCullingInputs.backFaceCulling = true;
+            backFaceCullingInputs.doubleSided = false;
             const backFaceCullingMat = draw.createPBRMaterial(backFaceCullingInputs);
             expect(backFaceCullingMat.cull).toBe(pc.CULLFACE_BACK);
         });
@@ -1830,7 +1830,7 @@ describe("Draw unit tests", () => {
         beforeEach(() => {
             mockImageInstances = [];
             originalImage = global.Image;
-            
+
             // Mock Image constructor to capture onload callbacks
             (global as any).Image = class MockImage {
                 crossOrigin = "";
@@ -1839,7 +1839,7 @@ describe("Draw unit tests", () => {
                 onerror: ((error: any) => void) | null = null;
                 width = 256;
                 height = 256;
-                
+
                 constructor() {
                     mockImageInstances.push(this);
                 }
@@ -1914,7 +1914,7 @@ describe("Draw unit tests", () => {
 
             // Act
             const texture = draw.createTexture(inputs);
-            
+
             // Simulate image load
             expect(mockImageInstances.length).toBe(1);
             mockImageInstances[0].onload();
@@ -1932,7 +1932,7 @@ describe("Draw unit tests", () => {
 
             // Act
             const texture = draw.createTexture(inputs);
-            
+
             // Simulate image load
             expect(mockImageInstances.length).toBe(1);
             mockImageInstances[0].onload();
@@ -1950,7 +1950,7 @@ describe("Draw unit tests", () => {
 
             // Act
             const texture = draw.createTexture(inputs);
-            
+
             // Simulate image load
             expect(mockImageInstances.length).toBe(1);
             mockImageInstances[0].onload();
@@ -1968,7 +1968,7 @@ describe("Draw unit tests", () => {
             // Act
             const texture = draw.createTexture(inputs);
             const setSourceSpy = jest.spyOn(texture, "setSource");
-            
+
             // Simulate image load
             expect(mockImageInstances.length).toBe(1);
             const mockImage = mockImageInstances[0];
@@ -2042,7 +2042,7 @@ describe("Draw unit tests", () => {
 
             // Act
             const texture = draw.createTexture(inputs);
-            
+
             // Simulate image load
             mockImageInstances[0].onload();
 

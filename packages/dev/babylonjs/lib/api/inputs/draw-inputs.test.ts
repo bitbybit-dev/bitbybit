@@ -329,7 +329,6 @@ describe("Draw DTO unit tests", () => {
             const alpha = 0.9;
             const emissiveColor = "#ffff00";
             const emissiveIntensity = 2.5;
-            const backFaceCulling = true;
             const zOffset = 0.5;
             const zOffsetUnits = 2;
             const baseColorTexture = { url: "base.png" } as Base.Texture;
@@ -352,7 +351,6 @@ describe("Draw DTO unit tests", () => {
                 alpha,
                 emissiveColor,
                 emissiveIntensity,
-                backFaceCulling,
                 zOffset,
                 zOffsetUnits,
                 baseColorTexture,
@@ -375,7 +373,6 @@ describe("Draw DTO unit tests", () => {
             expect(result.alpha).toBe(0.9);
             expect(result.emissiveColor).toBe("#ffff00");
             expect(result.emissiveIntensity).toBe(2.5);
-            expect(result.backFaceCulling).toBe(true);
             expect(result.zOffset).toBe(0.5);
             expect(result.zOffsetUnits).toBe(2);
             expect(result.baseColorTexture).toBe(baseColorTexture);
@@ -402,7 +399,6 @@ describe("Draw DTO unit tests", () => {
             expect(result.alpha).toBe(1);
             expect(result.emissiveColor).toBe("#000000");
             expect(result.emissiveIntensity).toBe(1);
-            expect(result.backFaceCulling).toBe(false);
             expect(result.zOffset).toBe(0);
             expect(result.zOffsetUnits).toBe(0);
             expect(result.baseColorTexture).toBeUndefined();

@@ -1148,9 +1148,9 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
-        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options));
+        const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
+        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, inputs));
         const manifoldMeshContainer = new BABYLON.Mesh(this.generateEntityId("manifoldMeshContainer"), this.context.scene);
         meshes.filter(s => s !== undefined).forEach(mesh => {
             mesh.parent = manifoldMeshContainer;
@@ -1159,21 +1159,21 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
-        return this.handleDecomposedManifold(decomposedMesh, options);
+        const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
+        return this.handleDecomposedManifold(decomposedMesh, inputs);
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
-        return this.handleDecomposedMesh(inputs, decomposedMesh, options);
+        const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+        const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", safeWorkerOptions);
+        return this.handleDecomposedMesh(inputs, decomposedMesh, inputs);
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
-        const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
+        const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+        const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", safeWorkerOptions);
+        const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, inputs)));
         const shapesMeshContainer = new BABYLON.Mesh(this.generateEntityId("shapesMeshContainer"), this.context.scene);
         meshesSolved.forEach(mesh => {
             mesh.parent = shapesMeshContainer;
@@ -1181,7 +1181,7 @@ export class DrawHelper extends DrawHelperCore {
         return shapesMeshContainer;
     }
 
-    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions): Promise<BABYLON.Mesh> {
+    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         let dummy;
@@ -1487,12 +1487,11 @@ export class DrawHelper extends DrawHelperCore {
         return countIndices;
     }
 
-    // sometimes we must delete face material property for the web worker not to complain about complex (circular) objects and use cloned object later
-    private deleteFaceMaterialForWorker(inputs: any) {
-        const options = { ...inputs };
-        if (inputs.faceMaterial) {
-            delete inputs.faceMaterial;
-        }
-        return options;
+    // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
+    // Workers cannot handle complex circular objects like Babylon.js materials
+    private getSafeWorkerOptions<T extends { faceMaterial?: BABYLON.Material }>(inputs: T): Omit<T, "faceMaterial"> {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { faceMaterial, ...safeOptions } = inputs;
+        return safeOptions as Omit<T, "faceMaterial">;
     }
 }

@@ -168,7 +168,7 @@ export class Draw extends DrawCore {
             roughness: inputs.roughness,
             opacity: inputs.alpha,
             transparent: inputs.alpha < 1 || inputs.alphaMode === Inputs.Draw.alphaModeEnum.blend,
-            side: inputs.doubleSided || !inputs.backFaceCulling ? THREEJS.DoubleSide : THREEJS.FrontSide,
+            side: inputs.doubleSided ? THREEJS.DoubleSide : THREEJS.FrontSide,
             wireframe: inputs.wireframe,
         });
         
