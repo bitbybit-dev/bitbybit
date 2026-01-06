@@ -1,4 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+jest.mock("@babylonjs/core", () => {
+    const { createBabylonJSMock } = jest.requireActual("../__mocks__/babylonjs.mock");
+    return createBabylonJSMock();
+});
+
+jest.mock("@babylonjs/materials");
+
 import * as BABYLON from "@babylonjs/core";
 import { GridMaterial } from "@babylonjs/materials";
 import { Draw } from "./draw";
@@ -8,9 +15,6 @@ import { Tag } from "@bitbybit-dev/core";
 import { Context } from "../context";
 import * as Inputs from "../inputs";
 import { MockScene, MockMesh } from "../__mocks__/babylonjs.mock";
-
-jest.mock("@babylonjs/core");
-jest.mock("@babylonjs/materials");
 
 // Type definitions for Draw private methods (for type-safe testing)
 type DrawPrivateMethods = {
@@ -2459,4 +2463,174 @@ describe("Draw unit tests", () => {
             }));
         });
     });
+
+    describe("createTexture", () => {
+        it("should create texture with default properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "test.png";
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result).toBeInstanceOf(BABYLON.Texture);
+            expect(result.name).toBe(inputs.name);
+            expect(result.uOffset).toBe(0);
+            expect(result.vOffset).toBe(0);
+            expect(result.uScale).toBe(1);
+            expect(result.vScale).toBe(1);
+            expect(result.uAng).toBe(0);
+            expect(result.vAng).toBe(0);
+            expect(result.wAng).toBe(0);
+            expect(result.level).toBe(1);
+        });
+
+        it("should create texture with custom properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "custom.jpg";
+            inputs.name = "CustomTexture";
+            inputs.uOffset = 0.5;
+            inputs.vOffset = 0.25;
+            inputs.uScale = 2;
+            inputs.vScale = 3;
+            inputs.wAng = 180;
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result).toBeInstanceOf(BABYLON.Texture);
+            expect(result.name).toBe("CustomTexture");
+            expect(result.uOffset).toBe(0.5);
+            expect(result.vOffset).toBe(0.25);
+            expect(result.uScale).toBe(2);
+            expect(result.vScale).toBe(3);
+            expect(result.wAng).toBe(180);
+        });
+    });
+
+    describe("createPBRMaterial", () => {
+        it("should create PBR material with default properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result).toBeInstanceOf(BABYLON.PBRMetallicRoughnessMaterial);
+            expect(result.name).toBe(inputs.name);
+            expect(result.metallic).toBe(0.5);
+            expect(result.roughness).toBe(0.5);
+        });
+
+        it("should create PBR material with custom properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.name = "CustomMaterial";
+            inputs.baseColor = "#ff0000";
+            inputs.metallic = 0.5;
+            inputs.roughness = 0.3;
+            inputs.alpha = 0.8;
+            inputs.emissiveColor = "#00ff00";
+            inputs.emissiveIntensity = 2;
+            inputs.alphaCutoff = 0.5;
+            inputs.doubleSided = true;
+            inputs.unlit = true;
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result).toBeInstanceOf(BABYLON.PBRMetallicRoughnessMaterial);
+            expect(result.name).toBe("CustomMaterial");
+            expect(result.metallic).toBe(0.5);
+            expect(result.roughness).toBe(0.3);
+            expect(result.alpha).toBe(0.8);
+            expect(result.alphaCutOff).toBe(0.5);
+            expect(result.doubleSided).toBe(true);
+            expect(result.disableLighting).toBe(true);
+        });
+
+        it("should apply alpha modes correctly", () => {
+            // Arrange & Act & Assert - opaque
+            const opaqueInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            opaqueInputs.alphaMode = Inputs.Draw.alphaModeEnum.opaque;
+            const opaqueMat = draw.createPBRMaterial(opaqueInputs);
+            expect(opaqueMat.transparencyMode).toBe(BABYLON.PBRMaterial.PBRMATERIAL_OPAQUE);
+
+            // Arrange & Act & Assert - mask
+            const maskInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            maskInputs.alphaMode = Inputs.Draw.alphaModeEnum.mask;
+            const maskMat = draw.createPBRMaterial(maskInputs);
+            expect(maskMat.transparencyMode).toBe(BABYLON.PBRMaterial.PBRMATERIAL_ALPHATEST);
+
+            // Arrange & Act & Assert - blend
+            const blendInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            blendInputs.alphaMode = Inputs.Draw.alphaModeEnum.blend;
+            const blendMat = draw.createPBRMaterial(blendInputs);
+            expect(blendMat.transparencyMode).toBe(BABYLON.PBRMaterial.PBRMATERIAL_ALPHABLEND);
+        });
+
+        it("should apply textures when provided", () => {
+            // Arrange
+            const mockTexture = {} as BABYLON.BaseTexture;
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.baseColorTexture = mockTexture;
+            inputs.metallicRoughnessTexture = mockTexture;
+            inputs.normalTexture = mockTexture;
+            inputs.emissiveTexture = mockTexture;
+            inputs.occlusionTexture = mockTexture;
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result.baseTexture).toBe(mockTexture);
+            expect(result.metallicRoughnessTexture).toBe(mockTexture);
+            expect(result.normalTexture).toBe(mockTexture);
+            expect(result.emissiveTexture).toBe(mockTexture);
+            expect(result.occlusionTexture).toBe(mockTexture);
+        });
+    });
+
+    describe("getSamplingMode", () => {
+        it("should return NEAREST_SAMPLINGMODE for nearestSamplingMode", () => {
+            // Arrange
+            const mode = Inputs.Draw.samplingModeEnum.nearest;
+
+            // Act
+            const result = (draw as any).getSamplingMode(mode);
+
+            // Assert
+            expect(result).toBe(BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        });
+
+        it("should return BILINEAR_SAMPLINGMODE for bilinearSamplingMode", () => {
+            // Arrange
+            const mode = Inputs.Draw.samplingModeEnum.bilinear;
+
+            // Act
+            const result = (draw as any).getSamplingMode(mode);
+
+            // Assert
+            expect(result).toBe(BABYLON.Texture.BILINEAR_SAMPLINGMODE);
+        });
+
+        it("should return TRILINEAR_SAMPLINGMODE for trilinearSamplingMode", () => {
+            // Arrange
+            const mode = Inputs.Draw.samplingModeEnum.trilinear;
+
+            // Act
+            const result = (draw as any).getSamplingMode(mode);
+
+            // Assert
+            expect(result).toBe(BABYLON.Texture.TRILINEAR_SAMPLINGMODE);
+        });
+
+    
+    });
+
 });

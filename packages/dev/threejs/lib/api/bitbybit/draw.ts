@@ -110,6 +110,125 @@ export class Draw extends DrawCore {
         return inputs;
     }
 
+    /**
+     * Creates a generic texture that can be used with PBR materials.
+     * This method provides a cross-engine compatible way to create textures.
+     * @param inputs Texture configuration options
+     * @returns ThreeJS Texture
+     * @group material
+     * @shortname create texture
+     * @disposableOutput true
+     */
+    createTexture(inputs: Inputs.Draw.GenericTextureDto): THREEJS.Texture {
+        const loader = new THREEJS.TextureLoader();
+        const texture = loader.load(inputs.url);
+        
+        texture.name = inputs.name;
+        texture.repeat.set(inputs.uScale, inputs.vScale);
+        texture.offset.set(inputs.uOffset, inputs.vOffset);
+        texture.rotation = inputs.wAng;
+        texture.flipY = !inputs.invertY; // ThreeJS default is flipY=true, so invert the logic
+        texture.wrapS = THREEJS.RepeatWrapping;
+        texture.wrapT = THREEJS.RepeatWrapping;
+        
+        // Sampling mode
+        switch (inputs.samplingMode) {
+            case Inputs.Draw.samplingModeEnum.nearest:
+                texture.minFilter = THREEJS.NearestFilter;
+                texture.magFilter = THREEJS.NearestFilter;
+                break;
+            case Inputs.Draw.samplingModeEnum.bilinear:
+                texture.minFilter = THREEJS.LinearFilter;
+                texture.magFilter = THREEJS.LinearFilter;
+                break;
+            case Inputs.Draw.samplingModeEnum.trilinear:
+                texture.minFilter = THREEJS.LinearMipmapLinearFilter;
+                texture.magFilter = THREEJS.LinearFilter;
+                break;
+        }
+        
+        return texture;
+    }
+
+    /**
+     * Creates a generic PBR (Physically Based Rendering) material.
+     * This method provides a cross-engine compatible way to create materials
+     * that can be used with draw options for OCCT shapes and other geometry.
+     * @param inputs Material configuration options
+     * @returns ThreeJS MeshStandardMaterial
+     * @group material
+     * @shortname create pbr material
+     * @disposableOutput true
+     */
+    createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): THREEJS.MeshStandardMaterial {
+        const mat = new THREEJS.MeshStandardMaterial({
+            name: inputs.name,
+            color: new THREEJS.Color(inputs.baseColor),
+            metalness: inputs.metallic,
+            roughness: inputs.roughness,
+            opacity: inputs.alpha,
+            transparent: inputs.alpha < 1 || inputs.alphaMode === Inputs.Draw.alphaModeEnum.blend,
+            side: inputs.doubleSided || !inputs.backFaceCulling ? THREEJS.DoubleSide : THREEJS.FrontSide,
+            wireframe: inputs.wireframe,
+        });
+        
+        // Emissive
+        if (inputs.emissiveColor) {
+            mat.emissive = new THREEJS.Color(inputs.emissiveColor);
+            mat.emissiveIntensity = inputs.emissiveIntensity;
+        }
+        
+        // Z offset (polygonOffset in ThreeJS)
+        if (inputs.zOffset !== 0 || inputs.zOffsetUnits !== 0) {
+            mat.polygonOffset = true;
+            mat.polygonOffsetFactor = inputs.zOffset;
+            mat.polygonOffsetUnits = inputs.zOffsetUnits;
+        }
+        
+        // Textures
+        if (inputs.baseColorTexture) {
+            mat.map = inputs.baseColorTexture as THREEJS.Texture;
+        }
+        if (inputs.metallicRoughnessTexture) {
+            mat.metalnessMap = inputs.metallicRoughnessTexture as THREEJS.Texture;
+            mat.roughnessMap = inputs.metallicRoughnessTexture as THREEJS.Texture;
+        }
+        if (inputs.normalTexture) {
+            mat.normalMap = inputs.normalTexture as THREEJS.Texture;
+        }
+        if (inputs.emissiveTexture) {
+            mat.emissiveMap = inputs.emissiveTexture as THREEJS.Texture;
+        }
+        if (inputs.occlusionTexture) {
+            mat.aoMap = inputs.occlusionTexture as THREEJS.Texture;
+        }
+        
+        // Alpha mode
+        switch (inputs.alphaMode) {
+            case Inputs.Draw.alphaModeEnum.opaque:
+                mat.transparent = false;
+                mat.alphaTest = 0;
+                break;
+            case Inputs.Draw.alphaModeEnum.mask:
+                mat.transparent = false;
+                mat.alphaTest = inputs.alphaCutoff;
+                break;
+            case Inputs.Draw.alphaModeEnum.blend:
+                mat.transparent = true;
+                mat.alphaTest = 0;
+                break;
+        }
+        
+        // Flat shading for unlit effect (ThreeJS doesn't have true unlit in MeshStandardMaterial)
+        if (inputs.unlit) {
+            mat.emissive = new THREEJS.Color(inputs.baseColor);
+            mat.emissiveIntensity = 1;
+            mat.color = new THREEJS.Color(0x000000);
+        }
+        
+        return mat;
+    }
+
     private handleJscadMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({

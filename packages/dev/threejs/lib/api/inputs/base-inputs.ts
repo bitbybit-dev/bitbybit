@@ -20,6 +20,7 @@ export namespace Base {
     export type Color = string;
     export type ColorRGB = { r: number, g: number, b: number };
     export type Material = any;
+    export type Texture = any;
     export type Point2 = [number, number];
     export type Vector2 = [number, number];
     export type Point3 = [number, number, number];

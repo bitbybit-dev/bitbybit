@@ -119,6 +119,143 @@ export class Draw extends DrawCore {
         return inputs;
     }
 
+    /**
+     * Creates a generic texture that can be used with PBR materials.
+     * This method provides a cross-engine compatible way to create textures.
+     * @param inputs Texture configuration options
+     * @returns PlayCanvas Texture
+     * @group material
+     * @shortname create texture
+     * @disposableOutput true
+     */
+    createTexture(inputs: Inputs.Draw.GenericTextureDto): pc.Texture {
+        const app = this.context.app;
+        
+        // Create a new texture
+        const texture = new pc.Texture(app.graphicsDevice, {
+            name: inputs.name,
+            addressU: pc.ADDRESS_REPEAT,
+            addressV: pc.ADDRESS_REPEAT,
+        });
+        
+        // Load the image asynchronously
+        const image = new Image();
+        image.crossOrigin = "anonymous";
+        image.onload = () => {
+            texture.setSource(image);
+            
+            // Apply sampling mode after source is set
+            switch (inputs.samplingMode) {
+                case Inputs.Draw.samplingModeEnum.nearest:
+                    texture.minFilter = pc.FILTER_NEAREST;
+                    texture.magFilter = pc.FILTER_NEAREST;
+                    break;
+                case Inputs.Draw.samplingModeEnum.bilinear:
+                    texture.minFilter = pc.FILTER_LINEAR;
+                    texture.magFilter = pc.FILTER_LINEAR;
+                    break;
+                case Inputs.Draw.samplingModeEnum.trilinear:
+                    texture.minFilter = pc.FILTER_LINEAR_MIPMAP_LINEAR;
+                    texture.magFilter = pc.FILTER_LINEAR;
+                    break;
+            }
+        };
+        image.src = inputs.url;
+        
+        return texture;
+    }
+
+    /**
+     * Creates a generic PBR (Physically Based Rendering) material.
+     * This method provides a cross-engine compatible way to create materials
+     * that can be used with draw options for OCCT shapes and other geometry.
+     * @param inputs Material configuration options
+     * @returns PlayCanvas StandardMaterial
+     * @group material
+     * @shortname create pbr material
+     * @disposableOutput true
+     */
+    createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): pc.StandardMaterial {
+        const mat = new pc.StandardMaterial();
+        mat.name = inputs.name;
+        
+        // Parse hex color to RGB
+        const baseColor = this.hexToRgb(inputs.baseColor);
+        mat.diffuse = new pc.Color(baseColor.r, baseColor.g, baseColor.b);
+        
+        // PBR properties
+        mat.metalness = inputs.metallic;
+        mat.gloss = 1 - inputs.roughness; // PlayCanvas uses gloss (inverse of roughness)
+        mat.useMetalness = true;
+        mat.opacity = inputs.alpha;
+        
+        // Emissive
+        if (inputs.emissiveColor) {
+            const emissive = this.hexToRgb(inputs.emissiveColor);
+            mat.emissive = new pc.Color(emissive.r, emissive.g, emissive.b);
+            mat.emissiveIntensity = inputs.emissiveIntensity;
+        }
+        
+        // Back face culling
+        mat.cull = inputs.backFaceCulling ? pc.CULLFACE_BACK : (inputs.doubleSided ? pc.CULLFACE_NONE : pc.CULLFACE_BACK);
+        
+        // Z offset (depth bias in PlayCanvas)
+        if (inputs.zOffset !== 0) {
+            mat.depthBias = inputs.zOffset;
+            mat.slopeDepthBias = inputs.zOffsetUnits;
+        }
+        
+        // Textures
+        if (inputs.baseColorTexture) {
+            mat.diffuseMap = inputs.baseColorTexture as pc.Texture;
+        }
+        if (inputs.metallicRoughnessTexture) {
+            mat.metalnessMap = inputs.metallicRoughnessTexture as pc.Texture;
+            mat.glossMap = inputs.metallicRoughnessTexture as pc.Texture;
+        }
+        if (inputs.normalTexture) {
+            mat.normalMap = inputs.normalTexture as pc.Texture;
+        }
+        if (inputs.emissiveTexture) {
+            mat.emissiveMap = inputs.emissiveTexture as pc.Texture;
+        }
+        if (inputs.occlusionTexture) {
+            mat.aoMap = inputs.occlusionTexture as pc.Texture;
+        }
+        
+        // Alpha mode
+        switch (inputs.alphaMode) {
+            case Inputs.Draw.alphaModeEnum.opaque:
+                mat.blendType = pc.BLEND_NONE;
+                break;
+            case Inputs.Draw.alphaModeEnum.mask:
+                mat.blendType = pc.BLEND_NONE;
+                mat.alphaTest = inputs.alphaCutoff;
+                break;
+            case Inputs.Draw.alphaModeEnum.blend:
+                mat.blendType = pc.BLEND_NORMAL;
+                break;
+        }
+        
+        mat.update();
+        return mat;
+    }
+
+    /**
+     * Helper method to convert hex color string to RGB values (0-1 range)
+     */
+    private hexToRgb(hex: string): { r: number; g: number; b: number } {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if (result) {
+            return {
+                r: parseInt(result[1], 16) / 255,
+                g: parseInt(result[2], 16) / 255,
+                b: parseInt(result[3], 16) / 255
+            };
+        }
+        return { r: 0, g: 0, b: 1 }; // Default blue
+    }
+
     private handleJscadMesh(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({

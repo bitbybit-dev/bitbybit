@@ -47,6 +47,13 @@ describe("Draw unit tests", () => {
         const mockGraphicsDevice = {
             createVertexBufferImpl: jest.fn(),
             createIndexBufferImpl: jest.fn(),
+            createTextureImpl: jest.fn(function() { 
+                return { 
+                    id: Math.random(),
+                    propertyChanged: jest.fn(),
+                    destroy: jest.fn()
+                }; 
+            }),
             setVertexBuffer: jest.fn(),
             setIndexBuffer: jest.fn(),
             draw: jest.fn(),
@@ -57,7 +64,8 @@ describe("Draw unit tests", () => {
                 totalUsed: 0
             },
             buffers: [],
-            indexBuffers: []
+            indexBuffers: [],
+            _textureRegistry: []  // Required by PlayCanvas Texture constructor
         };
         
         context.app = {
@@ -1693,6 +1701,357 @@ describe("Draw unit tests", () => {
             expect(updated.bitbybitMeta).toBeDefined();
         });
     });
+
+    describe("createPBRMaterial", () => {
+        it("should create PBR material with default properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(pc.StandardMaterial);
+            expect(result.name).toBe(inputs.name);
+            expect(result.metalness).toBe(0.5);
+            expect(result.gloss).toBe(0.5); // PlayCanvas uses gloss (1 - roughness)
+        });
+
+        it("should create PBR material with custom properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.name = "CustomMaterial";
+            inputs.baseColor = "#ff0000";
+            inputs.metallic = 0.8;
+            inputs.roughness = 0.3;
+            inputs.alpha = 0.7;
+            inputs.emissiveColor = "#00ff00";
+            inputs.emissiveIntensity = 2;
+            inputs.doubleSided = true;
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(pc.StandardMaterial);
+            expect(result.name).toBe("CustomMaterial");
+            expect(result.metalness).toBe(0.8);
+            expect(result.gloss).toBe(0.7); // 1 - 0.3
+            expect(result.opacity).toBe(0.7);
+            expect(result.emissiveIntensity).toBe(2);
+            expect(result.cull).toBe(pc.CULLFACE_NONE);
+        });
+
+        it("should apply alpha modes correctly", () => {
+            // Arrange & Act & Assert - opaque
+            const opaqueInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            opaqueInputs.alphaMode = Inputs.Draw.alphaModeEnum.opaque;
+            const opaqueMat = draw.createPBRMaterial(opaqueInputs);
+            expect(opaqueMat.blendType).toBe(pc.BLEND_NONE);
+
+            // Arrange & Act & Assert - mask
+            const maskInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            maskInputs.alphaMode = Inputs.Draw.alphaModeEnum.mask;
+            maskInputs.alphaCutoff = 0.5;
+            const maskMat = draw.createPBRMaterial(maskInputs);
+            expect(maskMat.blendType).toBe(pc.BLEND_NONE);
+            expect(maskMat.alphaTest).toBe(0.5);
+
+            // Arrange & Act & Assert - blend
+            const blendInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            blendInputs.alphaMode = Inputs.Draw.alphaModeEnum.blend;
+            const blendMat = draw.createPBRMaterial(blendInputs);
+            expect(blendMat.blendType).toBe(pc.BLEND_NORMAL);
+        });
+
+        it("should apply textures when provided", () => {
+            // Arrange
+            const mockTexture = {} as any;
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.baseColorTexture = mockTexture;
+            inputs.metallicRoughnessTexture = mockTexture;
+            inputs.normalTexture = mockTexture;
+            inputs.emissiveTexture = mockTexture;
+            inputs.occlusionTexture = mockTexture;
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result.diffuseMap).toBe(mockTexture);
+            expect(result.metalnessMap).toBe(mockTexture);
+            expect(result.glossMap).toBe(mockTexture);
+            expect(result.normalMap).toBe(mockTexture);
+            expect(result.emissiveMap).toBe(mockTexture);
+            expect(result.aoMap).toBe(mockTexture);
+        });
+
+        it("should apply depth bias for z-offset", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.zOffset = 1;
+            inputs.zOffsetUnits = 2;
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result.depthBias).toBe(1);
+            expect(result.slopeDepthBias).toBe(2);
+        });
+
+        it("should handle back face culling modes", () => {
+            // Arrange & Act - default (no back face culling by default)
+            const defaultInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            const defaultMat = draw.createPBRMaterial(defaultInputs);
+            expect(defaultMat.cull).toBe(pc.CULLFACE_BACK);
+
+            // Arrange & Act - double sided
+            const doubleSidedInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            doubleSidedInputs.doubleSided = true;
+            const doubleSidedMat = draw.createPBRMaterial(doubleSidedInputs);
+            expect(doubleSidedMat.cull).toBe(pc.CULLFACE_NONE);
+
+            // Arrange & Act - with back face culling enabled
+            const backFaceCullingInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            backFaceCullingInputs.backFaceCulling = true;
+            const backFaceCullingMat = draw.createPBRMaterial(backFaceCullingInputs);
+            expect(backFaceCullingMat.cull).toBe(pc.CULLFACE_BACK);
+        });
+    });
+
+    describe("createTexture", () => {
+        // Store original Image constructor
+        let originalImage: typeof Image;
+        let mockImageInstances: any[];
+
+        beforeEach(() => {
+            mockImageInstances = [];
+            originalImage = global.Image;
+            
+            // Mock Image constructor to capture onload callbacks
+            (global as any).Image = class MockImage {
+                crossOrigin = "";
+                src = "";
+                onload: (() => void) | null = null;
+                onerror: ((error: any) => void) | null = null;
+                width = 256;
+                height = 256;
+                
+                constructor() {
+                    mockImageInstances.push(this);
+                }
+            };
+        });
+
+        afterEach(() => {
+            global.Image = originalImage;
+        });
+
+        it("should create texture with default properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result).toBeInstanceOf(pc.Texture);
+            expect(result.name).toBe("Texture"); // default name
+            expect(result.addressU).toBe(pc.ADDRESS_REPEAT);
+            expect(result.addressV).toBe(pc.ADDRESS_REPEAT);
+        });
+
+        it("should create texture with custom name", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+            inputs.name = "CustomTexture";
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result.name).toBe("CustomTexture");
+        });
+
+        it("should set image crossOrigin to anonymous", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+
+            // Act
+            draw.createTexture(inputs);
+
+            // Assert
+            expect(mockImageInstances.length).toBe(1);
+            expect(mockImageInstances[0].crossOrigin).toBe("anonymous");
+        });
+
+        it("should set image src to input url", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/my-texture.png";
+
+            // Act
+            draw.createTexture(inputs);
+
+            // Assert
+            expect(mockImageInstances.length).toBe(1);
+            expect(mockImageInstances[0].src).toBe("https://example.com/my-texture.png");
+        });
+
+        it("should apply nearest sampling mode on image load", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+            inputs.samplingMode = Inputs.Draw.samplingModeEnum.nearest;
+
+            // Act
+            const texture = draw.createTexture(inputs);
+            
+            // Simulate image load
+            expect(mockImageInstances.length).toBe(1);
+            mockImageInstances[0].onload();
+
+            // Assert
+            expect(texture.minFilter).toBe(pc.FILTER_NEAREST);
+            expect(texture.magFilter).toBe(pc.FILTER_NEAREST);
+        });
+
+        it("should apply bilinear sampling mode on image load", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+            inputs.samplingMode = Inputs.Draw.samplingModeEnum.bilinear;
+
+            // Act
+            const texture = draw.createTexture(inputs);
+            
+            // Simulate image load
+            expect(mockImageInstances.length).toBe(1);
+            mockImageInstances[0].onload();
+
+            // Assert
+            expect(texture.minFilter).toBe(pc.FILTER_LINEAR);
+            expect(texture.magFilter).toBe(pc.FILTER_LINEAR);
+        });
+
+        it("should apply trilinear sampling mode on image load", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+            inputs.samplingMode = Inputs.Draw.samplingModeEnum.trilinear;
+
+            // Act
+            const texture = draw.createTexture(inputs);
+            
+            // Simulate image load
+            expect(mockImageInstances.length).toBe(1);
+            mockImageInstances[0].onload();
+
+            // Assert
+            expect(texture.minFilter).toBe(pc.FILTER_LINEAR_MIPMAP_LINEAR);
+            expect(texture.magFilter).toBe(pc.FILTER_LINEAR);
+        });
+
+        it("should call setSource on texture with loaded image", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+
+            // Act
+            const texture = draw.createTexture(inputs);
+            const setSourceSpy = jest.spyOn(texture, "setSource");
+            
+            // Simulate image load
+            expect(mockImageInstances.length).toBe(1);
+            const mockImage = mockImageInstances[0];
+            mockImage.onload();
+
+            // Assert
+            expect(setSourceSpy).toHaveBeenCalledWith(mockImage);
+        });
+
+        it("should return texture immediately without waiting for image load", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+
+            // Act
+            const texture = draw.createTexture(inputs);
+
+            // Assert - texture should be returned even before image loads
+            expect(texture).toBeDefined();
+            expect(texture).toBeInstanceOf(pc.Texture);
+            // Image load hasn't happened yet
+            expect(mockImageInstances[0].onload).toBeDefined();
+        });
+
+        it("should handle multiple textures independently", () => {
+            // Arrange
+            const inputs1 = new Inputs.Draw.GenericTextureDto();
+            inputs1.url = "https://example.com/texture1.png";
+            inputs1.name = "Texture1";
+            inputs1.samplingMode = Inputs.Draw.samplingModeEnum.nearest;
+
+            const inputs2 = new Inputs.Draw.GenericTextureDto();
+            inputs2.url = "https://example.com/texture2.png";
+            inputs2.name = "Texture2";
+            inputs2.samplingMode = Inputs.Draw.samplingModeEnum.trilinear;
+
+            // Act
+            const texture1 = draw.createTexture(inputs1);
+            const texture2 = draw.createTexture(inputs2);
+
+            // Simulate both images loading
+            mockImageInstances[0].onload();
+            mockImageInstances[1].onload();
+
+            // Assert
+            expect(texture1.name).toBe("Texture1");
+            expect(texture2.name).toBe("Texture2");
+            expect(texture1.minFilter).toBe(pc.FILTER_NEAREST);
+            expect(texture2.minFilter).toBe(pc.FILTER_LINEAR_MIPMAP_LINEAR);
+        });
+
+        it("should use graphics device from context app", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+
+            // Act
+            const texture = draw.createTexture(inputs);
+
+            // Assert
+            expect(texture).toBeDefined();
+            // The texture should have been created using the mock graphics device
+            expect(texture.device).toBeDefined();
+        });
+
+        it("should handle default sampling mode when not specified", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "https://example.com/texture.png";
+            // samplingMode defaults to 'nearest'
+
+            // Act
+            const texture = draw.createTexture(inputs);
+            
+            // Simulate image load
+            mockImageInstances[0].onload();
+
+            // Assert - default is 'nearest'
+            expect(texture.minFilter).toBe(pc.FILTER_NEAREST);
+            expect(texture.magFilter).toBe(pc.FILTER_NEAREST);
+        });
+    });
+
 });
 
 

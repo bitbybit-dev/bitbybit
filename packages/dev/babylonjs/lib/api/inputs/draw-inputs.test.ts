@@ -23,7 +23,7 @@ describe("Draw DTO unit tests", () => {
             // Assert
             expect(result.entity).toBeUndefined();
             expect(result.options).toBeUndefined();
-            expect(result.group).toBeUndefined();
+            expect(result.babylonMesh).toBeUndefined();
         });
     });
 

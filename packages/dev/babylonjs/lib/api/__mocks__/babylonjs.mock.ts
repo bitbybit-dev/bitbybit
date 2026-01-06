@@ -107,6 +107,10 @@ export class MockColor3 {
     clone() {
         return new MockColor3(this.r, this.g, this.b);
     }
+    
+    scale(scale: number) {
+        return new MockColor3(this.r * scale, this.g * scale, this.b * scale);
+    }
 }
 
 export class MockColor4 {
@@ -226,10 +230,58 @@ export class MockMaterial {
     }
 }
 
+export class MockTexture {
+    name: string;
+    url: string;
+    wrapU = 1; // WRAP_ADDRESSMODE
+    wrapV = 1; // WRAP_ADDRESSMODE
+    uScale = 1;
+    vScale = 1;
+    uOffset = 0;
+    vOffset = 0;
+    uAng = 0;
+    vAng = 0;
+    wAng = 0;
+    hasAlpha = false;
+    getAlphaFromRGB = false;
+    level = 1;
+    coordinatesIndex = 0;
+    isBlocking = true;
+
+    static NEAREST_SAMPLINGMODE = 1;
+    static BILINEAR_SAMPLINGMODE = 2;
+    static TRILINEAR_SAMPLINGMODE = 3;
+    static WRAP_ADDRESSMODE = 1;
+    static CLAMP_ADDRESSMODE = 0;
+    static MIRROR_ADDRESSMODE = 2;
+
+    constructor(url: string, scene?: MockScene, noMipmap?: boolean, invertY?: boolean, samplingMode?: number) {
+        this.url = url;
+        this.name = url;
+    }
+
+    dispose() {
+        // Mock dispose
+    }
+}
+
 export class MockPBRMetallicRoughnessMaterial extends MockMaterial {
     baseColor: MockColor3 = new MockColor3(1, 1, 1);
     metallic = 1.0;
     roughness = 0.6;
+    emissiveColor: MockColor3 = new MockColor3(0, 0, 0);
+    baseTexture: any = null;
+    metallicRoughnessTexture: any = null;
+    normalTexture: any = null;
+    emissiveTexture: any = null;
+    occlusionTexture: any = null;
+    alphaCutOff = 0.5;
+    transparencyMode: number | null = null;
+    disableLighting = false;
+
+    static PBRMATERIAL_OPAQUE = 0;
+    static PBRMATERIAL_ALPHATEST = 1;
+    static PBRMATERIAL_ALPHABLEND = 2;
 }
 
 export class MockStandardMaterial extends MockMaterial {
@@ -451,7 +503,9 @@ export function createBabylonJSMock() {
         Matrix: MockMatrix,
         VertexData: MockVertexData,
         Material: MockMaterial,
+        Texture: MockTexture,
         PBRMetallicRoughnessMaterial: MockPBRMetallicRoughnessMaterial,
+        PBRMaterial: MockPBRMetallicRoughnessMaterial,
         StandardMaterial: MockStandardMaterial,
         Mesh: MockMesh,
         InstancedMesh: MockInstancedMesh,
@@ -468,11 +522,6 @@ export function createBabylonJSMock() {
             COLOR_MODE_SET: 0,
             COLOR_MODE_ADD: 1,
             COLOR_MODE_MULTIPLY: 2
-        },
-        Texture: {
-            NEAREST_SAMPLINGMODE: 1,
-            BILINEAR_SAMPLINGMODE: 2,
-            TRILINEAR_SAMPLINGMODE: 3
         }
     };
 }

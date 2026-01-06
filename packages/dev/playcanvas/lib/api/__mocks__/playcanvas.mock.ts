@@ -327,6 +327,33 @@ export function createPlayCanvasMock() {
         Entity: MockEntity,
         Color: MockColor,
         GraphNode: MockGraphNode,
+        // Mock Texture class to avoid graphics device registry issues
+        Texture: class MockTexture {
+            name: string;
+            addressU: number;
+            addressV: number;
+            minFilter: number;
+            magFilter: number;
+            device: any;
+            _source: any;
+            
+            constructor(graphicsDevice: any, options?: any) {
+                this.device = graphicsDevice;
+                this.name = options?.name || "Texture";
+                this.addressU = options?.addressU ?? actual.ADDRESS_REPEAT;
+                this.addressV = options?.addressV ?? actual.ADDRESS_REPEAT;
+                this.minFilter = actual.FILTER_NEAREST;
+                this.magFilter = actual.FILTER_NEAREST;
+            }
+            
+            setSource(source: any) {
+                this._source = source;
+            }
+            
+            destroy() {
+                // Mock cleanup
+            }
+        },
         Mesh: class MockMesh extends actual.Mesh {
             constructor(graphicsDevice?: any) {
                 const mockDevice = graphicsDevice || mockGraphicsDevice;

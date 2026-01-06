@@ -277,12 +277,12 @@ export namespace Draw {
         edgeArrowSize = 0;
         /**
          * Angle of the arrow head in degrees. Controls how wide the arrow head spreads.
-         * @default 30
+         * @default 15
          * @minimum 0
          * @maximum 90
          * @step 1
          */
-        edgeArrowAngle = 30;
+        edgeArrowAngle = 15;
     }
 
     /**
@@ -318,12 +318,12 @@ export namespace Draw {
         colorMapStrategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder;
         /**
          * Size affect how big the drawn points are and how wide lines are.
-         * @default 0.1
+         * @default 1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        size = 0.1;
+        size = 1;
         /**
          * Opacity of the point 0 to 1
          * @default 1
@@ -370,12 +370,302 @@ export namespace Draw {
         arrowSize = 0;
         /**
          * Angle of the arrow head in degrees. Controls how wide the arrow head spreads.
-         * @default 30
+         * @default 15
          * @minimum 0
          * @maximum 90
          * @step 1
          */
-        arrowAngle = 30;
+        arrowAngle = 15;
+    }
+
+    /**
+     * Texture filtering mode - how the texture is sampled when scaled
+     */
+    export enum samplingModeEnum {
+        nearest = "nearest",
+        bilinear = "bilinear",
+        trilinear = "trilinear"
+    }
+
+    /**
+     * Generic texture creation options that work across all supported game engines.
+     * These options are mapped to engine-specific texture properties.
+     */
+    export class GenericTextureDto {
+        constructor(
+            url?: string,
+            name?: string,
+            uScale?: number,
+            vScale?: number,
+            uOffset?: number,
+            vOffset?: number,
+            wAng?: number,
+            invertY?: boolean,
+            invertZ?: boolean,
+            samplingMode?: samplingModeEnum
+        ) {
+            if (url !== undefined) { this.url = url; }
+            if (name !== undefined) { this.name = name; }
+            if (uScale !== undefined) { this.uScale = uScale; }
+            if (vScale !== undefined) { this.vScale = vScale; }
+            if (uOffset !== undefined) { this.uOffset = uOffset; }
+            if (vOffset !== undefined) { this.vOffset = vOffset; }
+            if (wAng !== undefined) { this.wAng = wAng; }
+            if (invertY !== undefined) { this.invertY = invertY; }
+            if (invertZ !== undefined) { this.invertZ = invertZ; }
+            if (samplingMode !== undefined) { this.samplingMode = samplingMode; }
+        }
+        /**
+         * URL of the texture image. Can be a local path or remote URL.
+         * @default undefined
+         */
+        url: string;
+        /**
+         * Name identifier for the texture
+         * @default Texture
+         */
+        name = "Texture";
+        /**
+         * Horizontal (U) scale/tiling of the texture
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        uScale = 1;
+        /**
+         * Vertical (V) scale/tiling of the texture
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        vScale = 1;
+        /**
+         * Horizontal (U) offset of the texture
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        uOffset = 0;
+        /**
+         * Vertical (V) offset of the texture
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        vOffset = 0;
+        /**
+         * Rotation angle of the texture in radians around the W axis
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        wAng = 0;
+        /**
+         * Invert the texture on the Y axis
+         * @default false
+         */
+        invertY = false;
+        /**
+         * Invert the texture on the Z axis
+         * @default false
+         */
+        invertZ = false;
+        /**
+         * Texture sampling/filtering mode
+         * @default nearest
+         */
+        samplingMode: samplingModeEnum = samplingModeEnum.nearest;
+    }
+
+    /**
+     * Alpha/blend modes that determine how transparent materials are rendered
+     */
+    export enum alphaModeEnum {
+        opaque = "opaque",
+        mask = "mask",
+        blend = "blend"
+    }
+
+    /**
+     * Generic PBR (Physically Based Rendering) material creation options.
+     * These properties represent the common subset available across BabylonJS, ThreeJS, and PlayCanvas.
+     * Property names follow BabylonJS conventions and are mapped to equivalent properties in other engines.
+     */
+    export class GenericPBRMaterialDto {
+        constructor(
+            name?: string,
+            baseColor?: Base.Color,
+            metallic?: number,
+            roughness?: number,
+            alpha?: number,
+            emissiveColor?: Base.Color,
+            emissiveIntensity?: number,
+            backFaceCulling?: boolean,
+            zOffset?: number,
+            zOffsetUnits?: number,
+            baseColorTexture?: Base.Texture,
+            metallicRoughnessTexture?: Base.Texture,
+            normalTexture?: Base.Texture,
+            emissiveTexture?: Base.Texture,
+            occlusionTexture?: Base.Texture,
+            alphaMode?: alphaModeEnum,
+            alphaCutoff?: number,
+            doubleSided?: boolean,
+            wireframe?: boolean,
+            unlit?: boolean
+        ) {
+            if (name !== undefined) { this.name = name; }
+            if (baseColor !== undefined) { this.baseColor = baseColor; }
+            if (metallic !== undefined) { this.metallic = metallic; }
+            if (roughness !== undefined) { this.roughness = roughness; }
+            if (alpha !== undefined) { this.alpha = alpha; }
+            if (emissiveColor !== undefined) { this.emissiveColor = emissiveColor; }
+            if (emissiveIntensity !== undefined) { this.emissiveIntensity = emissiveIntensity; }
+            if (backFaceCulling !== undefined) { this.backFaceCulling = backFaceCulling; }
+            if (zOffset !== undefined) { this.zOffset = zOffset; }
+            if (zOffsetUnits !== undefined) { this.zOffsetUnits = zOffsetUnits; }
+            if (baseColorTexture !== undefined) { this.baseColorTexture = baseColorTexture; }
+            if (metallicRoughnessTexture !== undefined) { this.metallicRoughnessTexture = metallicRoughnessTexture; }
+            if (normalTexture !== undefined) { this.normalTexture = normalTexture; }
+            if (emissiveTexture !== undefined) { this.emissiveTexture = emissiveTexture; }
+            if (occlusionTexture !== undefined) { this.occlusionTexture = occlusionTexture; }
+            if (alphaMode !== undefined) { this.alphaMode = alphaMode; }
+            if (alphaCutoff !== undefined) { this.alphaCutoff = alphaCutoff; }
+            if (doubleSided !== undefined) { this.doubleSided = doubleSided; }
+            if (wireframe !== undefined) { this.wireframe = wireframe; }
+            if (unlit !== undefined) { this.unlit = unlit; }
+        }
+        /**
+         * Name identifier for the material
+         * @default PBRMaterial
+         */
+        name = "PBRMaterial";
+        /**
+         * Base/albedo color of the material in hex format
+         * @default #0000ff
+         */
+        baseColor: Base.Color = "#0000ff";
+        /**
+         * Metallic factor (0 = dielectric, 1 = metallic)
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        metallic = 0.5;
+        /**
+         * Roughness factor (0 = smooth/mirror, 1 = rough/diffuse)
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        roughness = 0.5;
+        /**
+         * Overall opacity/transparency of the material (0 = fully transparent, 1 = fully opaque)
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        alpha = 1;
+        /**
+         * Emissive color - the color the material appears to emit (glow)
+         * @default #000000
+         */
+        emissiveColor?: Base.Color = "#000000";
+        /**
+         * Intensity multiplier for the emissive color
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        emissiveIntensity = 1;
+        /**
+         * Whether to cull (hide) back-facing polygons
+         * @default false
+         */
+        backFaceCulling = false;
+        /**
+         * Z-buffer depth offset factor to help with z-fighting on coplanar surfaces
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        zOffset = 0;
+        /**
+         * Z-buffer depth offset units for fine-tuned z-fighting control
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        zOffsetUnits = 0;
+        /**
+         * Texture to use for base/albedo color
+         * @default undefined
+         * @optional true
+         */
+        baseColorTexture?: Base.Texture;
+        /**
+         * Combined metallic-roughness texture (metallic in B channel, roughness in G channel)
+         * @default undefined
+         * @optional true
+         */
+        metallicRoughnessTexture?: Base.Texture;
+        /**
+         * Normal/bump map texture for surface detail
+         * @default undefined
+         * @optional true
+         */
+        normalTexture?: Base.Texture;
+        /**
+         * Texture for emissive/glow areas
+         * @default undefined
+         * @optional true
+         */
+        emissiveTexture?: Base.Texture;
+        /**
+         * Ambient occlusion texture for soft shadows in crevices
+         * @default undefined
+         * @optional true
+         */
+        occlusionTexture?: Base.Texture;
+        /**
+         * Alpha/transparency mode: opaque, mask (cutout), or blend (translucent)
+         * @default opaque
+         */
+        alphaMode: alphaModeEnum = alphaModeEnum.opaque;
+        /**
+         * Alpha threshold for mask mode (pixels below this are fully transparent)
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.05
+         */
+        alphaCutoff = 0.5;
+        /**
+         * Render both sides of faces (equivalent to disabling backFaceCulling)
+         * @default false
+         */
+        doubleSided = false;
+        /**
+         * Render material as wireframe
+         * @default false
+         */
+        wireframe = false;
+        /**
+         * Disable lighting calculations and render flat/unlit
+         * @default false
+         */
+        unlit = false;
     }
 
     export enum drawingTypes {

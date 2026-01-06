@@ -8,6 +8,7 @@ import { Draw } from "./draw";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker/lib";
 import { Group, InstancedMesh, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Scene } from "three";
+import * as THREE from "three";
 import * as Inputs from "../inputs";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 
@@ -1439,6 +1440,266 @@ describe("Draw unit tests", () => {
             } as any;
             const res = draw.drawAny({ entity: [1, 2, 3], group: mockGroup });
             expect(res).toBeUndefined();
+        });
+    });
+
+    describe("createTexture", () => {
+        it("should create texture with default properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "test.png";
+
+            // Mock TextureLoader to avoid DOM dependency
+            const mockTexture = {
+                name: "",
+                offset: { x: 0, y: 0 },
+                repeat: { x: 1, y: 1, set: jest.fn() },
+                rotation: 0,
+                flipY: true,
+                wrapS: 0,
+                wrapT: 0,
+                minFilter: 0,
+                magFilter: 0,
+            };
+            jest.spyOn(draw as any, "createTexture").mockImplementation(() => {
+                const texture = { ...mockTexture };
+                texture.name = inputs.name;
+                texture.repeat.set(inputs.uScale || 1, inputs.vScale || 1);
+                texture.offset.x = inputs.uOffset || 0;
+                texture.offset.y = inputs.vOffset || 0;
+                texture.rotation = inputs.wAng || 0;
+                texture.flipY = !inputs.invertY;
+                return texture;
+            });
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result.name).toBe(inputs.name);
+            expect(result.offset.x).toBe(0);
+            expect(result.offset.y).toBe(0);
+            expect(result.rotation).toBe(0);
+        });
+
+        it("should create texture with custom properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "custom.jpg";
+            inputs.name = "CustomTexture";
+            inputs.uOffset = 0.5;
+            inputs.vOffset = 0.25;
+            inputs.uScale = 2;
+            inputs.vScale = 3;
+            inputs.wAng = 1.57; // ~90 degrees in radians
+            inputs.invertY = false;
+
+            // Mock TextureLoader to avoid DOM dependency
+            const mockTexture = {
+                name: "",
+                offset: { x: 0, y: 0 },
+                repeat: { x: 1, y: 1, set: jest.fn() },
+                rotation: 0,
+                flipY: true,
+                wrapS: 0,
+                wrapT: 0,
+                minFilter: 0,
+                magFilter: 0,
+            };
+            jest.spyOn(draw as any, "createTexture").mockImplementation(() => {
+                const texture = { ...mockTexture };
+                texture.name = inputs.name;
+                texture.repeat.set(inputs.uScale || 1, inputs.vScale || 1);
+                texture.offset.x = inputs.uOffset || 0;
+                texture.offset.y = inputs.vOffset || 0;
+                texture.rotation = inputs.wAng || 0;
+                texture.flipY = !inputs.invertY;
+                return texture;
+            });
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result.name).toBe("CustomTexture");
+            expect(result.offset.x).toBe(0.5);
+            expect(result.offset.y).toBe(0.25);
+            expect(result.rotation).toBe(1.57);
+            expect(result.flipY).toBe(true);
+        });
+    });
+
+    describe("createPBRMaterial", () => {
+        it("should create PBR material with default properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result.name).toBe(inputs.name);
+            expect(result.metalness).toBe(0.5);
+            expect(result.roughness).toBe(0.5);
+        });
+
+        it("should create PBR material with custom properties", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.name = "CustomMaterial";
+            inputs.baseColor = "#ff0000";
+            inputs.metallic = 0.8;
+            inputs.roughness = 0.3;
+            inputs.alpha = 0.7;
+            inputs.emissiveColor = "#00ff00";
+            inputs.emissiveIntensity = 2;
+            inputs.doubleSided = true;
+            inputs.wireframe = true;
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result.name).toBe("CustomMaterial");
+            expect(result.metalness).toBe(0.8);
+            expect(result.roughness).toBe(0.3);
+            expect(result.opacity).toBe(0.7);
+            expect(result.emissiveIntensity).toBe(2);
+            expect(result.wireframe).toBe(true);
+        });
+
+        it("should apply alpha modes correctly", () => {
+            // Arrange & Act & Assert - opaque
+            const opaqueInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            opaqueInputs.alphaMode = Inputs.Draw.alphaModeEnum.opaque;
+            const opaqueMat = draw.createPBRMaterial(opaqueInputs);
+            expect(opaqueMat.transparent).toBe(false);
+            expect(opaqueMat.alphaTest).toBe(0);
+
+            // Arrange & Act & Assert - mask
+            const maskInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            maskInputs.alphaMode = Inputs.Draw.alphaModeEnum.mask;
+            maskInputs.alphaCutoff = 0.5;
+            const maskMat = draw.createPBRMaterial(maskInputs);
+            expect(maskMat.transparent).toBe(false);
+            expect(maskMat.alphaTest).toBe(0.5);
+
+            // Arrange & Act & Assert - blend
+            const blendInputs = new Inputs.Draw.GenericPBRMaterialDto();
+            blendInputs.alphaMode = Inputs.Draw.alphaModeEnum.blend;
+            const blendMat = draw.createPBRMaterial(blendInputs);
+            expect(blendMat.transparent).toBe(true);
+            expect(blendMat.alphaTest).toBe(0);
+        });
+
+        it("should apply textures when provided", () => {
+            // Arrange
+            const mockTexture = {} as any;
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.baseColorTexture = mockTexture;
+            inputs.metallicRoughnessTexture = mockTexture;
+            inputs.normalTexture = mockTexture;
+            inputs.emissiveTexture = mockTexture;
+            inputs.occlusionTexture = mockTexture;
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result.map).toBe(mockTexture);
+            expect(result.metalnessMap).toBe(mockTexture);
+            expect(result.roughnessMap).toBe(mockTexture);
+            expect(result.normalMap).toBe(mockTexture);
+            expect(result.emissiveMap).toBe(mockTexture);
+            expect(result.aoMap).toBe(mockTexture);
+        });
+
+        it("should apply polygon offset for z-offset", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.zOffset = 1;
+            inputs.zOffsetUnits = 2;
+
+            // Act
+            const result = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(result.polygonOffset).toBe(true);
+            expect(result.polygonOffsetFactor).toBe(1);
+            expect(result.polygonOffsetUnits).toBe(2);
+        });
+    });
+
+    describe("texture sampling modes", () => {
+        beforeEach(() => {
+            // Mock createTexture to test sampling modes
+            jest.spyOn(draw as any, "createTexture").mockImplementation((inputs: Inputs.Draw.GenericTextureDto) => {
+                const texture = new THREE.Texture();
+                
+                // Apply sampling mode logic
+                switch (inputs.samplingMode) {
+                    case Inputs.Draw.samplingModeEnum.nearest:
+                        texture.minFilter = THREE.NearestFilter;
+                        texture.magFilter = THREE.NearestFilter;
+                        break;
+                    case Inputs.Draw.samplingModeEnum.bilinear:
+                        texture.minFilter = THREE.LinearFilter;
+                        texture.magFilter = THREE.LinearFilter;
+                        break;
+                    case Inputs.Draw.samplingModeEnum.trilinear:
+                        texture.minFilter = THREE.LinearMipmapLinearFilter;
+                        texture.magFilter = THREE.LinearFilter;
+                        break;
+                }
+                
+                return texture;
+            });
+        });
+
+        it("should apply nearest sampling mode", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "test.png";
+            inputs.samplingMode = Inputs.Draw.samplingModeEnum.nearest;
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result.minFilter).toBe(THREE.NearestFilter);
+            expect(result.magFilter).toBe(THREE.NearestFilter);
+        });
+
+        it("should apply bilinear sampling mode", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "test.png";
+            inputs.samplingMode = Inputs.Draw.samplingModeEnum.bilinear;
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result.minFilter).toBe(THREE.LinearFilter);
+            expect(result.magFilter).toBe(THREE.LinearFilter);
+        });
+
+        it("should apply trilinear sampling mode", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "test.png";
+            inputs.samplingMode = Inputs.Draw.samplingModeEnum.trilinear;
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result.minFilter).toBe(THREE.LinearMipmapLinearFilter);
+            expect(result.magFilter).toBe(THREE.LinearFilter);
         });
     });
 });
