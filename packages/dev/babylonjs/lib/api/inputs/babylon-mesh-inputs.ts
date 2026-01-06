@@ -111,7 +111,22 @@ export namespace BabylonMesh {
          */
         scale: Base.Vector3;
     }
-
+    export class ScaleInPlaceDto {
+        constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, scale?: number) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (scale !== undefined) { this.scale = scale; }
+        }
+        /**
+         * Babylon Mesh that needs to be updated
+         * @default undefined
+         */
+        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
+        /**
+         * factor for the scale
+         * @default 1
+         */
+        scale = 1;
+    }
     export class IntersectsMeshDto {
         constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, babylonMesh2?: BABYLON.Mesh | BABYLON.InstancedMesh, precise?: boolean, includeDescendants?: boolean) {
             if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }

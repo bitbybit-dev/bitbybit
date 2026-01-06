@@ -41,7 +41,7 @@ export namespace BabylonScene {
         vector: Base.Vector3 = [0, -9.81, 0];
     }
     export class PointLightDto {
-        constructor(position?: Base.Point3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number, shadowRefreshRate?: number) {
+        constructor(position?: Base.Point3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, transparencyShadow?: boolean, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number, shadowRefreshRate?: number) {
             if (position !== undefined) { this.position = position; }
             if (intensity !== undefined) { this.intensity = intensity; }
             if (diffuse !== undefined) { this.diffuse = diffuse; }
@@ -50,6 +50,7 @@ export namespace BabylonScene {
             if (shadowGeneratorMapSize !== undefined) { this.shadowGeneratorMapSize = shadowGeneratorMapSize; }
             if (enableShadows !== undefined) { this.enableShadows = enableShadows; }
             if (shadowDarkness !== undefined) { this.shadowDarkness = shadowDarkness; }
+            if (transparencyShadow !== undefined) { this.transparencyShadow = transparencyShadow; }
             if (shadowUsePercentageCloserFiltering !== undefined) { this.shadowUsePercentageCloserFiltering = shadowUsePercentageCloserFiltering; }
             if (shadowContactHardeningLightSizeUVRatio !== undefined) { this.shadowContactHardeningLightSizeUVRatio = shadowContactHardeningLightSizeUVRatio; }
             if (shadowBias !== undefined) { this.shadowBias = shadowBias; }
@@ -110,7 +111,11 @@ export namespace BabylonScene {
          * @step 0.1
          */
         shadowDarkness? = 0;
-
+        /**
+         * Sets the ability to have transparent shadow (useful for Gaussian Splatting Meshes)
+         * @default false
+         */
+        transparencyShadow = false;
         /**
          * Use percentage closer filtering
          * @default true
@@ -250,6 +255,11 @@ export namespace BabylonScene {
          * @default true
          */
         shadowUsePercentageCloserFiltering = true;
+        /**
+         * Sets the ability to have transparent shadow (useful for Gaussian Splatting Meshes)
+         * @default false
+         */
+        transparencyShadow = false;
         /**
          * Shadow contact hardening light size UV ratio - only applies if usePercentageCloserFiltering is true
          * @default 0.2

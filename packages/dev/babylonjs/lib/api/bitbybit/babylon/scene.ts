@@ -103,18 +103,32 @@ export class BabylonScene {
             shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
             shadowGenerator.bias = inputs.shadowBias;
             shadowGenerator.normalBias = inputs.shadowNormalBias;
+            if (inputs.transparencyShadow === true) {
+                shadowGenerator.setTransparencyShadow(true);
+            }
             if (inputs.shadowRefreshRate !== undefined) {
                 shadowGenerator.getShadowMap().refreshRate = inputs.shadowRefreshRate;
             }
             light.shadowMaxZ = inputs.shadowMaxZ;
             light.shadowMinZ = inputs.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
+
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (!m.metadata || (m.metadata && m.metadata.shadows !== false))) {
+                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("poi_") && !m.name.includes("dimension_text_3d") && !m.name.includes("bitbybit-ground") && (!m.metadata || (m.metadata && m.metadata.shadows !== false))) {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
             });
+
+            light.onDispose = () => {
+                shadowGenerator.dispose();
+                if (this.context.scene.metadata && this.context.scene.metadata.shadowGenerators) {
+                    const index = this.context.scene.metadata.shadowGenerators.indexOf(shadowGenerator);
+                    if (index > -1) {
+                        this.context.scene.metadata.shadowGenerators.splice(index, 1);
+                    }
+                }
+            };
         }
 
         light.diffuse = BABYLON.Color3.FromHexString(inputs.diffuse);
@@ -168,10 +182,14 @@ export class BabylonScene {
             light.shadowEnabled = true;
             const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize, light);
             shadowGenerator.darkness = inputs.shadowDarkness;
+
             shadowGenerator.usePercentageCloserFiltering = inputs.shadowUsePercentageCloserFiltering;
             shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
             shadowGenerator.bias = inputs.shadowBias;
             shadowGenerator.normalBias = inputs.shadowNormalBias;
+            if (inputs.transparencyShadow === true) {
+                shadowGenerator.setTransparencyShadow(true);
+            }
             if (inputs.shadowRefreshRate !== undefined) {
                 shadowGenerator.getShadowMap().refreshRate = inputs.shadowRefreshRate;
             }
@@ -180,11 +198,20 @@ export class BabylonScene {
             light.shadowMinZ = inputs.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (!m.metadata || (m.metadata && m.metadata.shadows !== false))) {
+                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("poi_") && !m.name.includes("dimension_text_3d") && !m.name.includes("bitbybit-ground") && (!m.metadata || (m.metadata && m.metadata.shadows !== false))) {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
             });
+            light.onDispose = () => {
+                shadowGenerator.dispose();
+                if (this.context.scene.metadata && this.context.scene.metadata.shadowGenerators) {
+                    const index = this.context.scene.metadata.shadowGenerators.indexOf(shadowGenerator);
+                    if (index > -1) {
+                        this.context.scene.metadata.shadowGenerators.splice(index, 1);
+                    }
+                }
+            };
         }
 
         light.diffuse = BABYLON.Color3.FromHexString(inputs.diffuse);
