@@ -26,7 +26,7 @@ We strongly encourage you to watch the video tutorial and follow along, repeatin
     src="https://www.youtube.com/embed/kP8_38k8fg8?si=83S5Qvcby15TAQkd" 
     title="Creating 3D Product Variants on Shopify with 3D Bits App Tutorial" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

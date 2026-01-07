@@ -108,7 +108,7 @@ Learn how to build an interactive 3D chair configurator using the Viewer Editor 
     src="https://www.youtube.com/embed/7R6ueAHGFhg" 
     title="3D Configurators On Shopify Product Pages with Bitbybit Viewer Editor And GLTF Assets (No Code)" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

@@ -21,7 +21,7 @@ In this step-by-step tutorial, you’ll discover how to create, assign, and save
     src="https://www.youtube.com/embed/s00GpQp5Qmg" 
     title="Change Materials, Colors, And Textures Of 3D Products On Shopify With 3D Bits App" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

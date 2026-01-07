@@ -27,7 +27,7 @@ To showcase our application's capabilities, we have produced a video that depict
     src="https://www.youtube.com/embed/4rqxlJcS4eU" 
     title="YouTube video player - Mixed Reality CAD Demo" 
     frameborder="0" 
-    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

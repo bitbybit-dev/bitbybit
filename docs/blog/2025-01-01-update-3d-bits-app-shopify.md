@@ -52,7 +52,7 @@ For the best results with assets you own, we recommend uploading them to Shopify
 Here's a short tutorial that will walk you through all the steps involved to set up and use the BITBYBIT VIEWER block:
 
 <div class="responsive-video-container">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/FcvQAVE1tDc" title="3D Bits App For Shopify - Tutorial Explains How To Use 3D Bits App For Shopify With BITBYBIT VIEWER Theme App Extension Block" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/FcvQAVE1tDc" title="3D Bits App For Shopify - Tutorial Explains How To Use 3D Bits App For Shopify With BITBYBIT VIEWER Theme App Extension Block" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
 </div>
 
 ### BITBYBIT PREVIEW Block
@@ -68,7 +68,7 @@ The **BITBYBIT PREVIEW** block works with a single metafield where you can paste
 Here's a short tutorial that will walk you through all the steps involved to set up and use the BITBYBIT PREVIEW block:
 
 <div class="responsive-video-container">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/xU5seV1NQ5o" title="3D Bits App For Shopify - Tutorial Explains How To Use 3D Bits App For Shopify With BITBYBIT PREVIEW Theme App Extension Block" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/xU5seV1NQ5o" title="3D Bits App For Shopify - Tutorial Explains How To Use 3D Bits App For Shopify With BITBYBIT PREVIEW Theme App Extension Block" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
 </div>
 
 ### Showcasing 3D Gaussian Splats

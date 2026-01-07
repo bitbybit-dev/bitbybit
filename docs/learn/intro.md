@@ -20,7 +20,7 @@ In this essential introduction to Bitbybit video Matas Ubarevičius explains the
     src="https://www.youtube.com/embed/noc6Rg6tMe0" 
     title="Essential Introduction To BITBYBIT That Explains You The Most Important Aspects Of The 3D Platform" 
     frameborder="0" 
-    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

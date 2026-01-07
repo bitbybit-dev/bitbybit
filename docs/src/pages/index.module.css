@@ -282,12 +282,13 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
+  padding-bottom: -0.15em;
 }
 
 .highlight::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  bottom: 0;
   left: 0;
   right: 0;
   height: 4px;

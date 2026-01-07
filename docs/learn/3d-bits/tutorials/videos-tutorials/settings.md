@@ -27,7 +27,7 @@ By the end of this tutorial, you should feel confident in configuring the "3D Bi
     src="https://www.youtube.com/embed/BAA-qDBxCAk?si=bdkTOh-Q9SDYdP_Q" 
     title="Configuring Settings for the 3D Bits Shopify App" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>
