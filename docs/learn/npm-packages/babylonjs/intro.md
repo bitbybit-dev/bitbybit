@@ -70,7 +70,7 @@ If you're looking to get started or deepen your knowledge of BabylonJS:
 *   **BabylonJS Forum (Official):** <a href="https://forum.babylonjs.com/" target="_blank" rel="noopener noreferrer">forum.babylonjs.com</a> - The central hub for community support, questions, and showcasing projects.
 *   **Babylon 101 (Tutorials):** <a href="https://www.youtube.com/playlist?list=PLym1B0rdkvqhuCNSXzxw6ofEkrpYI70P4" target="_blank" rel="noopener noreferrer">Babylon 101 Series</a> - Great for beginners.
 *   **YouTube Channel:** <a href="https://www.youtube.com/channel/UCyOemMa5EJkIgVavJjSCLKQ" target="_blank" rel="noopener noreferrer">Official BabylonJS YouTube</a> - Tutorials and community highlights.
-*   **GitHub Repository:** <a href="https://github.com/BabylonJS/Babylon.js" target="_blank" rel="noopener noreferrer">BabylonJS/Babylon.js</a> - The engine's source code.
+*   **GitHub Repository:** <a href="https://github.com/BabylonJS/BabylonJS" target="_blank" rel="noopener noreferrer">BabylonJS/BabylonJS</a> - The engine's source code.
 
 ## How Bitbybit Uses BabylonJS
 

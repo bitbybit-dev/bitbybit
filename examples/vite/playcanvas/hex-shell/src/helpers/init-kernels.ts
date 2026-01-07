@@ -1,7 +1,7 @@
 import type { BitByBitBase } from "@bitbybit-dev/playcanvas";
 import type { AppBase, Entity } from "playcanvas";
 import type { KernelOptions } from "../models";
-import { first, firstValueFrom, tap } from "rxjs";
+import { first, firstValueFrom, map } from "rxjs";
 import { OccStateEnum } from "@bitbybit-dev/occt-worker";
 import { JscadStateEnum } from "@bitbybit-dev/jscad-worker";
 import { ManifoldStateEnum } from "@bitbybit-dev/manifold-worker";
@@ -11,7 +11,7 @@ export async function initKernels(
     scene: Entity,
     bitbybit: BitByBitBase,
     options: KernelOptions
-): Promise<{ message: string }> {
+): Promise<{ message: string; initializedKernels: string[] }> {
     let occtWorkerInstance: Worker | undefined;
     let jscadWorkerInstance: Worker | undefined;
     let manifoldWorkerInstance: Worker | undefined;
@@ -46,7 +46,7 @@ export async function initKernels(
     );
 
     // 3. Collect promises for kernel initializations
-    const initializationPromises: Promise<void>[] = [];
+    const initializationPromises: Promise<string>[] = [];
     let anyKernelSelectedForInit = false;
 
     if (options.enableOCCT) {
@@ -56,9 +56,9 @@ export async function initKernels(
                 firstValueFrom(
                     bitbybit.occtWorkerManager.occWorkerState$.pipe(
                         first((s) => s.state === OccStateEnum.initialised),
-                        tap(() => console.log("OCCT Initialized"))
+                        map(() => "OCCT")
                     )
-                ).then(() => { }) // Ensure the promise resolves to void for Promise.all
+                )
             );
         } else {
             console.warn(
@@ -74,9 +74,9 @@ export async function initKernels(
                 firstValueFrom(
                     bitbybit.jscadWorkerManager.jscadWorkerState$.pipe(
                         first((s) => s.state === JscadStateEnum.initialised),
-                        tap(() => console.log("JSCAD Initialized"))
+                        map(() => "JSCAD")
                     )
-                ).then(() => { })
+                )
             );
         } else {
             console.warn(
@@ -87,14 +87,14 @@ export async function initKernels(
 
     if (options.enableManifold) {
         anyKernelSelectedForInit = true;
-        if (bitbybit.manifoldWorkerManager) {
+        if (bitbybit.manifoldWorkerManager && bitbybit.manifoldWorkerManager.manifoldWorkerState$) {
             initializationPromises.push(
                 firstValueFrom(
                     bitbybit.manifoldWorkerManager.manifoldWorkerState$.pipe(
                         first((s) => s.state === ManifoldStateEnum.initialised),
-                        tap(() => console.log("Manifold Initialized"))
+                        map(() => "Manifold")
                     )
-                ).then(() => { })
+                )
             );
         } else {
             console.warn(
@@ -106,7 +106,7 @@ export async function initKernels(
     // 4. Wait for selected & available kernels or handle no selection/availability
     if (!anyKernelSelectedForInit) {
         console.log("No kernels selected for initialization.");
-        return { message: "No kernels selected for initialization." };
+        return { message: "No kernels selected for initialization.", initializedKernels: [] };
     }
 
     if (initializationPromises.length === 0) {
@@ -116,12 +116,14 @@ export async function initKernels(
         );
         return {
             message: "Selected kernels were not awaitable for initialization state.",
+            initializedKernels: [],
         };
     }
 
-    await Promise.all(initializationPromises);
-    console.log("Selected and awaitable kernels initialized:", options);
+    const initializedKernels = await Promise.all(initializationPromises);
+    console.log("Kernels initialized:", initializedKernels.join(", "));
     return {
-        message: "Selected and awaitable kernels initialized successfully.",
+        message: `Successfully initialized: ${initializedKernels.join(", ")}`,
+        initializedKernels,
     };
 }

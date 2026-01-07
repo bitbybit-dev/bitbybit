@@ -1,32 +1,32 @@
 bitbybit:
   label: Bitbybit
   permalink: /bitbybit
-  description: Blogs about Bitbybit
+  description: Blog posts about Bitbybit
 
 cloud:
   label: Cloud
   permalink: /cloud
-  description: Blogs about Cloud
+  description: Blog posts about Cloud
 
 ai:
   label: AI
   permalink: /ai
-  description: Blogs about Artificial Intelligence
+  description: Blog posts about Artificial Intelligence
 
 cad:
   label: CAD
   permalink: /cad
-  description: Blogs about Computer-Aided Design
+  description: Blog posts about Computer-Aided Design
 
 xr:
   label: XR
   permalink: /xr
-  description: Blogs about Extended Reality
+  description: Blog posts about Extended Reality
 
 vr:
   label: VR
   permalink: /vr
-  description: Blogs about Virtual Reality
+  description: Blog posts about Virtual Reality
 
 3d-bits:
   label: 3D Bits
@@ -36,7 +36,7 @@ vr:
 shopify:
   label: Shopify
   permalink: /shopify
-  description: Blogs about Shopify integrations via 3D Bits app
+  description: Blog posts about Shopify integrations via 3D Bits app
 
 case-study:
   label: Case Study
@@ -46,4 +46,19 @@ case-study:
 fitness-equipment:
   label: Fitness Equipment
   permalink: /fitness-equipment
-  description: Blogs about fitness equipment industry and 3D visualization
+  description: Blog posts about fitness equipment industry and 3D visualization
+
+babylonjs:
+  label: babylonjs
+  permalink: /babylonjs
+  description: Blog posts about Babylon.js 3D engine
+
+threejs:
+  label: threejs
+  permalink: /threejs
+  description: Blog posts about Three.js 3D library
+
+playcanvas:
+  label: PlayCanvas
+  permalink: /playcanvas
+  description: Blog posts about PlayCanvas 3D engine

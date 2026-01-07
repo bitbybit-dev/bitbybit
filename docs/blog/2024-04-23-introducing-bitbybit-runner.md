@@ -8,6 +8,22 @@ description: "Containment has failed! Run your Bitbybit.dev scripts wherever you
 
 ![Runner is on the loose. A free and powerful tiger in the jungle playing with soap bubbles, symbolizing the freedom to run scripts anywhere.](https://ik.imagekit.io/bitbybit/app/assets/blog/introducing-bitbybit-runner/introducing-bitbybit-runner.jpeg "Runner is on the loose. Run your scripts wherever you are on the internet")
 
+:::info Update - January 2026
+
+Since this post was originally published, **Bitbybit Runner has significantly evolved**. What started as a single Babylon.js-based runner has now expanded to support **multiple game engines**:
+
+- **Babylon.js Runner** - The original implementation (full and lite variants)
+- **Three.js Runner** - Support for the popular Three.js library (full and lite variants)
+- **PlayCanvas Runner** - Integration with the PlayCanvas game engine (full and lite variants)
+
+Each runner comes in two variants:
+- **Full Runner** - Includes the game engine in the bundle for quick setup
+- **Lite Runner** - Excludes the game engine, allowing you to load it separately for better flexibility and smaller bundle sizes
+
+Learn more about using runners with different engines in our [comprehensive runner documentation](/learn/runners/intro).
+
+:::
+
 In the last couple of weeks, we've been discussing and experimenting with a new way to run and embed Bitbybit.dev scripts. The result of these experiments is a new tool called **BITBYBIT-RUNNER.JS**. You can now run your scripts on your own websites, blogs, webshops, or third-party coding sites!
 
 <!--truncate-->

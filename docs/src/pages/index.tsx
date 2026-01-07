@@ -63,24 +63,45 @@ const technologies = [
     description: "Integrate Bitbybit's CAD capabilities with the popular Three.js rendering engine.",
     link: "/learn/npm-packages/threejs",
     color: "#049EF4",
+    logo: "https://bitbybit.dev/assets/threejs-logo.png",
+    isGameEngine: true,
   },
   {
     name: "Babylon.js",
     description: "Build powerful 3D experiences combining Bitbybit geometry with Babylon.js features.",
     link: "/learn/npm-packages/babylonjs",
     color: "#BB464B",
+    logo: "https://bitbybit.dev/assets/babylon_logo.png",
+    isGameEngine: true,
+  },
+  {
+    name: "PlayCanvas",
+    description: "Create high-performance 3D applications with Bitbybit and PlayCanvas game engine.",
+    link: "/learn/npm-packages/playcanvas",
+    color: "#FF6B35",
+    logo: "/img/playcanvas.png",
+    isGameEngine: true,
+  },
+  {
+    name: "NPM Packages",
+    description: "Install and use Bitbybit in your own projects via NPM for complete flexibility.",
+    link: "/learn/npm-packages/intro",
+    color: "#CB3837",
+    isGameEngine: false,
   },
   {
     name: "Shopify 3D Bits",
     description: "Add interactive 3D product configurators to your Shopify store with our app.",
     link: "/learn/3d-bits/intro",
     color: "#96BF48",
+    isGameEngine: false,
   },
   {
     name: "Script Runners",
     description: "Execute visual scripts directly on your website without writing code.",
     link: "/learn/runners/intro",
     color: "#f0cebb",
+    isGameEngine: false,
   },
 ];
 
@@ -241,12 +262,18 @@ function TechnologiesSection() {
       <div className="container">
         <div className={styles.sectionHeader}>
           <Heading as="h2">Integrate With Your Stack</Heading>
-          <p>Bitbybit works seamlessly with popular web technologies and platforms.</p>
+          <p>Bitbybit works with popular web technologies, game engines and e-commerce platforms.</p>
         </div>
         <div className={styles.techGrid}>
           {technologies.map((tech, idx) => (
-            <Link to={tech.link} key={idx} className={styles.techCard}>
+            <Link to={tech.link} key={idx} className={`${styles.techCard} ${tech.isGameEngine ? styles.techCardEngine : ""}`}>
               <div className={styles.techBorder} style={{ borderColor: tech.color }}></div>
+              {tech.logo && (
+                <div className={styles.techLogoContainer}>
+                  <div className={styles.techLogoGlow} style={{ background: `radial-gradient(circle, ${tech.color}40 0%, transparent 70%)` }}></div>
+                  <img src={tech.logo} alt={`${tech.name} logo`} className={styles.techLogo} />
+                </div>
+              )}
               <h3 style={{ color: tech.color }}>{tech.name}</h3>
               <p>{tech.description}</p>
               <span className={styles.techLink}>Learn more →</span>

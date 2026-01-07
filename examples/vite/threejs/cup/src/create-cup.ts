@@ -1,8 +1,8 @@
-import type { BitByBitBase } from '@bitbybit-dev/threejs';
-import { Color, MeshPhongMaterial, Scene } from 'three';
-import { Inputs } from '@bitbybit-dev/threejs';
-import type { Current } from './models/current';
-import type { Model } from './models/model';
+import type { BitByBitBase } from "@bitbybit-dev/threejs";
+import { Color, MeshPhongMaterial, Scene } from "three";
+import { Inputs } from "@bitbybit-dev/threejs";
+import type { Current } from "./models/current";
+import type { Model } from "./models/model";
 
 export const createShape = async (
   bitbybit: BitByBitBase | undefined,
@@ -16,7 +16,7 @@ export const createShape = async (
       await bitbybit.occt.deleteShapes({ shapes: shapesToClean });
     }
 
-    const faceColour = '#1c224f';
+    const faceColour = "#1c224f";
 
     const roundingRadius = model.cupThickness / 3;
     const cupHolderLength = 2;
@@ -30,7 +30,7 @@ export const createShape = async (
     });
 
     const cupHolderWidth = model.cupHandleDistance + model.cupThickness * 2;
-    const edgeColour = '#ffffff';
+    const edgeColour = "#ffffff";
 
     const box = await bitbybit.occt.shapes.solid.createBox({
       width: cupHolderWidth * 2,
@@ -81,7 +81,7 @@ export const createShape = async (
     });
 
     const dimOpt = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
-    dimOpt.labelSuffix = '(cm)';
+    dimOpt.labelSuffix = "(cm)";
     dimOpt.start = [model.cupRadius, 0, 0];
     dimOpt.end = [-model.cupRadius, 0, 0];
     dimOpt.labelSize = 0.5;
@@ -118,7 +118,8 @@ export const createShape = async (
     options.edgeOpacity = 1;
     options.drawEdges = true;
     options.edgeColour = edgeColour;
-    options.precision = 0.05;
+    options.drawTwoSided = false;
+    options.precision = 0.01;
 
     const mat = new MeshPhongMaterial({ color: new Color(model.color) });
     mat.polygonOffset = true;

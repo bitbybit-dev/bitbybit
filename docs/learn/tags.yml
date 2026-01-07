@@ -33,6 +33,11 @@ babylonjs:
   permalink: /babylonjs
   description: Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework.
 
+playcanvas:
+  label: PlayCanvas
+  permalink: /playcanvas
+  description: PlayCanvas is a web-based game engine and development platform for building 3D applications.
+
 occt:
   label: OCCT
   permalink: /occt

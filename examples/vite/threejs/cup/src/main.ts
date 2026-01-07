@@ -1,9 +1,9 @@
-import './style.css';
-import { BitByBitBase } from '@bitbybit-dev/threejs';
-import { OccStateEnum } from '@bitbybit-dev/occt-worker';
-import { Inputs } from '@bitbybit-dev/threejs';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { STLExporter } from 'three/examples/jsm/exporters/STLExporter';
+import "./style.css";
+import { BitByBitBase } from "@bitbybit-dev/threejs";
+import { OccStateEnum } from "@bitbybit-dev/occt-worker";
+import { Inputs } from "@bitbybit-dev/threejs";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
 import {
   Color,
   DirectionalLight,
@@ -17,13 +17,13 @@ import {
   Vector3,
   VSMShadowMap,
   WebGLRenderer,
-} from 'three';
-import { GUI } from 'lil-gui';
-import { createShape } from './create-cup';
-import type { Current } from './models/current';
-import type { Model } from './models/model';
+} from "three";
+import { GUI } from "lil-gui";
+import { createShape } from "./create-cup";
+import type { Current } from "./models/current";
+import type { Model } from "./models/model";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <canvas id="three-canvas">
   </canvas>
 `;
@@ -41,7 +41,7 @@ function component() {
     cupThickness: 1,
     cupHandleDistance: 2,
     cupHandleHeight: 0.5,
-    color: '#091044',
+    color: "#091044",
   } as Model;
 
   let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
@@ -60,7 +60,7 @@ function component() {
     if (bitbybit && finalShape) {
       await bitbybit.occt.io.saveShapeSTEP({
         shape: finalShape,
-        fileName: 'shape',
+        fileName: "shape",
         adjustYtoZ: true,
         tryDownload: true,
       });
@@ -71,12 +71,12 @@ function component() {
     if (scene) {
       var exporter = new STLExporter();
       var str = exporter.parse(scene);
-      var blob = new Blob([str], { type: 'text/plain' });
-      var link = document.createElement('a');
-      link.style.display = 'none';
+      var blob = new Blob([str], { type: "text/plain" });
+      var link = document.createElement("a");
+      link.style.display = "none";
       document.body.appendChild(link);
       link.href = URL.createObjectURL(blob);
-      link.download = 'Scene.stl';
+      link.download = "Scene.stl";
       link.click();
     }
   };
@@ -103,11 +103,11 @@ function component() {
     bitbybit = new BitByBitBase();
 
     const domNode = document.getElementById(
-      'three-canvas'
+      "three-canvas"
     ) as HTMLCanvasElement;
-    const occt = new Worker(new URL('./workers/occt.worker', import.meta.url), {
-      name: 'OCC',
-      type: 'module',
+    const occt = new Worker(new URL("./workers/occt.worker", import.meta.url), {
+      name: "OCC",
+      type: "module",
     });
 
     const camera = new PerspectiveCamera(
@@ -152,7 +152,7 @@ function component() {
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
-    window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener("resize", onWindowResize, false);
 
     renderer.setClearColor(new Color(0x1a1c1f), 1);
 
@@ -202,75 +202,75 @@ function component() {
   };
 
   const disableGUI = () => {
-    const lilGui = document.getElementsByClassName('lil-gui')[0] as HTMLElement;
-    lilGui.style.pointerEvents = 'none';
-    lilGui.style.opacity = '0.5';
+    const lilGui = document.getElementsByClassName("lil-gui")[0] as HTMLElement;
+    lilGui.style.pointerEvents = "none";
+    lilGui.style.opacity = "0.5";
   };
 
   const enableGUI = () => {
-    const lilGui = document.getElementsByClassName('lil-gui')[0] as HTMLElement;
-    lilGui.style.pointerEvents = 'all';
-    lilGui.style.opacity = '1';
+    const lilGui = document.getElementsByClassName("lil-gui")[0] as HTMLElement;
+    lilGui.style.pointerEvents = "all";
+    lilGui.style.opacity = "1";
   };
 
   const createGui = () => {
     const gui = new GUI();
     current.gui = gui;
-    gui.$title.innerHTML = 'Cup';
+    gui.$title.innerHTML = "Cup";
 
     gui
-      .add(model, 'cupHeight', 6, 16, 0.01)
-      .name('Height')
+      .add(model, "cupHeight", 6, 16, 0.01)
+      .name("Height")
       .onFinishChange((value: number) => {
         model.cupHeight = value;
         updateShape();
       });
 
     gui
-      .add(model, 'cupRadius', 3, 8, 0.01)
-      .name('Radius')
+      .add(model, "cupRadius", 3, 8, 0.01)
+      .name("Radius")
       .onFinishChange((value: number) => {
         model.cupRadius = value;
         updateShape();
       });
 
     gui
-      .add(model, 'cupThickness', 0.5, 1, 0.01)
-      .name('Thickness')
+      .add(model, "cupThickness", 0.5, 1, 0.01)
+      .name("Thickness")
       .onFinishChange((value: number) => {
         model.cupThickness = value;
         updateShape();
       });
 
     gui
-      .add(model, 'cupHandleDistance', 0.3, 3, 0.01)
-      .name('Handle Distance')
+      .add(model, "cupHandleDistance", 0.3, 3, 0.01)
+      .name("Handle Distance")
       .onFinishChange((value: number) => {
         model.cupHandleDistance = value;
         updateShape();
       });
 
     gui
-      .add(model, 'cupHandleHeight', 0, 1, 0.01)
-      .name('Handle Height')
+      .add(model, "cupHandleHeight", 0, 1, 0.01)
+      .name("Handle Height")
       .onFinishChange((value: number) => {
         model.cupHandleHeight = value;
         updateShape();
       });
 
     gui
-      .addColor(model, 'color')
-      .name('Color')
+      .addColor(model, "color")
+      .name("Color")
       .onChange((value: string) => {
         const children = current.group?.children[0].children as Mesh[];
         [...children, current.ground].forEach((child) => {
           const material = (child as Mesh).material as MeshPhongMaterial;
-          material.color.setHex(parseInt(value.replace('#', '0x')));
+          material.color.setHex(parseInt(value.replace("#", "0x")));
         });
       });
 
-    gui.add(model, 'downloadSTL').name('Download STL');
-    gui.add(model, 'downloadStep').name('Download STEP');
+    gui.add(model, "downloadSTL").name("Download STL");
+    gui.add(model, "downloadStep").name("Download STEP");
   };
 
   init();

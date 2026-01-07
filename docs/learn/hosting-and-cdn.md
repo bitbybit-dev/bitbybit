@@ -66,7 +66,7 @@ Each release contains a complete set of assets packaged as a `.zip` file. Downlo
 An important consideration: **you probably don't need to host all assets**, only the ones your specific implementation requires.
 
 **Examples:**
-- If you use `bitbybit-runner-babylonjs.js`, you won't need `bitbybit-runner-threejs.js` or the lite runners
+- If you use `bitbybit-runner-babylonjs.js`, you won't need `bitbybit-runner-threejs.js`, `bitbybit-runner-playcanvas.js`, or any of the lite runners
 - If you only use the OCCT kernel, you'll only need to host `bitbybit-occt-webworker.js`
 - If you never load GLTF files with Draco compression, you don't need the Draco decompressor
 
@@ -129,7 +129,7 @@ GlobalCDNProvider.BITBYBIT_CDN_URL = "https://cdn.yourownhosting.com/bitbybit/";
 ```
 
 <Admonition type="info" title="NPM Package Users">
-  <p>If you're using NPM packages like <code>@bitbybit-dev/occt</code>, <code>@bitbybit-dev/babylonjs</code>, or <code>@bitbybit-dev/threejs</code>, you must use the <code>GlobalCDNProvider</code> approach. The <code>cdnUrl</code> option in the runner configuration only applies when using the standalone runner files.</p>
+  <p>If you're using NPM packages like <code>@bitbybit-dev/occt</code>, <code>@bitbybit-dev/babylonjs</code>, <code>@bitbybit-dev/threejs</code>, or <code>@bitbybit-dev/playcanvas</code>, you must use the <code>GlobalCDNProvider</code> approach. The <code>cdnUrl</code> option in the runner configuration only applies when using the standalone runner files.</p>
 </Admonition>
 
 ### Important Considerations

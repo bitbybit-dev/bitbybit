@@ -1,0 +1,220 @@
+---
+sidebar_position: 2
+title: BabylonJS Lite Runner
+description: Learn how to use the lite version of the Bitbybit BabylonJS runner for CAD operations
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# BabylonJS Lite Runner
+
+The **lite runner** requires you to load Babylon.js separately before loading the runner. This results in a smaller Bitbybit bundle size and allows you to use your own version of Babylon.js.
+
+## Live Example
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/bitbybit-babylonjs-lite-runner?embed=1&file=index.html&theme=dark"
+  title="StackBlitz - Babylon.js Lite Runner Example"
+/>
+
+## Complete Example
+
+Below is a complete example that creates a parametric lofted surface with rectangle holes using OCCT:
+
+```html
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Bitbybit Runner BabylonJS Lite Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Load BabylonJS and its modules separately first -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script type="module">
+        window.GUI = window.BABYLON.GUI;
+    </script>
+    
+    <!-- Load the lite runner (requires BabylonJS to be loaded) -->
+    <script defer
+        src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-lite-babylonjs.js"></script>
+    <script type="module">
+
+        const runnerOptions = {
+            canvasId: 'myCanvas',
+            canvasZoneClass: 'myCanvasZone',
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableManifold: false,
+            cameraPosition: [20, 10, 20],
+            cameraTarget: [10, 5, 0],
+            backgroundColor: "#1a1c1f",
+            loadFonts: ['Roboto'],
+        };
+
+        const runner = window.bitbybitRunner.getRunnerInstance();
+        const { bitbybit, Bit, camera, scene, renderer } = await runner.run(
+            runnerOptions
+        );
+
+        // Model parameters
+        const model = {
+            uRec: 16,
+            vRec: 16,
+            rounding: 0.5,
+            drawEdges: true,
+            drawFaces: true,
+            color: '#6600ff'
+        }
+
+        // Create curve points for lofting
+        const curvePts = [
+            [[-10, 0, -10], [0, 3, -10], [10, -1, -10], [20, 2, -10]],
+            [[-10, -5, 0], [0, -3, 0], [10, 1, 0], [20, -2, 0]],
+            [[-10, 0, 10], [0, 3, 10], [10, -1, 10], [20, 2, 10]]
+        ];
+
+        // Create wires from interpolated points
+        const wirePromises = curvePts.map((pts) => {
+            return bitbybit.occt.shapes.wire.interpolatePoints({
+                points: pts, periodic: false, tolerance: 1e-7
+            });
+        });
+
+        const wires = await Promise.all(wirePromises);
+        const loft = await bitbybit.occt.operations.loft({ shapes: wires, makeSolid: false });
+        const translated = await bitbybit.occt.transforms.translate({ shape: loft, translation: [0, 10, 0] });
+        const faces = await bitbybit.occt.shapes.face.getFaces({ shape: translated });
+
+        // Subdivide face with rectangle holes
+        const subdivideOptions = new Bit.Inputs.OCCT.FaceSubdivideToRectangleHolesDto(faces[0]);
+        subdivideOptions.nrRectanglesU = model.vRec;
+        subdivideOptions.nrRectanglesV = model.uRec;
+        subdivideOptions.scalePatternU = [0.9, 0.5, 0.7];
+        subdivideOptions.scalePatternV = [0.9, 0.5, 0.7];
+        subdivideOptions.filletPattern = [model.rounding];
+        subdivideOptions.inclusionPattern = [false, true, true, true, true];
+        subdivideOptions.offsetFromBorderU = 0.01;
+        subdivideOptions.offsetFromBorderV = 0.01;
+
+        const withHoles = await bitbybit.occt.shapes.face.subdivideToRectangleHoles(subdivideOptions);
+        const finalShape = await bitbybit.occt.operations.makeThickSolidSimple({
+            shape: withHoles[0], offset: 0.5
+        });
+
+        // Draw options
+        const options = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+        options.precision = 0.02;
+        options.drawEdges = model.drawEdges;
+        options.drawFaces = model.drawFaces;
+        options.drawVertices = false;
+        options.edgeColour = "#000000";
+
+        const group = await bitbybit.draw.drawAnyAsync({ entity: finalShape, options });
+
+    </script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1c1f;
+        }
+        #myCanvas {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
+        .myCanvasZone {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="myCanvasZone">
+        <canvas id="myCanvas"></canvas>
+    </div>
+</body>
+
+</html>
+```
+
+## Key Points
+
+### Loading BabylonJS First
+
+```html
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+<script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+<script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+<script type="module">
+    window.GUI = window.BABYLON.GUI;
+</script>
+```
+
+**Important:** You must load all required BabylonJS modules and expose the GUI to the window object before loading the lite runner.
+
+### Lite Runner Script
+```html
+<script defer src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-lite-babylonjs.js"></script>
+```
+
+Note the `defer` attribute - this ensures the script loads after BabylonJS is available.
+
+### Initialization
+```javascript
+const runner = window.bitbybitRunner.getRunnerInstance();
+const { bitbybit, Bit, camera, scene, renderer } = await runner.run(runnerOptions);
+```
+
+Access BabylonJS via the global `window.BABYLON` object since you loaded it separately.
+
+## Required BabylonJS Modules
+
+For full functionality, load these BabylonJS modules:
+
+| Module | Purpose |
+|--------|---------|
+| `babylon.js` | Core BabylonJS engine |
+| `babylonjs.materials.min.js` | Material library |
+| `babylonjs.loaders.min.js` | File loaders (GLTF, OBJ, etc.) |
+| `babylonjs.serializers.min.js` | Export capabilities |
+| `babylon.gui.min.js` | UI components |
+
+## When to Use Lite vs Full
+
+| Use Case | Recommended |
+|----------|-------------|
+| Quick prototyping | Full Runner |
+| Need specific BabylonJS version | Lite Runner |
+| Smallest possible bundle | Lite Runner |
+| Using BabylonJS extensions | Lite Runner |
+| Simple single-page demos | Full Runner |
+
+## Runner Options
+
+The options are the same as the full runner:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `canvasId` | string | The ID of your canvas element |
+| `canvasZoneClass` | string | CSS class for the canvas container |
+| `enableOCCT` | boolean | Enable OpenCASCADE kernel |
+| `enableJSCAD` | boolean | Enable JSCAD kernel |
+| `enableManifold` | boolean | Enable Manifold kernel |
+| `cameraPosition` | number[] | Initial camera position [x, y, z] |
+| `cameraTarget` | number[] | Camera look-at target [x, y, z] |
+| `backgroundColor` | string | Scene background color (hex) |
+| `loadFonts` | string[] | Fonts to load for text operations |
+
+## GitHub Source
+
+View the full source code on GitHub: [BabylonJS Lite Runner Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/runner/babylon/lite)

@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Introducing Bitbybit Runner - Execute Visual 3D Scripts Anywhere
 sidebar_label: Bitbybit Runner
-description: Discover Bitbybit Runner, a powerful tool to execute your Bitbybit 3D scripts on any website using a single JavaScript file, now with support for both BabylonJS and ThreeJS.
+description: Discover Bitbybit Runner, a powerful tool to execute your Bitbybit 3D scripts on any website using a single JavaScript file, now with support for BabylonJS, ThreeJS, and PlayCanvas.
 tags: [getting-started, runners]
 ---
 
@@ -33,15 +33,58 @@ This section will guide you through understanding and utilizing the Bitbybit Run
 The Bitbybit Runner is a single JavaScript file you can include in your website. It bundles all the open-source components of the Bitbybit platform, including CAD kernels (like OCCT, JSCAD) and various 3D algorithms, making it easier than ever to develop sophisticated parametric 3D experiences and model configurators directly in your web projects.
 
 Our journey with the Runner began with a version fully based on the **BabylonJS** game engine. This initial runner proved to be incredibly powerful, allowing direct execution of Bitbybit algorithms via JavaScript and enabling users to export scripts from our visual editors (Rete, Blockly, TypeScript) for use in any browser-based coding environment like StackBlitz, CodePen, JSFiddle, or their own websites.
-*   For more background, check out our original announcement: [Introducing BITBYBIT-RUNNER.JS](https://bitbybit.dev/blog/introducing-bitbybit-runner)
+*   For more background, check out our original announcement: [Introducing BITBYBIT-RUNNER.JS](/blog/introducing-bitbybit-runner)
 
 ![Robot running with lightning, symbolizing the power and speed of Bitbybit Runners.](https://ik.imagekit.io/bitbybit/app/assets/blog/updated-bitbybit-runners/updated-bitbybit-runners.jpeg "Runners are powerful, fast and amazing")
 
-### New and Improved: ThreeJS Support & Lite Versions
+## Two Ways to Use Bitbybit Runner
 
-Responding to community feedback and our recent integration of the **ThreeJS** game engine, we are thrilled to announce:
-1.  **A Dedicated ThreeJS Runner:** This new runner follows the same principles as the BabylonJS version but is specifically designed to work with ThreeJS. It's a single JavaScript file that automatically loads all necessary resources, including web workers, CAD kernels, and other dependencies.
-2.  **"Lite" Versions for Both Engines:** We realized many projects already include ThreeJS or BabylonJS as a dependency. To avoid redundant loading and optimize performance, we've introduced **Lite versions** of our runners. These Lite bundles are significantly smaller as they do *not* include the game engine dependencies themselves, expecting you to load them separately in your project. This makes your website faster and more efficient if you're already using one of these engines.
+The Bitbybit Runner is incredibly versatile and supports two distinct approaches to building 3D web applications:
+
+### 1. Execute Visual Scripts from Bitbybit Editors
+
+Export scripts created in our visual programming editors (Rete, Blockly, or TypeScript) and run them directly in your web applications. This approach is perfect for designers and developers who prefer visual programming or want to quickly prototype complex 3D models without writing code.
+
+**Learn more about this approach:**
+- [Running Visual Scripts with Bitbybit Runner](/learn/runners/live-examples/static-3d-model-script)
+- [Building a 3D Table Configurator (Rete)](/learn/runners/table-configurator-rete)
+- [Building a 3D Table Configurator (Blockly)](/learn/runners/table-configurator-blockly)
+- [Building a 3D Table Configurator (TypeScript)](/learn/runners/table-configurator-typescript)
+
+### 2. Write JavaScript Web Applications Directly
+
+Use the runner as a powerful JavaScript library to write 3D CAD applications from scratch. This approach gives you complete control over your application logic and is ideal for developers who want to build custom parametric 3D experiences, configurators, or tools using JavaScript.
+
+**Explore engine-specific guides and examples:**
+
+<Tabs groupId="engine-guides">
+<TabItem value="playcanvas" label="PlayCanvas">
+
+- [PlayCanvas Full Runner Guide](/learn/runners/engines/playcanvas/full-runner) - Complete bundle with PlayCanvas included
+- [PlayCanvas Lite Runner Guide](/learn/runners/engines/playcanvas/lite-runner) - Lightweight version for existing PlayCanvas projects
+
+</TabItem>
+<TabItem value="threejs" label="Three.js">
+
+- [Three.js Full Runner Guide](/learn/runners/engines/threejs/full-runner) - Complete bundle with Three.js included
+- [Three.js Lite Runner Guide](/learn/runners/engines/threejs/lite-runner) - Lightweight version for existing Three.js projects
+
+</TabItem>
+<TabItem value="babylonjs" label="Babylon.js">
+
+- [Babylon.js Full Runner Guide](/learn/runners/engines/babylonjs/full-runner) - Complete bundle with Babylon.js included
+- [Babylon.js Lite Runner Guide](/learn/runners/engines/babylonjs/lite-runner) - Lightweight version for existing Babylon.js projects
+
+</TabItem>
+</Tabs>
+
+These guides include complete working examples with the `subdivideToRectangleHoles` algorithm, showing you how to create parametric lofted surfaces with rectangle hole patterns - a great starting point for understanding how to use Bitbybit's CAD capabilities in your JavaScript applications.
+
+### New and Improved: ThreeJS & PlayCanvas Support, Plus Lite Versions
+
+Responding to community feedback and our recent integration of the **ThreeJS** and **PlayCanvas** game engines, we are thrilled to announce:
+1.  **Dedicated ThreeJS and PlayCanvas Runners:** These new runners follow the same principles as the BabylonJS version but are specifically designed to work with ThreeJS and PlayCanvas respectively. Each is a single JavaScript file that automatically loads all necessary resources, including web workers, CAD kernels, and other dependencies.
+2.  **"Lite" Versions for All Three Engines:** We realized many projects already include ThreeJS, PlayCanvas, or BabylonJS as a dependency. To avoid redundant loading and optimize performance, we've introduced **Lite versions** of our runners. These Lite bundles are significantly smaller as they do *not* include the game engine dependencies themselves, expecting you to load them separately in your project. This makes your website faster and more efficient if you're already using one of these engines.
 
 ## Overview of Available Runners
 
@@ -60,19 +103,31 @@ Here's a breakdown of the different Bitbybit Runner versions:
 *   **`bitbybit-runner-lite-threejs.js`**:
     *   A lightweight version that *excludes* the ThreeJS engine.
     *   Expects `THREEJS` and `OrbitControls` global objects to be available on the `window` object.
+*   **`bitbybit-runner-playcanvas.js`**:
+    *   Bundles the PlayCanvas game engine.
+    *   Can execute Bitbybit's open-source 3D modeling algorithms and visual scripts, as long as they don't contain BabylonJS-specific logic.
+    *   Ideal for high-performance applications, mobile optimization, and game development.
+*   **`bitbybit-runner-lite-playcanvas.js`**:
+    *   A lightweight version that *excludes* the PlayCanvas engine.
+    *   Expects `pc` (PlayCanvas) global object to be available on the `window` object.
 
-### Key Differences: BabylonJS vs. ThreeJS Runners
-Both runner families can execute all of Bitbybit's open-source 3D modeling algorithms and CAD kernels. The primary differences relate to the game engines:
-*   **Visual Script Compatibility:** If you're exporting scripts from our visual editors on bitbybit.dev (which are BabylonJS-based), the BabylonJS runner offers broader compatibility, especially if your scripts use BabylonJS-specific features (skyboxes, GUI, physics).
-*   **ThreeJS Runner for Visual Scripts:** The ThreeJS runner will attempt to run visual scripts but will throw an error if it encounters BabylonJS-specific logic. However, if your visual coding is limited to 3D modeling features, it should execute fine.
-*   **Direct JavaScript Coding:** If you're writing Bitbybit logic directly in JavaScript, either runner family will work well for accessing the core algorithms.
-*   **Bundle Size:** The BabylonJS runner file is generally larger than the ThreeJS one. Consider this when choosing.
+### Key Differences: BabylonJS vs. ThreeJS vs. PlayCanvas Runners
+All runner families can execute all of Bitbybit's open-source 3D modeling algorithms and CAD kernels. The primary differences relate to the game engines:
+*   **Visual Script Compatibility:** If you're exporting scripts from our visual editors on bitbybit.dev (which are BabylonJS-based), the BabylonJS runner offers broadest compatibility, especially if your scripts use BabylonJS-specific features (skyboxes, GUI, physics).
+*   **ThreeJS and PlayCanvas Runners for Visual Scripts:** The ThreeJS and PlayCanvas runners will attempt to run visual scripts but will throw an error if they encounter BabylonJS-specific logic. However, if your visual coding is limited to 3D modeling features, it should execute fine on all three engines.
+*   **Direct JavaScript Coding:** If you're writing Bitbybit logic directly in JavaScript, any runner family will work well for accessing the core algorithms.
+*   **Bundle Size:** The BabylonJS runner file is generally the largest, followed by ThreeJS, with PlayCanvas being highly optimized for performance and size. Consider this when choosing.
+*   **Performance Focus:** PlayCanvas is specifically optimized for high-performance applications and mobile devices, making it an excellent choice for game development and applications requiring smooth performance on all devices.
 
-No matter your preference, we support both these fantastic game engines and are excited to see what you'll create!
+No matter your preference, we support all three of these fantastic game engines and are excited to see what you'll create!
 
 ## Where to Find and How to Use the Runners
 
 The Bitbybit Runners are served from the **jsDelivr CDN**. Include them in your website using `<script>` tags. **Remember to replace `<version-number-of-bitbybit>` with an actual version number.** You can find all Bitbybit release versions on [Bitbybit GitHub Releases](https://github.com/bitbybit-dev/bitbybit/releases).
+
+:::tip Self-Hosting Options
+**Want to host the runners yourself?** For improved reliability, performance, and control, you can self-host all Bitbybit assets on your own infrastructure. [**Learn how to set up self-hosting →**](/learn/hosting-and-cdn)
+:::
 
 *   **BabylonJS Runner (Full):**
     ```html
@@ -90,6 +145,14 @@ The Bitbybit Runners are served from the **jsDelivr CDN**. Include them in your 
     ```html
     <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-lite-threejs.js"></script>
     ```
+*   **PlayCanvas Runner (Full):**
+    ```html
+    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-playcanvas.js"></script>
+    ```
+*   **PlayCanvas Runner (Lite):**
+    ```html
+    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-lite-playcanvas.js"></script>
+    ```
 
 Once included, you can access the runner's functionality via the `window.bitbybitRunner` object.
 
@@ -98,7 +161,7 @@ Once included, you can access the runner's functionality via the `window.bitbybi
 *   **`run(options)`**:
     *   An `async` function that initializes the runner. **You must `await` this function or use `.then()` before executing scripts.**
     *   Requires an `options` object, minimally containing `canvasId: 'your-canvas-element-id'`.
-    *   It creates and configures a default 3D scene (BabylonJS or ThreeJS depending on the runner), instantiates CAD kernels, loads WebAssembly libraries, fonts, physics engines (for BabylonJS runner), and other resources.
+    *   It creates and configures a default 3D scene (BabylonJS, ThreeJS, or PlayCanvas depending on the runner), instantiates CAD kernels, loads WebAssembly libraries, fonts, physics engines (for BabylonJS runner), and other resources.
     *   You can disable various features via the `options` object if not needed (e.g., `occt: false`, `jscad: false`).
 *   **`executeScript(scriptContent, inputs)`**:
     *   Executes a script (either JavaScript code you write or code exported from Bitbybit editors).
@@ -135,7 +198,7 @@ Treat the exported script as a static code snippet; the Runner executes JavaScri
 
 To see the Bitbybit Runner in action, explore our example projects. These are often single `index.html` files you can open directly in your browser.
 
-*   ➡️ **[Example Use Cases of BabylonJS & ThreeJS Runners on GitHub](https://github.com/bitbybit-dev/app-examples/tree/main/runner)**
+*   ➡️ **[Example Use Cases of BabylonJS, ThreeJS & PlayCanvas Runners on GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/runner)**
     This repository contains examples using both full and lite runners, demonstrating various scenarios, including:
     *   Simply running an exported Rete script.
     *   Coding Bitbybit logic directly in JavaScript using the runner.
@@ -667,4 +730,4 @@ This configurator can even save STL and STEP files, allowing you to manufacture 
 
 ## What's Next?
 
-The Bitbybit Runner technology opens up vast possibilities. While this is an evolving tool, we're excited about its potential. We encourage you to experiment, provide feedback, and let us know how you're using it. More documentation, tutorials, and potentially a YouTube course are planned for the future.
+The Bitbybit Runner technology opens up vast possibilities. While this is an evolving tool, we're excited about its potential. We encourage you to experiment, provide feedback, and let us know how you're using it. More documentation and tutorials are planned for the future.

@@ -103,7 +103,5 @@ export const createGui = (
         });
 
     gui.add(model, "update").name("Finalize");
-    gui.add(model, "downloadSTL").name("Download STL");
     gui.add(model, "downloadStep").name("Download STEP");
-    gui.add(model, "downloadGLB").name("Download GLB");
 };

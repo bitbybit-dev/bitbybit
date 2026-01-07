@@ -12,7 +12,7 @@ import {
     Scene,
     WebGLRenderer,
 } from "three";
-import { first, firstValueFrom, tap } from "rxjs";
+import { first, firstValueFrom, map } from "rxjs";
 
 // Define an interface for kernel options
 interface KernelOptions {
@@ -113,7 +113,7 @@ async function initWithKernels(
     scene: Scene,
     bitbybit: BitByBitBase,
     options: KernelOptions
-): Promise<{ message: string }> {
+): Promise<{ message: string; initializedKernels: string[] }> {
     let occtWorkerInstance: Worker | undefined;
     let jscadWorkerInstance: Worker | undefined;
     let manifoldWorkerInstance: Worker | undefined;
@@ -147,7 +147,7 @@ async function initWithKernels(
     );
 
     // 3. Collect promises for kernel initializations
-    const initializationPromises: Promise<void>[] = [];
+    const initializationPromises: Promise<string>[] = [];
     let anyKernelSelectedForInit = false;
 
     if (options.enableOCCT) {
@@ -157,9 +157,9 @@ async function initWithKernels(
                 firstValueFrom(
                     bitbybit.occtWorkerManager.occWorkerState$.pipe(
                         first((s) => s.state === OccStateEnum.initialised),
-                        tap(() => console.log("OCCT Initialized"))
+                        map(() => "OCCT")
                     )
-                ).then(() => { }) // Ensure the promise resolves to void for Promise.all
+                )
             );
         } else {
             console.warn(
@@ -175,9 +175,9 @@ async function initWithKernels(
                 firstValueFrom(
                     bitbybit.jscadWorkerManager.jscadWorkerState$.pipe(
                         first((s) => s.state === JscadStateEnum.initialised),
-                        tap(() => console.log("JSCAD Initialized"))
+                        map(() => "JSCAD")
                     )
-                ).then(() => { })
+                )
             );
         } else {
             console.warn(
@@ -188,14 +188,14 @@ async function initWithKernels(
 
     if (options.enableManifold) {
         anyKernelSelectedForInit = true;
-        if (bitbybit.manifoldWorkerManager) {
+        if (bitbybit.manifoldWorkerManager && bitbybit.manifoldWorkerManager.manifoldWorkerState$) {
             initializationPromises.push(
                 firstValueFrom(
                     bitbybit.manifoldWorkerManager.manifoldWorkerState$.pipe(
                         first((s) => s.state === ManifoldStateEnum.initialised),
-                        tap(() => console.log("Manifold Initialized"))
+                        map(() => "Manifold")
                     )
-                ).then(() => { })
+                )
             );
         } else {
             console.warn(
@@ -207,7 +207,7 @@ async function initWithKernels(
     // 4. Wait for selected & available kernels or handle no selection/availability
     if (!anyKernelSelectedForInit) {
         console.log("No kernels selected for initialization.");
-        return { message: "No kernels selected for initialization." };
+        return { message: "No kernels selected for initialization.", initializedKernels: [] };
     }
 
     if (initializationPromises.length === 0) {
@@ -217,13 +217,15 @@ async function initWithKernels(
         );
         return {
             message: "Selected kernels were not awaitable for initialization state.",
+            initializedKernels: [],
         };
     }
 
-    await Promise.all(initializationPromises);
-    console.log("Selected and awaitable kernels initialized:", options);
+    const initializedKernels = await Promise.all(initializationPromises);
+    console.log("Kernels initialized:", initializedKernels.join(", "));
     return {
-        message: "Selected and awaitable kernels initialized successfully.",
+        message: `Successfully initialized: ${initializedKernels.join(", ")}`,
+        initializedKernels,
     };
 }
 
@@ -318,26 +320,26 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
 
 async function createTexturedOCCTCube(bitbybit: BitByBitBase) {
     console.log("Creating textured OCCT cube...");
-    
+
     // Create texture from URL
     const textureOptions = new Inputs.Draw.GenericTextureDto();
     textureOptions.url = "https://cdn.polyhaven.com/asset_img/primary/worn_asphalt.png?height=760&quality=95";
     textureOptions.uScale = 0.05;
     textureOptions.vScale = 0.05;
     const texture = await bitbybit.draw.createTexture(textureOptions);
-    
+
     // Create material with texture
     const materialOptions = new Inputs.Draw.GenericPBRMaterialDto();
     materialOptions.baseColorTexture = texture;
     materialOptions.baseColor = "#ffffff"; // White to show texture colors accurately
     const material = await bitbybit.draw.createPBRMaterial(materialOptions);
-    
+
     // Create OCCT cube
     const cubeOptions = new Inputs.OCCT.CubeDto();
     cubeOptions.size = 20;
     cubeOptions.center = [-50, 0, -50];
     const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);
-    
+
     // Draw cube with material
     const drawOptions = new Inputs.Draw.DrawOcctShapeOptions();
     drawOptions.faceMaterial = material;
@@ -346,7 +348,7 @@ async function createTexturedOCCTCube(bitbybit: BitByBitBase) {
         entity: cube,
         options: drawOptions,
     });
-    
+
     console.log("Textured OCCT cube created and drawn.");
 }
 
@@ -542,10 +544,10 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
     const gridSize = 30;
     const spacing = 1.5;
     const gridOffset = [-150, 0, 0]; // Move grid away from other geometry
-    
+
     const gridPoints: Inputs.Base.Point3[] = [];
     const gridColors: string[] = [];
-    
+
     for (let x = 0; x < gridSize; x++) {
         for (let y = 0; y < gridSize; y++) {
             for (let z = 0; z < gridSize; z++) {
@@ -560,12 +562,12 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
             }
         }
     }
-    
+
     const gridDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     gridDrawOptions.colours = gridColors;
     gridDrawOptions.size = 0.4;
     gridDrawOptions.colorMapStrategy = Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
-    
+
     console.time("Draw 27,000 points");
     await bitbybit.draw.drawAnyAsync({
         entity: gridPoints,
@@ -580,10 +582,10 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
     const polylineGridSize = 30;
     const polylineSpacing = 1.5;
     const polylineGridOffset = [-150, -60, 0]; // Position below the point grid
-    
+
     const gridPolylines: Inputs.Base.Polyline3[] = [];
     const polylineColors: string[] = [];
-    
+
     // Create lines along X axis (for each Y,Z position)
     for (let y = 0; y < polylineGridSize; y++) {
         for (let z = 0; z < polylineGridSize; z++) {
@@ -591,7 +593,7 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
             const endX = polylineGridOffset[0] + (polylineGridSize - 1) * polylineSpacing;
             const posY = polylineGridOffset[1] + y * polylineSpacing;
             const posZ = polylineGridOffset[2] + z * polylineSpacing;
-            
+
             gridPolylines.push({
                 points: [
                     [startX, posY, posZ],
@@ -603,7 +605,7 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
             polylineColors.push(isOrange ? "#ff6600" : "#00ffcc");
         }
     }
-    
+
     // Create lines along Y axis (for each X,Z position)
     for (let x = 0; x < polylineGridSize; x++) {
         for (let z = 0; z < polylineGridSize; z++) {
@@ -611,7 +613,7 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
             const startY = polylineGridOffset[1];
             const endY = polylineGridOffset[1] + (polylineGridSize - 1) * polylineSpacing;
             const posZ = polylineGridOffset[2] + z * polylineSpacing;
-            
+
             gridPolylines.push({
                 points: [
                     [posX, startY, posZ],
@@ -622,7 +624,7 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
             polylineColors.push(isPurple ? "#9933ff" : "#ffff00");
         }
     }
-    
+
     // Create lines along Z axis (for each X,Y position)
     for (let x = 0; x < polylineGridSize; x++) {
         for (let y = 0; y < polylineGridSize; y++) {
@@ -630,7 +632,7 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
             const posY = polylineGridOffset[1] + y * polylineSpacing;
             const startZ = polylineGridOffset[2];
             const endZ = polylineGridOffset[2] + (polylineGridSize - 1) * polylineSpacing;
-            
+
             gridPolylines.push({
                 points: [
                     [posX, posY, startZ],
@@ -641,12 +643,12 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
             polylineColors.push(isPink ? "#ff0099" : "#00ff66");
         }
     }
-    
+
     const polylineGridDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     polylineGridDrawOptions.colours = polylineColors;
     polylineGridDrawOptions.size = 1;
     polylineGridDrawOptions.colorMapStrategy = Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
-    
+
     console.log(`Drawing ${gridPolylines.length} polylines...`);
     console.time("Draw polyline grid");
     await bitbybit.draw.drawAnyAsync({

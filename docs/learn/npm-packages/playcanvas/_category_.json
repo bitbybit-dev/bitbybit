@@ -1,0 +1,10 @@
+{
+    "label": "PlayCanvas",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Integrate Bitbybit with PlayCanvas",
+        "description": "Learn how to integrate Bitbybit with PlayCanvas to create interactive 3D experiences, CAD apps, 3D configurators or other procedural web applications.",
+        "slug": "/npm-packages/playcanvas"
+    }
+}
