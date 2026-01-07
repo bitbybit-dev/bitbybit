@@ -115,11 +115,11 @@ Deviating significantly from our recommended approach and templates is done at y
 
 To get you started quickly, we provide access to our private GitHub repository containing production-ready templates:
 - **Vanilla TypeScript + React Three Fiber**
-- **Vanilla TypeScript + Three.js**
-- **Vanilla TypeScript + Babylon.js**
+- **Vanilla TypeScript + ThreeJS**
+- **Vanilla TypeScript + BabylonJS**
 - **Vanilla TypeScript + PlayCanvas**
-- **Vanilla TypeScript + Bitbybit CAD & Three.js**
-- **Vanilla TypeScript + Bitbybit CAD & Babylon.js**
+- **Vanilla TypeScript + Bitbybit CAD & ThreeJS**
+- **Vanilla TypeScript + Bitbybit CAD & BabylonJS**
 
 *(More templates focusing on other technologies may be added over time.)*
 

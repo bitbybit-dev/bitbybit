@@ -12,7 +12,11 @@ Our **Bitbybit Runners** allow you to easily include Bitbybit.dev's powerful 3D 
 
 <!--truncate-->
 
-Furthermore, we've developed new **Lite versions** of the runners for both ThreeJS and BabylonJS. These Lite versions allow you to load the respective game engines separately if you're already including them in your project, significantly reducing bundle sizes. Learn more about these exciting updates in this blog post.
+:::info Update: January 6, 2026
+This article has been updated to include information about our new **PlayCanvas Runner**! PlayCanvas is now the third officially supported game engine for Bitbybit Runners, joining BabylonJS and ThreeJS. All the concepts about Lite versions and runner architecture described below now apply to PlayCanvas as well. [Read the full PlayCanvas announcement here](/blog/playcanvas-support).
+:::
+
+Furthermore, we've developed new **Lite versions** of the runners for both ThreeJS and BabylonJS (and now PlayCanvas!). These Lite versions allow you to load the respective game engines separately if you're already including them in your project, significantly reducing bundle sizes. Learn more about these exciting updates in this blog post.
 
 ### Brief History of the Runner
 
@@ -23,9 +27,11 @@ About six months ago, we introduced the first version of the `bitbybit-runner`, 
 If you're unfamiliar with how the runner works or want a refresher, be sure to check out our original introduction article:
 ➡️ **[Introducing BITBYBIT-RUNNER.JS](/blog/introducing-bitbybit-runner)**
 
-### New and Improved Runners: Enter ThreeJS!
+### New and Improved Runners: Enter ThreeJS! (And Later, PlayCanvas!)
 
 Recently, we [announced official support for the ThreeJS game engine](/blog/threejs-support) via new NPM packages. Shortly after, we received requests from the community for a dedicated runner specifically for ThreeJS. Based on your valuable feedback, we are thrilled to announce the release of a **new Bitbybit Runner for ThreeJS**!
+
+**Update 2026:** Following the same principles, we've now also released a [PlayCanvas Runner](/blog/playcanvas-support), bringing the total number of supported game engines to three!
 
 This new runner follows the same core principles as the BabylonJS version but is specifically designed and optimized to work with ThreeJS. Like the original, it’s a single JavaScript file you can add to your website. The runner automatically loads all necessary resources, including web workers, CAD kernels, and other dependencies required to run your Bitbybit.dev scripts within a ThreeJS environment.
 
@@ -33,11 +39,11 @@ While developing the ThreeJS runner, we also realized that many projects already
 
 ### Introducing "Lite" Versions of the Runners
 
-We’ve created **Lite versions** of our runners for both ThreeJS and BabylonJS. These versions allow you to load the respective game engines *separately* if they are already part of your project, thus reducing redundancy and improving load times.
+We've created **Lite versions** of our runners for BabylonJS, ThreeJS, and PlayCanvas. These versions allow you to load the respective game engines *separately* if they are already part of your project, thus reducing redundancy and improving load times.
 
-The Lite bundles are significantly smaller because they **do not include the game engine dependencies** themselves. Instead, they expect the game engine (ThreeJS or BabylonJS) to be available in the global scope (e.g., on the `window` object).
+The Lite bundles are significantly smaller because they **do not include the game engine dependencies** themselves. Instead, they expect the game engine (BabylonJS, ThreeJS, or PlayCanvas) to be available in the global scope (e.g., on the `window` object).
 
-If your project already loads ThreeJS or BabylonJS via a script tag, NPM import, or another method, using the Lite version of the corresponding Bitbybit Runner will prevent duplicate loading of the engine, making your website faster and more efficient.
+If your project already loads one of these game engines via a script tag, NPM import, or another method, using the Lite version of the corresponding Bitbybit Runner will prevent duplicate loading of the engine, making your website faster and more efficient.
 
 ### ThreeJS Runners: Examples in Action
 
@@ -88,21 +94,41 @@ Here's a summary of the Bitbybit Runners now available:
     *   A lightweight version of the ThreeJS runner that **does not include** the ThreeJS engine.
     *   It expects the `window` object to contain these global ThreeJS dependencies before initialization: `THREE` (for ThreeJS itself) and `OrbitControls` (if you plan to use them via the runner's setup). Only then can this Lite runner initialize successfully.
     *   Use this if ThreeJS is already loaded in your project.
+*   **`bitbybit-runner-playcanvas.js`** *(Added 2026)*
+    *   This runner executes all open-source Bitbybit.dev CAD algorithms within a PlayCanvas environment. It bundles the PlayCanvas engine in a single file.
+    *   Optimized for high performance and mobile devices.
+    *   Can also execute visual scripts exported from our editors, as long as they do not contain BabylonJS-specific logic.
+*   **`bitbybit-runner-lite-playcanvas.js`** *(Added 2026)*
+    *   A lightweight version of the PlayCanvas runner that **does not include** the PlayCanvas engine.
+    *   It expects the `window` object to contain the `pc` (PlayCanvas) global before initialization.
+    *   Use this if PlayCanvas is already loaded in your project.
 
-### How BabylonJS Runners Differ from ThreeJS Runners
+### How BabylonJS, ThreeJS, and PlayCanvas Runners Differ
 
-Both sets of runners (BabylonJS and ThreeJS) can execute all of our open-source 3D modeling algorithms and interact with our CAD kernels (OCCT, JSCAD). The primary differences are related to the game engines themselves and their specific features:
+All three runner families (BabylonJS, ThreeJS, and PlayCanvas) can execute all of our open-source 3D modeling algorithms and interact with our CAD kernels (OCCT, JSCAD, Manifold). The primary differences are related to the game engines themselves and their specific features:
 
 *   **Visual Script Compatibility:** If you are looking to export and run scripts created with our visual programming editors (Rete, Blockly) on the Bitbybit.dev website, you will generally have more success and feature parity with the **BabylonJS runner**. Our visual editors are natively based on BabylonJS. Thus, if your scripts use specific BabylonJS features (like our built-in skyboxes, GUI elements, Havok physics integrations, specific BabylonJS materials, etc.), you should use a BabylonJS runner.
-*   **Error Handling for Visual Scripts in ThreeJS Runner:** The ThreeJS runner will also attempt to run visual scripts exported from Bitbybit.dev. However, if it encounters BabylonJS-specific logic, it will throw an error as those features are not available in a ThreeJS context. That said, if you limit your visual coding to *only* contain 3D modeling-related features (CAD operations, basic geometry, etc.) without engine-specific rendering features, then your scripts *should* execute just fine with the ThreeJS runner.
-*   **Direct JavaScript Coding:** If you are simply writing Bitbybit.dev logic directly in JavaScript (not exporting from visual editors), then either of these runners (BabylonJS or ThreeJS, full or Lite) will work well for you for the core CAD functionalities.
-*   **Bundle Size:** You will notice that the bundle size of the full BabylonJS runner is larger than the full ThreeJS runner. This is something to consider when deciding which runner to use, especially if bundle size is a critical factor for your project. The Lite versions, of course, are much smaller for both.
+*   **Error Handling for Visual Scripts in ThreeJS and PlayCanvas Runners:** The ThreeJS and PlayCanvas runners will also attempt to run visual scripts exported from Bitbybit.dev. However, if they encounter BabylonJS-specific logic, they will throw an error as those features are not available in their contexts. That said, if you limit your visual coding to *only* contain 3D modeling-related features (CAD operations, basic geometry, etc.) without engine-specific rendering features, then your scripts *should* execute just fine with any of the three runners.
+*   **Direct JavaScript Coding:** If you are simply writing Bitbybit.dev logic directly in JavaScript (not exporting from visual editors), then any of these runners (BabylonJS, ThreeJS, or PlayCanvas, full or Lite) will work well for you for the core CAD functionalities.
+*   **Bundle Size & Performance:** 
+    *   The BabylonJS runner is generally the largest due to its comprehensive feature set.
+    *   The ThreeJS runner offers a good balance of features and size.
+    *   The PlayCanvas runner is optimized for performance and smaller bundle sizes, making it ideal for mobile-first applications.
+    *   The Lite versions are much smaller for all three engines.
+*   **Engine-Specific Strengths:**
+    *   **BabylonJS:** Best for projects requiring physics (Havok), GUI elements, and maximum compatibility with visual scripts.
+    *   **ThreeJS:** Excellent for projects already using ThreeJS or needing its vast ecosystem.
+    *   **PlayCanvas:** Perfect for high-performance applications, mobile optimization, and game development.
 
-No matter your preference, we love both of these incredible game engines, and we are excited to see what you will create with them using Bitbybit.dev!
+No matter your preference, we love all three of these incredible game engines, and we are excited to see what you will create with them using Bitbybit.dev!
 
 ### Where to Find the Runners
 
 We are serving the Bitbybit Runners from the **JSDelivr CDN**. You can include them in your website with the following script tags. Remember to replace `<version-number-of-bitbybit>` with the actual version you intend to use.
+
+:::tip Self-Hosting for Production
+For production applications requiring maximum reliability and control, consider [**self-hosting the runners and assets**](/learn/hosting-and-cdn) on your own infrastructure.
+:::
 
 *   **`bitbybit-runner-babylonjs.js`** (Full BabylonJS runner)
     ```html
@@ -120,6 +146,14 @@ We are serving the Bitbybit Runners from the **JSDelivr CDN**. You can include t
     ```html
     <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-lite-threejs.js"></script>
     ```
+*   **`bitbybit-runner-playcanvas.js`** (Full PlayCanvas runner) *(Added 2026)*
+    ```html
+    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-playcanvas.js"></script>
+    ```
+*   **`bitbybit-runner-lite-playcanvas.js`** (Lite PlayCanvas runner - PlayCanvas must be loaded separately) *(Added 2026)*
+    ```html
+    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-lite-playcanvas.js"></script>
+    ```
 
 **Note:** You should replace `<version-number-of-bitbybit>` with an actual version number (e.g., `0.21.0`). You can find all the official versions of Bitbybit.dev here:
 ➡️ **[Bitbybit.dev GitHub Releases](https://github.com/bitbybit-dev/bitbybit/releases)**
@@ -128,9 +162,9 @@ We are serving the Bitbybit Runners from the **JSDelivr CDN**. You can include t
 
 It can be hard to guess how runners can be used in practice, which is why we provide you with actual, working examples. We create projects that fit within a single `index.html` file, which you can simply open in your browser directly from your file system. This approach doesn't even require you to run a local server on your computer. That’s the true power of the web!
 
-➡️ **[Explore Example Use Cases of BabylonJS & ThreeJS Runners on GitHub](https://github.com/bitbybit-dev/app-examples/tree/main/runner)**
+➡️ **[Explore Example Use Cases of BabylonJS, ThreeJS & PlayCanvas Runners on GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/runner)**
 
-This GitHub repository contains examples that use both the full and Lite runners. We also provide examples on how to initialize BabylonJS or ThreeJS scene objects *outside* the context of the runner. This approach allows Bitbybit Runners to work more harmoniously with third-party tools or existing projects that already manage their own game engine instances (e.g., integrating with A-Frame or a custom ThreeJS setup).
+This GitHub repository contains examples that use both the full and Lite runners for all three game engines. We also provide examples on how to initialize BabylonJS, ThreeJS, or PlayCanvas scene objects *outside* the context of the runner. This approach allows Bitbybit Runners to work more harmoniously with third-party tools or existing projects that already manage their own game engine instances (e.g., integrating with A-Frame, custom ThreeJS setups, or PlayCanvas Editor projects).
 
 Initiating scene objects *inside* the runner (letting the runner create the default scene) is also possible and is often simpler, though it offers less fine-grained control if you have a complex existing setup.
 

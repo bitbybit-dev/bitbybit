@@ -3,7 +3,7 @@ sidebar_position: 1
 title: Our NPM Packages
 sidebar_label: Intro
 description: Discover the open-source NPM packages that power Bitbybit, allowing you to integrate our 3D CAD algorithms into your own applications.
-tags: [npm-packages, threejs, babylonjs, occt, manifold, jscad]
+tags: [npm-packages, threejs, babylonjs, playcanvas, occt, manifold, jscad]
 ---
 
 # Our NPM Packages
@@ -12,7 +12,7 @@ When developing standalone applications in TypeScript or JavaScript, you often u
 
 ## Architecture of NPM Packages
 
-The following diagram illustrates the architecture of our NPM packages. Each game engine-specific package (`@bitbybit-dev/threejs`, `@bitbybit-dev/babylonjs`) connects through the `@bitbybit-dev/core` layer. This creates a streamlined, extensible structure that supports a range of integrations with various geometry kernels like OCCT, JSCAD, and Manifold.
+The following diagram illustrates the architecture of our NPM packages. Each game engine-specific package (`@bitbybit-dev/threejs`, `@bitbybit-dev/babylonjs`, `@bitbybit-dev/playcanvas`) connects through the `@bitbybit-dev/core` layer. This creates a streamlined, extensible structure that supports a range of integrations with various geometry kernels like OCCT, JSCAD, and Manifold.
 
 ![Architecture of Bitbybit NPM packages](https://ik.imagekit.io/bitbybit/app/assets/npm-package-architecture.jpeg)
 *Architecture of Bitbybit NPM packages*
@@ -40,6 +40,13 @@ Allows users of the [BabylonJS](https://babylonjs.com) game engine to use our co
 -   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/threejs)
 
 Enables users of the [ThreeJS](https://threejs.org) library to utilize our core 3D CAD algorithms. Similar to the BabylonJS package, it assists in building 3D applications by providing algorithms for constructing meshes from OpenCascade or JSCAD geometry.
+
+### @bitbybit-dev/playcanvas
+
+-   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/playcanvas)
+-   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/playcanvas)
+
+Enables users of the [PlayCanvas](https://playcanvas.com) game engine to utilize our core 3D CAD algorithms. It assists in building high-performance 3D applications by providing algorithms for constructing meshes and entities from OpenCascade, JSCAD, or Manifold geometry kernels.
 
 ---
 

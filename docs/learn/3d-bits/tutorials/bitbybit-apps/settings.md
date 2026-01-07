@@ -174,8 +174,8 @@ We provide production-ready templates in our private GitHub repository (included
 
 1. **Clone a template** from our private GitHub repository:
    - Vanilla TypeScript + React Three Fiber
-   - Vanilla TypeScript + Three.js
-   - Vanilla TypeScript + Babylon.js
+   - Vanilla TypeScript + ThreeJS
+   - Vanilla TypeScript + BabylonJS
    - Vanilla TypeScript + PlayCanvas
    - Vanilla TypeScript + Bitbybit CAD
 

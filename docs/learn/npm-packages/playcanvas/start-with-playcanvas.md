@@ -1,9 +1,9 @@
 ---
 sidebar_position: 2
-title: Using Bitbybit with BabylonJS
-sidebar_label: BabylonJS Starter Template
-description: Learn how to set up and use the @bitbybit-dev/babylonjs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
-tags: [npm-packages, babylonjs, occt, manifold, jscad]
+title: Using Bitbybit with PlayCanvas
+sidebar_label: PlayCanvas Starter Template
+description: Learn how to set up and use the @bitbybit-dev/playcanvas package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
+tags: [npm-packages, playcanvas, occt, manifold, jscad]
 ---
 
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
@@ -12,55 +12,55 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 
-# Using Bitbybit with BabylonJS
+# Using Bitbybit with PlayCanvas
 
-This guide will walk you through setting up and using the `@bitbybit-dev/babylonjs` package to integrate Bitbybit's 3D CAD functionalities into your BabylonJS applications. We'll use Vite as our build tool, which simplifies the setup process.
+This guide will walk you through setting up and using the `@bitbybit-dev/playcanvas` package to integrate Bitbybit's 3D CAD functionalities into your PlayCanvas applications. We'll use Vite as our build tool, which simplifies the setup process.
 
-The `@bitbybit-dev/babylonjs` package conveniently includes `@babylonjs/core` as a dependency, so you don't need to install it separately.
+The `@bitbybit-dev/playcanvas` package conveniently includes `playcanvas` as a dependency, so you don't need to install it separately.
 
 ## Prerequisites
 
 *   Node.js and npm (or yarn) installed.
-*   A basic understanding of TypeScript and BabylonJS.
+*   A basic understanding of TypeScript and PlayCanvas.
 
-## [Example on Bitbybit Github Repo](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/babylonjs/starter-template)
+## [Example on Bitbybit Github Repo](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/playcanvas/starter-template)
 
 ## 1. Project Setup with Vite
 
 First, create a new Vite project with a TypeScript template:
 
 <CodeBlock language="bash">
-{`npm create vite@latest my-bitbybit-babylonjs-app -- --template vanilla-ts
-# or: yarn create vite my-bitbybit-babylonjs-app --template vanilla-ts
+{`npm create vite@latest my-bitbybit-playcanvas-app -- --template vanilla-ts
+# or: yarn create vite my-bitbybit-playcanvas-app --template vanilla-ts
 
-cd my-bitbybit-babylonjs-app`}
+cd my-bitbybit-playcanvas-app`}
 </CodeBlock>
 
-Next, install the Bitbybit BabylonJS package and its necessary worker dependencies:
+Next, install the Bitbybit PlayCanvas package and its necessary worker dependencies:
 
 <CodeBlock language="bash">
-{`npm install @bitbybit-dev/babylonjs
-# or: yarn add @bitbybit-dev/babylonjs`}
+{`npm install @bitbybit-dev/playcanvas
+# or: yarn add @bitbybit-dev/playcanvas`}
 </CodeBlock>
 
 <Admonition type="info" title="Why these packages?">
   <ul>
-    <li><code>@bitbybit-dev/babylonjs</code>: The main library for integrating Bitbybit with BabylonJS. It also installs these main packages listed below.</li>
-    <li><code>@babylonjs/core</code>: Provides the main 3D engine to be used with this demo.</li>
-    <li><code>@bitbybit-dev/core</code>: Collects all kernel web worker libraries into a coherent Bitbybit base. It also includes some higher-level functionality.</li>
+    <li><code>@bitbybit-dev/playcanvas</code>: The main library for integrating Bitbybit with PlayCanvas. It also installs these main packages listed below.</li>
+    <li><code>playcanvas</code>: Provides main game engine to be used with this demo.</li>
+    <li><code>@bitbybit-dev/core</code>: Collects all kernel web worker libraries into coherent bitbybit base. It also includes some higher level functionality.</li>
     <li><code>@bitbybit-dev/occt-worker</code>: Provides the OpenCascade (OCCT) geometry kernel running in a Web Worker.</li>
     <li><code>@bitbybit-dev/jscad-worker</code>: Provides the JSCAD geometry kernel running in a Web Worker.</li>
     <li><code>@bitbybit-dev/manifold-worker</code>: Provides the Manifold geometry kernel running in a Web Worker.</li>
-    <li><code>@bitbybit-dev/occt</code>: Communicates with the OCCT worker and contains the main logic of the OCCT geometry kernel. It can also be used in non-web-worker environments.</li>
-    <li><code>@bitbybit-dev/jscad</code>: Communicates with the JSCAD worker and contains the main logic of the JSCAD geometry kernel. It can also be used in non-web-worker environments.</li>
-    <li><code>@bitbybit-dev/manifold</code>: Communicates with the Manifold worker and contains the main logic of the Manifold geometry kernel. It can also be used in non-web-worker environments.</li>
-    <li><code>@bitbybit-dev/base</code>: Contains base geometry types and functions, such as vector operations, matrix transformations, math, and list helpers, usable across all kernels.</li>
+    <li><code>@bitbybit-dev/occt</code>: Communicates with worker and contains main logic of OCCT geometry kernel - can be used in non web-worker environments.</li>
+    <li><code>@bitbybit-dev/jscad</code>: Communicates with worker and contains main logic of JSCAD geometry kernel - can be used in non web-worker environments.</li>
+    <li><code>@bitbybit-dev/manifold</code>: Communicates with worker and contains main logic of Manifold geometry kernel - can be used in non web-worker environments.</li>
+    <li><code>@bitbybit-dev/base</code>: Contains base geometry types and functions, such as vector operations, matrix transformations, math and list helpers - they can be used in all kernels.</li>
   </ul>
 </Admonition>
 
 ## 2. HTML Structure
 
-Modify your `index.html` file in the project root to include a `<canvas>` element where the BabylonJS scene will be rendered:
+Modify your `index.html` file in the project root to include a `<canvas>` element where the PlayCanvas application will be rendered:
 
 <CodeBlock language="html" title="index.html">
 {`<!DOCTYPE html>
@@ -69,17 +69,17 @@ Modify your `index.html` file in the project root to include a `<canvas>` elemen
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/vite.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Bitbybit & BabylonJS Example</title>
+        <title>Bitbybit & PlayCanvas Example</title>
     </head>
     <body>
-        <canvas id="babylon-canvas"></canvas>
+        <canvas id="playcanvas-canvas"></canvas>
         <script type="module" src="/src/main.ts"></script>
     </body>
 </html>`}
 </CodeBlock>
 
 This is a standard HTML setup. The key parts are:
--   `<canvas id="babylon-canvas"></canvas>`: This is where our 3D scene will be drawn.
+-   `<canvas id="playcanvas-canvas"></canvas>`: This is where our 3D scene will be drawn.
 -   `<script type="module" src="/src/main.ts"></script>`: This loads our main TypeScript application logic.
 
 ## 3. Setting up Web Workers
@@ -194,21 +194,21 @@ Replace the content of `src/main.ts` with the following:
 
 <CodeBlock language="typescript" title="src/main.ts">
 {`import './style.css'; // Basic styling
-import { BitByBitBase, Inputs } from '@bitbybit-dev/babylonjs';
+import { BitByBitBase, Inputs } from '@bitbybit-dev/playcanvas';
 import { OccStateEnum } from '@bitbybit-dev/occt-worker';
 import { JscadStateEnum } from '@bitbybit-dev/jscad-worker';
 import { ManifoldStateEnum } from '@bitbybit-dev/manifold-worker';
 
-import {
-    Engine,
-    Scene,
-    ArcRotateCamera,
-    Vector3,
-    HemisphericLight,
-    DirectionalLight,
-    Color4,
-} from '@babylonjs/core';
 import { first, firstValueFrom, map } from 'rxjs';
+import {
+    Application,
+    Color,
+    Entity,
+    FILLMODE_FILL_WINDOW,
+    Mouse,
+    RESOLUTION_AUTO,
+    TouchDevice,
+} from 'playcanvas';
 
 // Define an interface for kernel options
 interface KernelOptions {
@@ -221,9 +221,10 @@ interface KernelOptions {
 start();
 
 async function start() {
-    // Initialize basic BabylonJS scene
-    const { scene, engine } = initBabylonJS();
-    // Create an instance of BitByBitBase for BabylonJS
+    // Initialize basic PlayCanvas scene
+    const { app, scene, camera } = initPlayCanvas();
+
+    // Create an instance of BitByBitBase for PlayCanvas
     const bitbybit = new BitByBitBase();
 
     // --- 2. Configure and Initialize Kernels ---
@@ -234,7 +235,18 @@ async function start() {
         enableManifold: true,
     };
     // Initialize Bitbybit with the selected kernels
-    await initWithKernels(scene, bitbybit, kernelOptions);
+    await initWithKernels(app, scene, bitbybit, kernelOptions);
+
+    // Setup orbit camera controls using bitbybit library
+    const cameraOptions = new Inputs.PlayCanvasCamera.OrbitCameraDto();
+    cameraOptions.distance = 125;
+    cameraOptions.pitch = -24;
+    cameraOptions.yaw = 27;
+    cameraOptions.frameOnStart = false;
+    cameraOptions.inertiaFactor = 0.2;
+    cameraOptions.distanceSensitivity = 0.3;
+    cameraOptions.focusEntity = camera;
+    bitbybit.playcanvas.camera.orbitCamera.create(cameraOptions);
 
     // --- 3. Create Geometry with Active Kernels ---
     if (kernelOptions.enableOCCT) {
@@ -246,66 +258,66 @@ async function start() {
     if (kernelOptions.enableJSCAD) {
         await createJSCADGeometry(bitbybit, '#0000ff'); // Blue
     }
-
-    // Start the BabylonJS render loop
-    engine.runRenderLoop(() => {
-        if (scene.activeCamera) {
-            // Ensure camera is ready
-            scene.render();
-        }
-    });
 }
 
-// --- 4. BabylonJS Scene Initialization ---
-function initBabylonJS() {
-    const canvas = document.getElementById('babylon-canvas') as HTMLCanvasElement;
-    const engine = new Engine(canvas, true, {
-        preserveDrawingBuffer: true,
-        stencil: true,
+// --- 4. PlayCanvas Scene Initialization ---
+function initPlayCanvas() {
+    const canvas = document.getElementById('playcanvas-canvas') as HTMLCanvasElement;
+
+    // Create a PlayCanvas application
+    const app = new Application(canvas, {
+        graphicsDeviceOptions: {
+            antialias: true,
+            alpha: false,
+        },
+        mouse: new Mouse(canvas),
+        touch: new TouchDevice(canvas),
     });
-    const scene = new Scene(engine);
-    scene.metadata = { shadowGenerators: [] }; // Important for Bitbybit till we have better implementation...
-    scene.clearColor = new Color4(0.1, 0.11, 0.12, 1); // Set background color
 
-    const camera = new ArcRotateCamera(
-        'camera',
-        -Math.PI / 2,
-        Math.PI / 2.5,
-        150, // Adjusted radius for typical scenes
-        new Vector3(0, 0, 0),
-        scene
-    );
-    camera.attachControl(canvas, true);
-    camera.wheelPrecision = 5; // Control zoom speed
-    camera.zoomOnFactor = 1.2;
-    camera.angularSensibilityX = 1000;
-    camera.angularSensibilityY = 1000;
-    camera.panningSensibility = 100;
-    camera.lowerRadiusLimit = 10;
-    camera.upperRadiusLimit = 500;
+    // Fill the window and automatically change resolution to be the same as the canvas size
+    app.setCanvasFillMode(FILLMODE_FILL_WINDOW);
+    app.setCanvasResolution(RESOLUTION_AUTO);
 
-    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
-    light.intensity = 0.7;
+    // Ensure canvas is resized when window changes size
+    window.addEventListener('resize', () => app.resizeCanvas());
 
-    // Add a directional light for better shadows and lighting
-    const directionalLight = new DirectionalLight(
-        'directionalLight',
-        new Vector3(-1, -2, -1),
-        scene
-    );
-    directionalLight.intensity = 1;
+    // Create root scene entity
+    const scene = new Entity('scene');
+    app.root.addChild(scene);
 
-    const onWindowResize = () => {
-        engine.resize();
-    };
-    window.addEventListener('resize', onWindowResize, false);
+    // Create camera entity
+    const camera = new Entity('camera');
+    camera.addComponent('camera', {
+        clearColor: new Color(0x1a / 255, 0x1c / 255, 0x1f / 255, 1),
+        fov: 70,
+        nearClip: 0.1,
+        farClip: 1000,
+    });
+    scene.addChild(camera);
 
-    return { scene, engine, camera };
+    // Create directional light
+    const light = new Entity('directionalLight');
+    light.addComponent('light', {
+        type: 'directional',
+        color: new Color(1, 1, 1),
+        intensity: 1,
+    });
+    light.setEulerAngles(45, 30, 0);
+    scene.addChild(light);
+
+    // Create ambient/hemisphere-like lighting
+    app.scene.ambientLight = new Color(0.4, 0.4, 0.4);
+
+    // Start the application update loop
+    app.start();
+
+    return { app, scene, camera };
 }
 
 // --- 5. Bitbybit Kernel Initialization Logic ---
 async function initWithKernels(
-    scene: Scene,
+    app: pc.AppBase,
+    scene: pc.Entity,
     bitbybit: BitByBitBase,
     options: KernelOptions
 ): Promise<{ message: string; initializedKernels: string[] }> {
@@ -333,8 +345,9 @@ async function initWithKernels(
         );
     }
 
-    // 2. Initialize Bitbybit
-    await bitbybit.init(
+    // 2. Initialize Bitbybit with PlayCanvas app and scene
+    bitbybit.init(
+        app,
         scene,
         occtWorkerInstance,
         jscadWorkerInstance,
@@ -406,7 +419,6 @@ async function initWithKernels(
     }
 
     if (initializationPromises.length === 0) {
-        // Kernels were selected, but none were awaitable (e.g., managers missing for all selected)
         console.log(
             'Kernels were selected, but none had managers available for awaiting initialization.'
         );
@@ -417,6 +429,7 @@ async function initWithKernels(
     }
 
     const initializedKernels = await Promise.all(initializationPromises);
+    console.log('Kernels initialized:', initializedKernels.join(', '));
     console.log('Kernels initialized:', initializedKernels.join(', '));
     return {
         message: \`Successfully initialized: \${initializedKernels.join(', ')}\`,
@@ -450,6 +463,7 @@ async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
     });
     console.log('OCCT geometry created and drawn.');
 }
+
 async function createManifoldGeometry(bitbybit: BitByBitBase, color: string) {
     console.log('Creating Manifold geometry...');
     const sphereOptions = new Inputs.Manifold.SphereDto();
@@ -514,57 +528,58 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
 ### Explanation of `main.ts`:
 
 1.  **Imports:**
-    *   `BitByBitBase` and `Inputs`: Core components from `@bitbybit-dev/babylonjs`. `Inputs` provides DTOs (Data Transfer Objects) for specifying parameters for geometry operations.
+    *   `BitByBitBase` and `Inputs`: Core components from `@bitbybit-dev/playcanvas`. `Inputs` provides DTOs (Data Transfer Objects) for specifying parameters for geometry operations.
     *   `...StateEnum`: Enums used to check the initialization state of each kernel worker.
-    *   Standard BabylonJS modules for scene setup: `Engine`, `Scene`, `ArcRotateCamera`, `Vector3`, `HemisphericLight`, `DirectionalLight`, `Color4`.
+    *   PlayCanvas modules (`Application`, `Color`, `Entity`, etc.) for scene setup.
     *   `first`, `firstValueFrom`, `map` from `rxjs`: Used to subscribe to and transform the kernel state observables.
 
 2.  **`KernelOptions` Interface:** Defines the structure for selecting which kernels to initialize.
 
 3.  **`start()` function (Main Entry Point):**
-    *   Calls `initBabylonJS()` to set up the basic BabylonJS `Engine`, `Scene`, `Camera`, and `Lights`.
-    *   Creates an instance of `BitByBitBase` from the `@bitbybit-dev/babylonjs` package.
+    *   Calls `initPlayCanvas()` to set up the basic PlayCanvas application, scene entity, camera, and lights.
+    *   Creates an instance of `BitByBitBase`.
     *   **`kernelOptions`**: This object is key. By setting `enableOCCT`, `enableJSCAD`, and `enableManifold` to `true` or `false`, you control which kernels Bitbybit attempts to initialize. This allows for optimizing load times and resource usage if not all kernels are needed.
-    *   Calls `initWithKernels()` to initialize Bitbybit with the selected kernels, passing the BabylonJS `scene`.
-    *   Conditionally calls geometry creation functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`) based on which kernels were enabled and successfully initialized.
-    *   Starts the BabylonJS render loop using `engine.runRenderLoop(...)`.
+    *   Calls `initWithKernels()` to initialize Bitbybit with the selected kernels.
+    *   Sets up orbit camera controls using bitbybit's built-in camera helper.
+    *   Conditionally calls geometry creation functions based on which kernels were enabled.
 
-4.  **`initBabylonJS()` function:**
-    *   Standard BabylonJS boilerplate: sets up the `Engine` attached to the canvas.
-    *   Creates a `Scene` and sets its clear color (background).
-    *   Creates an `ArcRotateCamera` for user interaction with configured sensitivities and limits.
-    *   Adds a `HemisphericLight` and a `DirectionalLight` for better lighting.
-    *   Includes a window resize listener to ensure the `engine` adapts to viewport changes.
+4.  **`initPlayCanvas()` function:**
+    *   Creates a PlayCanvas `Application` instance with the canvas element.
+    *   Sets up proper canvas fill mode and resolution handling.
+    *   Creates a root `scene` entity and adds it to the app root.
+    *   Creates a `camera` entity with configured clear color, FOV, and clipping planes.
+    *   Adds directional and ambient lighting.
+    *   Starts the application and returns the `app`, `scene`, and `camera`.
 
 5.  **`initWithKernels()` function:**
     *   This is the core of Bitbybit's initialization.
-    *   It conditionally creates `Worker` instances for OCCT, JSCAD, and Manifold based on the `options` passed in. The `new URL('./workers/worker-name.worker.ts', import.meta.url)` syntax is Vite's way of correctly bundling and referencing web worker files.
-    *   Calls `await bitbybit.init(scene, occtWorkerInstance, jscadWorkerInstance, manifoldWorkerInstance)`. The `@bitbybit-dev/babylonjs` package's `BitByBitBase` is designed to work with a BabylonJS `Scene` object and can handle `undefined` for worker instances it shouldn't initialize.
+    *   Conditionally creates `Worker` instances for OCCT, JSCAD, and Manifold based on the `options` passed in.
+    *   Calls `bitbybit.init(app, scene, occtWorkerInstance, jscadWorkerInstance, manifoldWorkerInstance)`. Both the PlayCanvas `app` and `scene` entity are passed.
     *   Uses RxJS `pipe(first(...), map(...))` to subscribe to the state observables of each enabled kernel and transform the result to a string identifying the kernel.
-    *   The `Promise` resolves only after all *selected and enabled* kernels have emitted an `initialised` state. This ensures that you don't try to use a kernel before it's ready.
+    *   The `Promise` resolves only after all selected kernels have emitted an `initialised` state.
     *   Returns an object with a message and an array of initialized kernel names.
 
-6.  **Geometry Creation Functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`):**
-    *   These are example functions illustrating how to use Bitbybit's core geometry API (e.g., `bitbybit.occt.*`, `bitbybit.manifold.*`, `bitbybit.jscad.*`).
-    *   **`Inputs` DTOs**: You'll notice the use of `Inputs.OCCT.CubeDto()`, `Inputs.Manifold.SphereDto()`, etc. These objects are used to pass parameters to Bitbybit's geometry creation and modification functions. They provide type safety and often mirror the inputs you'd find in a visual programming environment. Intellisense (auto-completion in your IDE) will be very helpful here.
-    *   **Drawing**: After creating a geometric entity, `bitbybit.draw.drawAnyAsync()` (from `@bitbybit-dev/babylonjs`) is used to render it into the BabylonJS scene. Different kernels might have slightly different drawing option DTOs (e.g., `DrawOcctShapeOptions`, `DrawManifoldOrCrossSectionOptions`, `DrawBasicGeometryOptions`), but `drawAnyAsync` handles many common cases. The OCCT draw options now support additional properties like `edgeWidth`, `drawVertices`, `vertexSize`, and `vertexColour`.
+6.  **Geometry Creation Functions:**
+    *   These demonstrate how to use the APIs for each kernel.
+    *   **`Inputs` DTOs**: Typed objects to pass parameters to Bitbybit's geometry functions.
+    *   **API Structure**: Operations are namespaced under `bitbybit.occt.*`, `bitbybit.manifold.*`, and `bitbybit.jscad.*`.
+    *   **Drawing**: `bitbybit.draw.drawAnyAsync()` renders entities into the PlayCanvas scene. The OCCT draw options now support additional properties like `edgeWidth`, `drawVertices`, `vertexSize`, and `vertexColour`.
 
 ## 5. Basic Styling (Optional)
 
-Create an `src/style.css` file if you haven't already:
+Create an `src/style.css` file:
 
 <CodeBlock language="css" title="src/style.css">
 {`body {
     margin: 0;
     overflow: hidden; /* Prevent scrollbars from canvas */
-    background-color: #1a1c1f; /* Match canvas background for seamless look */
+    background-color: #1a1c1f;
 }
 
-#babylon-canvas {
+#playcanvas-canvas {
     display: block;
     width: 100vw;
     height: 100vh;
-    touch-action: none; /* Recommended for BabylonJS pointer events */
 }`}
 </CodeBlock>
 
@@ -575,31 +590,30 @@ Create an `src/style.css` file if you haven't already:
 # or: yarn dev`}
 </CodeBlock>
 
-Vite will start a development server. You should see a browser window open with your BabylonJS scene. If all kernels were enabled, you'll see three distinct shapes:
+Vite will start a development server, and you should see a browser window open with your PlayCanvas application. If all kernels were enabled, you'll see three distinct shapes:
 *   A red, filleted cube (OCCT) at the origin.
 *   A green, subtracted shape (Manifold) positioned below the OCCT shape.
 *   A blue, unioned sphere shape (JSCAD) positioned above the OCCT shape.
 
 Check your browser's developer console for logs indicating the initialization status of each kernel and any errors.
 
-
 ## Live Demo (StackBlitz)
 
-You can explore and interact with a live example of this setup on StackBlitz.
-
+You can explore and interact with a live example of this setup on StackBlitz:
 <BitByBitRenderCanvas
   requireManualStart={true}
-  iframeUrl="https://stackblitz.com/edit/babylonjs-bitbybit-setup-with-all-kernels?embed=1&file=src%2Fmain.ts&theme=dark"
-  title="StackBlitz - Bitbybit & BabylonJS - All Kernels Setup"
+  iframeUrl="https://stackblitz.com/edit/playcanvas-bitbybit-setup-with-all-kernels?embed=1&file=src%2Fmain.ts&theme=dark"
+  title="StackBlitz - Bitbybit & PlayCanvas - All Kernels Setup"
 />
 
 ## Key Takeaways
 
-*   **Vite Simplifies Setup:** Vite handles worker bundling and module resolution effectively for a smooth development experience.
+*   **Vite Simplifies Setup:** Vite handles worker bundling and module resolution effectively.
 *   **`KernelOptions` for Control:** You have fine-grained control over which geometry kernels are loaded, allowing you to tailor the application to specific needs and optimize performance.
-*   **Asynchronous Operations:** Most Bitbybit operations are `async` because they communicate with Web Workers, ensuring the main thread remains responsive.
-*   **`Inputs` DTOs:** Use these typed objects to configure geometry operations, promoting code clarity and type safety.
-*   **Separate Worker Files:** Each geometry kernel runs in its own dedicated worker, maximizing performance for computationally intensive tasks.
-*   **Modular Design:** The `@bitbybit-dev/babylonjs` package seamlessly integrates Bitbybit's powerful geometry kernels and functionalities with your BabylonJS applications.
+*   **Asynchronous Operations:** Most Bitbybit operations are `async` because they communicate with Web Workers.
+*   **`Inputs` DTOs:** Use these typed objects to configure geometry operations.
+*   **Separate Worker Files:** Each kernel runs in its own dedicated worker.
+*   **Modular Design:** The `@bitbybit-dev/playcanvas` package neatly integrates these complex components for use with PlayCanvas.
+*   **Entity-Based Rendering:** PlayCanvas uses an entity-component system, and Bitbybit creates entities that are added to the app root.
 
-This setup provides a robust foundation for building sophisticated 3D CAD applications in the browser with Bitbybit and BabylonJS.
+This setup provides a robust foundation for building sophisticated 3D CAD applications in the browser with Bitbybit and PlayCanvas.

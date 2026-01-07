@@ -2,8 +2,8 @@
 sidebar_position: 2
 title: "Bitbybit's Engine-Agnostic Architecture"
 sidebar_label: "Engine Agnosticism"
-description: "Learn about Bitbybit's core architecture, designed to be game engine agnostic, its base layer of fundamental algorithms, and its current integrations with ThreeJS and BabylonJS."
-tags: [threejs, babylonjs, npm-packages]
+description: "Learn about Bitbybit's core architecture, designed to be game engine agnostic, its base layer of fundamental algorithms, and its current integrations with ThreeJS, BabylonJS, and PlayCanvas."
+tags: [threejs, babylonjs, playcanvas, npm-packages]
 ---
 
 import Admonition from '@theme/Admonition';
@@ -52,7 +52,7 @@ Bitbybit's architecture can be visualized as a layered system:
 
 ## Current Rendering Engine Integrations
 
-As of now, Bitbybit provides official integration layers for two of the most popular and powerful WebGL-based 3D engines:
+As of now, Bitbybit provides official integration layers for three of the most popular and powerful WebGL-based 3D engines:
 
 ### 1. [ThreeJS](https://threejs.org/) Integration ([`@bitbybit-dev/threejs`](https://www.npmjs.com/package/@bitbybit-dev/threejs))
 
@@ -70,9 +70,16 @@ As of now, Bitbybit provides official integration layers for two of the most pop
 *   **Bitbybit Integration:** Our `@bitbybit-dev/babylonjs` NPM package serves the same purpose as the ThreeJS integration but targets the BabylonJS engine. Its implementation of `drawAnyAsync` translates Bitbybit's core geometric data into `BABYLON.Mesh` objects and integrates them into a BabylonJS scene.
 *   **Use Cases:** A great choice for projects requiring a rich set of out-of-the-box features, physics integration, advanced rendering effects, or for developers who appreciate the stability and robust tooling offered by a TypeScript-first engine with strong corporate backing and community support.
 
+### 3. [PlayCanvas](https://playcanvas.com/) Integration ([`@bitbybit-dev/playcanvas`](https://www.npmjs.com/package/@bitbybit-dev/playcanvas))
+
+*   **Overview:** PlayCanvas is a high-performance WebGL game engine known for its exceptional **mobile optimization** and **cloud-based visual editor**. It uses an entity-component architecture and is built for speed, making it ideal for creating performant 3D applications that need to run smoothly across all devices.
+*   **Community and Ecosystem:** PlayCanvas has a dedicated community of game developers and 3D creators. The engine is **open source** (MIT licensed) with strong commercial backing. Its focus on performance and professional game development has made it popular for web-based games, product configurators, and interactive experiences.
+*   **Bitbybit Integration:** Our `@bitbybit-dev/playcanvas` NPM package provides the necessary tools, including its version of `drawAnyAsync`, to take the geometric output from Bitbybit's core and render it efficiently within a PlayCanvas application. It handles the creation of PlayCanvas entities and mesh instances from the kernel-generated data.
+*   **Use Cases:** Ideal for high-performance applications, mobile-first experiences, game development, product configurators requiring smooth performance across devices, or projects where runtime efficiency and small bundle sizes are critical.
+
 ## Using the Integrations via NPM Packages
 
-When you use Bitbybit through our [NPM packages](/learn/npm-packages/intro) in your own JavaScript/TypeScript projects, you'll choose one of these integration layers. The `BitByBitBase` class from the respective package (`@bitbybit-dev/threejs` or `@bitbybit-dev/babylonjs`) is initialized with your chosen engine's scene object. From there, functions like `bitbybit.draw.drawAnyAsync()` will automatically use the correct engine-specific logic to create and render meshes.
+When you use Bitbybit through our [NPM packages](/learn/npm-packages/intro) in your own JavaScript/TypeScript projects, you'll choose one of these integration layers. The `BitByBitBase` class from the respective package (`@bitbybit-dev/threejs`, `@bitbybit-dev/babylonjs`, or `@bitbybit-dev/playcanvas`) is initialized with your chosen engine's scene object. From there, functions like `bitbybit.draw.drawAnyAsync()` will automatically use the correct engine-specific logic to create and render meshes.
 
 Our visual editors (Rete, Blockly) and the Monaco TypeScript editor on the Bitbybit platform also utilize these integration layers, but they primarily use BabylonJS game engine for rendering under the hood to provide you with a seamless 3D modeling experience.
 

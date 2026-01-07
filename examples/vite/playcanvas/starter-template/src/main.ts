@@ -4,7 +4,7 @@ import { OccStateEnum } from "@bitbybit-dev/occt-worker";
 import { JscadStateEnum } from "@bitbybit-dev/jscad-worker";
 import { ManifoldStateEnum } from "@bitbybit-dev/manifold-worker";
 
-import { first, firstValueFrom, tap } from "rxjs";
+import { first, firstValueFrom, map } from "rxjs";
 import { Application, Color, Entity, FILLMODE_FILL_WINDOW, Mouse, RESOLUTION_AUTO, TouchDevice } from "playcanvas";
 
 // Define an interface for kernel options
@@ -125,7 +125,7 @@ async function initWithKernels(
     scene: pc.Entity,
     bitbybit: BitByBitBase,
     options: KernelOptions
-): Promise<{ message: string }> {
+): Promise<{ message: string; initializedKernels: string[] }> {
     let occtWorkerInstance: Worker | undefined;
     let jscadWorkerInstance: Worker | undefined;
     let manifoldWorkerInstance: Worker | undefined;
@@ -160,7 +160,7 @@ async function initWithKernels(
     );
 
     // 3. Collect promises for kernel initializations
-    const initializationPromises: Promise<void>[] = [];
+    const initializationPromises: Promise<string>[] = [];
     let anyKernelSelectedForInit = false;
 
     if (options.enableOCCT) {
@@ -170,9 +170,9 @@ async function initWithKernels(
                 firstValueFrom(
                     bitbybit.occtWorkerManager.occWorkerState$.pipe(
                         first((s) => s.state === OccStateEnum.initialised),
-                        tap(() => console.log("OCCT Initialized"))
+                        map(() => "OCCT")
                     )
-                ).then(() => undefined)
+                )
             );
         } else {
             console.warn(
@@ -188,9 +188,9 @@ async function initWithKernels(
                 firstValueFrom(
                     bitbybit.jscadWorkerManager.jscadWorkerState$.pipe(
                         first((s) => s.state === JscadStateEnum.initialised),
-                        tap(() => console.log("JSCAD Initialized"))
+                        map(() => "JSCAD")
                     )
-                ).then(() => undefined)
+                )
             );
         } else {
             console.warn(
@@ -201,14 +201,14 @@ async function initWithKernels(
 
     if (options.enableManifold) {
         anyKernelSelectedForInit = true;
-        if (bitbybit.manifoldWorkerManager) {
+        if (bitbybit.manifoldWorkerManager && bitbybit.manifoldWorkerManager.manifoldWorkerState$) {
             initializationPromises.push(
                 firstValueFrom(
                     bitbybit.manifoldWorkerManager.manifoldWorkerState$.pipe(
                         first((s) => s.state === ManifoldStateEnum.initialised),
-                        tap(() => console.log("Manifold Initialized"))
+                        map(() => "Manifold")
                     )
-                ).then(() => undefined)
+                )
             );
         } else {
             console.warn(
@@ -220,7 +220,7 @@ async function initWithKernels(
     // 4. Wait for selected & available kernels or handle no selection/availability
     if (!anyKernelSelectedForInit) {
         console.log("No kernels selected for initialization.");
-        return { message: "No kernels selected for initialization." };
+        return { message: "No kernels selected for initialization.", initializedKernels: [] };
     }
 
     if (initializationPromises.length === 0) {
@@ -230,13 +230,15 @@ async function initWithKernels(
         );
         return {
             message: "Selected kernels were not awaitable for initialization state.",
+            initializedKernels: [],
         };
     }
 
-    await Promise.all(initializationPromises);
-    console.log("Selected and awaitable kernels initialized:", options);
+    const initializedKernels = await Promise.all(initializationPromises);
+    console.log("Kernels initialized:", initializedKernels.join(", "));
     return {
-        message: "Selected and awaitable kernels initialized successfully.",
+        message: `Successfully initialized: ${initializedKernels.join(", ")}`,
+        initializedKernels,
     };
 }
 
