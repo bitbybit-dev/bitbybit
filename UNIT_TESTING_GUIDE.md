@@ -2,6 +2,12 @@
 
 This guide covers unit testing best practices and conventions for the Bitbybit monorepo.
 
+## Additional Resources
+
+For more information about our unit testing philosophy and live coverage reports, visit:
+- [Unit Testing Approach](https://learn.bitbybit.dev/learn/github/unit-tests) - Learn about our pragmatic approach to testing 3D algorithms
+- [Live Coverage Reports](https://learn.bitbybit.dev/learn/github/live-unit-test-coverage) - Explore real-time test coverage for all core packages
+
 ## Tech Stack
 
 - **Language:** TypeScript

@@ -47,59 +47,20 @@ This "bottom-up" prioritization helps us maximize the impact of our testing effo
 
 ### Our Commitment to Transparency and Collaboration
 
-We choose to share our unit test reports publicly for several key reasons, even though we do not achieve 100% code coverage across modules.
+We choose to share our unit test reports publicly for several key reasons, even though we do not achieve 100% code coverage across modules:
 *   **Building Trust:** Transparency in our testing efforts helps build trust with our users and the developer community. You can see for yourselves the areas we are actively testing and the current health of our codebase.
 *   **Proof of Testing:** It demonstrates that unit tests are an integral part of our development process and that we are committed to quality.
 *   **Inviting Collaboration:** By making these reports public, we invite potential collaborators to identify areas that may need more test coverage. This openness encourages contributions from the community, whether it's by reporting issues found through untested paths or by submitting pull requests with new unit tests for parts of the platform that are not yet comprehensively covered. We believe that collaborative testing strengthens the platform for everyone.
 
-## Live Unit Test Reports
+## Live Unit Test Coverage Reports
 
-We believe in transparency and continuous improvement. To that end, we are making our unit test execution reports publicly available. These reports provide a live view of our testing status for various core packages.
+We make our unit test coverage reports publicly available for core packages. These live reports, together with open-sourced test files provide complete transparency into our testing efforts, showing detailed test results, coverage metrics, and execution status.
 
-Below are links to the live test reports for some of our key packages. More reports for other parts of the Bitbybit ecosystem will be shared as they become available.
+**[View Live Coverage Reports →](/learn/github/live-unit-test-coverage)**
 
-### 1. Base Utilities and Core Types (`@bitbybit-dev/base`)
-This package contains fundamental utilities, type definitions, and helper functions used across the Bitbybit platform. Its tests ensure the stability of these core building blocks.
+The coverage reports include:
+- Test execution results for core packages (Base, OCCT, Three.js, PlayCanvas, and more)
+- Detailed coverage metrics (line, branch, function, and statement coverage)
+- Clear visibility into tested and untested code paths
 
-<iframe
-    src="https://tests.bitbybit.dev/base"
-    width="100%"
-    style={{backgroundColor: "white"}}
-    height="600px"
-    frameborder="0"
-    scrolling="yes"
-    title="Bitbybit - Base Utilities Unit Test Report"
-    allow="fullscreen"
-></iframe>
-
-### 2. OpenCascade Technology (OCCT) Wrapper (`@bitbybit-dev/occt`)
-This is a critical package providing the JavaScript/TypeScript interface to the powerful OpenCascade geometric modeling kernel. Tests here cover a wide range of CAD operations, from creating basic shapes to complex boolean operations, filleting, chamfering, and data import/export.
-
-<iframe
-    src="https://tests.bitbybit.dev/occt"
-    style={{backgroundColor: "white"}}
-    width="100%"
-    height="600px"
-    frameborder="0"
-    scrolling="yes"
-    title="Bitbybit - OCCT Wrapper Unit Test Report"
-    allow="fullscreen"
-></iframe>
-
-### 3. ThreeJS Integration (`@bitbybit-dev/threejs`)
-This package facilitates the integration of Bitbybit's algorithmic capabilities with the ThreeJS 3D graphics library. Tests cover drawing Bitbybit geometries in ThreeJS, converting between Bitbybit and ThreeJS data structures, and utility functions specific to the ThreeJS environment.
-
-<iframe
-    src="https://tests.bitbybit.dev/threejs"
-    style={{backgroundColor: "white"}}
-    width="100%"
-    height="600px"
-    frameborder="0"
-    scrolling="yes"
-    title="Bitbybit - ThreeJS Integration Unit Test Report"
-    allow="fullscreen"
-></iframe>
-
----
-
-By regularly running and monitoring these tests, we strive to maintain quality and stability of the platform. We encourage you to explore these reports to get a deeper insight into our development practices and the stability of our core components.
+By regularly running and monitoring these tests, we strive to maintain the quality and stability of the platform. We encourage you to explore these reports to get a deeper insight into our development practices and the reliability of our core components.
