@@ -19,6 +19,7 @@ export function initPlayCanvas() {
     graphicsDeviceOptions: {
       antialias: true,
       alpha: false,
+      devicePixelRatio: 0.5,
     },
     mouse: new Mouse(canvas),
     touch: new TouchDevice(canvas),
@@ -76,7 +77,7 @@ export function createDirLightsAndGround(scene: Entity, current: Current) {
     intensity: 0.8,
     castShadows: true,
     shadowDistance: 40,
-    shadowResolution: 3048,
+    shadowResolution: 4000,
     shadowBias: 0.2,
     normalOffsetBias: 0.02,
     shadowType: 1,
@@ -91,7 +92,7 @@ export function createDirLightsAndGround(scene: Entity, current: Current) {
     type: "plane",
   });
   ground.setLocalScale(74, 1, 74);
-  ground.setPosition(0, 0, 0);
+  ground.setPosition(0, -0.01, 0);
 
   // Create material for ground
   const material = new StandardMaterial();

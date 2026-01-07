@@ -1,0 +1,436 @@
+---
+sidebar_position: 3
+title: PlayCanvas 3D Text on Face Example
+description: Learn how to create 3D text on a parametric surface using the Bitbybit PlayCanvas runner with advanced lighting and materials
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# PlayCanvas 3D Text on Face Example
+
+This advanced example demonstrates how to create **3D text on a parametric lofted surface** using the Bitbybit PlayCanvas runner. It showcases custom materials, enhanced lighting setup, orbit camera controls, and professional rendering techniques.
+
+## Live Example
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/bitbybit-playcanvas-full-runner-text-3d-on-face?embed=1&file=index.html&theme=dark"
+  title="StackBlitz - PlayCanvas 3D Text on Face Example"
+/>
+
+## Key Features
+
+This example demonstrates several advanced techniques:
+
+- **3D Text on Parametric Surface** - Creating text that follows the curvature of a lofted face
+- **Custom Materials** - Metallic materials with specular highlights using `faceMaterial` option
+- **Multi-Light Setup** - Professional 5-point lighting with shadows
+- **Orbit Camera Controls** - Interactive camera using Bitbybit's orbit camera API
+- **Sharp Hardware Scaling** - High-DPI rendering using `maxPixelRatio`
+- **Edge Shadow Control** - Disabling shadows on edge entities for cleaner rendering
+
+## Complete Example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Bitbybit Runner PlayCanvas Full Example 3D Text On Face</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Load the full PlayCanvas runner (includes PlayCanvas) -->
+    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-playcanvas.js"></script>
+    <script type="module">
+      const runnerOptions = {
+        canvasId: 'myCanvas',
+        canvasZoneClass: 'myCanvasZone',
+        enableOCCT: true,
+        enableJSCAD: false,
+        enableManifold: false,
+        cameraPosition: [30, 15, 30],
+        cameraTarget: [5, 3, 0],
+        backgroundColor: '#0a0c0f',
+        loadFonts: ['Roboto'],
+      };
+
+      const runner = window.bitbybitRunner.getRunnerInstance();
+      const { bitbybit, Bit, camera, scene, app, pc } = await runner.run(
+        runnerOptions
+      );
+
+      // ============================================
+      // SHARP HARDWARE SCALING
+      // ============================================
+      // Set the canvas resolution to match device pixel ratio for crisp rendering
+      app.graphicsDevice.maxPixelRatio = window.devicePixelRatio;
+      app.resizeCanvas();
+
+      // ============================================
+      // ORBIT CAMERA CONTROLS
+      // ============================================
+      const cameraOptions = new Bit.Inputs.PlayCanvasCamera.OrbitCameraDto();
+      cameraOptions.distance = 45;
+      cameraOptions.pitch = -20;
+      cameraOptions.yaw = 45;
+      cameraOptions.frameOnStart = false;
+      cameraOptions.inertiaFactor = 0.15;
+      cameraOptions.distanceSensitivity = 0.4;
+      cameraOptions.focusEntity = camera;
+      bitbybit.playcanvas.camera.orbitCamera.create(cameraOptions);
+
+      // ============================================
+      // ENHANCED LIGHTING SETUP
+      // ============================================
+
+      // Main directional light with high-quality shadows
+      const mainLight = new pc.Entity('mainLight');
+      mainLight.addComponent('light', {
+        type: 'directional',
+        color: new pc.Color(1, 0.98, 0.95),
+        intensity: 1.8,
+        castShadows: true,
+        shadowBias: 0.1,
+        normalOffsetBias: 0.2,
+        shadowResolution: 4096,
+        shadowDistance: 150,
+        numCascades: 4,
+        cascadeDistribution: 0.4,
+      });
+      mainLight.setEulerAngles(55, -95, 0);
+      scene.addChild(mainLight);
+
+      // Secondary directional light
+      const secondLight = new pc.Entity('secondLight');
+      secondLight.addComponent('light', {
+        type: 'directional',
+        color: new pc.Color(1, 0.98, 0.95),
+        intensity: 4,
+        castShadows: true,
+        shadowBias: 0.1,
+        normalOffsetBias: 0.2,
+        shadowResolution: 4096,
+        shadowDistance: 150,
+        numCascades: 4,
+        cascadeDistribution: 0.4,
+      });
+      secondLight.setEulerAngles(55, -55, 0);
+      scene.addChild(secondLight);
+
+      // Fill light (softer, from opposite side)
+      const fillLight = new pc.Entity('fillLight');
+      fillLight.addComponent('light', {
+        type: 'directional',
+        color: new pc.Color(0.5, 0.6, 0.9),
+        intensity: 0.5,
+        castShadows: false,
+      });
+      fillLight.setEulerAngles(30, -60, 0);
+      scene.addChild(fillLight);
+
+      // Rim light (backlight for edge definition)
+      const rimLight = new pc.Entity('rimLight');
+      rimLight.addComponent('light', {
+        type: 'directional',
+        color: new pc.Color(1, 0.85, 0.7),
+        intensity: 0.7,
+        castShadows: false,
+      });
+      rimLight.setEulerAngles(-20, -150, 0);
+      scene.addChild(rimLight);
+
+      // Enhanced ambient lighting
+      app.scene.ambientLight = new pc.Color(0.12, 0.12, 0.15);
+
+      // ============================================
+      // ENVIRONMENT & RENDERING SETTINGS
+      // ============================================
+
+      // Tone mapping and exposure for cinematic look
+      app.scene.exposure = 1.3;
+      app.scene.gammaCorrection = pc.GAMMA_SRGB;
+      app.scene.toneMapping = pc.TONEMAP_ACES;
+
+      // ============================================
+      // SIMULATED GLOBAL ILLUMINATION
+      // ============================================
+
+      // Add an upward-facing fill light for ground bounce
+      const groundBounce = new pc.Entity('groundBounce');
+      groundBounce.addComponent('light', {
+        type: 'directional',
+        color: new pc.Color(0.3, 0.35, 0.4),
+        intensity: 0.3,
+        castShadows: false,
+      });
+      groundBounce.setEulerAngles(-90, 0, 0); // Pointing up
+      scene.addChild(groundBounce);
+
+      // Sky light (top-down ambient simulation)
+      const skyLight = new pc.Entity('skyLight');
+      skyLight.addComponent('light', {
+        type: 'directional',
+        color: new pc.Color(0.4, 0.5, 0.7),
+        intensity: 0.4,
+        castShadows: false,
+      });
+      skyLight.setEulerAngles(90, 0, 0); // Pointing down from sky
+      scene.addChild(skyLight);
+
+      // ============================================
+      // GROUND PLANE
+      // ============================================
+
+      const ground = new pc.Entity('ground');
+      ground.addComponent('render', {
+        type: 'plane',
+        castShadows: false,
+        receiveShadows: true,
+      });
+      ground.setLocalScale(50, 1, 50);
+      ground.setPosition(5, -10, 0);
+
+      // Create ground material with subtle sheen
+      const groundMaterial = new pc.StandardMaterial();
+      groundMaterial.diffuse = new pc.Color(1, 0.4, 0.08);
+      groundMaterial.metalness = 0.2;
+      groundMaterial.gloss = 0.5;
+      groundMaterial.useMetalness = true;
+      groundMaterial.update();
+      if (ground.render) {
+        ground.render.meshInstances[0].material = groundMaterial;
+      }
+      scene.addChild(ground);
+
+      // ============================================
+      // GEOMETRY CREATION
+      // ============================================
+
+      const curvePts = [
+        [
+          [-10, 0, -10],
+          [0, 3, -10],
+          [10, -1, -10],
+          [20, 2, -10],
+        ],
+        [
+          [-10, -5, 0],
+          [0, -3, 0],
+          [10, 1, 0],
+          [20, -2, 0],
+        ],
+        [
+          [-10, 0, 10],
+          [0, 3, 10],
+          [10, -1, 10],
+          [20, 2, 10],
+        ],
+      ];
+
+      // Create wires from interpolated points
+      const wirePromises = curvePts.map((pts) => {
+        return bitbybit.occt.shapes.wire.interpolatePoints({
+          points: pts,
+          periodic: false,
+          tolerance: 1e-7,
+        });
+      });
+
+      const wires = await Promise.all(wirePromises);
+      const loft = await bitbybit.occt.operations.loft({
+        shapes: wires,
+        makeSolid: false,
+      });
+      const loftFace = await bitbybit.occt.shapes.face.getFace({
+        shape: loft,
+        index: 0,
+      });
+      const loftFaceRev = await bitbybit.occt.shapes.face.reversedFace({
+        shape: loftFace,
+      });
+
+      // Create 3D text on face
+      const txtOpt = new Bit.Advanced.Text3D.Text3DFaceDto();
+      txtOpt.text = 'PlayCanvas';
+      txtOpt.face = loftFace;
+      txtOpt.fontSize = 0.18;
+      txtOpt.rotation = -45;
+      txtOpt.height = -1;
+
+      const text = await bitbybit.advanced.text3d.createTextOnFace(txtOpt);
+
+      // ============================================
+      // CUSTOM MATERIALS FOR FANCY RENDERING
+      // ============================================
+
+      // Surface material - metallic orange with high gloss
+      const surfaceMaterial = new pc.StandardMaterial();
+      surfaceMaterial.diffuse = new pc.Color(1, 0.3, 0);
+      surfaceMaterial.specular = new pc.Color(0.5, 0.42, 1.0);
+      surfaceMaterial.metalness = 0.7;
+      surfaceMaterial.gloss = 0.9;
+      surfaceMaterial.useMetalness = true;
+      surfaceMaterial.update();
+
+      // Text material - gold/copper metallic
+      const textMaterial = new pc.StandardMaterial();
+      textMaterial.diffuse = new pc.Color(1, 0.5, 0);
+      textMaterial.specular = new pc.Color(1.0, 0.85, 0.6);
+      textMaterial.metalness = 0.5;
+      textMaterial.gloss = 0.7;
+      textMaterial.useMetalness = true;
+      textMaterial.update();
+
+      // ============================================
+      // DRAW OPTIONS
+      // ============================================
+
+      // Draw options for the loft surface
+      const loftDrawOpt = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+      loftDrawOpt.drawTwoSided = false;
+      loftDrawOpt.backFaceColour = '#3d2855';
+      loftDrawOpt.drawEdges = true;
+      loftDrawOpt.edgeWidth = 3;
+      loftDrawOpt.edgeColour = '#66aaff';
+      loftDrawOpt.faceMaterial = surfaceMaterial;
+
+      // Draw options for the text
+      const textDrawOpt = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+      textDrawOpt.drawTwoSided = false;
+      textDrawOpt.drawEdges = false;
+      textDrawOpt.faceMaterial = textMaterial;
+
+      // Draw the geometry (both sides of the loft surface)
+      const loftGroup = await bitbybit.draw.drawAnyAsync({
+        entity: loftFaceRev,
+        options: loftDrawOpt,
+      });
+      const loftBack = await bitbybit.draw.drawAnyAsync({
+        entity: loftFace,
+        options: loftDrawOpt,
+      });
+
+      // Move text slightly above surface and draw
+      const movedTxt = await bitbybit.occt.transforms.translate({
+        shape: text.compound,
+        translation: [0, 1, 0],
+      });
+      const textGroup = await bitbybit.draw.drawAnyAsync({
+        entity: movedTxt,
+        options: textDrawOpt,
+      });
+
+      // ============================================
+      // DISABLE SHADOWS ON EDGE ENTITIES
+      // ============================================
+
+      // Helper function to disable shadows on edges (third child in group)
+      function disableEdgeShadows(group) {
+        if (group && group.children && group.children[2]) {
+          const edgeEntity = group.children[2];
+          if (edgeEntity.render) {
+            edgeEntity.render.castShadows = false;
+          }
+        }
+      }
+
+      disableEdgeShadows(loftGroup);
+      disableEdgeShadows(textGroup);
+    </script>
+    <style>
+      body {
+        margin: 0;
+        background-color: #0a0c0f;
+      }
+      #myCanvas {
+        display: block;
+        width: 100%;
+        height: 100vh;
+      }
+      .myCanvasZone {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="myCanvasZone">
+      <canvas id="myCanvas"></canvas>
+    </div>
+  </body>
+</html>
+```
+
+## Key Techniques Explained
+
+### Sharp Hardware Scaling
+
+After initializing the runner, set the device pixel ratio for crisp rendering on high-DPI displays:
+
+```javascript
+app.graphicsDevice.maxPixelRatio = window.devicePixelRatio;
+app.resizeCanvas();
+```
+
+### Orbit Camera Controls
+
+Use Bitbybit's built-in orbit camera for interactive 3D navigation:
+
+```javascript
+const cameraOptions = new Bit.Inputs.PlayCanvasCamera.OrbitCameraDto();
+cameraOptions.distance = 45;
+cameraOptions.pitch = -20;
+cameraOptions.yaw = 45;
+cameraOptions.focusEntity = camera;
+bitbybit.playcanvas.camera.orbitCamera.create(cameraOptions);
+```
+
+### Custom Materials with faceMaterial
+
+Pass custom PlayCanvas `StandardMaterial` objects to the draw options:
+
+```javascript
+const surfaceMaterial = new pc.StandardMaterial();
+surfaceMaterial.diffuse = new pc.Color(1, 0.3, 0);
+surfaceMaterial.metalness = 0.7;
+surfaceMaterial.gloss = 0.9;
+surfaceMaterial.useMetalness = true;
+surfaceMaterial.update();
+
+const loftDrawOpt = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+loftDrawOpt.faceMaterial = surfaceMaterial;
+```
+
+### 3D Text on Parametric Face
+
+Create text that follows the surface curvature:
+
+```javascript
+const txtOpt = new Bit.Advanced.Text3D.Text3DFaceDto();
+txtOpt.text = 'PlayCanvas';
+txtOpt.face = loftFace;
+txtOpt.fontSize = 0.18;
+txtOpt.rotation = -45;
+txtOpt.height = -1;  // Negative for extruding downward
+
+const text = await bitbybit.advanced.text3d.createTextOnFace(txtOpt);
+```
+
+### Disabling Edge Shadows
+
+Edges are the third child entity in the returned group - disable their shadows for cleaner visuals:
+
+```javascript
+function disableEdgeShadows(group) {
+  if (group && group.children && group.children[2]) {
+    const edgeEntity = group.children[2];
+    if (edgeEntity.render) {
+      edgeEntity.render.castShadows = false;
+    }
+  }
+}
+```
+
+## GitHub Source
+
+View the full source code on GitHub: [PlayCanvas Text 3D on Face Example](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/runner/playcanvas/full/text-3d-on-face)
