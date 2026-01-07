@@ -30,7 +30,7 @@ Watch Matas Ubarevičius demonstrate how to use the Viewer Editor and the BITBYB
     src="https://www.youtube.com/embed/7R6ueAHGFhg" 
     title="No-Code 3D Configurators on Shopify Product Pages with Bitbybit Viewer Editor and GLTF Assets" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

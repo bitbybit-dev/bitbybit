@@ -68,7 +68,7 @@ For a step-by-step visual guide on setting up the "3D Bits" app and its blocks, 
     src="https://www.youtube.com/embed/9l7run2qy0Q?si=j8uSScxl6ncJaX81" 
     title="3D Bits App For Shopify Fast Introduction" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

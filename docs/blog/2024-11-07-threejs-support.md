@@ -25,7 +25,7 @@ Our main objective with these new releases is to make our CAD tools more versati
 This strategic move significantly broadens our reach and aligns perfectly with our vision of an open, adaptable CAD platform that meets the diverse needs of the global 3D developer community. Now, developers can leverage Bitbybit.dev's powerful CAD functionalities within their existing ThreeJS projects, or choose between ThreeJS and BabylonJS based on their project requirements.
 
 <div class="responsive-video-container">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Ozi2sbnXjHg" title="Use THREEJS Game Engine With 3D CAD Geometry Algorithms Of BITBYBIT DEV Platform" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Ozi2sbnXjHg" title="Use THREEJS Game Engine With 3D CAD Geometry Algorithms Of BITBYBIT DEV Platform" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
 </div>
 
 **See it in action with ThreeJS:**

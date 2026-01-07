@@ -34,7 +34,7 @@ Watch this step-by-step guide on how to configure and use the BITBYBIT PREVIEW b
     src="https://www.youtube.com/embed/xU5seV1NQ5o" 
     title="Tutorial: Using 3D Bits App For Shopify With BITBYBIT PREVIEW Theme App Extension Block for 3D Scans" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

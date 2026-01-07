@@ -32,7 +32,7 @@ For a fast overview of what "3D Bits" can do, check out this introductory video:
     src="https://www.youtube.com/embed/9l7run2qy0Q?si=j8uSScxl6ncJaX81" 
     title="3D Bits App For Shopify Fast Introduction" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

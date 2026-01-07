@@ -28,7 +28,7 @@ In this related video tutorial you can see how the results of this app look like
     src="https://www.youtube.com/embed/Bgf-rAqAtdc" 
     title="Unreal Engine 5 Using Assets From Bitbybit ThreeJS Configurator" 
     frameborder="0" 
-    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

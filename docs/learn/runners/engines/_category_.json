@@ -1,6 +1,6 @@
 {
   "label": "Engines",
-  "position": 10,
+  "position": 3,
   "link": {
     "type": "generated-index",
     "description": "Learn how to use Bitbybit runners with different 3D engines - PlayCanvas, Three.js, and Babylon.js."

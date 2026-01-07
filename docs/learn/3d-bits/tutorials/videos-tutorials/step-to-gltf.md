@@ -29,7 +29,7 @@ That’s why it’s essential to choose an efficient workflow for converting STE
     src="https://www.youtube.com/embed/7mqd2FLlpcU" 
     title="From STEP to GLTF - Convert PRO CAD 3D Models For 3D Bits Shopify App" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

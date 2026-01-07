@@ -38,7 +38,7 @@ This video provides insights into working with 3D scans, particularly focusing o
     src="https://www.youtube.com/embed/f3rBNesXD1s?si=RXy1E2knDpdIm6Cz" 
     title="Working with Gaussian Splatting 3D Scans for E-Commerce" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>

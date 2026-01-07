@@ -18,6 +18,19 @@ We are excited to announce the release of our new open-source NPM package and ru
 *   GitHub: **[Bitbybit.dev Monorepo](https://github.com/bitbybit-dev/bitbybit)**
 *   Documentation: **[PlayCanvas Integration Guide](/learn/npm-packages/playcanvas)**
 
+Short demo of some of the Bitbybit projects rendered via PlayCanvas:
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/z3RFu8HTkcA" 
+    title="PlayCanvas Support in Bitbybit CAD Parametric Design Platform" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
+    allowfullscreen>
+  </iframe>
+</div>
+
 ### Why PlayCanvas?
 
 PlayCanvas has established itself as a leading choice for web-based game development and interactive 3D experiences. Its entity-component architecture, visual editor, and exceptional runtime performance make it ideal for creating everything from games to product configurators. However, when it comes to precise CAD operations, parametric modeling, and industrial-grade geometry processing, developers have traditionally needed to look elsewhere.

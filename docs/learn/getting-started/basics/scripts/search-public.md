@@ -41,7 +41,7 @@ Learn more about how the search feature works by watching this video tutorial:
     src="https://www.youtube.com/embed/m4cDaCQp23w"
     title="Video that introduces search feature"
     frameBorder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
     allowFullScreen
   ></iframe>
 </div>

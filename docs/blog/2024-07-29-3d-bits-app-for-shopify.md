@@ -19,7 +19,7 @@ Ready to get started? Visit our listing page! 3D Bits is now available for insta
 ➡️ **[Install 3D Bits App for Shopify](https://apps.shopify.com/3d-bits-1)**
 
 <div class="video-container">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/UwIEYWxlGQ0" title="3D Bits App For Shopify - Sell Configurable 3D Products On Your Web Stores" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/UwIEYWxlGQ0" title="3D Bits App For Shopify - Sell Configurable 3D Products On Your Web Stores" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
 </div>
 
 ### Introducing 3D Bits

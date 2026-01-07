@@ -30,7 +30,7 @@ Watch the video below to see how to use the Viewer Editor and the BITBYBIT VIEWE
     src="https://www.youtube.com/embed/B0N3l5Zl5fw" 
     title="No-Code 3D Scanned Plant Configurators on Shopify with Bitbybit Viewer Editor and Gaussian Splats" 
     frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>
