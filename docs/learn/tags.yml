@@ -812,3 +812,8 @@ hosting:
  label: Hosting
  permalink: /hosting
  description: Web hosting and server management.
+
+coverage:
+ label: Coverage
+ permalink: /coverage
+ description: Unit test coverage
