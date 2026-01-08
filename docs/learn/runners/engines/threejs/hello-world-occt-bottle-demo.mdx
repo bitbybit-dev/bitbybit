@@ -1,0 +1,696 @@
+---
+sidebar_position: 3
+title: OCCT Bottle Example
+description: Learn how to use the full version of the Bitbybit ThreeJS runner for CAD operations
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# ThreeJS Full Runner - Bottle Example
+
+The **full runner** bundles Three.js together with Bitbybit, so you don't need to load Three.js separately. This makes setup simpler but results in a larger bundle size.
+
+## Live Example
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/bitbybit-threejs-runner-occt-bottle?embed=1&file=index.html&theme=dark"
+  title="StackBlitz - Three.js Full Runner Example"
+/>
+
+## Complete Example - Parametric Bottle
+
+Below is a complete example that creates a parametric bottle with threading using OCCT, with lil-gui controls for adjusting parameters:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Bitbybit Runner ThreeJS - Parametric Bottle</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Load the full ThreeJS runner (includes ThreeJS) -->
+    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-threejs.js"></script>
+    <!-- Load lil-gui for parameter controls -->
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.umd.min.js"></script>
+    <script type="module">
+      const runnerOptions = {
+        canvasId: 'myCanvas',
+        canvasZoneClass: 'myCanvasZone',
+        enableOCCT: true,
+        enableJSCAD: false,
+        enableManifold: false,
+        cameraPosition: [10, 10, 10],
+        cameraTarget: [0, 4, 0],
+        backgroundColor: '#1a1c1f',
+        loadFonts: ['Roboto'],
+      };
+
+      const runner = window.bitbybitRunner.getRunnerInstance();
+      const { bitbybit, Bit, camera, scene, renderer, THREEJS } =
+        await runner.run(runnerOptions);
+
+      // Model parameters
+      const model = {
+        width: 5,
+        height: 8,
+        thickness: 3,
+        color: '#ff00ff',
+      };
+
+      // Store current shape for downloading
+      let currentShape = null;
+
+      // Higher pixel ratio for sharper rendering
+      renderer.setPixelRatio(window.devicePixelRatio * 1.5);
+
+      // Enable tone mapping for PBR rendering
+      renderer.toneMapping = THREEJS.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+
+      // Softer shadow settings
+      renderer.shadowMap.type = THREEJS.PCFSoftShadowMap;
+
+      // Create lights for subtle PBR look
+      function createLights() {
+        // Soft ambient light for global illumination
+        const ambient = new THREEJS.AmbientLight(0xffffff, 0.4);
+        scene.add(ambient);
+
+        // Hemisphere light for natural sky/ground lighting
+        const hemi = new THREEJS.HemisphereLight(0xffffff, 0x444444, 0.6);
+        hemi.position.set(0, 20, 0);
+        scene.add(hemi);
+
+        // Key light - main directional light with soft shadows
+        const keyLight = new THREEJS.DirectionalLight(0xffffff, 1.5);
+        keyLight.position.set(
+          model.thickness * 2,
+          model.height * 1.5,
+          model.width
+        );
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.width = 2048;
+        keyLight.shadow.mapSize.height = 2048;
+        keyLight.shadow.camera.near = 0.5;
+        keyLight.shadow.camera.far = 50;
+        keyLight.shadow.camera.left = -10;
+        keyLight.shadow.camera.right = 10;
+        keyLight.shadow.camera.top = 10;
+        keyLight.shadow.camera.bottom = -10;
+        keyLight.shadow.bias = -0.0001;
+        keyLight.shadow.radius = 4;
+        scene.add(keyLight);
+
+        // Fill light - softer light from opposite side
+        const fillLight = new THREEJS.DirectionalLight(0xffffff, 0.5);
+        fillLight.position.set(-model.thickness, model.height * 0.5, -model.width);
+        scene.add(fillLight);
+
+        return { ambient, hemi, keyLight, fillLight };
+      }
+
+      const lights = createLights();
+
+      // Track current model group for cleanup
+      let currentGroup = null;
+      let currentDimensionsGroup = null;
+
+      // Download STEP file
+      async function downloadSTEP() {
+        if (!currentShape) return;
+        await bitbybit.occt.io.saveShapeSTEP({
+          shape: currentShape,
+          fileName: 'bottle.step',
+          adjustYtoZ: true,
+          tryDownload: true,
+        });
+      }
+
+      // Download STL file
+      async function downloadSTL() {
+        if (!currentShape) return;
+        await bitbybit.occt.io.saveShapeStl({
+          shape: currentShape,
+          fileName: 'bottle.stl',
+          precision: 0.01,
+          adjustYtoZ: true,
+          tryDownload: true,
+          binary: true,
+        });
+      }
+
+      // Wire up download buttons
+      document
+        .getElementById('downloadStep')
+        .addEventListener('click', downloadSTEP);
+      document
+        .getElementById('downloadStl')
+        .addEventListener('click', downloadSTL);
+
+      async function createBottle(width, height, thickness, color) {
+        // Clean up previous model
+        if (currentGroup) {
+          scene.remove(currentGroup);
+          currentGroup = null;
+        }
+        if (currentDimensionsGroup) {
+          scene.remove(currentDimensionsGroup);
+          currentDimensionsGroup = null;
+        }
+
+        const aPnt1 = [-width / 2, 0, 0];
+        const aPnt2 = [-width / 2, 0, -thickness / 4];
+        const aPnt3 = [0, 0, -thickness / 2];
+        const aPnt4 = [width / 2, 0, -thickness / 4];
+        const aPnt5 = [width / 2, 0, 0];
+
+        const anArc = await bitbybit.occt.shapes.edge.arcThroughThreePoints({
+          start: aPnt2,
+          middle: aPnt3,
+          end: aPnt4,
+        });
+        const edge1 = await bitbybit.occt.shapes.edge.line({
+          start: aPnt1,
+          end: aPnt2,
+        });
+        const edge2 = await bitbybit.occt.shapes.edge.line({
+          start: aPnt4,
+          end: aPnt5,
+        });
+
+        const firstHalfWire =
+          await bitbybit.occt.shapes.wire.combineEdgesAndWiresIntoAWire({
+            shapes: [edge1, anArc, edge2],
+          });
+
+        const direction = [1, 0, 0];
+        const origin = [0, 0, 0];
+        const secondHalfWire = await bitbybit.occt.transforms.mirror({
+          direction,
+          origin,
+          shape: firstHalfWire,
+        });
+
+        const wire =
+          await bitbybit.occt.shapes.wire.combineEdgesAndWiresIntoAWire({
+            shapes: [firstHalfWire, secondHalfWire],
+          });
+
+        const aPrismVec = [0, height, 0];
+        const face = await bitbybit.occt.shapes.face.createFaceFromWire({
+          shape: wire,
+          planar: true,
+        });
+        const extruded = await bitbybit.occt.operations.extrude({
+          shape: face,
+          direction: aPrismVec,
+        });
+        const appliedFillets = await bitbybit.occt.fillets.filletEdges({
+          shape: extruded,
+          radius: thickness / 12,
+        });
+
+        const neckLocation = [0, height, 0];
+        const neckRadius = thickness / 4;
+        const neckHeight = height / 10;
+        const neckAxis = [0, 1, 0];
+
+        const neck = await bitbybit.occt.shapes.solid.createCylinder({
+          radius: neckRadius,
+          height: neckHeight,
+          center: neckLocation,
+          direction: neckAxis,
+        });
+
+        const unioned = await bitbybit.occt.booleans.union({
+          shapes: [appliedFillets, neck],
+          keepEdges: false,
+        });
+
+        const faceToRemove = await bitbybit.occt.shapes.face.getFace({
+          shape: unioned,
+          index: 27,
+        });
+
+        const thickOptions = new Bit.Inputs.OCCT.ThickSolidByJoinDto(
+          unioned,
+          [faceToRemove],
+          -thickness / 50
+        );
+        const thick = await bitbybit.occt.operations.makeThickSolidByJoin(
+          thickOptions
+        );
+
+        const geom = bitbybit.occt.geom;
+
+        // Threading: Create Surfaces
+        const aCyl1 = await geom.surfaces.cylindricalSurface({
+          direction: neckAxis,
+          radius: neckRadius * 0.99,
+          center: neckLocation,
+        });
+        const aCyl2 = await geom.surfaces.cylindricalSurface({
+          direction: neckAxis,
+          radius: neckRadius * 1.05,
+          center: neckLocation,
+        });
+
+        const aPnt = [2 * Math.PI, neckHeight / 2];
+        const aDir = [2 * Math.PI, neckHeight / 4];
+        const aMajor = 2 * Math.PI;
+        const aMinor = neckHeight / 10;
+
+        const anEllipse1 = await geom.curves.geom2dEllipse({
+          center: aPnt,
+          direction: aDir,
+          radiusMinor: aMinor,
+          radiusMajor: aMajor,
+          sense: true,
+        });
+        const anEllipse2 = await geom.curves.geom2dEllipse({
+          center: aPnt,
+          direction: aDir,
+          radiusMinor: aMinor / 4,
+          radiusMajor: aMajor,
+          sense: true,
+        });
+
+        const anArc1 = await geom.curves.geom2dTrimmedCurve({
+          shape: anEllipse1,
+          u1: 0,
+          u2: Math.PI,
+          sense: true,
+          adjustPeriodic: true,
+        });
+        const anArc2 = await geom.curves.geom2dTrimmedCurve({
+          shape: anEllipse2,
+          u1: 0,
+          u2: Math.PI,
+          sense: true,
+          adjustPeriodic: true,
+        });
+
+        const anEllipsePnt1 = await geom.curves.get2dPointFrom2dCurveOnParam({
+          shape: anEllipse1,
+          param: 0,
+        });
+        const anEllipsePnt2 = await geom.curves.get2dPointFrom2dCurveOnParam({
+          shape: anEllipse1,
+          param: Math.PI,
+        });
+
+        const aSegment = await geom.curves.geom2dSegment({
+          start: anEllipsePnt1,
+          end: anEllipsePnt2,
+        });
+
+        const anEdge1OnSurf1 =
+          await bitbybit.occt.shapes.edge.makeEdgeFromGeom2dCurveAndSurface({
+            curve: anArc1,
+            surface: aCyl1,
+          });
+        const anEdge2OnSurf1 =
+          await bitbybit.occt.shapes.edge.makeEdgeFromGeom2dCurveAndSurface({
+            curve: aSegment,
+            surface: aCyl1,
+          });
+        const anEdge1OnSurf2 =
+          await bitbybit.occt.shapes.edge.makeEdgeFromGeom2dCurveAndSurface({
+            curve: anArc2,
+            surface: aCyl2,
+          });
+        const anEdge2OnSurf2 =
+          await bitbybit.occt.shapes.edge.makeEdgeFromGeom2dCurveAndSurface({
+            curve: aSegment,
+            surface: aCyl2,
+          });
+
+        const threadingWire1 =
+          await bitbybit.occt.shapes.wire.combineEdgesAndWiresIntoAWire({
+            shapes: [anEdge1OnSurf1, anEdge2OnSurf1],
+          });
+        const threadingWire2 =
+          await bitbybit.occt.shapes.wire.combineEdgesAndWiresIntoAWire({
+            shapes: [anEdge1OnSurf2, anEdge2OnSurf2],
+          });
+
+        const loft = await bitbybit.occt.operations.loft({
+          shapes: [threadingWire1, threadingWire2],
+          makeSolid: true,
+        });
+
+        const union = await bitbybit.occt.booleans.union({
+          shapes: [loft, thick],
+          keepEdges: false,
+        });
+
+        // Store shape for downloading
+        currentShape = union;
+
+        // Create dimensions
+        // Width dimension (bottom of bottle)
+        const widthDimOpt =
+          new Bit.Inputs.OCCT.SimpleLinearLengthDimensionDto();
+        widthDimOpt.end = [-width / 2, 0, thickness / 2];
+        widthDimOpt.start = [width / 2, 0, thickness / 2];
+        widthDimOpt.direction = [0, 0, 1];
+        widthDimOpt.offsetFromPoints = 0;
+        widthDimOpt.labelSize = 0.3;
+        widthDimOpt.labelSuffix = 'cm';
+        widthDimOpt.labelRotation = 180;
+        widthDimOpt.endType = 'arrow';
+        widthDimOpt.arrowSize = 0.3;
+        widthDimOpt.crossingSize = 0.2;
+        widthDimOpt.decimalPlaces = 1;
+        const widthDimension =
+          await bitbybit.occt.dimensions.simpleLinearLengthDimension(
+            widthDimOpt
+          );
+
+        // Height dimension (side of bottle)
+        const totalHeight = height + neckHeight;
+        const heightDimOpt =
+          new Bit.Inputs.OCCT.SimpleLinearLengthDimensionDto();
+        heightDimOpt.start = [-width / 2, 0, 0];
+        heightDimOpt.end = [-width / 2, totalHeight, 0];
+        heightDimOpt.direction = [-1, 0, 0];
+        heightDimOpt.offsetFromPoints = 0;
+        heightDimOpt.labelSize = 0.3;
+        heightDimOpt.endType = 'arrow';
+        heightDimOpt.labelSuffix = 'cm';
+        heightDimOpt.labelRotation = 0;
+        heightDimOpt.arrowSize = 0.3;
+        heightDimOpt.crossingSize = 0.2;
+        heightDimOpt.decimalPlaces = 1;
+        const heightDimension =
+          await bitbybit.occt.dimensions.simpleLinearLengthDimension(
+            heightDimOpt
+          );
+
+        // Thickness dimension (depth of bottle)
+        const thicknessDimOpt =
+          new Bit.Inputs.OCCT.SimpleLinearLengthDimensionDto();
+        thicknessDimOpt.start = [width / 2, 0, -thickness / 2];
+        thicknessDimOpt.end = [width / 2, 0, thickness / 2];
+        thicknessDimOpt.direction = [1, 0, 0];
+        thicknessDimOpt.offsetFromPoints = 0;
+        thicknessDimOpt.labelSize = 0.3;
+        thicknessDimOpt.endType = 'arrow';
+        thicknessDimOpt.labelSuffix = 'cm';
+        thicknessDimOpt.arrowSize = 0.3;
+        thicknessDimOpt.labelRotation = 180;
+        thicknessDimOpt.crossingSize = 0.2;
+        thicknessDimOpt.decimalPlaces = 1;
+        const thicknessDimension =
+          await bitbybit.occt.dimensions.simpleLinearLengthDimension(
+            thicknessDimOpt
+          );
+
+        // Draw options for model with custom material
+        const di = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+        di.edgeColour = '#000000';
+        di.edgeOpacity = 0.5;
+        di.precision = 0.001;
+        di.faceOpacity = 1;
+        di.edgeWidth = 1;
+
+        // Create custom ThreeJS material
+        const mat = new THREEJS.MeshPhongMaterial({
+          color: new THREEJS.Color(color),
+        });
+        mat.polygonOffset = true;
+        mat.polygonOffsetFactor = 1;
+        di.faceMaterial = mat;
+
+        currentGroup = await bitbybit.draw.drawAnyAsync({
+          entity: union,
+          options: di,
+        });
+
+        // Enable shadows on mesh children
+        currentGroup.children[0].children.forEach((child) => {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        });
+
+        // Draw options for dimensions
+        const dimOptions = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+        dimOptions.edgeColour = '#ffffff';
+        dimOptions.edgeWidth = 2;
+        dimOptions.drawEdges = true;
+        dimOptions.drawFaces = false;
+
+        currentDimensionsGroup = await bitbybit.draw.drawAnyAsync({
+          entity: [widthDimension, heightDimension, thicknessDimension],
+          options: dimOptions,
+        });
+
+        // Update light positions based on new model size
+        lights.keyLight.position.set(thickness * 2, height * 1.5, width);
+        lights.fillLight.position.set(-thickness, height * 0.5, -width);
+      }
+
+      // Initial render
+      await createBottle(
+        model.width,
+        model.height,
+        model.thickness,
+        model.color
+      );
+
+      // Setup lil-gui
+      const gui = new lil.GUI();
+      gui.title('Bottle Parameters');
+
+      gui
+        .add(model, 'width', 2, 10, 0.5)
+        .name('Width')
+        .onFinishChange(() => {
+          createBottle(model.width, model.height, model.thickness, model.color);
+        });
+
+      gui
+        .add(model, 'height', 4, 15, 0.5)
+        .name('Base Height')
+        .onFinishChange(() => {
+          createBottle(model.width, model.height, model.thickness, model.color);
+        });
+
+      gui
+        .add(model, 'thickness', 1, 6, 0.25)
+        .name('Thickness')
+        .onFinishChange(() => {
+          createBottle(model.width, model.height, model.thickness, model.color);
+        });
+
+      gui
+        .addColor(model, 'color')
+        .name('Color')
+        .onFinishChange(() => {
+          createBottle(model.width, model.height, model.thickness, model.color);
+        });
+    </script>
+    <style>
+      body {
+        margin: 0;
+        background-color: #1a1c1f;
+      }
+      #myCanvas {
+        display: block;
+        width: 100%;
+        height: 100vh;
+      }
+      .myCanvasZone {
+        width: 100%;
+        height: 100vh;
+      }
+      .download-buttons {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 1000;
+      }
+      .download-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      .download-step {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .download-stl {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="download-buttons">
+      <button id="downloadStep" class="download-btn download-step">
+        ⬇ Download STEP
+      </button>
+      <button id="downloadStl" class="download-btn download-stl">
+        ⬇ Download STL
+      </button>
+    </div>
+    <div class="myCanvasZone">
+      <canvas id="myCanvas"></canvas>
+    </div>
+  </body>
+</html>
+```
+
+## Key Points
+
+### Runner Script
+```html
+<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-threejs.js"></script>
+```
+
+The full runner includes ThreeJS, so you don't need to load it separately.
+
+### lil-gui Integration
+```html
+<script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.umd.min.js"></script>
+```
+
+Use lil-gui to create interactive parameter controls. The `onFinishChange` callback regenerates the model when parameters are adjusted.
+
+### Initialization
+```javascript
+const runner = window.bitbybitRunner.getRunnerInstance();
+const { bitbybit, Bit, camera, scene, renderer, THREEJS } = await runner.run(runnerOptions);
+```
+
+The `run()` method returns:
+- `bitbybit` - The main Bitbybit API object
+- `Bit` - Helper classes including input DTOs
+- `camera` - The ThreeJS PerspectiveCamera
+- `scene` - The ThreeJS Scene
+- `renderer` - The ThreeJS WebGLRenderer
+- `THREEJS` - The ThreeJS library itself
+
+### ThreeJS Lights
+
+In ThreeJS, point lights are created directly:
+```javascript
+const light = new THREEJS.PointLight(0xffffff, 500);
+light.position.set(x, y, z);
+light.castShadow = true;
+scene.add(light);
+```
+
+### Custom Materials
+
+ThreeJS allows you to create custom materials for your CAD geometry:
+
+```javascript
+const mat = new THREEJS.MeshPhongMaterial({
+    color: new THREEJS.Color(color)
+});
+mat.polygonOffset = true;
+mat.polygonOffsetFactor = 1;
+options.faceMaterial = mat;
+```
+
+### Model Cleanup
+
+In ThreeJS, use `scene.remove()` to clean up meshes:
+```javascript
+if (currentGroup) {
+    scene.remove(currentGroup);
+    currentGroup = null;
+}
+```
+
+### Runner Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `canvasId` | string | The ID of your canvas element |
+| `canvasZoneClass` | string | CSS class for the canvas container |
+| `enableOCCT` | boolean | Enable OpenCASCADE kernel |
+| `enableJSCAD` | boolean | Enable JSCAD kernel |
+| `enableManifold` | boolean | Enable Manifold kernel |
+| `cameraPosition` | number[] | Initial camera position [x, y, z] |
+| `cameraTarget` | number[] | Camera look-at target [x, y, z] |
+| `backgroundColor` | string | Scene background color (hex) |
+| `loadFonts` | string[] | Fonts to load for text operations |
+
+### Downloading STEP & STL Files
+
+Use `bitbybit.occt.io` to export shapes in various formats:
+
+```javascript
+// Download STEP file
+await bitbybit.occt.io.saveShapeSTEP({
+  shape: myShape,
+  fileName: 'model.step',
+  adjustYtoZ: true,
+  tryDownload: true,
+});
+
+// Download STL file
+await bitbybit.occt.io.saveShapeStl({
+  shape: myShape,
+  fileName: 'model.stl',
+  precision: 0.01,
+  adjustYtoZ: true,
+  tryDownload: true,
+  binary: true,
+});
+```
+
+### Adding Dimensions
+
+Use `bitbybit.occt.dimensions` to create linear dimensions:
+
+```javascript
+// Create dimension options DTO with default values
+const dimOpt = new Bit.Inputs.OCCT.SimpleLinearLengthDimensionDto();
+dimOpt.start = [0, 0, 0];
+dimOpt.end = [5, 0, 0];
+dimOpt.direction = [0, 0, 1];
+dimOpt.offsetFromPoints = 0;
+dimOpt.labelSize = 0.3;
+dimOpt.labelSuffix = 'cm';
+dimOpt.labelRotation = 180;
+dimOpt.endType = 'arrow';
+dimOpt.arrowSize = 0.3;
+dimOpt.crossingSize = 0.2;
+dimOpt.decimalPlaces = 1;
+
+const dimension = await bitbybit.occt.dimensions.simpleLinearLengthDimension(dimOpt);
+
+// Draw dimensions as wire geometry
+const dimOptions = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+dimOptions.edgeColour = '#ffffff';
+dimOptions.edgeWidth = 2;
+dimOptions.drawEdges = true;
+dimOptions.drawFaces = false;
+
+await bitbybit.draw.drawAnyAsync({
+  entity: dimension,
+  options: dimOptions,
+});
+```
+
+## GitHub Source
+
+View the full source code on GitHub: [ThreeJS Full Runner Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/runner/threejs/full)
