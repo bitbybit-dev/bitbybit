@@ -154,12 +154,12 @@ export namespace Draw {
         colorMapStrategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder;
         /**
          * Size affect how big the drawn points are and how wide lines are.
-         * @default 1
+         * @default 0.1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size = 0.1;
         /**
          * Opacity of the point 0 to 1
          * @default 1
