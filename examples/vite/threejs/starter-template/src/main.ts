@@ -438,7 +438,6 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
     });
     console.log("Multiple polylines drawn.");
 
-    // Example 5: Draw line segments
     const segments = [
         [
             [60, -20, 0],
@@ -451,13 +450,13 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
         [
             [60, -20, -5],
             [70, -20, 5],
-        ],
-    ];
+        ] ,
+    ]as Inputs.Base.Segment3[];
     const segmentsDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     segmentsDrawOptions.colours = ["#ffff00", "#ff00ff", "#00ffff"]; // Yellow, Magenta, Cyan
     segmentsDrawOptions.size = 2.5;
     await bitbybit.draw.drawAnyAsync({
-        entity: segments as Inputs.Base.Polyline3[],
+        entity: segments,
         options: segmentsDrawOptions,
     });
     console.log("Line segments drawn.");

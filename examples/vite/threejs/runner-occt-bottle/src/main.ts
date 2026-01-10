@@ -8,9 +8,6 @@ import { initThreeJS } from "./helpers/init-threejs";
 import * as lil from "lil-gui";
 import { loadRunnerScript } from "./runner/load-runner-script";
 
-(window as any).THREEJS = THREEJS;
-
-// Dynamically load the runner script after THREE is available on window
 loadRunnerScript().then(() => {
     start();
 });

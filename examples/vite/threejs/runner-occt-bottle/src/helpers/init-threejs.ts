@@ -23,15 +23,15 @@ export function initThreeJS(canvasId = "myCanvas") {
         200
     );
     const scene = new Scene();
-    scene.background = new Color(0x1a1c1f); // Set background color
+    scene.background = new Color(0x1a1c1f);
 
     scene.fog = new Fog(0x1a1c1f, 30, 80);
-    const light = new HemisphereLight(0xffffff, 0x444444, 2); // Adjusted intensity
+    const light = new HemisphereLight(0xffffff, 0x444444, 2);
     scene.add(light);
 
     const renderer = new WebGLRenderer({ antialias: true, canvas: domNode });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio); // Consider devicePixelRatio for sharpness
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = VSMShadowMap;
 
@@ -63,7 +63,7 @@ export function initThreeJS(canvasId = "myCanvas") {
 
     createDirLightsAndGround(scene);
 
-    return { scene, camera, renderer }; // Return renderer and camera if needed elsewhere
+    return { scene, camera, renderer };
 }
 
 function createDirLightsAndGround(scene: Scene) {
@@ -83,7 +83,7 @@ function createDirLightsAndGround(scene: Scene) {
     dirLight.shadow.radius = 2;
     dirLight.shadow.bias = -0.0005;
 
-    scene?.add(dirLight);
+    scene.add(dirLight);
 
     const dirLight2 = new DirectionalLight(0xffffff, 2);
     dirLight2.position.set(-5, 10, -5);
@@ -94,7 +94,7 @@ function createDirLightsAndGround(scene: Scene) {
     dirLight2.shadow.camera.top = dist;
     dirLight2.shadow.camera.bottom = -dist;
 
-    scene?.add(dirLight2);
+    scene.add(dirLight2);
 
     const material = new MeshPhongMaterial({ color: 0x444444 });
     material.shininess = 0;
@@ -104,5 +104,5 @@ function createDirLightsAndGround(scene: Scene) {
     const ground = new Mesh(new PlaneGeometry(50, 50, 1, 1), material);
     ground.rotateX(-Math.PI / 2);
     ground.receiveShadow = true;
-    scene?.add(ground);
+    scene.add(ground);
 }

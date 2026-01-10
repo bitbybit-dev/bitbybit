@@ -1,5 +1,4 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="./bitbybit-0.21.0.d.ts" />
 import type * as THREEJS from "three";
 
 class ExternalThreeJS {
