@@ -1,9 +1,5 @@
 import "./style.css"; // Basic styling
-import { BitByBitBase, Inputs } from "@bitbybit-dev/threejs";
-import { OccStateEnum } from "@bitbybit-dev/occt-worker";
-import { JscadStateEnum } from "@bitbybit-dev/jscad-worker";
-import { ManifoldStateEnum } from "@bitbybit-dev/manifold-worker";
-
+import { BitByBitBase, Inputs, initBitbybit, type InitBitbybitOptions } from "@bitbybit-dev/threejs";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import {
     Color,
@@ -12,14 +8,6 @@ import {
     Scene,
     WebGLRenderer,
 } from "three";
-import { first, firstValueFrom, map } from "rxjs";
-
-// Define an interface for kernel options
-interface KernelOptions {
-    enableOCCT: boolean;
-    enableJSCAD: boolean;
-    enableManifold: boolean;
-}
 
 // --- 1. Main Application Entry Point ---
 start();
@@ -31,24 +19,26 @@ async function start() {
     // Create an instance of BitByBitBase for Three.js
     const bitbybit = new BitByBitBase();
 
-    // --- 2. Configure and Initialize Kernels ---
-    // Users can control which kernels are loaded
-    const kernelOptions: KernelOptions = {
+    // --- 2. Configure and Initialize BitByBit ---
+    // Single options object for both workers and kernels
+    const options: InitBitbybitOptions = {
         enableOCCT: true,
         enableJSCAD: true,
         enableManifold: true,
+        // loadFonts: ["roboto"], // Optional: specify fonts to load, or omit to skip font loading
     };
-    // Initialize Bitbybit with the selected kernels
-    await initWithKernels(scene, bitbybit, kernelOptions);
+
+    // Initialize BitByBit in a single call - workers are created from CDN automatically!
+    await initBitbybit(scene, bitbybit, options);
 
     // --- 3. Create Geometry with Active Kernels ---
-    if (kernelOptions.enableOCCT) {
+    if (options.enableOCCT) {
         await createOCCTGeometry(bitbybit, "#ff0000"); // Red
     }
-    if (kernelOptions.enableManifold) {
+    if (options.enableManifold) {
         await createManifoldGeometry(bitbybit, "#00ff00"); // Green
     }
-    if (kernelOptions.enableJSCAD) {
+    if (options.enableJSCAD) {
         await createJSCADGeometry(bitbybit, "#0000ff"); // Blue
     }
 
@@ -56,7 +46,7 @@ async function start() {
     await createDrawingExamples(bitbybit);
 
     // --- 5. Create Textured OCCT Cube Example ---
-    if (kernelOptions.enableOCCT) {
+    if (options.enableOCCT) {
         await createTexturedOCCTCube(bitbybit);
     }
 }
@@ -108,126 +98,126 @@ function initThreeJS() {
     return { scene, camera, renderer }; // Return renderer and camera if needed elsewhere
 }
 
-// --- 5. Bitbybit Kernel Initialization Logic ---
-async function initWithKernels(
-    scene: Scene,
-    bitbybit: BitByBitBase,
-    options: KernelOptions
-): Promise<{ message: string; initializedKernels: string[] }> {
-    let occtWorkerInstance: Worker | undefined;
-    let jscadWorkerInstance: Worker | undefined;
-    let manifoldWorkerInstance: Worker | undefined;
+// // --- 5. Bitbybit Kernel Initialization Logic ---
+// async function initWithKernels(
+//     scene: Scene,
+//     bitbybit: BitByBitBase,
+//     options: KernelOptions
+// ): Promise<{ message: string; initializedKernels: string[] }> {
+//     let occtWorkerInstance: Worker | undefined;
+//     let jscadWorkerInstance: Worker | undefined;
+//     let manifoldWorkerInstance: Worker | undefined;
 
-    // 1. Conditionally create worker instances
-    if (options.enableOCCT) {
-        occtWorkerInstance = new Worker(
-            new URL("./workers/occt.worker.ts", import.meta.url),
-            { name: "OCC_WORKER", type: "module" }
-        );
-    }
-    if (options.enableJSCAD) {
-        jscadWorkerInstance = new Worker(
-            new URL("./workers/jscad.worker.ts", import.meta.url),
-            { name: "JSCAD_WORKER", type: "module" }
-        );
-    }
-    if (options.enableManifold) {
-        manifoldWorkerInstance = new Worker(
-            new URL("./workers/manifold.worker.ts", import.meta.url),
-            { name: "MANIFOLD_WORKER", type: "module" }
-        );
-    }
+//     // 1. Conditionally create worker instances
+//     if (options.enableOCCT) {
+//         occtWorkerInstance = new Worker(
+//             new URL("./workers/occt.worker.ts", import.meta.url),
+//             { name: "OCC_WORKER", type: "module" }
+//         );
+//     }
+//     if (options.enableJSCAD) {
+//         jscadWorkerInstance = new Worker(
+//             new URL("./workers/jscad.worker.ts", import.meta.url),
+//             { name: "JSCAD_WORKER", type: "module" }
+//         );
+//     }
+//     if (options.enableManifold) {
+//         manifoldWorkerInstance = new Worker(
+//             new URL("./workers/manifold.worker.ts", import.meta.url),
+//             { name: "MANIFOLD_WORKER", type: "module" }
+//         );
+//     }
 
-    // 2. Initialize Bitbybit
-    await bitbybit.init(
-        scene,
-        occtWorkerInstance,
-        jscadWorkerInstance,
-        manifoldWorkerInstance
-    );
+//     // 2. Initialize Bitbybit
+//     await bitbybit.init(
+//         scene,
+//         occtWorkerInstance,
+//         jscadWorkerInstance,
+//         manifoldWorkerInstance
+//     );
 
-    // 3. Collect promises for kernel initializations
-    const initializationPromises: Promise<string>[] = [];
-    let anyKernelSelectedForInit = false;
+//     // 3. Collect promises for kernel initializations
+//     const initializationPromises: Promise<string>[] = [];
+//     let anyKernelSelectedForInit = false;
 
-    if (options.enableOCCT) {
-        anyKernelSelectedForInit = true;
-        if (bitbybit.occtWorkerManager) {
-            initializationPromises.push(
-                firstValueFrom(
-                    bitbybit.occtWorkerManager.occWorkerState$.pipe(
-                        first((s) => s.state === OccStateEnum.initialised),
-                        map(() => "OCCT")
-                    )
-                )
-            );
-        } else {
-            console.warn(
-                "OCCT enabled in options, but occtWorkerManager not found after init."
-            );
-        }
-    }
+//     if (options.enableOCCT) {
+//         anyKernelSelectedForInit = true;
+//         if (bitbybit.occtWorkerManager) {
+//             initializationPromises.push(
+//                 firstValueFrom(
+//                     bitbybit.occtWorkerManager.occWorkerState$.pipe(
+//                         first((s) => s.state === OccStateEnum.initialised),
+//                         map(() => "OCCT")
+//                     )
+//                 )
+//             );
+//         } else {
+//             console.warn(
+//                 "OCCT enabled in options, but occtWorkerManager not found after init."
+//             );
+//         }
+//     }
 
-    if (options.enableJSCAD) {
-        anyKernelSelectedForInit = true;
-        if (bitbybit.jscadWorkerManager) {
-            initializationPromises.push(
-                firstValueFrom(
-                    bitbybit.jscadWorkerManager.jscadWorkerState$.pipe(
-                        first((s) => s.state === JscadStateEnum.initialised),
-                        map(() => "JSCAD")
-                    )
-                )
-            );
-        } else {
-            console.warn(
-                "JSCAD enabled in options, but jscadWorkerManager not found after init."
-            );
-        }
-    }
+//     if (options.enableJSCAD) {
+//         anyKernelSelectedForInit = true;
+//         if (bitbybit.jscadWorkerManager) {
+//             initializationPromises.push(
+//                 firstValueFrom(
+//                     bitbybit.jscadWorkerManager.jscadWorkerState$.pipe(
+//                         first((s) => s.state === JscadStateEnum.initialised),
+//                         map(() => "JSCAD")
+//                     )
+//                 )
+//             );
+//         } else {
+//             console.warn(
+//                 "JSCAD enabled in options, but jscadWorkerManager not found after init."
+//             );
+//         }
+//     }
 
-    if (options.enableManifold) {
-        anyKernelSelectedForInit = true;
-        if (bitbybit.manifoldWorkerManager && bitbybit.manifoldWorkerManager.manifoldWorkerState$) {
-            initializationPromises.push(
-                firstValueFrom(
-                    bitbybit.manifoldWorkerManager.manifoldWorkerState$.pipe(
-                        first((s) => s.state === ManifoldStateEnum.initialised),
-                        map(() => "Manifold")
-                    )
-                )
-            );
-        } else {
-            console.warn(
-                "Manifold enabled in options, but manifoldWorkerManager not found after init."
-            );
-        }
-    }
+//     if (options.enableManifold) {
+//         anyKernelSelectedForInit = true;
+//         if (bitbybit.manifoldWorkerManager && bitbybit.manifoldWorkerManager.manifoldWorkerState$) {
+//             initializationPromises.push(
+//                 firstValueFrom(
+//                     bitbybit.manifoldWorkerManager.manifoldWorkerState$.pipe(
+//                         first((s) => s.state === ManifoldStateEnum.initialised),
+//                         map(() => "Manifold")
+//                     )
+//                 )
+//             );
+//         } else {
+//             console.warn(
+//                 "Manifold enabled in options, but manifoldWorkerManager not found after init."
+//             );
+//         }
+//     }
 
-    // 4. Wait for selected & available kernels or handle no selection/availability
-    if (!anyKernelSelectedForInit) {
-        console.log("No kernels selected for initialization.");
-        return { message: "No kernels selected for initialization.", initializedKernels: [] };
-    }
+//     // 4. Wait for selected & available kernels or handle no selection/availability
+//     if (!anyKernelSelectedForInit) {
+//         console.log("No kernels selected for initialization.");
+//         return { message: "No kernels selected for initialization.", initializedKernels: [] };
+//     }
 
-    if (initializationPromises.length === 0) {
-        // Kernels were selected, but none were awaitable (e.g., managers missing for all selected)
-        console.log(
-            "Kernels were selected, but none had managers available for awaiting initialization."
-        );
-        return {
-            message: "Selected kernels were not awaitable for initialization state.",
-            initializedKernels: [],
-        };
-    }
+//     if (initializationPromises.length === 0) {
+//         // Kernels were selected, but none were awaitable (e.g., managers missing for all selected)
+//         console.log(
+//             "Kernels were selected, but none had managers available for awaiting initialization."
+//         );
+//         return {
+//             message: "Selected kernels were not awaitable for initialization state.",
+//             initializedKernels: [],
+//         };
+//     }
 
-    const initializedKernels = await Promise.all(initializationPromises);
-    console.log("Kernels initialized:", initializedKernels.join(", "));
-    return {
-        message: `Successfully initialized: ${initializedKernels.join(", ")}`,
-        initializedKernels,
-    };
-}
+//     const initializedKernels = await Promise.all(initializationPromises);
+//     console.log("Kernels initialized:", initializedKernels.join(", "));
+//     return {
+//         message: `Successfully initialized: ${initializedKernels.join(", ")}`,
+//         initializedKernels,
+//     };
+// }
 
 // --- 6. Geometry Creation Functions (Examples) ---
 async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
@@ -450,8 +440,8 @@ async function createDrawingExamples(bitbybit: BitByBitBase) {
         [
             [60, -20, -5],
             [70, -20, 5],
-        ] ,
-    ]as Inputs.Base.Segment3[];
+        ],
+    ] as Inputs.Base.Segment3[];
     const segmentsDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     segmentsDrawOptions.colours = ["#ffff00", "#ff00ff", "#00ffff"]; // Yellow, Magenta, Cyan
     segmentsDrawOptions.size = 2.5;
