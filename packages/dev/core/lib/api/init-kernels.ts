@@ -8,7 +8,7 @@ import { createWorkersFromCDN } from "./worker-utils";
 /**
  * Options for initializing bitbybit
  */
-export interface InitBitbybitOptions extends WorkerOptions {
+export interface InitBitByBitOptions extends WorkerOptions {
     /** Pre-created worker instances. If not provided, workers will be created from CDN. */
     workers?: WorkerInstances;
 }
@@ -126,7 +126,7 @@ export async function waitForKernelInitialization(
  * 
  * @param options - Initialization options
  */
-export function getOrCreateWorkers(options: InitBitbybitOptions): WorkerInstances {
+export function getOrCreateWorkers(options: InitBitByBitOptions): WorkerInstances {
     if (options.workers) {
         return options.workers;
     }

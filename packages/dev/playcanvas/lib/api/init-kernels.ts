@@ -11,7 +11,7 @@ import {
 /**
  * Options for initializing bitbybit with PlayCanvas
  */
-export interface InitBitbybitOptions extends WorkerOptions {
+export interface InitBitByBitOptions extends WorkerOptions {
     /** Pre-created worker instances. If not provided, workers will be created from CDN. */
     workers?: WorkerInstances;
 }
@@ -34,13 +34,13 @@ export { type InitKernelsResult, type WorkerInstances, type WorkerOptions };
  * 
  * @example
  * ```typescript
- * import { BitByBitBase, initBitbybit } from "@bitbybit-dev/playcanvas";
+ * import { BitByBitBase, initBitByBit } from "@bitbybit-dev/playcanvas";
  * 
  * const app = new pc.Application(canvas);
  * const scene = app.root;
  * const bitbybit = new BitByBitBase();
  * 
- * await initBitbybit(app, scene, bitbybit, {
+ * await initBitByBit(app, scene, bitbybit, {
  *   enableOCCT: true,
  *   enableJSCAD: true,
  *   enableManifold: false,
@@ -50,11 +50,11 @@ export { type InitKernelsResult, type WorkerInstances, type WorkerOptions };
  * // Now you can use bitbybit.occt, bitbybit.jscad, etc.
  * ```
  */
-export async function initBitbybit(
+export async function initBitByBit(
     app: pc.AppBase,
     scene: pc.Entity,
     bitbybit: BitByBitBase,
-    options: InitBitbybitOptions
+    options: InitBitByBitOptions
 ): Promise<InitKernelsResult & { bitbybit: BitByBitBase }> {
     // Get or create workers
     const workers = getOrCreateWorkers(options);

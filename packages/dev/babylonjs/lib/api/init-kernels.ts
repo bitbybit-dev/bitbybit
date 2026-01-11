@@ -11,7 +11,7 @@ import {
 /**
  * Options for initializing bitbybit with Babylon.js
  */
-export interface InitBitbybitOptions extends WorkerOptions {
+export interface InitBitByBitOptions extends WorkerOptions {
     /** Pre-created worker instances. If not provided, workers will be created from CDN. */
     workers?: WorkerInstances;
     /** Havok physics plugin instance (optional) */
@@ -35,12 +35,12 @@ export { type InitKernelsResult, type WorkerInstances, type WorkerOptions };
  * 
  * @example
  * ```typescript
- * import { BitByBitBase, initBitbybit } from "@bitbybit-dev/babylonjs";
+ * import { BitByBitBase, initBitByBit } from "@bitbybit-dev/babylonjs";
  * 
  * const scene = new BABYLON.Scene(engine);
  * const bitbybit = new BitByBitBase();
  * 
- * await initBitbybit(scene, bitbybit, {
+ * await initBitByBit(scene, bitbybit, {
  *   enableOCCT: true,
  *   enableJSCAD: true,
  *   enableManifold: false,
@@ -50,10 +50,10 @@ export { type InitKernelsResult, type WorkerInstances, type WorkerOptions };
  * // Now you can use bitbybit.occt, bitbybit.jscad, etc.
  * ```
  */
-export async function initBitbybit(
+export async function initBitByBit(
     scene: BABYLON.Scene,
     bitbybit: BitByBitBase,
-    options: InitBitbybitOptions
+    options: InitBitByBitOptions
 ): Promise<InitKernelsResult & { bitbybit: BitByBitBase }> {
     // Get or create workers
     const workers = getOrCreateWorkers(options);

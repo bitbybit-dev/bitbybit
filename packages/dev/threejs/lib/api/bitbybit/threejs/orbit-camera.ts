@@ -691,3 +691,20 @@ export class ThreeJSOrbitCamera {
         };
     }
 }
+
+/**
+ * Standalone function to create an orbit camera without requiring a BitByBit context.
+ * This is useful for the initThreeJS helper function.
+ * 
+ * @param inputs Configuration options including scene and domElement
+ * @returns Orbit camera controller instance
+ */
+export function createOrbitCamera(inputs: Inputs.ThreeJSCamera.OrbitCameraDto & { scene: THREEJS.Scene; domElement?: HTMLElement }): OrbitCameraController {
+    // Create a minimal context for the orbit camera
+    const minimalContext = {
+        scene: inputs.scene
+    } as Context;
+
+    const orbitCameraClass = new ThreeJSOrbitCamera(minimalContext);
+    return orbitCameraClass.create(inputs);
+}
