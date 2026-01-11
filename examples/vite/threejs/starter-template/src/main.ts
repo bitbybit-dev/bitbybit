@@ -1,20 +1,21 @@
 import "./style.css"; // Basic styling
-import { BitByBitBase, Inputs, initBitbybit, type InitBitbybitOptions } from "@bitbybit-dev/threejs";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { BitByBitBase, Inputs, initBitbybit, type InitBitbybitOptions, type OrbitCameraController } from "@bitbybit-dev/threejs";
 import {
     Color,
     HemisphereLight,
-    PerspectiveCamera,
     Scene,
     WebGLRenderer,
 } from "three";
+
+// Store the orbit camera controller globally so bitbybit can access it
+let orbitCameraController: OrbitCameraController | null = null;
 
 // --- 1. Main Application Entry Point ---
 start();
 
 async function start() {
     // Initialize basic Three.js scene
-    const { scene } = initThreeJS();
+    const { scene, renderer } = initThreeJS();
 
     // Create an instance of BitByBitBase for Three.js
     const bitbybit = new BitByBitBase();
@@ -30,6 +31,27 @@ async function start() {
 
     // Initialize BitByBit in a single call - workers are created from CDN automatically!
     await initBitbybit(scene, bitbybit, options);
+
+    // --- 2.5. Setup BitByBit Orbit Camera ---
+    // Setup orbit camera controls using bitbybit library
+    const cameraOptions = new Inputs.ThreeJSCamera.OrbitCameraDto();
+    cameraOptions.distance = 120;
+    cameraOptions.pitch = 25;
+    cameraOptions.yaw = 45;
+    cameraOptions.frameOnStart = false;
+    cameraOptions.inertiaFactor = 0.1;
+    cameraOptions.distanceSensitivity = 0.15;
+    cameraOptions.domElement = renderer.domElement;
+    orbitCameraController = bitbybit.three.camera.orbitCamera.create(cameraOptions);
+
+    // Update the render loop to use the new camera
+    const animate = () => {
+        if (orbitCameraController) {
+            orbitCameraController.update(0.016); // ~60fps delta time
+            renderer.render(scene, orbitCameraController.camera);
+        }
+    };
+    renderer.setAnimationLoop(animate);
 
     // --- 3. Create Geometry with Active Kernels ---
     if (options.enableOCCT) {
@@ -55,12 +77,6 @@ async function start() {
 function initThreeJS() {
     const domNode = document.getElementById("three-canvas") as HTMLCanvasElement;
 
-    const camera = new PerspectiveCamera(
-        70,
-        window.innerWidth / window.innerHeight,
-        0.1, // Adjusted near plane for typical scenes
-        1000
-    );
     const scene = new Scene();
     scene.background = new Color(0x1a1c1f); // Set background color
 
@@ -73,29 +89,16 @@ function initThreeJS() {
     // Higher values = sharper but more GPU intensive. Use 1 for performance, devicePixelRatio for quality.
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    camera.position.set(50, 50, 100); // Adjusted camera position
-    camera.lookAt(0, 0, 0);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05; // Smoother damping
-    controls.target.set(0, 0, 0); // Ensure controls target the origin
-    controls.update(); // Initial update
-
     const onWindowResize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+        if (orbitCameraController) {
+            orbitCameraController.camera.aspect = window.innerWidth / window.innerHeight;
+            orbitCameraController.camera.updateProjectionMatrix();
+        }
         renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener("resize", onWindowResize, false);
 
-    const animate = () => {
-        controls.update(); // Important for damping
-        renderer.render(scene, camera);
-    };
-    renderer.setAnimationLoop(animate);
-
-    return { scene, camera, renderer }; // Return renderer and camera if needed elsewhere
+    return { scene, renderer }; // Return renderer for camera setup
 }
 
 // // --- 5. Bitbybit Kernel Initialization Logic ---
