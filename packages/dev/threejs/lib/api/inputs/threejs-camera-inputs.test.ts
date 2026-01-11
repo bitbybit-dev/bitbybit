@@ -73,7 +73,7 @@ describe("ThreeJSCamera DTO unit tests", () => {
             expect(result.orbitSensitivity).toBe(0.3);
             expect(result.distanceSensitivity).toBe(0.15);
             expect(result.panSensitivity).toBe(1);
-            expect(result.inertiaFactor).toBe(0.1);
+            expect(result.inertiaFactor).toBe(0);
             expect(result.autoRender).toBe(true);
             expect(result.frameOnStart).toBe(true);
             expect(result.enableDamping).toBe(true);

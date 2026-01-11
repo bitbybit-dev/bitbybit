@@ -172,13 +172,13 @@ export namespace ThreeJSCamera {
          */
         panSensitivity = 1;
         /**
-         * Inertia factor for smooth camera movement (0 = no inertia, higher values = more inertia/smoother movement)
-         * @default 0.1
+         * Inertia factor for smooth camera movement (0 = no inertia, 1 = maximum inertia)
+         * @default 0
          * @minimum 0
          * @maximum 1
-         * @step 0.05
+         * @step 0.1
          */
-        inertiaFactor = 0.1;
+        inertiaFactor = 0;
         /**
          * Whether the camera should trigger automatic rendering on changes
          * @default true
