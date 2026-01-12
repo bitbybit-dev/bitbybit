@@ -1,33 +1,33 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import * as THREEJS from "three";
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
-import { OrbitCameraController, ThreeJSCamera } from "./threejs-camera-inputs";
+import { BabylonCamera } from "./babylon-camera-inputs";
 
 /**
- * Result object returned by initThreeJS helper function.
+ * Result object returned by initBabylonJS helper function.
  */
-export interface InitThreeJSResult {
-    /** The ThreeJS scene */
-    scene: THREEJS.Scene;
-    /** The WebGL renderer */
-    renderer: THREEJS.WebGLRenderer;
+export interface InitBabylonJSResult {
+    /** The BabylonJS scene */
+    scene: BABYLON.Scene;
+    /** The BabylonJS engine */
+    engine: BABYLON.Engine;
     /** The hemispheric light */
-    hemisphereLight: THREEJS.HemisphereLight;
+    hemisphericLight: BABYLON.HemisphericLight;
     /** The directional light (for shadows) */
-    directionalLight: THREEJS.DirectionalLight;
+    directionalLight: BABYLON.DirectionalLight;
     /** The ground mesh (if enabled) */
-    ground: THREEJS.Mesh | null;
-    /** The orbit camera controller (if enabled) */
-    orbitCamera: OrbitCameraController | null;
-    /** Start the animation loop with the orbit camera */
-    startAnimationLoop: (onRender?: (deltaTime: number) => void) => void;
+    ground: BABYLON.Mesh | null;
+    /** The arc rotate camera (if enabled) */
+    arcRotateCamera: BABYLON.ArcRotateCamera | null;
+    /** Start the render loop */
+    startRenderLoop: (onRender?: () => void) => void;
     /** Cleanup function to remove resize listener and dispose resources */
     dispose: () => void;
 }
 
-export namespace ThreeJSScene {
-    export class InitThreeJSDto {
+export namespace BabylonJSScene {
+    export class InitBabylonJSDto {
         constructor(
             canvasId?: string,
             sceneSize?: number,
@@ -171,17 +171,17 @@ export namespace ThreeJSScene {
         shadowMapSize = 2048;
 
         /**
-         * Enable automatic creation of an orbit camera controller.
+         * Enable automatic creation of an arc rotate camera.
          * @default true
          */
-        enableOrbitCamera = true;
+        enableArcRotateCamera = true;
 
         /**
-         * Options for the orbit camera. Only used if enableOrbitCamera is true.
+         * Options for the arc rotate camera. Only used if enableArcRotateCamera is true.
          * If not provided, scene-aware defaults will be computed based on sceneSize.
-         * Uses the same DTO as the standalone orbit camera creation.
+         * Uses the same DTO as the standalone arc rotate camera creation.
          * @optional true
          */
-        orbitCameraOptions?: ThreeJSCamera.OrbitCameraDto;
+        arcRotateCameraOptions?: BabylonCamera.ArcRotateCameraDto;
     }
 }

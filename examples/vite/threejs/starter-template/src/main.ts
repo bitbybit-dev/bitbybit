@@ -7,10 +7,7 @@ start();
 async function start() {
     const sceneOptions = new Inputs.ThreeJSScene.InitThreeJSDto();
     sceneOptions.canvasId = "three-canvas";
-    sceneOptions.orbitCameraOptions = new Inputs.ThreeJSCamera.OrbitCameraDto();
-    sceneOptions.orbitCameraOptions.yaw = 45;
-    sceneOptions.orbitCameraOptions.pitch = 25;
-    sceneOptions.orbitCameraOptions.distance = 12.0;
+    sceneOptions.sceneSize = 10;
     const { scene, startAnimationLoop } = initThreeJS(sceneOptions);
     startAnimationLoop();
     const bitbybit = new BitByBitBase();

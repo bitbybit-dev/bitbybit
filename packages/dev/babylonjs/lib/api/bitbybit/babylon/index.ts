@@ -10,3 +10,4 @@ export * from "./ray";
 export * from "./scene";
 export * from "./engine";
 export * from "./transforms";
+export * from "./scene-helper";

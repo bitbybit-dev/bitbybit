@@ -1,6 +1,6 @@
 import * as THREEJS from "three";
 import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
-import { OrbitCameraController } from "../../inputs/threejs-camera-inputs";
+import { OrbitCameraController, ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
 import { createOrbitCamera } from "./orbit-camera";
 
 /**
@@ -139,10 +139,40 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
     // Create orbit camera if enabled
     let orbitCamera: OrbitCameraController | null = null;
     if (config.enableOrbitCamera) {
-        const camOpts = config.orbitCameraOptions;
-        // Pass the DTO directly to createOrbitCamera, adding scene and domElement
+        // Use provided camera options or create new DTO with defaults as single source of truth
+        const camOpts = config.orbitCameraOptions ?? new ThreeJSCamera.OrbitCameraDto();
+        
+        // Compute scene-aware overrides for values that should scale with scene size
+        // Reference scene size of 20 units is used as baseline for sensitivity calculations
+        const referenceSize = 20;
+        const sizeRatio = config.sceneSize / referenceSize;
+        
+        // Only override these values if user didn't provide custom camera options
+        const userProvidedCameraOptions = config.orbitCameraOptions !== undefined;
+        const effectiveDistance = userProvidedCameraOptions ? camOpts.distance : config.sceneSize * Math.sqrt(2);
+        const effectiveDistanceMin = userProvidedCameraOptions ? camOpts.distanceMin : config.sceneSize * 0.05;
+        const effectiveDistanceMax = userProvidedCameraOptions ? camOpts.distanceMax : config.sceneSize * 10;
+        const effectiveDistanceSensitivity = userProvidedCameraOptions ? camOpts.distanceSensitivity : camOpts.distanceSensitivity * sizeRatio;
+        const effectivePanSensitivity = userProvidedCameraOptions ? camOpts.panSensitivity : camOpts.panSensitivity * sizeRatio;
+        
+        // Create orbit camera using DTO defaults with scene-aware overrides
         orbitCamera = createOrbitCamera({
-            ...camOpts,
+            pivotPoint: camOpts.pivotPoint,
+            distance: effectiveDistance,
+            pitch: camOpts.pitch,
+            yaw: camOpts.yaw,
+            distanceMin: effectiveDistanceMin,
+            distanceMax: effectiveDistanceMax,
+            pitchAngleMin: camOpts.pitchAngleMin,
+            pitchAngleMax: camOpts.pitchAngleMax,
+            orbitSensitivity: camOpts.orbitSensitivity,
+            distanceSensitivity: effectiveDistanceSensitivity,
+            panSensitivity: effectivePanSensitivity,
+            inertiaFactor: camOpts.inertiaFactor,
+            autoRender: camOpts.autoRender,
+            frameOnStart: camOpts.frameOnStart,
+            enableDamping: camOpts.enableDamping,
+            dampingFactor: camOpts.dampingFactor,
             scene,
             domElement: renderer.domElement,
         });

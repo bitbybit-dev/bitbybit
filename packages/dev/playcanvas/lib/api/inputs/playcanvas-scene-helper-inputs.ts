@@ -1,33 +1,71 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import * as THREEJS from "three";
+import * as pc from "playcanvas";
 import { Base } from "./base-inputs";
-import { OrbitCameraController, ThreeJSCamera } from "./threejs-camera-inputs";
+import { PlayCanvasCamera } from "./playcanvas-camera-inputs";
 
 /**
- * Result object returned by initThreeJS helper function.
+ * Interface for orbit camera internal state and methods (PlayCanvas).
  */
-export interface InitThreeJSResult {
-    /** The ThreeJS scene */
-    scene: THREEJS.Scene;
-    /** The WebGL renderer */
-    renderer: THREEJS.WebGLRenderer;
-    /** The hemispheric light */
-    hemisphereLight: THREEJS.HemisphereLight;
-    /** The directional light (for shadows) */
-    directionalLight: THREEJS.DirectionalLight;
-    /** The ground mesh (if enabled) */
-    ground: THREEJS.Mesh | null;
+export interface PlayCanvasOrbitCameraInstance {
+    autoRender: boolean;
+    distanceMax: number;
+    distanceMin: number;
+    pitchAngleMax: number;
+    pitchAngleMin: number;
+    inertiaFactor: number;
+    focusEntity: pc.Entity | null;
+    frameOnStart: boolean;
+    distance: number;
+    pitch: number;
+    yaw: number;
+    pivotPoint: pc.Vec3;
+    focus(focusEntity: pc.Entity): void;
+    resetAndLookAtPoint(resetPoint: pc.Vec3, lookAtPoint: pc.Vec3): void;
+    resetAndLookAtEntity(resetPoint: pc.Vec3, entity: pc.Entity): void;
+    reset(yaw: number, pitch: number, distance: number): void;
+    update(dt: number): void;
+}
+
+/**
+ * Interface for input handlers (mouse, touch).
+ */
+export interface PlayCanvasInputHandler {
+    destroy(): void;
+}
+
+/**
+ * Orbit camera controller returned by create method.
+ */
+export interface PlayCanvasOrbitCameraController {
+    orbitCamera: PlayCanvasOrbitCameraInstance;
+    cameraEntity: pc.Entity;
+    mouseInput: PlayCanvasInputHandler | null;
+    touchInput: PlayCanvasInputHandler | null;
+    update: (dt: number) => void;
+    destroy: () => void;
+}
+
+/**
+ * Result object returned by initPlayCanvas helper function.
+ */
+export interface InitPlayCanvasResult {
+    /** The PlayCanvas application */
+    app: pc.Application;
+    /** The root scene entity */
+    scene: pc.Entity;
+    /** The directional light entity */
+    directionalLight: pc.Entity;
+    /** The ground entity (if enabled) */
+    ground: pc.Entity | null;
     /** The orbit camera controller (if enabled) */
-    orbitCamera: OrbitCameraController | null;
-    /** Start the animation loop with the orbit camera */
-    startAnimationLoop: (onRender?: (deltaTime: number) => void) => void;
-    /** Cleanup function to remove resize listener and dispose resources */
+    orbitCamera: PlayCanvasOrbitCameraController | null;
+    /** Cleanup function to dispose resources */
     dispose: () => void;
 }
 
-export namespace ThreeJSScene {
-    export class InitThreeJSDto {
+export namespace PlayCanvasScene {
+    export class InitPlayCanvasDto {
         constructor(
             canvasId?: string,
             sceneSize?: number,
@@ -38,9 +76,8 @@ export namespace ThreeJSScene {
             groundScaleFactor?: number,
             groundColor?: string,
             groundOpacity?: number,
-            hemisphereLightSkyColor?: string,
-            hemisphereLightGroundColor?: string,
-            hemisphereLightIntensity?: number,
+            ambientLightColor?: string,
+            ambientLightIntensity?: number,
             directionalLightColor?: string,
             directionalLightIntensity?: number,
             shadowMapSize?: number
@@ -54,9 +91,8 @@ export namespace ThreeJSScene {
             if (groundScaleFactor !== undefined) { this.groundScaleFactor = groundScaleFactor; }
             if (groundColor !== undefined) { this.groundColor = groundColor; }
             if (groundOpacity !== undefined) { this.groundOpacity = groundOpacity; }
-            if (hemisphereLightSkyColor !== undefined) { this.hemisphereLightSkyColor = hemisphereLightSkyColor; }
-            if (hemisphereLightGroundColor !== undefined) { this.hemisphereLightGroundColor = hemisphereLightGroundColor; }
-            if (hemisphereLightIntensity !== undefined) { this.hemisphereLightIntensity = hemisphereLightIntensity; }
+            if (ambientLightColor !== undefined) { this.ambientLightColor = ambientLightColor; }
+            if (ambientLightIntensity !== undefined) { this.ambientLightIntensity = ambientLightIntensity; }
             if (directionalLightColor !== undefined) { this.directionalLightColor = directionalLightColor; }
             if (directionalLightIntensity !== undefined) { this.directionalLightIntensity = directionalLightIntensity; }
             if (shadowMapSize !== undefined) { this.shadowMapSize = shadowMapSize; }
@@ -126,25 +162,19 @@ export namespace ThreeJSScene {
         groundOpacity = 1;
 
         /**
-         * Sky color for the hemisphere light (illumination from above).
-         * @default "#ffffff"
+         * Ambient light color. PlayCanvas uses ambient light instead of hemisphere light.
+         * @default "#888888"
          */
-        hemisphereLightSkyColor = "#ffffff";
+        ambientLightColor = "#888888";
 
         /**
-         * Ground color for the hemisphere light (illumination from below).
-         * @default "#444444"
-         */
-        hemisphereLightGroundColor = "#444444";
-
-        /**
-         * Intensity of the hemisphere light.
+         * Intensity factor for ambient light (applied to RGB values).
          * @default 1
          * @minimum 0
          * @maximum 10
          * @step 0.1
          */
-        hemisphereLightIntensity = 1;
+        ambientLightIntensity = 1;
 
         /**
          * Color of the directional light (sun light).
@@ -182,6 +212,6 @@ export namespace ThreeJSScene {
          * Uses the same DTO as the standalone orbit camera creation.
          * @optional true
          */
-        orbitCameraOptions?: ThreeJSCamera.OrbitCameraDto;
+        orbitCameraOptions?: PlayCanvasCamera.OrbitCameraDto;
     }
 }

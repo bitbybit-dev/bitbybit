@@ -13,6 +13,7 @@ export * from "./babylon-tools-inputs";
 export * from "./babylon-mesh-builder";
 export * from "./babylon-gizmo-inputs";
 export * from "./babylon-webxr";
+export * from "./babylon-scene-helper-inputs";
 export * from "./scene-inputs";
 export * from "./node-inputs";
 export * from "./draw-inputs";

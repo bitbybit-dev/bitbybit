@@ -248,7 +248,7 @@ export class PlayCanvasOrbitCamera {
 
         const updatePosition = (): void => {
             const quatYaw = new pc.Quat().setFromEulerAngles(0, state._yaw, 0);
-            const quatPitch = new pc.Quat().setFromEulerAngles(state._pitch, 0, 0);
+            const quatPitch = new pc.Quat().setFromEulerAngles(-state._pitch, 0, 0);
 
             const finalQuat = new pc.Quat();
             finalQuat.mul2(quatYaw, quatPitch);
@@ -449,7 +449,7 @@ export class PlayCanvasOrbitCamera {
 
         const onMouseMove = (event: pc.MouseEvent): void => {
             if (lookButtonDown) {
-                orbitCamera.pitch -= event.dy * options.orbitSensitivity;
+                orbitCamera.pitch += event.dy * options.orbitSensitivity;
                 orbitCamera.yaw -= event.dx * options.orbitSensitivity;
             } else if (panButtonDown) {
                 pan(event);
@@ -537,7 +537,7 @@ export class PlayCanvasOrbitCamera {
             
             if (touches.length === 1) {
                 const touchPoint = touches[0];
-                orbitCamera.pitch -= (touchPoint.y - lastTouchPoint.y) * options.orbitSensitivity;
+                orbitCamera.pitch += (touchPoint.y - lastTouchPoint.y) * options.orbitSensitivity;
                 orbitCamera.yaw -= (touchPoint.x - lastTouchPoint.x) * options.orbitSensitivity;
                 lastTouchPoint.set(touchPoint.x, touchPoint.y);
             } else if (touches.length === 2) {

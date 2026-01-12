@@ -32,23 +32,6 @@ export { type InitKernelsResult, type WorkerInstances, type WorkerOptions };
  * @param bitbybit - BitByBitBase instance
  * @param options - Initialization options including which kernels to enable
  * @returns Promise with initialization result and the bitbybit instance
- * 
- * @example
- * ```typescript
- * import { BitByBitBase, initBitByBit } from "@bitbybit-dev/babylonjs";
- * 
- * const scene = new BABYLON.Scene(engine);
- * const bitbybit = new BitByBitBase();
- * 
- * await initBitByBit(scene, bitbybit, {
- *   enableOCCT: true,
- *   enableJSCAD: true,
- *   enableManifold: false,
- *   loadFonts: ["roboto"], // Optional: specify fonts, or omit to skip loading
- * });
- * 
- * // Now you can use bitbybit.occt, bitbybit.jscad, etc.
- * ```
  */
 export async function initBitByBit(
     scene: BABYLON.Scene,
