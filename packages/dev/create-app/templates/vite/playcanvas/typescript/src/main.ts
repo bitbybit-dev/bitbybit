@@ -1,15 +1,14 @@
 import "./style.css";
-import { BitByBitBase, Inputs, initBitByBit, initThreeJS, type InitBitByBitOptions } from "@bitbybit-dev/threejs";
+import { BitByBitBase, Inputs, initBitByBit, initPlayCanvas, type InitBitByBitOptions } from "@bitbybit-dev/playcanvas";
 
 
 start();
 
 async function start() {
-    const sceneOptions = new Inputs.ThreeJSScene.InitThreeJSDto();
-    sceneOptions.canvasId = "three-canvas";
+    const sceneOptions = new Inputs.PlayCanvasScene.InitPlayCanvasDto();
+    sceneOptions.canvasId = "playcanvas-canvas";
     sceneOptions.sceneSize = 10;
-    const { scene, startAnimationLoop } = initThreeJS(sceneOptions);
-    startAnimationLoop();
+    const { scene, app } = initPlayCanvas(sceneOptions);
     const bitbybit = new BitByBitBase();
 
     const options: InitBitByBitOptions = {
@@ -18,7 +17,7 @@ async function start() {
         enableManifold: true,
     };
 
-    await initBitByBit(scene, bitbybit, options);
+    await initBitByBit(app, scene, bitbybit, options);
 
     if (options.enableOCCT) {
         await createOCCTGeometry(bitbybit, "#ff0000"); // Red
@@ -51,7 +50,6 @@ async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
     drawOptions.drawVertices = true;
     drawOptions.vertexSize = 0.05;
     drawOptions.vertexColour = "#ffffff";
-
     await bitbybit.draw.drawAnyAsync({
         entity: roundedCube,
         options: drawOptions,
@@ -114,4 +112,3 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
         options: drawOptions,
     });
 }
-

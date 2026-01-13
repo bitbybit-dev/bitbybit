@@ -1,0 +1,19 @@
+{
+  "name": "bitbybit-playcanvas-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@bitbybit-dev/playcanvas": "0.21.0",
+    "playcanvas": "2.14.4"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "vite": "^6.3.2"
+  }
+}

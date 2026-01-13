@@ -51,7 +51,6 @@ async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
     drawOptions.drawVertices = true;
     drawOptions.vertexSize = 0.05;
     drawOptions.vertexColour = "#ffffff";
-
     await bitbybit.draw.drawAnyAsync({
         entity: roundedCube,
         options: drawOptions,
@@ -114,4 +113,3 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
         options: drawOptions,
     });
 }
-

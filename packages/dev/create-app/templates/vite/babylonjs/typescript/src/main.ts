@@ -1,17 +1,18 @@
 import "./style.css";
-import { BitByBitBase, Inputs, initBitByBit, initThreeJS, type InitBitByBitOptions } from "@bitbybit-dev/threejs";
-
+import { BitByBitBase, Inputs, initBitByBit, initBabylonJS, type InitBitByBitOptions } from "@bitbybit-dev/babylonjs";
 
 start();
 
 async function start() {
-    const sceneOptions = new Inputs.ThreeJSScene.InitThreeJSDto();
-    sceneOptions.canvasId = "three-canvas";
+    const sceneOptions = new Inputs.BabylonJSScene.InitBabylonJSDto();
+    sceneOptions.canvasId = "babylon-canvas";
     sceneOptions.sceneSize = 10;
-    const { scene, startAnimationLoop } = initThreeJS(sceneOptions);
-    startAnimationLoop();
-    const bitbybit = new BitByBitBase();
+    sceneOptions.enableShadows = true;
+    sceneOptions.enableGround = true;
+    sceneOptions.groundColor = "#333333";
 
+    const { scene, engine } = initBabylonJS(sceneOptions);
+    const bitbybit = new BitByBitBase();
     const options: InitBitByBitOptions = {
         enableOCCT: true,
         enableJSCAD: true,
@@ -21,15 +22,20 @@ async function start() {
     await initBitByBit(scene, bitbybit, options);
 
     if (options.enableOCCT) {
-        await createOCCTGeometry(bitbybit, "#ff0000"); // Red
+        await createOCCTGeometry(bitbybit, "#ff0000");
     }
     if (options.enableManifold) {
-        await createManifoldGeometry(bitbybit, "#00ff00"); // Green
+        await createManifoldGeometry(bitbybit, "#00ff00");
     }
     if (options.enableJSCAD) {
-        await createJSCADGeometry(bitbybit, "#0000ff"); // Blue
+        await createJSCADGeometry(bitbybit, "#0000ff");
     }
 
+    engine.runRenderLoop(() => {
+        if (scene.activeCamera) {
+            scene.render();
+        }
+    });
 }
 
 async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
@@ -51,7 +57,6 @@ async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
     drawOptions.drawVertices = true;
     drawOptions.vertexSize = 0.05;
     drawOptions.vertexColour = "#ffffff";
-
     await bitbybit.draw.drawAnyAsync({
         entity: roundedCube,
         options: drawOptions,
@@ -114,4 +119,3 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
         options: drawOptions,
     });
 }
-

@@ -1,0 +1,19 @@
+{
+  "name": "bitbybit-threejs-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@bitbybit-dev/threejs": "0.21.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "vite": "^6.3.2",
+    "@types/three": "0.182.0"
+  }
+}
