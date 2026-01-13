@@ -103,17 +103,17 @@ For online TypeScript editor at bitbybit.dev:
 #### BabylonJS Context
 
 - Full (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-ai-context-v0.21.0.md
-- Lite (114k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-no-comment-min-ai-v0.21.0.txt
+- Lite (114k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-no-comment-min-ai-v0.21.0.md
 
 #### Three.js Context
 
 - Full (95k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-three-ai-context-v0.21.0.md
-- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-three-no-comment-min-ai-v0.21.0.txt
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-three-no-comment-min-ai-v0.21.0.md
 
 #### PlayCanvas Context
 
 - Full (94k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-playcanvas-ai-context-v0.21.0.md
-- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-playcanvas-no-comment-min-ai-v0.21.0.txt
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-playcanvas-no-comment-min-ai-v0.21.0.md
 
 ### MCP Server
 
