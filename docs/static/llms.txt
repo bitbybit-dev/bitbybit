@@ -1,0 +1,197 @@
+# Bitbybit Documentation
+
+> Learn how to use the Bitbybit 3D creative coding platform—from visual programming to TypeScript APIs and NPM package integration. Build parametric 3D models, product configurators, and CAD applications directly in the browser.
+
+This is the official documentation site for Bitbybit. The platform enables designers and developers to create 3D geometry using visual programming or TypeScript code, with integration for BabylonJS, Three.js, and PlayCanvas game engines.
+
+## Quick Links
+
+- Main Platform: https://bitbybit.dev
+- TypeScript API Reference: https://docs.bitbybit.dev
+- GitHub Repository: https://github.com/bitbybit-dev/bitbybit
+
+## Getting Started
+
+- Welcome Guide: https://learn.bitbybit.dev/learn/intro
+- Platform Overview: https://learn.bitbybit.dev/learn/getting-started/overview
+- Open Source Approach: https://learn.bitbybit.dev/learn/open-source-approach
+
+## NPM Packages
+
+Integration guides for embedding Bitbybit in your web applications.
+
+### Quick Start
+
+```bash
+npx @bitbybit-dev/create-app my-project
+```
+
+Choose your game engine (BabylonJS, Three.js, or PlayCanvas) and start coding immediately.
+
+### Overview
+
+- Introduction: https://learn.bitbybit.dev/learn/npm-packages/intro
+- Engine Agnostic Core: https://learn.bitbybit.dev/learn/npm-packages/game-engine-agnostic
+
+### Game Engine Integration
+
+- Three.js Integration: https://learn.bitbybit.dev/learn/npm-packages/threejs
+- BabylonJS Integration: https://learn.bitbybit.dev/learn/npm-packages/babylonjs
+- PlayCanvas Integration: https://learn.bitbybit.dev/learn/npm-packages/playcanvas
+
+### All NPM Packages
+
+Game Engine Packages:
+- @bitbybit-dev/babylonjs - BabylonJS visualization and drawing
+- @bitbybit-dev/threejs - Three.js visualization and drawing
+- @bitbybit-dev/playcanvas - PlayCanvas visualization and drawing
+
+Core Packages:
+- @bitbybit-dev/core - Combined CAD kernel features
+- @bitbybit-dev/base - Base algorithms (vector math, transformations)
+
+CAD Kernel Packages (Main Thread):
+- @bitbybit-dev/occt - OpenCascade for industrial B-rep CAD
+- @bitbybit-dev/jscad - JSCAD for CSG modeling
+- @bitbybit-dev/manifold - Manifold for fast mesh booleans
+
+Web Worker Packages (Non-blocking, Recommended):
+- @bitbybit-dev/occt-worker - OpenCascade via web worker
+- @bitbybit-dev/jscad-worker - JSCAD via web worker
+- @bitbybit-dev/manifold-worker - Manifold via web worker
+
+## Runners
+
+Script runners for executing Bitbybit scripts in your applications:
+
+- Runners Overview: https://learn.bitbybit.dev/learn/runners
+- BabylonJS Full Runner: https://learn.bitbybit.dev/learn/runners/engines/babylonjs/full-runner
+- Three.js Full Runner: https://learn.bitbybit.dev/learn/runners/engines/threejs/full-runner
+- PlayCanvas Full Runner: https://learn.bitbybit.dev/learn/runners/engines/playcanvas/full-runner
+
+## Code Editor
+
+TypeScript programming guides:
+
+- Code Introduction: https://learn.bitbybit.dev/learn/code/intro
+
+## 3D Bits (Shopify App)
+
+Add 3D product configurators to Shopify stores:
+
+- 3D Bits Introduction: https://learn.bitbybit.dev/learn/3d-bits/intro
+- Shopify App: https://apps.shopify.com/3d-bits-1
+
+## AI Integration
+
+Using AI assistants with Bitbybit for enhanced coding workflows.
+
+### Documentation
+
+- AI Introduction: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro
+- Context7 MCP Integration: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/context-7
+
+### AI Context Files (v0.21.0)
+
+Attach these files to your AI coding assistant for Bitbybit API knowledge.
+
+#### Beginner Context (Monaco Editor)
+
+For online TypeScript editor at bitbybit.dev:
+- Full Context (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-monaco-ai-context-v0.21.0.md
+
+#### BabylonJS Context
+
+- Full (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-ai-context-v0.21.0.md
+- Lite (114k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-no-comment-min-ai-v0.21.0.txt
+
+#### Three.js Context
+
+- Full (95k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-three-ai-context-v0.21.0.md
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-three-no-comment-min-ai-v0.21.0.txt
+
+#### PlayCanvas Context
+
+- Full (94k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-playcanvas-ai-context-v0.21.0.md
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-playcanvas-no-comment-min-ai-v0.21.0.txt
+
+### MCP Server
+
+Context7 MCP provides live AI context with always up-to-date documentation:
+
+- Context7 Library: https://context7.com/bitbybit-dev/bitbybit
+
+VS Code MCP Setup:
+```json
+{
+    "servers": [
+        {
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp@latest"],
+            "env": {
+                "DEFAULT_MINIMUM_TOKENS": "10000"
+            }
+        }
+    ]
+}
+```
+
+## GitHub & Contributing
+
+- Main Repository: https://github.com/bitbybit-dev/bitbybit
+- Contributing Guide: https://learn.bitbybit.dev/learn/github
+- Unit Testing Guide: https://learn.bitbybit.dev/learn/github/unit-tests
+- Live Test Coverage: https://learn.bitbybit.dev/learn/github/live-unit-test-coverage
+
+## Blog
+
+Latest updates, tutorials, and announcements:
+
+- Blog: https://learn.bitbybit.dev/blog
+- PlayCanvas Support Announcement: https://learn.bitbybit.dev/blog/playcanvas-support
+
+## Security
+
+- Hosting & CDN: https://learn.bitbybit.dev/learn/hosting-and-cdn
+
+## Community
+
+- Discord: https://discord.gg/GSe3VMe
+- YouTube: https://www.youtube.com/@bitbybitdev
+- LinkedIn: https://www.linkedin.com/company/bitbybit-dev
+- X/Twitter: https://x.com/bitbybit_dev
+
+## Key Concepts
+
+### Geometry Kernels
+
+Bitbybit supports multiple CAD kernels:
+
+- **OpenCascade (OCCT)**: Industrial-grade B-rep kernel for precise CAD operations, boolean operations, fillets, chamfers, STEP export
+- **JSCAD**: JavaScript-based CSG modeling for simple shapes
+- **Manifold**: Fast mesh boolean operations for real-time applications
+
+### Game Engines
+
+Visualization and rendering:
+
+- **BabylonJS**: Full-featured WebGL engine with PBR, physics, audio
+- **Three.js**: Lightweight, popular 3D library with vast ecosystem
+- **PlayCanvas**: Professional engine with online collaborative editor
+
+### Editors
+
+- **Monaco (TypeScript)**: Full IntelliSense, professional coding
+- **Rete**: Node-based visual programming
+- **Blockly**: Block-based visual programming for beginners
+
+### Web Workers
+
+All geometry kernels have web worker variants (-worker packages) for non-blocking UI:
+- Asynchronous operations that don't freeze the browser
+- Recommended for production applications
+- Same API as main thread packages
+
+## Optional
+
+- Main site llms.txt: https://bitbybit.dev/llms.txt

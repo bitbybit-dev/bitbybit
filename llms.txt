@@ -1,0 +1,182 @@
+# Bitbybit Monorepo
+
+> Open-source 3D CAD algorithms and NPM packages for web-based parametric modeling and visualization. Build once, run anywhere—no installation required.
+
+This monorepo contains the open-source core of Bitbybit platform, including multiple NPM packages for integrating 3D CAD capabilities into web applications using BabylonJS, Three.js, or PlayCanvas game engines.
+
+## Repository
+
+- GitHub: https://github.com/bitbybit-dev/bitbybit
+- License: MIT
+
+## Documentation
+
+- Learn Bitbybit: https://learn.bitbybit.dev
+- TypeScript API Reference: https://docs.bitbybit.dev
+- Main Platform: https://bitbybit.dev
+
+## Quick Start
+
+```bash
+npx @bitbybit-dev/create-app my-project
+```
+
+Choose your game engine and start coding immediately.
+
+## NPM Packages
+
+### Game Engine Integrations
+
+| Package | Description | NPM |
+|---------|-------------|-----|
+| @bitbybit-dev/babylonjs | BabylonJS visualization and drawing | https://www.npmjs.com/package/@bitbybit-dev/babylonjs |
+| @bitbybit-dev/threejs | Three.js visualization and drawing | https://www.npmjs.com/package/@bitbybit-dev/threejs |
+| @bitbybit-dev/playcanvas | PlayCanvas visualization and drawing | https://www.npmjs.com/package/@bitbybit-dev/playcanvas |
+
+### Core Packages
+
+| Package | Description | NPM |
+|---------|-------------|-----|
+| @bitbybit-dev/core | Combined CAD kernel features | https://www.npmjs.com/package/@bitbybit-dev/core |
+| @bitbybit-dev/base | Base algorithms (vector math, transforms) | https://www.npmjs.com/package/@bitbybit-dev/base |
+
+### CAD Kernel Packages (Main Thread)
+
+| Package | Description | NPM |
+|---------|-------------|-----|
+| @bitbybit-dev/occt | OpenCascade B-rep CAD wrapper | https://www.npmjs.com/package/@bitbybit-dev/occt |
+| @bitbybit-dev/jscad | JSCAD CSG modeling wrapper | https://www.npmjs.com/package/@bitbybit-dev/jscad |
+| @bitbybit-dev/manifold | Manifold mesh booleans wrapper | https://www.npmjs.com/package/@bitbybit-dev/manifold |
+
+### Web Worker Packages (Non-blocking, Recommended)
+
+These packages run geometry computations in web workers for non-blocking UI. Same API as main thread packages, but all operations are asynchronous.
+
+| Package | Description | NPM |
+|---------|-------------|-----|
+| @bitbybit-dev/occt-worker | OpenCascade via web worker | https://www.npmjs.com/package/@bitbybit-dev/occt-worker |
+| @bitbybit-dev/jscad-worker | JSCAD via web worker | https://www.npmjs.com/package/@bitbybit-dev/jscad-worker |
+| @bitbybit-dev/manifold-worker | Manifold via web worker | https://www.npmjs.com/package/@bitbybit-dev/manifold-worker |
+
+## Package Structure
+
+```
+packages/
+└── dev/
+    ├── babylonjs/         # BabylonJS integration
+    ├── threejs/           # Three.js integration
+    ├── playcanvas/        # PlayCanvas integration
+    ├── core/              # Core combining all kernels
+    ├── base/              # Base algorithms
+    ├── occt/              # OpenCascade wrapper
+    ├── occt-worker/       # OCCT web worker
+    ├── jscad/             # JSCAD wrapper
+    ├── jscad-worker/      # JSCAD web worker
+    ├── manifold/          # Manifold wrapper
+    ├── manifold-worker/   # Manifold web worker
+    └── create-app/        # Project scaffolding CLI
+```
+
+## AI Context
+
+For AI coding assistants, use these resources to get comprehensive Bitbybit API knowledge.
+
+### AI Prompt Context Files (v0.21.0)
+
+#### Beginner Context (Monaco Editor)
+For online TypeScript editor at bitbybit.dev:
+- Full Context (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-monaco-ai-context-v0.21.0.md
+
+#### BabylonJS Context
+- Full (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-ai-context-v0.21.0.md
+- Lite (114k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-babylon-no-comment-min-ai-v0.21.0.txt
+
+#### Three.js Context
+- Full (95k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-three-ai-context-v0.21.0.md
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-three-no-comment-min-ai-v0.21.0.txt
+
+#### PlayCanvas Context
+- Full (94k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-playcanvas-ai-context-v0.21.0.md
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.0/bitbybit-playcanvas-no-comment-min-ai-v0.21.0.txt
+
+### Context7 MCP (Recommended)
+
+Live AI context with always up-to-date documentation. Works with Claude, Gemini, Grok.
+
+Add to your `.vscode/mcp.json`:
+
+```json
+{
+    "servers": [
+        {
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp@latest"],
+            "env": {
+                "DEFAULT_MINIMUM_TOKENS": "10000"
+            }
+        }
+    ]
+}
+```
+
+- Context7 Library: https://context7.com/bitbybit-dev/bitbybit
+- Integration Guide: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/context-7
+
+## Integration Guides
+
+- Three.js: https://learn.bitbybit.dev/learn/npm-packages/threejs
+- BabylonJS: https://learn.bitbybit.dev/learn/npm-packages/babylonjs
+- PlayCanvas: https://learn.bitbybit.dev/learn/npm-packages/playcanvas
+- Engine Agnostic: https://learn.bitbybit.dev/learn/npm-packages/game-engine-agnostic
+
+## Geometry Kernels
+
+### OpenCascade (OCCT)
+Industrial-grade B-rep kernel:
+- Boundary representation for exact geometry
+- Boolean operations (union, difference, intersection)
+- Fillets, chamfers, shell, offset operations
+- STEP/IGES import/export
+- Sweeps, lofts, pipes, revolutions
+
+### JSCAD
+JavaScript-based CSG modeling:
+- Constructive solid geometry operations
+- Lightweight for simple shapes
+- STL export for 3D printing
+
+### Manifold
+Fast mesh boolean operations:
+- Optimized for real-time operations
+- GPU-accelerated
+- Ideal for interactive applications
+
+## Example Applications
+
+- Laptop Holder: https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder
+- Cup Configurator: https://github.com/bitbybit-dev/app-examples/tree/main/react/cup
+- Live Demos: https://app-store.bitbybit.dev
+
+## Contributing
+
+- Contributing Guide: CONTRIBUTING.md
+- Code of Conduct: CODE_OF_CONDUCT.md
+- Unit Testing Guide: UNIT_TESTING_GUIDE.md
+
+## Community
+
+- Discord: https://discord.gg/GSe3VMe
+- YouTube: https://www.youtube.com/@bitbybitdev
+
+## Support the Project
+
+Your contributions allow this project to exist:
+
+- Silver/Gold Plans: https://bitbybit.dev/auth/pick-plan
+- 3D Bits Shopify App: https://apps.shopify.com/3d-bits-1
+- Crafts Shop: https://crafts.bitbybit.dev
+
+## Related llms.txt Files
+
+- Main Platform: https://bitbybit.dev/llms.txt
+- Documentation: https://learn.bitbybit.dev/llms.txt
