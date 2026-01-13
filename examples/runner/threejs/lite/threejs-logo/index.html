@@ -137,24 +137,24 @@
 
         const downloadStep = async () => {
             if (bitbybit && finalShape) {
-                await bitbybit.occt.io.saveShapeSTEP({
-                    shape: finalShape,
-                    fileName: 'threejs.stp',
-                    adjustYtoZ: true,
-                    tryDownload: true
-                });
+                const saveStepDto = new Bit.Inputs.OCCT.SaveStepDto();
+                saveStepDto.shape = finalShape;
+                saveStepDto.fileName = 'threejs.stp';
+                saveStepDto.adjustYtoZ = true;
+                saveStepDto.tryDownload = true;
+                await bitbybit.occt.io.saveShapeSTEP(saveStepDto);
             }
         }
 
         const downloadSTL = async () => {
             if (bitbybit && finalShape) {
-                await bitbybit.occt.io.saveShapeStl({
-                    shape: finalShape,
-                    fileName: 'threejs.stl',
-                    precision: 0.01,
-                    adjustYtoZ: true,
-                    tryDownload: true
-                });
+                const saveStlDto = new Bit.Inputs.OCCT.SaveStlDto();
+                saveStlDto.shape = finalShape;
+                saveStlDto.fileName = 'threejs.stl';
+                saveStlDto.precision = 0.01;
+                saveStlDto.adjustYtoZ = true;
+                saveStlDto.tryDownload = true;
+                await bitbybit.occt.io.saveShapeStl(saveStlDto);
             }
         }
 
@@ -184,94 +184,96 @@
         const createShape = async () => {
 
             if (shapesToClean.length > 0) {
-                await bitbybit.occt.deleteShapes({ shapes: shapesToClean });
+                const deleteShapesDto = new Bit.Inputs.OCCT.ShapesDto();
+                deleteShapesDto.shapes = shapesToClean;
+                await bitbybit.occt.deleteShapes(deleteShapesDto);
                 shapesToClean = [];
             }
 
-            const triangleFrame1 = await bitbybit.occt.shapes.wire.createNGonWire({
-                nrCorners: 3,
-                radius: 9,
-                center: [0, 0, 0],
-                direction: [0, 1, 0]
-            });
+            const ngonWireDto1 = new Bit.Inputs.OCCT.NGonWireDto();
+            ngonWireDto1.nrCorners = 3;
+            ngonWireDto1.radius = 9;
+            ngonWireDto1.center = [0, 0, 0];
+            ngonWireDto1.direction = [0, 1, 0];
+            const triangleFrame1 = await bitbybit.occt.shapes.wire.createNGonWire(ngonWireDto1);
 
-            const triangleFrame2 = await bitbybit.occt.shapes.wire.createNGonWire({
-                nrCorners: 3,
-                radius: 6,
-                center: [0, 0, 0],
-                direction: [0, 1, 0]
-            });
+            const ngonWireDto2 = new Bit.Inputs.OCCT.NGonWireDto();
+            ngonWireDto2.nrCorners = 3;
+            ngonWireDto2.radius = 6;
+            ngonWireDto2.center = [0, 0, 0];
+            ngonWireDto2.direction = [0, 1, 0];
+            const triangleFrame2 = await bitbybit.occt.shapes.wire.createNGonWire(ngonWireDto2);
 
             const shape1 = await createTriangle1(model.heightBase, model.scale1, model.heightMid1);
             const shape2 = await createTriangle1(model.heightBase, model.scale2, model.heightMid2);
 
             shapesToClean.push(shape1, shape2);
 
-            const shape2Rot = await bitbybit.occt.transforms.rotate({
-                shape: shape2,
-                angle: 180,
-                axis: [0, 1, 0],
-            });
+            const rotateDto1 = new Bit.Inputs.OCCT.RotateDto();
+            rotateDto1.shape = shape2;
+            rotateDto1.angle = 180;
+            rotateDto1.axis = [0, 1, 0];
+            const shape2Rot = await bitbybit.occt.transforms.rotate(rotateDto1);
             shapesToClean.push(shape2Rot);
 
-            const points1 = await bitbybit.occt.shapes.wire.divideWireByEqualDistanceToPoints({
-                shape: triangleFrame1,
-                nrOfDivisions: 9,
-                removeStartPoint: true,
-                removeEndPoint: false,
-            });
+            const divideDto1 = new Bit.Inputs.OCCT.DivideDto();
+            divideDto1.shape = triangleFrame1;
+            divideDto1.nrOfDivisions = 9;
+            divideDto1.removeStartPoint = true;
+            divideDto1.removeEndPoint = false;
+            const points1 = await bitbybit.occt.shapes.wire.divideWireByEqualDistanceToPoints(divideDto1);
 
             points1.push([0, 0, 0]);
 
-            const points2 = await bitbybit.occt.shapes.wire.divideWireByEqualDistanceToPoints({
-                shape: triangleFrame2,
-                nrOfDivisions: 6,
-                removeStartPoint: true,
-                removeEndPoint: false,
-            });
+            const divideDto2 = new Bit.Inputs.OCCT.DivideDto();
+            divideDto2.shape = triangleFrame2;
+            divideDto2.nrOfDivisions = 6;
+            divideDto2.removeStartPoint = true;
+            divideDto2.removeEndPoint = false;
+            const points2 = await bitbybit.occt.shapes.wire.divideWireByEqualDistanceToPoints(divideDto2);
 
-            const triangles1 = await bitbybit.occt.transforms.translateShapes({
-                shapes: points1.map(() => shape1),
-                translations: points1
-            });
+            const translateShapesDto1 = new Bit.Inputs.OCCT.TranslateShapesDto();
+            translateShapesDto1.shapes = points1.map(() => shape1);
+            translateShapesDto1.translations = points1;
+            const triangles1 = await bitbybit.occt.transforms.translateShapes(translateShapesDto1);
             shapesToClean.push(...triangles1);
 
-            const triangles2 = await bitbybit.occt.transforms.translateShapes({
-                shapes: points2.map(() => shape2Rot),
-                translations: points2
-            });
+            const translateShapesDto2 = new Bit.Inputs.OCCT.TranslateShapesDto();
+            translateShapesDto2.shapes = points2.map(() => shape2Rot);
+            translateShapesDto2.translations = points2;
+            const triangles2 = await bitbybit.occt.transforms.translateShapes(translateShapesDto2);
             shapesToClean.push(...triangles2);
 
-            const triangleBase = await bitbybit.occt.shapes.wire.createNGonWire({
-                nrCorners: 3,
-                radius: 12,
-                center: [0, -model.heightBase, 0],
-                direction: [0, 1, 0]
-            });
+            const ngonWireDto3 = new Bit.Inputs.OCCT.NGonWireDto();
+            ngonWireDto3.nrCorners = 3;
+            ngonWireDto3.radius = 12;
+            ngonWireDto3.center = [0, -model.heightBase, 0];
+            ngonWireDto3.direction = [0, 1, 0];
+            const triangleBase = await bitbybit.occt.shapes.wire.createNGonWire(ngonWireDto3);
             shapesToClean.push(triangleBase);
 
-            const extrusion = await bitbybit.occt.operations.extrude({
-                shape: triangleBase,
-                direction: [0, model.heightBase * 2, 0]
-            });
+            const extrudeDto = new Bit.Inputs.OCCT.ExtrudeDto();
+            extrudeDto.shape = triangleBase;
+            extrudeDto.direction = [0, model.heightBase * 2, 0];
+            const extrusion = await bitbybit.occt.operations.extrude(extrudeDto);
             shapesToClean.push(extrusion);
 
-            const shell = await bitbybit.occt.shapes.shell.sewFaces({
-                shapes: [extrusion, ...triangles1, ...triangles2],
-                tolerance: 1e-7
-            });
+            const sewDto = new Bit.Inputs.OCCT.SewDto();
+            sewDto.shapes = [extrusion, ...triangles1, ...triangles2];
+            sewDto.tolerance = 1e-7;
+            const shell = await bitbybit.occt.shapes.shell.sewFaces(sewDto);
             shapesToClean.push(shell);
 
-            finalShape = await bitbybit.occt.shapes.solid.fromClosedShell({
-                shape: shell,
-            });
+            const shapeDto = new Bit.Inputs.OCCT.ShapeDto();
+            shapeDto.shape = shell;
+            finalShape = await bitbybit.occt.shapes.solid.fromClosedShell(shapeDto);
             shapesToClean.push(finalShape);
 
-            const solidRot = await bitbybit.occt.transforms.rotate({
-                shape: finalShape,
-                angle: 15,
-                axis: [0, 1, 0],
-            });
+            const rotateDto2 = new Bit.Inputs.OCCT.RotateDto();
+            rotateDto2.shape = finalShape;
+            rotateDto2.angle = 15;
+            rotateDto2.axis = [0, 1, 0];
+            const solidRot = await bitbybit.occt.transforms.rotate(rotateDto2);
             shapesToClean.push(solidRot);
 
             const options = new Bit.Inputs.Draw.DrawOcctShapeOptions();
@@ -312,44 +314,45 @@
                 useScale = 0.0001;
             }
             const midScale = (1 - useScale) / 2 + useScale;
-            const triangleBaseOne = await bitbybit.occt.shapes.wire.createNGonWire({
-                nrCorners: 3,
-                radius: 3,
-                center: [0, heightBase, 0],
-                direction: [0, 1, 0]
-            });
+
+            const ngonBaseOneDto = new Bit.Inputs.OCCT.NGonWireDto();
+            ngonBaseOneDto.nrCorners = 3;
+            ngonBaseOneDto.radius = 3;
+            ngonBaseOneDto.center = [0, heightBase, 0];
+            ngonBaseOneDto.direction = [0, 1, 0];
+            const triangleBaseOne = await bitbybit.occt.shapes.wire.createNGonWire(ngonBaseOneDto);
             shapesToClean.push(triangleBaseOne);
 
-            const triangleMidOne = await bitbybit.occt.shapes.wire.createNGonWire({
-                nrCorners: 3,
-                radius: 3 * midScale,
-                center: [0, heightMid, 0],
-                direction: [0, 1, 0]
-            });
+            const ngonMidOneDto = new Bit.Inputs.OCCT.NGonWireDto();
+            ngonMidOneDto.nrCorners = 3;
+            ngonMidOneDto.radius = 3 * midScale;
+            ngonMidOneDto.center = [0, heightMid, 0];
+            ngonMidOneDto.direction = [0, 1, 0];
+            const triangleMidOne = await bitbybit.occt.shapes.wire.createNGonWire(ngonMidOneDto);
             shapesToClean.push(triangleMidOne);
 
-            const triangleCoreOne = await bitbybit.occt.shapes.wire.createNGonWire({
-                nrCorners: 3,
-                radius: 3 * useScale,
-                center: [0, 0, 0],
-                direction: [0, 1, 0]
-            });
+            const ngonCoreOneDto = new Bit.Inputs.OCCT.NGonWireDto();
+            ngonCoreOneDto.nrCorners = 3;
+            ngonCoreOneDto.radius = 3 * useScale;
+            ngonCoreOneDto.center = [0, 0, 0];
+            ngonCoreOneDto.direction = [0, 1, 0];
+            const triangleCoreOne = await bitbybit.occt.shapes.wire.createNGonWire(ngonCoreOneDto);
             shapesToClean.push(triangleCoreOne);
 
-            const triangleBaseDown = await bitbybit.occt.shapes.wire.createNGonWire({
-                nrCorners: 3,
-                radius: 3,
-                center: [0, -heightBase, 0],
-                direction: [0, 1, 0]
-            });
+            const ngonBaseDownDto = new Bit.Inputs.OCCT.NGonWireDto();
+            ngonBaseDownDto.nrCorners = 3;
+            ngonBaseDownDto.radius = 3;
+            ngonBaseDownDto.center = [0, -heightBase, 0];
+            ngonBaseDownDto.direction = [0, 1, 0];
+            const triangleBaseDown = await bitbybit.occt.shapes.wire.createNGonWire(ngonBaseDownDto);
             shapesToClean.push(triangleBaseDown);
 
-            const triangleMidDown = await bitbybit.occt.shapes.wire.createNGonWire({
-                nrCorners: 3,
-                radius: 3 * midScale,
-                center: [0, -heightMid, 0],
-                direction: [0, 1, 0]
-            });
+            const ngonMidDownDto = new Bit.Inputs.OCCT.NGonWireDto();
+            ngonMidDownDto.nrCorners = 3;
+            ngonMidDownDto.radius = 3 * midScale;
+            ngonMidDownDto.center = [0, -heightMid, 0];
+            ngonMidDownDto.direction = [0, 1, 0];
+            const triangleMidDown = await bitbybit.occt.shapes.wire.createNGonWire(ngonMidDownDto);
             shapesToClean.push(triangleMidDown);
 
             const loftOptions = new Bit.Inputs.OCCT.LoftAdvancedDto();
