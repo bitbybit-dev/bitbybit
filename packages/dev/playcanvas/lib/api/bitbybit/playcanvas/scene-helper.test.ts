@@ -1,143 +1,15 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { initPlayCanvas } from "./scene-helper";
 import { PlayCanvasScene } from "../../inputs/playcanvas-scene-helper-inputs";
 import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
+import { MockEntityType, MockAppType } from "../../__mocks__/playcanvas.mock";
 
-// Type definitions for mock objects
-interface MockEntityType {
-    name: string;
-    children: MockEntityType[];
-    addChild(entity: MockEntityType): void;
-    destroy(): void;
-    light?: MockLightComponentType;
-}
-
-interface MockColorType {
-    r: number;
-    g: number;
-    b: number;
-}
-
-interface MockAppType {
-    _canvas: HTMLCanvasElement | null;
-    _started: boolean;
-    _updateCallbacks: ((dt: number) => void)[];
-}
-
-interface MockLightComponentType {
-    intensity: number;
-    castShadows: boolean;
-    shadowResolution: number;
-}
-
-// Mock PlayCanvas module
+// Mock PlayCanvas module using centralized mocks
 jest.mock("playcanvas", () => {
-    const actualMock = jest.requireActual("../../__mocks__/playcanvas.mock");
-    
-    class MockGraphicsDevice {
-        maxPixelRatio = 1;
-        vram = { vb: 0, ib: 0, tex: 0, total: 0 };
-        createVertexBufferImpl = jest.fn(() => ({}));
-        createIndexBufferImpl = jest.fn(() => ({}));
-    }
-    
-    class MockApplication {
-        root: MockEntityType;
-        mouse = new actualMock.MockMouse();
-        touch = new actualMock.MockTouch();
-        graphicsDevice = new MockGraphicsDevice();
-        scene = {
-            ambientLight: new actualMock.MockColor(0.1, 0.1, 0.1),
-        };
-        _canvas: HTMLCanvasElement | null = null;
-        _started = false;
-        _updateCallbacks: ((dt: number) => void)[] = [];
-        
-        constructor(canvas: HTMLCanvasElement, _options?: object) {
-            this.root = new actualMock.MockEntity("root");
-            this._canvas = canvas;
-        }
-        
-        setCanvasFillMode(_mode: number) { /* mock */ }
-        setCanvasResolution(_mode: number) { /* mock */ }
-        resizeCanvas() { /* mock */ }
-        start() { this._started = true; }
-        destroy() { this._started = false; }
-        on(event: string, callback: (dt: number) => void) {
-            if (event === "update") {
-                this._updateCallbacks.push(callback);
-            }
-        }
-        off(event: string, callback: (dt: number) => void) {
-            if (event === "update") {
-                const idx = this._updateCallbacks.indexOf(callback);
-                if (idx > -1) {
-                    this._updateCallbacks.splice(idx, 1);
-                }
-            }
-        }
-    }
-    
-    class MockStandardMaterial {
-        diffuse: MockColorType;
-        opacity = 1;
-        blendType = 0;
-        
-        constructor() {
-            this.diffuse = new actualMock.MockColor(1, 1, 1);
-        }
-        
-        update() { /* mock */ }
-        destroy() { /* mock */ }
-    }
-    
-    class MockMouse {
-        on = jest.fn();
-        off = jest.fn();
-        disableContextMenu = jest.fn();
-    }
-    
-    class MockTouchDevice {
-        on = jest.fn();
-        off = jest.fn();
-    }
-    
-    return {
-        Application: MockApplication,
-        Entity: actualMock.MockEntity,
-        Vec2: actualMock.MockVec2,
-        Vec3: actualMock.MockVec3,
-        Quat: actualMock.MockQuat,
-        Color: actualMock.MockColor,
-        BoundingBox: actualMock.MockBoundingBox,
-        StandardMaterial: MockStandardMaterial,
-        Mouse: MockMouse,
-        TouchDevice: MockTouchDevice,
-        FILLMODE_FILL_WINDOW: 0,
-        RESOLUTION_AUTO: 0,
-        BLEND_NORMAL: 1,
-        MOUSEBUTTON_LEFT: 0,
-        MOUSEBUTTON_MIDDLE: 1,
-        MOUSEBUTTON_RIGHT: 2,
-        EVENT_MOUSEDOWN: "mousedown",
-        EVENT_MOUSEUP: "mouseup",
-        EVENT_MOUSEMOVE: "mousemove",
-        EVENT_MOUSEWHEEL: "mousewheel",
-        EVENT_TOUCHSTART: "touchstart",
-        EVENT_TOUCHEND: "touchend",
-        EVENT_TOUCHMOVE: "touchmove",
-        EVENT_TOUCHCANCEL: "touchcancel",
-        math: {
-            lerp: (a: number, b: number, t: number) => a + (b - a) * t,
-            clamp: (value: number, min: number, max: number) => Math.min(Math.max(value, min), max),
-            RAD_TO_DEG: 180 / Math.PI,
-            DEG_TO_RAD: Math.PI / 180,
-        },
-    };
+    const { createSceneHelperMock } = jest.requireActual("../../__mocks__/playcanvas.mock");
+    return createSceneHelperMock();
 });
 
 describe("initPlayCanvas unit tests", () => {

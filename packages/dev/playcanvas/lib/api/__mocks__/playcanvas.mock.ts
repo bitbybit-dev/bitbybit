@@ -290,6 +290,128 @@ export class MockApp {
     }
 }
 
+// Scene helper specific mock classes
+export class MockGraphicsDevice {
+    maxPixelRatio = 1;
+    vram = { vb: 0, ib: 0, tex: 0, total: 0 };
+    createVertexBufferImpl = jest.fn(() => ({}));
+    createIndexBufferImpl = jest.fn(() => ({}));
+}
+
+export class MockLightComponent {
+    intensity = 1;
+    castShadows = false;
+    shadowResolution = 1024;
+}
+
+export class MockApplication {
+    root: MockEntity;
+    mouse = new MockMouse();
+    touch = new MockTouch();
+    graphicsDevice = new MockGraphicsDevice();
+    scene = {
+        ambientLight: new MockColor(0.1, 0.1, 0.1),
+    };
+    _canvas: HTMLCanvasElement | null = null;
+    _started = false;
+    _updateCallbacks: ((dt: number) => void)[] = [];
+    
+    constructor(canvas: HTMLCanvasElement, _options?: object) {
+        this.root = new MockEntity("root");
+        this._canvas = canvas;
+    }
+    
+    setCanvasFillMode(_mode: number) { /* mock */ }
+    setCanvasResolution(_mode: number) { /* mock */ }
+    resizeCanvas() { /* mock */ }
+    start() { this._started = true; }
+    destroy() { this._started = false; }
+    on(event: string, callback: (dt: number) => void) {
+        if (event === "update") {
+            this._updateCallbacks.push(callback);
+        }
+    }
+    off(event: string, callback: (dt: number) => void) {
+        if (event === "update") {
+            const idx = this._updateCallbacks.indexOf(callback);
+            if (idx > -1) {
+                this._updateCallbacks.splice(idx, 1);
+            }
+        }
+    }
+}
+
+export class MockStandardMaterial {
+    diffuse: MockColor;
+    opacity = 1;
+    blendType = 0;
+    
+    constructor() {
+        this.diffuse = new MockColor(1, 1, 1);
+    }
+    
+    update() { /* mock */ }
+    destroy() { /* mock */ }
+}
+
+export class MockTouchDevice {
+    on = jest.fn();
+    off = jest.fn();
+}
+
+// Type definitions for test assertions
+export interface MockEntityType {
+    name: string;
+    children: MockEntityType[];
+    addChild(entity: MockEntityType): void;
+    destroy(): void;
+    light?: MockLightComponent;
+}
+
+export interface MockAppType {
+    _canvas: HTMLCanvasElement | null;
+    _started: boolean;
+    _updateCallbacks: ((dt: number) => void)[];
+}
+
+/**
+ * Create scene helper mock for jest.mock("playcanvas")
+ */
+export function createSceneHelperMock() {
+    return {
+        Application: MockApplication,
+        Entity: MockEntity,
+        Vec2: MockVec2,
+        Vec3: MockVec3,
+        Quat: MockQuat,
+        Color: MockColor,
+        BoundingBox: MockBoundingBox,
+        StandardMaterial: MockStandardMaterial,
+        Mouse: MockMouse,
+        TouchDevice: MockTouchDevice,
+        FILLMODE_FILL_WINDOW: 0,
+        RESOLUTION_AUTO: 0,
+        BLEND_NORMAL: 1,
+        MOUSEBUTTON_LEFT: 0,
+        MOUSEBUTTON_MIDDLE: 1,
+        MOUSEBUTTON_RIGHT: 2,
+        EVENT_MOUSEDOWN: "mousedown",
+        EVENT_MOUSEUP: "mouseup",
+        EVENT_MOUSEMOVE: "mousemove",
+        EVENT_MOUSEWHEEL: "mousewheel",
+        EVENT_TOUCHSTART: "touchstart",
+        EVENT_TOUCHEND: "touchend",
+        EVENT_TOUCHMOVE: "touchmove",
+        EVENT_TOUCHCANCEL: "touchcancel",
+        math: {
+            lerp: (a: number, b: number, t: number) => a + (b - a) * t,
+            clamp: (value: number, min: number, max: number) => Math.min(Math.max(value, min), max),
+            RAD_TO_DEG: 180 / Math.PI,
+            DEG_TO_RAD: Math.PI / 180,
+        },
+    };
+}
+
 /**
  * Creates a mock node with scene for mesh instances
  */
