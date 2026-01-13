@@ -16,8 +16,8 @@ describe("PlayCanvasCamera inputs unit tests", () => {
             expect(dto.pitchAngleMin).toBe(-90);
             expect(dto.pitchAngleMax).toBe(90);
             expect(dto.orbitSensitivity).toBe(0.3);
-            expect(dto.distanceSensitivity).toBe(0.15);
-            expect(dto.inertiaFactor).toBe(0);
+            expect(dto.distanceSensitivity).toBe(0.5);
+            expect(dto.inertiaFactor).toBe(0.1);
             expect(dto.autoRender).toBe(true);
             expect(dto.frameOnStart).toBe(true);
             expect(dto.focusEntity).toBeUndefined();
@@ -71,7 +71,7 @@ describe("PlayCanvasCamera inputs unit tests", () => {
         it("should create OrbitCameraDto with custom orbitSensitivity when provided", () => {
             const dto = new PlayCanvasCamera.OrbitCameraDto(undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0.5);
             expect(dto.orbitSensitivity).toBe(0.5);
-            expect(dto.distanceSensitivity).toBe(0.15);
+            expect(dto.distanceSensitivity).toBe(0.5);
         });
 
         it("should create OrbitCameraDto with custom distanceSensitivity when provided", () => {

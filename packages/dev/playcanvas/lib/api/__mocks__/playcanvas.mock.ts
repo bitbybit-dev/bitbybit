@@ -210,6 +210,9 @@ export class MockEntity {
     setLocalRotation(quat: MockQuat) {
         this.setRotation(quat);
     }
+    setEulerAngles(x: number, y: number, z: number) {
+        this._rotation.setFromEulerAngles(x, y, z);
+    }
     lookAt(target: MockVec3) { }
     findByName() { return null; }
     findOne() { return null; }
