@@ -18,7 +18,9 @@ export class CSVBitByBit {
         // Convert literal escape sequences to actual characters
         const rowSeparator = this.convertEscapeSequences(inputs.rowSeparator || "\n");
         const columnSeparator = this.convertEscapeSequences(inputs.columnSeparator || ",");
-        const lines = inputs.csv.split(rowSeparator);
+        // Also convert escape sequences in the CSV data itself (e.g., literal "\n" to actual newline)
+        const csvData = this.convertEscapeSequences(inputs.csv);
+        const lines = csvData.split(rowSeparator);
         const result: string[][] = [];
         
         for (let i = 0; i < lines.length; i++) {
