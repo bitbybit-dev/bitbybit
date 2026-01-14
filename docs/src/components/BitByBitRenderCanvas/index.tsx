@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, useState, useCallback, useId, CSSProperties } from "react";
 import Admonition from "@theme/Admonition";
 import CodeBlock from "@theme/CodeBlock";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 type ScriptType = "rete" | "blockly" | "typescript";
 
 interface ScriptProp {
     script: string;
-    version: string;
+    version?: string; // Made optional - will use default from config if not provided
     type: ScriptType;
 }
 
@@ -62,6 +63,8 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const canvasContainerRef = useRef<HTMLDivElement>(null);
     const uniqueId = useId();
+    const { siteConfig } = useDocusaurusContext();
+    const defaultVersion = siteConfig.customFields?.bitbybitVersion as string || "0.21.1";
 
     const [isIframeReady, setIsIframeReady] = useState(false);
     const [loadIframe, setLoadIframe] = useState(!requireManualStart);
@@ -83,14 +86,19 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     const dataToPost = React.useMemo<PostMessageData | null>(() => {
         if (!scriptProp || !scriptProp.script) return null;
         try {
-            const stringifiedFullScriptProp = JSON.stringify(scriptProp);
+            // Use version from script prop if provided, otherwise use default from config
+            const scriptWithVersion = {
+                ...scriptProp,
+                version: scriptProp.version || defaultVersion
+            };
+            const stringifiedFullScriptProp = JSON.stringify(scriptWithVersion);
             return { script: { script: stringifiedFullScriptProp, type: scriptProp.type }, type: "openScript" as const };
         }
         catch (error) {
             console.error("Error stringifying scriptProp:", error, scriptProp);
             return null;
         }
-    }, [scriptProp]);
+    }, [scriptProp, defaultVersion]);
 
     const postMessageToIframe = useCallback((message: PostMessageData) => {
         if (iframeRef.current?.contentWindow && fullIframeUrl) {
