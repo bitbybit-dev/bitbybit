@@ -230,6 +230,9 @@ For online TypeScript editor at bitbybit.dev:
 - Full (94k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md
 - Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md
 
+### Full API on Github
+- API with short explanations: https://github.com/bitbybit-dev/bitbybit/blob/master/docs/API.md
+
 ## GitHub & Contributing
 
 - Main Repository: https://github.com/bitbybit-dev/bitbybit
