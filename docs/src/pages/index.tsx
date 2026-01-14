@@ -36,7 +36,7 @@ const learningPaths = [
     subtitle: "No coding required",
     description: "Create 3D models using intuitive node-based editors like Rete and Blockly. Perfect for designers and beginners.",
     IconComponent: ArtIcon,
-    link: "/learn/getting-started/overview",
+    link: "/learn/getting-started/rete/hello-world",
     features: ["Drag & drop nodes", "Real-time preview", "Export ready models"],
   },
   {
@@ -44,7 +44,7 @@ const learningPaths = [
     subtitle: "Full programmatic control",
     description: "Write code in our Monaco editor with full TypeScript support, autocomplete, and access to the complete API.",
     IconComponent: CodeIcon,
-    link: "/learn/code/intro",
+    link: "/learn/npm-packages/intro",
     features: ["Type-safe API", "Monaco editor", "NPM packages"],
   },
   {
