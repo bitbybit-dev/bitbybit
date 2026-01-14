@@ -22,6 +22,8 @@ import {
   BlocklyEditorIcon,
   TypeScriptEditorIcon,
   TerminalIcon,
+  AIRobotIcon,
+  Context7Icon,
 } from "@site/src/components/Icons";
 import { useState } from "react";
 
@@ -168,7 +170,7 @@ function HeroSection() {
         <p className={styles.heroSubtitle}>
           Learn to create stunning parametric 3D models using visual programming or code. Understand how to use our E-Commerce solutions.
           <br />
-          From beginners to professionals — your journey to 3D mastery starts here.
+          From beginners to professionals - your journey to 3D mastery starts here.
         </p>
         <div className={styles.heroButtons}>
           <Link className={styles.primaryButton} to="/learn/getting-started/overview">
@@ -444,6 +446,83 @@ function ShopifyBitsSection() {
   );
 }
 
+function AICodingSection() {
+  return (
+    <section className={styles.aiSection}>
+      <div className={styles.aiBackground}>
+        <div className={styles.aiGradientOrb1}></div>
+        <div className={styles.aiGradientOrb2}></div>
+        <div className={styles.aiParticles}>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+        </div>
+      </div>
+      <div className="container">
+        <div className={styles.aiContent}>
+          <div className={styles.aiHeader}>
+            <div className={styles.aiBadge}>
+              <span className={styles.aiBadgeIcon}>✦</span>
+              <span>AI-Powered Development</span>
+            </div>
+            <Heading as="h2">Code with AI Assistants</Heading>
+            <p>
+              Supercharge your 3D development workflow by leveraging AI coding assistants like GitHub Copilot, 
+              Claude, and ChatGPT. Use our specialized context files to help AI understand Bitbybit's APIs.
+            </p>
+          </div>
+          <div className={styles.aiCardsGrid}>
+            <Link to="/learn/using-ai-with-bitbybit/intro" className={styles.aiCard}>
+              <div className={styles.aiCardGlow}></div>
+              <div className={styles.aiCardIcon}>
+                <AIRobotIcon size={56} />
+              </div>
+              <h3>Getting Started with AI</h3>
+              <p>
+                Learn how to effectively prompt AI assistants to generate Bitbybit code, understand our patterns, 
+                and accelerate your 3D development.
+              </p>
+              <span className={styles.aiCardCta}>Learn More →</span>
+            </Link>
+            <Link to="/learn/using-ai-with-bitbybit/prompt-contexts" className={styles.aiCard}>
+              <div className={styles.aiCardGlow}></div>
+              <div className={styles.aiCardIcon}>
+                <CodeIcon size={56} />
+              </div>
+              <h3>Context Files</h3>
+              <p>
+                Download engine-specific context files for BabylonJS, Three.js, and PlayCanvas to enhance 
+                AI understanding of your development environment.
+              </p>
+              <span className={styles.aiCardCta}>Get Contexts →</span>
+            </Link>
+            <Link to="/learn/using-ai-with-bitbybit/mcp/context-7" className={styles.aiCard}>
+              <div className={styles.aiCardGlow}></div>
+              <div className={styles.aiCardIcon}>
+                <Context7Icon size={56} />
+              </div>
+              <h3>Context7 MCP</h3>
+              <p>
+                Use the Context7 Model Context Protocol server to automatically provide Bitbybit documentation 
+                to AI models like Claude.
+              </p>
+              <span className={styles.aiCardCta}>Setup MCP →</span>
+            </Link>
+          </div>
+          <div className={styles.aiFooter}>
+            <p>
+              Works with popular AI assistants including GitHub Copilot, Claude, ChatGPT, and any MCP-compatible tool.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CTASection() {
   return (
     <section className={styles.ctaSection}>
@@ -544,6 +623,7 @@ export default function Home(): ReactNode {
         <WhatYouCanBuildSection />
         <TechnologiesSection />
         <QuickStartSection />
+        <AICodingSection />
         <ShopifyBitsSection />
         <CommunitySection />
         <CTASection />

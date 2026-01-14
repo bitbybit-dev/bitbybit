@@ -7,9 +7,66 @@ description: Learn how to use AI Prompt Context files to give your AI coding ass
 tags: [ai, babylonjs, threejs, playcanvas]
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import { DownloadButton } from '@site/src/components/DownloadButton';
+
 # AI Prompt Context Files
 
 Modern AI assistants like Claude, Gemini, Grok, or ChatGPT are remarkably capable at writing code. However, they can struggle with specialized libraries and APIs they weren't extensively trained on. That's where **AI Prompt Contexts** come in - specially crafted documentation files that give your AI assistant deep knowledge of the Bitbybit API.
+
+---
+
+## Download Context Files
+
+Choose the context file that matches your 3D rendering engine. **Right-click and "Save As"** to download, or open and copy the content.
+
+<Tabs>
+  <TabItem value="monaco" label="Monaco Editor" default>
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(240, 206, 187, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(240, 206, 187, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#F0CEBB' }}>Monaco Editor Context (Beginner-Friendly)</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>For users of our online TypeScript editor at <a href="https://bitbybit.dev/app?editor=typescript">bitbybit.dev/app</a></p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-monaco-ai-context-v0.21.1.md" label="Monaco Context (~116k tokens)" variant="full" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="babylonjs" label="BabylonJS">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(187, 70, 75, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(187, 70, 75, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#BB464B' }}>BabylonJS Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Full-featured 3D engine with powerful rendering capabilities</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-ai-context-v0.21.1.md" label="Full Context (~116k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-no-comment-min-ai-v0.21.1.md" label="Lite Context (~114k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="threejs" label="ThreeJS">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(4, 158, 244, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(4, 158, 244, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#049EF4' }}>ThreeJS Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Popular, lightweight 3D library for web applications</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-ai-context-v0.21.1.md" label="Full Context (~95k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-no-comment-min-ai-v0.21.1.md" label="Lite Context (~82k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="playcanvas" label="PlayCanvas">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(255, 107, 53, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#FF6B35' }}>PlayCanvas Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Game engine with visual editor and runtime</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md" label="Full Context (~94k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md" label="Lite Context (~82k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+</Tabs>
+
+:::tip Which version should I choose?
+- **Full Context** - Best for beginners. Includes explanations, setup guides, and complete API reference.
+- **Lite Context** - Best for experienced developers. Minimal size, just API definitions with abbreviated notation.
+:::
 
 ---
 
@@ -27,54 +84,30 @@ Think of it as giving your AI assistant a complete reference manual it can consu
 
 ---
 
-## Choosing the Right Context
+## How to Use Context Files
 
-We offer several context variants tailored to different needs and 3D rendering engines.
+### Step 1: Download or Copy
 
-### Engine-Specific Contexts
+Click the download button above for your engine, then either:
+- **Right-click → Save As** to download the file
+- Or open the file and copy its entire content
 
-Each context file is tailored to a specific 3D rendering engine:
+### Step 2: Attach to Your AI Conversation
 
-| Engine | Use Case |
-|--------|----------|
-| **BabylonJS** | Full-featured 3D engine with powerful rendering capabilities |
-| **ThreeJS** | Popular, lightweight 3D library for web applications |
-| **PlayCanvas** | Game engine with visual editor and runtime |
+Most modern AI interfaces support file attachments:
+- Drag and drop the file into the chat
+- Use the attachment button
+- Or paste the content directly
 
-The engine-specific details matter because initialization patterns, scene management, and rendering APIs differ between engines.
+### Step 3: Start Coding with AI
 
-### Full vs Lite Versions
+Once attached, ask questions like:
 
-For each engine, we provide two versions:
+- *"Create a parametric table with adjustable legs"*
+- *"Show me how to create a filleted box and export it as STEP"*
+- *"Build a gear with 24 teeth and a 5mm module"*
 
-#### Full Contexts
-
-Full contexts contain everything an AI needs to help you from scratch:
-
-- Extensive explanations of what Bitbybit is
-- Project setup guides
-- Integration guides for NPM packages and browser-based runners
-- Best practices for performance
-- Scene setup recommendations
-- Complete API reference with detailed descriptions
-
-**Best for:** Beginners or developers who want comprehensive guidance.
-
-#### Lite Contexts
-
-Lite contexts strip away explanations and focus purely on API definitions. They use a compressed notation to minimize token usage.
-
-**Best for:** Experienced developers who want to set up their own custom coding rules, project preferences, or coding style guides alongside the API definitions.
-
-### Monaco Editor Context (Beginner-Friendly)
-
-We provide a special context for users of our online Monaco TypeScript editor at [bitbybit.dev/app](https://bitbybit.dev/app?editor=typescript). This context:
-
-- Focuses only on what you need when coding in the browser-based editor
-- Explains pre-initialized global variables available in that environment
-- Covers specific patterns required for that context
-
-**Perfect for:** Getting started with Bitbybit and experimenting in the online editor.
+The AI will reference the context to generate accurate, working code that follows Bitbybit's recommended patterns.
 
 ---
 
@@ -110,60 +143,6 @@ The abbreviated forms are only for documentation - they would not compile if use
 :::warning
 If your AI agent cannot translate these abbreviated values, the code will not work. If that happens, consider using the Full context version or a more capable AI model.
 :::
-
----
-
-## How to Use Prompt Context Files
-
-### Step 1: Download the Context File
-
-Download the appropriate markdown file from the links below or from our homepage at [bitbybit.dev](https://bitbybit.dev).
-
-### Step 2: Attach to Your AI Conversation
-
-Most modern AI interfaces support file attachments:
-- Drag and drop the file into the chat
-- Use the attachment button
-- Or paste the content directly
-
-### Step 3: Start Coding with AI
-
-Once attached, ask questions like:
-
-- *"Create a parametric table with adjustable legs"*
-- *"Show me how to create a filleted box and export it as STEP"*
-- *"Build a gear with 24 teeth and a 5mm module"*
-
-The AI will reference the context to generate accurate, working code that follows Bitbybit's recommended patterns.
-
----
-
-## Download Links
-
-### For Beginners (Monaco Editor)
-
-<VersionLink href="https://app.bitbybit.dev/assets/ai-prompt-context/v{version}/bitbybit-babylon-monaco-ai-context-v{version}.md">Monaco Editor Context</VersionLink> (~116k tokens)
-
-### BabylonJS
-
-| Version | Link | Size |
-|---------|------|------|
-| Full | <VersionLink href="https://app.bitbybit.dev/assets/ai-prompt-context/v{version}/bitbybit-babylon-ai-context-v{version}.md">Download Full Context</VersionLink> | ~116k tokens |
-| Lite | <VersionLink href="https://app.bitbybit.dev/assets/ai-prompt-context/v{version}/bitbybit-babylon-no-comment-min-ai-v{version}.md">Download Lite Context</VersionLink> | ~114k tokens |
-
-### ThreeJS
-
-| Version | Link | Size |
-|---------|------|------|
-| Full | <VersionLink href="https://app.bitbybit.dev/assets/ai-prompt-context/v{version}/bitbybit-three-ai-context-v{version}.md">Download Full Context</VersionLink> | ~95k tokens |
-| Lite | <VersionLink href="https://app.bitbybit.dev/assets/ai-prompt-context/v{version}/bitbybit-three-no-comment-min-ai-v{version}.md">Download Lite Context</VersionLink> | ~82k tokens |
-
-### PlayCanvas
-
-| Version | Link | Size |
-|---------|------|------|
-| Full | <VersionLink href="https://app.bitbybit.dev/assets/ai-prompt-context/v{version}/bitbybit-playcanvas-ai-context-v{version}.md">Download Full Context</VersionLink> | ~94k tokens |
-| Lite | <VersionLink href="https://app.bitbybit.dev/assets/ai-prompt-context/v{version}/bitbybit-playcanvas-no-comment-min-ai-v{version}.md">Download Lite Context</VersionLink> | ~82k tokens |
 
 ---
 

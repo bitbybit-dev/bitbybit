@@ -1529,3 +1529,245 @@
   text-decoration: none;
   transform: translateX(4px);
 }
+
+/* AI Coding Section */
+.aiSection {
+  position: relative;
+  padding: 100px 0;
+  background: linear-gradient(180deg, #121315 0%, #1a1c1f 50%, #121315 100%);
+  overflow: hidden;
+}
+
+.aiBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.aiGradientOrb1 {
+  position: absolute;
+  top: -150px;
+  left: -100px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, rgba(138, 43, 226, 0.05) 40%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: aiOrbFloat1 15s ease-in-out infinite;
+}
+
+.aiGradientOrb2 {
+  position: absolute;
+  bottom: -150px;
+  right: -100px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 200, 255, 0.12) 0%, rgba(0, 200, 255, 0.04) 40%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: aiOrbFloat2 18s ease-in-out infinite;
+}
+
+@keyframes aiOrbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, 30px) scale(1.1); }
+}
+
+@keyframes aiOrbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, -30px) scale(1.15); }
+}
+
+.aiParticles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.aiParticle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(138, 43, 226, 0.6);
+  border-radius: 50%;
+  animation: aiParticleFloat 12s ease-in-out infinite;
+}
+
+.aiParticle:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
+.aiParticle:nth-child(2) { top: 60%; left: 80%; animation-delay: 2s; background: rgba(0, 200, 255, 0.6); }
+.aiParticle:nth-child(3) { top: 40%; left: 50%; animation-delay: 4s; }
+.aiParticle:nth-child(4) { top: 75%; left: 25%; animation-delay: 6s; background: rgba(240, 206, 187, 0.6); }
+.aiParticle:nth-child(5) { top: 30%; left: 70%; animation-delay: 8s; background: rgba(0, 200, 255, 0.6); }
+.aiParticle:nth-child(6) { top: 85%; left: 60%; animation-delay: 10s; }
+
+@keyframes aiParticleFloat {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-30px) scale(1.5); opacity: 1; }
+}
+
+.aiContent {
+  position: relative;
+  z-index: 1;
+}
+
+.aiHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.aiBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.15) 0%, rgba(0, 200, 255, 0.1) 100%);
+  border: 1px solid rgba(138, 43, 226, 0.3);
+  border-radius: 30px;
+  padding: 8px 20px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #c792ea;
+  backdrop-filter: blur(10px);
+}
+
+.aiBadgeIcon {
+  font-size: 16px;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.aiHeader h2 {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 300;
+  color: #ffffff;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
+
+.aiHeader > p {
+  max-width: 700px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.aiCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+@media (max-width: 996px) {
+  .aiCardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .aiCardsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aiCard {
+  position: relative;
+  background: linear-gradient(145deg, rgba(30, 32, 36, 0.8) 0%, rgba(20, 22, 25, 0.9) 100%);
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  border-radius: 20px;
+  padding: 32px 28px;
+  text-decoration: none;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.aiCard:hover {
+  transform: translateY(-8px);
+  border-color: rgba(138, 43, 226, 0.5);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(138, 43, 226, 0.15);
+  text-decoration: none;
+}
+
+.aiCardGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(138, 43, 226, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.aiCard:hover .aiCardGlow {
+  opacity: 1;
+}
+
+.aiCardIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.15) 0%, rgba(0, 200, 255, 0.08) 100%);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  transition: all 0.3s ease;
+}
+
+.aiCard:hover .aiCardIcon {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.25) 0%, rgba(0, 200, 255, 0.15) 100%);
+  border-color: rgba(138, 43, 226, 0.4);
+  transform: scale(1.05);
+}
+
+.aiCardIcon svg {
+  color: #c792ea;
+}
+
+.aiCard h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
+}
+
+.aiCard p {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 15px;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.aiCardCta {
+  display: inline-flex;
+  align-items: center;
+  color: #c792ea;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.aiCard:hover .aiCardCta {
+  color: #e0b0ff;
+  transform: translateX(4px);
+}
+
+.aiFooter {
+  text-align: center;
+}
+
+.aiFooter p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  max-width: 600px;
+  margin: 0 auto;
+}
