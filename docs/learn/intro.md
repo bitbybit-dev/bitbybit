@@ -35,7 +35,7 @@ To get started:
 
 *   We offer [**NPM packages**](/learn/npm-packages/intro) that you can incorporate into your own websites.
     *   *Note: These packages do not include our proprietary advanced algorithms or the models available in the 3D Models section.*
-*   Check out how to set up our algorithms with [**Three.JS**](/learn/npm-packages/threejs/intro) or [**Babylon.JS**](/learn/npm-packages/babylonjs/intro). We include some complete powerful demos with explanations.
+*   Check out how to set up our algorithms with [**Three.JS**](/learn/npm-packages/threejs), [**Babylon.JS**](/learn/npm-packages/babylonjs) or [**PlayCanvas**](/learn/npm-packages/playcanvas). We include some complete powerful demos with explanations.
 *   Also consider our course: [**Introduction To Programming 3D In TypeScript**](https://bitbybit.dev/school/courses/introduction-to-programming-3d-in-typescript).
 *   Or, if you're familiar with BabylonJS: [**Bitbybit For BabylonJS Developers**](https://bitbybit.dev/school/courses/bitbybit-for-babylonjs-developers).
     These courses explore how our algorithms can create 3D CAD applications.
