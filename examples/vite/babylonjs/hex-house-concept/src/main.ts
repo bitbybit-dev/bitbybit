@@ -1,8 +1,7 @@
 import "./style.css";
-import { BitByBitBase, Inputs } from "@bitbybit-dev/babylonjs";
-import { model, type KernelOptions, current } from "./models";
+import { BitByBitBase, Inputs, initBitByBit, type InitBitByBitOptions } from "@bitbybit-dev/babylonjs";
+import { model, current } from "./models";
 import {
-  initKernels,
   initBabylonJS,
   createGui,
   createShape,
@@ -16,7 +15,7 @@ import {
   downloadStep,
 } from "./helpers";
 
-const kernelOptions: KernelOptions = {
+const options: InitBitByBitOptions = {
   enableOCCT: true,
   enableJSCAD: false,
   enableManifold: false,
@@ -28,14 +27,13 @@ async function start() {
   const { scene, engine } = initBabylonJS();
 
   const bitbybit = new BitByBitBase();
-  bitbybit.context.scene = scene;
-  bitbybit.context.engine = engine;
+
+  await initBitByBit(scene, bitbybit, options);
+  
   createDirLightsAndGround(bitbybit, current);
 
-  await initKernels(scene, bitbybit, kernelOptions);
-
   let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
-  let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
+  const shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
 
   model.downloadStep = () => downloadStep(bitbybit, finalShape);
   model.downloadGLTF = () => downloadGLTF(bitbybit);

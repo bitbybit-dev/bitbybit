@@ -1,8 +1,7 @@
 import "./style.css";
-import { BitByBitBase, Inputs } from "@bitbybit-dev/threejs";
-import { model, type KernelOptions, current } from "./models";
+import { BitByBitBase, Inputs, initBitByBit, type InitBitByBitOptions } from "@bitbybit-dev/threejs";
+import { model, current } from "./models";
 import {
-    initKernels,
     initThreeJS,
     createGui,
     createShapeLod1,
@@ -17,7 +16,7 @@ import {
     downloadStep,
 } from "./helpers";
 
-const kernelOptions: KernelOptions = {
+const options: InitBitByBitOptions = {
     enableOCCT: true,
     enableJSCAD: false,
     enableManifold: false,
@@ -30,10 +29,10 @@ async function start() {
     createDirLightsAndGround(scene, current);
 
     const bitbybit = new BitByBitBase();
-    await initKernels(scene, bitbybit, kernelOptions);
+    await initBitByBit(scene, bitbybit, options);
 
     let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
-    let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
+    const shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
 
     model.downloadStep = () => downloadStep(bitbybit, finalShape);
     model.downloadGLB = () => downloadGLB(scene);

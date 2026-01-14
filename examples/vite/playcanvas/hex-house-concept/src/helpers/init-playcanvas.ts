@@ -59,7 +59,7 @@ export function initPlayCanvas() {
 export function setupOrbitCamera(bitbybit: BitByBitBase, camera: Entity) {
   const cameraOptions = new Inputs.PlayCanvasCamera.OrbitCameraDto();
   cameraOptions.distance = 20;
-  cameraOptions.pitch = -24;
+  cameraOptions.pitch = 24;
   cameraOptions.yaw = 27;
   cameraOptions.frameOnStart = false;
   cameraOptions.inertiaFactor = 0.2;
