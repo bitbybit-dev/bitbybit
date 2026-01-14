@@ -10,6 +10,46 @@ tags: [npm-packages, threejs, babylonjs, playcanvas, occt, manifold, jscad]
 
 When developing standalone applications in TypeScript or JavaScript, you often use third-party libraries and frameworks. We've developed several open-source NPM packages (MIT Licensed) to help you integrate our powerful 3D CAD algorithms directly into your applications.
 
+---
+
+## Quick Start with CLI
+
+The fastest way to get started is with our CLI tool. Scaffold a fully-configured 3D CAD project in seconds:
+
+```bash
+npx @bitbybit-dev/create-app my-awesome-project
+```
+
+The CLI guides you through an interactive setup where you choose your preferred 3D engine (Three.js, Babylon.js, or PlayCanvas). You can also specify the engine directly:
+
+```bash
+npx @bitbybit-dev/create-app my-project --engine babylonjs
+```
+
+### What You Get
+
+Your scaffolded project includes:
+
+- **Vite** for fast development and optimized production builds
+- **TypeScript** configured out of the box
+- **All three geometry kernels** pre-configured and ready to use:
+  - **OCCT** (OpenCascade) for professional CAD operations
+  - **JSCAD** for programmatic solid modeling
+  - **Manifold** for fast mesh boolean operations
+- **Starter code** demonstrating each kernel's capabilities
+
+### Development Workflow
+
+```bash
+cd my-awesome-project
+npm install
+npm run dev
+```
+
+Your browser opens with a live 3D preview at `http://localhost:5173`. Changes appear instantly with hot reload.
+
+---
+
 ## Architecture of NPM Packages
 
 The following diagram illustrates the architecture of our NPM packages. Each game engine-specific package (`@bitbybit-dev/threejs`, `@bitbybit-dev/babylonjs`, `@bitbybit-dev/playcanvas`) connects through the `@bitbybit-dev/core` layer. This creates a streamlined, extensible structure that supports a range of integrations with various geometry kernels like OCCT, JSCAD, and Manifold.
