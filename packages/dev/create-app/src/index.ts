@@ -280,7 +280,7 @@ async function main(): Promise<void> {
     program
         .name("@bitbybit-dev/create-app")
         .description("Scaffold a new Bit By Bit Developers 3D/CAD project")
-        .version("0.21.0")
+        .version("0.21.1")
         .argument("[project-name]", "Name of the project to create")
         .option("-e, --engine <engine>", "Game engine to use (threejs, babylonjs, playcanvas)")
         .action(async (projectName: string | undefined, cmdOptions: { engine?: string }) => {

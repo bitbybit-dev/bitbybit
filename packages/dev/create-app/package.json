@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/create-app",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "description": "CLI tool to scaffold Bit By Bit Developers 3D/CAD projects with your favorite game engine",
   "type": "module",
   "bin": {

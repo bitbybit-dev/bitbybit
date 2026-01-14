@@ -155,7 +155,7 @@ For production applications requiring maximum reliability and control, consider 
     <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-lite-playcanvas.js"></script>
     ```
 
-**Note:** You should replace `<version-number-of-bitbybit>` with an actual version number (e.g., `0.21.0`). You can find all the official versions of Bitbybit.dev here:
+**Note:** You should replace `<version-number-of-bitbybit>` with an actual version number (e.g., `0.21.1`). You can find all the official versions of Bitbybit.dev here:
 ➡️ **[Bitbybit.dev GitHub Releases](https://github.com/bitbybit-dev/bitbybit/releases)**
 
 ### Examples of the Runners
