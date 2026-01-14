@@ -1,6 +1,5 @@
 import "./style.css";
-import { BitByBitBase } from "@bitbybit-dev/threejs";
-import { OccStateEnum } from "@bitbybit-dev/occt-worker";
+import { BitByBitBase, initBitByBit, type InitBitByBitOptions } from "@bitbybit-dev/threejs";
 import { Inputs } from "@bitbybit-dev/threejs";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
@@ -29,7 +28,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 `;
 
 function component() {
-  let current: Current = {
+  const current: Current = {
     group: undefined,
     ground: undefined,
     gui: undefined,
@@ -44,7 +43,7 @@ function component() {
     color: "#091044",
   } as Model;
 
-  let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
+  const shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
   let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
   let bitbybit: BitByBitBase | undefined;
   let scene: Scene | undefined;
@@ -69,10 +68,10 @@ function component() {
 
   const downloadSTL = () => {
     if (scene) {
-      var exporter = new STLExporter();
-      var str = exporter.parse(scene);
-      var blob = new Blob([str], { type: "text/plain" });
-      var link = document.createElement("a");
+      const exporter = new STLExporter();
+      const str = exporter.parse(scene);
+      const blob = new Blob([str], { type: "text/plain" });
+      const link = document.createElement("a");
       link.style.display = "none";
       document.body.appendChild(link);
       link.href = URL.createObjectURL(blob);
@@ -105,10 +104,6 @@ function component() {
     const domNode = document.getElementById(
       "three-canvas"
     ) as HTMLCanvasElement;
-    const occt = new Worker(new URL("./workers/occt.worker", import.meta.url), {
-      name: "OCC",
-      type: "module",
-    });
 
     const camera = new PerspectiveCamera(
       70,
@@ -120,7 +115,13 @@ function component() {
     scene.fog = new Fog(0x1a1c1f, 15, 60);
     const light = new HemisphereLight(0xffffff, 0x000000, 10);
     scene.add(light);
-    await bitbybit.init(scene, occt, undefined);
+    
+    const options: InitBitByBitOptions = {
+      enableOCCT: true,
+      enableJSCAD: false,
+      enableManifold: false,
+    };
+    await initBitByBit(scene, bitbybit, options);
 
     const renderer = new WebGLRenderer({ antialias: true, canvas: domNode });
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -156,49 +157,45 @@ function component() {
 
     renderer.setClearColor(new Color(0x1a1c1f), 1);
 
-    bitbybit.occtWorkerManager.occWorkerState$.subscribe(async (s) => {
-      if (s.state === OccStateEnum.initialised) {
-        finalShape = await createShape(
-          bitbybit,
-          scene,
-          model,
-          shapesToClean,
-          current
-        );
+    finalShape = await createShape(
+      bitbybit,
+      scene,
+      model,
+      shapesToClean,
+      current
+    );
 
-        renderer.setAnimationLoop(animation);
+    renderer.setAnimationLoop(animation);
 
-        const dirLight = new DirectionalLight(0xffffff, 100);
-        dirLight.position.set(15, 40, -15);
-        dirLight.castShadow = true;
-        dirLight.shadow.camera.near = 0;
-        dirLight.shadow.camera.far = 300;
-        const dist = 100;
-        dirLight.shadow.camera.right = dist;
-        dirLight.shadow.camera.left = -dist;
-        dirLight.shadow.camera.top = dist;
-        dirLight.shadow.camera.bottom = -dist;
-        dirLight.shadow.mapSize.width = 2000;
-        dirLight.shadow.mapSize.height = 2000;
-        dirLight.shadow.blurSamples = 8;
-        dirLight.shadow.radius = 2;
-        dirLight.shadow.bias = -0.0005;
+    const dirLight = new DirectionalLight(0xffffff, 100);
+    dirLight.position.set(15, 40, -15);
+    dirLight.castShadow = true;
+    dirLight.shadow.camera.near = 0;
+    dirLight.shadow.camera.far = 300;
+    const dist = 100;
+    dirLight.shadow.camera.right = dist;
+    dirLight.shadow.camera.left = -dist;
+    dirLight.shadow.camera.top = dist;
+    dirLight.shadow.camera.bottom = -dist;
+    dirLight.shadow.mapSize.width = 2000;
+    dirLight.shadow.mapSize.height = 2000;
+    dirLight.shadow.blurSamples = 8;
+    dirLight.shadow.radius = 2;
+    dirLight.shadow.bias = -0.0005;
 
-        scene?.add(dirLight);
+    scene?.add(dirLight);
 
-        const material = new MeshPhongMaterial({ color: 0x091044 });
-        material.shininess = 0;
-        material.specular = new Color(0x222222);
-        const ground = new Mesh(new PlaneGeometry(40, 40, 1, 1), material);
-        ground.rotateX(-Math.PI / 2);
-        ground.receiveShadow = true;
-        ground.position.y = -0.01;
-        current.ground = ground;
-        scene?.add(ground);
+    const material = new MeshPhongMaterial({ color: 0x091044 });
+    material.shininess = 0;
+    material.specular = new Color(0x222222);
+    const ground = new Mesh(new PlaneGeometry(40, 40, 1, 1), material);
+    ground.rotateX(-Math.PI / 2);
+    ground.receiveShadow = true;
+    ground.position.y = -0.01;
+    current.ground = ground;
+    scene?.add(ground);
 
-        createGui();
-      }
-    });
+    createGui();
   };
 
   const disableGUI = () => {

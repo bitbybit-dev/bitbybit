@@ -139,7 +139,7 @@ When you export, you get JSON like this:
 
 ```json
 {
-    "$schema": "https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.21.0.json",
+    "$schema": "https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.21.1.json",
     "models": [
         {
         "name": "Main Product",

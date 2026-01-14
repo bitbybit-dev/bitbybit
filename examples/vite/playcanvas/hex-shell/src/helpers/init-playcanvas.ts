@@ -61,7 +61,7 @@ export function setupOrbitCamera(
 ) {
     const cameraOptions = new Inputs.PlayCanvasCamera.OrbitCameraDto();
     cameraOptions.distance = 125;
-    cameraOptions.pitch = -24;
+    cameraOptions.pitch = 24;
     cameraOptions.yaw = 27;
     cameraOptions.frameOnStart = false;
     cameraOptions.inertiaFactor = 0.2;

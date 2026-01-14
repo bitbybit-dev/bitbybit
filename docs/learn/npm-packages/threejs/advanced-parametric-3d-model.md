@@ -55,18 +55,16 @@ This project is typically structured with:
 *   `index.html`: The main HTML file to host the canvas and load scripts.
 *   `style.css`: For basic styling of the page and UI elements like a loading spinner.
 *   `src/main.ts`: The main entry point of our application, orchestrating scene setup, Bitbybit initialization, GUI, and geometry updates.
-*   `src/models/`: A directory to define data structures for our model parameters (`model.ts`), kernel initialization options (`kernel-options.ts`), and current scene state (`current.ts`).
+*   `src/models/`: A directory to define data structures for our model parameters (`model.ts`) and current scene state (`current.ts`).
 *   `src/helpers/`: A directory for utility functions, broken down by responsibility:
     *   `init-threejs.ts`: Sets up the ThreeJS scene, camera, renderer, lights, and ground.
-    *   `init-kernels.ts`: Handles the initialization of selected Bitbybit geometry kernels.
     *   `create-shape.ts`: Contains the core logic for generating the parametric 3D geometry using OCCT. This is where the detailed CAD operations happen.
     *   `create-gui.ts`: Sets up the `lil-gui` panel and links its controls to the model parameters and update functions.
     *   `downloads.ts`: Implements functions for exporting the model to various file formats.
     *   `gui-helper.ts`: Provides utility functions for managing the GUI state (e.g., showing/hiding a spinner, disabling/enabling GUI).
-*   `src/workers/`: Directory containing the individual worker files for each geometry kernel (e.g., `occt.worker.ts`).
 
-<Admonition type="info" title="Worker Setup">
-  For a detailed explanation of how to set up the Web Worker files (`occt.worker.ts`, `jscad.worker.ts`, `manifold.worker.ts`), please refer to our [**ThreeJS Integration Starter Tutorial**](./start-with-three-js). This current tutorial focuses on the application logic built upon that foundation.
+<Admonition type="info" title="Simplified Kernel Initialization">
+  Since version 0.21.1, Bitbybit provides a simplified `initBitByBit()` helper function that handles all worker creation and kernel initialization automatically by loading kernels from CDN. This eliminates the need for manual worker file setup. For details, see our [**ThreeJS Integration Starter Tutorial**](./start-with-three-js). If you need to host assets on your own infrastructure, see [Self-Hosting Assets](/learn/hosting-and-cdn).
 </Admonition>
 
 ## 1. HTML Setup (`index.html`)
@@ -114,10 +112,14 @@ This is the heart of our application, orchestrating all the major components.
 
 <CodeBlock language="typescript" title="src/main.ts">
 {`import './style.css';
-import { BitByBitBase, Inputs } from '@bitbybit-dev/threejs';
-import { model, type KernelOptions, current } from './models';
 import {
-  initKernels,
+    BitByBitBase,
+    Inputs,
+    initBitByBit,
+    type InitBitByBitOptions,
+} from '@bitbybit-dev/threejs';
+import { model, current } from './models';
+import {
   initThreeJS,
   createGui,
   createShapeLod1,
@@ -133,7 +135,7 @@ import {
 } from './helpers';
 
 // Configure which geometry kernels to enable
-const kernelOptions: KernelOptions = {
+const options: InitBitByBitOptions = {
   enableOCCT: true, // We'll use OCCT for this parametric model
   enableJSCAD: false,
   enableManifold: false,
@@ -149,7 +151,10 @@ async function start() {
 
   // 2. Initialize Bitbybit with the ThreeJS scene and selected kernels
   const bitbybit = new BitByBitBase();
-  await initKernels(scene, bitbybit, kernelOptions);
+  
+  // Initialize Bitbybit with the selected geometry kernels using the helper function.
+  // This automatically creates workers and loads kernels from CDN.
+  await initBitByBit(scene, bitbybit, options);
 
   // Variables to hold the OCCT shape representation and shapes to clean up
   let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
@@ -222,11 +227,11 @@ async function start() {
 
 **Explanation of `main.ts`:**
 
-1.  **Imports:** Pulls in necessary Bitbybit modules, data models, and helper functions.
-2.  **`kernelOptions`:** Configures which Bitbybit geometry kernels (OCCT, JSCAD, Manifold) will be initialized. For this example, only OCCT is enabled as it's used for the parametric modeling.
+1.  **Imports:** Pulls in necessary Bitbybit modules (`BitByBitBase`, `Inputs`, `initBitByBit`, `InitBitByBitOptions`), data models, and helper functions.
+2.  **`options`:** Configures which Bitbybit geometry kernels (OCCT, JSCAD, Manifold) will be initialized. For this example, only OCCT is enabled as it's used for the parametric modeling.
 3.  **`start()` function:** The main asynchronous function that orchestrates the application.
     *   **`initThreeJS()` & `createDirLightsAndGround()`:** Sets up the basic ThreeJS environment.
-    *   **`BitByBitBase` & `initKernels()`:** Initializes the Bitbybit library, linking it to the ThreeJS scene and loading the configured OCCT kernel worker.
+    *   **`BitByBitBase` & `initBitByBit()`:** Initializes the Bitbybit library with the ThreeJS scene. The `initBitByBit()` helper function automatically creates workers, loads kernel WASM files from CDN, and waits for the selected kernels to be ready.
     *   **`finalShape` & `shapesToClean`:** `finalShape` will hold a reference to the main OCCT geometry. `shapesToClean` is crucial for managing memory in OCCT by keeping track of intermediate shapes that need to be explicitly deleted after they are no
         longer needed.
     *   **Download Functions:** Attaches download helper functions to the `model` object. These will be triggered by buttons in the GUI.
@@ -245,32 +250,10 @@ async function start() {
 
 The `helpers` directory modularizes different aspects of the application.
 
-### `init-threejs.ts` & `init-kernels.ts`
+### `init-threejs.ts`
 
 *   **`initThreeJS()`:** Contains standard ThreeJS setup for scene, camera, WebGL renderer, basic lighting (HemisphereLight, DirectionalLights), a ground plane, and OrbitControls for camera manipulation. It also sets up the animation loop.
 *   **`createDirLightsAndGround()`:** A helper to specifically add directional lights (for shadows) and a ground plane to the scene.
-*   **`initKernels()`:** This function is responsible for:
-    1.  Conditionally creating Web Worker instances for each kernel specified in `kernelOptions`.
-    2.  Calling `bitbybit.init(...)` to link Bitbybit with the ThreeJS scene and these worker instances.
-    3.  Asynchronously waiting for each selected and available kernel to report that it has been fully initialized before resolving. This ensures kernels are ready before use.
-
-<CodeBlock language="typescript" title="src/helpers/init-kernels.ts (Simplified Structure)">
-{`// ... imports ...
-export async function initKernels(
-  scene: Scene,
-  bitbybit: BitByBitBase,
-  options: KernelOptions
-): Promise<{ message: string }> {
-  // 1. Conditionally create worker instances based on options
-  //    (e.g., new Worker(new URL('../workers/occt.worker.ts', import.meta.url), ...))
-  // 2. Initialize Bitbybit with scene and worker instances
-  //    await bitbybit.init(scene, occtWorker, jscadWorker, manifoldWorker);
-  // 3. Collect and await promises for kernel initializations
-  //    (e.g., using firstValueFrom on bitbybit.occtWorkerManager.occWorkerState$)
-  // 4. Resolve once selected kernels are ready
-  return { message: "Kernels initialized" };
-}`}
-</CodeBlock>
 
 ### `create-shape.ts` (Core Geometry Logic)
 
@@ -348,7 +331,6 @@ Simple utility functions to manage the UI during processing:
 ## 4. Data Models (`src/models/`)
 
 *   **`current.ts`:** Defines a `Current` type and an instance to hold references to currently active ThreeJS objects (like `Group`s for different model parts, lights, ground) and the `lil-gui` instance. This helps in easily accessing and manipulating these objects from different parts of the code.
-*   **`kernel-options.ts`:** Defines the `KernelOptions` interface used in `main.ts` to specify which geometry kernels (OCCT, JSCAD, Manifold) should be initialized by Bitbybit.
 *   **`model.ts`:** Defines the `Model` type and a default `model` object. This object holds all the parameters that control the geometry of the 3D shape (e.g., `uHex`, `vHex`, `height`, colors, precision). The `lil-gui` directly manipulates this object. It also includes optional function signatures for `update` and download methods, which are later assigned in `main.ts` and `create-gui.ts`.
 
 ## 5. Styles (`style.css`)

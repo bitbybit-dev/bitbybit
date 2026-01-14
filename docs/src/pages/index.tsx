@@ -12,19 +12,20 @@ import {
   GamepadIcon,
   SofaIcon,
   BuildingIcon,
-  TargetIcon,
   OpenSourceIcon,
   BookIcon,
   RingIcon,
-  BlocksIcon,
   UserPlusIcon,
-  MonacoIcon,
   ShopifyBagIcon,
   NoCodeIcon,
   ReteEditorIcon,
   BlocklyEditorIcon,
   TypeScriptEditorIcon,
+  TerminalIcon,
+  AIRobotIcon,
+  Context7Icon,
 } from "@site/src/components/Icons";
+import { useState } from "react";
 
 import styles from "./index.module.css";
 
@@ -35,7 +36,7 @@ const learningPaths = [
     subtitle: "No coding required",
     description: "Create 3D models using intuitive node-based editors like Rete and Blockly. Perfect for designers and beginners.",
     IconComponent: ArtIcon,
-    link: "/learn/getting-started/overview",
+    link: "/learn/getting-started/rete/hello-world",
     features: ["Drag & drop nodes", "Real-time preview", "Export ready models"],
   },
   {
@@ -43,7 +44,7 @@ const learningPaths = [
     subtitle: "Full programmatic control",
     description: "Write code in our Monaco editor with full TypeScript support, autocomplete, and access to the complete API.",
     IconComponent: CodeIcon,
-    link: "/learn/code/intro",
+    link: "/learn/npm-packages/intro",
     features: ["Type-safe API", "Monaco editor", "NPM packages"],
   },
   {
@@ -61,7 +62,7 @@ const technologies = [
   {
     name: "Three.js",
     description: "Integrate Bitbybit's CAD capabilities with the popular Three.js rendering engine.",
-    link: "/learn/npm-packages/threejs",
+    link: "/learn/getting-started/engines/threejs",
     color: "#049EF4",
     logo: "https://bitbybit.dev/assets/threejs-logo.png",
     isGameEngine: true,
@@ -69,7 +70,7 @@ const technologies = [
   {
     name: "Babylon.js",
     description: "Build powerful 3D experiences combining Bitbybit geometry with Babylon.js features.",
-    link: "/learn/npm-packages/babylonjs",
+    link: "/learn/getting-started/engines/babylonjs",
     color: "#BB464B",
     logo: "https://bitbybit.dev/assets/babylon_logo.png",
     isGameEngine: true,
@@ -77,7 +78,7 @@ const technologies = [
   {
     name: "PlayCanvas",
     description: "Create high-performance 3D applications with Bitbybit and PlayCanvas game engine.",
-    link: "/learn/npm-packages/playcanvas",
+    link: "/learn/getting-started/engines/playcanvas",
     color: "#FF6B35",
     logo: "/img/playcanvas.png",
     isGameEngine: true,
@@ -169,7 +170,7 @@ function HeroSection() {
         <p className={styles.heroSubtitle}>
           Learn to create stunning parametric 3D models using visual programming or code. Understand how to use our E-Commerce solutions.
           <br />
-          From beginners to professionals — your journey to 3D mastery starts here.
+          From beginners to professionals - your journey to 3D mastery starts here.
         </p>
         <div className={styles.heroButtons}>
           <Link className={styles.primaryButton} to="/learn/getting-started/overview">
@@ -285,6 +286,68 @@ function TechnologiesSection() {
   );
 }
 
+function QuickStartSection() {
+  const [copied, setCopied] = useState(false);
+  const command = "npx @bitbybit-dev/create-app my-awesome-project";
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(command);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <section className={styles.quickStartSection}>
+      <div className="container">
+        <div className={styles.quickStartCard}>
+          <div className={styles.quickStartGlow}></div>
+          <div className={styles.quickStartContent}>
+            <div className={styles.quickStartIcon}>
+              <TerminalIcon size={48} />
+            </div>
+            <div className={styles.quickStartText}>
+              <h2>Quick Start with NPM Packages</h2>
+              <p>
+                Scaffold a fully-configured 3D CAD project in seconds. Includes Vite, TypeScript, and all three geometry kernels (OCCT, JSCAD, Manifold) ready to use.
+              </p>
+            </div>
+          </div>
+          <div className={styles.quickStartCommand}>
+            <code>{command}</code>
+            <button 
+              onClick={copyToClipboard} 
+              className={styles.copyButton}
+              title="Copy to clipboard"
+            >
+              {copied ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              )}
+            </button>
+          </div>
+          <div className={styles.quickStartEngines}>
+            <span>Supports:</span>
+            <div className={styles.engineBadges}>
+              <span className={styles.engineBadge}>Three.js</span>
+              <span className={styles.engineBadge}>Babylon.js</span>
+              <span className={styles.engineBadge}>PlayCanvas</span>
+            </div>
+          </div>
+          <Link to="/learn/npm-packages/intro" className={styles.quickStartLink}>
+            Learn more about NPM packages →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CommunitySection() {
   return (
     <section className={styles.communitySection}>
@@ -377,6 +440,83 @@ function ShopifyBitsSection() {
             </p>
             <span className={styles.shopifyBitsCta}>Start Creating →</span>
           </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AICodingSection() {
+  return (
+    <section className={styles.aiSection}>
+      <div className={styles.aiBackground}>
+        <div className={styles.aiGradientOrb1}></div>
+        <div className={styles.aiGradientOrb2}></div>
+        <div className={styles.aiParticles}>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+          <span className={styles.aiParticle}></span>
+        </div>
+      </div>
+      <div className="container">
+        <div className={styles.aiContent}>
+          <div className={styles.aiHeader}>
+            <div className={styles.aiBadge}>
+              <span className={styles.aiBadgeIcon}>✦</span>
+              <span>AI-Powered Development</span>
+            </div>
+            <Heading as="h2">Code with AI Assistants</Heading>
+            <p>
+              Supercharge your 3D development workflow by leveraging AI coding assistants like GitHub Copilot, 
+              Claude, and ChatGPT. Use our specialized context files to help AI understand Bitbybit's APIs.
+            </p>
+          </div>
+          <div className={styles.aiCardsGrid}>
+            <Link to="/learn/using-ai-with-bitbybit/intro" className={styles.aiCard}>
+              <div className={styles.aiCardGlow}></div>
+              <div className={styles.aiCardIcon}>
+                <AIRobotIcon size={56} />
+              </div>
+              <h3>Getting Started with AI</h3>
+              <p>
+                Learn how to effectively prompt AI assistants to generate Bitbybit code, understand our patterns, 
+                and accelerate your 3D development.
+              </p>
+              <span className={styles.aiCardCta}>Learn More →</span>
+            </Link>
+            <Link to="/learn/using-ai-with-bitbybit/prompt-contexts" className={styles.aiCard}>
+              <div className={styles.aiCardGlow}></div>
+              <div className={styles.aiCardIcon}>
+                <CodeIcon size={56} />
+              </div>
+              <h3>Context Files</h3>
+              <p>
+                Download engine-specific context files for BabylonJS, Three.js, and PlayCanvas to enhance 
+                AI understanding of your development environment.
+              </p>
+              <span className={styles.aiCardCta}>Get Contexts →</span>
+            </Link>
+            <Link to="/learn/using-ai-with-bitbybit/mcp/context-7" className={styles.aiCard}>
+              <div className={styles.aiCardGlow}></div>
+              <div className={styles.aiCardIcon}>
+                <Context7Icon size={56} />
+              </div>
+              <h3>Context7 MCP</h3>
+              <p>
+                Use the Context7 Model Context Protocol server to automatically provide Bitbybit documentation 
+                to AI models like Claude.
+              </p>
+              <span className={styles.aiCardCta}>Setup MCP →</span>
+            </Link>
+          </div>
+          <div className={styles.aiFooter}>
+            <p>
+              Works with popular AI assistants including GitHub Copilot, Claude, ChatGPT, and any MCP-compatible tool.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -482,6 +622,8 @@ export default function Home(): ReactNode {
         <LearningPathsSection />
         <WhatYouCanBuildSection />
         <TechnologiesSection />
+        <QuickStartSection />
+        <AICodingSection />
         <ShopifyBitsSection />
         <CommunitySection />
         <CTASection />

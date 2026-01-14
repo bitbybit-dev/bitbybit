@@ -1,0 +1,107 @@
+---
+sidebar_position: 2
+title: "Getting Started with ThreeJS"
+sidebar_label: "ThreeJS"
+description: "Get started with Bitbybit and ThreeJS - the world's most popular WebGL library. Learn about NPM packages and runners integration approaches."
+tags: [getting-started, threejs]
+---
+
+import Admonition from '@theme/Admonition';
+
+# Getting Started with ThreeJS
+
+<img 
+  src="https://bitbybit.dev/assets/threejs-logo.png" 
+  width="150"
+  alt="ThreeJS Logo" 
+  title="ThreeJS Logo" />
+
+ThreeJS is a popular JavaScript library for creating 3D graphics in the browser. It provides a simpler API on top of WebGL and has a huge community with countless examples and resources.
+
+**Official homepage:** <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">threejs.org</a>
+
+<Admonition type="info" title="Note">
+Our visual programming editors (Rete, Blockly, Monaco) use BabylonJS as their rendering engine. For ThreeJS, you'll work with NPM packages or Runners directly.
+</Admonition>
+
+---
+
+## Two Ways to Use ThreeJS with Bitbybit
+
+### 1. NPM Packages (Recommended)
+
+If you're building a production application or prefer working with TypeScript, use our NPM packages.
+
+The quickest way to start a new project:
+
+```bash
+npx @bitbybit-dev/create-app my-project --engine threejs
+cd my-project
+npm install
+npm run dev
+```
+
+This creates a ready-to-run project with Vite, TypeScript, and all three CAD kernels (OCCT, JSCAD, Manifold) pre-configured.
+
+NPM packages give you full TypeScript support with intellisense, optimized bundle sizes through tree-shaking, and are the recommended approach for production applications.
+
+Note that NPM packages only include our open-source algorithms. To understand which parts of Bitbybit are open-source and which are not, see our [Open Source Approach](/learn/open-source-approach) guide.
+
+**Detailed setup guide:** [Quick Start with ThreeJS](/learn/npm-packages/threejs/start-with-three-js)
+
+---
+
+### 2. Runners (Quick Prototypes)
+
+Runners are single JavaScript files that bundle everything you need. They're perfect when you want to quickly prototype something without setting up a build environment.
+
+**Full Runner** - Includes both ThreeJS and Bitbybit in one file:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-threejs.js"></script>
+```
+
+**Lite Runner** - Just Bitbybit, you load ThreeJS separately (smaller download):
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/three@latest/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-threejs-lite.js"></script>
+```
+
+Runners work great for demos on CodePen, JSFiddle, or StackBlitz. However, they only support JavaScript (no TypeScript) and have larger bundle sizes, so NPM packages are better for production work.
+
+**Learn more:** [Introduction to Runners](/learn/runners/intro) - Understand runner capabilities, limitations, and how to export visual scripts as JavaScript.
+
+**Runner guides:** [Full Runner](/learn/runners/engines/threejs/full-runner) | [Lite Runner](/learn/runners/engines/threejs/lite-runner)
+
+---
+
+## NPM vs Runners - Which Should I Use?
+
+**Choose NPM packages** when you're building something for production, want TypeScript support, or need optimized bundle sizes.
+
+**Choose Runners** when you're prototyping, creating quick demos, or just want to experiment without any setup.
+
+---
+
+## What About Visual Editors?
+
+Our visual editors use BabylonJS for rendering, but the CAD algorithms are engine-agnostic. This means you can prototype ideas in our visual editors, export the script, and adapt it for ThreeJS. The Bitbybit API is largely the same across engines - the main differences are in initialization and drawing functions.
+
+---
+
+## Next Steps
+
+If you're ready to build, run the NPX command above and check out the [starter template guide](/learn/npm-packages/threejs/start-with-three-js).
+
+If you want to understand ThreeJS better, read [About ThreeJS](/learn/npm-packages/threejs/about-threejs) for a deeper look at the library's capabilities.
+
+---
+
+## Resources
+
+- [About ThreeJS](/learn/npm-packages/threejs/about-threejs) - Library overview and features
+- [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/threejs)
+- [GitHub Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs)
+- [ThreeJS Documentation](https://threejs.org/docs/)
+- [ThreeJS Examples](https://threejs.org/examples/)

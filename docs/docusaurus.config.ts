@@ -1,10 +1,14 @@
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import packageJson from "./package.json";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
+    customFields: {
+        bitbybitVersion: packageJson.version,
+    },
     title: "Bitbybit",
     tagline: "Learn How To Use The Platform",
     favicon: "img/logo-gold-small.png",
@@ -86,9 +90,9 @@ const config: Config = {
                 },
                 { to: "/learn/code/intro", label: "Code", position: "left" },
                 { to: "/learn/3d-bits/intro", label: "3D Bits", position: "left" },
-                { to: "/learn/npm-packages/threejs", label: "ThreeJS", position: "left" },
-                { to: "/learn/npm-packages/babylonjs", label: "BabylonJS", position: "left" },
-                { to: "/learn/npm-packages/playcanvas", label: "PlayCanvas", position: "left" },
+                { to: "/learn/getting-started/engines/threejs", label: "ThreeJS", position: "left" },
+                { to: "/learn/getting-started/engines/babylonjs", label: "BabylonJS", position: "left" },
+                { to: "/learn/getting-started/engines/playcanvas", label: "PlayCanvas", position: "left" },
                 { to: "/blog", label: "Blog", position: "left" },
                 { to: "https://bitbybit.dev", label: "Home", position: "left" },
                 {

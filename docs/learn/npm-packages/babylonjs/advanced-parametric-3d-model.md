@@ -58,19 +58,16 @@ A well-organized project structure is key for managing more complex applications
 *   `src/main.ts`: The primary TypeScript file that orchestrates the entire application, from scene setup and Bitbybit initialization to GUI interactions and geometry updates.
 *   `src/models/`: A directory to define the data structures (TypeScript interfaces/types and initial values) for:
     *   `model.ts`: Parameters controlling the 3D shape's geometry.
-    *   `kernel-options.ts`: Configuration for enabling Bitbybit geometry kernels.
     *   `current.ts`: References to current scene objects (meshes, lights, GUI instance).
 *   `src/helpers/`: This directory houses utility functions, each with a distinct responsibility:
     *   `init-babylonjs.ts`: Responsible for setting up the BabylonJS `Engine`, `Scene`, `Camera`, default lighting, and a ground plane.
-    *   `init-kernels.ts`: Manages the initialization of the selected Bitbybit geometry kernels (e.g., OCCT).
     *   `create-shape.ts`: The core of the geometric logic, containing the functions that use Bitbybit's OCCT API to generate the parametric "Hex Shell" model.
     *   `create-gui.ts`: Configures the `lil-gui` panel, linking its controls to the parameters in `model.ts` and connecting them to the geometry update functions.
     *   `downloads.ts`: Implements the logic for exporting the generated 3D model to STEP, STL, and GLB file formats.
     *   `gui-helper.ts`: Provides simple utility functions for managing the GUI's visual state (e.g., showing/hiding a loading spinner, enabling/disabling GUI controls).
-*   `src/workers/`: This directory would contain the individual Web Worker files for each geometry kernel Bitbybit uses (e.g., `occt.worker.ts`).
 
-<Admonition type="info" title="Web Worker Setup">
-  For a detailed explanation on setting up the Web Worker files (e.g., `occt.worker.ts`), which are essential for running geometry kernels in a separate thread, please refer to our [**BabylonJS Integration Starter Tutorial**](./start-with-babylon-js) or a general guide on using workers with Bitbybit. This tutorial assumes that foundation is in place and focuses on the application logic.
+<Admonition type="info" title="Simplified Kernel Initialization">
+  Since version 0.21.1, Bitbybit provides a simplified `initBitByBit()` helper function that handles all worker creation and kernel initialization automatically by loading kernels from CDN. This eliminates the need for manual worker file setup. For details, see our [**BabylonJS Integration Starter Tutorial**](./start-with-babylon-js). If you need to host assets on your own infrastructure, see [Self-Hosting Assets](/learn/hosting-and-cdn).
 </Admonition>
 
 ## 1. HTML Setup (`index.html`)
@@ -117,10 +114,14 @@ This file is the central coordinator for our application, bringing together the 
 
 <CodeBlock language="typescript" title="src/main.ts">
 {`import './style.css';
-import { BitByBitBase, Inputs } from '@bitbybit-dev/babylonjs';
-import { model, type KernelOptions, current } from './models';
 import {
-    initKernels,
+    BitByBitBase,
+    Inputs,
+    initBitByBit,
+    type InitBitByBitOptions,
+} from '@bitbybit-dev/babylonjs';
+import { model, current } from './models';
+import {
     initBabylonJS,
     createGui,
     createShapeLod1,
@@ -136,7 +137,7 @@ import {
 } from './helpers';
 
 // Configuration for enabling Bitbybit geometry kernels
-const kernelOptions: KernelOptions = {
+const options: InitBitByBitOptions = {
     enableOCCT: true, // This example primarily uses OCCT for its CAD operations
     enableJSCAD: false,
     enableManifold: false,
@@ -151,16 +152,13 @@ async function start() {
 
     // 2. Initialize BitByBitBase for BabylonJS
     const bitbybit = new BitByBitBase();
-    // Provide the BabylonJS context to the Bitbybit library.
-    // This allows Bitbybit to create and manage BabylonJS-specific objects.
-    bitbybit.context.scene = scene;
-    bitbybit.context.engine = engine;
 
     // Add default lighting and a ground plane to the scene
     createDirLightsAndGround(bitbybit, current);
 
-    // Initialize the selected Bitbybit geometry kernels (OCCT in this case)
-    await initKernels(scene, bitbybit, kernelOptions);
+    // Initialize Bitbybit with the selected geometry kernels using the helper function.
+    // This automatically creates workers and loads kernels from CDN.
+    await initBitByBit(scene, bitbybit, options);
 
     // Variables to store the final OCCT shape and intermediate shapes for cleanup
     let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
@@ -240,13 +238,12 @@ async function start() {
 
 **Explanation of `main.ts`:**
 
-1.  **Imports:** Includes `BitByBitBase` and `Inputs` from `@bitbybit-dev/babylonjs`, along with local models and helper functions.
-2.  **`kernelOptions`:** Specifies that only the OCCT kernel should be enabled and initialized for this particular application, as it's the one used for the Hex Shell's CAD operations.
+1.  **Imports:** Includes `BitByBitBase`, `Inputs`, `initBitByBit`, and `InitBitByBitOptions` from `@bitbybit-dev/babylonjs`, along with local models and helper functions.
+2.  **`options`:** Specifies that only the OCCT kernel should be enabled and initialized for this particular application, as it's the one used for the Hex Shell's CAD operations.
 3.  **`start()` function (Main Application Flow):**
     *   **BabylonJS Setup:** `initBabylonJS()` initializes the BabylonJS `Engine` and `Scene`.
-    *   **Bitbybit Initialization:** An instance of `BitByBitBase` is created. Crucially, `bitbybit.context.scene` and `bitbybit.context.engine` are assigned the BabylonJS scene and engine instances. This step is vital for the `@bitbybit-dev/babylonjs` integration package to correctly interact with the BabylonJS environment (e.g., for creating materials, adding meshes to the scene).
+    *   **Bitbybit Initialization:** An instance of `BitByBitBase` is created. The `initBitByBit()` helper function is then called to initialize the Bitbybit instance with the scene and the kernel options. This helper automatically creates web workers, loads kernel WASM files from CDN, and waits for the selected kernels to be ready.
     *   **Scene Elements:** `createDirLightsAndGround()` adds basic lighting and a ground plane using Bitbybit's BabylonJS helpers.
-    *   **Kernel Initialization:** `initKernels()` ensures the OCCT worker is started and ready.
     *   **Shape Management:** `finalShape` will store the primary OCCT geometry. `shapesToClean` is an array used to track intermediate OCCT shapes created during geometry generation; these need to be explicitly deleted using `bitbybit.occt.deleteShapes()` to manage memory effectively, especially with complex CAD operations.
     *   **Download Functions:** The `downloadStep`, `downloadGLB`, and `downloadSTL` functions (from `helpers/downloads.ts`) are attached to the `model` object so they can be easily triggered by GUI buttons.
     *   **GUI Creation:** `createGui()` sets up the `lil-gui` panel, linking its controls to the parameters defined in `model.ts`. Changes in the GUI will trigger the `updateShape` function.
@@ -264,7 +261,7 @@ async function start() {
 
 Helper functions promote modularity and code organization.
 
-### `init-babylonjs.ts` & `init-kernels.ts`
+### `init-babylonjs.ts`
 
 *   **`initBabylonJS()`:** This module is responsible for all the initial BabylonJS setup. It:
     *   Gets the `<canvas>` element.
@@ -275,11 +272,6 @@ Helper functions promote modularity and code organization.
     *   Initializes the render loop via `engine.runRenderLoop()`.
     *   Handles window resize events to keep the rendering correct.
 *   **`createDirLightsAndGround()`:** This helper specifically adds directional lights (important for casting shadows and defining highlights) and a ground mesh (e.g., a cylinder or plane) to the BabylonJS scene. It might use Bitbybit's BabylonJS API helpers for convenience.
-*   **`initKernels()`:** This function's role is identical regardless of the rendering engine. It:
-    1.  Looks at the `kernelOptions` (from `main.ts`).
-    2.  For each enabled kernel, it creates a new `Worker` instance, pointing to the respective worker script (e.g., `../workers/occt.worker.ts`).
-    3.  Calls `await bitbybit.init(...)`, passing the BabylonJS `scene` and the worker instances.
-    4.  It then patiently waits for each selected and available kernel to confirm its full initialization by observing their state streams (e.g., `bitbybit.occtWorkerManager.occWorkerState$`). The function only resolves after all required kernels are ready for use.
 
 ### `create-shape.ts` (Core OCCT Geometry Logic)
 
@@ -343,7 +335,6 @@ These DOM manipulation utilities (disable/enable GUI, show/hide spinner) are gen
 
 ## 4. Data Models (`src/models/`)
 
-*   **`kernel-options.ts`:** Defines the `KernelOptions` interface (same as before).
 *   **`model.ts`:** Defines the `Model` type for geometric parameters and an initial `model` object (same structure as before).
 *   **`current.ts`:** This is where BabylonJS types become apparent. The `Current` type now holds references to BabylonJS objects:
 

@@ -1,0 +1,189 @@
+---
+id: prompt-contexts
+sidebar_position: 2
+title: AI Prompt Context Files
+sidebar_label: Prompt Context Files
+description: Learn how to use AI Prompt Context files to give your AI coding assistant comprehensive knowledge of the Bitbybit API for more accurate code generation.
+tags: [ai, babylonjs, threejs, playcanvas]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import { DownloadButton } from '@site/src/components/DownloadButton';
+
+# AI Prompt Context Files
+
+Modern AI assistants like Claude, Gemini, Grok, or ChatGPT are remarkably capable at writing code. However, they can struggle with specialized libraries and APIs they weren't extensively trained on. That's where **AI Prompt Contexts** come in - specially crafted documentation files that give your AI assistant deep knowledge of the Bitbybit API.
+
+---
+
+## Download Context Files
+
+Choose the context file that matches your 3D rendering engine. **Right-click and "Save As"** to download, or open and copy the content.
+
+<Tabs>
+  <TabItem value="monaco" label="Monaco Editor" default>
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(240, 206, 187, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(240, 206, 187, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#F0CEBB' }}>Monaco Editor Context (Beginner-Friendly)</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>For users of our online TypeScript editor at <a href="https://bitbybit.dev/app?editor=typescript">bitbybit.dev/app</a></p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-monaco-ai-context-v0.21.1.md" label="Monaco Context (~116k tokens)" variant="full" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="babylonjs" label="BabylonJS">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(187, 70, 75, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(187, 70, 75, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#BB464B' }}>BabylonJS Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Full-featured 3D engine with powerful rendering capabilities</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-ai-context-v0.21.1.md" label="Full Context (~116k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-no-comment-min-ai-v0.21.1.md" label="Lite Context (~114k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="threejs" label="ThreeJS">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(4, 158, 244, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(4, 158, 244, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#049EF4' }}>ThreeJS Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Popular, lightweight 3D library for web applications</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-ai-context-v0.21.1.md" label="Full Context (~95k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-no-comment-min-ai-v0.21.1.md" label="Lite Context (~82k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="playcanvas" label="PlayCanvas">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(255, 107, 53, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#FF6B35' }}>PlayCanvas Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Game engine with visual editor and runtime</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md" label="Full Context (~94k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md" label="Lite Context (~82k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+</Tabs>
+
+:::tip Which version should I choose?
+- **Full Context** - Best for beginners. Includes explanations, setup guides, and complete API reference.
+- **Lite Context** - Best for experienced developers. Minimal size, just API definitions with abbreviated notation.
+:::
+
+---
+
+## What Are AI Prompt Contexts?
+
+An AI Prompt Context is a markdown file designed to be attached to conversations with AI coding assistants. When you provide this context file, the AI gains comprehensive knowledge about:
+
+- **Bitbybit's complete API** with all available functions and their parameters
+- **Coding patterns and best practices** for 3D/CAD development
+- **Integration approaches** for different rendering engines
+- **Code examples** demonstrating correct usage patterns
+- **Decision trees** that help the AI recommend the right approach based on your experience level
+
+Think of it as giving your AI assistant a complete reference manual it can consult while helping you write code.
+
+---
+
+## How to Use Context Files
+
+### Step 1: Download or Copy
+
+Click the download button above for your engine, then either:
+- **Right-click → Save As** to download the file
+- Or open the file and copy its entire content
+
+### Step 2: Attach to Your AI Conversation
+
+Most modern AI interfaces support file attachments:
+- Drag and drop the file into the chat
+- Use the attachment button
+- Or paste the content directly
+
+### Step 3: Start Coding with AI
+
+Once attached, ask questions like:
+
+- *"Create a parametric table with adjustable legs"*
+- *"Show me how to create a filleted box and export it as STEP"*
+- *"Build a gear with 24 teeth and a 5mm module"*
+
+The AI will reference the context to generate accurate, working code that follows Bitbybit's recommended patterns.
+
+---
+
+## Understanding the Lite Context Format
+
+Lite contexts use an important technique to reduce file size: **a translation dictionary**.
+
+At the beginning of the API section, you'll find a dictionary that maps abbreviated terms to their full names:
+
+| Abbreviation | Full Name |
+|--------------|-----------|
+| `OC` | `OCCT` |
+| `sp` | `shape` |
+| `sd` | `solid` |
+| `cr` | `create` |
+
+### Critical: AI Must Translate Abbreviations
+
+The AI must translate these abbreviations back to full names when generating code. When the AI sees something like:
+
+```
+bitbybit.oc.sh.sd.crBox(op: BoxD)
+```
+
+It should generate:
+
+```typescript
+bitbybit.occt.shapes.solid.createBox(boxOptions: BoxDto)
+```
+
+The abbreviated forms are only for documentation - they would not compile if used directly in code. The AI handles this translation transparently, so you receive clean, readable code.
+
+:::warning
+If your AI agent cannot translate these abbreviated values, the code will not work. If that happens, consider using the Full context version or a more capable AI model.
+:::
+
+---
+
+## Combining with Context7 MCP
+
+For the best experience, we recommend combining a **Lite context** with our **[Context7 MCP Server](./mcp/context-7.md)**:
+
+- **Context7 MCP** provides live access to full documentation and stays current with the latest changes
+- **Lite context** ensures the AI knows precise API signatures
+
+Together, they create a powerful coding assistant that understands both the big picture and the fine details.
+
+---
+
+## Tips for Effective AI-Assisted Coding
+
+### Be Specific About Your Goals
+
+Instead of asking for "a shape," describe what you actually need:
+
+> *"Create a rounded rectangular table top with four cylindrical legs, where the leg height and table dimensions are parametric."*
+
+### Mention Your Experience Level
+
+The contexts include decision trees that help the AI adapt:
+
+- **Beginners:** The AI can scaffold complete applications
+- **Experienced developers:** The AI can focus on just the API calls you need
+
+### Iterate and Refine
+
+AI assistants are collaborative tools. If the first attempt isn't quite right:
+
+1. Explain what you'd like changed
+2. Ask for specific modifications
+3. The AI can refine suggestions while staying consistent with the Bitbybit API
+
+---
+
+## Staying Up to Date
+
+The context files are updated with each Bitbybit release to match the latest API. When you see a new version available, download the updated context to ensure your AI has the most current information.
+
+Check the version number in your context file and compare it with the latest version on [bitbybit.dev GitHub](https://github.com/bitbybit-dev/bitbybit/releases) to ensure you're using the most recent documentation.

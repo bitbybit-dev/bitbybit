@@ -1,6 +1,6 @@
 {
     "name": "bitbybit-examples",
-    "version": "0.21.0",
+    "version": "0.21.1",
     "description": "Monorepo for browser CAD which holds bitbybit.dev npm packages",
     "main": "index.js",
     "scripts": {
@@ -17,12 +17,18 @@
         "ci-vite-babylonjs-hex-house-concept": "cd vite/babylonjs/hex-house-concept && npm install",
         "ci-vite-babylonjs-hex-shell": "cd vite/babylonjs/hex-shell && npm install",
         "ci-vite-babylonjs-starter-template": "cd vite/babylonjs/starter-template && npm install",
+        "ci-vite-babylonjs-starter-template-full": "cd vite/babylonjs/starter-template-full && npm install",
         "ci-vite-threejs-cup": "cd vite/threejs/cup && npm install",
         "ci-vite-threejs-hex-house-concept": "cd vite/threejs/hex-house-concept && npm install",
         "ci-vite-threejs-hex-shell": "cd vite/threejs/hex-shell && npm install",
         "ci-vite-threejs-starter-template": "cd vite/threejs/starter-template && npm install",
+        "ci-vite-threejs-starter-template-full": "cd vite/threejs/starter-template-full && npm install",
+        "ci-vite-playcanvas-hex-house-concept": "cd vite/playcanvas/hex-house-concept && npm install",
+        "ci-vite-playcanvas-hex-shell": "cd vite/playcanvas/hex-shell && npm install",
+        "ci-vite-playcanvas-starter-template": "cd vite/playcanvas/starter-template && npm install",
+        "ci-vite-playcanvas-starter-template-full": "cd vite/playcanvas/starter-template-full && npm install",
         "ci-webpack-threejs": "cd webpack/threejs && npm install",
-        "ci-packages": "npm run ci-angular-babylonjs-laptop-holder && npm run ci-angular-threejs-simple-viewer && npm run ci-angular-three-vite-basic-example && npm run ci-nextjs-babylonjs-simple && npm run ci-node-basic && npm run ci-node-express-app && npm run ci-nuxt-babylonjs-basic && npm run ci-react-babylonjs-cup && npm run ci-react-babylonjs-laptop-holder && npm run ci-react-threejs-vase && npm run ci-vite-babylonjs-hex-house-concept && npm run ci-vite-babylonjs-hex-shell &&  npm run ci-vite-babylonjs-starter-template && npm run ci-vite-threejs-cup && npm run ci-vite-threejs-hex-house-concept && npm run ci-vite-threejs-hex-shell && npm run ci-vite-threejs-starter-template && npm run ci-webpack-threejs"
+        "ci-packages": "npm run ci-angular-babylonjs-laptop-holder && npm run ci-angular-threejs-simple-viewer && npm run ci-angular-three-vite-basic-example && npm run ci-nextjs-babylonjs-simple && npm run ci-node-basic && npm run ci-node-express-app && npm run ci-nuxt-babylonjs-basic && npm run ci-react-babylonjs-cup && npm run ci-react-babylonjs-laptop-holder && npm run ci-react-threejs-vase && npm run ci-vite-babylonjs-hex-house-concept && npm run ci-vite-babylonjs-hex-shell &&  npm run ci-vite-babylonjs-starter-template &&  npm run ci-vite-babylonjs-starter-template-full && npm run ci-vite-threejs-cup && npm run ci-vite-threejs-hex-house-concept && npm run ci-vite-threejs-hex-shell && npm run ci-vite-threejs-starter-template && npm run ci-vite-threejs-starter-template-full && npm run ci-webpack-threejs && npm run ci-vite-playcanvas-hex-house-concept && npm run ci-vite-playcanvas-hex-shell && npm run ci-vite-playcanvas-starter-template && npm run ci-vite-playcanvas-starter-template-full"
     },
     "repository": {
         "type": "git",

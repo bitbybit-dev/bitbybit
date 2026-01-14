@@ -1,0 +1,112 @@
+---
+sidebar_position: 1
+title: "Getting Started with BabylonJS"
+sidebar_label: "BabylonJS"
+description: "Get started with Bitbybit and BabylonJS - our fully integrated 3D game engine. Learn about integration approaches including visual editors, NPM packages, and runners."
+tags: [getting-started, babylonjs]
+---
+
+import Admonition from '@theme/Admonition';
+
+# Getting Started with BabylonJS
+
+<img 
+  src="https://bitbybit.dev/assets/babylon_logo.png" 
+  width="150"
+  alt="BabylonJS Logo" 
+  title="BabylonJS Logo" />
+
+BabylonJS is a powerful, open-source game and rendering engine for the web. It's also the native rendering engine for all Bitbybit visual programming editors, which means you get the most complete integration experience with this engine.
+
+**Official homepage:** <a href="https://babylonjs.com/" target="_blank" rel="noopener noreferrer">babylonjs.com</a>
+
+---
+
+## Three Ways to Use BabylonJS with Bitbybit
+
+### 1. Visual Editors (No Setup Required)
+
+The easiest way to get started. Just open one of our online editors and start building:
+
+- **<a href="https://bitbybit.dev/app?editor=rete" target="_blank" rel="noopener noreferrer">Rete Editor</a>** - Connect visual nodes to create parametric 3D models. If you've used Grasshopper, Dynamo, or Blender Nodes, this will feel familiar.
+
+- **<a href="https://bitbybit.dev/app?editor=blockly" target="_blank" rel="noopener noreferrer">Blockly Editor</a>** - Drag and drop blocks to build 3D models. Great for beginners and educational settings.
+
+- **<a href="https://bitbybit.dev/app?editor=monaco" target="_blank" rel="noopener noreferrer">Monaco Editor</a>** - Write TypeScript code directly in your browser with full intellisense.
+
+Scripts created in any of these editors can be exported as JavaScript and run on your own website using Bitbybit Runners.
+
+---
+
+### 2. NPM Packages (For Developers)
+
+If you're building a production application or prefer working with TypeScript in your own development environment, use our NPM packages.
+
+The quickest way to start a new project:
+
+```bash
+npx @bitbybit-dev/create-app my-project --engine babylonjs
+cd my-project
+npm install
+npm run dev
+```
+
+This creates a ready-to-run project with Vite, TypeScript, and all three CAD kernels (OCCT, JSCAD, Manifold) pre-configured.
+
+NPM packages give you full TypeScript support with intellisense, optimized bundle sizes through tree-shaking, and are the recommended approach for production applications.
+
+Note that NPM packages only include our open-source algorithms. To understand which parts of Bitbybit are open-source and which are not, see our [Open Source Approach](/learn/open-source-approach) guide.
+
+**Detailed setup guide:** [Quick Start with BabylonJS](/learn/npm-packages/babylonjs/start-with-babylon-js)
+
+---
+
+### 3. Runners (Quick Prototypes)
+
+Runners are single JavaScript files that bundle everything you need. They're perfect when you want to quickly prototype something without setting up a build environment.
+
+**Full Runner** - Includes both BabylonJS and Bitbybit in one file:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-babylonjs.js"></script>
+```
+
+**Lite Runner** - Just Bitbybit, you load BabylonJS separately (smaller download):
+
+```html
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-babylonjs-lite.js"></script>
+```
+
+Runners work great for demos on CodePen, JSFiddle, or StackBlitz. However, they only support JavaScript (no TypeScript) and have larger bundle sizes, so NPM packages are better for production work.
+
+**Learn more:** [Introduction to Runners](/learn/runners/intro) - Understand runner capabilities, limitations, and how to export visual scripts as JavaScript.
+
+**Runner guides:** [Full Runner](/learn/runners/engines/babylonjs/full-runner) | [Lite Runner](/learn/runners/engines/babylonjs/lite-runner)
+
+---
+
+## NPM vs Runners - Which Should I Use?
+
+**Choose NPM packages** when you're building something for production, want TypeScript support, or need optimized bundle sizes.
+
+**Choose Runners** when you're prototyping, creating quick demos, or just want to experiment without any setup.
+
+---
+
+## Next Steps
+
+If you're new to 3D programming, start with the <a href="https://bitbybit.dev/app?editor=rete" target="_blank" rel="noopener noreferrer">Rete Editor</a> to get familiar with the concepts visually.
+
+If you're a developer ready to build, run the NPX command above and check out the [starter template guide](/learn/npm-packages/babylonjs/start-with-babylon-js).
+
+If you want to understand BabylonJS better, read [About BabylonJS](/learn/npm-packages/babylonjs/about-babylonjs) for a deeper look at the engine's capabilities.
+
+---
+
+## Resources
+
+- [About BabylonJS](/learn/npm-packages/babylonjs/about-babylonjs) - Engine overview and features
+- [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/babylonjs)
+- [GitHub Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/babylonjs)
+- [BabylonJS Documentation](https://doc.babylonjs.com/)

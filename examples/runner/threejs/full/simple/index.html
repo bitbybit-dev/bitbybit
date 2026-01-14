@@ -46,13 +46,28 @@
         const curvePts = [[[-10, 0, -10], [0, 3, -10], [10, -1, -10], [20, 2, -10]], [[-10, -5, 0], [0, -3, 0], [10, 1, 0], [20, -2, 0]], [[-10, 0, 10], [0, 3, 10], [10, -1, 10], [20, 2, 10]]];
 
         const wirePromises = curvePts.map((pts) => {
-            return bitbybit.occt.shapes.wire.interpolatePoints({ points: pts, periodic: false, tolerance: 1e-7 });
+            const interpolateDto = new Bit.Inputs.OCCT.InterpolationDto();
+            interpolateDto.points = pts;
+            interpolateDto.periodic = false;
+            interpolateDto.tolerance = 1e-7;
+            return bitbybit.occt.shapes.wire.interpolatePoints(interpolateDto);
         });
 
         const wires = await Promise.all(wirePromises);
-        const loft = await bitbybit.occt.operations.loft({ shapes: wires, makeSolid: false });
-        const translated = await bitbybit.occt.transforms.translate({ shape: loft, translation: [0, 10, 0] });
-        const faces = await bitbybit.occt.shapes.face.getFaces({ shape: translated });
+
+        const loftDto = new Bit.Inputs.OCCT.LoftDto();
+        loftDto.shapes = wires;
+        loftDto.makeSolid = false;
+        const loft = await bitbybit.occt.operations.loft(loftDto);
+
+        const translateDto = new Bit.Inputs.OCCT.TranslateDto();
+        translateDto.shape = loft;
+        translateDto.translation = [0, 10, 0];
+        const translated = await bitbybit.occt.transforms.translate(translateDto);
+
+        const getFacesDto = new Bit.Inputs.OCCT.ShapeDto();
+        getFacesDto.shape = translated;
+        const faces = await bitbybit.occt.shapes.face.getFaces(getFacesDto);
 
         const subdivideOptions = new Bit.Inputs.OCCT.FaceSubdivideToRectangleHolesDto(faces[0]);
         subdivideOptions.nrRectanglesU = model.vRec;
@@ -65,7 +80,11 @@
         subdivideOptions.offsetFromBorderV = 0.01;
 
         const withHoles = await bitbybit.occt.shapes.face.subdivideToRectangleHoles(subdivideOptions);
-        const finalShape = await bitbybit.occt.operations.makeThickSolidSimple({ shape: withHoles[0], offset: 0.5 });
+
+        const thickSolidDto = new Bit.Inputs.OCCT.ThisckSolidSimpleDto();
+        thickSolidDto.shape = withHoles[0];
+        thickSolidDto.offset = 0.5;
+        const finalShape = await bitbybit.occt.operations.makeThickSolidSimple(thickSolidDto);
 
         const options = new Bit.Inputs.Draw.DrawOcctShapeOptions();
         options.precision = 0.02;

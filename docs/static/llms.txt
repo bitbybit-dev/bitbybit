@@ -1,0 +1,324 @@
+# Bitbybit Documentation
+
+> Learn how to use the Bitbybit 3D creative coding platform—from visual programming to TypeScript APIs and NPM package integration. Build parametric 3D models, product configurators, and CAD applications directly in the browser.
+
+This is the official documentation site for Bitbybit. The platform enables designers and developers to create 3D geometry using visual programming or TypeScript code, with integration for BabylonJS, Three.js, and PlayCanvas game engines.
+
+## Quick Links
+
+- Main Platform: https://bitbybit.dev
+- TypeScript API Reference: https://docs.bitbybit.dev
+- GitHub Repository: https://github.com/bitbybit-dev/bitbybit
+
+## Getting Started
+
+Comprehensive guides for new users to understand the platform basics.
+
+- Welcome Guide: https://learn.bitbybit.dev/learn/intro
+- Platform Overview: https://learn.bitbybit.dev/learn/getting-started/overview
+- Open Source Approach: https://learn.bitbybit.dev/learn/open-source-approach
+
+### Understanding Scripts & Projects
+
+Scripts are the core building blocks in Bitbybit projects. Each project can contain multiple scripts of different types:
+
+- Scripts Overview: https://learn.bitbybit.dev/learn/getting-started/basics/scripts/intro
+
+Learn about:
+- What scripts are and how they work within projects
+- The three script types (Blockly, Rete, TypeScript)
+- Script visibility settings (public/private)
+- Combining multiple script types in a single project
+- Exporting scripts for external use
+
+### Blockly Editor (Visual Block-Based Programming)
+
+Blockly provides an intuitive block-based visual programming interface, ideal for beginners:
+
+- Introduction to Blockly: https://learn.bitbybit.dev/learn/getting-started/blockly/intro
+
+### Rete Editor (Node-Based Visual Programming)
+
+Rete offers a node-based visual programming interface for complex workflows:
+
+- Introduction to Rete: https://learn.bitbybit.dev/learn/getting-started/rete/intro
+- Parametric Cube Tutorial: https://learn.bitbybit.dev/learn/getting-started/rete/parametric-cube
+- TypeScript in Rete Editor: https://learn.bitbybit.dev/learn/getting-started/rete/typescript-editor-component
+
+The Rete editor includes embedded TypeScript, JavaScript, and JSON editors. This allows users to:
+- Write custom code within visual programming workflows
+- Access algorithms not yet available as visual components
+- Combine the intuitiveness of visual programming with the power of text-based scripting
+
+### TypeScript Editor (Monaco)
+
+For advanced users who prefer text-based programming:
+
+- Introduction to TypeScript: https://learn.bitbybit.dev/learn/getting-started/typescript/intro
+- Hello World Tutorial: https://learn.bitbybit.dev/learn/getting-started/typescript/hello-world
+
+The Monaco editor (based on core technologies of VS Code) provides:
+- Full IntelliSense and autocompletion
+- Type safety and early error detection
+- Maximum flexibility and control
+
+### Assets & File Management
+
+Working with local and external assets:
+
+- Importing Local glTF Files: https://learn.bitbybit.dev/learn/getting-started/basics/assets/local/gltf
+
+## Code & Algorithm Organization
+
+Understanding how algorithms are organized across all three editors (TypeScript, Blockly, and Rete).
+
+- Algorithm Organization Introduction: https://learn.bitbybit.dev/learn/code/intro
+
+This section explains:
+- How algorithms are organized into common categories across all editors
+- Why the same core algorithms (OCCT, JSCAD, BabylonJS) are available in TypeScript, Blockly, and Rete
+- Editor-specific differences (e.g., Blockly has Functions/Variables categories, Rete uses dataflow approach)
+- The DRY (Don't Repeat Yourself) principle in algorithm design
+
+Key insight: The fundamental algorithms are identical regardless of editor choice—only the method of interaction differs.
+
+## NPM Packages
+
+Integration guides for embedding Bitbybit in your web applications.
+
+### Quick Start
+
+```bash
+npx @bitbybit-dev/create-app my-project
+```
+
+Choose your game engine (BabylonJS, Three.js, or PlayCanvas) and start coding immediately.
+
+### Overview
+
+- Introduction: https://learn.bitbybit.dev/learn/npm-packages/intro
+- Engine Agnostic Core: https://learn.bitbybit.dev/learn/npm-packages/game-engine-agnostic
+
+### Game Engine Integration
+
+- Three.js Integration: https://learn.bitbybit.dev/learn/npm-packages/threejs
+- BabylonJS Integration: https://learn.bitbybit.dev/learn/npm-packages/babylonjs
+- PlayCanvas Integration: https://learn.bitbybit.dev/learn/npm-packages/playcanvas
+
+### All NPM Packages
+
+Game Engine Packages:
+- @bitbybit-dev/babylonjs - BabylonJS visualization and drawing
+- @bitbybit-dev/threejs - Three.js visualization and drawing
+- @bitbybit-dev/playcanvas - PlayCanvas visualization and drawing
+
+Core Packages:
+- @bitbybit-dev/core - Combined CAD kernel features
+- @bitbybit-dev/base - Base algorithms (vector math, transformations)
+
+CAD Kernel Packages (Main Thread):
+- @bitbybit-dev/occt - OpenCascade for industrial B-rep CAD
+- @bitbybit-dev/jscad - JSCAD for CSG modeling
+- @bitbybit-dev/manifold - Manifold for fast mesh booleans
+
+Web Worker Packages (Non-blocking, Recommended):
+- @bitbybit-dev/occt-worker - OpenCascade via web worker
+- @bitbybit-dev/jscad-worker - JSCAD via web worker
+- @bitbybit-dev/manifold-worker - Manifold via web worker
+
+## Runners
+
+Script runners enable executing Bitbybit scripts in external web applications. Scripts can be created in any editor (Blockly, Rete, or TypeScript) and exported for use in standalone websites.
+
+- Runners Overview: https://learn.bitbybit.dev/learn/runners
+- Runner with TypeScript: https://learn.bitbybit.dev/learn/runners/intro-typescript
+
+### Engine-Specific Runners
+
+- BabylonJS Full Runner: https://learn.bitbybit.dev/learn/runners/engines/babylonjs/full-runner
+- Three.js Full Runner: https://learn.bitbybit.dev/learn/runners/engines/threejs/full-runner
+- PlayCanvas Full Runner: https://learn.bitbybit.dev/learn/runners/engines/playcanvas/full-runner
+
+### Export Workflow
+
+1. Create your parametric design in any Bitbybit editor (Blockly, Rete, or TypeScript)
+2. Click "Export to Runner" button
+3. Copy the generated script
+4. Integrate into your web application using the bitbybit-runner.js library
+
+## 3D Bits (Shopify App)
+
+Add 3D product configurators to Shopify stores with both Low-Code and Pro-Code options.
+
+- 3D Bits Introduction: https://learn.bitbybit.dev/learn/3d-bits/intro
+- Shopify App: https://apps.shopify.com/3d-bits-1
+
+### Theme App Extensions
+
+- BITBYBIT RUNNER Block: https://learn.bitbybit.dev/learn/3d-bits/tutorials/bitbybit-runner/settings
+- BITBYBIT APPS Block: https://learn.bitbybit.dev/learn/3d-bits/tutorials/bitbybit-apps/settings
+
+### Programming Options
+
+**Low-Code (Visual Programming):**
+- Blockly Editor - Block-based visual programming
+- Rete Editor - Node-based visual programming
+
+**Pro-Code:**
+- TypeScript with Monaco Editor
+- Custom Vite/TypeScript templates for production apps
+
+### Tutorials
+
+- Product Laptop Holder (TypeScript): https://learn.bitbybit.dev/learn/3d-bits/tutorials/videos-tutorials/product-laptop-holder
+
+## AI Integration
+
+Using AI assistants with Bitbybit for enhanced coding workflows. Bitbybit does not provide proprietary LLMs—instead, it integrates with leading third-party AI services.
+
+- AI Introduction: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro
+
+### Key Concepts
+
+- **Model Context Protocol (MCP)**: Open standard for AI applications to interact with external data sources
+- **Specialized Coding Agents**: AI agents for generating code, debugging, and suggesting algorithms
+- **Open Source Advantage**: Bitbybit's open-source components provide rich training data for foundation models
+
+### MCP Integration
+
+- Context7 MCP Integration: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/context-7
+
+Context7 provides live AI context with always up-to-date documentation:
+- Context7 Library: https://context7.com/bitbybit-dev/bitbybit
+
+VS Code MCP Setup:
+```json
+{
+    "servers": [
+        {
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp@latest"],
+            "env": {
+                "DEFAULT_MINIMUM_TOKENS": "10000"
+            }
+        }
+    ]
+}
+```
+
+### AI Context Files (v0.21.1)
+
+Attach these files to your AI coding assistant for Bitbybit API knowledge.
+
+#### Beginner Context (Monaco Editor)
+
+For online TypeScript editor at bitbybit.dev:
+- Full Context (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-monaco-ai-context-v0.21.1.md
+
+#### BabylonJS Context
+
+- Full (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-ai-context-v0.21.1.md
+- Lite (114k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-no-comment-min-ai-v0.21.1.md
+
+#### Three.js Context
+
+- Full (95k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-ai-context-v0.21.1.md
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-no-comment-min-ai-v0.21.1.md
+
+#### PlayCanvas Context
+
+- Full (94k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md
+
+### Full API on Github
+- API with short explanations: https://github.com/bitbybit-dev/bitbybit/blob/master/docs/API.md
+
+## GitHub & Contributing
+
+- Main Repository: https://github.com/bitbybit-dev/bitbybit
+- Contributing Guide: https://learn.bitbybit.dev/learn/github
+- Unit Testing Guide: https://learn.bitbybit.dev/learn/github/unit-tests
+- Live Test Coverage: https://learn.bitbybit.dev/learn/github/live-unit-test-coverage
+
+## Blog
+
+Latest updates, tutorials, and announcements:
+
+- Blog: https://learn.bitbybit.dev/blog
+- PlayCanvas Support Announcement: https://learn.bitbybit.dev/blog/playcanvas-support
+
+## Security
+
+- Hosting & CDN: https://learn.bitbybit.dev/learn/hosting-and-cdn
+
+## Community
+
+- Discord: https://discord.gg/GSe3VMe
+- YouTube: https://www.youtube.com/@bitbybitdev
+- LinkedIn: https://www.linkedin.com/company/bitbybit-dev
+- X/Twitter: https://x.com/bitbybit_dev
+
+## Key Concepts
+
+### Three Editor Types
+
+Bitbybit offers three ways to create 3D geometry, all sharing the same underlying algorithms:
+
+1. **Blockly (Visual Block-Based)**
+   - Beginner-friendly drag-and-drop blocks
+   - Similar to Scratch programming
+   - Best for learning programming concepts
+   - Has dedicated Functions and Variables categories
+
+2. **Rete (Node-Based Visual)**
+   - Professional node-based dataflow programming
+   - Over 1,300 pre-built components
+   - Includes embedded TypeScript/JavaScript/JSON editors
+   - Best for complex visual workflows
+
+3. **Monaco (TypeScript)**
+   - Full text-based TypeScript programming
+   - Same editor as VS Code
+   - Maximum flexibility and control
+   - Best for experienced developers
+
+### Geometry Kernels
+
+Bitbybit supports multiple CAD kernels:
+
+- **OpenCascade (OCCT)**: Industrial-grade B-rep kernel for precise CAD operations, boolean operations, fillets, chamfers, STEP export
+- **JSCAD**: JavaScript-based CSG modeling for simple shapes
+- **Manifold**: Fast mesh boolean operations for real-time applications
+
+### Game Engines
+
+Visualization and rendering:
+
+- **BabylonJS**: Full-featured WebGL engine with PBR, physics, audio
+- **Three.js**: Lightweight, popular 3D library with vast ecosystem
+- **PlayCanvas**: Professional engine with online collaborative editor
+
+### Web Workers
+
+All geometry kernels have web worker variants (-worker packages) for non-blocking UI:
+- Asynchronous operations that don't freeze the browser
+- Recommended for production applications
+- Same API as main thread packages
+
+## School & Courses
+
+Educational content organized by topic and skill level:
+
+- DIY 3D Model Configurators for Makers
+- Introduction to Programming 3D in TypeScript
+- OpenCascade in Rete Editor
+- Control Flow in Rete Editor
+- TypeScript Component for Magical Powers in Rete
+- STEM Lessons for Kids and Beginners (Rete Editor)
+- Using AI with Bitbybit
+- Make 3D Websites with Runners
+- Shopify 3D Bits App
+
+## Optional
+
+- Main site llms.txt: https://bitbybit.dev/llms.txt

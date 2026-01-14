@@ -197,3 +197,70 @@ export function mockWorkerError(workerManager: any, method: string, error: Error
             });
         });
 }
+
+/**
+ * Creates a mock window object for testing
+ */
+export function mockWindow() {
+    (global as any).window = {
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        innerWidth: 1920,
+        innerHeight: 1080,
+    };
+}
+
+/**
+ * Creates a mock DOM element for testing orbit camera inputs.
+ * Supports event listener tracking for simulating user interactions.
+ */
+export function createMockDOMElement(): HTMLElement {
+    const listeners: { [key: string]: Array<(...args: unknown[]) => void> } = {};
+    return {
+        addEventListener: jest.fn((type: string, handler: (...args: unknown[]) => void) => {
+            if (!listeners[type]) {
+                listeners[type] = [];
+            }
+            listeners[type].push(handler);
+        }),
+        removeEventListener: jest.fn((type: string, handler: (...args: unknown[]) => void) => {
+            if (listeners[type]) {
+                const idx = listeners[type].indexOf(handler);
+                if (idx >= 0) {
+                    listeners[type].splice(idx, 1);
+                }
+            }
+        }),
+        dispatchEvent: jest.fn((event: Event) => {
+            const handlers = listeners[event.type];
+            if (handlers) {
+                handlers.forEach(h => h(event));
+            }
+        }),
+        getBoundingClientRect: jest.fn(() => ({
+            left: 0,
+            top: 0,
+            width: 1920,
+            height: 1080,
+        })),
+    } as unknown as HTMLElement;
+}
+
+/**
+ * Creates mock app and scene for orbit camera tests
+ */
+export function createOrbitCameraMocks() {
+    mockWindow();
+    const mockScene = new THREEJS.Scene();
+    const mockDomElement = createMockDOMElement();
+    const mockContext = {
+        scene: mockScene,
+    } as Context;
+
+    return {
+        mockScene,
+        mockDomElement,
+        mockContext
+    };
+}
+

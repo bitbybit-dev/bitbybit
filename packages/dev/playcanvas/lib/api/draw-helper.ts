@@ -1030,7 +1030,8 @@ export class DrawHelper extends DrawHelperCore {
         const meshInstance = new pc.MeshInstance(mesh, mat);
         const lineEntity = new pc.Entity(this.generateEntityId("lines"));
         lineEntity.addComponent("render", {
-            meshInstances: [meshInstance]
+            meshInstances: [meshInstance],
+            castShadows: false
         });
         return lineEntity;
     }
@@ -1146,7 +1147,8 @@ export class DrawHelper extends DrawHelperCore {
         const meshInstance = new pc.MeshInstance(mesh, mat);
         const lineEntity = new pc.Entity(this.generateEntityId("lines"));
         lineEntity.addComponent("render", {
-            meshInstances: [meshInstance]
+            meshInstances: [meshInstance],
+            castShadows: false
         });
         return lineEntity;
     }

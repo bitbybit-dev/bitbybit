@@ -72,7 +72,7 @@ export class BitByBitBase {
         this.math = new MathBitByBit();
         this.vector = new Vector(this.math, geometryHelper);
         const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.manifoldWorkerManager, this.occtWorkerManager);
-        this.three = new ThreeJS(drawHelper);
+        this.three = new ThreeJS(this.context, drawHelper);
         this.tag = new Tag(this.context);
         this.draw = new Draw(drawHelper, this.context, this.tag);
         this.color = new Color(this.math);

@@ -47,7 +47,7 @@ This example will guide you through:
 <Admonition type="info" title="Prerequisites & Further Details">
   <p>This tutorial focuses on the core application logic for generating the Hex House. For a detailed explanation of:</p>
   <ul>
-    <li>Setting up Web Worker files (e.g., <code>occt.worker.ts</code>), please refer to our <a href="./start-with-babylon-js">BabylonJS Integration Starter Tutorial</a>.</li>
+    <li>The simplified kernel initialization approach (using <code>initBitByBit()</code>), please refer to our <a href="./start-with-babylon-js">BabylonJS Integration Starter Tutorial</a>.</li>
     <li>The general project structure (models, downloads, other helpers), you can refer to the <a href="./advanced-parametric-3d-model">previous Advanced Parametric Model (BabylonJS) tutorial</a> which shares a similar foundational setup.</li>
   </ul>
   <p>Here, we'll concentrate on the essential files that bring the Hex House concept to life.</p>
@@ -96,15 +96,16 @@ This file coordinates the setup and dynamic updates of our Hex House.
 
 <CodeBlock language="typescript" title="src/main.ts">
 {`import './style.css';
-import { BitByBitBase, Inputs } from '@bitbybit-dev/babylonjs';
-import { model, type KernelOptions, current } from './models';
+import { BitByBitBase, Inputs } from '@bitbybit-dev/core';
+import { initBitByBit, type InitBitByBitOptions } from '@bitbybit-dev/babylonjs';
+import { model, current } from './models';
 import { /* Assuming these are correctly imported from your helpers index */
-  initKernels, initBabylonJS, createGui, createShape,
+  initBabylonJS, createGui, createShape,
   createDirLightsAndGround, disableGUI, enableGUI, hideSpinner, showSpinner,
   downloadGLTF, downloadSTL, downloadStep,
 } from './helpers';
 
-const kernelOptions: KernelOptions = {
+const options: InitBitByBitOptions = {
   enableOCCT: true, enableJSCAD: false, enableManifold: false,
 };
 
@@ -114,11 +115,9 @@ async function start() {
   const { scene, engine } = initBabylonJS();
 
   const bitbybit = new BitByBitBase();
-  bitbybit.context.scene = scene; // Link Bitbybit to BabylonJS scene
-  bitbybit.context.engine = engine; // Link Bitbybit to BabylonJS engine
   createDirLightsAndGround(bitbybit, current);
 
-  await initKernels(scene, bitbybit, kernelOptions); // Initialize OCCT
+  await initBitByBit(scene, bitbybit, options); // Initialize OCCT
 
   let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
   let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
@@ -161,8 +160,8 @@ async function start() {
 </CodeBlock>
 
 **Core Logic in `main.ts`:**
-1.  Initializes BabylonJS (`initBabylonJS`) and then Bitbybit, crucially setting `bitbybit.context.scene` and `bitbybit.context.engine`.
-2.  Initializes the OCCT kernel via `initKernels`.
+1.  Initializes BabylonJS (`initBabylonJS`) and then Bitbybit.
+2.  Initializes the OCCT kernel via `initBitByBit()` from `@bitbybit-dev/babylonjs`, which automatically creates workers from CDN.
 3.  Sets up download functions and the `lil-gui` interface using `createGui`. The GUI will call `updateShape` when parameters change.
 4.  Implements a simple rotation for the generated model parts.
 5.  The `updateShape` function is key:

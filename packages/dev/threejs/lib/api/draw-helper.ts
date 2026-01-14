@@ -528,9 +528,15 @@ export class DrawHelper extends DrawHelperCore {
             group.clear();
             const geometry = createMesh();
             if (material) {
-                group.add(new THREEJS.Mesh(geometry, material));
+                const mesh = new THREEJS.Mesh(geometry, material);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                group.add(mesh);
             } else {
-                group.add(new THREEJS.Mesh(geometry));
+                const mesh = new THREEJS.Mesh(geometry);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                group.add(mesh);
             }
         } else {
             let scene = null;
@@ -543,9 +549,15 @@ export class DrawHelper extends DrawHelperCore {
             scene.add(group);
             const geometry = createMesh();
             if (material) {
-                group.add(new THREEJS.Mesh(geometry, material));
+                const mesh = new THREEJS.Mesh(geometry, material);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                group.add(mesh);
             } else {
-                group.add(new THREEJS.Mesh(geometry));
+                const mesh = new THREEJS.Mesh(geometry);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                group.add(mesh);
             }
         }
         if (hidden) {
@@ -675,7 +687,10 @@ export class DrawHelper extends DrawHelperCore {
         const matrix4 = new THREEJS.Matrix4();
         matrix4.fromArray(transforms);
         jscadMesh.clear();
-        jscadMesh.add(new THREEJS.Mesh(geometry, material));
+        const mesh = new THREEJS.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        jscadMesh.add(mesh);
         jscadMesh.applyMatrix4(matrix4);
     }
 
@@ -1016,7 +1031,10 @@ export class DrawHelper extends DrawHelperCore {
                     material = options.faceMaterial as THREEJS.MeshPhysicalMaterial;
                 }
 
-                group.add(new THREEJS.Mesh(geometry, material));
+                const mesh = new THREEJS.Mesh(geometry, material);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                group.add(mesh);
 
                 // Draw back faces with different color when two-sided rendering is enabled
                 if (options.drawTwoSided !== false) {
@@ -1221,6 +1239,8 @@ export class DrawHelper extends DrawHelperCore {
         group.name = this.generateEntityId("backFaceSurface");
         const mesh = new THREEJS.Mesh(geometry, backMaterial);
         mesh.name = this.generateEntityId("backFaceSurfaceChild");
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         group.add(mesh);
 
         return group;

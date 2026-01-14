@@ -248,7 +248,7 @@ describe("Draw DTO unit tests", () => {
             // Assert
             expect(result.colours).toBe("#ff0000");
             expect(result.colorMapStrategy).toBe(Base.colorMapStrategyEnum.lastColorRemainder);
-            expect(result.size).toBe(1);
+            expect(result.size).toBe(0.1);
             expect(result.opacity).toBe(1);
             expect(result.updatable).toBe(false);
             expect(result.hidden).toBe(false);

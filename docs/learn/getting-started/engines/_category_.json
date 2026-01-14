@@ -1,0 +1,10 @@
+{
+    "label": "Game Engines",
+    "position": 7,
+    "link": {
+        "type": "generated-index",
+        "title": "Getting Started with Game Engines",
+        "description": "Choose your preferred 3D game engine and learn how to integrate Bitbybit's CAD capabilities. We support BabylonJS, ThreeJS, and PlayCanvas.",
+        "slug": "/getting-started/engines"
+    }
+}

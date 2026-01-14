@@ -1,8 +1,7 @@
 import "./style.css";
-import { BitByBitBase, Inputs } from "@bitbybit-dev/playcanvas";
-import { model, type KernelOptions, current } from "./models";
+import { BitByBitBase, Inputs, initBitByBit, type InitBitByBitOptions } from "@bitbybit-dev/playcanvas";
+import { model, current } from "./models";
 import {
-    initKernels,
     initPlayCanvas,
     setupOrbitCamera,
     createGui,
@@ -18,7 +17,7 @@ import {
     downloadStep,
 } from "./helpers";
 
-const kernelOptions: KernelOptions = {
+const options: InitBitByBitOptions = {
     enableOCCT: true,
     enableJSCAD: false,
     enableManifold: false,
@@ -31,7 +30,7 @@ async function start() {
     createDirLightsAndGround(scene, current);
 
     const bitbybit = new BitByBitBase();
-    await initKernels(app, scene, bitbybit, kernelOptions);
+    await initBitByBit(app, scene, bitbybit, options);
 
     // Setup orbit camera controls
     setupOrbitCamera(bitbybit, camera);

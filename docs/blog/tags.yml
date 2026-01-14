@@ -49,12 +49,12 @@ fitness-equipment:
   description: Blog posts about fitness equipment industry and 3D visualization
 
 babylonjs:
-  label: babylonjs
+  label: BabylonJS
   permalink: /babylonjs
   description: Blog posts about Babylon.js 3D engine
 
 threejs:
-  label: threejs
+  label: ThreeJS
   permalink: /threejs
   description: Blog posts about Three.js 3D library
 

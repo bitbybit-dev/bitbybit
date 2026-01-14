@@ -1,6 +1,6 @@
 {
     "name": "bitbybit",
-    "version": "0.21.0",
+    "version": "0.21.1",
     "description": "Monorepo for browser CAD which holds bitbybit.dev npm packages",
     "main": "index.js",
     "scripts": {

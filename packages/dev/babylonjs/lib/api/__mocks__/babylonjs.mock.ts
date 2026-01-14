@@ -525,3 +525,159 @@ export function createBabylonJSMock() {
         }
     };
 }
+
+// Scene helper specific mock classes
+export class MockEngine {
+    _canvas: HTMLCanvasElement;
+    _renderLoop: (() => void) | null = null;
+    
+    constructor(canvas: HTMLCanvasElement, _antialias?: boolean, _options?: object) {
+        this._canvas = canvas;
+    }
+    
+    setHardwareScalingLevel(_level: number) { /* mock */ }
+    resize() { /* mock */ }
+    
+    runRenderLoop(callback: () => void) {
+        this._renderLoop = callback;
+    }
+    
+    stopRenderLoop() {
+        this._renderLoop = null;
+    }
+    
+    dispose() { /* mock */ }
+}
+
+export class MockBabylonScene {
+    _meshes: MockMesh[] = [];
+    metadata: { shadowGenerators: MockShadowGenerator[] } = { shadowGenerators: [] };
+    clearColor: MockColor4 | null = null;
+    activeCamera: MockArcRotateCamera | null = null;
+    
+    dispose() { /* mock */ }
+    render() { /* mock */ }
+}
+
+export class MockHemisphericLight {
+    name: string;
+    direction: MockVector3;
+    diffuse: MockColor3;
+    groundColor: MockColor3;
+    intensity = 1;
+    
+    constructor(name: string, direction: MockVector3, _scene: MockBabylonScene) {
+        this.name = name;
+        this.direction = direction;
+        this.diffuse = new MockColor3(1, 1, 1);
+        this.groundColor = new MockColor3(0.5, 0.5, 0.5);
+    }
+    
+    dispose() { /* mock */ }
+}
+
+export class MockDirectionalLight {
+    name: string;
+    direction: MockVector3;
+    position: MockVector3;
+    diffuse: MockColor3;
+    intensity = 1;
+    
+    constructor(name: string, direction: MockVector3, _scene: MockBabylonScene) {
+        this.name = name;
+        this.direction = direction;
+        this.position = new MockVector3();
+        this.diffuse = new MockColor3(1, 1, 1);
+    }
+    
+    dispose() { /* mock */ }
+}
+
+export class MockShadowGenerator {
+    useBlurExponentialShadowMap = false;
+    blurKernel = 0;
+    darkness = 0;
+    
+    constructor(_mapSize: number, _light: MockDirectionalLight) { /* mock */ }
+}
+
+export class MockArcRotateCamera {
+    name: string;
+    alpha: number;
+    beta: number;
+    radius: number;
+    target: MockVector3;
+    angularSensibilityX = 1000;
+    angularSensibilityY = 1000;
+    lowerRadiusLimit: number | null = null;
+    upperRadiusLimit: number | null = null;
+    panningSensibility = 1000;
+    wheelPrecision = 3;
+    maxZ = 10000;
+    minZ = 0.1;
+    lowerBetaLimit: number | null = null;
+    upperBetaLimit: number | null = null;
+    lowerAlphaLimit: number | null = null;
+    upperAlphaLimit: number | null = null;
+    
+    constructor(
+        name: string,
+        alpha: number,
+        beta: number,
+        radius: number,
+        target: MockVector3,
+        scene: MockBabylonScene
+    ) {
+        this.name = name;
+        this.alpha = alpha;
+        this.beta = beta;
+        this.radius = radius;
+        this.target = target;
+        scene.activeCamera = this;
+    }
+    
+    attachControl(_canvas: HTMLCanvasElement, _noPreventDefault?: boolean) { /* mock */ }
+    dispose() { /* mock */ }
+}
+
+export const MockTools = {
+    ToRadians: (degrees: number) => degrees * (Math.PI / 180)
+};
+
+// Type definitions for test assertions
+export interface MockMeshType {
+    name: string;
+    position: MockVector3;
+    receiveShadows: boolean;
+    material: object | null;
+    _groundWidth?: number;
+    _groundHeight?: number;
+}
+
+/**
+ * Create scene helper mock for jest.mock("@babylonjs/core")
+ */
+export function createSceneHelperMock() {
+    return {
+        Engine: MockEngine,
+        Scene: MockBabylonScene,
+        Vector3: MockVector3,
+        Color3: MockColor3,
+        Color4: MockColor4,
+        HemisphericLight: MockHemisphericLight,
+        DirectionalLight: MockDirectionalLight,
+        ShadowGenerator: MockShadowGenerator,
+        ArcRotateCamera: MockArcRotateCamera,
+        MeshBuilder: {
+            CreateGround: (name: string, options: { width: number; height: number }, _scene: MockBabylonScene) => {
+                const mesh = new MockMesh(name, null) as unknown as MockMeshType;
+                mesh._groundWidth = options.width;
+                mesh._groundHeight = options.height;
+                mesh.receiveShadows = false;
+                return mesh;
+            }
+        },
+        StandardMaterial: MockStandardMaterial,
+        Tools: MockTools,
+    };
+}

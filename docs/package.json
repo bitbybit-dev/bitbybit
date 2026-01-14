@@ -1,11 +1,12 @@
 {
   "name": "docs",
-  "version": "0.0.0",
+  "version": "0.21.1",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "generate-llms": "node scripts/generate-llms.js",
+    "start": "npm run generate-llms && docusaurus start",
+    "build": "npm run generate-llms && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

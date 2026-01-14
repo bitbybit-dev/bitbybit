@@ -9,12 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/babylonjs": "0.21.0",
+    "@bitbybit-dev/babylonjs": "0.21.1",
     "lil-gui": "0.20.0"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
-    "vite": "^6.3.2",
-    "@types/three": "0.182.0"
+    "vite": "^6.3.2"
   }
 }

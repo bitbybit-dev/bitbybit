@@ -408,3 +408,68 @@ export const TypeScriptEditorIcon: React.FC<IconProps> = ({ size = defaultSize, 
     <text x="37" y="57" fontFamily="Arial, sans-serif" fontSize="12" fontWeight="bold" fill={color}>TS</text>
   </svg>
 );
+
+export const TerminalIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    {/* Terminal window frame */}
+    <rect x="6" y="10" width="52" height="44" rx="4" stroke={color} strokeWidth="2.5" fill="none"/>
+    {/* Title bar */}
+    <line x1="6" y1="20" x2="58" y2="20" stroke={color} strokeWidth="2"/>
+    {/* Window controls */}
+    <circle cx="14" cy="15" r="2" fill={color} opacity="0.6"/>
+    <circle cx="22" cy="15" r="2" fill={color} opacity="0.6"/>
+    <circle cx="30" cy="15" r="2" fill={color} opacity="0.6"/>
+    {/* Command prompt arrow */}
+    <path d="M14 30L22 36L14 42" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    {/* Cursor/command line */}
+    <path d="M28 42H44" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+    {/* Blinking cursor */}
+    <rect x="46" y="38" width="3" height="8" fill={color} opacity="0.8"/>
+  </svg>
+);
+
+export const AIRobotIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    {/* Robot Head */}
+    <rect x="16" y="14" width="32" height="26" rx="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    {/* Antenna */}
+    <line x1="32" y1="6" x2="32" y2="14" stroke={color} strokeWidth="2"/>
+    <circle cx="32" cy="4" r="3" stroke={color} strokeWidth="2" fill="none"/>
+    {/* Left eye */}
+    <circle cx="24" cy="24" r="4" stroke={color} strokeWidth="2" fill="none"/>
+    <circle cx="25" cy="23" r="1.5" fill={color}/>
+    {/* Right eye */}
+    <circle cx="40" cy="24" r="4" stroke={color} strokeWidth="2" fill="none"/>
+    <circle cx="41" cy="23" r="1.5" fill={color}/>
+    {/* Smile */}
+    <path d="M25 32Q32 38 39 32" stroke={color} strokeWidth="2" strokeLinecap="round" fill="none"/>
+    {/* Body */}
+    <rect x="18" y="42" width="28" height="16" rx="4" stroke={color} strokeWidth="2.5" fill="none"/>
+    {/* Code lines on body */}
+    <line x1="24" y1="48" x2="34" y2="48" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <line x1="24" y1="53" x2="40" y2="53" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    {/* Arms */}
+    <line x1="16" y1="46" x2="10" y2="52" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="8" cy="54" r="3" stroke={color} strokeWidth="2" fill="none"/>
+    <line x1="48" y1="46" x2="54" y2="40" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="56" cy="38" r="3" stroke={color} strokeWidth="2" fill="none"/>
+  </svg>
+);
+
+export const Context7Icon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    {/* Circle with 7 */}
+    <circle cx="32" cy="32" r="22" stroke={color} strokeWidth="2.5" fill="none"/>
+    {/* The number 7 */}
+    <path d="M22 18H42L30 46" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    {/* Context dots around */}
+    <circle cx="32" cy="6" r="2" fill={color}/>
+    <circle cx="50" cy="16" r="2" fill={color}/>
+    <circle cx="56" cy="32" r="2" fill={color}/>
+    <circle cx="50" cy="48" r="2" fill={color}/>
+    <circle cx="32" cy="58" r="2" fill={color}/>
+    <circle cx="14" cy="48" r="2" fill={color}/>
+    <circle cx="8" cy="32" r="2" fill={color}/>
+    <circle cx="14" cy="16" r="2" fill={color}/>
+  </svg>
+);
