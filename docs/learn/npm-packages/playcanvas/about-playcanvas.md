@@ -1,7 +1,7 @@
 ---
-sidebar_position: 1
-title: "Introduction to PlayCanvas"
-sidebar_label: "PlayCanvas Overview"
+sidebar_position: 2
+title: "About PlayCanvas"
+sidebar_label: "About PlayCanvas"
 description: "An overview of PlayCanvas, a powerful WebGL game engine for creating and displaying 3D graphics in web browsers, and how it's integrated with Bitbybit."
 tags: [npm-packages, playcanvas]
 ---

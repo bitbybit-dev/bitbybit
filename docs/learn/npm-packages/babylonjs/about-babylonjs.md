@@ -1,7 +1,7 @@
 ---
-sidebar_position: 1
-title: "Introduction to BabylonJS"
-sidebar_label: "BabylonJS Overview"
+sidebar_position: 2
+title: "About BabylonJS"
+sidebar_label: "About BabylonJS"
 description: "An overview of BabylonJS, a powerful and easy-to-use WebGL-based 3D game engine, and its integration with Bitbybit."
 tags: [npm-packages, babylonjs]
 ---

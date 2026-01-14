@@ -75,18 +75,28 @@ The Monaco editor provides a full code-based environment using TypeScript, aimed
 
 ## Open-Source NPM Packages (MIT Licensed)
 
-For developers who want to integrate our core geometric algorithms and functionalities directly into their own web applications, we offer a suite of **open-source NPM packages**. Our two main game engine-based libraries are:
+For developers who want to integrate our core geometric algorithms and functionalities directly into their own web applications, we offer a suite of **open-source NPM packages**. Our game engine-based libraries include:
 
-*   `@bitbybit-dev/threejs`
-*   `@bitbybit-dev/babylonjs`
+*   `@bitbybit-dev/babylonjs` - [Getting Started Guide](/learn/getting-started/engines/babylonjs)
+*   `@bitbybit-dev/threejs` - [Getting Started Guide](/learn/getting-started/engines/threejs)
+*   `@bitbybit-dev/playcanvas` - [Getting Started Guide](/learn/getting-started/engines/playcanvas)
 
 These allow you to leverage our CAD capabilities within your preferred 3D rendering environment.
 
 **Key Features & Benefits:**
 *   **Flexibility:** Build custom 3D tools, viewers, or applications tailored to your specific needs.
-*   **Integration:** Seamlessly incorporate our computational geometry capabilities into your existing JavaScript or TypeScript projects using either ThreeJS or BabylonJS.
+*   **Integration:** Seamlessly incorporate our computational geometry capabilities into your existing JavaScript or TypeScript projects.
 *   **Community & Control:** Leverage the power of open-source, contribute, or fork as needed.
 *   **MIT Licensed:** All our core NPM packages are licensed under the permissive MIT license, granting you broad freedom to use, modify, and distribute your projects.
+
+<Admonition type="tip" title="Quick Start with Any Engine">
+The fastest way to get started is using our NPX scaffolding tool:
+```bash
+npx @bitbybit-dev/create-app my-project --engine babylonjs
+# or --engine threejs
+# or --engine playcanvas
+```
+</Admonition>
 
 <Admonition type="info" title="What's Included (and Not Included)">
   <p>Our NPM packages provide the foundational geometric algorithms and data structures that power our platform, along with rendering integrations for ThreeJS and BabylonJS.</p>

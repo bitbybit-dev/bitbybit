@@ -60,7 +60,7 @@ const technologies = [
   {
     name: "Three.js",
     description: "Integrate Bitbybit's CAD capabilities with the popular Three.js rendering engine.",
-    link: "/learn/npm-packages/threejs",
+    link: "/learn/getting-started/engines/threejs",
     color: "#049EF4",
     logo: "https://bitbybit.dev/assets/threejs-logo.png",
     isGameEngine: true,
@@ -68,7 +68,7 @@ const technologies = [
   {
     name: "Babylon.js",
     description: "Build powerful 3D experiences combining Bitbybit geometry with Babylon.js features.",
-    link: "/learn/npm-packages/babylonjs",
+    link: "/learn/getting-started/engines/babylonjs",
     color: "#BB464B",
     logo: "https://bitbybit.dev/assets/babylon_logo.png",
     isGameEngine: true,
@@ -76,7 +76,7 @@ const technologies = [
   {
     name: "PlayCanvas",
     description: "Create high-performance 3D applications with Bitbybit and PlayCanvas game engine.",
-    link: "/learn/npm-packages/playcanvas",
+    link: "/learn/getting-started/engines/playcanvas",
     color: "#FF6B35",
     logo: "/img/playcanvas.png",
     isGameEngine: true,

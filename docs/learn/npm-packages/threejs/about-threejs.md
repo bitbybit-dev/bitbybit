@@ -1,7 +1,7 @@
 ---
-sidebar_position: 1
-title: "Introduction to ThreeJS"
-sidebar_label: "ThreeJS Overview"
+sidebar_position: 2
+title: "About ThreeJS"
+sidebar_label: "About ThreeJS"
 description: "An overview of ThreeJS, a powerful JavaScript library for creating and displaying 3D graphics in web browsers, and how it's integrated with Bitbybit."
 tags: [npm-packages, threejs]
 ---

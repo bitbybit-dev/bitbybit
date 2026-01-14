@@ -1,0 +1,107 @@
+---
+sidebar_position: 3
+title: "Getting Started with PlayCanvas"
+sidebar_label: "PlayCanvas"
+description: "Get started with Bitbybit and PlayCanvas - a powerful WebGL game engine. Learn about NPM packages and runners integration approaches."
+tags: [getting-started, playcanvas, engines]
+---
+
+import Admonition from '@theme/Admonition';
+
+# Getting Started with PlayCanvas
+
+<img 
+  src="/img/playcanvas.png" 
+  width="200"
+  alt="PlayCanvas Logo" 
+  title="PlayCanvas Logo" />
+
+PlayCanvas is a high-performance WebGL game engine known for its speed and mobile optimization. It features an open-source engine (MIT licensed) and is particularly well-suited for interactive 3D experiences that need to run smoothly across devices.
+
+**Official homepage:** <a href="https://playcanvas.com/" target="_blank" rel="noopener noreferrer">playcanvas.com</a>
+
+<Admonition type="info" title="Note">
+Our visual programming editors (Rete, Blockly, Monaco) use BabylonJS as their rendering engine. For PlayCanvas, you'll work with NPM packages or Runners directly.
+</Admonition>
+
+---
+
+## Two Ways to Use PlayCanvas with Bitbybit
+
+### 1. NPM Packages (Recommended)
+
+If you're building a production application or prefer working with TypeScript, use our NPM packages.
+
+The quickest way to start a new project:
+
+```bash
+npx @bitbybit-dev/create-app my-project --engine playcanvas
+cd my-project
+npm install
+npm run dev
+```
+
+This creates a ready-to-run project with Vite, TypeScript, and all three CAD kernels (OCCT, JSCAD, Manifold) pre-configured.
+
+NPM packages give you full TypeScript support with intellisense, optimized bundle sizes through tree-shaking, and are the recommended approach for production applications.
+
+Note that NPM packages only include our open-source algorithms. To understand which parts of Bitbybit are open-source and which are not, see our [Open Source Approach](/learn/open-source-approach) guide.
+
+**Detailed setup guide:** [Quick Start with PlayCanvas](/learn/npm-packages/playcanvas/start-with-playcanvas)
+
+---
+
+### 2. Runners (Quick Prototypes)
+
+Runners are single JavaScript files that bundle everything you need. They're perfect when you want to quickly prototype something without setting up a build environment.
+
+**Full Runner** - Includes both PlayCanvas and Bitbybit in one file:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-playcanvas.js"></script>
+```
+
+**Lite Runner** - Just Bitbybit, you load PlayCanvas separately (smaller download):
+
+```html
+<script src="https://cdn.playcanvas.com/playcanvas-stable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-playcanvas-lite.js"></script>
+```
+
+Runners work great for demos on CodePen, JSFiddle, or StackBlitz. However, they only support JavaScript (no TypeScript) and have larger bundle sizes, so NPM packages are better for production work.
+
+**Learn more:** [Introduction to Runners](/learn/runners/intro) - Understand runner capabilities, limitations, and how to export visual scripts as JavaScript.
+
+**Runner guides:** [Full Runner](/learn/runners/engines/playcanvas/full-runner) | [Lite Runner](/learn/runners/engines/playcanvas/lite-runner)
+
+---
+
+## NPM vs Runners - Which Should I Use?
+
+**Choose NPM packages** when you're building something for production, want TypeScript support, or need optimized bundle sizes.
+
+**Choose Runners** when you're prototyping, creating quick demos, or just want to experiment without any setup.
+
+---
+
+## What About Visual Editors?
+
+Our visual editors use BabylonJS for rendering, but the CAD algorithms are engine-agnostic. This means you can prototype ideas in our visual editors, export the script, and adapt it for PlayCanvas. The Bitbybit API is largely the same across engines - the main differences are in initialization and drawing functions.
+
+---
+
+## Next Steps
+
+If you're ready to build, run the NPX command above and check out the [starter template guide](/learn/npm-packages/playcanvas/start-with-playcanvas).
+
+If you want to understand PlayCanvas better, read [About PlayCanvas](/learn/npm-packages/playcanvas/about-playcanvas) for a deeper look at the engine's capabilities.
+
+---
+
+## Resources
+
+- [About PlayCanvas](/learn/npm-packages/playcanvas/about-playcanvas) - Engine overview and features
+- [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/playcanvas)
+- [GitHub Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/playcanvas)
+- [PlayCanvas Documentation](https://developer.playcanvas.com/)
+- [PlayCanvas Examples](https://playcanvas.github.io/)

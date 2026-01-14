@@ -1,7 +1,7 @@
 ---
-sidebar_position: 2
-title: Using Bitbybit with BabylonJS
-sidebar_label: BabylonJS Starter Template
+sidebar_position: 1
+title: Quick Start with BabylonJS
+sidebar_label: Quick Start
 description: Learn how to set up and use the @bitbybit-dev/babylonjs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
 tags: [npm-packages, babylonjs, occt, manifold, jscad]
 ---
@@ -12,20 +12,41 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 
-# Using Bitbybit with BabylonJS
+# Quick Start with BabylonJS
 
-This guide will walk you through setting up and using the `@bitbybit-dev/babylonjs` package to integrate Bitbybit's 3D CAD functionalities into your BabylonJS applications. We'll use Vite as our build tool, which simplifies the setup process.
+Get up and running with Bitbybit and BabylonJS in under 2 minutes!
+
+## Fastest Way: Use NPX Scaffolding
+
+<CodeBlock language="bash">
+{`npx @bitbybit-dev/create-app my-project --engine babylonjs
+cd my-project
+npm install
+npm run dev`}
+</CodeBlock>
+
+This creates a complete project with Vite, TypeScript, and all three CAD kernels (OCCT, JSCAD, Manifold) pre-configured.
+
+<Admonition type="tip" title="New to Bitbybit?">
+Check out the [Getting Started with BabylonJS](/learn/getting-started/engines/babylonjs) page for an overview of all integration approaches including visual editors and runners.
+</Admonition>
+
+---
+
+## Manual Setup (Alternative)
+
+If you prefer to set up the project manually or integrate into an existing project, follow these steps.
 
 The `@bitbybit-dev/babylonjs` package conveniently includes `@babylonjs/core` as a dependency, so you don't need to install it separately.
 
-## Prerequisites
+### Prerequisites
 
 *   Node.js and npm (or yarn) installed.
 *   A basic understanding of TypeScript and BabylonJS.
 
-## [Example on Bitbybit Github Repo](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/babylonjs/starter-template)
+### [Example on Bitbybit Github Repo](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/babylonjs/starter-template)
 
-## 1. Project Setup with Vite
+### 1. Project Setup with Vite
 
 First, create a new Vite project with a TypeScript template:
 
@@ -36,7 +57,7 @@ First, create a new Vite project with a TypeScript template:
 cd my-bitbybit-babylonjs-app`}
 </CodeBlock>
 
-Next, install the Bitbybit BabylonJS package and its necessary worker dependencies:
+Next, install the Bitbybit BabylonJS package:
 
 <CodeBlock language="bash">
 {`npm install @bitbybit-dev/babylonjs
