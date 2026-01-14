@@ -48,8 +48,8 @@ This example will demonstrate how to:
 <Admonition type="info" title="Prerequisites & Further Details">
   <p>This tutorial focuses on the core application logic for generating the Hex House with ThreeJS. For a detailed explanation of:</p>
   <ul>
-    <li>Setting up Web Worker files (e.g., <code>occt.worker.ts</code>), please refer to our <a href="./start-with-three-js">ThreeJS Integration Starter Tutorial</a>.</li>
-    <li>The general project structure (models, downloads, other helpers like <code>init-threejs.ts</code>, <code>init-kernels.ts</code>, etc.), you can refer to the <a href="./advanced-parametric-3d-model">previous Advanced Parametric Model (ThreeJS) tutorial</a> which shares a similar foundational setup.</li>
+    <li>The simplified kernel initialization approach (using <code>initBitByBit()</code>), please refer to our <a href="./start-with-three-js">ThreeJS Integration Starter Tutorial</a>.</li>
+    <li>The general project structure (models, downloads, other helpers like <code>init-threejs.ts</code>, etc.), you can refer to the <a href="./advanced-parametric-3d-model">previous Advanced Parametric Model (ThreeJS) tutorial</a> which shares a similar foundational setup.</li>
   </ul>
   <p>Here, we'll concentrate on the essential files and logic that bring the Hex House concept to life: <code>main.ts</code>, <code>create-gui.ts</code>, and particularly <code>create-shape.ts</code>.</p>
 </Admonition>
@@ -98,16 +98,17 @@ This file coordinates the setup and dynamic updates of our Hex House within the 
 
 <CodeBlock language="typescript" title="src/main.ts">
 {`import './style.css';
-import { BitByBitBase, Inputs } from '@bitbybit-dev/threejs'; // ThreeJS integration
-import { model, type KernelOptions, current } from './models';
+import { BitByBitBase, Inputs } from '@bitbybit-dev/core'; // Core package
+import { initBitByBit, type InitBitByBitOptions } from '@bitbybit-dev/threejs'; // ThreeJS integration
+import { model, current } from './models';
 import {
-    initKernels, initThreeJS, createGui, createShape,
+    initThreeJS, createGui, createShape,
     createDirLightsAndGround, disableGUI, enableGUI, hideSpinner, showSpinner,
     downloadGLB, downloadSTL, downloadStep,
 } from './helpers';
 
 // Configure which geometry kernels to enable
-const kernelOptions: KernelOptions = {
+const options: InitBitByBitOptions = {
     enableOCCT: true, // This example relies heavily on OCCT for its CAD operations
     enableJSCAD: false,
     enableManifold: false,
@@ -124,7 +125,7 @@ async function start() {
 
     // 2. Initialize Bitbybit, linking it to the ThreeJS scene and selected kernels
     const bitbybit = new BitByBitBase();
-    await initKernels(scene, bitbybit, kernelOptions); // From helpers/init-kernels.ts
+    await initBitByBit(scene, bitbybit, options); // Automatically creates workers from CDN
 
     // Variables to hold the OCCT shape representation and shapes to clean up
     let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
@@ -193,7 +194,7 @@ async function start() {
 
 **Core Logic in `main.ts`:**
 1.  Initializes the ThreeJS scene using `initThreeJS()` and adds lighting/ground via `createDirLightsAndGround()`.
-2.  Initializes `BitByBitBase` for ThreeJS and then the OCCT kernel using `initKernels()`.
+2.  Initializes `BitByBitBase` for ThreeJS and then the OCCT kernel using `initBitByBit()` from `@bitbybit-dev/threejs`, which automatically creates workers from CDN.
 3.  Sets up download functions and the `lil-gui` interface through `createGui()`. Changes in the GUI trigger `updateShape`.
 4.  A simple `rotateGroup` animation is tied to ThreeJS's `scene.onBeforeRender`.
 5.  The `updateShape` function is central to interactivity:
@@ -202,7 +203,7 @@ async function start() {
 
 ## 3. Essential Helper Functions (`src/helpers/`)
 
-We'll focus on the provided `create-gui.ts` and `create-shape.ts`. For `init-threejs.ts` and `init-kernels.ts`, their roles are analogous to those described in the "Advanced Parametric Model (ThreeJS)" tutorial (setting up the ThreeJS environment and initializing Bitbybit kernels, respectively).
+We'll focus on the provided `create-gui.ts` and `create-shape.ts`. For `init-threejs.ts`, its role is to set up the ThreeJS environment as described in the "Advanced Parametric Model (ThreeJS)" tutorial. Note that kernel initialization is now handled by the `initBitByBit()` helper from `@bitbybit-dev/threejs`.
 
 ### Creating the GUI (`create-gui.ts`)
 

@@ -82,367 +82,88 @@ This is a standard HTML setup. The key parts are:
 -   `<canvas id="babylon-canvas"></canvas>`: This is where our 3D scene will be drawn.
 -   `<script type="module" src="/src/main.ts"></script>`: This loads our main TypeScript application logic.
 
-## 3. Setting up Web Workers
-
-Bitbybit utilizes Web Workers to run computationally intensive geometry kernels (OCCT, JSCAD, Manifold) off the main browser thread, preventing UI freezes. You need to create simple worker files that initialize these kernels.
-
-Create a `workers` directory inside your `src` folder (`src/workers/`).
-
-<Tabs groupId="worker-setup">
-<TabItem value="occt" label="occt.worker.ts">
-
-<CodeBlock language="typescript" title="src/workers/occt.worker.ts">
-{`import initOpenCascade from '@bitbybit-dev/occt/bitbybit-dev-occt/cdn';
-import type { OpenCascadeInstance } from '@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt.js';
-import {
-  initializationComplete,
-  onMessageInput,
-} from '@bitbybit-dev/occt-worker';
-
-// Initialize OpenCascade (OCCT)
-initOpenCascade().then((occ: OpenCascadeInstance) => {
-    // Notify the main thread that OCCT is ready
-    initializationComplete(occ, undefined);
-});
-
-// Listen for messages from the main thread
-addEventListener('message', ({ data }) => {
-    // Process messages using the occt-worker helper
-    onMessageInput(data, postMessage);
-});`}
-</CodeBlock>
-**Explanation:**
--   Imports `initOpenCascade` to load the OCCT WebAssembly module.
--   Calls `initializationComplete` once OCCT is loaded, signaling to the main Bitbybit instance that this kernel is ready.
--   `onMessageInput` handles communication between the main thread and the OCCT worker.
-
-</TabItem>
-<TabItem value="jscad" label="jscad.worker.ts">
-
-<CodeBlock language="typescript" title="src/workers/jscad.worker.ts">
-{`import {
-  initializationComplete,
-  onMessageInput,
-} from '@bitbybit-dev/jscad-worker';
-
-// Dynamically import and initialize JSCAD
-import('@bitbybit-dev/jscad/jscad-generated').then((s) => {
-    // Notify the main thread that JSCAD is ready
-    initializationComplete(s.default());
-});
-
-// Listen for messages from the main thread
-addEventListener('message', ({ data }) => {
-    // Process messages using the jscad-worker helper
-    onMessageInput(data, postMessage);
-});`}
-</CodeBlock>
-**Explanation:**
--   Dynamically imports the JSCAD module.
--   Calls `initializationComplete` once JSCAD is loaded.
--   `onMessageInput` handles communication.
-
-</TabItem>
-<TabItem value="manifold" label="manifold.worker.ts">
-
-<CodeBlock language="typescript" title="src/workers/manifold.worker.ts">
-{`import {
-  initializationComplete,
-  onMessageInput,
-} from '@bitbybit-dev/manifold-worker';
-import Module from 'manifold-3d'; // Imports the Manifold JS bindings
-
-const init = async () => {
-    // Initialize the Manifold WASM module
-    const wasm = await Module({
-        // Manifold requires its WASM file to be loaded.
-        // This CDN link provides a hosted version.
-        // For production, you might want to host this yourself.
-        locateFile: () => {
-            return 'https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.21.1/wasm/manifold-3-3-2.wasm';
-        },
-    });
-    wasm.setup(); // Additional setup step for Manifold
-    // Notify the main thread that Manifold is ready
-    initializationComplete(wasm);
-};
-
-init();
-
-// Listen for messages from the main thread
-addEventListener('message', ({ data }) => {
-    // Process messages using the manifold-worker helper
-    onMessageInput(data, postMessage);
-});`}
-</CodeBlock>
-**Explanation:**
--   Imports the `manifold-3d` JavaScript bindings.
--   The `Module` function initializes the Manifold WASM. The `locateFile` function is crucial for pointing to the Manifold WASM file.
--   Calls `initializationComplete` after setup.
--   `onMessageInput` handles communication.
-
-</TabItem>
-</Tabs>
-
-<Admonition type="important" title="Worker File Location">
-  Vite handles these worker files automatically when you instantiate them using `new Worker(new URL('./path/to/worker.ts', import.meta.url), ...)`. Ensure the paths in `main.ts` correctly point to these files within your `src/workers/` directory.
-</Admonition>
-
-## 4. Main Application Logic (`main.ts`)
+## 3. Main Application Logic (`main.ts`)
 
 Replace the content of `src/main.ts` with the following:
 
 <CodeBlock language="typescript" title="src/main.ts">
 {`import './style.css'; // Basic styling
-import { BitByBitBase, Inputs } from '@bitbybit-dev/babylonjs';
-import { OccStateEnum } from '@bitbybit-dev/occt-worker';
-import { JscadStateEnum } from '@bitbybit-dev/jscad-worker';
-import { ManifoldStateEnum } from '@bitbybit-dev/manifold-worker';
-
 import {
-    Engine,
-    Scene,
-    ArcRotateCamera,
-    Vector3,
-    HemisphericLight,
-    DirectionalLight,
-    Color4,
-} from '@babylonjs/core';
-import { first, firstValueFrom, map } from 'rxjs';
-
-// Define an interface for kernel options
-interface KernelOptions {
-    enableOCCT: boolean;
-    enableJSCAD: boolean;
-    enableManifold: boolean;
-}
+    BitByBitBase,
+    Inputs,
+    initBitByBit,
+    initBabylonJS,
+    type InitBitByBitOptions,
+} from '@bitbybit-dev/babylonjs';
 
 // --- 1. Main Application Entry Point ---
 start();
 
 async function start() {
-    // Initialize basic BabylonJS scene
-    const { scene, engine } = initBabylonJS();
+    // Initialize BabylonJS scene using Bitbybit's helper function
+    const sceneOptions = new Inputs.BabylonJSScene.InitBabylonJSDto();
+    sceneOptions.canvasId = 'babylon-canvas';
+    sceneOptions.sceneSize = 10;
+    sceneOptions.enableShadows = true;
+    sceneOptions.enableGround = true;
+    sceneOptions.groundColor = '#333333';
+
+    const { scene, engine } = initBabylonJS(sceneOptions);
+    
     // Create an instance of BitByBitBase for BabylonJS
     const bitbybit = new BitByBitBase();
 
     // --- 2. Configure and Initialize Kernels ---
-    // Users can control which kernels are loaded
-    const kernelOptions: KernelOptions = {
+    // Users can control which kernels are loaded.
+    // The initBitByBit helper function handles all worker setup automatically
+    // by loading the kernels from CDN.
+    const options: InitBitByBitOptions = {
         enableOCCT: true,
         enableJSCAD: true,
         enableManifold: true,
     };
+    
     // Initialize Bitbybit with the selected kernels
-    await initWithKernels(scene, bitbybit, kernelOptions);
+    await initBitByBit(scene, bitbybit, options);
 
     // --- 3. Create Geometry with Active Kernels ---
-    if (kernelOptions.enableOCCT) {
+    if (options.enableOCCT) {
         await createOCCTGeometry(bitbybit, '#ff0000'); // Red
     }
-    if (kernelOptions.enableManifold) {
+    if (options.enableManifold) {
         await createManifoldGeometry(bitbybit, '#00ff00'); // Green
     }
-    if (kernelOptions.enableJSCAD) {
+    if (options.enableJSCAD) {
         await createJSCADGeometry(bitbybit, '#0000ff'); // Blue
     }
 
     // Start the BabylonJS render loop
     engine.runRenderLoop(() => {
         if (scene.activeCamera) {
-            // Ensure camera is ready
             scene.render();
         }
     });
 }
 
-// --- 4. BabylonJS Scene Initialization ---
-function initBabylonJS() {
-    const canvas = document.getElementById('babylon-canvas') as HTMLCanvasElement;
-    const engine = new Engine(canvas, true, {
-        preserveDrawingBuffer: true,
-        stencil: true,
-    });
-    const scene = new Scene(engine);
-    scene.metadata = { shadowGenerators: [] }; // Important for Bitbybit till we have better implementation...
-    scene.clearColor = new Color4(0.1, 0.11, 0.12, 1); // Set background color
-
-    const camera = new ArcRotateCamera(
-        'camera',
-        -Math.PI / 2,
-        Math.PI / 2.5,
-        150, // Adjusted radius for typical scenes
-        new Vector3(0, 0, 0),
-        scene
-    );
-    camera.attachControl(canvas, true);
-    camera.wheelPrecision = 5; // Control zoom speed
-    camera.zoomOnFactor = 1.2;
-    camera.angularSensibilityX = 1000;
-    camera.angularSensibilityY = 1000;
-    camera.panningSensibility = 100;
-    camera.lowerRadiusLimit = 10;
-    camera.upperRadiusLimit = 500;
-
-    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
-    light.intensity = 0.7;
-
-    // Add a directional light for better shadows and lighting
-    const directionalLight = new DirectionalLight(
-        'directionalLight',
-        new Vector3(-1, -2, -1),
-        scene
-    );
-    directionalLight.intensity = 1;
-
-    const onWindowResize = () => {
-        engine.resize();
-    };
-    window.addEventListener('resize', onWindowResize, false);
-
-    return { scene, engine, camera };
-}
-
-// --- 5. Bitbybit Kernel Initialization Logic ---
-async function initWithKernels(
-    scene: Scene,
-    bitbybit: BitByBitBase,
-    options: KernelOptions
-): Promise<{ message: string; initializedKernels: string[] }> {
-    let occtWorkerInstance: Worker | undefined;
-    let jscadWorkerInstance: Worker | undefined;
-    let manifoldWorkerInstance: Worker | undefined;
-
-    // 1. Conditionally create worker instances
-    if (options.enableOCCT) {
-        occtWorkerInstance = new Worker(
-            new URL('./workers/occt.worker.ts', import.meta.url),
-            { name: 'OCC_WORKER', type: 'module' }
-        );
-    }
-    if (options.enableJSCAD) {
-        jscadWorkerInstance = new Worker(
-            new URL('./workers/jscad.worker.ts', import.meta.url),
-            { name: 'JSCAD_WORKER', type: 'module' }
-        );
-    }
-    if (options.enableManifold) {
-        manifoldWorkerInstance = new Worker(
-            new URL('./workers/manifold.worker.ts', import.meta.url),
-            { name: 'MANIFOLD_WORKER', type: 'module' }
-        );
-    }
-
-    // 2. Initialize Bitbybit
-    await bitbybit.init(
-        scene,
-        occtWorkerInstance,
-        jscadWorkerInstance,
-        manifoldWorkerInstance
-    );
-
-    // 3. Collect promises for kernel initializations
-    const initializationPromises: Promise<string>[] = [];
-    let anyKernelSelectedForInit = false;
-
-    if (options.enableOCCT) {
-        anyKernelSelectedForInit = true;
-        if (bitbybit.occtWorkerManager) {
-            initializationPromises.push(
-                firstValueFrom(
-                    bitbybit.occtWorkerManager.occWorkerState$.pipe(
-                        first((s) => s.state === OccStateEnum.initialised),
-                        map(() => 'OCCT')
-                    )
-                )
-            );
-        } else {
-            console.warn(
-                'OCCT enabled in options, but occtWorkerManager not found after init.'
-            );
-        }
-    }
-
-    if (options.enableJSCAD) {
-        anyKernelSelectedForInit = true;
-        if (bitbybit.jscadWorkerManager) {
-            initializationPromises.push(
-                firstValueFrom(
-                    bitbybit.jscadWorkerManager.jscadWorkerState$.pipe(
-                        first((s) => s.state === JscadStateEnum.initialised),
-                        map(() => 'JSCAD')
-                    )
-                )
-            );
-        } else {
-            console.warn(
-                'JSCAD enabled in options, but jscadWorkerManager not found after init.'
-            );
-        }
-    }
-
-    if (options.enableManifold) {
-        anyKernelSelectedForInit = true;
-        if (bitbybit.manifoldWorkerManager && bitbybit.manifoldWorkerManager.manifoldWorkerState$) {
-            initializationPromises.push(
-                firstValueFrom(
-                    bitbybit.manifoldWorkerManager.manifoldWorkerState$.pipe(
-                        first((s) => s.state === ManifoldStateEnum.initialised),
-                        map(() => 'Manifold')
-                    )
-                )
-            );
-        } else {
-            console.warn(
-                'Manifold enabled in options, but manifoldWorkerManager not found after init.'
-            );
-        }
-    }
-
-    // 4. Wait for selected & available kernels or handle no selection/availability
-    if (!anyKernelSelectedForInit) {
-        console.log('No kernels selected for initialization.');
-        return { message: 'No kernels selected for initialization.', initializedKernels: [] };
-    }
-
-    if (initializationPromises.length === 0) {
-        // Kernels were selected, but none were awaitable (e.g., managers missing for all selected)
-        console.log(
-            'Kernels were selected, but none had managers available for awaiting initialization.'
-        );
-        return {
-            message: 'Selected kernels were not awaitable for initialization state.',
-            initializedKernels: [],
-        };
-    }
-
-    const initializedKernels = await Promise.all(initializationPromises);
-    console.log('Kernels initialized:', initializedKernels.join(', '));
-    return {
-        message: \`Successfully initialized: \${initializedKernels.join(', ')}\`,
-        initializedKernels,
-    };
-}
-
-// --- 6. Geometry Creation Functions (Examples) ---
+// --- 4. Geometry Creation Functions (Examples) ---
 async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
     console.log('Creating OCCT geometry...');
     const cubeOptions = new Inputs.OCCT.CubeDto();
-    cubeOptions.size = 25;
-    cubeOptions.center = [0, 0, 0];
+    cubeOptions.size = 2.5;
+    cubeOptions.center = [0, 1.25, 0];
 
     const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);
 
     const filletOptions = new Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSShapePointer>();
     filletOptions.shape = cube;
-    filletOptions.radius = 4;
+    filletOptions.radius = 0.4;
     const roundedCube = await bitbybit.occt.fillets.filletEdges(filletOptions);
 
     const drawOptions = new Inputs.Draw.DrawOcctShapeOptions();
-    drawOptions.edgeWidth = 5;
+    drawOptions.edgeWidth = 0.5;
     drawOptions.faceColour = color;
     drawOptions.drawVertices = true;
-    drawOptions.vertexSize = 0.5;
+    drawOptions.vertexSize = 0.05;
     drawOptions.vertexColour = '#ffffff';
     await bitbybit.draw.drawAnyAsync({
         entity: roundedCube,
@@ -450,14 +171,16 @@ async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
     });
     console.log('OCCT geometry created and drawn.');
 }
+
 async function createManifoldGeometry(bitbybit: BitByBitBase, color: string) {
     console.log('Creating Manifold geometry...');
     const sphereOptions = new Inputs.Manifold.SphereDto();
-    sphereOptions.radius = 15;
+    sphereOptions.radius = 1.5;
+    sphereOptions.circularSegments = 32;
     const sphere = await bitbybit.manifold.manifold.shapes.sphere(sphereOptions);
 
     const cubeOptions = new Inputs.Manifold.CubeDto();
-    cubeOptions.size = 25;
+    cubeOptions.size = 2.5;
     const cube = await bitbybit.manifold.manifold.shapes.cube(cubeOptions);
 
     const diffedShape = await bitbybit.manifold.manifold.booleans.differenceTwo({
@@ -467,7 +190,7 @@ async function createManifoldGeometry(bitbybit: BitByBitBase, color: string) {
 
     const translationOptions = new Inputs.Manifold.TranslateDto<Inputs.Manifold.ManifoldPointer>();
     translationOptions.manifold = diffedShape;
-    translationOptions.vector = [0, -40, 0]; // Position below OCCT
+    translationOptions.vector = [0, 1.25, -4]; // Position below OCCT
     const movedShape = await bitbybit.manifold.manifold.transforms.translate(
         translationOptions
     );
@@ -484,16 +207,15 @@ async function createManifoldGeometry(bitbybit: BitByBitBase, color: string) {
 async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
     console.log('Creating JSCAD geometry...');
     const geodesicSphereOptions = new Inputs.JSCAD.GeodesicSphereDto();
-    geodesicSphereOptions.radius = 15;
-    geodesicSphereOptions.center = [0, 40, 0]; // Position above OCCT
+    geodesicSphereOptions.radius = 1.5;
+    geodesicSphereOptions.center = [0, 1.5, 4]; // Position above OCCT
     const geodesicSphere = await bitbybit.jscad.shapes.geodesicSphere(
         geodesicSphereOptions
     );
 
-    // Example: Create another simple sphere for a boolean operation
     const sphereOptions = new Inputs.JSCAD.SphereDto();
-    sphereOptions.radius = 10; // Smaller sphere
-    sphereOptions.center = [5, 45, 0]; // Slightly offset
+    sphereOptions.radius = 1;
+    sphereOptions.center = [0, 3, 4.5];
     const simpleSphere = await bitbybit.jscad.shapes.sphere(sphereOptions);
 
     const unionOptions = new Inputs.JSCAD.BooleanTwoObjectsDto();
@@ -502,7 +224,7 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
     const unionShape = await bitbybit.jscad.booleans.unionTwo(unionOptions);
 
     const drawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
-    drawOptions.colours = color; // Note: 'colours' for JSCAD draw options
+    drawOptions.colours = color;
     await bitbybit.draw.drawAnyAsync({
         entity: unionShape,
         options: drawOptions,
@@ -514,42 +236,23 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
 ### Explanation of `main.ts`:
 
 1.  **Imports:**
-    *   `BitByBitBase` and `Inputs`: Core components from `@bitbybit-dev/babylonjs`. `Inputs` provides DTOs (Data Transfer Objects) for specifying parameters for geometry operations.
-    *   `...StateEnum`: Enums used to check the initialization state of each kernel worker.
-    *   Standard BabylonJS modules for scene setup: `Engine`, `Scene`, `ArcRotateCamera`, `Vector3`, `HemisphericLight`, `DirectionalLight`, `Color4`.
-    *   `first`, `firstValueFrom`, `map` from `rxjs`: Used to subscribe to and transform the kernel state observables.
+    *   `BitByBitBase`, `Inputs`, `initBitByBit`, `initBabylonJS`, and `InitBitByBitOptions`: Core components from `@bitbybit-dev/babylonjs`. `Inputs` provides DTOs (Data Transfer Objects) for specifying parameters for geometry operations and scene configuration. `initBitByBit` is the helper function that handles all kernel initialization automatically, `initBabylonJS` sets up the BabylonJS scene, and `InitBitByBitOptions` is the type for kernel configuration options.
 
-2.  **`KernelOptions` Interface:** Defines the structure for selecting which kernels to initialize.
-
-3.  **`start()` function (Main Entry Point):**
-    *   Calls `initBabylonJS()` to set up the basic BabylonJS `Engine`, `Scene`, `Camera`, and `Lights`.
+2.  **`start()` function (Main Entry Point):**
+    *   Uses `Inputs.BabylonJSScene.InitBabylonJSDto()` to configure scene options like canvas ID, scene size, shadows, and ground settings.
+    *   Calls `initBabylonJS(sceneOptions)` to set up the complete BabylonJS environment (engine, scene, camera, lights) with a single function call.
     *   Creates an instance of `BitByBitBase` from the `@bitbybit-dev/babylonjs` package.
-    *   **`kernelOptions`**: This object is key. By setting `enableOCCT`, `enableJSCAD`, and `enableManifold` to `true` or `false`, you control which kernels Bitbybit attempts to initialize. This allows for optimizing load times and resource usage if not all kernels are needed.
-    *   Calls `initWithKernels()` to initialize Bitbybit with the selected kernels, passing the BabylonJS `scene`.
-    *   Conditionally calls geometry creation functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`) based on which kernels were enabled and successfully initialized.
+    *   **`options`**: This object is key. By setting `enableOCCT`, `enableJSCAD`, and `enableManifold` to `true` or `false`, you control which kernels Bitbybit attempts to initialize. This allows for optimizing load times and resource usage if not all kernels are needed.
+    *   **`initBitByBit()`**: This helper function handles all the complexity of initializing Bitbybit with the selected kernels. It automatically creates web workers, loads kernel WASM files from CDN, and waits for all selected kernels to be ready. You simply pass the scene, the bitbybit instance, and your options.
+    *   Conditionally calls geometry creation functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`) based on which kernels were enabled.
     *   Starts the BabylonJS render loop using `engine.runRenderLoop(...)`.
 
-4.  **`initBabylonJS()` function:**
-    *   Standard BabylonJS boilerplate: sets up the `Engine` attached to the canvas.
-    *   Creates a `Scene` and sets its clear color (background).
-    *   Creates an `ArcRotateCamera` for user interaction with configured sensitivities and limits.
-    *   Adds a `HemisphericLight` and a `DirectionalLight` for better lighting.
-    *   Includes a window resize listener to ensure the `engine` adapts to viewport changes.
-
-5.  **`initWithKernels()` function:**
-    *   This is the core of Bitbybit's initialization.
-    *   It conditionally creates `Worker` instances for OCCT, JSCAD, and Manifold based on the `options` passed in. The `new URL('./workers/worker-name.worker.ts', import.meta.url)` syntax is Vite's way of correctly bundling and referencing web worker files.
-    *   Calls `await bitbybit.init(scene, occtWorkerInstance, jscadWorkerInstance, manifoldWorkerInstance)`. The `@bitbybit-dev/babylonjs` package's `BitByBitBase` is designed to work with a BabylonJS `Scene` object and can handle `undefined` for worker instances it shouldn't initialize.
-    *   Uses RxJS `pipe(first(...), map(...))` to subscribe to the state observables of each enabled kernel and transform the result to a string identifying the kernel.
-    *   The `Promise` resolves only after all *selected and enabled* kernels have emitted an `initialised` state. This ensures that you don't try to use a kernel before it's ready.
-    *   Returns an object with a message and an array of initialized kernel names.
-
-6.  **Geometry Creation Functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`):**
+3.  **Geometry Creation Functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`):**
     *   These are example functions illustrating how to use Bitbybit's core geometry API (e.g., `bitbybit.occt.*`, `bitbybit.manifold.*`, `bitbybit.jscad.*`).
     *   **`Inputs` DTOs**: You'll notice the use of `Inputs.OCCT.CubeDto()`, `Inputs.Manifold.SphereDto()`, etc. These objects are used to pass parameters to Bitbybit's geometry creation and modification functions. They provide type safety and often mirror the inputs you'd find in a visual programming environment. Intellisense (auto-completion in your IDE) will be very helpful here.
     *   **Drawing**: After creating a geometric entity, `bitbybit.draw.drawAnyAsync()` (from `@bitbybit-dev/babylonjs`) is used to render it into the BabylonJS scene. Different kernels might have slightly different drawing option DTOs (e.g., `DrawOcctShapeOptions`, `DrawManifoldOrCrossSectionOptions`, `DrawBasicGeometryOptions`), but `drawAnyAsync` handles many common cases. The OCCT draw options now support additional properties like `edgeWidth`, `drawVertices`, `vertexSize`, and `vertexColour`.
 
-## 5. Basic Styling (Optional)
+## 4. Basic Styling (Optional)
 
 Create an `src/style.css` file if you haven't already:
 
@@ -568,7 +271,7 @@ Create an `src/style.css` file if you haven't already:
 }`}
 </CodeBlock>
 
-## 6. Running the Application
+## 5. Running the Application
 
 <CodeBlock language="bash">
 {`npm run dev
@@ -595,11 +298,11 @@ You can explore and interact with a live example of this setup on StackBlitz.
 
 ## Key Takeaways
 
-*   **Vite Simplifies Setup:** Vite handles worker bundling and module resolution effectively for a smooth development experience.
-*   **`KernelOptions` for Control:** You have fine-grained control over which geometry kernels are loaded, allowing you to tailor the application to specific needs and optimize performance.
+*   **Vite Simplifies Setup:** Vite handles module resolution effectively for a smooth development experience.
+*   **`initBitByBit()` for Easy Initialization:** The `initBitByBit()` helper function handles all the complexity of creating web workers and loading kernel WASM files from CDN. You simply configure which kernels to enable. If you need to host assets on your own infrastructure, see [Self-Hosting Assets](/learn/hosting-and-cdn).
+*   **`InitBitByBitOptions` for Control:** You have fine-grained control over which geometry kernels are loaded, allowing you to tailor the application to specific needs and optimize performance.
 *   **Asynchronous Operations:** Most Bitbybit operations are `async` because they communicate with Web Workers, ensuring the main thread remains responsive.
 *   **`Inputs` DTOs:** Use these typed objects to configure geometry operations, promoting code clarity and type safety.
-*   **Separate Worker Files:** Each geometry kernel runs in its own dedicated worker, maximizing performance for computationally intensive tasks.
 *   **Modular Design:** The `@bitbybit-dev/babylonjs` package seamlessly integrates Bitbybit's powerful geometry kernels and functionalities with your BabylonJS applications.
 
 This setup provides a robust foundation for building sophisticated 3D CAD applications in the browser with Bitbybit and BabylonJS.
