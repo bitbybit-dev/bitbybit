@@ -408,3 +408,22 @@ export const TypeScriptEditorIcon: React.FC<IconProps> = ({ size = defaultSize, 
     <text x="37" y="57" fontFamily="Arial, sans-serif" fontSize="12" fontWeight="bold" fill={color}>TS</text>
   </svg>
 );
+
+export const TerminalIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    {/* Terminal window frame */}
+    <rect x="6" y="10" width="52" height="44" rx="4" stroke={color} strokeWidth="2.5" fill="none"/>
+    {/* Title bar */}
+    <line x1="6" y1="20" x2="58" y2="20" stroke={color} strokeWidth="2"/>
+    {/* Window controls */}
+    <circle cx="14" cy="15" r="2" fill={color} opacity="0.6"/>
+    <circle cx="22" cy="15" r="2" fill={color} opacity="0.6"/>
+    <circle cx="30" cy="15" r="2" fill={color} opacity="0.6"/>
+    {/* Command prompt arrow */}
+    <path d="M14 30L22 36L14 42" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    {/* Cursor/command line */}
+    <path d="M28 42H44" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+    {/* Blinking cursor */}
+    <rect x="46" y="38" width="3" height="8" fill={color} opacity="0.8"/>
+  </svg>
+);

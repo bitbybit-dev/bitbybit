@@ -1350,4 +1350,182 @@
   .editorDescription {
     font-size: 14px;
   }
+
+  .quickStartContent {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .quickStartCommand {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .quickStartCommand code {
+    font-size: 12px;
+    word-break: break-all;
+  }
+
+  .copyButton {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .quickStartEngines {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* ===== QUICK START SECTION ===== */
+.quickStartSection {
+  padding: 5rem 0;
+  background: linear-gradient(180deg, #121315 0%, #1a1c1f 100%);
+}
+
+.quickStartCard {
+  position: relative;
+  background: linear-gradient(145deg, rgba(30, 33, 38, 0.95) 0%, rgba(22, 24, 28, 0.98) 100%);
+  border: 1px solid rgba(240, 206, 187, 0.2);
+  border-radius: 24px;
+  padding: 48px;
+  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.quickStartGlow {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(240, 206, 187, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.quickStartContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.quickStartIcon {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(240, 206, 187, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(240, 206, 187, 0.2);
+}
+
+.quickStartIcon svg {
+  color: #F0CEBB;
+}
+
+.quickStartText h2 {
+  color: #F0CEBB;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.quickStartText p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.quickStartCommand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(240, 206, 187, 0.15);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.quickStartCommand code {
+  flex: 1;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 15px;
+  color: #F0CEBB;
+  background: none;
+  border: none;
+  letter-spacing: 0.3px;
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(240, 206, 187, 0.1);
+  border: 1px solid rgba(240, 206, 187, 0.2);
+  border-radius: 8px;
+  color: #F0CEBB;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copyButton:hover {
+  background: rgba(240, 206, 187, 0.2);
+  border-color: rgba(240, 206, 187, 0.4);
+  transform: scale(1.05);
+}
+
+.quickStartEngines {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.quickStartEngines > span {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.engineBadges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.engineBadge {
+  background: rgba(240, 206, 187, 0.08);
+  border: 1px solid rgba(240, 206, 187, 0.15);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: rgba(240, 206, 187, 0.9);
+  font-weight: 500;
+}
+
+.quickStartLink {
+  display: inline-flex;
+  align-items: center;
+  color: #F0CEBB;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.quickStartLink:hover {
+  color: #fff6f3;
+  text-decoration: none;
+  transform: translateX(4px);
 }

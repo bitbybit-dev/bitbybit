@@ -24,7 +24,9 @@ import {
   ReteEditorIcon,
   BlocklyEditorIcon,
   TypeScriptEditorIcon,
+  TerminalIcon,
 } from "@site/src/components/Icons";
+import { useState } from "react";
 
 import styles from "./index.module.css";
 
@@ -285,6 +287,68 @@ function TechnologiesSection() {
   );
 }
 
+function QuickStartSection() {
+  const [copied, setCopied] = useState(false);
+  const command = "npx @bitbybit-dev/create-app my-awesome-project";
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(command);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <section className={styles.quickStartSection}>
+      <div className="container">
+        <div className={styles.quickStartCard}>
+          <div className={styles.quickStartGlow}></div>
+          <div className={styles.quickStartContent}>
+            <div className={styles.quickStartIcon}>
+              <TerminalIcon size={48} />
+            </div>
+            <div className={styles.quickStartText}>
+              <h2>Quick Start with NPM Packages</h2>
+              <p>
+                Scaffold a fully-configured 3D CAD project in seconds. Includes Vite, TypeScript, and all three geometry kernels (OCCT, JSCAD, Manifold) ready to use.
+              </p>
+            </div>
+          </div>
+          <div className={styles.quickStartCommand}>
+            <code>{command}</code>
+            <button 
+              onClick={copyToClipboard} 
+              className={styles.copyButton}
+              title="Copy to clipboard"
+            >
+              {copied ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              )}
+            </button>
+          </div>
+          <div className={styles.quickStartEngines}>
+            <span>Supports:</span>
+            <div className={styles.engineBadges}>
+              <span className={styles.engineBadge}>Three.js</span>
+              <span className={styles.engineBadge}>Babylon.js</span>
+              <span className={styles.engineBadge}>PlayCanvas</span>
+            </div>
+          </div>
+          <Link to="/learn/npm-packages/intro" className={styles.quickStartLink}>
+            Learn more about NPM packages →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CommunitySection() {
   return (
     <section className={styles.communitySection}>
@@ -482,6 +546,7 @@ export default function Home(): ReactNode {
         <LearningPathsSection />
         <WhatYouCanBuildSection />
         <TechnologiesSection />
+        <QuickStartSection />
         <ShopifyBitsSection />
         <CommunitySection />
         <CTASection />
