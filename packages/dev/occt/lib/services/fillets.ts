@@ -1,11 +1,11 @@
 import { OccHelper } from "../occ-helper";
-import { BRepFilletAPI_MakeFillet2d_2, OpenCascadeInstance, TopAbs_ShapeEnum, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BRepFilletAPI_MakeFillet2d, BitbybitOcctModule, TopAbs_ShapeEnum, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs/inputs";
 
 export class OCCTFillets {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
@@ -68,7 +68,7 @@ export class OCCTFillets {
 
     filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto<TopoDS_Edge>): TopoDS_Wire {
         const pln = this.och.entitiesService.gpPln(inputs.planeOrigin, inputs.planeDirection);
-        const fil = new this.occ.ChFi2d_FilletAlgo_3(inputs.edge1, inputs.edge2, pln);
+        const fil = new this.occ.ChFi2d_FilletAlgo(inputs.edge1, inputs.edge2, pln);
         fil.Perform(inputs.radius);
         const pt = this.och.entitiesService.gpPnt(inputs.planeOrigin);
         const edge1 = new this.occ.TopoDS_Edge();

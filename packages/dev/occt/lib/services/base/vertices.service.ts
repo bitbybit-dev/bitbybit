@@ -1,4 +1,4 @@
-import { OpenCascadeInstance, TopoDS_Compound, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 import { BooleansService } from "./booleans.service";
 import { ConverterService } from "./converter.service";
@@ -9,7 +9,7 @@ import { WiresService } from "./wires.service";
 export class VerticesService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
         private readonly shapeGettersService: ShapeGettersService,
@@ -46,7 +46,7 @@ export class VerticesService {
 
     verticesToPoints(inputs: Inputs.OCCT.ShapesDto<TopoDS_Vertex>): Inputs.Base.Point3[] {
         return inputs.shapes.map(v => {
-            const pt = this.occ.BRep_Tool.Pnt(v);
+            const pt = this.occ.BRep_Tool_Pnt(v);
             const res = [pt.X(), pt.Y(), pt.Z()] as Inputs.Base.Point3;
             pt.delete();
             return res;
@@ -55,7 +55,7 @@ export class VerticesService {
 
     pointsToVertices(inputs: Inputs.OCCT.ShapesDto<TopoDS_Vertex>): Inputs.Base.Point3[] {
         return inputs.shapes.map(v => {
-            const pt = this.occ.BRep_Tool.Pnt(v);
+            const pt = this.occ.BRep_Tool_Pnt(v);
             const res = [pt.X(), pt.Y(), pt.Z()] as Inputs.Base.Point3;
             pt.delete();
             return res;

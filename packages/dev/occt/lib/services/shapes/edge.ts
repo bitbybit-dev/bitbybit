@@ -1,11 +1,11 @@
-import { Geom2d_Curve, Geom_Surface, OpenCascadeInstance, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs/inputs";
 
 export class OCCTEdge {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
@@ -98,11 +98,7 @@ export class OCCTEdge {
     }
 
     removeInternalEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>) {
-        const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(inputs.shape, true, true, false);
-        fusor.Build();
-        const shape = fusor.Shape();
-        fusor.delete();
-        return shape;
+        return this.occ.ShapeUpgrade_UnifySameDomain_Perform(inputs.shape, true, true, false);
     }
 
     getEdge(inputs: Inputs.OCCT.EdgeIndexDto<TopoDS_Shape>): TopoDS_Edge {

@@ -1,4 +1,4 @@
-import initOpenCascade, { OpenCascadeInstance, TopAbs_Orientation, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -13,7 +13,7 @@ import { OCCTSurfaces } from "../geom/surfaces";
 import * as Inputs from "../../api/inputs/inputs";
 
 describe("OCCT shape unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let occHelper: OccHelper;
     let shape: OCCTShape;
     let solid: OCCTSolid;
@@ -25,7 +25,7 @@ describe("OCCT shape unit tests", () => {
     let surfaces: OCCTSurfaces;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
         occHelper = new OccHelper(vec, s, occt);
@@ -125,7 +125,7 @@ describe("OCCT shape unit tests", () => {
         const circle2 = wire.createCircleWire({ radius: 1.5, center: [0, 1, 0], direction: [0, 1, 0] });
         const circle3 = wire.createCircleWire({ radius: 1, center: [0, 2, 0], direction: [0, 1, 0] });
         const loft = operations.loft({ shapes: [circle1, circle2, circle3], makeSolid: false });
-        loft.Convex_2(true);
+        loft.SetConvex(true);
         const res = shape.isConvex({ shape: loft });
         expect(res).toBe(true);
         circle1.delete();
@@ -140,7 +140,7 @@ describe("OCCT shape unit tests", () => {
         const circle2 = wire.createCircleWire({ radius: 0.5, center: [0, 1, 0], direction: [0, 1, 0] });
         const circle3 = wire.createCircleWire({ radius: 1, center: [0, 2, 0], direction: [0, 1, 0] });
         const loft = operations.loft({ shapes: [circle1, circle2, circle3], makeSolid: false });
-        loft.Convex_2(false);
+        loft.SetConvex(false);
         const res = shape.isConvex({ shape: loft });
         expect(res).toBe(false);
         circle1.delete();
@@ -153,7 +153,7 @@ describe("OCCT shape unit tests", () => {
         const cube = solid.createCube({ size: 1, center: [0, 0, 0] });
         let res = shape.isChecked({ shape: cube });
         expect(res).toBe(false);
-        cube.Checked_2(true);
+        cube.SetChecked(true);
         res = shape.isChecked({ shape: cube });
         expect(res).toBe(true);
         cube.delete();
@@ -163,7 +163,7 @@ describe("OCCT shape unit tests", () => {
         const cube = solid.createCube({ size: 1, center: [0, 0, 0] });
         let res = shape.isFree({ shape: cube });
         expect(res).toBe(true);
-        cube.Free_2(false);
+        cube.SetFree(false);
         res = shape.isFree({ shape: cube });
         expect(res).toBe(false);
         cube.delete();
@@ -186,7 +186,7 @@ describe("OCCT shape unit tests", () => {
             shape: cylSurface,
             tolerance: 0.001,
         });
-        f.Infinite_2(true);
+        f.SetInfinite(true);
         const res = shape.isInfinite({ shape: f });
         expect(res).toBe(true);
         cylSurface.delete();
@@ -197,7 +197,7 @@ describe("OCCT shape unit tests", () => {
         const cube = solid.createCube({ size: 1, center: [0, 0, 0] });
         let res = shape.isModified({ shape: cube });
         expect(res).toBe(true);
-        cube.Modified_2(false);
+        cube.SetModified(false);
         res = shape.isModified({ shape: cube });
         expect(res).toBe(false);
         cube.delete();
@@ -207,7 +207,7 @@ describe("OCCT shape unit tests", () => {
         const cube = solid.createCube({ size: 1, center: [0, 0, 0] });
         let res = shape.isLocked({ shape: cube });
         expect(res).toBe(false);
-        cube.Locked_2(true);
+        cube.SetLocked(true);
         res = shape.isLocked({ shape: cube });
         expect(res).toBe(true);
         cube.delete();
@@ -293,12 +293,12 @@ describe("OCCT shape unit tests", () => {
 
     it("should get reversed orientation of the shape", async () => {
         const cube = solid.createCube({ size: 1, center: [0, 0, 0] });
-        cube.Orientation_2(occt.TopAbs_Orientation.TopAbs_INTERNAL as TopAbs_Orientation);
+        cube.SetOrientation(occt.TopAbs_Orientation.INTERNAL);
         const orientation = shape.getOrientation({
             shape: cube
         });
         expect(orientation).toBe(Inputs.OCCT.topAbsOrientationEnum.internal);
-        cube.Orientation_2(occt.TopAbs_Orientation.TopAbs_EXTERNAL as TopAbs_Orientation);
+        cube.SetOrientation(occt.TopAbs_Orientation.EXTERNAL);
         const orientation2 = shape.getOrientation({
             shape: cube
         });

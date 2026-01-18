@@ -1,4 +1,4 @@
-import { OpenCascadeInstance, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs/inputs";
 import { Base } from "../api/inputs/inputs";
@@ -6,7 +6,7 @@ import { Base } from "../api/inputs/inputs";
 export class OCCTTransforms {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
@@ -51,10 +51,10 @@ export class OCCTTransforms {
     }
 
     scale(inputs: Inputs.OCCT.ScaleDto<TopoDS_Shape>): TopoDS_Shape {
-        const transformation = new this.occ.gp_Trsf_1();
+        const transformation = new this.occ.gp_Trsf();
         const gpPnt = this.och.entitiesService.gpPnt([0.0, 0.0, 0.0]);
         transformation.SetScale(gpPnt, inputs.factor);
-        const transf = new this.occ.BRepBuilderAPI_Transform_2(inputs.shape, transformation, true);
+        const transf = new this.occ.BRepBuilderAPI_Transform(inputs.shape, transformation, true);
         const s = transf.Shape();
         const result = this.och.converterService.getActualTypeOfShape(s);
         gpPnt.delete();

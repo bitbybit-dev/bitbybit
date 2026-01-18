@@ -1,7 +1,7 @@
 import {
-    Approx_ParametrizationType, BRepFill_TypeOfContact, BRepOffsetAPI_MakeOffsetShape,
-    BRepOffsetAPI_MakeOffset_1, BRepOffset_Mode, Bnd_Box_1, Extrema_ExtAlgo, Extrema_ExtFlag,
-    GeomAbs_JoinType, OpenCascadeInstance, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire
+    BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, Bnd_Box, EmbindEnumValue,
+    BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire,
+    Approx_ParametrizationType
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import * as Inputs from "../../api/inputs/inputs";
@@ -21,7 +21,7 @@ import { SolidsService } from "./solids.service";
 export class OperationsService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly enumService: EnumService,
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
@@ -86,16 +86,16 @@ export class OperationsService {
         if (inputs.maxUDegree) {
             pipe.SetMaxDegree(inputs.maxUDegree);
         }
-        let parType: Approx_ParametrizationType | undefined = undefined;
+        let parType: EmbindEnumValue | undefined = undefined;
         if (inputs.parType === Inputs.OCCT.approxParametrizationTypeEnum.approxChordLength) {
-            parType = this.occ.Approx_ParametrizationType.Approx_ChordLength as Approx_ParametrizationType;
+            parType = this.occ.Approx_ParametrizationType.ChordLength;
         } else if (inputs.parType === Inputs.OCCT.approxParametrizationTypeEnum.approxCentripetal) {
-            parType = this.occ.Approx_ParametrizationType.Approx_Centripetal as Approx_ParametrizationType;
+            parType = this.occ.Approx_ParametrizationType.Centripetal;
         } else if (inputs.parType === Inputs.OCCT.approxParametrizationTypeEnum.approxIsoParametric) {
-            parType = this.occ.Approx_ParametrizationType.Approx_IsoParametric as Approx_ParametrizationType;
+            parType = this.occ.Approx_ParametrizationType.IsoParametric;
         }
         if (parType) {
-            pipe.SetParType(parType);
+            pipe.SetParType(parType as unknown as Approx_ParametrizationType);
         }
         pipe.CheckCompatibility(false);
         const pipeShape = pipe.Shape();
@@ -110,20 +110,10 @@ export class OperationsService {
 
 
     closestPointsBetweenTwoShapes(shape1: TopoDS_Shape, shape2: TopoDS_Shape): [Base.Point3, Base.Point3] {
-        const messageProgress = new this.occ.Message_ProgressRange_1();
-        const extrema = new this.occ.BRepExtrema_DistShapeShape_2(
-            shape1,
-            shape2,
-            this.occ.Extrema_ExtFlag.Extrema_ExtFlag_MIN as Extrema_ExtFlag,
-            this.occ.Extrema_ExtAlgo.Extrema_ExtAlgo_Grad as Extrema_ExtAlgo,
-            messageProgress
-        );
-        const messageProgress1 = new this.occ.Message_ProgressRange_1();
-        extrema.Perform(messageProgress1);
-        if (extrema.IsDone() && extrema.NbSolution() > 0) {
-            const closestPoint1 = extrema.PointOnShape1(1);
-            const closestPoint2 = extrema.PointOnShape2(1);
-            return [[closestPoint1.X(), closestPoint1.Y(), closestPoint1.Z()], [closestPoint2.X(), closestPoint2.Y(), closestPoint2.Z()]];
+        const result = this.occ.ClosestPointsBetweenShapes(shape1, shape2);
+        // embind returns a VectorDouble object with .size() and .get() methods, not a native array
+        if (result.size() === 6) {
+            return [[result.get(0), result.get(1), result.get(2)], [result.get(3), result.get(4), result.get(5)]];
         } else {
             throw new Error("Closest points could not be found.");
         }
@@ -154,7 +144,7 @@ export class OperationsService {
     }
 
     boundingBoxOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.BoundingBoxPropsDto {
-        const bbox = new this.occ.Bnd_Box_1();
+        const bbox = new this.occ.Bnd_Box();
         this.occ.BRepBndLib.Add(inputs.shape, bbox, false);
         const cornerMin = bbox.CornerMin();
         const cornerMax = bbox.CornerMax();
@@ -232,10 +222,10 @@ export class OperationsService {
     offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>) {
         if (!inputs.tolerance) { inputs.tolerance = 0.1; }
         if (inputs.distance === 0.0) { return inputs.shape; }
-        let offset: BRepOffsetAPI_MakeOffset_1 | BRepOffsetAPI_MakeOffsetShape;
-        const joinType: GeomAbs_JoinType = this.getJoinType(inputs.joinType);
+        let offset: BRepOffsetAPI_MakeOffset | BRepOffsetAPI_MakeOffsetShape;
+        const joinType = this.getJoinType(inputs.joinType);
         // only this mode is implemented currently, so we cannot expose others...
-        const brepOffsetMode: BRepOffset_Mode = this.occ.BRepOffset_Mode.BRepOffset_Skin as BRepOffset_Mode;
+        const brepOffsetMode = this.occ.BRepOffset_Mode.Skin;
 
         const wires: TopoDS_Wire[] = [];
 
@@ -249,15 +239,14 @@ export class OperationsService {
                 wire = inputs.shape;
             }
             try {
-                offset = new this.occ.BRepOffsetAPI_MakeOffset_1();
+                offset = new this.occ.BRepOffsetAPI_MakeOffset();
                 if (inputs.face) {
-                    offset.Init_1(inputs.face, joinType, false);
+                    offset.Init(inputs.face, joinType, false);
                 } else {
-                    offset.Init_2(joinType, false);
+                    offset.InitJoin(joinType, false);
                 }
                 offset.AddWire(wire);
-                const messageProgress1 = new this.occ.Message_ProgressRange_1();
-                offset.Build(messageProgress1);
+                offset.Build();
                 offset.Perform(inputs.distance, 0.0);
             } catch (ex) {
                 offset = new this.occ.BRepOffsetAPI_MakeOffsetShape();
@@ -269,8 +258,7 @@ export class OperationsService {
                     false,
                     false,
                     joinType,
-                    inputs.removeIntEdges,
-                    new this.occ.Message_ProgressRange_1()
+                    inputs.removeIntEdges
                 );
             }
         } else {
@@ -284,8 +272,7 @@ export class OperationsService {
                 false,
                 false,
                 joinType,
-                inputs.removeIntEdges,
-                new this.occ.Message_ProgressRange_1()
+                inputs.removeIntEdges
             );
         }
         const offsetShape = offset.Shape();
@@ -347,8 +334,8 @@ export class OperationsService {
     }
 
     extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
-        const gpVec = new this.occ.gp_Vec_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
-        const prismMaker = new this.occ.BRepPrimAPI_MakePrism_1(
+        const gpVec = new this.occ.gp_Vec(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+        const prismMaker = new this.occ.BRepPrimAPI_MakePrism(
             inputs.shape,
             gpVec,
             false,
@@ -361,18 +348,18 @@ export class OperationsService {
     }
 
     splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
-        const bopalgoBuilder = new this.occ.BOPAlgo_Builder_1();
+        const bopalgoBuilder = new this.occ.BOPAlgo_Builder();
         bopalgoBuilder.SetNonDestructive(inputs.nonDestructive);
         bopalgoBuilder.SetFuzzyValue(inputs.localFuzzyTolerance);
         bopalgoBuilder.AddArgument(inputs.shape);
         inputs.shapes.forEach(s => {
             bopalgoBuilder.AddArgument(s);
         });
-        bopalgoBuilder.Perform(new this.occ.Message_ProgressRange_1());
+        bopalgoBuilder.Perform();
         let shapes;
         if (!inputs.nonDestructive) {
             const res = bopalgoBuilder.Modified(inputs.shape);
-            const shapeCompound = this.occ.BitByBitDev.BitListOfShapesToCompound(res);
+            const shapeCompound = this.occ.BitListOfShapesToCompound(res);
             shapes = this.shapeGettersService.getShapesOfCompound({ shape: shapeCompound });
         } else {
             const res = bopalgoBuilder.Shape();
@@ -386,31 +373,25 @@ export class OperationsService {
         if (!inputs.angle) { inputs.angle = 360.0; }
         if (!inputs.direction) { inputs.direction = [0, 0, 1]; }
         let result;
+        const pt1 = new this.occ.gp_Pnt(0, 0, 0);
+        const dir = new this.occ.gp_Dir(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+        const ax1 = new this.occ.gp_Ax1(pt1, dir);
         if (inputs.angle >= 360.0) {
-            const pt1 = new this.occ.gp_Pnt_3(0, 0, 0);
-            const dir = new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
-            const ax1 = new this.occ.gp_Ax1_2(pt1, dir);
-            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol_2(inputs.shape,
-                ax1,
-                inputs.copy);
+            // Full revolution - use 2-parameter constructor
+            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1);
             result = makeRevol.Shape();
             makeRevol.delete();
-            pt1.delete();
-            dir.delete();
-            ax1.delete();
         } else {
-            const pt1 = new this.occ.gp_Pnt_3(0, 0, 0);
-            const dir = new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
-            const ax1 = new this.occ.gp_Ax1_2(pt1, dir);
-            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol_1(inputs.shape,
+            // Partial revolution - use 4-parameter constructor with angle and copy flag
+            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape,
                 ax1,
                 inputs.angle * 0.0174533, inputs.copy);
             result = makeRevol.Shape();
             makeRevol.delete();
-            pt1.delete();
-            dir.delete();
-            ax1.delete();
         }
+        pt1.delete();
+        dir.delete();
+        ax1.delete();
         const actual = this.converterService.getActualTypeOfShape(result);
         result.delete();
         return actual;
@@ -458,10 +439,10 @@ export class OperationsService {
 
         // Sweep the face wires along the spine to create the extrusion
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(spineWire);
-        pipe.SetMode_5(aspineWire, true, (this.occ.BRepFill_TypeOfContact.BRepFill_NoContact as BRepFill_TypeOfContact));
-        pipe.Add_1(inputs.shape, false, false);
-        pipe.Add_1(upperPolygon, false, false);
-        pipe.Build(new this.occ.Message_ProgressRange_1());
+        pipe.SetModeWithAuxSpine(aspineWire, true, this.occ.BRepFill_TypeOfContact.NoContact);
+        pipe.Add(inputs.shape, false, false);
+        pipe.Add(upperPolygon, false, false);
+        pipe.Build();
 
         // default should be to make the solid for backwards compatibility
         if (inputs.makeSolid || inputs.makeSolid === undefined) {
@@ -482,9 +463,9 @@ export class OperationsService {
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>) {
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(inputs.shape);
         inputs.shapes.forEach(sh => {
-            pipe.Add_1(sh, false, false);
+            pipe.Add(sh, false, false);
         });
-        pipe.Build(new this.occ.Message_ProgressRange_1());
+        pipe.Build();
         pipe.MakeSolid();
         const pipeShape = pipe.Shape();
         const result = this.converterService.getActualTypeOfShape(pipeShape);
@@ -524,8 +505,8 @@ export class OperationsService {
 
         const geomFillTrihedron = this.enumService.getGeomFillTrihedronEnumOCCTValue(inputs.trihedronEnum);
 
-        const pipe = new this.occ.BRepOffsetAPI_MakePipe_2(wire, shape, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
-        pipe.Build(new this.occ.Message_ProgressRange_1());
+        const pipe = new this.occ.BRepOffsetAPI_MakePipe(wire, shape, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
+        pipe.Build();
         const pipeShape = pipe.Shape();
 
         // Convert and clean up
@@ -559,8 +540,8 @@ export class OperationsService {
 
         // Create the pipe by sweeping the profile along the wire
         const geomFillTrihedron = this.enumService.getGeomFillTrihedronEnumOCCTValue(inputs.trihedronEnum);
-        const pipe = new this.occ.BRepOffsetAPI_MakePipe_2(wire, circle, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
-        pipe.Build(new this.occ.Message_ProgressRange_1());
+        const pipe = new this.occ.BRepOffsetAPI_MakePipe(wire, circle, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
+        pipe.Build();
         const pipeShape = pipe.Shape();
 
         // Convert and clean up
@@ -581,7 +562,7 @@ export class OperationsService {
     makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>) {
         const maker = new this.occ.BRepOffsetAPI_MakeThickSolid();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
-        maker.Build(new this.occ.Message_ProgressRange_1());
+        maker.Build();
         const makerShape = maker.Shape();
 
         const result = this.converterService.getActualTypeOfShape(makerShape);
@@ -598,24 +579,23 @@ export class OperationsService {
     }
 
     makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<TopoDS_Shape>) {
-        const facesToRemove = new this.occ.TopTools_ListOfShape_1();
+        const facesToRemove = new this.occ.TopTools_ListOfShape();
         inputs.shapes.forEach(shape => {
-            facesToRemove.Append_1(shape);
+            facesToRemove.Append(shape);
         });
         const myBody = new this.occ.BRepOffsetAPI_MakeThickSolid();
-        const jointType: GeomAbs_JoinType = this.getJoinType(inputs.joinType);
+        const jointType = this.getJoinType(inputs.joinType);
 
         myBody.MakeThickSolidByJoin(
             inputs.shape,
             facesToRemove,
             inputs.offset,
             inputs.tolerance,
-            this.occ.BRepOffset_Mode.BRepOffset_Skin as BRepOffset_Mode, // currently a single option
+            this.occ.BRepOffset_Mode.Skin, // currently a single option
             inputs.intersection,
             inputs.selfIntersection,
             jointType,
-            inputs.removeIntEdges,
-            new this.occ.Message_ProgressRange_1());
+            inputs.removeIntEdges);
         const makeThick = myBody.Shape();
         const result = this.converterService.getActualTypeOfShape(makeThick);
         makeThick.delete();
@@ -624,38 +604,38 @@ export class OperationsService {
         return result;
     }
 
-    private getJoinType(jointType: Inputs.OCCT.joinTypeEnum): GeomAbs_JoinType {
-        let res: GeomAbs_JoinType;
+    private getJoinType(jointType: Inputs.OCCT.joinTypeEnum): EmbindEnumValue {
+        let res: EmbindEnumValue;
         switch (jointType) {
             case Inputs.OCCT.joinTypeEnum.arc: {
-                res = this.occ.GeomAbs_JoinType.GeomAbs_Arc as GeomAbs_JoinType;
+                res = this.occ.GeomAbs_JoinType.Arc;
                 break;
             }
             case Inputs.OCCT.joinTypeEnum.intersection: {
-                res = this.occ.GeomAbs_JoinType.GeomAbs_Intersection as GeomAbs_JoinType;
+                res = this.occ.GeomAbs_JoinType.Intersection;
                 break;
             }
             case Inputs.OCCT.joinTypeEnum.tangent: {
-                res = this.occ.GeomAbs_JoinType.GeomAbs_Tangent as GeomAbs_JoinType;
+                res = this.occ.GeomAbs_JoinType.Tangent;
                 break;
             }
         }
         return res;
     }
 
-    private getBRepOffsetMode(offsetMode: Inputs.OCCT.bRepOffsetModeEnum): BRepOffset_Mode {
-        let res: BRepOffset_Mode;
+    private getBRepOffsetMode(offsetMode: Inputs.OCCT.bRepOffsetModeEnum): EmbindEnumValue {
+        let res: EmbindEnumValue;
         switch (offsetMode) {
             case Inputs.OCCT.bRepOffsetModeEnum.skin: {
-                res = this.occ.BRepOffset_Mode.BRepOffset_Skin as BRepOffset_Mode;
+                res = this.occ.BRepOffset_Mode.Skin;
                 break;
             }
             case Inputs.OCCT.bRepOffsetModeEnum.pipe: {
-                res = this.occ.BRepOffset_Mode.BRepOffset_Pipe as BRepOffset_Mode;
+                res = this.occ.BRepOffset_Mode.Pipe;
                 break;
             }
             case Inputs.OCCT.bRepOffsetModeEnum.rectoVerso: {
-                res = this.occ.BRepOffset_Mode.BRepOffset_RectoVerso as BRepOffset_Mode;
+                res = this.occ.BRepOffset_Mode.RectoVerso;
                 break;
             }
         }
@@ -668,7 +648,7 @@ export class OperationsService {
         }
         const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
         const intersections = [];
-        if (!bbox.IsThin(0.0001)) {
+        if (!this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
             const { minY, maxY, maxDist } = this.computeBounds(bbox);
 
             const planes = [];
@@ -689,7 +669,7 @@ export class OperationsService {
         }
         const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
         const intersections = [];
-        if (!bbox.IsThin(0.0001)) {
+        if (!this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
             const { minY, maxY, maxDist } = this.computeBounds(bbox);
 
             const planes = [];
@@ -724,12 +704,12 @@ export class OperationsService {
             toOrigin: [0, 0, 0],
             toDirection: [0, 1, 0],
         });
-        const bbox = new this.occ.Bnd_Box_1();
+        const bbox = new this.occ.Bnd_Box();
         this.occ.BRepBndLib.Add(transformedShape, bbox, false);
         return { bbox, transformedShape };
     }
 
-    private computeBounds(bbox: Bnd_Box_1) {
+    private computeBounds(bbox: Bnd_Box) {
         const cornerMin = bbox.CornerMin();
         const cornerMax = bbox.CornerMax();
         const minY = cornerMin.Y();

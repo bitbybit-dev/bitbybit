@@ -1,4 +1,4 @@
-import { OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 import { Base } from "../../api/inputs/inputs";
 import { ShapeGettersService } from "./shape-getters";
@@ -11,7 +11,7 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 export class SolidsService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly facesService: FacesService,
         private readonly enumService: EnumService,
@@ -23,7 +23,7 @@ export class SolidsService {
 
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): TopoDS_Solid {
         const shell = this.converterService.getActualTypeOfShape(inputs.shape);
-        const builder = new this.occ.BRepBuilderAPI_MakeSolid_3(shell);
+        const builder = new this.occ.BRepBuilderAPI_MakeSolid(shell);
         const result = builder.Solid();
         builder.delete();
         shell.delete();
@@ -104,7 +104,7 @@ export class SolidsService {
 
     createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Shape {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
-        const makeCone = new this.occ.BRepPrimAPI_MakeCone_4(ax, inputs.radius1, inputs.radius2, inputs.height, inputs.angle);
+        const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, inputs.angle);
         const coneShape = makeCone.Shape();
         makeCone.delete();
         ax.delete();
@@ -114,13 +114,17 @@ export class SolidsService {
     filterSolidPoints(inputs: Inputs.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {
         const points = [];
         if (inputs.points.length > 0) {
-            const classifier = new this.occ.BRepClass3d_SolidClassifier_1();
-            classifier.Load(inputs.shape);
             inputs.points.forEach(pt => {
                 const gpPnt = this.entitiesService.gpPnt(pt);
-                classifier.Perform(gpPnt, inputs.tolerance);
-                const top = classifier.State();
-                const type = this.enumService.getTopAbsStateEnum(top);
+                // ClassifyPointInSolid returns: 0=IN, 1=OUT, 2=ON, 3=UNKNOWN
+                const state = this.occ.ClassifyPointInSolid(inputs.shape as TopoDS_Solid, gpPnt, inputs.tolerance);
+                let type: Inputs.OCCT.topAbsStateEnum;
+                switch (state) {
+                    case 0: type = Inputs.OCCT.topAbsStateEnum.in; break;
+                    case 1: type = Inputs.OCCT.topAbsStateEnum.out; break;
+                    case 2: type = Inputs.OCCT.topAbsStateEnum.on; break;
+                    default: type = Inputs.OCCT.topAbsStateEnum.unknown; break;
+                }
                 if (inputs.keepOn && type === Inputs.OCCT.topAbsStateEnum.on) {
                     points.push(pt);
                 }
@@ -135,7 +139,6 @@ export class SolidsService {
                 }
                 gpPnt.delete();
             });
-            classifier.delete();
             return points;
         } else {
             return [];
@@ -143,8 +146,8 @@ export class SolidsService {
     }
 
     getSolidVolume(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): number {
-        const gprops = new this.occ.GProp_GProps_1();
-        this.occ.BRepGProp.VolumeProperties_1(inputs.shape, gprops, true, false, false);
+        const gprops = new this.occ.GProp_GProps();
+        this.occ.BRepGProp_VolumeProperties(inputs.shape, gprops);
         const vol = gprops.Mass();
         gprops.delete();
         return vol;
@@ -164,8 +167,8 @@ export class SolidsService {
     }
 
     getSolidCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): Base.Point3 {
-        const gprops = new this.occ.GProp_GProps_1();
-        this.occ.BRepGProp.VolumeProperties_1(inputs.shape, gprops, true, false, false);
+        const gprops = new this.occ.GProp_GProps();
+        this.occ.BRepGProp_VolumeProperties(inputs.shape, gprops);
         const gppnt = gprops.CentreOfMass();
         const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
         gprops.delete();

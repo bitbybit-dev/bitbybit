@@ -1,4 +1,25 @@
-import { OpenCascadeInstance, TopoDS_Shape, TopAbs_ShapeEnum, TDataStd_Name, TCollection_ExtendedString, Handle_XCAFDoc_ShapeTool, XCAFDoc_ShapeTool, XCAFDoc_ColorTool, TDF_Label, TDocStd_Document, gp_Trsf, gp_Mat, XCAFDoc_MaterialTool, XCAFDoc_ColorType } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { 
+    BitbybitOcctModule, 
+    TopoDS_Shape, 
+    TopAbs_ShapeEnum, 
+    gp_Trsf,
+    gp_Mat,
+    TDF_Label,
+    TDF_LabelSequence,
+    Handle_XCAFDoc_ShapeTool,
+    Handle_XCAFDoc_ColorTool,
+    Handle_XCAFDoc_MaterialTool,
+    Handle_TDocStd_Document,
+    TDocStd_Document,
+    XCAFDoc_ShapeTool,
+    XCAFDoc_ColorTool,
+    XCAFDoc_MaterialTool,
+    Quantity_Color,
+    Standard_GUID,
+    Handle_TDF_Attribute,
+    TopLoc_Location,
+    EmbindEnumValue
+} from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs/inputs";
 
@@ -61,7 +82,7 @@ export interface AssemblyStructure {
 export class OCCTIOAssembly {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) { }
 
@@ -77,7 +98,7 @@ export class OCCTIOAssembly {
         level: number
     ): AssemblyComponent {
         const id = this.generateId();
-        const isAssembly = this.occ.XCAFDoc_ShapeTool.IsAssembly(label);
+        const isAssembly = this.occ.XCAFDoc_ShapeTool_IsAssembly(label);
 
         const component: AssemblyComponent = {
             id,
@@ -108,20 +129,20 @@ export class OCCTIOAssembly {
         const children: AssemblyComponent[] = [];
 
         // Get components of the assembly
-        const components = new this.occ.TDF_LabelSequence_1();
-        this.occ.XCAFDoc_ShapeTool.GetComponents(assemblyLabel, components, false);
+        const components = new this.occ.TDF_LabelSequence();
+        this.occ.XCAFDoc_ShapeTool_GetComponents(assemblyLabel, components, false);
 
         for (let i = 1; i <= components.Length(); i++) {
             const componentLabel = components.Value(i);
 
             // Get the referenced shape
             const referredLabel = new this.occ.TDF_Label();
-            if (this.occ.XCAFDoc_ShapeTool.GetReferredShape(componentLabel, referredLabel)) {
+            if (this.occ.XCAFDoc_ShapeTool_GetReferredShape(componentLabel, referredLabel)) {
                 const componentShape = new this.occ.TopoDS_Shape();
-                if (this.occ.XCAFDoc_ShapeTool.GetShape_1(referredLabel, componentShape)) {
+                if (this.occ.XCAFDoc_ShapeTool_GetShape_1(referredLabel, componentShape)) {
 
                     // Get the location/transformation for this component instance
-                    const location = this.occ.XCAFDoc_ShapeTool.GetLocation(componentLabel);
+                    const location = this.occ.XCAFDoc_ShapeTool_GetLocation(componentLabel);
 
                     if (location && !location.IsIdentity()) {
                         // Apply the location to the shape
@@ -166,7 +187,7 @@ export class OCCTIOAssembly {
 
     private extractColorFromXCAF(shape: TopoDS_Shape, label: TDF_Label, colorTool: XCAFDoc_ColorTool): AssemblyComponent["color"] | undefined {
         try {
-            const color = new this.occ.Quantity_Color_1();
+            const color = new this.occ.Quantity_Color();
             if (colorTool.GetColor_1(label, color)) {
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
@@ -177,17 +198,17 @@ export class OCCTIOAssembly {
                 color.delete();
                 return result;
             }
-            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorSurf as XCAFDoc_ColorType, color)) {
+            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorSurf, color)) {
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
                 return result;
             }
-            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorCurv as XCAFDoc_ColorType, color)) {
+            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorCurv, color)) {
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
                 return result;
             }
-            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorGen as XCAFDoc_ColorType, color)) {
+            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorGen, color)) {
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
                 return result;
@@ -217,13 +238,13 @@ export class OCCTIOAssembly {
 
     private extractSubShapeColor(shape: TopoDS_Shape, colorTool: XCAFDoc_ColorTool): AssemblyComponent["color"] | undefined {
         try {
-            const faceExplorer = new this.occ.TopExp_Explorer_2(shape, this.occ.TopAbs_ShapeEnum.TopAbs_FACE as any, this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as any);
+            const faceExplorer = new this.occ.TopExp_Explorer(shape, this.occ.TopAbs_ShapeEnum.FACE as any, this.occ.TopAbs_ShapeEnum.SHAPE as any);
 
             while (faceExplorer.More()) {
-                const face = this.occ.TopoDS.Face_1(faceExplorer.Current());
-                const color = new this.occ.Quantity_Color_1();
+                const face = this.occ.CastToFace(faceExplorer.Current());
+                const color = new this.occ.Quantity_Color();
 
-                if (colorTool.GetColor_7(face, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorSurf as XCAFDoc_ColorType, color)) {
+                if (colorTool.GetColor_7(face, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorSurf, color)) {
                     const result = this.convertQuantityColorToRgba(color);
                     color.delete();
                     face.delete();
@@ -246,13 +267,13 @@ export class OCCTIOAssembly {
     private extractNameFromLabel(label: TDF_Label): string | undefined {
         try {
             // Try to get name attribute from the label using correct API
-            const nameAttrHandle = new this.occ.Handle_TDF_Attribute_1();
+            const nameAttrHandle = new this.occ.Handle_TDF_Attribute();
             const nameID = this.occ.TDataStd_Name.GetID();
 
             if (label.FindAttribute_1(nameID, nameAttrHandle)) {
                 try {
                     const TCollection_ExtendedString = (nameAttrHandle.get() as any).Get();
-                    const nameString = new this.occ.TCollection_AsciiString_13(TCollection_ExtendedString, 0).ToCString();
+                    const nameString = new this.occ.TCollection_AsciiString(TCollection_ExtendedString, 0).ToCString();
                     nameAttrHandle.delete();
                     return nameString && nameString.trim() !== "" ? nameString.trim() : undefined;
                 } catch (convertError) {
@@ -274,7 +295,7 @@ export class OCCTIOAssembly {
             // This is where you would extract material properties, custom attributes, etc.
 
             // Example: Extract density if available using the correct FindAttribute method
-            const realAttrHandle = new this.occ.Handle_TDF_Attribute_1();
+            const realAttrHandle = new this.occ.Handle_TDF_Attribute();
             const realID = new this.occ.TDataStd_Real().ID();
 
             if (label.FindAttribute_1(realID, realAttrHandle)) {
@@ -299,8 +320,8 @@ export class OCCTIOAssembly {
 
         try {
             // Calculate volume
-            const gprops = new this.occ.GProp_GProps_1();
-            this.occ.BRepGProp.VolumeProperties_1(shape, gprops, false, false, false);
+            const gprops = new this.occ.GProp_GProps();
+            this.occ.BRepGProp_VolumeProperties(shape, gprops);
             properties.volume = gprops.Mass();
 
             // Calculate center of mass
@@ -315,13 +336,13 @@ export class OCCTIOAssembly {
             centerOfMass.delete();
 
             // Calculate surface area
-            const surfaceGprops = new this.occ.GProp_GProps_1();
-            this.occ.BRepGProp.SurfaceProperties_1(shape, surfaceGprops, false, false);
+            const surfaceGprops = new this.occ.GProp_GProps();
+            this.occ.BRepGProp_SurfaceProperties(shape, surfaceGprops);
             properties.surfaceArea = surfaceGprops.Mass();
             surfaceGprops.delete();
 
             // Calculate bounding box
-            const bbox = new this.occ.Bnd_Box_1();
+            const bbox = new this.occ.Bnd_Box();
             this.occ.BRepBndLib.Add(shape, bbox, false);
 
             const corner1 = bbox.CornerMin();
@@ -374,25 +395,25 @@ export class OCCTIOAssembly {
 
     private extractCylindricalFeatures(shape: TopoDS_Shape, pmiData: PMIData[]): void {
         try {
-            const faceExplorer = new this.occ.TopExp_Explorer_2(
+            const faceExplorer = new this.occ.TopExp_Explorer(
                 shape,
-                this.occ.TopAbs_ShapeEnum.TopAbs_FACE as any,
-                this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as any
+                this.occ.TopAbs_ShapeEnum.FACE as any,
+                this.occ.TopAbs_ShapeEnum.SHAPE as any
             );
 
             while (faceExplorer.More()) {
-                const face = this.occ.TopoDS.Face_1(faceExplorer.Current());
+                const face = this.occ.CastToFace(faceExplorer.Current());
 
                 // Check if face is cylindrical
-                const surface = this.occ.BRep_Tool.Surface_2(face);
-                const surfaceType = surface.get().DynamicType().Name();
+                const surface = this.occ.BRep_Tool_Surface(face);
+                const surfaceType = (surface.get().DynamicType() as any).Name();
 
                 if (surfaceType.includes("Cylinder")) {
                     // Extract cylinder properties
                     const cylinderSurf = surface.get();
                     // Get cylinder axis and radius information
-                    const props = new this.occ.GProp_GProps_1();
-                    this.occ.BRepGProp.SurfaceProperties_1(face, props, false, false);
+                    const props = new this.occ.GProp_GProps();
+                    this.occ.BRepGProp_SurfaceProperties(face, props);
 
                     const centerOfMass = props.CentreOfMass();
 
@@ -424,7 +445,7 @@ export class OCCTIOAssembly {
 
     private extractTransformation(shape: TopoDS_Shape): AssemblyComponent["transformation"] {
         // Extract transformation matrix from shape location
-        const location = shape.Location_1();
+        const location = shape.Location();
         const transformation = location.Transformation();
 
         // Get translation
@@ -436,7 +457,7 @@ export class OCCTIOAssembly {
         ];
 
         // Get rotation matrix and convert to quaternion
-        const rotationMatrix = transformation.HVectorialPart();
+        const rotationMatrix = this.occ.gp_Trsf_HVectorialPart(transformation);
         const quaternion = this.matrixToQuaternion(rotationMatrix);
 
         // Get scale (OCCT doesn't typically store non-uniform scale)
@@ -574,15 +595,15 @@ export class OCCTIOAssembly {
     // New method for parsing XCAF documents with full metadata
     parseXCAFDocument(doc: TDocStd_Document): AssemblyStructure {
         const mainLabel = doc.Main();
-        const shapeTool = this.occ.XCAFDoc_DocumentTool.ShapeTool(mainLabel).get();
-        const colorTool = this.occ.XCAFDoc_DocumentTool.ColorTool(mainLabel).get();
-        const materialTool = this.occ.XCAFDoc_DocumentTool.MaterialTool(mainLabel).get();
+        const shapeTool = this.occ.XCAFDoc_DocumentTool_ShapeTool(mainLabel).get();
+        const colorTool = this.occ.XCAFDoc_DocumentTool_ColorTool(mainLabel).get();
+        const materialTool = this.occ.XCAFDoc_DocumentTool_MaterialTool(mainLabel).get();
 
         // Build color assignment map
         this.buildColorAssignments(colorTool);
 
         // Get all free shapes (top-level assembly components)
-        const freeShapes = new this.occ.TDF_LabelSequence_1();
+        const freeShapes = new this.occ.TDF_LabelSequence();
         shapeTool.GetFreeShapes(freeShapes);
 
         let totalParts = 0;
@@ -595,7 +616,7 @@ export class OCCTIOAssembly {
             const rootLabel = freeShapes.Value(1);
             const rootShape = new this.occ.TopoDS_Shape();
 
-            if (this.occ.XCAFDoc_ShapeTool.GetShape_1(rootLabel, rootShape)) {
+            if (this.occ.XCAFDoc_ShapeTool_GetShape_1(rootLabel, rootShape)) {
                 rootComponent = this.parseXCAFComponent(
                     rootShape,
                     rootLabel,
@@ -618,7 +639,7 @@ export class OCCTIOAssembly {
                 const label = freeShapes.Value(i);
                 const shape = new this.occ.TopoDS_Shape();
 
-                if (this.occ.XCAFDoc_ShapeTool.GetShape_1(label, shape)) {
+                if (this.occ.XCAFDoc_ShapeTool_GetShape_1(label, shape)) {
                     const component = this.parseXCAFComponent(
                         shape,
                         label,
@@ -686,7 +707,7 @@ export class OCCTIOAssembly {
         level: number
     ): AssemblyComponent {
         const id = this.generateId();
-        const isAssembly = this.occ.XCAFDoc_ShapeTool.IsAssembly(label);
+        const isAssembly = this.occ.XCAFDoc_ShapeTool_IsAssembly(label);
 
         const component: AssemblyComponent = {
             id,
@@ -718,20 +739,20 @@ export class OCCTIOAssembly {
         const children: AssemblyComponent[] = [];
 
         // Get components of the assembly
-        const components = new this.occ.TDF_LabelSequence_1();
-        this.occ.XCAFDoc_ShapeTool.GetComponents(assemblyLabel, components, false);
+        const components = new this.occ.TDF_LabelSequence();
+        this.occ.XCAFDoc_ShapeTool_GetComponents(assemblyLabel, components, false);
 
         for (let i = 1; i <= components.Length(); i++) {
             const componentLabel = components.Value(i);
 
             // Get the referenced shape
             const referredLabel = new this.occ.TDF_Label();
-            if (this.occ.XCAFDoc_ShapeTool.GetReferredShape(componentLabel, referredLabel)) {
+            if (this.occ.XCAFDoc_ShapeTool_GetReferredShape(componentLabel, referredLabel)) {
                 const componentShape = new this.occ.TopoDS_Shape();
-                if (this.occ.XCAFDoc_ShapeTool.GetShape_1(referredLabel, componentShape)) {
+                if (this.occ.XCAFDoc_ShapeTool_GetShape_1(referredLabel, componentShape)) {
 
                     // Get the location/transformation for this component instance
-                    const location = this.occ.XCAFDoc_ShapeTool.GetLocation(componentLabel);
+                    const location = this.occ.XCAFDoc_ShapeTool_GetLocation(componentLabel);
 
                     let finalShape = componentShape;
                     if (location && !location.IsIdentity()) {
@@ -771,11 +792,11 @@ export class OCCTIOAssembly {
     private extractNameFromXCAFLabel(label: TDF_Label): string | undefined {
         try {
             const nameID = this.occ.TDataStd_Name.GetID();
-            const nameAttrHandle = new this.occ.Handle_TDF_Attribute_1();
+            const nameAttrHandle = new this.occ.Handle_TDF_Attribute();
             if (label.FindAttribute_1(nameID, nameAttrHandle)) {
                 try {
                     const TCollection_ExtendedString = (nameAttrHandle.get() as any).Get();
-                    const nameString = new this.occ.TCollection_AsciiString_13(TCollection_ExtendedString, 0).ToCString();
+                    const nameString = new this.occ.TCollection_AsciiString(TCollection_ExtendedString, 0).ToCString();
                     nameAttrHandle.delete();
                     if (nameString && nameString.trim() !== "") {
                         return nameString.trim();
@@ -794,8 +815,8 @@ export class OCCTIOAssembly {
 
     private extractXCAFColor(shape: TopoDS_Shape, label: TDF_Label, colorTool: XCAFDoc_ColorTool): AssemblyComponent["color"] | undefined {
         try {
-            let color = new this.occ.Quantity_Color_1();
-            const colorRGB = new this.occ.Quantity_ColorRGBA_1();
+            let color = new this.occ.Quantity_Color();
+            const colorRGB = new this.occ.Quantity_ColorRGBA();
             if (colorTool.GetColor_1(label, color)) {
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
@@ -808,36 +829,36 @@ export class OCCTIOAssembly {
                 colorRGB.delete();
                 return result;
             }
-            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorSurf as XCAFDoc_ColorType, color)) {
+            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorSurf, color)) {
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
                 return result;
             }
-            if (colorTool.GetColor_8(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorSurf as XCAFDoc_ColorType, colorRGB)) {
+            if (colorTool.GetColor_8(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorSurf, colorRGB)) {
                 color = colorRGB.GetRGB();
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
                 colorRGB.delete();
                 return result;
             }
-            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorCurv as XCAFDoc_ColorType, color)) {
+            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorCurv, color)) {
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
                 return result;
             }
-            if (colorTool.GetColor_8(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorCurv as XCAFDoc_ColorType, colorRGB)) {
+            if (colorTool.GetColor_8(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorCurv, colorRGB)) {
                 color = colorRGB.GetRGB();
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
                 colorRGB.delete();
                 return result;
             }
-            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorGen as XCAFDoc_ColorType, color)) {
+            if (colorTool.GetColor_7(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorGen, color)) {
                 const result = this.convertQuantityColorToRgba(color);
                 color.delete();
                 return result;
             }
-            if (colorTool.GetColor_8(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorGen as XCAFDoc_ColorType, colorRGB)) {
+            if (colorTool.GetColor_8(shape, this.occ.XCAFDoc_ColorType.XCAFDoc_ColorGen, colorRGB)) {
                 color = colorRGB.GetRGB();
                 const result = this.convertQuantityColorToRgba(color);
                 colorRGB.delete();
@@ -898,11 +919,11 @@ export class OCCTIOAssembly {
 
     private extractMaterialName(materialLabel: TDF_Label): string | undefined {
         try {
-            const nameAttrHandle = new this.occ.Handle_TDF_Attribute_1();
+            const nameAttrHandle = new this.occ.Handle_TDF_Attribute();
             if (materialLabel.FindAttribute_1(this.occ.TDataStd_Name.GetID(), nameAttrHandle)) {
                 try {
                     const TCollection_ExtendedString = (nameAttrHandle.get() as any).Get();
-                    const nameString = new this.occ.TCollection_AsciiString_13(TCollection_ExtendedString, 0).ToCString();
+                    const nameString = new this.occ.TCollection_AsciiString(TCollection_ExtendedString, 0).ToCString();
                     nameAttrHandle.delete();
                     if (nameString && nameString.trim() !== "") {
                         return nameString.trim();
@@ -921,7 +942,7 @@ export class OCCTIOAssembly {
     private extractMaterialDensity(materialLabel: TDF_Label): number {
         try {
             // Try to get density value from real attributes
-            const realAttrHandle = new this.occ.Handle_TDF_Attribute_1();
+            const realAttrHandle = new this.occ.Handle_TDF_Attribute();
             const realID = new this.occ.TDataStd_Real().ID();
             if (materialLabel.FindAttribute_1(realID, realAttrHandle)) {
                 const attr = realAttrHandle.get();
@@ -944,7 +965,7 @@ export class OCCTIOAssembly {
 
     private extractAdditionalMaterialProperties(label: TDF_Label, attributes: AssemblyComponent["attributes"]): void {
         try {
-            const intAttrHandle = new this.occ.Handle_TDF_Attribute_1();
+            const intAttrHandle = new this.occ.Handle_TDF_Attribute();
             const intID = new this.occ.TDataStd_Integer().ID();
             if (label.FindAttribute_1(intID, intAttrHandle)) {
                 const attr = intAttrHandle.get();
@@ -967,12 +988,12 @@ export class OCCTIOAssembly {
         this.colorAssignments.clear();
         
         // Get all color labels
-        const colorLabels = new this.occ.TDF_LabelSequence_1();
+        const colorLabels = new this.occ.TDF_LabelSequence();
         colorTool.GetColors(colorLabels);
         
         for (let i = 1; i <= colorLabels.Length(); i++) {
             const colorLabel = colorLabels.Value(i);
-            const color = new this.occ.Quantity_Color_1();
+            const color = new this.occ.Quantity_Color();
             
             if (colorTool.GetColor_1(colorLabel, color)) {
                 this.colorAssignments.set(String(colorLabel.Tag()), this.convertQuantityColorToRgba(color));

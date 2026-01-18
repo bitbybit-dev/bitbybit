@@ -1,11 +1,11 @@
-import { TopoDS_Face, OpenCascadeInstance, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs/inputs";
 
 export class OCCTWire {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
@@ -200,9 +200,9 @@ export class OCCTWire {
 
     derivativesOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
 
-        const absc = new this.occ.GCPnts_AbscissaPoint_2(curve, inputs.length, curve.FirstParameter());
+        const absc = this.occ.GCPnts_AbscissaPoint_FromCompCurve(curve, inputs.length, curve.FirstParameter());
         const param = absc.Parameter();
         const gpPnt = this.och.entitiesService.gpPnt([0, 0, 0]);
 
@@ -223,7 +223,7 @@ export class OCCTWire {
 
     derivativesOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
 
         const gpPnt = this.och.entitiesService.gpPnt([0, 0, 0]);
 
@@ -390,7 +390,7 @@ export class OCCTWire {
     project(inputs: Inputs.OCCT.ProjectWireDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Compound {
         const wire = inputs.wire;
         const gpDir = this.och.entitiesService.gpDir(inputs.direction);
-        const proj = new this.occ.BRepProj_Projection_1(wire, inputs.shape, gpDir);
+        const proj = new this.occ.BRepProj_Projection(wire, inputs.shape, gpDir);
         const shape = proj.Shape();
         gpDir.delete();
         proj.delete();
@@ -405,7 +405,7 @@ export class OCCTWire {
         const shapes = [];
         inputs.wires.forEach(wire => {
             const gpDir = this.och.entitiesService.gpDir(inputs.direction);
-            const proj = new this.occ.BRepProj_Projection_1(wire, inputs.shape, gpDir);
+            const proj = new this.occ.BRepProj_Projection(wire, inputs.shape, gpDir);
             const shape = proj.Shape();
             shapes.push(shape);
             gpDir.delete();

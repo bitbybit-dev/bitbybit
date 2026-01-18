@@ -1,5 +1,5 @@
 import {
-    Geom2d_Curve, Geom_Surface, OpenCascadeInstance,
+    Geom2d_Curve, Geom_Surface, BitbybitOcctModule, Handle_Geom2d_Curve,
     TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Circ2d
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
@@ -17,7 +17,7 @@ import { TransformsService } from "./transforms.service";
 export class EdgesService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly occRefReturns: OCCReferencedReturns,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly entitiesService: EntitiesService,
@@ -33,21 +33,27 @@ export class EdgesService {
         const edges = this.shapeGettersService.getEdges(inputs);
         let points: Inputs.Base.Point3[] = [];
         edges.forEach((edge) => {
-            const param1 = { current: 0 };
-            const param2 = { current: 0 };
-            const crvHandle = this.occRefReturns.BRep_Tool_Curve_2(edge, param1, param2);
+            // Use the new API: GetEdgeCurve returns a Handle_Geom_Curve wrapper
+            // which already has Value() method - no need to call .get()
+            const crvHandle = this.occ.GetEdgeCurve(edge);
 
             try {
-                const crv = crvHandle.get();
-                if (crv) {
-                    const pt1 = crv.Value(param1.current);
-                    const pt2 = crv.Value(param2.current);
-                    const pt1g: Inputs.Base.Point3 = [pt1.X(), pt1.Y(), pt1.Z()];
-                    const pt2g: Inputs.Base.Point3 = [pt2.X(), pt2.Y(), pt2.Z()];
-                    pt1.delete();
-                    pt2.delete();
-                    points.push(pt1g);
-                    points.push(pt2g);
+                // Check if handle is null using IsNull() method
+                if (crvHandle && !crvHandle.IsNull()) {
+                    // Get parameter bounds from the edge
+                    const edgeParams = this.occ.BRep_Tool_GetEdgeParameters(edge);
+                    if (edgeParams.IsValid) {
+                        // Value() is directly on the handle wrapper
+                        const pt1 = crvHandle.Value(edgeParams.First);
+                        const pt2 = crvHandle.Value(edgeParams.Last);
+                        const pt1g: Inputs.Base.Point3 = [pt1.X(), pt1.Y(), pt1.Z()];
+                        const pt2g: Inputs.Base.Point3 = [pt2.X(), pt2.Y(), pt2.Z()];
+                        pt1.delete();
+                        pt2.delete();
+                        points.push(pt1g);
+                        points.push(pt2g);
+                    }
+                    crvHandle.delete();
                 }
             } catch (ex) {
                 console.log(ex);
@@ -95,16 +101,10 @@ export class EdgesService {
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.middle);
         const gpPnt3 = this.entitiesService.gpPnt(inputs.end);
-        const segment = new this.occ.GC_MakeArcOfCircle_4(gpPnt1, gpPnt2, gpPnt3);
-        const hcurve = new this.occ.Handle_Geom_Curve_2(segment.Value().get());
-        const makeEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve);
-        const shape = makeEdge.Edge();
+        const shape = this.occ.MakeArcThrough3Points(gpPnt1, gpPnt2, gpPnt3);
         gpPnt1.delete();
         gpPnt2.delete();
         gpPnt3.delete();
-        segment.delete();
-        hcurve.delete();
-        makeEdge.delete();
         return shape;
     }
 
@@ -112,16 +112,10 @@ export class EdgesService {
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpVec = this.entitiesService.gpVec(inputs.tangentVec);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.end);
-        const segment = new this.occ.GC_MakeArcOfCircle_5(gpPnt1, gpVec, gpPnt2);
-        const hcurve = new this.occ.Handle_Geom_Curve_2(segment.Value().get());
-        const makeEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve);
-        const shape = makeEdge.Edge();
+        const shape = this.occ.MakeArcWithTangent(gpPnt1, gpVec, gpPnt2);
         gpPnt1.delete();
         gpVec.delete();
         gpPnt2.delete();
-        segment.delete();
-        hcurve.delete();
-        makeEdge.delete();
         return shape;
     }
 
@@ -129,14 +123,8 @@ export class EdgesService {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
         const radAlpha1 = this.vecHelper.degToRad(inputs.alphaAngle1);
         const radAlpha2 = this.vecHelper.degToRad(inputs.alphaAngle2);
-        const arc = new this.occ.GC_MakeArcOfCircle_1(circle, radAlpha1, radAlpha2, inputs.sense);
-        const hcurve = new this.occ.Handle_Geom_Curve_2(arc.Value().get());
-        const makeEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve);
-        const shape = makeEdge.Edge();
+        const shape = this.occ.MakeArcOnCircleByAngles(circle, radAlpha1, radAlpha2, inputs.sense);
         circle.delete();
-        arc.delete();
-        hcurve.delete();
-        makeEdge.delete();
         return shape;
     }
 
@@ -144,45 +132,23 @@ export class EdgesService {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
         const radAlpha = this.vecHelper.degToRad(inputs.alphaAngle);
         const point = this.entitiesService.gpPnt(inputs.point);
-        const arc = new this.occ.GC_MakeArcOfCircle_2(circle, point, radAlpha, inputs.sense);
-        const hcurve = new this.occ.Handle_Geom_Curve_2(arc.Value().get());
-        const makeEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve);
-        const shape = makeEdge.Edge();
+        const shape = this.occ.MakeArcOnCircleByAngle(circle, point, radAlpha, inputs.sense);
         circle.delete();
-        arc.delete();
         point.delete();
-        hcurve.delete();
-        makeEdge.delete();
         return shape;
     }
 
     lineEdge(inputs: Inputs.OCCT.LineDto) {
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.end);
-        const segment = new this.occ.GC_MakeSegment_1(gpPnt1, gpPnt2);
-        const segVal = segment.Value();
-        const seg = segVal.get();
-        const hcurve = new this.occ.Handle_Geom_Curve_2(seg);
-        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve);
-        const edge = edgeMaker.Edge();
-        edgeMaker.delete();
-        hcurve.delete();
+        const edge = this.occ.MakeLineEdgeBetweenPoints(gpPnt1, gpPnt2);
         gpPnt1.delete();
         gpPnt2.delete();
-        segVal.delete();
-        seg.delete();
         return edge;
     }
 
     getEdgeLength(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
-        const makeWire = new this.occ.BRepBuilderAPI_MakeWire_2(inputs.shape);
-        const wire = makeWire.Wire();
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        const length = this.geomService.curveLength({ shape: curve });
-        curve.delete();
-        wire.delete();
-        makeWire.delete();
-        return length;
+        return this.occ.GetEdgeLength(inputs.shape);
     }
 
     getEdgeLengthsOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): number[] {
@@ -226,7 +192,7 @@ export class EdgesService {
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const pt = this.geomService.pointOnCurveAtParam({ shape: curve, param: 0 });
         curve.delete();
         return pt;
@@ -235,7 +201,7 @@ export class EdgesService {
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const pt = this.geomService.pointOnCurveAtParam({ shape: curve, param: 1 });
         curve.delete();
         return pt;
@@ -243,9 +209,9 @@ export class EdgesService {
 
     edgeToPoints(inputs: Inputs.OCCT.EdgesToPointsDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         const edgePoints: Base.Point3[] = [];
-        const aLocation = new this.occ.TopLoc_Location_1();
-        const adaptorCurve = new this.occ.BRepAdaptor_Curve_2(inputs.shape);
-        const tangDef = new this.occ.GCPnts_TangentialDeflection_2(
+        const aLocation = new this.occ.TopLoc_Location();
+        const adaptorCurve = new this.occ.BRepAdaptor_Curve(inputs.shape);
+        const tangDef = new this.occ.GCPnts_TangentialDeflection(
             adaptorCurve,
             inputs.angularDeflection,
             inputs.curvatureDeflection,
@@ -290,25 +256,11 @@ export class EdgesService {
     }
 
     makeEdgeFromGeom2dCurveAndSurfaceBounded(inputs: Inputs.OCCT.CurveAndSurfaceDto<Geom2d_Curve, Geom_Surface>, umin: number, umax: number): TopoDS_Edge {
-        const curve2d = new this.occ.Handle_Geom2d_Curve_2(inputs.curve as Geom2d_Curve);
-        const surface = new this.occ.Handle_Geom_Surface_2(inputs.surface as Geom_Surface);
-        const res = new this.occ.BRepBuilderAPI_MakeEdge_31(curve2d, surface, umin, umax);
-        const resShape = res.Shape();
-        const r = this.converterService.getActualTypeOfShape(resShape);
-        resShape.delete();
-        res.delete();
-        return r;
+        return this.occ.MakeEdgeFromGeom2dCurveAndSurfaceBounded(inputs.curve as unknown as Handle_Geom2d_Curve, inputs.surface, umin, umax);
     }
 
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.CurveAndSurfaceDto<Geom2d_Curve, Geom_Surface>): TopoDS_Edge {
-        const curve2d = new this.occ.Handle_Geom2d_Curve_2(inputs.curve as Geom2d_Curve);
-        const surface = new this.occ.Handle_Geom_Surface_2(inputs.surface as Geom_Surface);
-        const res = new this.occ.BRepBuilderAPI_MakeEdge_30(curve2d, surface);
-        const resShape = res.Shape();
-        const r = this.converterService.getActualTypeOfShape(resShape);
-        resShape.delete();
-        res.delete();
-        return r;
+        return this.occ.MakeEdgeFromGeom2dCurveAndSurface(inputs.curve as unknown as Handle_Geom2d_Curve, inputs.surface);
     }
 
     constraintTanLinesFromTwoPtsToCircle(inputs: Inputs.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<TopoDS_Edge>): TopoDS_Shape[] {
@@ -343,8 +295,8 @@ export class EdgesService {
         const qCircle = new this.occ.GccEnt_QualifiedCirc(circle, this.enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.unqualified));
         circle.delete();
 
-        const lin1 = new this.occ.GccAna_Lin2d2Tan_2(qCircle, pt2d1, inputs.tolerance);
-        const lin2 = new this.occ.GccAna_Lin2d2Tan_2(qCircle, pt2d2, inputs.tolerance);
+        const lin1 = this.occ.GccAna_Lin2d2Tan_fromQualifiedCircAndPoint(qCircle, pt2d1, inputs.tolerance);
+        const lin2 = this.occ.GccAna_Lin2d2Tan_fromQualifiedCircAndPoint(qCircle, pt2d2, inputs.tolerance);
 
         qCircle.delete();
         const solutions1 = [];
@@ -446,7 +398,7 @@ export class EdgesService {
         circleAligned.delete();
         const qCircle = new this.occ.GccEnt_QualifiedCirc(circle, this.enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.unqualified));
         circle.delete();
-        const lin = new this.occ.GccAna_Lin2d2Tan_2(qCircle, pt2d, inputs.tolerance);
+        const lin = this.occ.GccAna_Lin2d2Tan_fromQualifiedCircAndPoint(qCircle, pt2d, inputs.tolerance);
         qCircle.delete();
         const solutions = [];
         for (let i = 1; i <= lin.NbSolutions(); i++) {
@@ -520,8 +472,8 @@ export class EdgesService {
         circle1.delete();
         circle2.delete();
 
-        const lin1 = new this.occ.GccAna_Lin2d2Tan_3(qCircle1, qCircle2, inputs.tolerance);
-        const lin2 = new this.occ.GccAna_Lin2d2Tan_3(qCircle2, qCircle1, inputs.tolerance);
+        const lin1 = this.occ.GccAna_Lin2d2Tan_fromTwoQualifiedCirc(qCircle1, qCircle2, inputs.tolerance);
+        const lin2 = this.occ.GccAna_Lin2d2Tan_fromTwoQualifiedCirc(qCircle2, qCircle1, inputs.tolerance);
 
         qCircle1.delete();
         qCircle2.delete();
@@ -666,7 +618,7 @@ export class EdgesService {
 
         circle.delete();
 
-        const lin1 = new this.occ.GccAna_Circ2d2TanRad_3(qCircle, pt2d, inputs.radius, inputs.tolerance);
+        const lin1 = this.occ.GccAna_Circ2d2TanRad_fromQualifiedCircAndPoint(qCircle, pt2d, inputs.radius, inputs.tolerance);
 
         qCircle.delete();
 
@@ -718,7 +670,7 @@ export class EdgesService {
         circle1.delete();
         circle2.delete();
 
-        const lin1 = new this.occ.GccAna_Circ2d2TanRad_1(qCircle1, qCircle2, inputs.radius, inputs.tolerance);
+        const lin1 = this.occ.GccAna_Circ2d2TanRad_fromTwoQualifiedCirc(qCircle1, qCircle2, inputs.radius, inputs.tolerance);
 
         qCircle1.delete();
         qCircle2.delete();
@@ -743,7 +695,7 @@ export class EdgesService {
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         const edge = inputs.shape;
         const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const points = this.geomService.divideCurveToNrSegments({ ...inputs, shape: curve }, curve.FirstParameter(), curve.LastParameter());
         curve.delete();
         wire.delete();
@@ -753,8 +705,8 @@ export class EdgesService {
     divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Base.Point3[] {
         const edge = inputs.shape;
         const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        const points = this.geomService.divideCurveByEqualLengthDistance({ ...inputs, shape: curve });
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
+        const points = this.geomService.divideCompCurveByEqualLengthDistance({ ...inputs, shape: curve });
         curve.delete();
         wire.delete();
         return points;
@@ -763,13 +715,11 @@ export class EdgesService {
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const { uMin, uMax } = this.getEdgeBounds(edge);
-        const curve = this.converterService.getGeomCurveFromEdge(edge, uMin, uMax);
-        const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
         const param = this.vecHelper.remap(inputs.param, 0, 1, uMin, uMax);
-        if (curve) {
-            curve.D0(param, gpPnt);
-            const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-            gpPnt.delete();
+        const result = this.occ.EvaluateEdgeCurve(edge, param);
+        if (result && result.IsValid) {
+            const pt: Base.Point3 = [result.Point.X(), result.Point.Y(), result.Point.Z()];
+            result.delete();
             return pt;
         } else {
             return undefined;
@@ -796,16 +746,10 @@ export class EdgesService {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.end);
-        const arc = new this.occ.GC_MakeArcOfCircle_3(circle, gpPnt1, gpPnt2, inputs.sense);
-        const hcurve = new this.occ.Handle_Geom_Curve_2(arc.Value().get());
-        const makeEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve);
-        const shape = makeEdge.Edge();
+        const shape = this.occ.MakeArcOnCircle(circle, gpPnt1, gpPnt2, inputs.sense);
         circle.delete();
         gpPnt1.delete();
         gpPnt2.delete();
-        arc.delete();
-        hcurve.delete();
-        makeEdge.delete();
         return shape;
     }
 
@@ -838,7 +782,7 @@ export class EdgesService {
     }
 
     private getGpCircleFromEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
-        const curve = new this.occ.BRepAdaptor_Curve_2(inputs.shape);
+        const curve = new this.occ.BRepAdaptor_Curve(inputs.shape);
         try {
             const circle = curve.Circle();
             curve.delete();
@@ -850,14 +794,14 @@ export class EdgesService {
     }
 
     getGpCircle2dFromEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
-        const curve = new this.occ.BRepAdaptor_Curve_2(inputs.shape);
+        const curve = new this.occ.BRepAdaptor_Curve(inputs.shape);
         try {
             const circle = curve.Circle();
             const ax = circle.Position();
             const location = circle.Location();
             const ax2d = this.entitiesService.gpAx2d([location.X(), location.Y()], [1, 0]);
             const radius = circle.Radius();
-            const circle2d = new this.occ.gp_Circ2d_2(ax2d, radius, true);
+            const circle2d = new this.occ.gp_Circ2d(ax2d, radius);
             curve.delete();
             circle.delete();
             ax.delete();
@@ -873,20 +817,19 @@ export class EdgesService {
 
     tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Vector3 {
         const edge = inputs.shape;
-        const { uMin, uMax } = this.getEdgeBounds(edge);
-        const curve = this.converterService.getGeomCurveFromEdge(edge, uMin, uMax);
-        const param = this.vecHelper.remap(inputs.param, 0, 1, uMin, uMax);
-        const vec = curve.DN(param, 1);
-        const vector: Base.Vector3 = [vec.X(), vec.Y(), vec.Z()];
-        vec.delete();
-        return vector;
+        // C++ function expects normalized [0,1] parameter and does its own remapping
+        const result = this.occ.GetDerivativesOnEdgeAtParam(edge, inputs.param);
+        if (result && result.isValid) {
+            return [result.d1x, result.d1y, result.d1z];
+        }
+        throw new Error("Could not get tangent on edge at param");
     }
 
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        const res = this.geomService.pointOnCurveAtLength({ ...inputs, shape: curve });
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
+        const res = this.geomService.pointOnCompCurveAtLength({ ...inputs, shape: curve });
         curve.delete();
         wire.delete();
         return res;
@@ -895,41 +838,28 @@ export class EdgesService {
     tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        const res = this.geomService.tangentOnCurveAtLength({ ...inputs, shape: curve });
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
+        const res = this.geomService.tangentOnCurveAtLengthCompCurve({ ...inputs, shape: curve });
         wire.delete();
         curve.delete();
         return res;
     }
 
     getEdgeBounds(edge: TopoDS_Edge): { uMin: number, uMax: number } {
-        const p1 = { current: 0 };
-        const p2 = { current: 0 };
-        this.occRefReturns.BRep_Tool_Range_1(edge, p1, p2);
-        return { uMin: p1.current, uMax: p2.current };
+        const result = this.occ.BRep_Tool_GetEdgeParameters(edge);
+        if (result.IsValid) {
+            return { uMin: result.First, uMax: result.Last };
+        }
+        return { uMin: 0, uMax: 0 };
     }
 
 
     isEdgeCircular(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
-        const curve = new this.occ.BRepAdaptor_Curve_2(inputs.shape);
-        try {
-            curve.Circle();
-            curve.delete();
-            return true;
-        } catch (ex) {
-            return false;
-        }
+        return this.occ.IsEdgeCircular(inputs.shape);
     }
 
     isEdgeLinear(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
-        const curve = new this.occ.BRepAdaptor_Curve_2(inputs.shape);
-        try {
-            curve.Line();
-            curve.delete();
-            return true;
-        } catch (ex) {
-            return false;
-        }
+        return this.occ.IsEdgeLinear(inputs.shape);
     }
 
 

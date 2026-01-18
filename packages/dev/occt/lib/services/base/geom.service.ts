@@ -1,4 +1,4 @@
-import { Adaptor3d_Curve, BRepAdaptor_CompCurve_2, Geom_Curve, OpenCascadeInstance, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BRepAdaptor_Curve, BRepAdaptor_CompCurve, Geom_Curve, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 import { Base } from "../../api/inputs/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -7,16 +7,20 @@ import { EntitiesService } from "./entities.service";
 export class GeomService {
 
     constructor(
-        public readonly occ: OpenCascadeInstance,
+        public readonly occ: BitbybitOcctModule,
         private readonly vecHelper: VectorHelperService,
         private readonly entitiesService: EntitiesService
     ) { }
 
-    curveLength(inputs: Inputs.OCCT.ShapeDto<Adaptor3d_Curve>): number {
-        return this.occ.GCPnts_AbscissaPoint.Length_1(inputs.shape);
+    curveLength(inputs: Inputs.OCCT.ShapeDto<BRepAdaptor_Curve>): number {
+        return this.occ.GCPnts_AbscissaPoint_CurveLength(inputs.shape);
     }
 
-    pointOnCurveAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Geom_Curve | BRepAdaptor_CompCurve_2>): Base.Point3 {
+    curveLengthCompCurve(inputs: Inputs.OCCT.ShapeDto<BRepAdaptor_CompCurve>): number {
+        return this.occ.GCPnts_AbscissaPoint_CompCurveLength(inputs.shape);
+    }
+
+    pointOnCurveAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Geom_Curve | BRepAdaptor_CompCurve>): Base.Point3 {
         const curve = inputs.shape;
         const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
         const param = this.vecHelper.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
@@ -26,8 +30,8 @@ export class GeomService {
         return pt;
     }
 
-    pointOnCurveAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Adaptor3d_Curve>): Base.Point3 {
-        const absc = new this.occ.GCPnts_AbscissaPoint_2(inputs.shape, inputs.length, inputs.shape.FirstParameter());
+    pointOnCurveAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<BRepAdaptor_Curve>): Base.Point3 {
+        const absc = new this.occ.GCPnts_AbscissaPoint(inputs.shape, inputs.length, inputs.shape.FirstParameter());
         const param = absc.Parameter();
 
         const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
@@ -38,36 +42,62 @@ export class GeomService {
         return pt;
     }
 
-    pointsOnCurveAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<Adaptor3d_Curve>): Base.Point3[] {
+    pointOnCompCurveAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<BRepAdaptor_CompCurve>): Base.Point3 {
+        const absc = this.occ.GCPnts_AbscissaPoint_FromCompCurve(inputs.shape, inputs.length, inputs.shape.FirstParameter());
+        const param = absc.Parameter();
+
+        const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
+        inputs.shape.D0(param, gpPnt);
+        const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        absc.delete();
+        gpPnt.delete();
+        return pt;
+    }
+
+    pointsOnCurveAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<BRepAdaptor_Curve>): Base.Point3[] {
         return inputs.lengths.map(length => this.pointOnCurveAtLength({ shape: inputs.shape, length }));
     }
 
-    tangentOnCurveAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Adaptor3d_Curve>): Base.Point3 {
-        const absc = new this.occ.GCPnts_AbscissaPoint_2(inputs.shape, inputs.length, inputs.shape.FirstParameter());
+    pointsOnCompCurveAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<BRepAdaptor_CompCurve>): Base.Point3[] {
+        return inputs.lengths.map(length => this.pointOnCompCurveAtLength({ shape: inputs.shape, length }));
+    }
+
+    tangentOnCurveAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<BRepAdaptor_Curve>): Base.Point3 {
+        const absc = new this.occ.GCPnts_AbscissaPoint(inputs.shape, inputs.length, inputs.shape.FirstParameter());
         const param = absc.Parameter();
-        const vec = inputs.shape.DN(param, 1);
+        const vec = this.occ.BRepAdaptor_Curve_DN(inputs.shape, param, 1);
         const pt: Base.Point3 = [vec.X(), vec.Y(), vec.Z()];
         vec.delete();
         absc.delete();
         return pt;
     }
 
-    tangentOnCurveAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Geom_Curve | BRepAdaptor_CompCurve_2>): Base.Point3 {
+    tangentOnCurveAtLengthCompCurve(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<BRepAdaptor_CompCurve>): Base.Point3 {
+        const absc = this.occ.GCPnts_AbscissaPoint_FromCompCurve(inputs.shape, inputs.length, inputs.shape.FirstParameter());
+        const param = absc.Parameter();
+        const vec = this.occ.BRepAdaptor_CompCurve_DN(inputs.shape, param, 1);
+        const pt: Base.Point3 = [vec.X(), vec.Y(), vec.Z()];
+        vec.delete();
+        absc.delete();
+        return pt;
+    }
+
+    tangentOnCurveAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<BRepAdaptor_CompCurve>): Base.Point3 {
         const curve = inputs.shape;
         const param = this.vecHelper.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
-        const vec = curve.DN(param, 1);
+        const vec = this.occ.BRepAdaptor_CompCurve_DN(curve, param, 1);
         const pt: Base.Point3 = [vec.X(), vec.Y(), vec.Z()];
         vec.delete();
         return pt;
     }
 
-    divideCurveByEqualLengthDistance(inputs: Inputs.OCCT.DivideDto<Adaptor3d_Curve>): Base.Point3[] {
+    divideCurveByEqualLengthDistance(inputs: Inputs.OCCT.DivideDto<BRepAdaptor_Curve>): Base.Point3[] {
         const curve = inputs.shape;
-        const curveLength = this.occ.GCPnts_AbscissaPoint.Length_5(curve, curve.FirstParameter(), curve.LastParameter());
-        const step = curveLength / inputs.nrOfDivisions;
+        const curveLen = this.occ.GCPnts_AbscissaPoint_CurveLengthBetween(curve, curve.FirstParameter(), curve.LastParameter());
+        const step = curveLen / inputs.nrOfDivisions;
 
         const lengths: number[] = [];
-        for (let i = 0; i <= curveLength + 0.000000001; i += step) {
+        for (let i = 0; i <= curveLen + 0.000000001; i += step) {
             lengths.push(i);
         }
 
@@ -79,7 +109,7 @@ export class GeomService {
         }
 
         const paramsLength = lengths.map(l => {
-            const absc = new this.occ.GCPnts_AbscissaPoint_2(curve, l, curve.FirstParameter());
+            const absc = new this.occ.GCPnts_AbscissaPoint(curve, l, curve.FirstParameter());
             const param = absc.Parameter();
             absc.delete();
             return param;
@@ -95,7 +125,41 @@ export class GeomService {
         return points;
     }
 
-    divideCurveToNrSegments(inputs: Inputs.OCCT.DivideDto<Geom_Curve | BRepAdaptor_CompCurve_2>, uMin: number, uMax: number) {
+    divideCompCurveByEqualLengthDistance(inputs: Inputs.OCCT.DivideDto<BRepAdaptor_CompCurve>): Base.Point3[] {
+        const curve = inputs.shape;
+        const curveLen = this.occ.GCPnts_AbscissaPoint_CompCurveLengthBetween(curve, curve.FirstParameter(), curve.LastParameter());
+        const step = curveLen / inputs.nrOfDivisions;
+
+        const lengths: number[] = [];
+        for (let i = 0; i <= curveLen + 0.000000001; i += step) {
+            lengths.push(i);
+        }
+
+        if (inputs.removeStartPoint) {
+            lengths.shift();
+        }
+        if (inputs.removeEndPoint) {
+            lengths.pop();
+        }
+
+        const paramsLength = lengths.map(l => {
+            const absc = this.occ.GCPnts_AbscissaPoint_FromCompCurve(curve, l, curve.FirstParameter());
+            const param = absc.Parameter();
+            absc.delete();
+            return param;
+        });
+
+        const points = paramsLength.map(r => {
+            const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
+            curve.D0(r, gpPnt);
+            const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] as Base.Point3;
+            gpPnt.delete();
+            return pt;
+        });
+        return points;
+    }
+
+    divideCurveToNrSegments(inputs: Inputs.OCCT.DivideDto<Geom_Curve | BRepAdaptor_CompCurve>, uMin: number, uMax: number) {
         const curve = inputs.shape;
 
         const ranges: number[] = [];
@@ -124,7 +188,7 @@ export class GeomService {
     }
 
 
-    startPointOnCurve(inputs: Inputs.OCCT.ShapeDto<Geom_Curve | BRepAdaptor_CompCurve_2>): Inputs.Base.Point3 {
+    startPointOnCurve(inputs: Inputs.OCCT.ShapeDto<Geom_Curve | BRepAdaptor_CompCurve>): Inputs.Base.Point3 {
         const curve = inputs.shape;
         const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
         curve.D0(curve.FirstParameter(), gpPnt);
@@ -133,7 +197,7 @@ export class GeomService {
         return pt;
     }
 
-    endPointOnCurve(inputs: Inputs.OCCT.ShapeDto<Geom_Curve | BRepAdaptor_CompCurve_2>): Inputs.Base.Point3 {
+    endPointOnCurve(inputs: Inputs.OCCT.ShapeDto<Geom_Curve | BRepAdaptor_CompCurve>): Inputs.Base.Point3 {
         const curve = inputs.shape;
         const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
         curve.D0(curve.LastParameter(), gpPnt);
@@ -144,8 +208,8 @@ export class GeomService {
 
     getLinearCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Base.Point3 {
         const edge: TopoDS_Shape = inputs.shape;
-        const gprops = new this.occ.GProp_GProps_1();
-        this.occ.BRepGProp.LinearProperties(edge, gprops, false, false);
+        const gprops = new this.occ.GProp_GProps();
+        this.occ.BRepGProp_LinearProperties(edge, gprops);
         const gppnt = gprops.CentreOfMass();
         const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
         gprops.delete();

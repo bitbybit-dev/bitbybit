@@ -1,4 +1,4 @@
-import initOpenCascade, { OpenCascadeInstance } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTGeom } from "../geom/geom";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -7,12 +7,12 @@ import { ShapesHelperService } from "../../api/shapes-helper.service";
 describe("OCCT edge unit tests", () => {
     let geom: OCCTGeom;
     let occHelper: OccHelper;
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let vec: VectorHelperService;
     let s: ShapesHelperService;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         vec = new VectorHelperService();
         s = new ShapesHelperService();
         occHelper = new OccHelper(vec, s, occt);
@@ -71,8 +71,11 @@ describe("OCCT edge unit tests", () => {
             param: circle.LastParameter()
         });
 
-        expect(point).toEqual([2.4492935982947065e-15, 10]);
-        expect(point2).toEqual([-2.4492935982947065e-15, 10]);
+        // Use toBeCloseTo for near-zero floating-point values
+        expect(point[0]).toBeCloseTo(0, 10);
+        expect(point[1]).toBeCloseTo(10, 10);
+        expect(point2[0]).toBeCloseTo(0, 10);
+        expect(point2[1]).toBeCloseTo(10, 10);
         circle.delete();
         trimmed.delete();
     });
@@ -89,10 +92,11 @@ describe("OCCT edge unit tests", () => {
     });
 
     it("should get 2d point from 2d curve on param", async () => {
-        const circle = geom.curves.geomCircleCurve({
+        const circle = geom.curves.geom2dCircle({
             radius: 10,
-            center: [0, 0, 0],
-            direction: [0, 0, 1]
+            center: [0, 0],
+            direction: [1, 0],
+            sense: false
         });
         const point = geom.curves.get2dPointFrom2dCurveOnParam({
             shape: circle,

@@ -1,6 +1,6 @@
 import {
-    GeomAbs_Shape, Geom_Surface, OpenCascadeInstance,
-    TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Pnt, gp_Pnt_3
+    Geom_Surface, BitbybitOcctModule,
+    TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Pnt
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 import { Base } from "../../api/inputs/inputs";
@@ -21,7 +21,7 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 export class WiresService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly occRefReturns: OCCReferencedReturns,
         private readonly base: BaseBitByBit,
         private readonly shapesHelperService: ShapesHelperService,
@@ -38,8 +38,8 @@ export class WiresService {
     ) { }
 
     getWireLength(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): number {
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(inputs.shape, false);
-        const length = this.geomService.curveLength({ shape: curve });
+        const curve = new this.occ.BRepAdaptor_CompCurve(inputs.shape, false);
+        const length = this.geomService.curveLengthCompCurve({ shape: curve });
         curve.delete();
         return length;
     }
@@ -324,40 +324,40 @@ export class WiresService {
     }
 
     createPolygonWire(inputs: Inputs.OCCT.PolygonDto) {
-        const gpPoints: gp_Pnt_3[] = [];
+        const gpPoints: gp_Pnt[] = [];
         for (let ind = 0; ind < inputs.points.length; ind++) {
             gpPoints.push(this.entitiesService.gpPnt(inputs.points[ind]));
         }
 
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_1();
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
         for (let ind = 0; ind < inputs.points.length - 1; ind++) {
             const pt1 = gpPoints[ind];
             const pt2 = gpPoints[ind + 1];
             const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
-            wireMaker.Add_2(innerWire);
+            wireMaker.AddWire(innerWire);
         }
 
         const pt1 = gpPoints[inputs.points.length - 1];
         const pt2 = gpPoints[0];
         const innerWire2 = this.makeWireBetweenTwoPoints(pt1, pt2);
-        wireMaker.Add_2(innerWire2);
+        wireMaker.AddWire(innerWire2);
         const wire = wireMaker.Wire();
         wireMaker.delete();
         return wire;
     }
 
     createPolylineWire(inputs: Inputs.OCCT.PolylineDto) {
-        const gpPoints: gp_Pnt_3[] = [];
+        const gpPoints: gp_Pnt[] = [];
         for (let ind = 0; ind < inputs.points.length; ind++) {
             gpPoints.push(this.entitiesService.gpPnt(inputs.points[ind]));
         }
 
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_1();
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
         for (let ind = 0; ind < inputs.points.length - 1; ind++) {
             const pt1 = gpPoints[ind];
             const pt2 = gpPoints[ind + 1];
             const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
-            wireMaker.Add_2(innerWire);
+            wireMaker.AddWire(innerWire);
         }
 
         const wire = wireMaker.Wire();
@@ -366,16 +366,16 @@ export class WiresService {
     }
 
     createLineWire(inputs: Inputs.OCCT.LineDto) {
-        const gpPoints: gp_Pnt_3[] = [];
+        const gpPoints: gp_Pnt[] = [];
         gpPoints.push(this.entitiesService.gpPnt(inputs.start));
         gpPoints.push(this.entitiesService.gpPnt(inputs.end));
 
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_1();
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
         for (let ind = 0; ind < gpPoints.length - 1; ind++) {
             const pt1 = gpPoints[ind];
             const pt2 = gpPoints[ind + 1];
             const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
-            wireMaker.Add_2(innerWire);
+            wireMaker.AddWire(innerWire);
         }
 
         const wire = wireMaker.Wire();
@@ -393,20 +393,10 @@ export class WiresService {
     }
 
     private makeWireBetweenTwoPoints(pt1: gp_Pnt, pt2: gp_Pnt) {
-        const seg = new this.occ.GC_MakeSegment_1(pt1, pt2);
-        const segVal = seg.Value();
-        const segment = segVal.get();
-        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.occ.Handle_Geom_Curve_2(segment)
-        );
-        const edge = edgeMaker.Edge();
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
+        const edge = this.occ.MakeLineEdgeBetweenPoints(pt1, pt2);
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
         const innerWire = wireMaker.Wire();
 
-        edgeMaker.delete();
-        seg.delete();
-        segVal.delete();
-        segment.delete();
         edge.delete();
         wireMaker.delete();
         return innerWire;
@@ -416,7 +406,7 @@ export class WiresService {
 
     divideWireByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Wire>): Inputs.Base.Point3[] {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const points = this.geomService.divideCurveToNrSegments({ ...inputs, shape: curve }, curve.FirstParameter(), curve.LastParameter());
         curve.delete();
         return points;
@@ -424,15 +414,15 @@ export class WiresService {
 
     divideWireByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Wire>): Base.Point3[] {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        const points = this.geomService.divideCurveByEqualLengthDistance({ ...inputs, shape: curve });
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
+        const points = this.geomService.divideCompCurveByEqualLengthDistance({ ...inputs, shape: curve });
         curve.delete();
         return points;
     }
 
     pointOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const pt = this.geomService.pointOnCurveAtParam({ ...inputs, shape: curve });
         curve.delete();
         return pt;
@@ -440,7 +430,7 @@ export class WiresService {
 
     tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const tangent = this.geomService.tangentOnCurveAtParam({ ...inputs, shape: curve });
         curve.delete();
         return tangent;
@@ -448,23 +438,23 @@ export class WiresService {
 
     pointOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        const res = this.geomService.pointOnCurveAtLength({ ...inputs, shape: curve });
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
+        const res = this.geomService.pointOnCompCurveAtLength({ ...inputs, shape: curve });
         curve.delete();
         return res;
     }
 
     pointsOnWireAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<TopoDS_Wire>): Base.Point3[] {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        const res = this.geomService.pointsOnCurveAtLengths({ ...inputs, shape: curve });
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
+        const res = this.geomService.pointsOnCompCurveAtLengths({ ...inputs, shape: curve });
         curve.delete();
         return res;
     }
 
     pointsOnWireAtEqualLength(inputs: Inputs.OCCT.PointsOnWireAtEqualLengthDto<TopoDS_Wire>): Base.Point3[] {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const wireLength = this.getWireLength({ shape: wire });
         const nrOfLengths = wireLength / inputs.length;
         const lengths = [];
@@ -479,7 +469,7 @@ export class WiresService {
         if (inputs.tryNext) {
             lengths.push(total + inputs.length);
         }
-        const res = this.geomService.pointsOnCurveAtLengths({ lengths, shape: curve });
+        const res = this.geomService.pointsOnCompCurveAtLengths({ lengths, shape: curve });
         if (inputs.includeLast) {
             res.push(this.endPointOnWire({ shape: wire }));
         }
@@ -489,7 +479,7 @@ export class WiresService {
 
     pointsOnWireAtPatternOfLengths(inputs: Inputs.OCCT.PointsOnWireAtPatternOfLengthsDto<TopoDS_Wire>): Base.Point3[] {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const wireLength = this.getWireLength({ shape: wire });
         const lengths = [];
         let total = 0;
@@ -518,7 +508,7 @@ export class WiresService {
                 lengths.push(total + inputs.lengths[0]);
             }
         }
-        const res = this.geomService.pointsOnCurveAtLengths({ lengths, shape: curve });
+        const res = this.geomService.pointsOnCompCurveAtLengths({ lengths, shape: curve });
         if (inputs.includeLast) {
             res.push(this.endPointOnWire({ shape: wire }));
         }
@@ -528,46 +518,39 @@ export class WiresService {
 
     tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        const res = this.geomService.tangentOnCurveAtLength({ ...inputs, shape: curve });
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
+        const res = this.geomService.tangentOnCurveAtLengthCompCurve({ ...inputs, shape: curve });
         curve.delete();
         return res;
     }
 
     interpolatePoints(inputs: Inputs.OCCT.InterpolationDto) {
-
-        const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length);
-        const gpPnts: gp_Pnt_3[] = [];
-        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            const gpPnt = this.entitiesService.gpPnt(inputs.points[pIndex - 1]);
-            gpPnts.push(gpPnt);
-            ptList.SetValue(pIndex, gpPnt);
+        // Create flat array of coordinates for the new API
+        const coords = new this.occ.VectorDouble();
+        for (const pt of inputs.points) {
+            coords.push_back(pt[0]);
+            coords.push_back(pt[1]);
+            coords.push_back(pt[2]);
         }
-        const geomBSplineHandle = this.occ.BitByBitDev.BitInterpolate(ptList, inputs.periodic, inputs.tolerance);
-        if (!geomBSplineHandle.IsNull()) {
-            const geomBSpline = geomBSplineHandle.get();
-            const geomCrvHandle = new this.occ.Handle_Geom_Curve_2(geomBSpline);
-            const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(geomCrvHandle);
-            const edge = edgeMaker.Edge();
-            const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
-            const wire = wireMaker.Wire();
-
-            geomBSplineHandle.Nullify();
-            geomBSplineHandle.delete();
-            geomCrvHandle.Nullify();
-            geomCrvHandle.delete();
-            edgeMaker.delete();
+        
+        let wire: TopoDS_Wire;
+        if (inputs.periodic) {
+            wire = this.occ.MakePeriodicBSplineWire(coords);
+        } else {
+            const edge = this.occ.MakeBSplineEdge(coords);
+            const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
+            wire = wireMaker.Wire();
             edge.delete();
             wireMaker.delete();
-            gpPnts.forEach(p => p.delete());
-            ptList.delete();
+        }
+        
+        coords.delete();
+        
+        if (wire && !wire.IsNull()) {
             return wire;
         } else {
-            gpPnts.forEach(p => p.delete());
-            ptList.delete();
             return undefined;
         }
-
     }
 
     isWireClosed(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): boolean {
@@ -596,7 +579,7 @@ export class WiresService {
         const firstEdge = edges[0];
         let first = { current: 0 };
         let last = { current: 0 };
-        this.occRefReturns.BRep_Tool_Curve_2(firstEdge, first, last);
+        this.occRefReturns.BRep_Tool_Range_1(firstEdge, first, last);
         splitLocations.push({ edgeIndex: 0, parameter: first.current });
 
         // Project each split point onto the wire
@@ -608,23 +591,31 @@ export class WiresService {
             edges.forEach((edge, index) => {
                 const first = { current: 0 };
                 const last = { current: 0 };
-                const curve = this.occRefReturns.BRep_Tool_Curve_2(edge, first, last);
+                this.occRefReturns.BRep_Tool_Range_1(edge, first, last);
                 const firstVal = first.current;
                 const lastVal = last.current;
 
                 const gpPnt = this.entitiesService.gpPnt(pt as Base.Point3);
-                const projector = new this.occ.GeomAPI_ProjectPointOnCurve_2(gpPnt, curve);
-                if (projector.NbPoints() > 0) {
-                    const param = projector.LowerDistanceParameter();
+                try {
+                    const result = this.occ.ProjectPointOnCurve(gpPnt, edge);
+                    const param = result.param;
                     // Clamp the parameter to the edge's range
                     const clampedParam = Math.max(firstVal, Math.min(lastVal, param));
-                    const dist = projector.Distance(1); // Use the first projection point
+                    const projectedPt = result.Point;
+                    const dx = projectedPt.X() - gpPnt.X();
+                    const dy = projectedPt.Y() - gpPnt.Y();
+                    const dz = projectedPt.Z() - gpPnt.Z();
+                    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
                     if (dist < minDist) {
                         minDist = dist;
                         bestEdgeIndex = index;
                         bestParam = clampedParam;
                     }
+                    projectedPt.delete();
+                } catch {
+                    // Projection failed, skip this edge
                 }
+                gpPnt.delete();
             });
 
             if (bestEdgeIndex >= 0) {
@@ -636,7 +627,7 @@ export class WiresService {
         const lastEdge = edges[edges.length - 1];
         first = { current: 0 };
         last = { current: 0 };
-        this.occRefReturns.BRep_Tool_Curve_2(lastEdge, first, last);
+        this.occRefReturns.BRep_Tool_Range_1(lastEdge, first, last);
         splitLocations.push({ edgeIndex: edges.length - 1, parameter: last.current });
 
         // 3. Remove duplicates and sort split locations by edgeIndex, then parameter
@@ -653,73 +644,52 @@ export class WiresService {
         for (let i = 0; i < uniqueLocations.length - 1; i++) {
             const startLoc = uniqueLocations[i];
             const endLoc = uniqueLocations[i + 1];
-            const wireBuilder = new this.occ.BRepBuilderAPI_MakeWire_1();
+            const wireBuilder = new this.occ.BRepBuilderAPI_MakeWire();
 
             if (startLoc.edgeIndex === endLoc.edgeIndex) {
                 // Same edge: create a single trimmed edge
                 const edge = edges[startLoc.edgeIndex];
-                const first = { current: 0 };
-                const last = { current: 0 };
-                const curve = this.occRefReturns.BRep_Tool_Curve_2(edge, first, last);
 
                 // Avoid zero-length segments
                 if (startLoc.parameter === endLoc.parameter) continue;
 
-                const trimmedCurve = new this.occ.Geom_TrimmedCurve(
-                    curve,
-                    startLoc.parameter,
-                    endLoc.parameter,
-                    true,
-                    true
-                );
-                const handleTrimmedCurve = new this.occ.Handle_Geom_Curve_2(trimmedCurve);
-                const newEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedCurve).Edge();
-                wireBuilder.Add_1(newEdge);
+                const newEdge = this.occ.TrimEdgeToParams(edge, startLoc.parameter, endLoc.parameter);
+                if (!newEdge.IsNull()) {
+                    wireBuilder.AddEdge(newEdge);
+                }
             } else {
                 // Spans multiple edges
                 // Trim the start edge
                 const startEdge = edges[startLoc.edgeIndex];
                 const startFirst = { current: 0 };
                 const startLast = { current: 0 };
-                const startCurve = this.occRefReturns.BRep_Tool_Curve_2(startEdge, startFirst, startLast);
+                this.occRefReturns.BRep_Tool_Range_1(startEdge, startFirst, startLast);
                 const startLastVal = startLast.current;
 
                 if (startLoc.parameter < startLastVal) {
-                    const trimmedStartCurve = new this.occ.Geom_TrimmedCurve(
-                        startCurve,
-                        startLoc.parameter,
-                        startLastVal,
-                        true,
-                        true
-                    );
-                    const handleTrimmedStartCurve = new this.occ.Handle_Geom_Curve_2(trimmedStartCurve);
-                    const newStartEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedStartCurve).Edge();
-                    wireBuilder.Add_1(newStartEdge);
+                    const newStartEdge = this.occ.TrimEdgeToParams(startEdge, startLoc.parameter, startLastVal);
+                    if (!newStartEdge.IsNull()) {
+                        wireBuilder.AddEdge(newStartEdge);
+                    }
                 }
 
                 // Add full edges in between
                 for (let j = startLoc.edgeIndex + 1; j < endLoc.edgeIndex; j++) {
-                    wireBuilder.Add_1(edges[j]);
+                    wireBuilder.AddEdge(edges[j]);
                 }
 
                 // Trim the end edge
                 const endEdge = edges[endLoc.edgeIndex];
                 const endFirst = { current: 0 };
                 const endLast = { current: 0 };
-                const endCurve = this.occRefReturns.BRep_Tool_Curve_2(endEdge, endFirst, endLast);
+                this.occRefReturns.BRep_Tool_Range_1(endEdge, endFirst, endLast);
                 const endFirstVal = endFirst.current;
 
                 if (endLoc.parameter > endFirstVal) {
-                    const trimmedEndCurve = new this.occ.Geom_TrimmedCurve(
-                        endCurve,
-                        endFirstVal,
-                        endLoc.parameter,
-                        true,
-                        true
-                    );
-                    const handleTrimmedEndCurve = new this.occ.Handle_Geom_Curve_2(trimmedEndCurve);
-                    const newEndEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedEndCurve).Edge();
-                    wireBuilder.Add_1(newEndEdge);
+                    const newEndEdge = this.occ.TrimEdgeToParams(endEdge, endFirstVal, endLoc.parameter);
+                    if (!newEndEdge.IsNull()) {
+                        wireBuilder.AddEdge(newEndEdge);
+                    }
                 }
             }
 
@@ -909,41 +879,33 @@ export class WiresService {
     }
 
     createWireFromEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): TopoDS_Wire {
-        const makeWire = new this.occ.BRepBuilderAPI_MakeWire_2(inputs.shape);
+        const makeWire = new this.occ.BRepBuilderAPI_MakeWire(inputs.shape);
         const wire = makeWire.Wire();
         makeWire.delete();
         return wire;
     }
 
     createBSpline(inputs: Inputs.OCCT.BSplineDto): TopoDS_Wire {
-        const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
-        const gpPnts: gp_Pnt_3[] = [];
-        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            const gpPnt = this.entitiesService.gpPnt(inputs.points[pIndex - 1]);
-            gpPnts.push(gpPnt);
-            ptList.SetValue(pIndex, gpPnt);
+        // Create flat array of coordinates for the new API
+        const coords = new this.occ.VectorDouble();
+        for (const pt of inputs.points) {
+            coords.push_back(pt[0]);
+            coords.push_back(pt[1]);
+            coords.push_back(pt[2]);
         }
-        if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
+        // If closed, add first point again
+        if (inputs.closed) {
+            coords.push_back(inputs.points[0][0]);
+            coords.push_back(inputs.points[0][1]);
+            coords.push_back(inputs.points[0][2]);
+        }
 
-        const ptsToBspline = new this.occ.GeomAPI_PointsToBSpline_2(ptList, 3, 8,
-            (this.occ.GeomAbs_Shape.GeomAbs_C2 as GeomAbs_Shape), 1.0e-3);
-
-        const bsplineHandle = ptsToBspline.Curve();
-        const bspline = bsplineHandle.get();
-        const bsplineCrv = new this.occ.Handle_Geom_Curve_2(bspline);
-        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(bsplineCrv);
-        const edge = edgeMaker.Edge();
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
+        // Use MakeApproxBSplineEdge which uses GeomAPI_PointsToBSpline
+        const edge = this.occ.MakeApproxBSplineEdge(coords, 3, 8, 1.0e-3);
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
         const wire = wireMaker.Wire();
 
-        gpPnts.forEach(p => p.delete());
-        ptList.delete();
-        ptsToBspline.delete();
-        bsplineHandle.Nullify();
-        bsplineHandle.delete();
-        bsplineCrv.Nullify();
-        bsplineCrv.delete();
-        edgeMaker.delete();
+        coords.delete();
         edge.delete();
         wireMaker.delete();
 
@@ -951,64 +913,66 @@ export class WiresService {
     }
 
     createBezier(inputs: Inputs.OCCT.BezierDto) {
-        const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
-        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            ptList.SetValue(pIndex, this.entitiesService.gpPnt(inputs.points[pIndex - 1]));
+        // Create flat array of coordinates for the new API
+        const coords = new this.occ.VectorDouble();
+        for (const pt of inputs.points) {
+            coords.push_back(pt[0]);
+            coords.push_back(pt[1]);
+            coords.push_back(pt[2]);
         }
-        if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
-        const geomBezierCurveHandle = new this.occ.Geom_BezierCurve_1(ptList);
-        const geomCurve = new this.occ.Handle_Geom_Curve_2(geomBezierCurveHandle);
-        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(geomCurve);
-        const edge = edgeMaker.Edge();
-        const makeWire = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
-        const result = makeWire.Wire();
-        makeWire.delete();
-        edgeMaker.delete();
-        edge.delete();
-        geomCurve.delete();
-        ptList.delete();
-        return result;
+        // If closed, add first point again
+        if (inputs.closed) {
+            coords.push_back(inputs.points[0][0]);
+            coords.push_back(inputs.points[0][1]);
+            coords.push_back(inputs.points[0][2]);
+        }
+
+        const wire = this.occ.MakeBezierWire(coords);
+        coords.delete();
+        return wire;
     }
 
     createBezierWeights(inputs: Inputs.OCCT.BezierWeightsDto) {
         if (!inputs.closed && inputs.points.length !== inputs.weights.length) {
-            throw new Error("Number of points and weights must be the same when bezier is not clsoed.");
+            throw new Error("Number of points and weights must be the same when bezier is not closed.");
         } else if (inputs.closed && inputs.points.length !== inputs.weights.length - 1) {
-            throw new Error("Number of points must be one less than number of weights when bezier is clsoed.");
+            throw new Error("Number of points must be one less than number of weights when bezier is closed.");
         }
 
-        const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
-        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            ptList.SetValue(pIndex, this.entitiesService.gpPnt(inputs.points[pIndex - 1]));
+        // Create flat array of coordinates for the new API
+        const coords = new this.occ.VectorDouble();
+        for (const pt of inputs.points) {
+            coords.push_back(pt[0]);
+            coords.push_back(pt[1]);
+            coords.push_back(pt[2]);
         }
-        if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
-        const arrayOfReal = new this.occ.TColStd_Array1OfReal_2(1, inputs.weights.length);
-        for (let i = 1; i <= inputs.weights.length; i++) {
-            arrayOfReal.SetValue(i, inputs.weights[i - 1]);
+        // If closed, add first point again
+        if (inputs.closed) {
+            coords.push_back(inputs.points[0][0]);
+            coords.push_back(inputs.points[0][1]);
+            coords.push_back(inputs.points[0][2]);
         }
-        const geomBezierCurveHandle = new this.occ.Geom_BezierCurve_2(ptList, arrayOfReal);
-        const geomCurve = new this.occ.Handle_Geom_Curve_2(geomBezierCurveHandle);
-        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(geomCurve);
-        const edge = edgeMaker.Edge();
-        const makeWire = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
-        const result = makeWire.Wire();
-        makeWire.delete();
-        edgeMaker.delete();
-        edge.delete();
-        geomCurve.delete();
-        ptList.delete();
-        arrayOfReal.delete();
-        return result;
+
+        // Create weights array
+        const weights = new this.occ.VectorDouble();
+        for (const w of inputs.weights) {
+            weights.push_back(w);
+        }
+
+        const wire = this.occ.MakeWeightedBezierWire(coords, weights);
+        coords.delete();
+        weights.delete();
+        return wire;
     }
 
     addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire {
-        const makeWire = new this.occ.BRepBuilderAPI_MakeWire_1();
-        makeWire.Add_2(inputs.shape);
+        const makeWire = new this.occ.BRepBuilderAPI_MakeWire();
+        makeWire.AddWire(inputs.shape);
         inputs.shapes.forEach((shape) => {
-            if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_EDGE) {
-                makeWire.Add_1(shape);
-            } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_WIRE) {
-                makeWire.Add_2(shape);
+            if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.EDGE) {
+                makeWire.AddEdge(shape as TopoDS_Edge);
+            } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
+                makeWire.AddWire(shape as TopoDS_Wire);
             }
         });
         let result;
@@ -1023,21 +987,21 @@ export class WiresService {
 
     startPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const res = this.geomService.startPointOnCurve({ shape: curve });
         return res;
     }
 
     midPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const res = this.geomService.pointOnCurveAtParam({ shape: curve, param: 0.5 });
         return res;
     }
 
     endPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
+        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const res = this.geomService.endPointOnCurve({ shape: curve });
         return res;
     }
@@ -1104,19 +1068,19 @@ export class WiresService {
             const umin = { current: 0 };
             const umax = { current: 0 };
             this.occRefReturns.BRep_Tool_Range_1(e, umin, umax);
-            const crv = this.occRefReturns.BRep_Tool_Curve_2(e, umin, umax);
-            if (!crv.IsNull()) {
+            // Use the new API: GetEdgeCurve returns Handle_Geom_Curve wrapper
+            const crv = this.occ.GetEdgeCurve(e);
+            if (crv && !crv.IsNull()) {
                 const plane = this.entitiesService.gpPln([0, 0, 0], [0, 1, 0]);
-                const c2dHandle = this.occ.GeomAPI.To2d(crv, plane);
-                const c2 = c2dHandle.get();
+                const c2 = this.occ.GeomAPI_To2d(crv, plane);
                 const newEdgeOnSrf = this.edgesService.makeEdgeFromGeom2dCurveAndSurfaceBounded({ curve: c2, surface }, umin.current, umax.current);
                 if (newEdgeOnSrf) {
                     newEdges.push(newEdgeOnSrf);
                 }
                 plane.delete();
-                c2dHandle.delete();
+                c2.delete();
+                crv.delete();
             }
-            crv.delete();
         });
         edges.forEach(e => e.delete());
         const res = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: newEdges });

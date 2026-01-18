@@ -1,12 +1,12 @@
 import { OccHelper } from "../../occ-helper";
-import { OpenCascadeInstance, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 import { Base } from "../../api/inputs/inputs";
 
 export class OCCTSolid {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
@@ -111,7 +111,7 @@ export class OCCTSolid {
         }
 
         // Get the face normal to determine actual extrusion direction
-        const faceCasted = this.occ.TopoDS.Face_1(face);
+        const faceCasted = this.occ.CastToFace(face);
         
         // Use face service methods to get UV bounds and normal at center
         const uMin = this.och.facesService.getUMinBound({ shape: faceCasted });
@@ -137,12 +137,12 @@ export class OCCTSolid {
 
         // Create forward extrusion if lengthFront > 0
         if (lengthFront > 0) {
-            const frontVec = new this.occ.gp_Vec_4(
+            const frontVec = new this.occ.gp_Vec(
                 normalizedDir[0] * lengthFront,
                 normalizedDir[1] * lengthFront,
                 normalizedDir[2] * lengthFront
             );
-            const frontPrism = new this.occ.BRepPrimAPI_MakePrism_1(face, frontVec, false, true);
+            const frontPrism = new this.occ.BRepPrimAPI_MakePrism(face, frontVec, false, true);
             result = frontPrism.Shape();
             frontPrism.delete();
             frontVec.delete();
@@ -150,12 +150,12 @@ export class OCCTSolid {
 
         // If there's backward extrusion, add it
         if (lengthBack > 0) {
-            const backVec = new this.occ.gp_Vec_4(
+            const backVec = new this.occ.gp_Vec(
                 -normalizedDir[0] * lengthBack,
                 -normalizedDir[1] * lengthBack,
                 -normalizedDir[2] * lengthBack
             );
-            const backPrism = new this.occ.BRepPrimAPI_MakePrism_1(face, backVec, false, true);
+            const backPrism = new this.occ.BRepPrimAPI_MakePrism(face, backVec, false, true);
             const backShape = backPrism.Shape();
             backPrism.delete();
             backVec.delete();

@@ -1,23 +1,26 @@
 import {
-    OpenCascadeInstance, TopAbs_ShapeEnum, TopoDS_Edge, TopoDS_Face, TopoDS_Shape,
+    BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape,
     TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 
 export class IteratorService {
 
     constructor(
-        public readonly occ: OpenCascadeInstance,
+        public readonly occ: BitbybitOcctModule,
     ) { }
 
     forEachWire(shape: TopoDS_Shape, callback: (index: number, wire: TopoDS_Wire) => void): void {
         let wireIndex = 0;
-        const anExplorer = new this.occ.TopExp_Explorer_2(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_WIRE as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
-        for (anExplorer.Init(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_WIRE as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)); anExplorer.More(); anExplorer.Next()) {
-            callback(wireIndex++, this.occ.TopoDS.Wire_2(anExplorer.Current()));
+        const anExplorer = new this.occ.TopExp_Explorer(
+            shape,
+            this.occ.TopAbs_ShapeEnum.WIRE,
+            this.occ.TopAbs_ShapeEnum.SHAPE
+        );
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.WIRE, this.occ.TopAbs_ShapeEnum.SHAPE);
+            anExplorer.More();
+            anExplorer.Next()
+        ) {
+            callback(wireIndex++, this.occ.CastToWire(anExplorer.Current()));
         }
         anExplorer.delete();
     }
@@ -26,16 +29,17 @@ export class IteratorService {
     forEachEdge(shape: TopoDS_Shape, callback: (index: number, edge: TopoDS_Edge) => void) {
         const edgeHashes = {};
         let edgeIndex = 0;
-        const anExplorer = new this.occ.TopExp_Explorer_2(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_EDGE as TopAbs_ShapeEnum), (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
+        const anExplorer = new this.occ.TopExp_Explorer(
+            shape,
+            this.occ.TopAbs_ShapeEnum.EDGE,
+            this.occ.TopAbs_ShapeEnum.SHAPE
         );
-        for (anExplorer.Init(shape, (this.occ.TopAbs_ShapeEnum.TopAbs_EDGE as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.EDGE, this.occ.TopAbs_ShapeEnum.SHAPE);
             anExplorer.More();
             anExplorer.Next()
         ) {
-            const edge = this.occ.TopoDS.Edge_1(anExplorer.Current());
-            const edgeHash = edge.HashCode(100000000);
+            const edge = this.occ.CastToEdge(anExplorer.Current());
+            const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
             if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
                 edgeHashes[edgeHash] = edgeIndex;
                 edgeIndex++;
@@ -49,13 +53,10 @@ export class IteratorService {
     forEachEdgeAlongWire(shape: TopoDS_Wire, callback: (index: number, edge: TopoDS_Edge) => void) {
         const edgeHashes = {};
         let edgeIndex = 0;
-        const anExplorer = new this.occ.BRepTools_WireExplorer_1();
-        for (anExplorer.Init_1(shape);
-            anExplorer.More();
-            anExplorer.Next()
-        ) {
-            const edge = this.occ.TopoDS.Edge_1(anExplorer.Current());
-            const edgeHash = edge.HashCode(100000000);
+        const anExplorer = new this.occ.BRepTools_WireExplorer(shape);
+        for (/* initialized in constructor */; anExplorer.More(); anExplorer.Next()) {
+            const edge = this.occ.CastToEdge(anExplorer.Current());
+            const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
             if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
                 edgeHashes[edgeHash] = edgeIndex;
                 edgeIndex++;
@@ -68,95 +69,106 @@ export class IteratorService {
 
     forEachFace(shape: TopoDS_Shape, callback: (index: number, face: TopoDS_Face) => void): void {
         let faceIndex = 0;
-        const anExplorer = new this.occ.TopExp_Explorer_2(
+        const anExplorer = new this.occ.TopExp_Explorer(
             shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_FACE as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
+            this.occ.TopAbs_ShapeEnum.FACE,
+            this.occ.TopAbs_ShapeEnum.SHAPE
         );
-        for (anExplorer.Init(shape, (this.occ.TopAbs_ShapeEnum.TopAbs_FACE as TopAbs_ShapeEnum), (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.FACE, this.occ.TopAbs_ShapeEnum.SHAPE);
             anExplorer.More();
-            anExplorer.Next()) {
-            callback(faceIndex++, this.occ.TopoDS.Face_1(anExplorer.Current()));
+            anExplorer.Next()
+        ) {
+            callback(faceIndex++, this.occ.CastToFace(anExplorer.Current()));
         }
         anExplorer.delete();
     }
 
     forEachShell(shape: TopoDS_Shape, callback: (index: number, shell: TopoDS_Shell) => void): void {
-        let faceIndex = 0;
-        const anExplorer = new this.occ.TopExp_Explorer_2(
+        let shellIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer(
             shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHELL as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
+            this.occ.TopAbs_ShapeEnum.SHELL,
+            this.occ.TopAbs_ShapeEnum.SHAPE
         );
-        for (anExplorer.Init(shape, (this.occ.TopAbs_ShapeEnum.TopAbs_SHELL as TopAbs_ShapeEnum), (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.SHELL, this.occ.TopAbs_ShapeEnum.SHAPE);
             anExplorer.More();
-            anExplorer.Next()) {
-            callback(faceIndex++, this.occ.TopoDS.Shell_1(anExplorer.Current()));
+            anExplorer.Next()
+        ) {
+            callback(shellIndex++, this.occ.CastToShell(anExplorer.Current()));
         }
         anExplorer.delete();
     }
 
     forEachVertex(shape: TopoDS_Shape, callback: (index: number, vertex: TopoDS_Vertex) => void): void {
-        let faceIndex = 0;
-        const anExplorer = new this.occ.TopExp_Explorer_2(
+        let vertexIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer(
             shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_VERTEX as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
+            this.occ.TopAbs_ShapeEnum.VERTEX,
+            this.occ.TopAbs_ShapeEnum.SHAPE
         );
-        for (anExplorer.Init(shape, (this.occ.TopAbs_ShapeEnum.TopAbs_VERTEX as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.VERTEX, this.occ.TopAbs_ShapeEnum.SHAPE);
             anExplorer.More();
-            anExplorer.Next()) {
-            callback(faceIndex++, this.occ.TopoDS.Vertex_1(anExplorer.Current()));
+            anExplorer.Next()
+        ) {
+            callback(vertexIndex++, this.occ.CastToVertex(anExplorer.Current()));
         }
         anExplorer.delete();
     }
 
     forEachSolid(shape: TopoDS_Shape, callback: (index: number, solid: TopoDS_Solid) => void): void {
         let solidIndex = 0;
-        const anExplorer = new this.occ.TopExp_Explorer_2(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SOLID as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
-        for (anExplorer.Init(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SOLID as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)); anExplorer.More(); anExplorer.Next()) {
-            callback(solidIndex++, this.occ.TopoDS.Solid_2(anExplorer.Current()));
+        const anExplorer = new this.occ.TopExp_Explorer(
+            shape,
+            this.occ.TopAbs_ShapeEnum.SOLID,
+            this.occ.TopAbs_ShapeEnum.SHAPE
+        );
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.SOLID, this.occ.TopAbs_ShapeEnum.SHAPE);
+            anExplorer.More();
+            anExplorer.Next()
+        ) {
+            callback(solidIndex++, this.occ.CastToSolid(anExplorer.Current()));
         }
         anExplorer.delete();
     }
 
     forEachCompound(shape: TopoDS_Shape, callback: (index: number, shape: TopoDS_Shape) => void): void {
-        let solidIndex = 0;
-        const anExplorer = new this.occ.TopExp_Explorer_2(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_COMPOUND as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
-        for (anExplorer.Init(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_COMPOUND as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)); anExplorer.More(); anExplorer.Next()) {
-            callback(solidIndex++, anExplorer.Current());
+        let compoundIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer(
+            shape,
+            this.occ.TopAbs_ShapeEnum.COMPOUND,
+            this.occ.TopAbs_ShapeEnum.SHAPE
+        );
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.COMPOUND, this.occ.TopAbs_ShapeEnum.SHAPE);
+            anExplorer.More();
+            anExplorer.Next()
+        ) {
+            callback(compoundIndex++, anExplorer.Current());
         }
         anExplorer.delete();
     }
 
     forEachCompSolid(shape: TopoDS_Shape, callback: (index: number, shape: TopoDS_Shape) => void): void {
-        let solidIndex = 0;
-        const anExplorer = new this.occ.TopExp_Explorer_2(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
-        for (anExplorer.Init(shape,
-            (this.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID as TopAbs_ShapeEnum),
-            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)); anExplorer.More(); anExplorer.Next()) {
-            callback(solidIndex++, anExplorer.Current());
+        let compSolidIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer(
+            shape,
+            this.occ.TopAbs_ShapeEnum.COMPSOLID,
+            this.occ.TopAbs_ShapeEnum.SHAPE
+        );
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.COMPSOLID, this.occ.TopAbs_ShapeEnum.SHAPE);
+            anExplorer.More();
+            anExplorer.Next()
+        ) {
+            callback(compSolidIndex++, anExplorer.Current());
         }
         anExplorer.delete();
     }
-    
+
     forEachShapeInCompound(shape: TopoDS_Shape, callback: (index: number, shape: TopoDS_Shape) => void): void {
-        let solidIndex = 0;
-        const iterator = new this.occ.TopoDS_Iterator_1();
-    
-        for (iterator.Initialize(shape, true, true); iterator.More(); iterator.Next()) {
-            callback(solidIndex++, iterator.Value());
+        let shapeIndex = 0;
+        const iterator = new this.occ.TopoDS_Iterator(shape);
+
+        for (/* initialized in constructor */; iterator.More(); iterator.Next()) {
+            callback(shapeIndex++, iterator.Value());
         }
         iterator.delete();
     }
