@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Command } from "commander";
 import inquirer from "inquirer";
@@ -29,11 +30,13 @@ interface ProjectOptions {
     engine: "threejs" | "babylonjs" | "playcanvas";
     bundler: "vite";
     language: "typescript";
+    occtArchitecture: "32" | "64" | "64-mt";
 }
 
 type EngineType = "threejs" | "babylonjs" | "playcanvas";
 type BundlerType = "vite";
 type LanguageType = "typescript";
+type OcctArchitectureType = "32" | "64" | "64-mt";
 
 const ENGINE_DISPLAY_NAMES: Record<EngineType, string> = {
     "threejs": "Three.js",
@@ -51,6 +54,18 @@ const ENGINE_COLORS: Record<EngineType, (text: string) => string> = {
     "threejs": chalk.hex("#049EF4"),    // Three.js blue
     "babylonjs": chalk.hex("#E0684B"),  // Babylon.js red/orange
     "playcanvas": chalk.hex("#FF6600")  // PlayCanvas orange
+};
+
+const OCCT_ARCHITECTURE_DISPLAY_NAMES: Record<OcctArchitectureType, string> = {
+    "32": "32-bit (Default)",
+    "64": "64-bit",
+    "64-mt": "64-bit Multi-threaded"
+};
+
+const OCCT_ARCHITECTURE_DESCRIPTIONS: Record<OcctArchitectureType, string> = {
+    "32": "Supported on all browsers",
+    "64": "May not be supported on all browsers",
+    "64-mt": "Requires special server configuration (COOP/COEP headers)"
 };
 
 async function displayWelcome(): Promise<void> {
@@ -81,7 +96,26 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
     interface PromptAnswers {
         projectName?: string;
         engine: EngineType;
+        occtArchitecture: OcctArchitectureType;
     }
+
+    const occtArchitectureChoices = [
+        {
+            name: `${chalk.green("● 32-bit")}          ${chalk.gray("- Supported on all browsers (recommended)")}`,
+            value: "32" as OcctArchitectureType,
+            short: "32-bit"
+        },
+        {
+            name: `${chalk.yellow("● 64-bit")}          ${chalk.gray("- May not be supported on all browsers")}`,
+            value: "64" as OcctArchitectureType,
+            short: "64-bit"
+        },
+        {
+            name: `${chalk.magenta("● 64-bit MT")}       ${chalk.gray("- Requires COOP/COEP server headers")}`,
+            value: "64-mt" as OcctArchitectureType,
+            short: "64-bit MT"
+        }
+    ];
 
     let answers: PromptAnswers;
     
@@ -125,6 +159,13 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
                     }
                 ],
                 default: "threejs"
+            },
+            {
+                type: "list",
+                name: "occtArchitecture",
+                message: chalk.cyan("⚙️  Which OCCT worker architecture would you like to use?"),
+                choices: occtArchitectureChoices,
+                default: "32"
             }
         ]);
     } else {
@@ -151,6 +192,13 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
                     }
                 ],
                 default: "threejs"
+            },
+            {
+                type: "list",
+                name: "occtArchitecture",
+                message: chalk.cyan("⚙️  Which OCCT worker architecture would you like to use?"),
+                choices: occtArchitectureChoices,
+                default: "32"
             }
         ]);
     }
@@ -159,13 +207,20 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
         projectName: projectNameArg || answers.projectName!,
         engine: answers.engine,
         bundler: "vite",
-        language: "typescript"
+        language: "typescript",
+        occtArchitecture: answers.occtArchitecture
     };
 }
 
 async function createProject(options: ProjectOptions): Promise<void> {
-    const { projectName, engine, bundler, language } = options;
+    const { projectName, engine, bundler, language, occtArchitecture } = options;
     const targetDir = path.resolve(process.cwd(), projectName);
+
+    const occtArchColors: Record<OcctArchitectureType, (text: string) => string> = {
+        "32": chalk.green,
+        "64": chalk.yellow,
+        "64-mt": chalk.magenta
+    };
 
     console.log();
     console.log(chalk.gray("─".repeat(72)));
@@ -176,6 +231,7 @@ async function createProject(options: ProjectOptions): Promise<void> {
     console.log(`  ${chalk.gray("Engine:")}      ${ENGINE_COLORS[engine](ENGINE_DISPLAY_NAMES[engine])}`);
     console.log(`  ${chalk.gray("Bundler:")}     ${chalk.magenta("Vite")}`);
     console.log(`  ${chalk.gray("Language:")}    ${chalk.blue("TypeScript")}`);
+    console.log(`  ${chalk.gray("OCCT Arch:")}   ${occtArchColors[occtArchitecture](OCCT_ARCHITECTURE_DISPLAY_NAMES[occtArchitecture])}`);
     console.log();
     console.log(chalk.gray("─".repeat(72)));
     console.log();
@@ -229,6 +285,46 @@ async function createProject(options: ProjectOptions): Promise<void> {
             await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
         }
 
+        // Update main.ts with OCCT architecture if not default (32-bit)
+        if (occtArchitecture !== "32") {
+            const mainTsPath = path.join(targetDir, "src", "main.ts");
+            if (fs.existsSync(mainTsPath)) {
+                let mainTsContent = await fs.readFile(mainTsPath, "utf-8");
+                
+                // Find the options object and add occtArchitecture property
+                const optionsPattern = /(const options:\s*InitBitByBitOptions\s*=\s*\{[\s\S]*?enableManifold:\s*true),(\s*\};)/;
+                const replacement = `$1,\n        occtArchitecture: "${occtArchitecture}"$2`;
+                
+                mainTsContent = mainTsContent.replace(optionsPattern, replacement);
+                await fs.writeFile(mainTsPath, mainTsContent, "utf-8");
+            }
+        }
+
+        // Create vite.config.ts with COOP/COEP headers for 64-bit multi-threaded
+        if (occtArchitecture === "64-mt") {
+            const viteConfigPath = path.join(targetDir, "vite.config.ts");
+            const viteConfigContent = `import { defineConfig } from "vite";
+
+// COOP/COEP headers required for SharedArrayBuffer support in multi-threaded OCCT
+// Using 'credentialless' instead of 'require-corp' to allow cross-origin CDN resources
+export default defineConfig({
+    server: {
+        headers: {
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "Cross-Origin-Embedder-Policy": "credentialless",
+        },
+    },
+    preview: {
+        headers: {
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "Cross-Origin-Embedder-Policy": "credentialless",
+        },
+    },
+});
+`;
+            await fs.writeFile(viteConfigPath, viteConfigContent, "utf-8");
+        }
+
         // Success message
         console.log();
         console.log(chalk.gray("─".repeat(72)));
@@ -257,6 +353,21 @@ async function createProject(options: ProjectOptions): Promise<void> {
         console.log(chalk.gray("  3. Start the development server:"));
         console.log(chalk.cyan("     npm run dev"));
         console.log();
+
+        // Show architecture-specific notes
+        if (occtArchitecture === "64") {
+            console.log(chalk.yellow("  ⚠️  Note: 64-bit OCCT may not be supported on all browsers."));
+            console.log(chalk.gray("     Some older browsers may lack WebAssembly Memory64 support."));
+            console.log();
+        } else if (occtArchitecture === "64-mt") {
+            console.log(chalk.yellow("  ⚠️  Note: 64-bit Multi-threaded OCCT requires special server configuration."));
+            console.log(chalk.gray("     Your server must send these headers for SharedArrayBuffer support:"));
+            console.log(chalk.gray("     • Cross-Origin-Opener-Policy: same-origin"));
+            console.log(chalk.gray("     • Cross-Origin-Embedder-Policy: require-corp"));
+            console.log(chalk.gray("     Vite dev server is pre-configured, but production servers need setup."));
+            console.log();
+        }
+
         console.log(chalk.gray("─".repeat(72)));
         console.log();
         console.log(chalk.yellow.bold("  ⭐ Support Bit By Bit Developers with a Silver or Gold subscription:"));
@@ -283,7 +394,8 @@ async function main(): Promise<void> {
         .version("0.21.1")
         .argument("[project-name]", "Name of the project to create")
         .option("-e, --engine <engine>", "Game engine to use (threejs, babylonjs, playcanvas)")
-        .action(async (projectName: string | undefined, cmdOptions: { engine?: string }) => {
+        .option("-o, --occt-architecture <arch>", "OCCT worker architecture (32, 64, 64-mt). Default: 32")
+        .action(async (projectName: string | undefined, cmdOptions: { engine?: string; occtArchitecture?: string }) => {
             await displayWelcome();
 
             let options: ProjectOptions;
@@ -298,14 +410,29 @@ async function main(): Promise<void> {
                 }
             }
 
-            // If both project name and engine are provided, skip prompts
-            if (projectName && cmdOptions.engine) {
+            // If OCCT architecture is provided via CLI, validate it
+            if (cmdOptions.occtArchitecture) {
+                const validArchitectures = ["32", "64", "64-mt"];
+                if (!validArchitectures.includes(cmdOptions.occtArchitecture)) {
+                    console.error(chalk.red(`\n  ✖ Invalid OCCT architecture: ${cmdOptions.occtArchitecture}`));
+                    console.error(chalk.gray(`    Valid options: ${validArchitectures.join(", ")}`));
+                    process.exit(1);
+                }
+            }
+
+            // If all options are provided via CLI, skip prompts
+            if (projectName && cmdOptions.engine && cmdOptions.occtArchitecture) {
                 options = {
                     projectName,
                     engine: cmdOptions.engine as EngineType,
                     bundler: "vite",
-                    language: "typescript"
+                    language: "typescript",
+                    occtArchitecture: cmdOptions.occtArchitecture as OcctArchitectureType
                 };
+            } else if (projectName && cmdOptions.engine) {
+                // Engine provided but not architecture - still need to prompt for architecture
+                options = await promptProjectOptions(projectName);
+                options.engine = cmdOptions.engine as EngineType;
             } else {
                 options = await promptProjectOptions(projectName);
             }
