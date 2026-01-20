@@ -1,6 +1,6 @@
 // import { OccHelper } from "../occ-helper";
 // import { BitbybitOcctModule, TDF_Label, TDF_LabelSequence, TDataStd_Name, TopoDS_Shape, XCAFDoc_ShapeTool } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-// import * as Inputs from "../api/inputs/inputs";
+// import * as Inputs from "../api/inputs";
 
 // type Assembly = {
 //     name: string;

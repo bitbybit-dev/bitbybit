@@ -4,7 +4,7 @@ import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTSolid, OCCTWire } from "./shapes";
 import { OCCTIO } from "./io";
-import * as Inputs from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
 
 describe("OCCT io unit tests", () => {
     let occt: BitbybitOcctModule;

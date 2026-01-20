@@ -1,5 +1,5 @@
 import { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { BooleansService } from "./booleans.service";
 import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";

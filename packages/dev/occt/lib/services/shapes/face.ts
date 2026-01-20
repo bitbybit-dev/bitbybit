@@ -1,7 +1,7 @@
 import { Geom_Surface, BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 
 export class OCCTFace {
 

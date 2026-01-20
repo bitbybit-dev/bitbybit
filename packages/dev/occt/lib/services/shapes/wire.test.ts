@@ -4,7 +4,7 @@ import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { OCCTFace } from "./face";
 import { OCCTShape } from "./shape";
 import { OCCTBooleans } from "../booleans";

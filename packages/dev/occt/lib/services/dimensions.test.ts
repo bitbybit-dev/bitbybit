@@ -1,5 +1,5 @@
 import createBitbybitOcct, { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { OccHelper } from "../occ-helper";

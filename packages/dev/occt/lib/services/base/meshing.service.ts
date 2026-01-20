@@ -3,7 +3,7 @@ import {
     BitbybitOcctModule,
     TopoDS_Shape, TopoDS_Wire
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { EdgesService } from "./edges.service";
 import { FacesService } from "./faces.service";
 import { ShapeGettersService } from "./shape-getters";
@@ -63,7 +63,7 @@ export class MeshingService {
         // This could be made optional...
         // Clean cached triangulation data for the shape.
         // This allows to get lower res models out of higher res that was once computed and cached.
-        this.occ.BRepTools.Clean(shapeToUse);
+        this.occ.BRepTools_Clean_Force(shapeToUse, true);
 
         if (inputs.adjustYtoZ) {
             const shapeToUseRotated = this.transformsService.rotate({ shape: inputs.shape, axis: [1, 0, 0], angle: -90 });
@@ -84,7 +84,7 @@ export class MeshingService {
             incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(shapeToUse, inputs.precision, false, 0.5, false);
             faces.forEach((myFace, faceIndex) => {
 
-                const aLocation = new this.occ.TopLoc_Location();
+                const aLocation = this.occ.GetFaceLocation(myFace);
                 const triangulation = this.occ.GetFaceTriangulation(myFace);
                 if (triangulation.IsNull()) { console.error("Encountered Null Face!"); aLocation.delete(); return; }
 
@@ -200,7 +200,7 @@ export class MeshingService {
                 ]);
                 tangDefValues.push(tangDefVal);
             }
-            
+
             // Check if the edge orientation is reversed
             // GCPnts_TangentialDeflection meshes the curve in its natural direction,
             // so we need to reverse the points if the edge orientation is TopAbs_REVERSED
@@ -208,7 +208,7 @@ export class MeshingService {
             if (orientation === this.occ.TopAbs_Orientation.REVERSED) {
                 thisEdge.vertex_coord.reverse();
             }
-            
+
             thisEdge.edge_index = index;
 
             edgeList.push(thisEdge);
@@ -216,7 +216,7 @@ export class MeshingService {
             aLocation.delete();
             adaptorCurve.delete();
             tangDef.delete();
-            this.occ.BRepTools.Clean(myEdge);
+            this.occ.BRepTools_Clean_Force(myEdge, true);
         });
 
         const vertices = this.shapeGettersService.getVertices({ shape: shapeToUse });
@@ -231,7 +231,7 @@ export class MeshingService {
         if (incrementalMeshBuilder) {
             incrementalMeshBuilder.delete();
         }
-        this.occ.BRepTools.Clean(shapeToUse);
+        this.occ.BRepTools_Clean_Force(shapeToUse, true);
         return { faceList, edgeList, pointsList };
     }
 

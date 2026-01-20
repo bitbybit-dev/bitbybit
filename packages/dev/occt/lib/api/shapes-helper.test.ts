@@ -1,5 +1,5 @@
 import { ShapesHelperService } from "./shapes-helper.service";
-import * as Inputs from "./inputs/inputs";
+import * as Inputs from "./inputs";
 
 describe("OCCT shapes helper unit tests", () => {
 

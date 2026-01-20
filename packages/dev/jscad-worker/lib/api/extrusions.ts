@@ -1,5 +1,5 @@
 import { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
-import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs/inputs";
+import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 
 
 /**

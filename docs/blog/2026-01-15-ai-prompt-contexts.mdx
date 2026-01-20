@@ -1,0 +1,167 @@
+---
+slug: ai-prompt-contexts
+title: AI Prompt Contexts - Teaching Your AI Assistant to Code with Bitbybit
+authors: [ubarevicius]
+tags: [ai, babylonjs, threejs, playcanvas]
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/ai-prompt-contexts/ai-prompt-contexts.webp
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import { DownloadButton } from '@site/src/components/DownloadButton';
+
+![AI Prompt Contexts for Bitbybit](https://ik.imagekit.io/bitbybit/app/assets/blog/ai-prompt-contexts/ai-prompt-contexts.webp "AI Prompt Contexts for Bitbybit")
+
+Modern AI assistants like Claude, Gemini, Grok or ChatGPT or are remarkably capable at writing code. However, they can struggle with specialized libraries and APIs they weren't extensively trained on. That's where AI Prompt Contexts come in - specially crafted documentation files that give your AI assistant deep knowledge of the Bitbybit API.
+
+## Download Context Files
+
+Choose the context file that matches your 3D rendering engine. **Right-click and "Save As"** to download, or open and copy the content. Read on below for guidance on which format to choose.
+
+<Tabs>
+  <TabItem value="monaco" label="Monaco Editor" default>
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(240, 206, 187, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(240, 206, 187, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#F0CEBB' }}>Monaco Editor Context (Beginner-Friendly)</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>For users of our online TypeScript editor at <a href="https://bitbybit.dev/app?editor=typescript">bitbybit.dev/app</a></p>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Context (Dictionary Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-monaco-ai-context-v0.21.1.md" label="Monaco Context (~132k tokens)" variant="full" />
+      </div>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~612k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~210k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="babylonjs" label="BabylonJS">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(187, 70, 75, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(187, 70, 75, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#BB464B' }}>BabylonJS Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Full-featured 3D engine with powerful rendering capabilities</p>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-ai-context-v0.21.1.md" label="Full Context (~126k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-no-comment-min-ai-v0.21.1.md" label="Lite Context (~128k tokens)" variant="lite" />
+      </div>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~612k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~210k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="threejs" label="ThreeJS">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(4, 158, 244, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(4, 158, 244, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#049EF4' }}>ThreeJS Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Popular, lightweight 3D library for web applications</p>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-ai-context-v0.21.1.md" label="Full Context (~95k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-no-comment-min-ai-v0.21.1.md" label="Lite Context (~87k tokens)" variant="lite" />
+      </div>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~461k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~151k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="playcanvas" label="PlayCanvas">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(255, 107, 53, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#FF6B35' }}>PlayCanvas Context Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Game engine with visual editor and runtime</p>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md" label="Full Context (~87k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md" label="Lite Context (~87k tokens)" variant="lite" />
+      </div>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~460k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~151k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+</Tabs>
+
+:::tip Which format should I choose?
+- **Markdown Full Context** - Best for beginners. Includes explanations, setup guides, and complete API reference.
+- **Markdown Lite Context** - Best for experienced developers. Minimal size, just API definitions.
+- **TypeScript .d.ts** - Best for AI agents that struggle with dictionary translation, or agents that support lookahead reading.
+:::
+
+<!-- truncate -->
+
+## What Are AI Prompt Contexts?
+
+An AI Prompt Context is a markdown file designed to be attached to conversations with AI coding assistants. When you provide this context file, the AI gains comprehensive knowledge about Bitbybit's API, coding patterns, best practices, and integration approaches. Think of it as giving your AI assistant a complete reference manual it can consult while helping you write code.
+
+We've structured these context files specifically for AI consumption. They include clear role definitions that tell the AI how to behave, complete API references with all available functions and their parameters, code examples demonstrating correct usage patterns, and decision trees that help the AI recommend the right approach based on your experience level.
+
+## Choosing the Right Context
+
+We offer several context variants, and understanding their differences will help you pick the right one for your needs.
+
+### Engine-Specific Contexts
+
+Each context file is tailored to a specific 3D rendering engine. If you're building with Babylon.js, download the BabylonJS context. Building with Three.js? Grab the ThreeJS variant. Working with PlayCanvas? There's a context file for that too. The engine-specific details matter because initialization patterns, scene management, and rendering APIs differ between engines.
+
+### Full vs Lite Versions
+
+This is where the real choice comes in. For each engine, we provide two versions: Full and Lite.
+
+**Full contexts** contain everything an AI needs to help you from scratch. They include extensive explanations of what Bitbybit is, how to set up projects, integration guides for both NPM packages and browser-based runners, best practices for performance, scene setup recommendations, and the complete API reference. If you're new to Bitbybit or want your AI to provide comprehensive guidance, the Full context is your friend.
+
+**Lite contexts** strip away the explanations and focus purely on API definitions. They contain the same complete API reference but without the additional guidance. This approach has a specific use case: when you already understand Bitbybit well and want to set up your own custom coding rules. You might have your own project setup preferences, your own coding style guide, or specific patterns you want the AI to follow.
+
+**Important:** Both Full and Lite contexts use a compressed notation with dictionary translation to minimize token usage. The difference is only in the explanatory content, not in how the API is represented.
+
+### Monaco Editor Context
+
+We also provide a special context for users of our online Monaco TypeScript editor at [bitbybit.dev](https://bitbybit.dev/app?editor=typescript). This context is simpler because it focuses only on what you need when coding in the browser-based editor. It explains the pre-initialized global variables available in that environment and the specific patterns required for that context. If you're just getting started with Bitbybit and want to experiment in our online editor, this beginner-friendly context is the perfect starting point.
+
+### TypeScript Declaration Files (.d.ts)
+
+For AI agents that struggle with dictionary translations, we also provide **TypeScript Declaration Files**. These `.d.ts` files are standard TypeScript type definitions that describe the complete Bitbybit API schema using full, unabbreviated names.
+
+The key advantage of `.d.ts` files is that **no translation is required**. While our markdown context files use abbreviated notation (like `OC` for `OCCT`) to save tokens, declaration files use the exact names you'll write in your code. This makes them ideal for:
+
+- **Lower-end AI models** that may struggle with translation rules
+- **Direct API reference** without any transformation layer
+- **Maximum compatibility** with any AI that understands TypeScript
+
+The trade-off is size: `.d.ts` files are significantly larger than our compressed markdown contexts. A declaration file with comments can be 3-4x larger than the equivalent Lite context. If your AI has a limited context window or you're paying per token, the markdown contexts are more economical. But if translation failures are causing incorrect code, the `.d.ts` files provide a reliable fallback.
+
+## Understanding the Dictionary Translation Format
+
+Both Full and Lite contexts use an important technique to reduce file size: a translation dictionary. This is something your AI must understand to generate correct code.
+
+At the beginning of the API section, you'll find a dictionary that maps abbreviated terms to their full names. For example, `OC` means `OCCT`, `sp` means `shape`, `sd` means `solid`, and `cr` means `create`. The API definitions throughout the document use these abbreviations to stay compact.
+
+Here's the critical part: **the AI must translate these abbreviations back to full names when generating code**. We explicitly instruct the AI about this requirement in the context file. When the AI sees something like `bitbybit.oc.sh.sd.crBox(op: BoxD)` in the documentation, it should generate `bitbybit.occt.shapes.solid.createBox(boxOptions: BoxDto)` for you. The abbreviated forms are only for documentation - they would not compile if used directly in code.
+
+This translation system allows us to provide complete API coverage while keeping token counts reasonable. The AI handles the translation transparently, so you receive clean, readable code. However, some AI agents - particularly smaller or less capable models - may fail to apply these translations consistently. If your AI produces code with abbreviated names that don't compile, consider switching to the TypeScript Declaration Files (.d.ts) which require no translation.
+
+## How to Use These Contexts
+
+Using a prompt context is straightforward. Download the appropriate markdown file from our homepage at bitbybit.dev, then attach it to your conversation with your AI assistant. Most modern AI interfaces support file attachments - simply drag and drop the file or use the attachment button.
+
+Once attached, you can start asking questions like "Create a parametric table with adjustable legs" or "Show me how to create a filleted box and export it as STEP." The AI should reference the context to generate accurate, working code that follows our recommended patterns.
+
+For the best experience, we recommend combining a Lite context with our Context7 MCP Server. The MCP server provides live access to our full documentation and stays current with the latest changes. The Lite context ensures the AI knows the precise API signatures. Together, they create a powerful coding assistant that understands both the big picture and the fine details.
+
+## Getting the Most from AI-Assisted Coding
+
+A few tips will help you work more effectively with AI and these contexts. First, be specific about what you want to build. Instead of asking for "a shape," describe "a rounded rectangular table top with four cylindrical legs." The more detail you provide, the more useful the generated code will be.
+
+Second, mention your experience level. The contexts include decision trees that help the AI adapt its responses. If you're new to web development, the AI can scaffold complete applications for you. If you're an experienced developer, it can focus on just the API calls you need.
+
+Third, iterate on the generated code. AI assistants are collaborative tools. If the first attempt isn't quite right, explain what you'd like changed. The AI can refine its suggestions based on your feedback while staying consistent with the Bitbybit API.
+
+## The Future of AI-Assisted CAD
+
+We believe AI assistants will become increasingly important tools for developers working with 3D and CAD applications. These prompt contexts represent our commitment to making Bitbybit as accessible as possible. Whether you're prototyping ideas quickly or building production applications, having an AI that truly understands our API makes the development process smoother and more enjoyable.
+
+The contexts are updated with each Bitbybit release to match the latest API. When you see a new version available, download the updated context to ensure your AI has the most current information.
+
+Happy building with AI at your side!

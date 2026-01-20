@@ -1,6 +1,6 @@
 import { BitbybitOcctModule, TopoDS_Face } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "./api/vector-helper.service";
-import * as Inputs from "./api/inputs/inputs";
+import * as Inputs from "./api/inputs";
 import { ShapesHelperService } from "./api/shapes-helper.service";
 import { OCCReferencedReturns } from "./occ-referenced-returns";
 import { IteratorService } from "./services/base/iterator.service";

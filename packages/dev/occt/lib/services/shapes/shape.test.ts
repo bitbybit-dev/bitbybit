@@ -10,7 +10,7 @@ import { OCCTEdge } from "./edge";
 import { OCCTShell } from "./shell";
 import { OCCTOperations } from "../operations";
 import { OCCTSurfaces } from "../geom/surfaces";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 describe("OCCT shape unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -64,6 +64,14 @@ describe("OCCT shape unit tests", () => {
         expect(edges.length).toBe(8);
         expect(faces.length).toBe(1);
 
+        // Cleanup
+        square1.delete();
+        square2.delete();
+        square3.delete();
+        loft.delete();
+        unified.delete();
+        edges.forEach(e => e.delete());
+        faces.forEach(f => f.delete());
     });
 
     it("should check whether shape is null", async () => {

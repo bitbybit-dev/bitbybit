@@ -693,5 +693,18 @@ export class OCCTEdge {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.isEdgeCircular", inputs);
     }
 
+    /**
+     * Create symmetric periodic (closed) BSpline edge through points.
+     * Uses chord-based tangent constraints to ensure the curve is symmetrical
+     * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
+     * @param inputs Points to interpolate
+     * @returns Symmetric periodic BSpline edge
+     * @group create
+     * @shortname symmetric periodic bspline edge
+     * @drawable true
+     */
+    createSymmetricPeriodicBSplineEdge(inputs: Inputs.OCCT.InterpolationDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.createSymmetricPeriodicBSplineEdge", inputs);
+    }
 
 }

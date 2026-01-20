@@ -1,5 +1,5 @@
 import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shell } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { ShapeGettersService } from "./shape-getters";
 import { FacesService } from "./faces.service";
 import { ConverterService } from "./converter.service";

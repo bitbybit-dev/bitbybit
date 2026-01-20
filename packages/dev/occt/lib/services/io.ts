@@ -1,6 +1,6 @@
 import { IGESControl_Reader, BitbybitOcctModule, STEPControl_Reader, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
-import * as Inputs from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs";
 
 export class OCCTIO {

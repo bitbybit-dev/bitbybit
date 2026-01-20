@@ -78,12 +78,14 @@ export interface BitbybitOcctModule {
   BRepPrimAPI_MakeTorus: BRepPrimAPI_MakeTorus_Constructor;
   BRepPrimAPI_MakePrism: BRepPrimAPI_MakePrism_Constructor;
   BRepPrimAPI_MakeRevol: BRepPrimAPI_MakeRevol_Constructor;
+  BRepPrimAPI_MakeWedge: BRepPrimAPI_MakeWedge_Constructor;
 
   // Boolean Operations
   BRepAlgoAPI_Fuse: BRepAlgoAPI_Fuse_Constructor;
   BRepAlgoAPI_Cut: BRepAlgoAPI_Cut_Constructor;
   BRepAlgoAPI_Common: BRepAlgoAPI_Common_Constructor;
   BRepAlgoAPI_Section: BRepAlgoAPI_Section_Constructor;
+  BRepAlgoAPI_Splitter: BRepAlgoAPI_Splitter_Constructor;
 
   // Shape Building
   BRepBuilderAPI_MakeVertex: BRepBuilderAPI_MakeVertex_Constructor;
@@ -282,8 +284,11 @@ export interface BitbybitOcctModule {
   BRepGProp_SurfaceProperties(shape: TopoDS_Shape, props: GProp_GProps): void;
   BRepGProp_VolumeProperties(shape: TopoDS_Shape, props: GProp_GProps): void;
 
-  // Triangulation helper
+  // Triangulation helpers
+  /** Gets the triangulation of a face. Nodes are in local coordinates. */
   GetFaceTriangulation(face: TopoDS_Face): Poly_Triangulation;
+  /** Gets the location (transformation) of a face. Use with GetFaceTriangulation to transform nodes to global coordinates. */
+  GetFaceLocation(face: TopoDS_Face): TopLoc_Location;
 
   // Factory functions for alternate constructors (embind can't distinguish by type)
   gp_Dir_fromVec(vec: gp_Vec): gp_Dir;
@@ -346,6 +351,8 @@ export interface BitbybitOcctModule {
   
   // BRepTools helpers
   BRepTools_Clean(shape: TopoDS_Shape): void;
+  BRepTools_Clean_Force(shape: TopoDS_Shape, force: boolean): void;
+  BRepTools_CleanGeometry(shape: TopoDS_Shape): void;
   
   // BRepLib static functions
   BRepLib_BuildCurves3d(shape: TopoDS_Shape): boolean;
@@ -580,6 +587,24 @@ export interface BitbybitOcctModule {
    * @returns Wire containing the periodic BSpline edge
    */
   MakePeriodicBSplineWire(coords: VectorDouble): TopoDS_Wire;
+  
+  /**
+   * Create symmetric periodic (closed) BSpline edge through points
+   * Uses chord-based tangent constraints to ensure the curve is symmetrical
+   * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
+   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
+   * @returns Edge containing the symmetric periodic BSpline curve
+   */
+  MakeSymmetricPeriodicBSplineEdge(coords: VectorDouble): TopoDS_Edge;
+  
+  /**
+   * Create symmetric periodic (closed) BSpline wire through points
+   * Uses chord-based tangent constraints to ensure the curve is symmetrical
+   * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
+   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
+   * @returns Wire containing the symmetric periodic BSpline edge
+   */
+  MakeSymmetricPeriodicBSplineWire(coords: VectorDouble): TopoDS_Wire;
   
   /**
    * Create closed BSpline wire through points (alias for MakePeriodicBSplineWire)
@@ -2755,10 +2780,16 @@ export interface BRepPrimAPI_MakeTorus {
 }
 
 export interface BRepPrimAPI_MakeTorus_Constructor {
+  /** Make a complete torus with major radius R1 and minor (pipe) radius R2. */
   new(r1: number, r2: number): BRepPrimAPI_MakeTorus;
-  new(r1: number, r2: number, angle: number): BRepPrimAPI_MakeTorus;
-  new(r1: number, r2: number, angle1: number, angle2: number): BRepPrimAPI_MakeTorus;
+  /** Make a torus with axes, major radius R1, and minor (pipe) radius R2. */
   new(axes: gp_Ax2, r1: number, r2: number): BRepPrimAPI_MakeTorus;
+  /** Make a torus ring segment with angles on the minor circle (angle1 to angle2). */
+  new(r1: number, r2: number, angle1: number, angle2: number): BRepPrimAPI_MakeTorus;
+  /** Make a partial torus: ring segment (angle1, angle2) and pipe segment (angle). */
+  new(r1: number, r2: number, angle1: number, angle2: number, angle: number): BRepPrimAPI_MakeTorus;
+  /** Make a partial torus with axes: ring segment (angle1, angle2) and pipe segment (angle). */
+  new(axes: gp_Ax2, r1: number, r2: number, angle1: number, angle2: number, angle: number): BRepPrimAPI_MakeTorus;
 }
 
 export interface BRepPrimAPI_MakePrism {
@@ -2791,6 +2822,98 @@ export interface BRepPrimAPI_MakeRevol_Constructor {
   new(shape: TopoDS_Shape, axis: gp_Ax1): BRepPrimAPI_MakeRevol;
   new(shape: TopoDS_Shape, axis: gp_Ax1, angle: number): BRepPrimAPI_MakeRevol;
   new(shape: TopoDS_Shape, axis: gp_Ax1, angle: number, copy: boolean): BRepPrimAPI_MakeRevol;
+}
+
+// =============================================================================
+// BRepPrimAPI_MakeWedge - Wedge/Ramp Primitive
+// =============================================================================
+
+/**
+ * Creates a wedge (tapered box) primitive.
+ * 
+ * A wedge is a box where the top face is smaller than the bottom face,
+ * creating a ramp or pyramid-like shape. The wedge is defined by:
+ * - A box with dimensions dx × dy × dz
+ * - The top face is offset/scaled relative to the bottom
+ * 
+ * Two construction modes:
+ * 1. Simple wedge: dx, dy, dz, ltx - where ltx is the length of the top edge in X
+ * 2. Full control: dx, dy, dz, xmin, zmin, xmax, zmax - specifying exact top face bounds
+ * 
+ * Example:
+ * ```typescript
+ * // Simple ramp (top edge is 20 units long, bottom is 100 units)
+ * const wedge1 = new oc.BRepPrimAPI_MakeWedge(100, 50, 80, 20);
+ * 
+ * // Pyramid (top edge = 0)
+ * const pyramid = new oc.BRepPrimAPI_MakeWedge(100, 100, 100, 0);
+ * 
+ * // Wedge with custom top face bounds
+ * const wedge2 = new oc.BRepPrimAPI_MakeWedge(100, 50, 80, 20, 20, 80, 60);
+ * 
+ * // Wedge at custom position/orientation
+ * const axes = new oc.gp_Ax2(new oc.gp_Pnt(10, 20, 30), new oc.gp_Dir(0, 0, 1));
+ * const wedge3 = new oc.BRepPrimAPI_MakeWedge(axes, 100, 50, 80, 20);
+ * ```
+ */
+export interface BRepPrimAPI_MakeWedge {
+  /** Get the resulting shape */
+  Shape(): TopoDS_Shape;
+  /** Get the resulting solid */
+  Solid(): TopoDS_Solid;
+  /** Get the shell (outer boundary) */
+  Shell(): TopoDS_Shell;
+  /** Check if construction was successful */
+  IsDone(): boolean;
+  delete(): void;
+}
+
+export interface BRepPrimAPI_MakeWedge_Constructor {
+  /**
+   * Create a wedge with base dx×dz, height dy, and top edge length ltx.
+   * The top edge runs along X direction with length ltx, centered on the base.
+   * @param dx Base length in X direction
+   * @param dy Height in Y direction  
+   * @param dz Base length in Z direction
+   * @param ltx Length of top edge in X direction (0 creates a pyramid point)
+   */
+  new(dx: number, dy: number, dz: number, ltx: number): BRepPrimAPI_MakeWedge;
+  
+  /**
+   * Create a wedge at specified position/orientation.
+   * @param axes Coordinate system (origin and directions)
+   * @param dx Base length in X direction
+   * @param dy Height in Y direction
+   * @param dz Base length in Z direction
+   * @param ltx Length of top edge in X direction
+   */
+  new(axes: gp_Ax2, dx: number, dy: number, dz: number, ltx: number): BRepPrimAPI_MakeWedge;
+  
+  /**
+   * Create a wedge with full control over the top face bounds.
+   * The top face is defined by (xmin, zmin) to (xmax, zmax) on the top plane.
+   * @param dx Base length in X direction
+   * @param dy Height in Y direction
+   * @param dz Base length in Z direction
+   * @param xmin X coordinate of top face minimum corner
+   * @param zmin Z coordinate of top face minimum corner  
+   * @param xmax X coordinate of top face maximum corner
+   * @param zmax Z coordinate of top face maximum corner
+   */
+  new(dx: number, dy: number, dz: number, xmin: number, zmin: number, xmax: number, zmax: number): BRepPrimAPI_MakeWedge;
+  
+  /**
+   * Create a wedge at specified position with full control over top face bounds.
+   * @param axes Coordinate system (origin and directions)
+   * @param dx Base length in X direction
+   * @param dy Height in Y direction
+   * @param dz Base length in Z direction
+   * @param xmin X coordinate of top face minimum corner
+   * @param zmin Z coordinate of top face minimum corner
+   * @param xmax X coordinate of top face maximum corner
+   * @param zmax Z coordinate of top face maximum corner
+   */
+  new(axes: gp_Ax2, dx: number, dy: number, dz: number, xmin: number, zmin: number, xmax: number, zmax: number): BRepPrimAPI_MakeWedge;
 }
 
 // =============================================================================
@@ -3111,6 +3234,47 @@ export interface BRepAlgoAPI_Section_Constructor {
   new(shape: TopoDS_Shape, plane: gp_Pln): BRepAlgoAPI_Section;
 }
 
+/**
+ * Split shapes by other shapes (cutting tools).
+ * Unlike Cut, Splitter preserves all pieces from both arguments and tools.
+ * 
+ * Example:
+ * ```typescript
+ * const splitter = new oc.BRepAlgoAPI_Splitter();
+ * const argsToSplit = new oc.TopTools_ListOfShape();
+ * argsToSplit.Append(box);
+ * const tools = new oc.TopTools_ListOfShape();
+ * tools.Append(cuttingPlane);
+ * splitter.SetArguments(argsToSplit);
+ * splitter.SetTools(tools);
+ * splitter.Build();
+ * if (splitter.IsDone()) {
+ *   const result = splitter.Shape(); // compound of split pieces
+ * }
+ * ```
+ */
+export interface BRepAlgoAPI_Splitter {
+  /** Set shapes to be split */
+  SetArguments(shapes: TopTools_ListOfShape): void;
+  /** Set shapes used as splitting tools */
+  SetTools(tools: TopTools_ListOfShape): void;
+  /** Perform the split operation */
+  Build(): void;
+  /** Get the result (compound of all split pieces) */
+  Shape(): TopoDS_Shape;
+  /** Check if operation completed successfully */
+  IsDone(): boolean;
+  /** Check if there were errors */
+  HasErrors(): boolean;
+  /** Check if there were warnings */
+  HasWarnings(): boolean;
+  delete(): void;
+}
+
+export interface BRepAlgoAPI_Splitter_Constructor {
+  new(): BRepAlgoAPI_Splitter;
+}
+
 // =============================================================================
 // BRepBuilderAPI - Shape Building
 // =============================================================================
@@ -3169,12 +3333,7 @@ export interface BRepBuilderAPI_MakeFace {
 
 export interface BRepBuilderAPI_MakeFace_Constructor {
   new(): BRepBuilderAPI_MakeFace;
-  new(plane: gp_Pln): BRepBuilderAPI_MakeFace;
-  new(plane: gp_Pln, uMin: number, uMax: number, vMin: number, vMax: number): BRepBuilderAPI_MakeFace;
   new(wire: TopoDS_Wire): BRepBuilderAPI_MakeFace;
-  new(wire: TopoDS_Wire, onlyPlane: boolean): BRepBuilderAPI_MakeFace;
-  new(plane: gp_Pln, wire: TopoDS_Wire): BRepBuilderAPI_MakeFace;
-  new(plane: gp_Pln, wire: TopoDS_Wire, inside: boolean): BRepBuilderAPI_MakeFace;
   new(face: TopoDS_Face, wire: TopoDS_Wire): BRepBuilderAPI_MakeFace;
 }
 

@@ -1,7 +1,7 @@
 import {
     EmbindEnumValue, BitbybitOcctModule, TopoDS_Shape
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 export class EnumService {
 

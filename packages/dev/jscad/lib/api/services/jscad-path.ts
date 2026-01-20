@@ -1,5 +1,5 @@
 import { GeometryHelper } from "@bitbybit-dev/base";
-import { Base } from "../inputs/inputs";
+import { Base } from "../inputs";
 import * as Inputs from "../inputs/jscad-inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";

@@ -3,7 +3,7 @@ import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { EnumService } from "./enum.service";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 describe("OCCT enum service unit tests", () => {
     let occt: BitbybitOcctModule;

@@ -1,6 +1,6 @@
 import { Geom2d_Curve, Geom_Curve, BitbybitOcctModule, TopoDS_Edge, TopoDS_Wire, Handle_Geom2d_Curve } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 export class OCCTCurves {
 

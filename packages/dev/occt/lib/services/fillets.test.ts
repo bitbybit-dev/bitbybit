@@ -2,7 +2,7 @@ import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Wire } from "../../bitby
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
-import * as Inputs from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
 import { OCCTFillets } from "./fillets";
 import { OCCTEdge, OCCTSolid, OCCTWire } from "./shapes";
 

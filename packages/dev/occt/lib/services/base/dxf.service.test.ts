@@ -4,7 +4,7 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTWire, OCCTEdge } from "../shapes";
 import { DxfService } from "./dxf.service";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 describe("DxfService unit tests", () => {
     let occt: BitbybitOcctModule;

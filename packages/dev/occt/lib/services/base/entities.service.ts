@@ -4,8 +4,8 @@ import {
     gp_Ax1, gp_Ax2, gp_Ax22d, gp_Ax2d, gp_Ax3, gp_Dir2d, gp_Dir, gp_Pln,
     gp_Pnt2d, gp_Pnt, gp_Vec2d, gp_Vec, gp_XYZ
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 
 export class EntitiesService {
 

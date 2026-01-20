@@ -2,8 +2,8 @@ import {
     Geom2d_Curve, Geom_Surface, BitbybitOcctModule, Handle_Geom2d_Curve,
     TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Circ2d
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";
@@ -862,8 +862,31 @@ export class EdgesService {
         return this.occ.IsEdgeLinear(inputs.shape);
     }
 
-
-
-
+    /**
+     * Create symmetric periodic (closed) BSpline edge through points
+     * Uses chord-based tangent constraints to ensure the curve is symmetrical
+     * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
+     * @param inputs Points to interpolate
+     * @returns Symmetric periodic BSpline edge
+     */
+    createSymmetricPeriodicBSplineEdge(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Edge {
+        // Create flat array of coordinates for the new API
+        const coords = new this.occ.VectorDouble();
+        for (const pt of inputs.points) {
+            coords.push_back(pt[0]);
+            coords.push_back(pt[1]);
+            coords.push_back(pt[2]);
+        }
+        
+        const edge = this.occ.MakeSymmetricPeriodicBSplineEdge(coords);
+        
+        coords.delete();
+        
+        if (edge && !edge.IsNull()) {
+            return edge;
+        } else {
+            return undefined;
+        }
+    }
 
 }

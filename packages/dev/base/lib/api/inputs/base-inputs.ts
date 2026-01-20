@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Base namespace containing foundational types and enums used across all bitbybit packages.
+ * This is the single source of truth - other packages extend this via module augmentation.
+ */
 export namespace Base {
+    // ============================================================================
+    // Core Types
+    // ============================================================================
     export type Color = string;
     export type ColorRGB = { r: number, g: number, b: number };
     export type Material = any;
@@ -11,7 +18,7 @@ export namespace Base {
     export type Axis2 = { origin: Base.Point2, direction: Base.Vector2 };
     export type Segment2 = [Point2, Point2];
     export type Segment3 = [Point3, Point3];
-    // Triangle plane is efficient defininition described by a normal vector and d value (N dot X = d)
+    /** Triangle plane is efficient definition described by a normal vector and d value (N dot X = d) */
     export type TrianglePlane3 = { normal: Vector3; d: number; }
     export type Triangle3 = [Base.Point3, Base.Point3, Base.Point3];
     export type Mesh3 = Triangle3[];
@@ -25,6 +32,10 @@ export namespace Base {
     export type TransformMatrixes3x3 = TransformMatrix3x3[];
     export type TransformMatrix = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
     export type TransformMatrixes = TransformMatrix[];
+
+    // ============================================================================
+    // Alignment Enums
+    // ============================================================================
     export enum horizontalAlignEnum {
         left = "left",
         center = "center",

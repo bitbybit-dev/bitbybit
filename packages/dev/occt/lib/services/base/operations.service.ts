@@ -4,8 +4,8 @@ import {
     Approx_ParametrizationType
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "../../api/vector-helper.service";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 import { EnumService } from "./enum.service";
 import { EntitiesService } from "./entities.service";
 import { ConverterService } from "./converter.service";
@@ -335,12 +335,8 @@ export class OperationsService {
 
     extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
         const gpVec = new this.occ.gp_Vec(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
-        const prismMaker = new this.occ.BRepPrimAPI_MakePrism(
-            inputs.shape,
-            gpVec,
-            false,
-            true
-        );
+        // Use 2-parameter constructor - the 4-parameter version has binding issues in new Emscripten bindings
+        const prismMaker = new this.occ.BRepPrimAPI_MakePrism(inputs.shape, gpVec);
         const prismShape = prismMaker.Shape();
         prismMaker.delete();
         gpVec.delete();

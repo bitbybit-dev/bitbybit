@@ -1,6 +1,6 @@
 import * as pc from "playcanvas";
 import { DrawCore, Tag } from "@bitbybit-dev/core";
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";

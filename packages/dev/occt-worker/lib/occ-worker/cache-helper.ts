@@ -1,4 +1,4 @@
-import { OpenCascadeInstance } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { Models } from "@bitbybit-dev/occt";
 
 export class CacheHelper {
@@ -7,7 +7,7 @@ export class CacheHelper {
     usedHashes = {};
     argCache = {};
 
-    constructor(private readonly occ: OpenCascadeInstance) { }
+    constructor(private readonly occ: BitbybitOcctModule) { }
 
     cleanAllCache(): void {
         // Clean all entries in argCache, not just usedHashes
@@ -23,16 +23,16 @@ export class CacheHelper {
                         if (Array.isArray(cachedItem)) {
                             cachedItem.forEach(shape => {
                                 try {
-                                    this.occ.BRepTools.Clean(shape, true);
-                                    this.occ.BRepTools.CleanGeometry(shape);
+                                    this.occ.BRepTools_Clean_Force(shape, true);
+                                    this.occ.BRepTools_CleanGeometry(shape);
                                     shape.delete();
                                 } catch (error) {
                                     // Ignore errors for already deleted shapes
                                 }
                             });
                         } else {
-                            this.occ.BRepTools.Clean(cachedItem, true);
-                            this.occ.BRepTools.CleanGeometry(cachedItem);
+                            this.occ.BRepTools_Clean_Force(cachedItem, true);
+                            this.occ.BRepTools_CleanGeometry(cachedItem);
                             cachedItem.delete();
                         }
                     }
@@ -58,16 +58,16 @@ export class CacheHelper {
                     if (Array.isArray(cachedItem)) {
                         cachedItem.forEach(shape => {
                             try {
-                                this.occ.BRepTools.Clean(shape, true);
-                                this.occ.BRepTools.CleanGeometry(shape);
+                                this.occ.BRepTools_Clean_Force(shape, true);
+                                this.occ.BRepTools_CleanGeometry(shape);
                                 shape.delete();
                             } catch (error) {
                                 // Ignore errors for already deleted shapes
                             }
                         });
                     } else {
-                        this.occ.BRepTools.Clean(cachedItem, true);
-                        this.occ.BRepTools.CleanGeometry(cachedItem);
+                        this.occ.BRepTools_Clean_Force(cachedItem, true);
+                        this.occ.BRepTools_CleanGeometry(cachedItem);
                         cachedItem.delete();
                     }
                 }
@@ -84,17 +84,17 @@ export class CacheHelper {
     cleanUpCache(): void {
         // Clean up cache entries that were used in previous run but not in current run
         // This helps manage memory by removing unused cached shapes
-        
+
         const usedHashKeys = Object.keys(this.usedHashes);
         const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
-        
+
         // Find hashes that exist in previous run but not in current run
         // These are the ones we should clean up
         let hashesToDelete: string[] = [];
         if (hashesFromPreviousRunKeys.length > 0) {
             hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
         }
-        
+
         // Delete unused shapes and clean them from cache
         if (hashesToDelete.length > 0) {
             hashesToDelete.forEach(hash => {
@@ -107,16 +107,16 @@ export class CacheHelper {
                             if (Array.isArray(shape)) {
                                 shape.forEach(s => {
                                     try {
-                                        this.occ.BRepTools.Clean(s, true);
-                                        this.occ.BRepTools.CleanGeometry(s);
+                                        this.occ.BRepTools_Clean_Force(s, true);
+                                        this.occ.BRepTools_CleanGeometry(s);
                                         s.delete();
                                     } catch {
                                         // Ignore errors for already deleted shapes
                                     }
                                 });
                             } else {
-                                this.occ.BRepTools.Clean(shape, true);
-                                this.occ.BRepTools.CleanGeometry(shape);
+                                this.occ.BRepTools_Clean_Force(shape, true);
+                                this.occ.BRepTools_CleanGeometry(shape);
                                 shape.delete();
                             }
                         }
@@ -128,7 +128,7 @@ export class CacheHelper {
                 delete this.usedHashes[hash];
             });
         }
-        
+
         // Update hashesFromPreviousRun to be current usedHashes for next cleanup cycle
         this.hashesFromPreviousRun = { ...this.usedHashes };
     }
@@ -165,27 +165,28 @@ export class CacheHelper {
                     r.hash = itemHash;
                     this.addToCache(itemHash, r);
                 });
-                } else {
-                    if (this.isOCCTObject(toReturn)) {
-                        toReturn.hash = curHash;
-                        this.addToCache(curHash, toReturn);
-                    } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
-                        const compoundHash = this.computeHash({ ...args, index: "compound" });
-                        objDef.compound.hash = compoundHash;
-                        this.addToCache(compoundHash, objDef.compound);
-                        objDef.shapes.forEach((s, index) => {
-                            const itemHash = this.computeHash({ ...args, index });
-                            s.shape.hash = itemHash;
-                            this.addToCache(itemHash, s.shape);
-                        });
-                        this.addToCache(curHash, { value: objDef });
-                    }
-                    else {
-                        this.addToCache(curHash, { value: toReturn });
-                    }
-                }        }
+            } else {
+                if (this.isOCCTObject(toReturn)) {
+                    toReturn.hash = curHash;
+                    this.addToCache(curHash, toReturn);
+                } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
+                    const compoundHash = this.computeHash({ ...args, index: "compound" });
+                    objDef.compound.hash = compoundHash;
+                    this.addToCache(compoundHash, objDef.compound);
+                    objDef.shapes.forEach((s, index) => {
+                        const itemHash = this.computeHash({ ...args, index });
+                        s.shape.hash = itemHash;
+                        this.addToCache(itemHash, s.shape);
+                    });
+                    this.addToCache(curHash, { value: objDef });
+                }
+                else {
+                    this.addToCache(curHash, { value: toReturn });
+                }
+            }
+        }
         return toReturn;
     }
     /** Returns the cached object if it exists and is valid, or null otherwise. */
@@ -195,7 +196,7 @@ export class CacheHelper {
         if (!cachedShape) {
             return null;
         }
-        
+
         // Check if the cached shape is still valid (not deleted)
         if (this.isOCCTObject(cachedShape)) {
             // Handle arrays of OCCT objects
@@ -232,7 +233,7 @@ export class CacheHelper {
                 }
             }
         }
-        
+
         return cachedShape;
     }
     /** Adds this `shape` to the cache, indexable by `hash`. */

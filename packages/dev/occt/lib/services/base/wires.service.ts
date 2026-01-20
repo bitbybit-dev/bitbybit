@@ -2,8 +2,8 @@ import {
     Geom_Surface, BitbybitOcctModule,
     TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Pnt
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCReferencedReturns } from "../../occ-referenced-returns";
 import { EdgesService } from "./edges.service";
@@ -543,6 +543,33 @@ export class WiresService {
             edge.delete();
             wireMaker.delete();
         }
+        
+        coords.delete();
+        
+        if (wire && !wire.IsNull()) {
+            return wire;
+        } else {
+            return undefined;
+        }
+    }
+
+    /**
+     * Interpolate points with symmetric periodic (closed) curve
+     * Uses chord-based tangent constraints to ensure the curve is symmetrical
+     * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
+     * @param inputs Points to interpolate and tolerance
+     * @returns Symmetric periodic BSpline wire
+     */
+    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolationDto) {
+        // Create flat array of coordinates for the new API
+        const coords = new this.occ.VectorDouble();
+        for (const pt of inputs.points) {
+            coords.push_back(pt[0]);
+            coords.push_back(pt[1]);
+            coords.push_back(pt[2]);
+        }
+        
+        const wire = this.occ.MakeSymmetricPeriodicBSplineWire(coords);
         
         coords.delete();
         
@@ -1098,5 +1125,33 @@ export class WiresService {
             allWirePoints.push(dupsRemoved);
         });
         return allWirePoints;
+    }
+
+    createHelixWire(inputs: Inputs.OCCT.HelixWireDto): TopoDS_Wire {
+        const ax = this.entitiesService.gpAx3_4(inputs.center, inputs.direction);
+        const wire = this.occ.MakeHelixWire(ax, inputs.radius, inputs.pitch, inputs.height, inputs.clockwise, inputs.tolerance);
+        ax.delete();
+        return wire;
+    }
+
+    createHelixWireByTurns(inputs: Inputs.OCCT.HelixWireByTurnsDto): TopoDS_Wire {
+        const ax = this.entitiesService.gpAx3_4(inputs.center, inputs.direction);
+        const wire = this.occ.MakeHelixWireByTurns(ax, inputs.radius, inputs.pitch, inputs.numTurns, inputs.clockwise, inputs.tolerance);
+        ax.delete();
+        return wire;
+    }
+
+    createTaperedHelixWire(inputs: Inputs.OCCT.TaperedHelixWireDto): TopoDS_Wire {
+        const ax = this.entitiesService.gpAx3_4(inputs.center, inputs.direction);
+        const wire = this.occ.MakeTaperedHelixWire(ax, inputs.startRadius, inputs.endRadius, inputs.pitch, inputs.height, inputs.clockwise, inputs.tolerance);
+        ax.delete();
+        return wire;
+    }
+
+    createFlatSpiralWire(inputs: Inputs.OCCT.FlatSpiralWireDto): TopoDS_Wire {
+        const ax = this.entitiesService.gpAx3_4(inputs.center, inputs.direction);
+        const wire = this.occ.MakeFlatSpiralWire(ax, inputs.startRadius, inputs.endRadius, inputs.numTurns, inputs.clockwise, inputs.tolerance);
+        ax.delete();
+        return wire;
     }
 }

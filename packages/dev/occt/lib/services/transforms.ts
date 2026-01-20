@@ -1,7 +1,7 @@
 import { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
-import * as Inputs from "../api/inputs/inputs";
-import { Base } from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
+import { Base } from "../api/inputs";
 
 export class OCCTTransforms {
 

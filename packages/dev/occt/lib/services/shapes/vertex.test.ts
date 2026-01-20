@@ -4,7 +4,7 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTVertex } from "./vertex";
 import { OCCTSolid } from "./solid";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { OCCTCompound } from "./compound";
 
 describe("OCCT vertex unit tests", () => {

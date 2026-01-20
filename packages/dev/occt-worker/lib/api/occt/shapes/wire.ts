@@ -299,6 +299,20 @@ export class OCCTWire {
     }
 
     /**
+     * Creates OpenCascade symmetric periodic BSpline wire from points.
+     * Uses chord-based tangent constraints to ensure the curve is symmetrical
+     * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
+     * @param inputs Points through which to make the curve
+     * @returns Symmetric periodic BSpline wire
+     * @group via points
+     * @shortname interpolate symmetric
+     * @drawable true
+     */
+    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolationDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.interpolatePointsSymmetric", inputs);
+    }
+
+    /**
      * Creates OpenCascade BSPline wire
      * @param inputs Points through which to make BSpline
      * @returns OpenCascade BSpline wire
@@ -728,6 +742,54 @@ export class OCCTWire {
      */
     createEllipseWire(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createEllipseWire", inputs);
+    }
+
+    /**
+     * Creates a 3D helix wire
+     * @param inputs Helix parameters including radius, pitch, height, center and direction
+     * @returns OpenCascade helix wire
+     * @group primitives
+     * @shortname helix
+     * @drawable true
+     */
+    createHelixWire(inputs: Inputs.OCCT.HelixWireDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createHelixWire", inputs);
+    }
+
+    /**
+     * Creates a 3D helix wire by specifying the number of turns
+     * @param inputs Helix parameters including radius, pitch, number of turns, center and direction
+     * @returns OpenCascade helix wire
+     * @group primitives
+     * @shortname helix by turns
+     * @drawable true
+     */
+    createHelixWireByTurns(inputs: Inputs.OCCT.HelixWireByTurnsDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createHelixWireByTurns", inputs);
+    }
+
+    /**
+     * Creates a conical (tapered) helix wire with varying radius
+     * @param inputs Tapered helix parameters including start/end radii, pitch, height, center and direction
+     * @returns OpenCascade tapered helix wire
+     * @group primitives
+     * @shortname tapered helix
+     * @drawable true
+     */
+    createTaperedHelixWire(inputs: Inputs.OCCT.TaperedHelixWireDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createTaperedHelixWire", inputs);
+    }
+
+    /**
+     * Creates a flat (Archimedean) spiral wire lying in a plane
+     * @param inputs Flat spiral parameters including start/end radii, number of turns, center and direction
+     * @returns OpenCascade flat spiral wire
+     * @group primitives
+     * @shortname flat spiral
+     * @drawable true
+     */
+    createFlatSpiralWire(inputs: Inputs.OCCT.FlatSpiralWireDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createFlatSpiralWire", inputs);
     }
 
     /**

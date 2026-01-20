@@ -1,6 +1,6 @@
 import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 export class OCCTWire {
 
@@ -119,6 +119,10 @@ export class OCCTWire {
     interpolateWires(inputs: Inputs.OCCT.InterpolateWiresDto): TopoDS_Wire[] | TopoDS_Compound {
         const wires = inputs.interpolations.map(p => this.interpolatePoints(p)).filter(s => s !== undefined);
         return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
+    }
+
+    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire {
+        return this.och.wiresService.interpolatePointsSymmetric(inputs);
     }
 
     splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
@@ -261,6 +265,22 @@ export class OCCTWire {
 
     createEllipseWire(inputs: Inputs.OCCT.EllipseDto) {
         return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire) as TopoDS_Wire;
+    }
+
+    createHelixWire(inputs: Inputs.OCCT.HelixWireDto): TopoDS_Wire {
+        return this.och.wiresService.createHelixWire(inputs);
+    }
+
+    createHelixWireByTurns(inputs: Inputs.OCCT.HelixWireByTurnsDto): TopoDS_Wire {
+        return this.och.wiresService.createHelixWireByTurns(inputs);
+    }
+
+    createTaperedHelixWire(inputs: Inputs.OCCT.TaperedHelixWireDto): TopoDS_Wire {
+        return this.och.wiresService.createTaperedHelixWire(inputs);
+    }
+
+    createFlatSpiralWire(inputs: Inputs.OCCT.FlatSpiralWireDto): TopoDS_Wire {
+        return this.och.wiresService.createFlatSpiralWire(inputs);
     }
 
     textWires(inputs: Inputs.OCCT.TextWiresDto) {

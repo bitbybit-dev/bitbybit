@@ -1,5 +1,5 @@
 import { BitbybitOcctModule, TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "./api/inputs/inputs";
+import * as Inputs from "./api/inputs";
 import { OCCTBooleans } from "./services/booleans";
 import { OCCTGeom } from "./services/geom/geom";
 import { OCCTIO } from "./services/io";

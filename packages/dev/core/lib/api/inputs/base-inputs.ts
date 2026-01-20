@@ -1,5 +1,47 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Re-export Base namespace from @bitbybit-dev/base and extend with core-specific types.
+ */
+import { Base as BaseTypes } from "@bitbybit-dev/base";
+
 export namespace Base {
+    // Re-export all types from base package
+    export type Color = BaseTypes.Color;
+    export type ColorRGB = BaseTypes.ColorRGB;
+    export type Material = BaseTypes.Material;
+    export type Point2 = BaseTypes.Point2;
+    export type Vector2 = BaseTypes.Vector2;
+    export type Point3 = BaseTypes.Point3;
+    export type Vector3 = BaseTypes.Vector3;
+    export type Axis3 = BaseTypes.Axis3;
+    export type Axis2 = BaseTypes.Axis2;
+    export type Segment2 = BaseTypes.Segment2;
+    export type Segment3 = BaseTypes.Segment3;
+    export type TrianglePlane3 = BaseTypes.TrianglePlane3;
+    export type Triangle3 = BaseTypes.Triangle3;
+    export type Mesh3 = BaseTypes.Mesh3;
+    export type Plane3 = BaseTypes.Plane3;
+    export type BoundingBox = BaseTypes.BoundingBox;
+    export type Line2 = BaseTypes.Line2;
+    export type Line3 = BaseTypes.Line3;
+    export type Polyline3 = BaseTypes.Polyline3;
+    export type Polyline2 = BaseTypes.Polyline2;
+    export type TransformMatrix3x3 = BaseTypes.TransformMatrix3x3;
+    export type TransformMatrixes3x3 = BaseTypes.TransformMatrixes3x3;
+    export type TransformMatrix = BaseTypes.TransformMatrix;
+    export type TransformMatrixes = BaseTypes.TransformMatrixes;
+
+    // Re-export enums from base package
+    export const horizontalAlignEnum = BaseTypes.horizontalAlignEnum;
+    export type horizontalAlignEnum = BaseTypes.horizontalAlignEnum;
+    export const verticalAlignmentEnum = BaseTypes.verticalAlignmentEnum;
+    export type verticalAlignmentEnum = BaseTypes.verticalAlignmentEnum;
+    export const topBottomEnum = BaseTypes.topBottomEnum;
+    export type topBottomEnum = BaseTypes.topBottomEnum;
+    export const basicAlignmentEnum = BaseTypes.basicAlignmentEnum;
+    export type basicAlignmentEnum = BaseTypes.basicAlignmentEnum;
+
+    // Core-specific types and enums
     /**
      * Defines how colors are mapped to entities when there are more entities than colors.
      * - firstColorForAll: Uses the first color for all entities (legacy behavior)
@@ -17,68 +59,8 @@ export namespace Base {
         /** After exhausting colors, reverses direction (ping-pong pattern) */
         reversedColors = "reversedColors",
     }
-    export enum skyboxEnum {
-        default = "default",
-        clearSky = "clearSky",
-        city = "city",
-        greyGradient = "greyGradient",
-    }
-    export enum fogModeEnum {
-        none = "none",
-        exponential = "exponential",
-        exponentialSquared = "exponentialSquared",
-        linear = "linear",
-    }
-    export enum horizontalAlignEnum {
-        left = "left",
-        center = "center",
-        right = "right",
-    }
-    export enum verticalAlignmentEnum {
-        top = "top",
-        middle = "middle",
-        bottom = "bottom",
-    }
-    export enum topBottomEnum {
-        top = "top",
-        bottom = "bottom",
-    }
-    export enum basicAlignmentEnum {
-        topLeft = "topLeft",
-        topMid = "topMid",
-        topRight = "topRight",
-        midLeft = "midLeft",
-        midMid = "midMid",
-        midRight = "midRight",
-        bottomLeft = "bottomLeft",
-        bottomMid = "bottomMid",
-        bottomRight = "bottomRight"
-    }
-    // Can't use BabylonJS types here as that crashes worker, which tries to include them
-    export type Color = string;
-    export type ColorRGB = { r: number, g: number, b: number };
-    export type Point2 = [number, number];
-    export type Vector2 = [number, number];
-    export type Point3 = [number, number, number];
-    export type Vector3 = [number, number, number];
-    export type Axis3 = { origin: Base.Point3, direction: Base.Vector3 };
-    export type Axis2 = { origin: Base.Point2, direction: Base.Vector2 };
-    export type Segment2 = [Point2, Point2];
-    export type Segment3 = [Point3, Point3];
-    // Triangle plane is efficient defininition described by a normal vector and d value (N dot X = d)
-    export type TrianglePlane3 = { normal: Vector3; d: number; }
-    export type Triangle3 = [Base.Point3, Base.Point3, Base.Point3];
-    export type Mesh3 = Triangle3[];
-    export type Plane3 = { origin: Base.Point3, normal: Base.Vector3, direction: Base.Vector3 };
-    export type BoundingBox = { min: Base.Point3, max: Base.Point3, center?: Base.Point3, width?: number, height?: number, length?: number };
-    export type Line2 = { start: Base.Point2, end: Base.Point2 };
-    export type Line3 = { start: Base.Point3, end: Base.Point3 };
-    export type Polyline3 = { points: Base.Point3[], isClosed?: boolean };
-    export type Polyline2 = { points: Base.Point2[], isClosed?: boolean };
+    /** NURBS curve type from verb-nurbs library */
     export type VerbCurve = { tessellate: (options: any) => any };
+    /** NURBS surface type from verb-nurbs library */
     export type VerbSurface = { tessellate: (options: any) => any };
-    export type TransformMatrix3x3 = [number, number, number, number, number, number, number, number, number];
-    export type TransformMatrixes3x3 = TransformMatrix3x3[];
-    export type TransformMatrix = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
-    export type TransformMatrixes = TransformMatrix[];
 }

@@ -1,32 +1,41 @@
-import ocFullJS from "./bitbybit-dev-occt.js";
+import createBitbybitDevOcctOriginal from "./bitbybit-dev-occt.js";
 import { GlobalCDNProvider } from "@bitbybit-dev/base";
 
-const initOpenCascade = ({
-  mainJS = ocFullJS,
-  mainWasm = GlobalCDNProvider.BITBYBIT_CDN_URL + "/wasm/bitbybit-dev-occt.f151efeb.wasm",
-  worker = undefined,
-  libs = [],
-  module = {},
-} = {}) => {
-  return new Promise((resolve, reject) => {
-    new mainJS({
-      locateFile(path) {
-        if (path.endsWith('.wasm')) {
-          return mainWasm;
+
+/**
+ * Extended createBitbybitDevOcct that uses CDN-hosted WASM file by default.
+ * This has the same interface as the original createBitbybitDevOcct but
+ * automatically configures locateFile to use the CDN for WASM loading.
+ * 
+ * This is designed for browser/webworker usage where bundling the WASM
+ * is problematic (e.g., with webpack).
+ *
+ * @param moduleOverrides - Emscripten module configuration options
+ * @returns Promise that resolves to the initialized OCCT module
+ */
+const createBitbybitDevOcct = (moduleOverrides = {}) => {
+    const cdnWasmUrl = "https://app-store.bitbybit.dev/files/bitbybit-dev-occt-3.wasm";
+    
+    // If user provided their own locateFile, wrap it to preserve their customizations
+    const userLocateFile = moduleOverrides.locateFile;
+    
+    return createBitbybitDevOcctOriginal({
+        ...moduleOverrides,
+        locateFile(path, scriptDirectory) {
+            // First check if user wants to handle this path
+            if (userLocateFile) {
+                const userResult = userLocateFile(path, scriptDirectory);
+                if (userResult) {
+                    return userResult;
+                }
+            }
+            // Default: use CDN for WASM files
+            if (path.endsWith(".wasm")) {
+                return cdnWasmUrl;
+            }
+            return scriptDirectory + path;
         }
-        if (path.endsWith('.worker.js') && !!worker) {
-          return worker;
-        }
-        return path;
-      },
-      ...module
-    }).then(async oc => {
-      for (let lib of libs) {
-        await oc.loadDynamicLibrary(lib, { loadAsync: true, global: true, nodelete: true, allowUndefined: false });
-      }
-      resolve(oc);
     });
-  });
 };
 
-export default initOpenCascade;
+export default createBitbybitDevOcct;

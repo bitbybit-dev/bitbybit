@@ -99,6 +99,22 @@ For online TypeScript editor at bitbybit.dev:
 - Full (94k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md
 - Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md
 
+### TypeScript Declaration Files (.d.ts)
+
+For AI agents that struggle with dictionary translation, use these full TypeScript type definitions:
+
+#### BabylonJS Declarations
+- With Comments (~500k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-v0.21.1.d.ts
+- Without Comments (~180k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-no-comments-v0.21.1.d.ts
+
+#### Three.js Declarations
+- With Comments (~420k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-v0.21.1.d.ts
+- Without Comments (~150k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-no-comments-v0.21.1.d.ts
+
+#### PlayCanvas Declarations
+- With Comments (~420k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-v0.21.1.d.ts
+- Without Comments (~150k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-no-comments-v0.21.1.d.ts
+
 ### Context7 MCP (Recommended)
 
 Live AI context with always up-to-date documentation. Works with Claude, Gemini, Grok.

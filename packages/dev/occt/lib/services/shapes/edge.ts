@@ -1,6 +1,6 @@
 import { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 export class OCCTEdge {
 
@@ -259,5 +259,9 @@ export class OCCTEdge {
 
     constraintTanCirclesOnCircleAndPnt(inputs: Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto<TopoDS_Edge>): TopoDS_Shape[] {
         return this.och.edgesService.constraintTanCirclesOnCircleAndPnt(inputs);
+    }
+
+    createSymmetricPeriodicBSplineEdge(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Edge {
+        return this.och.edgesService.createSymmetricPeriodicBSplineEdge(inputs);
     }
 }

@@ -26,8 +26,14 @@ Choose the context file that matches your 3D rendering engine. **Right-click and
     <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(240, 206, 187, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(240, 206, 187, 0.3)', marginBottom: '20px' }}>
       <h4 style={{ marginTop: 0, color: '#F0CEBB' }}>Monaco Editor Context (Beginner-Friendly)</h4>
       <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>For users of our online TypeScript editor at <a href="https://bitbybit.dev/app?editor=typescript">bitbybit.dev/app</a></p>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Context (Dictionary Translation)</h5>
       <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-monaco-ai-context-v0.21.1.md" label="Monaco Context (~116k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-monaco-ai-context-v0.21.1.md" label="Monaco Context (~132k tokens)" variant="full" />
+      </div>
+      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~612k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~210k tokens)" variant="lite" />
       </div>
     </div>
   </TabItem>
@@ -36,8 +42,8 @@ Choose the context file that matches your 3D rendering engine. **Right-click and
       <h4 style={{ marginTop: 0, color: '#BB464B' }}>BabylonJS Context Files</h4>
       <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Full-featured 3D engine with powerful rendering capabilities</p>
       <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-ai-context-v0.21.1.md" label="Full Context (~116k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-no-comment-min-ai-v0.21.1.md" label="Lite Context (~114k tokens)" variant="lite" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-ai-context-v0.21.1.md" label="Full Context (~126k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-no-comment-min-ai-v0.21.1.md" label="Lite Context (~128k tokens)" variant="lite" />
       </div>
     </div>
   </TabItem>
@@ -47,7 +53,7 @@ Choose the context file that matches your 3D rendering engine. **Right-click and
       <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Popular, lightweight 3D library for web applications</p>
       <div>
         <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-ai-context-v0.21.1.md" label="Full Context (~95k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-no-comment-min-ai-v0.21.1.md" label="Lite Context (~82k tokens)" variant="lite" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-no-comment-min-ai-v0.21.1.md" label="Lite Context (~87k tokens)" variant="lite" />
       </div>
     </div>
   </TabItem>
@@ -56,16 +62,16 @@ Choose the context file that matches your 3D rendering engine. **Right-click and
       <h4 style={{ marginTop: 0, color: '#FF6B35' }}>PlayCanvas Context Files</h4>
       <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Game engine with visual editor and runtime</p>
       <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md" label="Full Context (~94k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md" label="Lite Context (~82k tokens)" variant="lite" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md" label="Full Context (~87k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md" label="Lite Context (~87k tokens)" variant="lite" />
       </div>
     </div>
   </TabItem>
 </Tabs>
 
 :::tip Which version should I choose?
-- **Full Context** - Best for beginners. Includes explanations, setup guides, and complete API reference.
-- **Lite Context** - Best for experienced developers. Minimal size, just API definitions with abbreviated notation.
+- **Full Context** - Best for beginners. Includes explanations, setup guides, and complete API reference with dictionary-compressed notation.
+- **Lite Context** - Best for experienced developers. Minimal size, just API definitions with dictionary-compressed notation.
 :::
 
 ---
@@ -111,9 +117,9 @@ The AI will reference the context to generate accurate, working code that follow
 
 ---
 
-## Understanding the Lite Context Format
+## Understanding the Dictionary Translation Format
 
-Lite contexts use an important technique to reduce file size: **a translation dictionary**.
+Both Full and Lite context files use an important technique to reduce file size: **a translation dictionary**. This compression allows us to include the complete API reference while keeping token counts manageable.
 
 At the beginning of the API section, you'll find a dictionary that maps abbreviated terms to their full names:
 
@@ -141,7 +147,76 @@ bitbybit.occt.shapes.solid.createBox(boxOptions: BoxDto)
 The abbreviated forms are only for documentation - they would not compile if used directly in code. The AI handles this translation transparently, so you receive clean, readable code.
 
 :::warning
-If your AI agent cannot translate these abbreviated values, the code will not work. If that happens, consider using the Full context version or a more capable AI model.
+If your AI agent cannot translate these abbreviated values, the code will not work. If that happens, consider using the **TypeScript Declaration Files (.d.ts)** instead, which use full, unabbreviated names and require no translation.
+:::
+
+---
+
+## TypeScript Declaration Files (.d.ts)
+
+For AI agents that have difficulty with dictionary translations, we provide **TypeScript Declaration Files** (`.d.ts`). These are standard TypeScript type definition files that describe the complete Bitbybit API schema.
+
+### Why Use .d.ts Files?
+
+TypeScript declaration files are the native way TypeScript describes API shapes. They contain:
+
+- **Complete type definitions** for all classes, interfaces, and functions
+- **JSDoc comments** explaining each method and parameter (in the "with comments" version)
+- **Proper TypeScript syntax** that any AI model can understand without translation
+
+The key advantage is that **no dictionary translation is required**. While our markdown context files use abbreviated notation (like `OC` for `OCCT`) to save tokens, `.d.ts` files use full, unabbreviated names. This means even lower-end AI models can generate correct code without needing to apply translation rules.
+
+### Trade-offs
+
+| Format | Tokens | Translation Required | Best For |
+|--------|--------|---------------------|----------|
+| Lite Context (.md) | ~87-128k | Yes | Capable AI models, token-conscious usage |
+| Full Context (.md) | ~87-126k | Yes | Beginners, comprehensive guidance |
+| .d.ts (no comments) | ~151-210k | No | Lower-end AI models, direct API reference |
+| .d.ts (with comments) | ~460-612k | No | Maximum detail, documentation included |
+
+### Download Declaration Files
+
+<Tabs>
+  <TabItem value="babylonjs-dts" label="BabylonJS" default>
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(187, 70, 75, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(187, 70, 75, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#BB464B' }}>BabylonJS Declaration Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>TypeScript definitions with full, unabbreviated names</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~612k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~210k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="threejs-dts" label="ThreeJS">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(4, 158, 244, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(4, 158, 244, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#049EF4' }}>ThreeJS Declaration Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>TypeScript definitions with full, unabbreviated names</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~461k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~151k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+  <TabItem value="playcanvas-dts" label="PlayCanvas">
+    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(255, 107, 53, 0.3)', marginBottom: '20px' }}>
+      <h4 style={{ marginTop: 0, color: '#FF6B35' }}>PlayCanvas Declaration Files</h4>
+      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>TypeScript definitions with full, unabbreviated names</p>
+      <div>
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~460k tokens)" variant="full" />
+        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~151k tokens)" variant="lite" />
+      </div>
+    </div>
+  </TabItem>
+</Tabs>
+
+:::info When to use .d.ts files
+Use `.d.ts` files when:
+- Your AI model produces incorrect code with abbreviated notation
+- You're using a smaller or less capable AI model
+- You want the AI to see the exact TypeScript types without any transformation
+- You have a large context window available and token cost is not a concern
+- Your AI agent supports lookahead and can selectively read only the relevant portions of the file
 :::
 
 ---

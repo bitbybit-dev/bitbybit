@@ -1,5 +1,5 @@
 
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 import { OCCTWorkerManager, OCCTIO } from "@bitbybit-dev/occt-worker";
 import { ContextBase } from "../../context";
 

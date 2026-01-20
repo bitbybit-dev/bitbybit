@@ -2,7 +2,7 @@ import {
     BitbybitOcctModule, TopoDS_Edge, TopoDS_Face,
     TopoDS_Shape, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Compound
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { EnumService } from "./enum.service";
 import { IteratorService } from "./iterator.service";
 

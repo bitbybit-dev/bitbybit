@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import * as Inputs from "./inputs";
+import * as Inputs from "./index";
 import { Base } from "./base-inputs";
 import * as pc from "playcanvas";
 

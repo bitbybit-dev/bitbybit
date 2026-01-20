@@ -1,6 +1,6 @@
 import * as THREEJS from "three";
 import { Context } from "../../context";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 import { OrbitCameraInstance, InputHandler, OrbitCameraController } from "../../inputs/threejs-camera-inputs";
 
 // Re-export for backwards compatibility

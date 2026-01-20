@@ -2,8 +2,8 @@ import {
     BRepFilletAPI_MakeFillet, BRepFilletAPI_MakeFillet2d, ChFi3d_FilletShape, BitbybitOcctModule,
     TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { IteratorService } from "./iterator.service";
 import { ConverterService } from "./converter.service";

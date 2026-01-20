@@ -1,7 +1,7 @@
 import { OccHelper } from "../../occ-helper";
 import { BitbybitOcctModule, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 
 export class OCCTSolid {
 
@@ -41,6 +41,10 @@ export class OCCTSolid {
 
     createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Shape {
         return this.och.solidsService.createCone(inputs);
+    }
+
+    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Shape {
+        return this.och.solidsService.createTorus(inputs);
     }
 
     createIBeamProfileSolid(inputs: Inputs.OCCT.IBeamProfileSolidDto): TopoDS_Solid {
@@ -142,7 +146,8 @@ export class OCCTSolid {
                 normalizedDir[1] * lengthFront,
                 normalizedDir[2] * lengthFront
             );
-            const frontPrism = new this.occ.BRepPrimAPI_MakePrism(face, frontVec, false, true);
+            // Use 2-parameter constructor - the 4-parameter version has binding issues in new Emscripten bindings
+            const frontPrism = new this.occ.BRepPrimAPI_MakePrism(face, frontVec);
             result = frontPrism.Shape();
             frontPrism.delete();
             frontVec.delete();
@@ -155,7 +160,8 @@ export class OCCTSolid {
                 -normalizedDir[1] * lengthBack,
                 -normalizedDir[2] * lengthBack
             );
-            const backPrism = new this.occ.BRepPrimAPI_MakePrism(face, backVec, false, true);
+            // Use 2-parameter constructor - the 4-parameter version has binding issues in new Emscripten bindings
+            const backPrism = new this.occ.BRepPrimAPI_MakePrism(face, backVec);
             const backShape = backPrism.Shape();
             backPrism.delete();
             backVec.delete();

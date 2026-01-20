@@ -1,6 +1,6 @@
 import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 import { ShapeGettersService } from "./shape-getters";
 import { FacesService } from "./faces.service";
 import { EntitiesService } from "./entities.service";
@@ -109,6 +109,31 @@ export class SolidsService {
         makeCone.delete();
         ax.delete();
         return coneShape;
+    }
+
+    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Shape {
+        const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
+        let angle = inputs.angle;
+        if (angle === undefined || angle === null) {
+            angle = 2 * Math.PI;
+        }
+        let makeTorus;
+        // Angle is already in radians from higher level conversion
+        // Use tolerance check for full torus (2*PI) to handle floating-point precision
+        if (angle >= 2 * Math.PI - 1e-7) {
+            // Full torus - use simple 3-param constructor
+            makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius);
+        } else {
+            // Partial torus - angle is already in radians
+            // 6-param: axes, R1, R2, angle1, angle2, angle
+            // angle1 and angle2 control the ring segment (minor circle), angle controls the pipe segment (major circle)
+            // For a simple pie-slice torus, we keep the full ring (0 to 2*PI) and control the pipe angle
+            makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius, 0, 2 * Math.PI, angle);
+        }
+        const torusShape = makeTorus.Shape();
+        makeTorus.delete();
+        ax.delete();
+        return torusShape;
     }
 
     filterSolidPoints(inputs: Inputs.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {

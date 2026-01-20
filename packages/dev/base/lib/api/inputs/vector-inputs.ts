@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
-import { Math } from "./inputs";
+import { Math } from "./math-inputs";
 
 export namespace Vector {
 
