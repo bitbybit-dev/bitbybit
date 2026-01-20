@@ -1,7 +1,6 @@
 import createBitbybitDevOcctOriginal from "./bitbybit-dev-occt-64-bit-mt.js";
 import { GlobalCDNProvider } from "@bitbybit-dev/base";
 
-
 /**
  * Extended createBitbybitDevOcct that uses CDN-hosted WASM file by default.
  * This has the same interface as the original createBitbybitDevOcct but
@@ -14,7 +13,7 @@ import { GlobalCDNProvider } from "@bitbybit-dev/base";
  * @returns Promise that resolves to the initialized OCCT module
  */
 const createBitbybitDevOcct = (moduleOverrides = {}) => {
-    const cdnWasmUrl = "https://app-store.bitbybit.dev/files/bitbybit-dev-occt-64-bit-mt-1.wasm";
+    const cdnWasmUrl = GlobalCDNProvider.BITBYBIT_CDN_URL + "/wasm/bitbybit-dev-occt-64-bit-mt.95baabc7.wasm";
     
     // If user provided their own locateFile, wrap it to preserve their customizations
     const userLocateFile = moduleOverrides.locateFile;

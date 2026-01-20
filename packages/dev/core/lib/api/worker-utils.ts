@@ -14,7 +14,7 @@ import { GlobalCDNProvider } from "@bitbybit-dev/base";
  * - "64-bit" - 64-bit WebAssembly (better performance, requires browser support for Memory64)
  * - "64-bit-mt" - 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
  */
-export type WorkerArchitecture = "32" | "64-bit" | "64-bit-mt";
+export type WorkerArchitecture = "32" | "64" | "64-mt";
 
 /**
  * Worker configuration containing the Worker instance or undefined
@@ -46,56 +46,75 @@ export interface WorkerOptions {
      * OCCT worker architecture to use. Defaults to "32" (32-bit).
      * Note: This only applies to OCCT workers. JSCAD and Manifold always use 32-bit.
      * - "32" - 32-bit WebAssembly (default, widest browser support)
-     * - "64-bit" - 64-bit WebAssembly (better performance, requires browser support for Memory64)
-     * - "64-bit-mt" - 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
+     * - "64" - 64-bit WebAssembly (better performance, requires browser support for Memory64)
+     * - "64-mt" - 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
      */
     occtArchitecture?: WorkerArchitecture;
 }
 
 /**
- * Helper function to create a cross-origin worker URL using importScripts.
- * This is required for loading workers from CDN.
+ * Creates a blob URL that uses importScripts to load a classic (non-ES module) worker script.
+ * This works for all bundled webworkers loaded from CDN.
  */
-function getWorkerURL(url: string): string {
+function getClassicWorkerURL(url: string): string {
     const content = `importScripts("${url}");`;
     return URL.createObjectURL(new Blob([content], { type: "text/javascript" }));
 }
 
 /**
+ * Creates a blob URL that uses a static import to load an ES module worker script.
+ * This is required for 64-bit-mt workers which use Emscripten pthreads that internally
+ * spawn workers with type: "module".
+ * 
+ * Note: We use static import (not dynamic import()) so the module is fully loaded
+ * and its message handlers are registered before any messages are sent.
+ */
+function getModuleWorkerURL(url: string): string {
+    const content = `import "${url}";`;
+    return URL.createObjectURL(new Blob([content], { type: "text/javascript" }));
+}
+
+/**
  * Gets the OCCT worker filename based on architecture.
- * - "32" -> "bitbybit-occt-webworker.js"
- * - "64-bit" -> "bitbybit-occt-webworker-64-bit.js"
- * - "64-bit-mt" -> "bitbybit-occt-webworker-64-bit-mt.js"
+ * - "32" -> "bitbybit-dev-occt-webworker.js"
+ * - "64" -> "bitbybit-dev-occt-64-bit-webworker.js"
+ * - "64-mt" -> "bitbybit-dev-occt-64-bit-mt-webworker.js"
  */
 function getOcctWorkerFilename(architecture: WorkerArchitecture = "32"): string {
     switch (architecture) {
-        case "64-bit":
-            return "bitbybit-occt-webworker-64-bit.js";
-        case "64-bit-mt":
-            return "bitbybit-occt-webworker-64-bit-mt.js";
+        case "64":
+            return "bitbybit-dev-occt-64-bit-webworker.js";
+        case "64-mt":
+            return "bitbybit-dev-occt-64-bit-mt-webworker.js";
         case "32":
         default:
-            return "bitbybit-occt-webworker.js";
+            return "bitbybit-dev-occt-webworker.js";
     }
 }
 
 /**
  * Creates an OCCT worker from CDN.
- * No local files needed - worker is loaded from CDN.
+ * No local files needed - worker is loaded directly from CDN.
  * 
  * @param cdnUrl - Optional custom CDN URL
  * @param loadFonts - Array of font keys to load, or undefined to load all fonts. Empty array skips font loading.
- * @param architecture - Worker architecture: "32" (default), "64-bit", or "64-bit-mt"
+ * @param architecture - Worker architecture: "32" (default), "64", or "64-mt"
  */
 export function createOcctWorkerFromCDN(cdnUrl?: string, loadFonts?: string[], architecture?: WorkerArchitecture): Worker {
     const baseUrl = cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL;
     const filename = getOcctWorkerFilename(architecture);
     const scriptUrl = `${baseUrl}/workers/${filename}`;
-    const workerUrl = getWorkerURL(scriptUrl);
-    const worker = new Worker(workerUrl, { name: "OCC_WORKER" });
+    
+    
+        // 64-bit-mt workers require ES module workers because Emscripten pthreads
+        // internally spawn workers with type: "module".
+        // Use blob wrapper with static import to avoid CORS issues.
+        const workerUrl = getModuleWorkerURL(scriptUrl);
+      const  worker = new Worker(workerUrl, { type: "module", name: "OCC_WORKER" });
+        URL.revokeObjectURL(workerUrl);
+    
     // Pass empty array if loadFonts is undefined to avoid loading all fonts by default
     worker.postMessage({ type: "initialise", loadFonts: loadFonts ?? [] });
-    URL.revokeObjectURL(workerUrl);
     return worker;
 }
 
@@ -108,8 +127,9 @@ export function createOcctWorkerFromCDN(cdnUrl?: string, loadFonts?: string[], a
  */
 export function createJscadWorkerFromCDN(cdnUrl?: string): Worker {
     const baseUrl = cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL;
-    const scriptUrl = `${baseUrl}/workers/bitbybit-jscad-webworker.js`;
-    const workerUrl = getWorkerURL(scriptUrl);
+    const scriptUrl = `${baseUrl}/workers/bitbybit-dev-jscad-webworker.js`;
+    // JSCAD workers are classic (non-ES module) workers, use importScripts via blob
+    const workerUrl = getClassicWorkerURL(scriptUrl);
     const worker = new Worker(workerUrl, { name: "JSCAD_WORKER" });
     URL.revokeObjectURL(workerUrl);
     return worker;
@@ -124,8 +144,9 @@ export function createJscadWorkerFromCDN(cdnUrl?: string): Worker {
  */
 export function createManifoldWorkerFromCDN(cdnUrl?: string): Worker {
     const baseUrl = cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL;
-    const scriptUrl = `${baseUrl}/workers/bitbybit-manifold-webworker.js`;
-    const workerUrl = getWorkerURL(scriptUrl);
+    const scriptUrl = `${baseUrl}/workers/bitbybit-dev-manifold-webworker.js`;
+    // Manifold workers are classic (non-ES module) workers, use importScripts via blob
+    const workerUrl = getClassicWorkerURL(scriptUrl);
     const worker = new Worker(workerUrl, { name: "MANIFOLD_WORKER" });
     URL.revokeObjectURL(workerUrl);
     return worker;

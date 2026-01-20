@@ -1,5 +1,6 @@
 import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, Handle_Geom_Curve, EdgeCurveResult } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 
+// TODO - refactor so that this layer would not be needed anymore
 // This module provides compatibility between the old opencascade.js API patterns
 // and the new BitbybitOcct helper function patterns.
 

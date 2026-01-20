@@ -9,5 +9,5 @@
 //   - Access to >4GB memory for large CAD models
 //   - Parallel operations for faster processing
 
-export { default } from "./bitbybit-dev-occt-64-bit-mt.js";
-export * from "./bitbybit-dev-occt-64-bit-mt.js";
+export { default } from './bitbybit-dev-occt-64-bit-mt.js';
+export * from './bitbybit-dev-occt-64-bit-mt.js';
