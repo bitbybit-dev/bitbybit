@@ -63,8 +63,7 @@ function getClassicWorkerURL(url: string): string {
 
 /**
  * Creates a blob URL that uses a static import to load an ES module worker script.
- * This is required for 64-bit-mt workers which use Emscripten pthreads that internally
- * spawn workers with type: "module".
+ * This is required for all OCCT workers which are built as ES modules.
  * 
  * Note: We use static import (not dynamic import()) so the module is fully loaded
  * and its message handlers are registered before any messages are sent.
@@ -105,12 +104,10 @@ export function createOcctWorkerFromCDN(cdnUrl?: string, loadFonts?: string[], a
     const filename = getOcctWorkerFilename(architecture);
     const scriptUrl = `${baseUrl}/workers/${filename}`;
     
-    
-        // 64-bit-mt workers require ES module workers because Emscripten pthreads
-        // internally spawn workers with type: "module".
-        // Use blob wrapper with static import to avoid CORS issues.
-        const workerUrl = getModuleWorkerURL(scriptUrl);
-      const  worker = new Worker(workerUrl, { type: "module", name: "OCC_WORKER" });
+    // All OCCT workers are built as ES modules.
+    // Use blob wrapper with static import to avoid CORS issues.
+    const workerUrl = getModuleWorkerURL(scriptUrl);
+    const worker = new Worker(workerUrl, { type: "module", name: "OCC_WORKER" });
         URL.revokeObjectURL(workerUrl);
     
     // Pass empty array if loadFonts is undefined to avoid loading all fonts by default
