@@ -299,20 +299,6 @@ export class OCCTWire {
     }
 
     /**
-     * Creates OpenCascade symmetric periodic BSpline wire from points.
-     * Uses chord-based tangent constraints to ensure the curve is symmetrical
-     * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
-     * @param inputs Points through which to make the curve
-     * @returns Symmetric periodic BSpline wire
-     * @group via points
-     * @shortname interpolate symmetric
-     * @drawable true
-     */
-    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolationDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
-        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.interpolatePointsSymmetric", inputs);
-    }
-
-    /**
      * Creates OpenCascade BSPline wire
      * @param inputs Points through which to make BSpline
      * @returns OpenCascade BSpline wire
