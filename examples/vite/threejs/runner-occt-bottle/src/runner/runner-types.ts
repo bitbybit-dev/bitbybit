@@ -58,7 +58,7 @@ export interface RunOptionsInterface {
    */
   loadFonts?: fontsEnum[];
   /**
-   * URL to use for CDN of the runner. By default when this is not provided we're using jsdelivr, but if you'd like to host these assets yourself or use our fallback CDN - that's totally fine.
+   * URL to use for CDN of the runner. By default when this is not provided we're using Bitbybit CDN, but if you'd like to host these assets yourself or use our fallback CDN - that's totally fine.
    */
   cdnUrl?: string;
   /**

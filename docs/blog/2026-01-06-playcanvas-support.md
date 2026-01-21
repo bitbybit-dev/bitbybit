@@ -66,7 +66,7 @@ The PlayCanvas Runner follows the same architecture as our other runners, suppor
 
 ### How to Include the PlayCanvas Runner
 
-The runners are served from the **jsDelivr CDN**. Include them in your website with these script tags (replace `<version-number-of-bitbybit>` with the actual version):
+The runners are served from the **Bitbybit CDN**. Include them in your website with these script tags (replace `<version-number-of-bitbybit>` with the actual version):
 
 :::tip Self-Hosting
 For production applications, consider [**self-hosting the runners and assets**](/learn/hosting-and-cdn) for improved reliability and performance.
@@ -74,11 +74,11 @@ For production applications, consider [**self-hosting the runners and assets**](
 
 *   **PlayCanvas Runner (Full):**
     ```html
-    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-playcanvas.js"></script>
+    <script src="https://git-cdn.bitbybit.dev/v<version-number-of-bitbybit>/runner/bitbybit-runner-playcanvas.js"></script>
     ```
 *   **PlayCanvas Runner (Lite):**
     ```html
-    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-lite-playcanvas.js"></script>
+    <script src="https://git-cdn.bitbybit.dev/v<version-number-of-bitbybit>/runner/bitbybit-runner-lite-playcanvas.js"></script>
     ```
 
 You can find all official Bitbybit versions on [GitHub Releases](https://github.com/bitbybit-dev/bitbybit/releases).

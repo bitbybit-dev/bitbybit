@@ -162,6 +162,6 @@ While the process is designed to be straightforward, there are still a few steps
 
 First, you must include the `BITBYBIT-RUNNER.JS` script on your website. This single script will automatically load all the necessary resources, including WebAssembly modules, and instantiate web workers and physics engines. Once that's done, you can run your exported scripts and interact with them.
 
-The JavaScript file is hosted on the JSDelivr CDN and can be included on your website by adding this script tag to your HTML (usually in the `<head>` or before the closing `</body>` tag):
+The JavaScript file is hosted on the Bitbybit CDN and can be included on your website by adding this script tag to your HTML (usually in the `<head>` or before the closing `</body>` tag):
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-babylonjs.js"></script>
+<script src="https://git-cdn.bitbybit.dev/latest/runner/bitbybit-runner-babylonjs.js"></script>
