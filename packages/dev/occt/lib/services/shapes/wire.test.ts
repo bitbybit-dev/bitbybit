@@ -627,18 +627,18 @@ describe("OCCT wire unit tests", () => {
     });
 
     it("should throw error if shape is undefined", async () => {
-        expect(() => wire.getWire({ shape: undefined, index: 0 })).toThrowError("Shape is not provided or is null");
+        expect(() => wire.getWire({ shape: undefined, index: 0 })).toThrow("Shape is not provided or is null");
     });
 
     it("should throw error if shape is of incorrect type", async () => {
         const b = edge.createCircleEdge({ radius: 5, center: [0, 0, 0], direction: [0, 0, 1] });
-        expect(() => wire.getWire({ shape: b, index: 0 })).toThrowError("Shape is of incorrect type");
+        expect(() => wire.getWire({ shape: b, index: 0 })).toThrow("Shape is of incorrect type");
         b.delete();
     });
 
     it("should throw error if innerWire not found", async () => {
         const rect = wire.createRectangleWire({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 1, 0] });
-        expect(() => wire.getWire({ shape: rect, index: 10 })).toThrowError("Shape is of incorrect type");
+        expect(() => wire.getWire({ shape: rect, index: 10 })).toThrow("Shape is of incorrect type");
     });
 
     it("should get start point on a wire", async () => {
@@ -1062,7 +1062,7 @@ describe("OCCT wire unit tests", () => {
         const w1 = wire.createBezier({ points: [[3, 4, 0], [4, 4, 0], [5, 5, 0]], closed: false });
         const w2 = wire.createBezier({ points: [[5, 5, 0], [6, 6, 0], [7, 7, 0]], closed: false });
         expect(() => wire.addEdgesAndWiresToWire({ shape: wBase, shapes: [e1, e2, w1, w2] }))
-            .toThrowError("Wire could not be constructed. Check if edges and wires do not have disconnected elements.");
+            .toThrow("Wire could not be constructed. Check if edges and wires do not have disconnected elements.");
         wBase.delete();
         e1.delete();
         e2.delete();

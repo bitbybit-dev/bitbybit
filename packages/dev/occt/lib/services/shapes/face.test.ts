@@ -57,7 +57,7 @@ describe("OCCT face unit tests", () => {
 
     it("should not create a good face from shape that is not a wire", async () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
-        expect(() => face.createFaceFromWire({ shape: b, planar: false })).toThrowError("Provided input shape is not a wire");
+        expect(() => face.createFaceFromWire({ shape: b, planar: false })).toThrow("Provided input shape is not a wire");
         b.delete();
     });
 
@@ -800,19 +800,19 @@ describe("OCCT face unit tests", () => {
 
     it("should not get a face of a shape that does not have faces", async () => {
         const d = occHelper.edgesService.lineEdge({ start: [0, 0, 0], end: [1, 1, 1] });
-        expect(() => face.getFace({ shape: d, index: 22 })).toThrowError("Shape is of incorrect type");
+        expect(() => face.getFace({ shape: d, index: 22 })).toThrow("Shape is of incorrect type");
         d.delete();
     });
 
     it("should not get a face of a shape that does not have particular index", async () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
-        expect(() => face.getFace({ shape: b, index: 22 })).toThrowError("Face index is out of range");
+        expect(() => face.getFace({ shape: b, index: 22 })).toThrow("Face index is out of range");
         b.delete();
     });
 
     it("should not get a face of a shape that does not have particular index", async () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
-        expect(() => face.getFace({ shape: b, index: -22 })).toThrowError("Face index is out of range");
+        expect(() => face.getFace({ shape: b, index: -22 })).toThrow("Face index is out of range");
         b.delete();
     });
 
@@ -1166,7 +1166,7 @@ describe("OCCT face unit tests", () => {
                     unify: true,
                     tolerance: 1e-7
                 });
-            }).toThrowError("All lists of circles must have the same length in order to use inOrder strategy.");
+            }).toThrow("All lists of circles must have the same length in order to use inOrder strategy.");
 
             deleteCircleShapes(circle1, circle2, circle3, circlesOnPts1, circlesOnPts2, circlesOnPts3);
         });
@@ -1250,7 +1250,7 @@ describe("OCCT face unit tests", () => {
                     unify: true,
                     tolerance: 1e-7
                 });
-            }).toThrowError("All lists of circles must have the same length in order to use inOrderClosed strategy.");
+            }).toThrow("All lists of circles must have the same length in order to use inOrderClosed strategy.");
 
             deleteCircleShapes(circle1, circle2, circle3, circlesOnPts1, circlesOnPts2, circlesOnPts3);
         });

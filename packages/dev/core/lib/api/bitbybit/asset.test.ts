@@ -17,12 +17,12 @@ describe("Asset unit tests", () => {
 
     it("should get file", async () => {
         asset.getFile({ fileName: "test" });
-        expect(assetManager.getAsset).toBeCalledWith("test");
+        expect(assetManager.getAsset).toHaveBeenCalledWith("test");
     });
 
     it("should get file", async () => {
         asset.getLocalFile({ fileName: "test" });
-        expect(assetManager.getLocalAsset).toBeCalledWith("test");
+        expect(assetManager.getLocalAsset).toHaveBeenCalledWith("test");
     });
 
     it("should fetch blob", async () => {
