@@ -34,7 +34,7 @@ export class OCCTDimensions {
     }
 
     /**
-     * Creates pin label. It can be used to explain things about the models or mark important things in the 3D scene.
+     * Creates pin label. It can be used to explain things about the models or mark things in the 3D scene.
      * @param inputs a start and end point, direction and parameters for the label
      * @returns compound wires representing dimension
      * @group simple

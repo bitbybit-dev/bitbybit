@@ -105,7 +105,7 @@ export class OCCTVertex {
     }
 
     /**
-     * Project points on a shape and return the projected points - length of the vector is important
+     * Project points on a shape and return the projected points - length of the vector is essential
      * @param inputs points, shape and direction that includes the length
      * @returns Points
      * @group place
