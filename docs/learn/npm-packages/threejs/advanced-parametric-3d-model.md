@@ -11,6 +11,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 import Admonition from '@theme/Admonition';
+import Version from '@site/src/components/Version';
 
 # Advanced Parametric 3D Model with ThreeJS & Bitbybit
 
@@ -64,7 +65,7 @@ This project is typically structured with:
     *   `gui-helper.ts`: Provides utility functions for managing the GUI state (e.g., showing/hiding a spinner, disabling/enabling GUI).
 
 <Admonition type="info" title="Simplified Kernel Initialization">
-  Since version 0.21.1, Bitbybit provides a simplified `initBitByBit()` helper function that handles all worker creation and kernel initialization automatically by loading kernels from CDN. This eliminates the need for manual worker file setup. For details, see our [**ThreeJS Integration Starter Tutorial**](./start-with-three-js). If you need to host assets on your own infrastructure, see [Self-Hosting Assets](/learn/hosting-and-cdn).
+  Since version <Version />, Bitbybit provides a simplified `initBitByBit()` helper function that handles all worker creation and kernel initialization automatically by loading kernels from CDN. This eliminates the need for manual worker file setup. For details, see our [**ThreeJS Integration Starter Tutorial**](./start-with-three-js). If you need to host assets on your own infrastructure, see [Self-Hosting Assets](/learn/hosting-and-cdn).
 </Admonition>
 
 ## 1. HTML Setup (`index.html`)

@@ -6,6 +6,8 @@ description: Learn about common settings shared across BITBYBIT VIEWER, RUNNER, 
 tags: [shopify, 3d-bits]
 ---
 
+import Version from '@site/src/components/Version';
+
 # Common Settings
 
 This guide explains settings that are shared across multiple **3D Bits** theme app extension blocks. Understanding these common settings helps you configure your 3D experiences consistently and efficiently.
@@ -121,7 +123,7 @@ These settings are specific to RUNNER and APPS blocks:
 ### Runner CDN Link
 
 **Available in:** VIEWER, RUNNER  
-**Default:** `https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.21.1/runner/bitbybit-runner-babylonjs.js`
+**Default:** `https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<Version />/runner/bitbybit-runner-babylonjs.js`
 
 Specifies which version of the Bitbybit runner library to use. The runner is the core engine that loads and renders 3D content in your browser.
 
@@ -173,7 +175,7 @@ The URL follows this pattern:
 https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@{VERSION}/runner/bitbybit-runner-babylonjs.js
 ```
 
-Replace `{VERSION}` with the desired version number (e.g., `0.21.1`).
+Replace `{VERSION}` with the desired version number (e.g., `<Version />`).
 
 **Self-Hosting on Shopify CDN:**
 

@@ -9,6 +9,7 @@ tags: [getting-started, runners, blockly]
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Version from '@site/src/components/Version';
 
 # Building a 3D Table Configurator with Blockly & Bitbybit Runner
 
@@ -66,7 +67,7 @@ Below are the `index.html` and `script.js` files you would use on StackBlitz or 
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width" />
             <link rel="stylesheet" href="styles.css" />
-            <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.21.1/runner/bitbybit-runner-babylonjs.js"></script>
+            <script src={`https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<Version />/runner/bitbybit-runner-babylonjs.js`}></script>
             <script type="module" src="script.js"></script>
         </head>
         <body>

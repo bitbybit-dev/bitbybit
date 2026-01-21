@@ -9,6 +9,79 @@ image: https://ik.imagekit.io/bitbybit/app/assets/blog/ai-prompt-contexts/ai-pro
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import { DownloadButton } from '@site/src/components/DownloadButton';
+import Version, { useBitbybitVersion } from '@site/src/components/Version';
+
+export function DownloadButtons() {
+  const version = useBitbybitVersion();
+  
+  return (
+    <Tabs>
+      <TabItem value="monaco" label="Monaco Editor" default>
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(240, 206, 187, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(240, 206, 187, 0.3)', marginBottom: '20px' }}>
+          <h4 style={{ marginTop: 0, color: '#F0CEBB' }}>Monaco Editor Context (Beginner-Friendly)</h4>
+          <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>For users of our online TypeScript editor at <a href="https://bitbybit.dev/app?editor=typescript">bitbybit.dev/app</a></p>
+          <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Context (Dictionary Translation)</h5>
+          <div>
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-babylon-monaco-ai-context-v${version}.md`} label="Monaco Context (~132k tokens)" variant="full" />
+          </div>
+          <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+          <div>
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-babylon-formatted-v${version}.d.ts`} label=".d.ts with Comments (~612k tokens)" variant="full" />
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-babylon-formatted-no-comments-v${version}.d.ts`} label=".d.ts without Comments (~210k tokens)" variant="lite" />
+          </div>
+        </div>
+      </TabItem>
+      <TabItem value="babylonjs" label="BabylonJS">
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(187, 70, 75, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(187, 70, 75, 0.3)', marginBottom: '20px' }}>
+          <h4 style={{ marginTop: 0, color: '#BB464B' }}>BabylonJS Context Files</h4>
+          <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Full-featured 3D engine with powerful rendering capabilities</p>
+          <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
+          <div>
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-babylon-ai-context-v${version}.md`} label="Full Context (~126k tokens)" variant="full" />
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-babylon-no-comment-min-ai-v${version}.md`} label="Lite Context (~128k tokens)" variant="lite" />
+          </div>
+          <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+          <div>
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-babylon-formatted-v${version}.d.ts`} label=".d.ts with Comments (~612k tokens)" variant="full" />
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-babylon-formatted-no-comments-v${version}.d.ts`} label=".d.ts without Comments (~210k tokens)" variant="lite" />
+          </div>
+        </div>
+      </TabItem>
+      <TabItem value="threejs" label="ThreeJS">
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(4, 158, 244, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(4, 158, 244, 0.3)', marginBottom: '20px' }}>
+          <h4 style={{ marginTop: 0, color: '#049EF4' }}>ThreeJS Context Files</h4>
+          <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Popular, lightweight 3D library for web applications</p>
+          <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
+          <div>
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-three-ai-context-v${version}.md`} label="Full Context (~95k tokens)" variant="full" />
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-three-no-comment-min-ai-v${version}.md`} label="Lite Context (~87k tokens)" variant="lite" />
+          </div>
+          <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+          <div>
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-three-formatted-v${version}.d.ts`} label=".d.ts with Comments (~461k tokens)" variant="full" />
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-three-formatted-no-comments-v${version}.d.ts`} label=".d.ts without Comments (~151k tokens)" variant="lite" />
+          </div>
+        </div>
+      </TabItem>
+      <TabItem value="playcanvas" label="PlayCanvas">
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(255, 107, 53, 0.3)', marginBottom: '20px' }}>
+          <h4 style={{ marginTop: 0, color: '#FF6B35' }}>PlayCanvas Context Files</h4>
+          <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Game engine with visual editor and runtime</p>
+          <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
+          <div>
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-playcanvas-ai-context-v${version}.md`} label="Full Context (~87k tokens)" variant="full" />
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-playcanvas-no-comment-min-ai-v${version}.md`} label="Lite Context (~87k tokens)" variant="lite" />
+          </div>
+          <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
+          <div>
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-playcanvas-formatted-v${version}.d.ts`} label=".d.ts with Comments (~460k tokens)" variant="full" />
+            <DownloadButton href={`https://app.bitbybit.dev/assets/ai-prompt-context/v${version}/bitbybit-playcanvas-formatted-no-comments-v${version}.d.ts`} label=".d.ts without Comments (~151k tokens)" variant="lite" />
+          </div>
+        </div>
+      </TabItem>
+    </Tabs>
+  );
+}
 
 ![AI Prompt Contexts for Bitbybit](https://ik.imagekit.io/bitbybit/app/assets/blog/ai-prompt-contexts/ai-prompt-contexts.webp "AI Prompt Contexts for Bitbybit")
 
@@ -18,83 +91,9 @@ Modern AI assistants like Claude, Gemini, Grok or ChatGPT or are remarkably capa
 
 Choose the context file that matches your 3D rendering engine. **Right-click and "Save As"** to download, or open and copy the content. Read on below for guidance on which format to choose.
 
-<Tabs>
-  <TabItem value="monaco" label="Monaco Editor" default>
-    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(240, 206, 187, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(240, 206, 187, 0.3)', marginBottom: '20px' }}>
-      <h4 style={{ marginTop: 0, color: '#F0CEBB' }}>Monaco Editor Context (Beginner-Friendly)</h4>
-      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>For users of our online TypeScript editor at <a href="https://bitbybit.dev/app?editor=typescript">bitbybit.dev/app</a></p>
-      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Context (Dictionary Translation)</h5>
-      <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-monaco-ai-context-v0.21.1.md" label="Monaco Context (~132k tokens)" variant="full" />
-      </div>
-      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
-      <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~612k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~210k tokens)" variant="lite" />
-      </div>
-    </div>
-  </TabItem>
-  <TabItem value="babylonjs" label="BabylonJS">
-    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(187, 70, 75, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(187, 70, 75, 0.3)', marginBottom: '20px' }}>
-      <h4 style={{ marginTop: 0, color: '#BB464B' }}>BabylonJS Context Files</h4>
-      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Full-featured 3D engine with powerful rendering capabilities</p>
-      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
-      <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-ai-context-v0.21.1.md" label="Full Context (~126k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-no-comment-min-ai-v0.21.1.md" label="Lite Context (~128k tokens)" variant="lite" />
-      </div>
-      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
-      <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~612k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~210k tokens)" variant="lite" />
-      </div>
-    </div>
-  </TabItem>
-  <TabItem value="threejs" label="ThreeJS">
-    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(4, 158, 244, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(4, 158, 244, 0.3)', marginBottom: '20px' }}>
-      <h4 style={{ marginTop: 0, color: '#049EF4' }}>ThreeJS Context Files</h4>
-      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Popular, lightweight 3D library for web applications</p>
-      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
-      <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-ai-context-v0.21.1.md" label="Full Context (~95k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-no-comment-min-ai-v0.21.1.md" label="Lite Context (~87k tokens)" variant="lite" />
-      </div>
-      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
-      <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~461k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~151k tokens)" variant="lite" />
-      </div>
-    </div>
-  </TabItem>
-  <TabItem value="playcanvas" label="PlayCanvas">
-    <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(30, 32, 36, 0.8) 100%)', borderRadius: '12px', border: '1px solid rgba(255, 107, 53, 0.3)', marginBottom: '20px' }}>
-      <h4 style={{ marginTop: 0, color: '#FF6B35' }}>PlayCanvas Context Files</h4>
-      <p style={{ color: 'var(--ifm-font-color-base)', opacity: 0.8, marginBottom: '20px' }}>Game engine with visual editor and runtime</p>
-      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>Markdown Contexts (Dictionary Translation)</h5>
-      <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md" label="Full Context (~87k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md" label="Lite Context (~87k tokens)" variant="lite" />
-      </div>
-      <h5 style={{ marginTop: '16px', marginBottom: '12px', color: 'var(--ifm-font-color-base)' }}>TypeScript Declarations (No Translation)</h5>
-      <div>
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-v0.21.1.d.ts" label=".d.ts with Comments (~460k tokens)" variant="full" />
-        <DownloadButton href="https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-no-comments-v0.21.1.d.ts" label=".d.ts without Comments (~151k tokens)" variant="lite" />
-      </div>
-    </div>
-  </TabItem>
-</Tabs>
-
-:::tip Which format should I choose?
-- **Markdown Full Context** - Best for beginners. Includes explanations, setup guides, and complete API reference.
-- **Markdown Lite Context** - Best for experienced developers. Minimal size, just API definitions.
-- **TypeScript .d.ts** - Best for AI agents that struggle with dictionary translation, or agents that support lookahead reading.
-:::
+<DownloadButtons />
 
 <!-- truncate -->
-
-## What Are AI Prompt Contexts?
-
-An AI Prompt Context is a markdown file designed to be attached to conversations with AI coding assistants. When you provide this context file, the AI gains comprehensive knowledge about Bitbybit's API, coding patterns, best practices, and integration approaches. Think of it as giving your AI assistant a complete reference manual it can consult while helping you write code.
 
 We've structured these context files specifically for AI consumption. They include clear role definitions that tell the AI how to behave, complete API references with all available functions and their parameters, code examples demonstrating correct usage patterns, and decision trees that help the AI recommend the right approach based on your experience level.
 
