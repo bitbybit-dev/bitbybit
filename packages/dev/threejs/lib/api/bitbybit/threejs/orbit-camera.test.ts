@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ThreeJSOrbitCamera, OrbitCameraController, OrbitCameraInstance } from "./orbit-camera";
 import { Context } from "../../context";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 import * as THREEJS from "three";
 import { createMockContext, createSimpleMockContext, createMockDOMElement } from "../../__mocks__/test-helpers";
 

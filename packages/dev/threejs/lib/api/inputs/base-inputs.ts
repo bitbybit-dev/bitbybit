@@ -1,48 +1,54 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Re-export Base namespace from @bitbybit-dev/core and extend with Three.js-specific types.
+ * This includes the base types + core extensions (VerbCurve, VerbSurface, colorMapStrategyEnum, etc.)
+ */
+import { Base as CoreBase } from "@bitbybit-dev/core";
+
 export namespace Base {
-    /**
-     * Defines how colors are mapped to entities when there are more entities than colors.
-     * - firstColorForAll: Uses the first color for all entities (legacy behavior)
-     * - lastColorRemainder: Maps colors 1:1, then uses last color for remaining entities
-     * - repeatColors: Cycles through colors in a repeating pattern
-     * - reversedColors: After exhausting colors, reverses direction (ping-pong pattern)
-     */
-    export enum colorMapStrategyEnum {
-        /** Uses the first color for all entities (legacy behavior) */
-        firstColorForAll = "firstColorForAll",
-        /** Maps colors 1:1, then uses last color for remaining entities */
-        lastColorRemainder = "lastColorRemainder",
-        /** Cycles through colors in a repeating pattern */
-        repeatColors = "repeatColors",
-        /** After exhausting colors, reverses direction (ping-pong pattern) */
-        reversedColors = "reversedColors",
-    }
-    export type Color = string;
-    export type ColorRGB = { r: number, g: number, b: number };
-    export type Material = any;
+    // Re-export all types from core package (which includes base types)
+    export type Color = CoreBase.Color;
+    export type ColorRGB = CoreBase.ColorRGB;
+    export type Material = CoreBase.Material;
+    export type Point2 = CoreBase.Point2;
+    export type Vector2 = CoreBase.Vector2;
+    export type Point3 = CoreBase.Point3;
+    export type Vector3 = CoreBase.Vector3;
+    export type Axis3 = CoreBase.Axis3;
+    export type Axis2 = CoreBase.Axis2;
+    export type Segment2 = CoreBase.Segment2;
+    export type Segment3 = CoreBase.Segment3;
+    export type TrianglePlane3 = CoreBase.TrianglePlane3;
+    export type Triangle3 = CoreBase.Triangle3;
+    export type Mesh3 = CoreBase.Mesh3;
+    export type Plane3 = CoreBase.Plane3;
+    export type BoundingBox = CoreBase.BoundingBox;
+    export type Line2 = CoreBase.Line2;
+    export type Line3 = CoreBase.Line3;
+    export type Polyline3 = CoreBase.Polyline3;
+    export type Polyline2 = CoreBase.Polyline2;
+    export type TransformMatrix3x3 = CoreBase.TransformMatrix3x3;
+    export type TransformMatrixes3x3 = CoreBase.TransformMatrixes3x3;
+    export type TransformMatrix = CoreBase.TransformMatrix;
+    export type TransformMatrixes = CoreBase.TransformMatrixes;
+
+    // Re-export enums from base package
+    export const horizontalAlignEnum = CoreBase.horizontalAlignEnum;
+    export type horizontalAlignEnum = CoreBase.horizontalAlignEnum;
+    export const verticalAlignmentEnum = CoreBase.verticalAlignmentEnum;
+    export type verticalAlignmentEnum = CoreBase.verticalAlignmentEnum;
+    export const topBottomEnum = CoreBase.topBottomEnum;
+    export type topBottomEnum = CoreBase.topBottomEnum;
+    export const basicAlignmentEnum = CoreBase.basicAlignmentEnum;
+    export type basicAlignmentEnum = CoreBase.basicAlignmentEnum;
+
+    // Re-export core-specific types and enums
+    export const colorMapStrategyEnum = CoreBase.colorMapStrategyEnum;
+    export type colorMapStrategyEnum = CoreBase.colorMapStrategyEnum;
+    export type VerbCurve = CoreBase.VerbCurve;
+    export type VerbSurface = CoreBase.VerbSurface;
+
+    // Three.js-specific types
+    /** Texture type for Three.js materials */
     export type Texture = any;
-    export type Point2 = [number, number];
-    export type Vector2 = [number, number];
-    export type Point3 = [number, number, number];
-    export type Vector3 = [number, number, number];
-    export type Axis3 = {origin: Base.Point3, direction: Base.Vector3};
-    export type Axis2 = {origin: Base.Point2, direction: Base.Vector2};
-    export type Segment2 = [Point2, Point2];
-    export type Segment3 = [Point3, Point3];
-    // Triangle plane is efficient defininition described by a normal vector and d value (N dot X = d)
-    export type TrianglePlane3 = { normal: Vector3; d: number; }
-    export type Triangle3 = [Base.Point3, Base.Point3, Base.Point3];
-    export type Mesh3 = Triangle3[];
-    export type Plane3 = { origin: Base.Point3, normal: Base.Vector3, direction: Base.Vector3 };
-    export type BoundingBox = { min: Base.Point3, max: Base.Point3, center?: Base.Point3, width?: number, height?: number, length?: number };
-    export type Line2 = { start: Base.Point2, end: Base.Point2 };
-    export type Line3 = { start: Base.Point3, end: Base.Point3 };
-    export type Polyline3 = { points: Base.Point3[], isClosed?: boolean, color?: number[] };
-    export type Polyline2 = { points: Base.Point2[], isClosed?: boolean, color?: number[] };
-    export type VerbCurve = { tessellate: (options: any) => any };
-    export type VerbSurface = { tessellate: (options: any) => any };
-    export type TransformMatrix3x3 = [number, number, number, number, number, number, number, number, number];
-    export type TransformMatrixes3x3 = TransformMatrix3x3[];
-    export type TransformMatrix = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
-    export type TransformMatrixes = TransformMatrix[];
 }

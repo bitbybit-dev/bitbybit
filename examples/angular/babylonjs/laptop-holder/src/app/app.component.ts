@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { BitByBitBase } from '@bitbybit-dev/babylonjs';
-import { OccStateEnum } from '@bitbybit-dev/occt-worker';
-import { Scene, Engine, Color4, Color3, HemisphericLight, Vector3, ArcRotateCamera, Light } from '@babylonjs/core';
-import { LaptopLogic } from './laptop';
+import { Component } from "@angular/core";
+import { BitByBitBase } from "@bitbybit-dev/babylonjs";
+import { OccStateEnum } from "@bitbybit-dev/occt-worker";
+import { Scene, Engine, Color4, HemisphericLight, Vector3, ArcRotateCamera, Light } from "@babylonjs/core";
+import { LaptopLogic } from "./laptop";
 class Laptop {
     id: string;
     width: number;
@@ -11,15 +11,15 @@ class Laptop {
 }
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css'],
+    selector: "app-root",
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.css"],
 })
 export class AppComponent {
 
-    bitbybit = new BitByBitBase()
+    bitbybit = new BitByBitBase();
 
-    title = 'trialwebsite';
+    title = "trialwebsite";
     showSpinner = true;
     bitbybitInitialised = false;
 
@@ -31,7 +31,7 @@ export class AppComponent {
             length: 1.5,
             height: 21.24,
         }
-    ]
+    ];
 
     scene: Scene;
     engine: Engine;
@@ -41,25 +41,25 @@ export class AppComponent {
 
     renderLoopFunction = () => {
         this.scene.render();
-    }
+    };
 
     ngOnInit() {
-        const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+        const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 
         this.engine = new Engine(canvas);
         this.scene = new Scene(this.engine);
         this.engine.setHardwareScalingLevel(0.5);
         this.scene.clearColor = new Color4(26 / 255, 28 / 255, 31 / 255, 1);
-        const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
+        const camera = new ArcRotateCamera("Camera", 0, 10, 10, new Vector3(0, 0, 0), this.scene);
         camera.attachControl(canvas, true);
 
-        const light = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
+        const light = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), this.scene);
         light.intensityMode = Light.INTENSITYMODE_ILLUMINANCE;
         light.intensity = 1;
         this.scene.metadata = { shadowGenerators: [] };
 
-        const occt = new Worker(new URL('./occ.worker', import.meta.url), { name: 'OCC', type: 'module' })
-        const jscad = new Worker(new URL('./jscad.worker', import.meta.url), { name: 'JSCAD', type: 'module' })
+        const occt = new Worker(new URL("./occ.worker", import.meta.url), { name: "OCC", type: "module" });
+        const jscad = new Worker(new URL("./jscad.worker", import.meta.url), { name: "JSCAD", type: "module" });
 
         this.bitbybit.init(this.scene, occt, jscad);
 
@@ -83,7 +83,7 @@ export class AppComponent {
             if (this.engine) {
                 this.engine.resize();
             }
-        }
+        };
     }
 
     async jscadDrawBox() {
@@ -146,7 +146,7 @@ export class AppComponent {
                 } else if (laptop.width !== c.width || laptop.height !== c.height || laptop.length !== c.length) {
                     result = true;
                 }
-            })
+            });
         }
         return result;
     }

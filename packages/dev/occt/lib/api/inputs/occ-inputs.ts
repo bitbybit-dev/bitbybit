@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Base } from "./inputs";
+import { Base } from "@bitbybit-dev/base";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 
 export namespace OCCT {
@@ -2608,6 +2608,49 @@ export namespace OCCT {
         direction: Base.Point3 = [0, 1, 0];
 
     }
+    export class TorusDto {
+        constructor(majorRadius?: number, minorRadius?: number, center?: Base.Point3, direction?: Base.Vector3, angle?: number) {
+            if (majorRadius !== undefined) { this.majorRadius = majorRadius; }
+            if (minorRadius !== undefined) { this.minorRadius = minorRadius; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (angle !== undefined) { this.angle = angle; }
+        }
+        /**
+         * Major radius (distance from the center of the torus to the center of the pipe)
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        majorRadius = 2;
+        /**
+         * Minor radius (radius of the pipe)
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        minorRadius = 0.5;
+        /**
+         * Center of the torus
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction (axis) of the torus
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * Angle of the torus segment in degrees (360 for full torus)
+         * @default 360
+         * @minimum 0
+         * @maximum 360
+         * @step 1
+         */
+        angle? = 360;
+    }
     export class LineDto {
         constructor(start?: Base.Point3, end?: Base.Point3) {
             if (start !== undefined) { this.start = start; }
@@ -5011,12 +5054,12 @@ export namespace OCCT {
         shape: T;
         /**
          * Index of the entity
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        index = 1;
+        index = 0;
     }
     export class RotationExtrudeDto<T> {
         constructor(shape?: T, height?: number, angle?: number, makeSolid?: boolean) {
@@ -6871,6 +6914,247 @@ export namespace OCCT {
          * @step 0.1
          */
         radiusMajor = 2;
+    }
+    export class HelixWireDto {
+        constructor(radius?: number, pitch?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3, clockwise?: boolean, tolerance?: number) {
+            if (radius !== undefined) { this.radius = radius; }
+            if (pitch !== undefined) { this.pitch = pitch; }
+            if (height !== undefined) { this.height = height; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (clockwise !== undefined) { this.clockwise = clockwise; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Radius of the helix
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius = 1;
+        /**
+         * Height per complete turn (vertical distance per 360°)
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        pitch = 1;
+        /**
+         * Total height of the helix
+         * @default 5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 5;
+        /**
+         * Center of the helix
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction of the helix axis
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * If true, helix winds clockwise when viewed from above
+         * @default false
+         */
+        clockwise = false;
+        /**
+         * Approximation tolerance
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance = 0.0001;
+    }
+    export class HelixWireByTurnsDto {
+        constructor(radius?: number, pitch?: number, numTurns?: number, center?: Base.Point3, direction?: Base.Vector3, clockwise?: boolean, tolerance?: number) {
+            if (radius !== undefined) { this.radius = radius; }
+            if (pitch !== undefined) { this.pitch = pitch; }
+            if (numTurns !== undefined) { this.numTurns = numTurns; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (clockwise !== undefined) { this.clockwise = clockwise; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Radius of the helix
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius = 1;
+        /**
+         * Height per complete turn
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        pitch = 1;
+        /**
+         * Number of complete turns
+         * @default 5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.5
+         */
+        numTurns = 5;
+        /**
+         * Center of the helix
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction of the helix axis
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * If true, helix winds clockwise when viewed from above
+         * @default false
+         */
+        clockwise = false;
+        /**
+         * Approximation tolerance
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance = 0.0001;
+    }
+    export class TaperedHelixWireDto {
+        constructor(startRadius?: number, endRadius?: number, pitch?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3, clockwise?: boolean, tolerance?: number) {
+            if (startRadius !== undefined) { this.startRadius = startRadius; }
+            if (endRadius !== undefined) { this.endRadius = endRadius; }
+            if (pitch !== undefined) { this.pitch = pitch; }
+            if (height !== undefined) { this.height = height; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (clockwise !== undefined) { this.clockwise = clockwise; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Starting radius of the tapered helix
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        startRadius = 2;
+        /**
+         * Ending radius of the tapered helix
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        endRadius = 0.5;
+        /**
+         * Height per complete turn
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        pitch = 1;
+        /**
+         * Total height of the helix
+         * @default 5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 5;
+        /**
+         * Center of the helix
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction of the helix axis
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * If true, helix winds clockwise when viewed from above
+         * @default false
+         */
+        clockwise = false;
+        /**
+         * Approximation tolerance
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance = 0.0001;
+    }
+    export class FlatSpiralWireDto {
+        constructor(startRadius?: number, endRadius?: number, numTurns?: number, center?: Base.Point3, direction?: Base.Vector3, clockwise?: boolean, tolerance?: number) {
+            if (startRadius !== undefined) { this.startRadius = startRadius; }
+            if (endRadius !== undefined) { this.endRadius = endRadius; }
+            if (numTurns !== undefined) { this.numTurns = numTurns; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (clockwise !== undefined) { this.clockwise = clockwise; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Starting radius from center
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        startRadius = 0.5;
+        /**
+         * Ending radius from center
+         * @default 5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        endRadius = 5;
+        /**
+         * Number of complete turns
+         * @default 5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.5
+         */
+        numTurns = 5;
+        /**
+         * Center of the spiral
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Normal direction of the spiral plane
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * If true, spiral winds clockwise when viewed from above
+         * @default false
+         */
+        clockwise = false;
+        /**
+         * Approximation tolerance
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance = 0.0001;
     }
     export class TextWiresDto {
         constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, origin?: Base.Point3, rotation?: number, direction?: Base.Vector3, centerOnOrigin?: boolean) {

@@ -1,12 +1,12 @@
 import { OccHelper } from "../../occ-helper";
-import { OpenCascadeInstance, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import { BitbybitOcctModule, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 
 export class OCCTSolid {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
@@ -41,6 +41,10 @@ export class OCCTSolid {
 
     createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Shape {
         return this.och.solidsService.createCone(inputs);
+    }
+
+    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Shape {
+        return this.och.solidsService.createTorus(inputs);
     }
 
     createIBeamProfileSolid(inputs: Inputs.OCCT.IBeamProfileSolidDto): TopoDS_Solid {
@@ -111,7 +115,7 @@ export class OCCTSolid {
         }
 
         // Get the face normal to determine actual extrusion direction
-        const faceCasted = this.occ.TopoDS.Face_1(face);
+        const faceCasted = this.occ.CastToFace(face);
         
         // Use face service methods to get UV bounds and normal at center
         const uMin = this.och.facesService.getUMinBound({ shape: faceCasted });
@@ -137,12 +141,13 @@ export class OCCTSolid {
 
         // Create forward extrusion if lengthFront > 0
         if (lengthFront > 0) {
-            const frontVec = new this.occ.gp_Vec_4(
+            const frontVec = new this.occ.gp_Vec(
                 normalizedDir[0] * lengthFront,
                 normalizedDir[1] * lengthFront,
                 normalizedDir[2] * lengthFront
             );
-            const frontPrism = new this.occ.BRepPrimAPI_MakePrism_1(face, frontVec, false, true);
+            // Use 2-parameter constructor - the 4-parameter version has binding issues in new Emscripten bindings
+            const frontPrism = new this.occ.BRepPrimAPI_MakePrism(face, frontVec);
             result = frontPrism.Shape();
             frontPrism.delete();
             frontVec.delete();
@@ -150,12 +155,13 @@ export class OCCTSolid {
 
         // If there's backward extrusion, add it
         if (lengthBack > 0) {
-            const backVec = new this.occ.gp_Vec_4(
+            const backVec = new this.occ.gp_Vec(
                 -normalizedDir[0] * lengthBack,
                 -normalizedDir[1] * lengthBack,
                 -normalizedDir[2] * lengthBack
             );
-            const backPrism = new this.occ.BRepPrimAPI_MakePrism_1(face, backVec, false, true);
+            // Use 2-parameter constructor - the 4-parameter version has binding issues in new Emscripten bindings
+            const backPrism = new this.occ.BRepPrimAPI_MakePrism(face, backVec);
             const backShape = backPrism.Shape();
             backPrism.delete();
             backVec.delete();

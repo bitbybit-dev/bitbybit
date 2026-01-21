@@ -1,14 +1,2 @@
-export * from "./color-inputs";
-export * from "./lists-inputs";
-export * from "./logic-inputs";
-export * from "./math-inputs";
-export * from "./point-inputs";
-export * from "./text-inputs";
-export * from "./text-inputs";
-export * from "./vector-inputs";
-export * from "./transforms-inputs";
-export * from "./dates-inputs";
-export * from "./line-inputs";
-export * from "./polyline-inputs";
-export * from "./mesh-inputs";
-export * from "./io-inputs";
+// Re-export everything from index for backward compatibility
+export * from "./index";

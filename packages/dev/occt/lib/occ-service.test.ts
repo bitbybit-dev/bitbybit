@@ -1,16 +1,16 @@
-import initOpenCascade, { OpenCascadeInstance } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
 import { VectorHelperService } from "./api/vector-helper.service";
 import { ShapesHelperService } from "./api/shapes-helper.service";
 import { OCCTService } from "./occ-service";
 
 describe("OCCT service unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let occHelper: OccHelper;
     let service: OCCTService;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
         occHelper = new OccHelper(vec, s, occt);

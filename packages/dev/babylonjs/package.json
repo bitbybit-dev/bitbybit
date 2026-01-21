@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/babylonjs",
-  "version": "0.21.1",
+  "version": "1.0.0-rc.0",
   "description": "Bit By Bit Developers BABYLONJS CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {
@@ -54,13 +54,13 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "@babylonjs/core": "8.45.4",
-    "@babylonjs/gui": "8.45.4",
+    "@babylonjs/core": "8.46.2",
+    "@babylonjs/gui": "8.46.2",
     "@babylonjs/havok": "1.3.10",
-    "@babylonjs/loaders": "8.45.4",
-    "@babylonjs/materials": "8.45.4",
-    "@babylonjs/serializers": "8.45.4",
-    "@bitbybit-dev/core": "0.21.1",
+    "@babylonjs/loaders": "8.46.2",
+    "@babylonjs/materials": "8.46.2",
+    "@babylonjs/serializers": "8.46.2",
+    "@bitbybit-dev/core": "1.0.0-rc.0",
     "earcut": "2.2.3"
   },
   "devDependencies": {
@@ -91,6 +91,22 @@
     "transformIgnorePatterns": [
       "node_modules/(?!@babylonjs|@bitbybit-dev)"
     ],
+    "moduleNameMapper": {
+      "^@bitbybit-dev/base$": "<rootDir>/../base/dist/index.js",
+      "^@bitbybit-dev/base/(.*)$": "<rootDir>/../base/dist/$1",
+      "^@bitbybit-dev/core$": "<rootDir>/../core/dist/index.js",
+      "^@bitbybit-dev/core/(.*)$": "<rootDir>/../core/dist/$1",
+      "^@bitbybit-dev/jscad$": "<rootDir>/../jscad/dist/index.js",
+      "^@bitbybit-dev/jscad/(.*)$": "<rootDir>/../jscad/dist/$1",
+      "^@bitbybit-dev/manifold$": "<rootDir>/../manifold/dist/index.js",
+      "^@bitbybit-dev/manifold/(.*)$": "<rootDir>/../manifold/dist/$1",
+      "^@bitbybit-dev/jscad-worker$": "<rootDir>/__mocks__/@bitbybit-dev/jscad-worker.ts",
+      "^@bitbybit-dev/jscad-worker/(.*)$": "<rootDir>/__mocks__/@bitbybit-dev/jscad-worker.ts",
+      "^@bitbybit-dev/manifold-worker$": "<rootDir>/__mocks__/@bitbybit-dev/manifold-worker.ts",
+      "^@bitbybit-dev/manifold-worker/(.*)$": "<rootDir>/__mocks__/@bitbybit-dev/manifold-worker.ts",
+      "^@bitbybit-dev/occt-worker$": "<rootDir>/__mocks__/@bitbybit-dev/occt-worker.ts",
+      "^@bitbybit-dev/occt-worker/(.*)$": "<rootDir>/__mocks__/@bitbybit-dev/occt-worker.ts"
+    },
     "collectCoverageFrom": [
       "lib/workers/**/*",
       "lib/api/**/*"

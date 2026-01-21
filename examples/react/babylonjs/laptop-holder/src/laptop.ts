@@ -76,6 +76,7 @@ export class LaptopLogic {
             di.edgeWidth = 5;
             di.edgeOpacity = 0.6;
             di.edgeColour = this.whiteColor;
+            di.drawTwoSided = false;
             di.faceColour = this.whiteColor;
             const laptopFilletMesh = await this.bitbybit.draw.drawAnyAsync({entity: laptopVisFillet, options: di});
             this.laptopsFilletsMesh.push(laptopFilletMesh);
@@ -96,6 +97,7 @@ export class LaptopLogic {
         li.faceColour = this.holderColor;
         li.edgeColour = this.whiteColor;
         li.edgeWidth = 5;
+        li.drawTwoSided = false;
         this.laptopStandMesh = await this.bitbybit.draw.drawAnyAsync({ entity: this.laptopStand, options: li });
     }
 
@@ -135,11 +137,11 @@ export class LaptopLogic {
     }
 
     downloadStep() {
-        this.occt.io.saveShapeSTEP({ shape: this.laptopStand, fileName: 'laptop-stand.step', adjustYtoZ: false, });
+        this.occt.io.saveShapeSTEP({ shape: this.laptopStand, tryDownload: true, fileName: 'laptop-stand.step', adjustYtoZ: false, });
     }
 
     downloadStl() {
-        this.occt.io.saveShapeStl({ shape: this.laptopStand, fileName: 'laptop-stand', precision: 0.001, adjustYtoZ: false });
+        this.occt.io.saveShapeStl({ shape: this.laptopStand, tryDownload: true, fileName: 'laptop-stand.stl', precision: 0.001, adjustYtoZ: false });
     }
 
     async render(laptops: Laptop[]) {

@@ -693,5 +693,4 @@ export class OCCTEdge {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.isEdgeCircular", inputs);
     }
 
-
 }

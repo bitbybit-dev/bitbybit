@@ -1,6 +1,6 @@
 
 import { Context } from "./context";
-import * as Inputs from "./inputs/inputs";
+import * as Inputs from "./inputs";
 import { DrawHelperCore, MeshData } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
 import { Vector } from "@bitbybit-dev/base";
@@ -786,7 +786,7 @@ export class DrawHelper extends DrawHelperCore {
                     edgeMiddle = this.computeEdgeMiddlePos(edge);
                 }
                 const tdto = new Inputs.JSCAD.TextDto();
-                tdto.text = `${edge.edge_index + 1}`;
+                tdto.text = `${edge.edge_index}`;
                 tdto.height = inputs.edgeIndexHeight;
                 tdto.lineSpacing = 1.5;
                 const t = await this.solidText.createVectorText(tdto);

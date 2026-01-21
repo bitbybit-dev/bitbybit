@@ -106,6 +106,19 @@ export class OCCTSolid {
     }
 
     /**
+     * Creates OpenCascade Torus
+     * @param inputs Torus parameters
+     * @returns OpenCascade torus shape
+     * @group primitives
+     * @shortname torus
+     * @drawable true
+     */
+    createTorus(inputs: Inputs.OCCT.TorusDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        inputs.angle = inputs.angle * (Math.PI / 180);
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createTorus", inputs);
+    }
+    
+    /**
      * Creates OpenCascade star solid
      * @param inputs Star solid parameters
      * @returns OpenCascade star solid

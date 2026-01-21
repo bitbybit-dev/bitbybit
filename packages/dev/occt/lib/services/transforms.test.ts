@@ -1,4 +1,4 @@
-import initOpenCascade, { OpenCascadeInstance } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
@@ -6,14 +6,14 @@ import { OCCTEdge, OCCTSolid } from "./shapes";
 import { OCCTTransforms } from "./transforms";
 
 describe("OCCT transforms unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let solid: OCCTSolid;
     let transforms: OCCTTransforms;
     let edge: OCCTEdge;
     let occHelper: OccHelper;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
 

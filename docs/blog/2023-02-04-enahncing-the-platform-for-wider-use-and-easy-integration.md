@@ -53,7 +53,7 @@ Laptop Holder Configurator Example
 
 [GitHub Link](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/occt)
 
-This package includes a custom build of the OpenCascade.js library, which compiles the C++ OpenCascade Technology (OCCT) kernel into Web Assembly (wasm) using emscripten. Our aim with this library is to abstract the OCCT kernel and provide a straightforward JavaScript API for its use.
+This package includes a custom build of the C++ OpenCascade Technology (OCCT) kernel into Web Assembly (wasm) using emscripten. Our aim with this library is to abstract the OCCT kernel and provide a straightforward JavaScript API for its use.
 
 The "bitbybit-occt" is independent of front-end frameworks or game engines. It can run both on the browser and on NodeJS apps. This makes this package very versatile as it can even run 3D CAD algorithms on the server.
 

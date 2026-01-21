@@ -11986,7 +11986,7 @@ declare namespace Bit {
         readonly time: Time;
         readonly asset: Asset;
     }
-    declare var isRunnerContext: boolean;
+    declare const isRunnerContext: boolean;
     declare function mockBitbybitRunnerInputs<T>(inputs: T): T;
     declare function getBitbybitRunnerInputs<T>(): T;
     declare function setBitbybitRunnerResult<T>(result: T): void;

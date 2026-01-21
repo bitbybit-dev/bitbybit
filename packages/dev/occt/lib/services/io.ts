@@ -1,12 +1,12 @@
-import { IGESControl_Reader_1, OpenCascadeInstance, STEPControl_Reader_1, STEPControl_StepModelType, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { IGESControl_Reader, BitbybitOcctModule, STEPControl_Reader, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
-import * as Inputs from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs";
 
 export class OCCTIO {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
@@ -26,7 +26,7 @@ export class OCCTIO {
             }
         }
         const fileName = "x";
-        const writer = new this.occ.STEPControl_Writer_1();
+        const writer = new this.occ.STEPControl_Writer();
         let transferShape;
         if (adjustedShape) {
             transferShape = adjustedShape;
@@ -35,25 +35,22 @@ export class OCCTIO {
         }
         // Convert to a .STEP File
 
-        const messageProgress = new this.occ.Message_ProgressRange_1();
         let transferResult;
         try {
             transferResult = writer.Transfer(
                 transferShape,
-                (this.occ.STEPControl_StepModelType.STEPControl_AsIs as STEPControl_StepModelType),
-                true,
-                messageProgress
+                this.occ.STEPControl_StepModelType.AsIs
             );
         } catch (ex) {
             throw (new Error("Failed when calling writer.Transfer."));
         }
         let result: string;
-        if (transferResult === this.occ.IFSelect_ReturnStatus.IFSelect_RetDone) {
+        if (transferResult === this.occ.IFSelect_ReturnStatus.RetDone) {
             // Write the STEP File to the virtual Emscripten Filesystem Temporarily
             const writeResult = writer.Write(fileName);
-            if (writeResult === this.occ.IFSelect_ReturnStatus.IFSelect_RetDone) {
+            if (writeResult === this.occ.IFSelect_ReturnStatus.RetDone) {
                 // Read the STEP File from the filesystem and clean up
-                const stepFileText = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" });
+                const stepFileText = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
                 this.occ.FS.unlink("/" + fileName);
 
                 // Return the contents of the STEP File
@@ -67,7 +64,6 @@ export class OCCTIO {
         if (adjustedShape) {
             adjustedShape.delete();
         }
-        messageProgress.delete();
 
         return result;
     }
@@ -78,7 +74,7 @@ export class OCCTIO {
         // This could be made optional...
         // Clean cached triangulation data for the shape.
         // This allows to get lower res models out of higher res that was once computed and cached.
-        this.occ.BRepTools.Clean(shapeToUse, true);
+        this.occ.BRepTools.Clean(shapeToUse);
 
         let adjustedShape;
         if (inputs.adjustYtoZ) {
@@ -96,15 +92,14 @@ export class OCCTIO {
         } else {
             transferShape = shapeToUse;
         }
-        const messageProgress = new this.occ.Message_ProgressRange_1();
         let result: string;
-        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh_2(transferShape, inputs.precision, false, 0.5, false);
+        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, inputs.precision, false, 0.5, false);
 
         // Write the STL File to the virtual Emscripten Filesystem Temporarily
-        const writeResult = writer.Write(transferShape, fileName, messageProgress);
+        const writeResult = writer.Write(transferShape, fileName);
         if (writeResult) {
             // Read the STL File from the filesystem and clean up
-            const stlFile = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" });
+            const stlFile = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
             this.occ.FS.unlink("/" + fileName);
             // Return the contents of the STL File
             result = stlFile;
@@ -115,10 +110,9 @@ export class OCCTIO {
         if (adjustedShape) {
             adjustedShape.delete();
         }
-        messageProgress.delete();
 
         if (incrementalMeshBuilder) {
-            incrementalMeshBuilder.Delete();
+            incrementalMeshBuilder.delete();
         }
 
         return result;
@@ -145,23 +139,19 @@ export class OCCTIO {
         // Writes the uploaded file to Emscripten's Virtual Filesystem
         this.occ.FS.createDataFile("/", `file.${fileType}`, fileText as string, true, true, true);
         // Choose the correct OpenCascade file parsers to read the CAD file
-        let reader: STEPControl_Reader_1 | IGESControl_Reader_1;
+        let reader: STEPControl_Reader | IGESControl_Reader;
         if (fileType === "step") {
-            reader = new this.occ.STEPControl_Reader_1();
+            reader = new this.occ.STEPControl_Reader();
         } else if (fileType === "iges") {
-            reader = new this.occ.IGESControl_Reader_1();
+            reader = new this.occ.IGESControl_Reader();
         } else {
             console.error("opencascade can't parse this extension! (yet)");
             return undefined;
         }
         const readResult = reader.ReadFile(`file.${fileType}`);            // Read the file
-        if (readResult === this.occ.IFSelect_ReturnStatus.IFSelect_RetDone) {
+        if (readResult === this.occ.IFSelect_ReturnStatus.RetDone) {
             // Translate all transferable roots to OpenCascade
-            const messageProgress = new this.occ.Message_ProgressRange_1();
-            reader.TransferRoots(
-                messageProgress
-            );
-            messageProgress.delete();
+            reader.TransferRoots();
             let stepShape = reader.OneShape();
             let adjustedShape;
             if (inputs.adjustZtoY) {
@@ -212,9 +202,9 @@ export class OCCTIO {
     //         // Read the file
     //         const readResult = reader.ReadFile("step_file.step");
 
-    //         if (readResult === this.occ.IFSelect_ReturnStatus.IFSelect_RetDone) {
+    //         if (readResult === this.occ.IFSelect_ReturnStatus.RetDone) {
     //             // Transfer to XCAF document
-    //             const messageProgress = new this.occ.Message_ProgressRange_1();
+    //             const messageProgress = new this.occ.Message_ProgressRange();
     //             const transferResult = reader.Transfer_1(docHandle, messageProgress);
     //             messageProgress.delete();
 

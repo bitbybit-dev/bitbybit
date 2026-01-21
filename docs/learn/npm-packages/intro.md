@@ -113,7 +113,7 @@ Exposes core OpenCascade (OCCT) 3D algorithms via a Web Worker for browser envir
 -   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/occt)
 -   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/occt)
 
-Contains core OpenCascade (OCCT) 3D algorithms. This package can be deployed in both browser and backend (Node.js) contexts, allowing you to build custom caching or Web Worker pipelines. It can potentially be used alongside other opencascade.js libraries.
+Contains core OpenCascade (OCCT) 3D algorithms. This package can be deployed in both browser and backend (Node.js) contexts, allowing you to build custom caching or Web Worker pipelines.
 
 ### @bitbybit-dev/jscad-worker
 

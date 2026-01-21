@@ -14,7 +14,7 @@ We've been working on improving the quality of our core codebase by adding new u
 
 ### What is @bitbybit-dev/occt?
 
-`@bitbybit-dev/occt` is the core CAD (Computer-Aided Design) layer of our platform, shared with the open-source community under the MIT license. This layer is built on top of the powerful [OpenCascade Technology (OCCT)](https://www.opencascade.com/doc/occt-7.6.0/overview/html/occt__ov.html) 3D kernel, accessed through the [OpenCascade.js](https://github.com/occt-web-viewer/opencascade.js) library.
+`@bitbybit-dev/occt` is the core CAD (Computer-Aided Design) layer of our platform, shared with the open-source community under the MIT license. This layer is built on top of the powerful [OpenCascade Technology (OCCT)](https://github.com/Open-Cascade-SAS/OCCT) 3D kernel.
 
 Over time, numerous 3D geometry algorithms have been developed within this layer, enabling our users to create intricate and complex 3D designs. As the codebase grew steadily, it became necessary to split it into smaller, more manageable modules. However, before embarking on this significant refactoring, it was imperative to write comprehensive unit tests. This ensures that any restructuring would not inadvertently disrupt existing functionality or introduce regressions.
 

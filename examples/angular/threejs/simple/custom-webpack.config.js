@@ -22,7 +22,8 @@ module.exports = {
         fallback: {
             fs: false,
             path: false,
-            crypto: false
+            crypto: false,
+            module: false
         }
     }
 };

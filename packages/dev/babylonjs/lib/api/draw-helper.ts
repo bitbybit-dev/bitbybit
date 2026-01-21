@@ -1043,7 +1043,7 @@ export class DrawHelper extends DrawHelperCore {
         }
         
         // Add two-sided rendering if enabled using shared createBackFaceMesh method
-        const drawTwoSided = inputs.drawTwoSided ?? true;
+        const drawTwoSided = (inputs.drawTwoSided === undefined || inputs.drawTwoSided === true) ? true : false;
         if (drawTwoSided) {
             const backFaceColour = inputs.backFaceColour ?? inputs.colour;
             const backFaceOpacity = inputs.backFaceOpacity ?? inputs.opacity;
@@ -1280,7 +1280,7 @@ export class DrawHelper extends DrawHelperCore {
                     edgeMiddle = this.computeEdgeMiddlePos(edge);
                 }
                 const tdto = new Inputs.JSCAD.TextDto();
-                tdto.text = `${edge.edge_index + 1}`;
+                tdto.text = `${edge.edge_index}`;
                 tdto.height = inputs.edgeIndexHeight;
                 tdto.lineSpacing = 1.5;
                 const t = await this.solidText.createVectorText(tdto);

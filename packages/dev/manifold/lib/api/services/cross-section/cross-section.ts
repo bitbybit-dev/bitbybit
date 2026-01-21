@@ -1,4 +1,4 @@
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 import * as Manifold3D from "manifold-3d";
 import { CrossSectionShapes } from "./cross-section-shapes";
 import { CrossSectionOperations } from "./cross-section-operations";

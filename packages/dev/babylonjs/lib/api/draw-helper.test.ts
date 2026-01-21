@@ -3125,8 +3125,8 @@ describe("DrawHelper unit tests", () => {
             const firstCall = (mockSolidText.createVectorText as jest.Mock).mock.calls[0][0];
             expect(firstCall.height).toBe(0.1);
             
-            // Verify the text content includes edge index (1-based)
-            expect(firstCall.text).toBe("1");
+            // Verify the text content uses edge_index from the decomposed mesh (0-based from OCCT)
+            expect(firstCall.text).toBe("0");
         });
 
         it("should compute edge middle position when middle_point is undefined", async () => {

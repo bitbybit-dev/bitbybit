@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: "Understanding the OCCT (OpenCascade Technology) Category"
 sidebar_label: OCCT Category
-description: Learn about OpenCascade Technology (OCCT), its role as a powerful open-source 3D geometry kernel in Bitbybit, OpenCascade.js, and the @bitbybit-dev/occt NPM package.
+description: Learn about OpenCascade Technology (OCCT), its role as a powerful open-source 3D geometry kernel in Bitbybit and the @bitbybit-dev/occt NPM package.
 tags: [occt]
 ---
 
@@ -26,13 +26,11 @@ OCCT is our choice for advanced geometric modeling for several key reasons:
 *   **Open-Source Leadership:** It is currently the best and arguably the only comprehensive open-source 3D [Boundary Representation (B-rep)](https://en.wikipedia.org/wiki/Boundary_representation) geometry kernel that can be effectively compiled for and used within a web browser environment.
 *   **Power and Complexity:** OCCT is exceptionally powerful, capable of handling very complex 3D modeling scenarios, precision geometry, and advanced CAD operations like booleans, fillets, chamfers, and more.
 
-## What is OpenCascade.js (OCJS)?
+## What is OCCT 3D?
 
-[OpenCascade.js (OCJS)](https://ocjs.org/) is an innovative project spearheaded by [Sebastian Alff (donalffons)](https://github.com/donalffons). He developed a Python-based toolchain that takes the original C++ library of OCCT and compiles it into **WebAssembly (WASM)**. This WASM code can then be executed efficiently in web browsers and NodeJS applications.
-
-Bitbybit utilizes a **custom build of OCCT** that is compiled using the OpenCascade.js Docker package. This allows us to:
-*   **Selectively Include Modules:** We carefully pick and choose which parts of the vast OCCT library are included in our WASM bundle.
-*   **Optimize for Web:** Using the full OCCT build directly on the web is often impractical due to its very large size, which would significantly slow down the loading times of our platform and user applications. Our custom builds are optimized for web delivery.
+Bitbybit utilizes a **custom build of OCCT** that is compiled from the main [GitHub repo](https://github.com/Open-Cascade-SAS/OCCT). This allows us to:
+*   **Selectively Include Modules:** We carefully pick and choose which parts of the vast OCCT library are included in our WASM bundle. Some of our algorithms are directly written in C++ on top of OCCT layer.
+*   **Optimized for Web:** Using the full OCCT build directly on the web is often impractical due to its very large size, which would significantly slow down the loading times of our platform and user applications. Our custom builds are optimized for web delivery, but provide 64 bit and multi-threaded builds for the power users.
 
 ## NPM Package: `@bitbybit-dev/occt`
 

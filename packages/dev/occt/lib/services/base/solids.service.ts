@@ -1,6 +1,6 @@
-import { OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 import { ShapeGettersService } from "./shape-getters";
 import { FacesService } from "./faces.service";
 import { EntitiesService } from "./entities.service";
@@ -11,7 +11,7 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 export class SolidsService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly facesService: FacesService,
         private readonly enumService: EnumService,
@@ -23,7 +23,7 @@ export class SolidsService {
 
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): TopoDS_Solid {
         const shell = this.converterService.getActualTypeOfShape(inputs.shape);
-        const builder = new this.occ.BRepBuilderAPI_MakeSolid_3(shell);
+        const builder = new this.occ.BRepBuilderAPI_MakeSolid(shell);
         const result = builder.Solid();
         builder.delete();
         shell.delete();
@@ -104,23 +104,52 @@ export class SolidsService {
 
     createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Shape {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
-        const makeCone = new this.occ.BRepPrimAPI_MakeCone_4(ax, inputs.radius1, inputs.radius2, inputs.height, inputs.angle);
+        const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, inputs.angle);
         const coneShape = makeCone.Shape();
         makeCone.delete();
         ax.delete();
         return coneShape;
     }
 
+    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Shape {
+        const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
+        let angle = inputs.angle;
+        if (angle === undefined || angle === null) {
+            angle = 2 * Math.PI;
+        }
+        let makeTorus;
+        // Angle is already in radians from higher level conversion
+        // Use tolerance check for full torus (2*PI) to handle floating-point precision
+        if (angle >= 2 * Math.PI - 1e-7) {
+            // Full torus - use simple 3-param constructor
+            makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius);
+        } else {
+            // Partial torus - angle is already in radians
+            // 6-param: axes, R1, R2, angle1, angle2, angle
+            // angle1 and angle2 control the ring segment (minor circle), angle controls the pipe segment (major circle)
+            // For a simple pie-slice torus, we keep the full ring (0 to 2*PI) and control the pipe angle
+            makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius, 0, 2 * Math.PI, angle);
+        }
+        const torusShape = makeTorus.Shape();
+        makeTorus.delete();
+        ax.delete();
+        return torusShape;
+    }
+
     filterSolidPoints(inputs: Inputs.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {
         const points = [];
         if (inputs.points.length > 0) {
-            const classifier = new this.occ.BRepClass3d_SolidClassifier_1();
-            classifier.Load(inputs.shape);
             inputs.points.forEach(pt => {
                 const gpPnt = this.entitiesService.gpPnt(pt);
-                classifier.Perform(gpPnt, inputs.tolerance);
-                const top = classifier.State();
-                const type = this.enumService.getTopAbsStateEnum(top);
+                // ClassifyPointInSolid returns: 0=IN, 1=OUT, 2=ON, 3=UNKNOWN
+                const state = this.occ.ClassifyPointInSolid(inputs.shape as TopoDS_Solid, gpPnt, inputs.tolerance);
+                let type: Inputs.OCCT.topAbsStateEnum;
+                switch (state) {
+                    case 0: type = Inputs.OCCT.topAbsStateEnum.in; break;
+                    case 1: type = Inputs.OCCT.topAbsStateEnum.out; break;
+                    case 2: type = Inputs.OCCT.topAbsStateEnum.on; break;
+                    default: type = Inputs.OCCT.topAbsStateEnum.unknown; break;
+                }
                 if (inputs.keepOn && type === Inputs.OCCT.topAbsStateEnum.on) {
                     points.push(pt);
                 }
@@ -135,7 +164,6 @@ export class SolidsService {
                 }
                 gpPnt.delete();
             });
-            classifier.delete();
             return points;
         } else {
             return [];
@@ -143,8 +171,8 @@ export class SolidsService {
     }
 
     getSolidVolume(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): number {
-        const gprops = new this.occ.GProp_GProps_1();
-        this.occ.BRepGProp.VolumeProperties_1(inputs.shape, gprops, true, false, false);
+        const gprops = new this.occ.GProp_GProps();
+        this.occ.BRepGProp_VolumeProperties(inputs.shape, gprops);
         const vol = gprops.Mass();
         gprops.delete();
         return vol;
@@ -164,8 +192,8 @@ export class SolidsService {
     }
 
     getSolidCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): Base.Point3 {
-        const gprops = new this.occ.GProp_GProps_1();
-        this.occ.BRepGProp.VolumeProperties_1(inputs.shape, gprops, true, false, false);
+        const gprops = new this.occ.GProp_GProps();
+        this.occ.BRepGProp_VolumeProperties(inputs.shape, gprops);
         const gppnt = gprops.CentreOfMass();
         const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
         gprops.delete();

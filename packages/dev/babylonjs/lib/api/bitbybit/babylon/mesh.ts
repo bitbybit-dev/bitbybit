@@ -1,7 +1,7 @@
 
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 import { Base } from "../../inputs";
 
 export class BabylonMesh {

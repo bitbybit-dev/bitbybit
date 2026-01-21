@@ -1,17 +1,17 @@
-import initOpenCascade, { OpenCascadeInstance, TopoDS_Compound, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { OCCTFace } from "./face";
 import { OCCTShape } from "./shape";
 import { OCCTBooleans } from "../booleans";
 import { OCCTFillets } from "../fillets";
 
 describe("OCCT wire unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let wire: OCCTWire;
     let edge: OCCTEdge;
     let face: OCCTFace;
@@ -21,7 +21,7 @@ describe("OCCT wire unit tests", () => {
     let occHelper: OccHelper;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
         occHelper = new OccHelper(vec, s, occt);
@@ -1814,7 +1814,8 @@ describe("OCCT wire unit tests", () => {
         }).flat();
         expect(wires.length).toBe(4);
         const wireLengths = wires.map(w => wire.getWireLength({ shape: w }));
-        expect(wireLengths).toEqual([36.22718914885955, 36.22718914885927, 16.139612940402895, 16.139612940402888]);
+        expect(wireLengths.length).toEqual(4);
+        wireLengths.forEach((len, i) => expect(len).toBeCloseTo([36.22718914885955, 36.22718914885927, 16.139612940402895, 16.139612940402888][i], 10));
 
         star1.delete();
         star2.delete();

@@ -1,5 +1,5 @@
-import { OpenCascadeInstance, TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "./api/inputs/inputs";
+import { BitbybitOcctModule, TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "./api/inputs";
 import { OCCTBooleans } from "./services/booleans";
 import { OCCTGeom } from "./services/geom/geom";
 import { OCCTIO } from "./services/io";
@@ -27,7 +27,7 @@ export class OCCTService {
     public plugins?;
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
         this.shapes = new OCCTShapes(occ, och);

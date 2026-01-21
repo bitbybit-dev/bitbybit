@@ -1,8 +1,8 @@
-import initOpenCascade, { OpenCascadeInstance, TopAbs_ShapeEnum } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { CacheHelper } from "./cache-helper";
 
 describe("CacheHelper unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let cacheHelper: CacheHelper;
 
     beforeAll(async () => {

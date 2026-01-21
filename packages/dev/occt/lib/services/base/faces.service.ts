@@ -1,6 +1,6 @@
-import { GeomAbs_Shape, Geom_Surface, OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire, Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 import { OCCReferencedReturns } from "../../occ-referenced-returns";
 import { ShapeGettersService } from "./shape-getters";
 import { EntitiesService } from "./entities.service";
@@ -16,7 +16,7 @@ import { BaseBitByBit } from "../../base";
 export class FacesService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly occRefReturns: OCCReferencedReturns,
         private readonly entitiesService: EntitiesService,
         private readonly enumService: EnumService,
@@ -46,33 +46,29 @@ export class FacesService {
             throw new Error("Provided input shape is not a wire");
         }
         if (inputs.planar) {
-            const wire = this.occ.TopoDS.Wire_1(inputs.shape);
+            const wire = this.occ.CastToWire(inputs.shape);
             result = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, inputs.planar);
             wire.delete();
         } else {
-            const Degree = 3;
-            const NbPtsOnCur = 15;
-            const NbIter = 2;
-            const Anisotropie = false;
-            const Tol2d = 0.00001;
-            const Tol3d = 0.0001;
-            const TolAng = 0.01;
-            const TolCurv = 0.1;
-            const MaxDeg = 8;
-            const MaxSegments = 9;
-
-            const bs = new this.occ.BRepFill_Filling(Degree, NbPtsOnCur, NbIter, Anisotropie, Tol2d, Tol3d, TolAng, TolCurv, MaxDeg, MaxSegments);
-            const edges = this.shapeGettersService.getEdges(inputs);
-            edges.forEach(e => {
-                bs.Add_1(e, this.occ.GeomAbs_Shape.GeomAbs_C0 as GeomAbs_Shape, true);
-            });
-            bs.Build();
-            if (!bs.IsDone()) {
-                throw new Error("Could not create non planar face");
+            // Use BRepFill_Filling for non-planar face creation
+            const wire = this.occ.CastToWire(inputs.shape);
+            const edges = this.shapeGettersService.getEdges({ shape: wire });
+            const filling = new this.occ.BRepFill_Filling();
+            try {
+                // Add all edges as boundary constraints (order 0 = C0 continuity)
+                for (const edge of edges) {
+                    this.occ.BRepFill_Filling_AddEdge(filling, edge, 0, true);
+                    edge.delete();
+                }
+                this.occ.BRepFill_Filling_Build(filling);
+                if (!this.occ.BRepFill_Filling_IsDone(filling)) {
+                    throw new Error("BRepFill_Filling failed to create face from wire");
+                }
+                result = this.occ.BRepFill_Filling_Face(filling);
+            } finally {
+                filling.delete();
+                wire.delete();
             }
-            result = bs.Face();
-            bs.delete();
-            edges.forEach(e => e.delete());
         }
 
         return result;
@@ -81,8 +77,8 @@ export class FacesService {
 
 
     getFaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
-        const gprops = new this.occ.GProp_GProps_1();
-        this.occ.BRepGProp.SurfaceProperties_1(inputs.shape, gprops, false, false);
+        const gprops = new this.occ.GProp_GProps();
+        this.occ.BRepGProp_SurfaceProperties(inputs.shape, gprops);
         const area = gprops.Mass();
         gprops.delete();
         return area;
@@ -96,8 +92,8 @@ export class FacesService {
     }
 
     getFaceCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Base.Point3 {
-        const gprops = new this.occ.GProp_GProps_1();
-        this.occ.BRepGProp.SurfaceProperties_1(inputs.shape, gprops, false, false);
+        const gprops = new this.occ.GProp_GProps();
+        this.occ.BRepGProp_SurfaceProperties(inputs.shape, gprops);
         const gppnt = gprops.CentreOfMass();
         const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
         gprops.delete();
@@ -113,33 +109,35 @@ export class FacesService {
     }
 
     filterFacePoints(inputs: Inputs.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
-        const points = [];
-        if (inputs.points.length > 0) {
-            const classifier = new this.occ.BRepClass_FaceClassifier_1();
-            inputs.points.forEach(pt => {
-                const gpPnt = this.entitiesService.gpPnt(pt);
-                classifier.Perform_2(inputs.shape, gpPnt, inputs.tolerance, inputs.useBndBox, inputs.gapTolerance);
-                const top = classifier.State();
-                const type = this.enumService.getTopAbsStateEnum(top);
-                if (inputs.keepOn && type === Inputs.OCCT.topAbsStateEnum.on) {
-                    points.push(pt);
+        const face = inputs.shape;
+        const points = inputs.points;
+        const tolerance = inputs.tolerance || 1e-6;
+        const keepOn = inputs.keepOn !== false;
+        const keepIn = inputs.keepIn !== false;
+        const keepOut = inputs.keepOut === true;
+
+        const result: Base.Point3[] = [];
+
+        for (const pt of points) {
+            const gpPnt = new this.occ.gp_Pnt(pt[0], pt[1], pt[2]);
+            try {
+                const classifier = new this.occ.BRepClass_FaceClassifier(face, gpPnt, tolerance);
+                const state = classifier.State();
+                const stateValue = state.value;
+                
+                // TopAbs_State: IN=0, OUT=1, ON=2, UNKNOWN=3
+                if ((stateValue === 0 && keepIn) ||
+                    (stateValue === 1 && keepOut) ||
+                    (stateValue === 2 && keepOn)) {
+                    result.push(pt);
                 }
-                if (inputs.keepIn && type === Inputs.OCCT.topAbsStateEnum.in) {
-                    points.push(pt);
-                }
-                if (inputs.keepOut && type === Inputs.OCCT.topAbsStateEnum.out) {
-                    points.push(pt);
-                }
-                if (inputs.keepUnknown && type === Inputs.OCCT.topAbsStateEnum.unknown) {
-                    points.push(pt);
-                }
+                classifier.delete();
+            } finally {
                 gpPnt.delete();
-            });
-            classifier.delete();
-            return points;
-        } else {
-            return [];
+            }
         }
+
+        return result;
     }
 
 
@@ -304,13 +302,13 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
+        const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const u = uMin + (uMax - uMin) * inputs.paramU;
         const v = vMin + (vMax - vMin) * inputs.paramV;
-        const gpDir = this.entitiesService.gpDir([0, 1, 0]);
-        this.occ.GeomLib.NormEstim(handle, this.entitiesService.gpPnt2d([u, v]), 1e-7, gpDir);
-        if (face.Orientation_1() === this.occ.TopAbs_Orientation.TopAbs_REVERSED) {
+        const gpDir = this.occ.GeomLib_NormEstim(surface, this.entitiesService.gpPnt2d([u, v]), 1e-7);
+        if (face.Orientation() === this.occ.TopAbs_Orientation.REVERSED) {
             gpDir.Reverse();
         }
         const dir: Base.Vector3 = [gpDir.X(), gpDir.Y(), gpDir.Z()];
@@ -338,31 +336,19 @@ export class FacesService {
         return result;
     }
 
+    faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {
+        return this.occ.MakeFaceFromSurface(inputs.shape, inputs.tolerance);
+    }
+
+    faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>): TopoDS_Face {
+        return this.occ.MakeFaceFromSurfaceAndWire(inputs.surface, inputs.wire, inputs.inside);
+    }
+
     createFacesFromWires(inputs: Inputs.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
         const result = inputs.shapes.map(shape => {
             return this.createFaceFromWire({ shape, planar: inputs.planar });
         });
         return result;
-    }
-
-    faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>) {
-        const face = this.entitiesService.bRepBuilderAPIMakeFaceFromSurface(inputs.shape, inputs.tolerance) as TopoDS_Face;
-        if (face.IsNull()) {
-            face.delete();
-            throw new Error("Could not construct a face from the surface. Check if surface is not infinite.");
-        } else {
-            return face;
-        }
-    }
-
-    faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>) {
-        const face = this.entitiesService.bRepBuilderAPIMakeFaceFromSurfaceAndWire(inputs.surface, inputs.wire, inputs.inside) as TopoDS_Face;
-        if (face.IsNull()) {
-            face.delete();
-            throw new Error("Could not construct a face from the surface. Check if surface is not infinite.");
-        } else {
-            return face;
-        }
     }
 
     getUMinBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
@@ -394,7 +380,7 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
@@ -412,8 +398,7 @@ export class FacesService {
                 v += (inputs.shiftHalfStepNthV && (i + inputs.shiftHalfStepVOffsetN) % inputs.shiftHalfStepNthV === 0) ? halfStepV : 0;
                 let u = uMin + stepsU;
                 u += (inputs.shiftHalfStepNthU && (j + inputs.shiftHalfStepUOffsetN) % inputs.shiftHalfStepNthU === 0) ? halfStepU : 0;
-                const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
-                surface.D0(u, v, gpPnt);
+                const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
                 const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
 
                 let shouldPush = true;
@@ -441,7 +426,7 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
@@ -462,8 +447,7 @@ export class FacesService {
                 const halfStepV = stepV / 2;
                 const stepsV = stepV * j;
                 const v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
-                const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
-                surface.D0(u, v, gpPnt);
+                const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
                 const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
                 points.push(pt);
                 gpPnt.delete();
@@ -478,7 +462,7 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
@@ -519,7 +503,7 @@ export class FacesService {
         }
         const shapesToDelete = [];
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
@@ -744,7 +728,7 @@ export class FacesService {
         }
         const shapesToDelete: TopoDS_Shape[] = [];
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
@@ -947,7 +931,8 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
+        const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
 
@@ -967,11 +952,10 @@ export class FacesService {
                 const halfStepV = stepV / 2;
                 const stepsV = stepV * j;
                 const v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
-                const gpDir = this.entitiesService.gpDir([0, 1, 0]);
                 const gpUv = this.entitiesService.gpPnt2d([u, v]);
-                this.occ.GeomLib.NormEstim(handle, gpUv, 1e-7, gpDir);
+                const gpDir = this.occ.GeomLib_NormEstim(surface, gpUv, 1e-7);
                 // Sometimes face gets reversed and its original surface is not reversed, thus we need to adjust for such situation.
-                if (face.Orientation_1() === this.occ.TopAbs_Orientation.TopAbs_REVERSED) {
+                if (face.Orientation() === this.occ.TopAbs_Orientation.REVERSED) {
                     gpDir.Reverse();
                 }
                 const pt: Base.Point3 = [gpDir.X(), gpDir.Y(), gpDir.Z()];
@@ -989,7 +973,7 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const placedWire = this.placeWireOnParamSurface(inputs.isU, inputs.param, uMin, uMax, vMin, vMax, surface);
@@ -1025,7 +1009,7 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
@@ -1044,7 +1028,7 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
@@ -1071,11 +1055,11 @@ export class FacesService {
                 const stepsU = stepU * j;
                 p = uMin + (inputs.shiftHalfStep ? halfStepU : 0) + stepsU;
             }
-            const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
+            let gpPnt;
             if (inputs.isU) {
-                surface.D0(param, p, gpPnt);
+                gpPnt = this.occ.Geom_Surface_Value(surface, param, p);
             } else {
-                surface.D0(p, param, gpPnt);
+                gpPnt = this.occ.Geom_Surface_Value(surface, p, param);
             }
             const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
             points.push(pt);
@@ -1172,14 +1156,13 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const pts: Base.Point3[] = inputs.paramsUV.map(uv => {
             const u = uMin + (uMax - uMin) * uv[0];
             const v = vMin + (vMax - vMin) * uv[1];
-            const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
-            surface.D0(u, v, gpPnt);
+            const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
             const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
             gpPnt.delete();
             return pt;
@@ -1192,15 +1175,17 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
+        const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const nrmls: Base.Vector3[] = inputs.paramsUV.map(uv => {
             const u = uMin + (uMax - uMin) * uv[0];
             const v = vMin + (vMax - vMin) * uv[1];
-            const gpDir = this.entitiesService.gpDir([0, 1, 0]);
-            this.occ.GeomLib.NormEstim(handle, this.entitiesService.gpPnt2d([u, v]), 1e-7, gpDir);
+            const gpUv = this.entitiesService.gpPnt2d([u, v]);
+            const gpDir = this.occ.GeomLib_NormEstim(surface, gpUv, 1e-7);
             const pt = [gpDir.X(), gpDir.Y(), gpDir.Z()];
             gpDir.delete();
+            gpUv.delete();
             return pt as Base.Vector3;
         });
         handle.delete();
@@ -1212,14 +1197,13 @@ export class FacesService {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const handle = this.occ.BRep_Tool_Surface(face);
         const surface = handle.get();
         if (surface) {
             const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
             const u = uMin + (uMax - uMin) * inputs.paramU;
             const v = vMin + (vMax - vMin) * inputs.paramV;
-            const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
-            surface.D0(u, v, gpPnt);
+            const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
             const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
             gpPnt.delete();
             handle.delete();

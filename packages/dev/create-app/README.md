@@ -30,17 +30,35 @@ npm init @bitbybit-dev/app my-project
 
 You'll be prompted to select:
 - 🎮 **Game Engine**: Three.js, Babylon.js, or PlayCanvas
+- ⚙️ **OCCT Architecture**: 32-bit, 64-bit, or 64-bit Multi-threaded
 
 ### CLI Options
 
 ```bash
-npm init @bitbybit-dev/app my-project --engine threejs
+npm init @bitbybit-dev/app my-project --engine threejs --occt-architecture 32
 ```
 
 Available engines:
 - `threejs` - Three.js: Lightweight and flexible 3D library
 - `babylonjs` - Babylon.js: Powerful and feature-rich game engine  
 - `playcanvas` - PlayCanvas: Fast and lightweight WebGL game engine
+
+Available OCCT architectures:
+- `32` - 32-bit (Default): Supported on all browsers
+- `64` - 64-bit: May not be supported on all browsers (requires WebAssembly Memory64)
+- `64-mt` - 64-bit Multi-threaded: Requires special server configuration (COOP/COEP headers)
+
+### OCCT Architecture Notes
+
+**32-bit (Default)**: Works on all browsers and is recommended for maximum compatibility.
+
+**64-bit**: Uses WebAssembly Memory64, which may not be available in older browsers. Use this when you need to work with larger CAD models that exceed 32-bit memory limits.
+
+**64-bit Multi-threaded**: Enables parallel processing using WebAssembly threads. Requires your server to send the following headers:
+- `Cross-Origin-Opener-Policy: same-origin`
+- `Cross-Origin-Embedder-Policy: require-corp`
+
+When you select 64-bit MT, a `vite.config.ts` is automatically created with these headers pre-configured for development.
 
 ## What You Get
 

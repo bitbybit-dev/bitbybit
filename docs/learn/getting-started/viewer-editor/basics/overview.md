@@ -6,6 +6,8 @@ description: Understand what the Viewer Editor is, its key capabilities, and how
 tags: [viewer-editor, overview, no-code]
 ---
 
+import Version from '@site/src/components/Version';
+
 # What is Viewer Editor?
 
 The **Viewer Editor** is a professional no-code visual tool for creating advanced 3D product configurators and interactive scenes for eCommerce. It provides a comprehensive interface for designing complex 3D experiences without writing JSON configuration manually.
@@ -78,7 +80,7 @@ For Shopify users, see [Subscription Plans](../../../3d-bits/plans/subscription-
 
 ## Generated Output
 
-The Viewer Editor generates valid JSON that conforms to the [**Viewer Scene Schema**](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.21.1.json). This JSON can be:
+The Viewer Editor generates valid JSON that conforms to the [**Viewer Scene Schema**](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v<Version />.json). This JSON can be:
 
 - Copied to clipboard and pasted into Shopify product metafields
 - Downloaded as a file and hosted on your CDN

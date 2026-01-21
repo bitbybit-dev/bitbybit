@@ -1,5 +1,5 @@
-import { OpenCascadeInstance, TopoDS_Face, TopoDS_Shell } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
+import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shell } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../../api/inputs";
 import { ShapeGettersService } from "./shape-getters";
 import { FacesService } from "./faces.service";
 import { ConverterService } from "./converter.service";
@@ -7,7 +7,7 @@ import { ConverterService } from "./converter.service";
 export class ShellsService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly converterService: ConverterService,
         private readonly facesService: FacesService,
@@ -20,16 +20,14 @@ export class ShellsService {
     }
 
     sewFaces(inputs: Inputs.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
-        const sew = new this.occ.BRepBuilderAPI_Sewing(inputs.tolerance, true, true, true, false);
+        const sew = new this.occ.BRepBuilderAPI_Sewing(inputs.tolerance);
         inputs.shapes.forEach(face => {
             sew.Add(face);
         });
-        const messageProgress = new this.occ.Message_ProgressRange_1();
-        sew.Perform(messageProgress);
+        sew.Perform();
         const res = sew.SewedShape();
         const result = this.converterService.getActualTypeOfShape(res);
         sew.delete();
-        messageProgress.delete();
         res.delete();
         return result;
     }

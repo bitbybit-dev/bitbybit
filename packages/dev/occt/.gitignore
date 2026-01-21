@@ -10,3 +10,5 @@ csg-generated.js
 !bitbybit-dev-occt.d.ts
 ts-doc-theme
 coverage
+bitbybit-dev-occt/new
+*.bak

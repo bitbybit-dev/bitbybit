@@ -1,4 +1,4 @@
-import { OpenCascadeInstance } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, Models } from "@bitbybit-dev/occt";
 import { CacheHelper } from "./cache-helper";
 
@@ -7,7 +7,7 @@ let cacheHelper: CacheHelper;
 
 let dependencies;
 
-export const initializationComplete = (occ: OpenCascadeInstance, plugins: any, doNotPost?: boolean) => {
+export const initializationComplete = (occ: BitbybitOcctModule, plugins: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper(occ);
     const vecService = new VectorHelperService();
     const shapesService = new ShapesHelperService();

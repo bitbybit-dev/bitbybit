@@ -6,6 +6,8 @@ description: Learn how to access the Viewer Editor and create your first 3D scen
 tags: [viewer-editor, getting-started, tutorial]
 ---
 
+import Version from '@site/src/components/Version';
+
 # Getting Started with Viewer Editor
 
 This guide will help you access the Viewer Editor and understand the initial setup process.
@@ -139,7 +141,7 @@ When you export, you get JSON like this:
 
 ```json
 {
-    "$schema": "https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.21.1.json",
+    "$schema": "https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v<Version />.json",
     "models": [
         {
         "name": "Main Product",

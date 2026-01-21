@@ -1,10 +1,13 @@
 export * from "./asset-inputs";
+export * from "./csv-inputs";
 export * from "./json-inputs";
 export * from "./tag-inputs";
 export * from "./time-inputs";
 export * from "./verb-inputs";
 export * from "./base-inputs";
-export * from "@bitbybit-dev/jscad/lib/api/inputs/jscad-inputs";
-export * from "@bitbybit-dev/manifold/lib/api/inputs/manifold-inputs";
-export * from "@bitbybit-dev/occt/lib/api/inputs/occ-inputs";
-export * from "@bitbybit-dev/base/lib/api/inputs/inputs";
+// Re-export from lower-level packages excluding Base (already exported above)
+export { JSCAD } from "@bitbybit-dev/jscad/lib/api/inputs";
+export { Manifold } from "@bitbybit-dev/manifold/lib/api/inputs";
+export { OCCT } from "@bitbybit-dev/occt/lib/api/inputs";
+// Exclude Base from base package - we export our extended version
+export { Color, Dates, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/base/lib/api/inputs";

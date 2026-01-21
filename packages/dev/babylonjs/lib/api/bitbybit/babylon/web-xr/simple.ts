@@ -1,7 +1,7 @@
 import { GUI3DManager, NearMenu, TextBlock, TouchHolographicButton } from "@babylonjs/gui";
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
-import * as Inputs from "../../../inputs/inputs";
+import * as Inputs from "../../../inputs";
 
 export class BabylonWebXRSimple {
 
