@@ -50,7 +50,7 @@ describe("OCCT booleans unit tests", () => {
 
     it("should not compute difference if shapes are empty", async () => {
         const box1 = solid.createBox({ width: 1, height: 2, length: 1, center: [0, 0, 0] });
-        expect(() => booleans.difference({ shape: box1, shapes: [], keepEdges: false })).toThrowError("Shape is not a compound or is null.");
+        expect(() => booleans.difference({ shape: box1, shapes: [], keepEdges: false })).toThrow("Shape is not a compound or is null.");
     });
 
     it("should compute mesh mesh intersection wires of two intersecting boxes", async () => {

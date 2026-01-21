@@ -44,7 +44,7 @@ describe("JSON unit tests", () => {
     });
 
     it("should throw if provided json is not an object", () => {
-        expect(() => json.setValue({ json: 1, path: "$", value: 2, prop: "a" })).toThrowError("Json must be an object");
+        expect(() => json.setValue({ json: 1, path: "$", value: 2, prop: "a" })).toThrow("Json must be an object");
     });
 
     it("should create empty json", () => {
@@ -76,12 +76,12 @@ describe("JSON unit tests", () => {
 
     it("should preview and save json", () => {
         json.previewAndSaveJson({ json: { a: 1 } });
-        expect(context.promptPrintSave).toBeCalledWith({ text: { a: 1 }, isJson: true, hidden: false });
+        expect(context.promptPrintSave).toHaveBeenCalledWith({ text: { a: 1 }, isJson: true, hidden: false });
     });
 
     it("should preview json", () => {
         json.previewJson({ json: { a: 1 } });
-        expect(context.promptPrint).toBeCalledWith({ text: { a: 1 }, isJson: true, hidden: false });
+        expect(context.promptPrint).toHaveBeenCalledWith({ text: { a: 1 }, isJson: true, hidden: false });
     });
 
     it("should set value on prop", () => {

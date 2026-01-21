@@ -410,7 +410,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should not fillet specific edges on the solid by index if radius list does not have the same nr of elements as indexes", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        expect(() => fillets.filletEdges({ shape: cube, indexes: [0, 3, 5], radiusList: [0.3, 0.2] })).toThrowError("Radius not defined, or radiusList not correct length");
+        expect(() => fillets.filletEdges({ shape: cube, indexes: [0, 3, 5], radiusList: [0.3, 0.2] })).toThrow("Radius not defined, or radiusList not correct length");
         cube.delete();
     });
 

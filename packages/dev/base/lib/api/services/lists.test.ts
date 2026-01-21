@@ -54,7 +54,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should get out of bound error when getting item from the list", () => {
-        expect(() => lists.getItem({ list: [0, 1, 2], index: 3 })).toThrowError("Index out of bounds");
+        expect(() => lists.getItem({ list: [0, 1, 2], index: 3 })).toThrow("Index out of bounds");
     });
 
     it("should get sublist from the list", () => {
@@ -184,7 +184,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should throw when flipping the list with different lengths", () => {
-        expect(() => lists.flipLists({ list: [[0, 1, 2], [3, 4]] })).toThrowError("Lists are not of the same length");
+        expect(() => lists.flipLists({ list: [[0, 1, 2], [3, 4]] })).toThrow("Lists are not of the same length");
     });
 
     it("should multiply the item", () => {
@@ -203,7 +203,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should not flip empty list", () => {
-        expect(() => lists.flipLists({ list: [] })).toThrowError("List is empty");
+        expect(() => lists.flipLists({ list: [] })).toThrow("List is empty");
     });
 
     it("should add item to the beginning of the list", () => {
@@ -312,11 +312,11 @@ describe("Lists unit tests", () => {
     });
 
     it("should not add items to list at indexes if the number of items is not the same as indexes", () => {
-        expect(() => lists.addItemsAtIndexes({ list: [0, 1, 2], indexes: [0, 3], items: [3, 4, 5] })).toThrowError("Items and indexes must have the same length");
+        expect(() => lists.addItemsAtIndexes({ list: [0, 1, 2], indexes: [0, 3], items: [3, 4, 5] })).toThrow("Items and indexes must have the same length");
     });
 
     it("should not add items to list at indexes if the indexes are not in ascending order", () => {
-        expect(() => lists.addItemsAtIndexes({ list: [0, 1, 2], indexes: [3, 0], items: [3, 4] })).toThrowError("Indexes must be in ascending order");
+        expect(() => lists.addItemsAtIndexes({ list: [0, 1, 2], indexes: [3, 0], items: [3, 4] })).toThrow("Indexes must be in ascending order");
     });
 
     it("should remove item from list at index", () => {
@@ -499,11 +499,11 @@ describe("Lists unit tests", () => {
     });
 
     it("should not get the elements by following the empty pattern", () => {
-        expect(() => lists.getByPattern({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pattern: [] })).toThrowError("Pattern is empty or does not exist");
+        expect(() => lists.getByPattern({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pattern: [] })).toThrow("Pattern is empty or does not exist");
     });
 
     it("should not get the elements by following the empty pattern", () => {
-        expect(() => lists.getByPattern({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pattern: undefined })).toThrowError("Pattern is empty or does not exist");
+        expect(() => lists.getByPattern({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pattern: undefined })).toThrow("Pattern is empty or does not exist");
     });
 
     it("should get list length", () => {
@@ -619,7 +619,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should throw error when getting first item from empty list", () => {
-        expect(() => lists.getFirstItem({ list: [] })).toThrowError("List is empty");
+        expect(() => lists.getFirstItem({ list: [] })).toThrow("List is empty");
     });
 
     it("should get last item from the list", () => {
@@ -633,7 +633,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should throw error when getting last item from empty list", () => {
-        expect(() => lists.getLastItem({ list: [] })).toThrowError("List is empty");
+        expect(() => lists.getLastItem({ list: [] })).toThrow("List is empty");
     });
 
     it("should remove first item from the list", () => {
@@ -821,7 +821,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should throw error when interleaving with no lists", () => {
-        expect(() => lists.interleave({ lists: [] })).toThrowError("Lists array is empty or does not exist");
+        expect(() => lists.interleave({ lists: [] })).toThrow("Lists array is empty or does not exist");
     });
 
     it("should interleave string lists", () => {

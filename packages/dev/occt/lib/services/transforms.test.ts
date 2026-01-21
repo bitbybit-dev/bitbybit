@@ -344,7 +344,7 @@ describe("OCCT transforms unit tests", () => {
 
             expect(() => {
                 transforms.translateShapes({ shapes: [sphere, box], translations: [[1, 1, -1]] });
-            }).toThrowError("Some of the list lengths are not the same. For this operation to work all lists need to be of equal length");
+            }).toThrow("Some of the list lengths are not the same. For this operation to work all lists need to be of equal length");
 
             sphere.delete();
             box.delete();

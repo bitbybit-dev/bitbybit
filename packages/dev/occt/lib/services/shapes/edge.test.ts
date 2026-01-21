@@ -127,7 +127,7 @@ describe("OCCT edge unit tests", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         expect(() =>
             edge.getEdge({ shape: box, index: 12 })
-        ).toThrowError("Edge can not be found for shape on index 12");
+        ).toThrow("Edge can not be found for shape on index 12");
         box.delete();
     });
 
@@ -135,14 +135,14 @@ describe("OCCT edge unit tests", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         expect(() =>
             edge.getEdge({ shape: box, index: 13 })
-        ).toThrowError("Edge can not be found for shape on index 13");
+        ).toThrow("Edge can not be found for shape on index 13");
         box.delete();
     });
 
     it("should not be able to get an edge if shape is not provided", async () => {
         expect(() =>
             edge.getEdge({ shape: undefined, index: 0 })
-        ).toThrowError("Edge can not be found for shape that is not provided or is of incorrect type");
+        ).toThrow("Edge can not be found for shape that is not provided or is of incorrect type");
     });
 
     it("should not remove internal edges if there are none", async () => {
