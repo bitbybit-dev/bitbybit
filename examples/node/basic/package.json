@@ -15,7 +15,7 @@
         "node": ">=20.19.4"
     },
     "dependencies": {
-        "@bitbybit-dev/occt": "^0.21.1"
+        "@bitbybit-dev/occt": "^1.0.0-rc.0"
     },
     "devDependencies": {
         "extensionless": "1.9.9",

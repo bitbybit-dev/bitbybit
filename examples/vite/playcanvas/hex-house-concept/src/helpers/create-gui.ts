@@ -1,6 +1,6 @@
 import GUI from "lil-gui";
 import type { Current, Model } from "../models";
-import type { Entity, StandardMaterial, Color } from "playcanvas";
+import type { Entity, StandardMaterial } from "playcanvas";
 
 export const createGui = (
   current: Current,

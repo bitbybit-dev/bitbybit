@@ -81,39 +81,39 @@ packages/
 
 For AI coding assistants, use these resources to get comprehensive Bitbybit API knowledge.
 
-### AI Prompt Context Files (v0.21.1)
+### AI Prompt Context Files (v1.0.0-rc.0)
 
 #### Beginner Context (Monaco Editor)
 For online TypeScript editor at bitbybit.dev:
-- Full Context (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-monaco-ai-context-v0.21.1.md
+- Full Context (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-babylon-monaco-ai-context-v1.0.0-rc.0.md
 
 #### BabylonJS Context
-- Full (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-ai-context-v0.21.1.md
-- Lite (114k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-no-comment-min-ai-v0.21.1.md
+- Full (116k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-babylon-ai-context-v1.0.0-rc.0.md
+- Lite (114k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-babylon-no-comment-min-ai-v1.0.0-rc.0.md
 
 #### Three.js Context
-- Full (95k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-ai-context-v0.21.1.md
-- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-no-comment-min-ai-v0.21.1.md
+- Full (95k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-three-ai-context-v1.0.0-rc.0.md
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-three-no-comment-min-ai-v1.0.0-rc.0.md
 
 #### PlayCanvas Context
-- Full (94k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-ai-context-v0.21.1.md
-- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-no-comment-min-ai-v0.21.1.md
+- Full (94k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-playcanvas-ai-context-v1.0.0-rc.0.md
+- Lite (82k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-playcanvas-no-comment-min-ai-v1.0.0-rc.0.md
 
 ### TypeScript Declaration Files (.d.ts)
 
 For AI agents that struggle with dictionary translation, use these full TypeScript type definitions:
 
 #### BabylonJS Declarations
-- With Comments (~500k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-v0.21.1.d.ts
-- Without Comments (~180k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-babylon-formatted-no-comments-v0.21.1.d.ts
+- With Comments (~500k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-babylon-formatted-v1.0.0-rc.0.d.ts
+- Without Comments (~180k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-babylon-formatted-no-comments-v1.0.0-rc.0.d.ts
 
 #### Three.js Declarations
-- With Comments (~420k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-v0.21.1.d.ts
-- Without Comments (~150k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-three-formatted-no-comments-v0.21.1.d.ts
+- With Comments (~420k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-three-formatted-v1.0.0-rc.0.d.ts
+- Without Comments (~150k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-three-formatted-no-comments-v1.0.0-rc.0.d.ts
 
 #### PlayCanvas Declarations
-- With Comments (~420k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-v0.21.1.d.ts
-- Without Comments (~150k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v0.21.1/bitbybit-playcanvas-formatted-no-comments-v0.21.1.d.ts
+- With Comments (~420k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-playcanvas-formatted-v1.0.0-rc.0.d.ts
+- Without Comments (~150k tokens): https://app.bitbybit.dev/assets/ai-prompt-context/v1.0.0-rc.0/bitbybit-playcanvas-formatted-no-comments-v1.0.0-rc.0.d.ts
 
 ### Context7 MCP (Recommended)
 

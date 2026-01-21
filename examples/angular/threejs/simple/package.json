@@ -10,7 +10,7 @@
     },
     "private": true,
     "dependencies": {
-        "@bitbybit-dev/threejs": "0.21.1",
+        "@bitbybit-dev/threejs": "1.0.0-rc.0",
         "@angular/animations": "13.3.0",
         "@angular/common": "13.3.0",
         "@angular/compiler": "13.3.0",
