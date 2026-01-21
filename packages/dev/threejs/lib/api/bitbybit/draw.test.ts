@@ -19,6 +19,7 @@ describe("Draw unit tests", () => {
     let jscadWorkerManager: JSCADWorkerManager;
     let manifoldWorkerManager: ManifoldWorkerManager;
     let vector: Vector;
+    let solidText: JSCADText;
 
     beforeAll(async () => {
         const context = new Context();
@@ -26,7 +27,7 @@ describe("Draw unit tests", () => {
         occtWorkerManager = new OCCTWorkerManager();
         manifoldWorkerManager = new ManifoldWorkerManager();
 
-        const solidText = new JSCADText(jscadWorkerManager);
+        solidText = new JSCADText(jscadWorkerManager);
 
         const math = new MathBitByBit();
         const geometryHelper = new GeometryHelper();
@@ -675,8 +676,9 @@ describe("Draw unit tests", () => {
             options.drawEdgeIndexes = true;
             options.drawFaceIndexes = true;
             occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
-            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([[[0.5, 0.3, 0.2], [0.5, 0.3, 0.2], [0.5, 0.3, 0.2], [0.5, 0.3, 0.2]]]);
-            vector.add = jest.fn().mockReturnValue([[[1, 2, 3], [1, 2, 3]], [[1, 2, 3], [1, 2, 3]]]);
+            // Mock createVectorText to return polyline data for edge/face index text
+            (solidText.createVectorText as jest.Mock).mockResolvedValue([[[0, 0], [0.5, 0], [0.5, 0.3], [0, 0.3]]]);
+            vector.add = jest.fn().mockReturnValue([1, 2, 3]);
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
