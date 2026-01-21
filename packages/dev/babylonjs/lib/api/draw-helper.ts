@@ -1043,7 +1043,7 @@ export class DrawHelper extends DrawHelperCore {
         }
         
         // Add two-sided rendering if enabled using shared createBackFaceMesh method
-        const drawTwoSided = inputs.drawTwoSided ?? true;
+        const drawTwoSided = (inputs.drawTwoSided === undefined || inputs.drawTwoSided === true) ? true : false;
         if (drawTwoSided) {
             const backFaceColour = inputs.backFaceColour ?? inputs.colour;
             const backFaceOpacity = inputs.backFaceOpacity ?? inputs.opacity;

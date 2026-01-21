@@ -91,6 +91,22 @@
     "transformIgnorePatterns": [
       "node_modules/(?!@babylonjs|@bitbybit-dev)"
     ],
+    "moduleNameMapper": {
+      "^@bitbybit-dev/base$": "<rootDir>/../base/dist/index.js",
+      "^@bitbybit-dev/base/(.*)$": "<rootDir>/../base/dist/$1",
+      "^@bitbybit-dev/core$": "<rootDir>/../core/dist/index.js",
+      "^@bitbybit-dev/core/(.*)$": "<rootDir>/../core/dist/$1",
+      "^@bitbybit-dev/jscad$": "<rootDir>/../jscad/dist/index.js",
+      "^@bitbybit-dev/jscad/(.*)$": "<rootDir>/../jscad/dist/$1",
+      "^@bitbybit-dev/manifold$": "<rootDir>/../manifold/dist/index.js",
+      "^@bitbybit-dev/manifold/(.*)$": "<rootDir>/../manifold/dist/$1",
+      "^@bitbybit-dev/jscad-worker$": "<rootDir>/__mocks__/@bitbybit-dev/jscad-worker.ts",
+      "^@bitbybit-dev/jscad-worker/(.*)$": "<rootDir>/__mocks__/@bitbybit-dev/jscad-worker.ts",
+      "^@bitbybit-dev/manifold-worker$": "<rootDir>/__mocks__/@bitbybit-dev/manifold-worker.ts",
+      "^@bitbybit-dev/manifold-worker/(.*)$": "<rootDir>/__mocks__/@bitbybit-dev/manifold-worker.ts",
+      "^@bitbybit-dev/occt-worker$": "<rootDir>/__mocks__/@bitbybit-dev/occt-worker.ts",
+      "^@bitbybit-dev/occt-worker/(.*)$": "<rootDir>/__mocks__/@bitbybit-dev/occt-worker.ts"
+    },
     "collectCoverageFrom": [
       "lib/workers/**/*",
       "lib/api/**/*"
