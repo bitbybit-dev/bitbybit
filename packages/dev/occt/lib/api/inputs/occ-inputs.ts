@@ -5054,12 +5054,12 @@ export namespace OCCT {
         shape: T;
         /**
          * Index of the entity
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        index = 1;
+        index = 0;
     }
     export class RotationExtrudeDto<T> {
         constructor(shape?: T, height?: number, angle?: number, makeSolid?: boolean) {

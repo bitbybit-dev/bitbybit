@@ -494,14 +494,14 @@ export class FilletsService {
             // So original indexes are based on the number of corners between edges. These corner indexes are used as an input, but extrusion creates 3D edges
             // with different indexes, so we need to adjust the indexes to match the 3D edges.
 
-            // the original indexes are [3, 4, 5, 6, 7, 8, 9, 10, 11, ...]
-            // the order is [5, 8, 11, 14, 17, 20, 23, 26, 29, ...]
+            // the original indexes are [2, 3, 4, 5, 6, 7, 8, 9, 10, ...] (0-based corner indexes >= 2)
+            // the order is [4, 7, 10, 13, 16, 19, 22, 25, 28, ...] (0-based edge indexes on extruded shape)
             // this is needed because of the way edge indexes are made on such shapes
-            const filteredEnd = inputs.indexes.filter(i => i > 2);
+            const filteredEnd = inputs.indexes.filter(i => i > 1);
             const maxNr = Math.max(...filteredEnd);
 
-            const adjacentList = [5];
-            let lastNr = 5;
+            const adjacentList = [4];
+            let lastNr = 4;
             for (let i = 0; i < maxNr; i++) {
                 lastNr += 3;
                 adjacentList.push(lastNr);
@@ -509,16 +509,16 @@ export class FilletsService {
 
             adjustedIndexes = inputs.indexes.map((index) => {
                 if (inputs.shape.Closed()) {
-                    if (index <= 2) {
+                    if (index <= 1) {
                         return index;
                     } else {
-                        return adjacentList[index - 3];
+                        return adjacentList[index - 2];
                     }
                 } else {
-                    if (index === 1) {
-                        return 2;
+                    if (index === 0) {
+                        return 1;
                     } else {
-                        return adjacentList[index - 2];
+                        return adjacentList[index - 1];
                     }
                 }
             });

@@ -42,8 +42,7 @@ export class IteratorService {
             const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
             if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
                 edgeHashes[edgeHash] = edgeIndex;
-                edgeIndex++;
-                callback(edgeIndex, edge);
+                callback(edgeIndex++, edge);
             }
         }
         anExplorer.delete();
@@ -59,8 +58,7 @@ export class IteratorService {
             const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
             if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
                 edgeHashes[edgeHash] = edgeIndex;
-                edgeIndex++;
-                callback(edgeIndex, edge);
+                callback(edgeIndex++, edge);
             }
         }
         anExplorer.delete();

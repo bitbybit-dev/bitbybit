@@ -116,22 +116,22 @@ describe("OCCT edge unit tests", () => {
 
     it("should be able to get an edge from solid shape", async () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
-        const e = edge.getEdge({ shape: box, index: 1 });
+        const e = edge.getEdge({ shape: box, index: 0 });
         const length = edge.getEdgeLength({ shape: e });
         expect(length).toEqual(10);
         box.delete();
         e.delete();
     });
 
-    it("should not be able to get an edge from solid shape with undefined index", async () => {
+    it("should not be able to get an edge from solid shape with out of range index", async () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         expect(() =>
-            edge.getEdge({ shape: box, index: 0 })
-        ).toThrowError("Edge can not be found for shape on index 0");
+            edge.getEdge({ shape: box, index: 12 })
+        ).toThrowError("Edge can not be found for shape on index 12");
         box.delete();
     });
 
-    it("should be not able to get an edge from solid shape with undefined index", async () => {
+    it("should be not able to get an edge from solid shape with out of range index", async () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         expect(() =>
             edge.getEdge({ shape: box, index: 13 })
@@ -141,7 +141,7 @@ describe("OCCT edge unit tests", () => {
 
     it("should not be able to get an edge if shape is not provided", async () => {
         expect(() =>
-            edge.getEdge({ shape: undefined, index: 1 })
+            edge.getEdge({ shape: undefined, index: 0 })
         ).toThrowError("Edge can not be found for shape that is not provided or is of incorrect type");
     });
 

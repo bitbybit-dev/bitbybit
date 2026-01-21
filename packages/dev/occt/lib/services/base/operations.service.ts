@@ -475,7 +475,7 @@ export class OperationsService {
         const wire = inputs.shape;
 
         // Get the edges of the wire
-        const edge = this.shapeGettersService.getEdge({ shape: wire, index: 1 });
+        const edge = this.shapeGettersService.getEdge({ shape: wire, index: 0 });
 
         // Get the start point and tangent of the first edge
         const startPoint = this.edgesService.pointOnEdgeAtParam({ shape: edge, param: 0 });

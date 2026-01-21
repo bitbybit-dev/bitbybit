@@ -1,4 +1,4 @@
-import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, Models } from "@bitbybit-dev/occt";
 import { CacheHelper } from "./cache-helper";
 
