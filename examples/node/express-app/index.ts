@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import { BitByBitBase } from "./bitbybit";
+import { BitByBitBase } from "./bitbybit.js";
 
 const bitbybit = new BitByBitBase();
 
