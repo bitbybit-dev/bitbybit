@@ -42,7 +42,7 @@
         "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run copy-readme-license && npm run delete-coverage && npm run delete-bak",
         "copy-package": "shx cp -R ./package.json ./dist/package.json",
         "copy-occt": "shx cp -R ./bitbybit-dev-occt ./dist && shx cp -R ./bitbybit-dev-occt-64-bit ./dist && shx cp -R ./bitbybit-dev-occt-64-bit-mt ./dist",
-        "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp-R ./LICENSE ./dist",
+        "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "delete-bak": "find ./dist -name '*.bak' -delete || true",
         "test": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --watchAll=true",
