@@ -1,6 +1,6 @@
 
 import { ContextBase } from "../../context";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 
 /**
  * Conical surface functions.

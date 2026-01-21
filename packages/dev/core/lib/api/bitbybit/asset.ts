@@ -1,5 +1,5 @@
 
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 import { AssetManager } from "../../asset-manager";
 
 export class Asset {

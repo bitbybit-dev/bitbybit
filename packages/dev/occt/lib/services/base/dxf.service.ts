@@ -1,8 +1,8 @@
 import {
     TopoDS_Edge, TopoDS_Shape
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { EdgesService } from "./edges.service";
 import { ShapeGettersService } from "./shape-getters";

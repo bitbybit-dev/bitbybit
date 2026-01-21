@@ -1,13 +1,13 @@
 import {
-    OpenCascadeInstance, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, TopoDS_Face
+    BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, TopoDS_Face
 } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
-import * as Inputs from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
 
 export class OCCTOperations {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }

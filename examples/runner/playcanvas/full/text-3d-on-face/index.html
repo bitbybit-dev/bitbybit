@@ -5,12 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Load the full PlayCanvas runner (includes PlayCanvas) -->
-    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-playcanvas.js"></script>
+    <script src="https://git-cdn.bitbybit.dev/v1.0.0-rc.0/runner/bitbybit-runner-playcanvas.js"></script>
     <script type="module">
       const runnerOptions = {
         canvasId: 'myCanvas',
         canvasZoneClass: 'myCanvasZone',
         enableOCCT: true,
+        occtArch: "64", // 32 or 64-mt (needs special server configuration)
         enableJSCAD: false,
         enableManifold: false,
         cameraPosition: [30, 15, 30],
@@ -36,7 +37,7 @@
       // ============================================
       const cameraOptions = new Bit.Inputs.PlayCanvasCamera.OrbitCameraDto();
       cameraOptions.distance = 45;
-      cameraOptions.pitch = -20;
+      cameraOptions.pitch = 20;
       cameraOptions.yaw = 45;
       cameraOptions.frameOnStart = false;
       cameraOptions.inertiaFactor = 0.15;

@@ -1,13 +1,13 @@
-import initOpenCascade, { OpenCascadeInstance, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
-import * as Inputs from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
 import { OCCTFillets } from "./fillets";
 import { OCCTEdge, OCCTSolid, OCCTWire } from "./shapes";
 
 describe("OCCT fillets unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let wire: OCCTWire;
     let edge: OCCTEdge;
     let fillets: OCCTFillets;
@@ -15,7 +15,7 @@ describe("OCCT fillets unit tests", () => {
     let occHelper: OccHelper;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
 
@@ -34,12 +34,12 @@ describe("OCCT fillets unit tests", () => {
             undefined,
             [0, 1, 0],
             [0.4, 0.2, 0.5, 0.3, 0.6],
-            [1, 2, 3, 4, 5],
+            [0, 1, 2, 3, 4],
         );
         const result = fillets.fillet3DWire(filletOptions);
         const edges = occHelper.edgesService.getEdgesAlongWire({ shape: result });
         const edgeLengths = edges.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
-        expect(edgeLengths).toEqual([
+        const expectedLengths = [
             5.348146466383239,
             0.4475593096045423,
             5.268367175439688,
@@ -59,7 +59,9 @@ describe("OCCT fillets unit tests", () => {
             6.073198156795949,
             5.7540809930217485,
             0.511396397670537,
-        ]);
+        ];
+        expect(edgeLengths.length).toEqual(expectedLengths.length);
+        edgeLengths.forEach((len, i) => expect(len).toBeCloseTo(expectedLengths[i], 10));
         expect(edgeLengths[1]).toBeLessThan(1);
         expect(edgeLengths[3]).toBeLessThan(1);
         expect(edgeLengths[5]).toBeLessThan(1);
@@ -79,12 +81,12 @@ describe("OCCT fillets unit tests", () => {
             undefined,
             [0, 1, 0],
             [0.3, 0.2, 0.3, 0.3, 0.3],
-            [4, 7, 8, 9, 12],
+            [3, 6, 7, 8, 11],
         );
         const result = fillets.fillet3DWire(filletOptions);
         const edges = occHelper.edgesService.getEdgesAlongWire({ shape: result });
         const edgeLengths = edges.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
-        expect(edgeLengths).toEqual([
+        const expectedLengths = [
             5.464296366838182,
             0.6713389644068104,
             5.464296366838182,
@@ -104,7 +106,9 @@ describe("OCCT fillets unit tests", () => {
             6.073198156795948,
             6.073198156795948,
             6.073198156795948,
-        ]);
+        ];
+        expect(edgeLengths.length).toEqual(expectedLengths.length);
+        edgeLengths.forEach((len, i) => expect(len).toBeCloseTo(expectedLengths[i], 10));
 
         expect(edgeLengths[1]).toBeLessThan(1);
         expect(edgeLengths[5]).toBeLessThan(1);
@@ -130,13 +134,13 @@ describe("OCCT fillets unit tests", () => {
             undefined,
             [0, 1, 0],
             [0.4, 0.2, 0.5, 0.3, 0.6],
-            [1, 2, 3, 4, 5],
+            [0, 1, 2, 3, 4],
         );
         const result = fillets.fillet3DWire(filletOptions);
         const edges = occHelper.shapeGettersService.getEdges({ shape: result });
         const edgeLengths = edges.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
 
-        expect(edgeLengths).toEqual([
+        const expectedLengths = [
             5.7540809930217485, 0.5113963976705358,
             5.348146466383239, 0.4475593096045423,
             5.268367175439688, 0.6392454970881696,
@@ -146,7 +150,9 @@ describe("OCCT fillets unit tests", () => {
             6.073198156795948, 6.073198156795948,
             6.073198156795948, 6.073198156795948,
             6.073198156795948, 6.073198156795949
-        ]);
+        ];
+        expect(edgeLengths.length).toEqual(expectedLengths.length);
+        edgeLengths.forEach((len, i) => expect(len).toBeCloseTo(expectedLengths[i], 10));
         expect(edgeLengths[1]).toBeLessThan(1);
         expect(edgeLengths[3]).toBeLessThan(1);
         expect(edgeLengths[5]).toBeLessThan(1);
@@ -242,7 +248,7 @@ describe("OCCT fillets unit tests", () => {
         const result = fillets.fillet2d(filletOptions);
         const edges = occHelper.edgesService.getEdgesAlongWire({ shape: result });
         const edgeLengths = edges.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
-        expect(edgeLengths).toEqual([
+        const expectedLengths = [
             5.280505264812232, 5.280505264812232,
             5.280505264812232, 4.574603909466177,
             0.8442070927826264, 4.5746039094661795,
@@ -253,7 +259,9 @@ describe("OCCT fillets unit tests", () => {
             5.280505264812233, 5.280505264812232,
             4.864307780415325, 0.7277518985585463,
             4.8643077804153245
-        ]);
+        ];
+        expect(edgeLengths.length).toEqual(expectedLengths.length);
+        edgeLengths.forEach((len, i) => expect(len).toBeCloseTo(expectedLengths[i], 10));
         expect(edgeLengths[4]).toBeLessThan(1);
         expect(edgeLengths[7]).toBeLessThan(1);
         expect(edgeLengths[9]).toBeLessThan(1);
@@ -282,7 +290,7 @@ describe("OCCT fillets unit tests", () => {
         const result = fillets.fillet2d(filletOptions);
         const edges = occHelper.shapeGettersService.getEdges({ shape: result });
         const edgeLengths = edges.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
-        expect(edgeLengths).toEqual([
+        const expectedLengths = [
             5.003040275214293, 0.4851679323723642,
             4.650089597541266, 0.4221035463913131,
             4.58072335014178, 0.6064599154654553,
@@ -292,7 +300,9 @@ describe("OCCT fillets unit tests", () => {
             5.280505264812232, 5.280505264812232,
             5.280505264812232, 5.280505264812233,
             5.280505264812232, 5.280505264812232
-        ]);
+        ];
+        expect(edgeLengths.length).toEqual(expectedLengths.length);
+        edgeLengths.forEach((len, i) => expect(len).toBeCloseTo(expectedLengths[i], 10));
         expect(edgeLengths[1]).toBeLessThan(1);
         expect(edgeLengths[3]).toBeLessThan(1);
         expect(edgeLengths[5]).toBeLessThan(1);
@@ -376,7 +386,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should fillet a single edge on the solid", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const filRes = fillets.filletEdges({ shape: cube, indexes: [1], radius: 0.5 });
+        const filRes = fillets.filletEdges({ shape: cube, indexes: [0], radius: 0.5 });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.892699081698724);
@@ -388,7 +398,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should fillet specific edges on the solid by index", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const filRes = fillets.filletEdges({ shape: cube, indexes: [1, 4, 6], radiusList: [0.3, 0.2, 0.1] });
+        const filRes = fillets.filletEdges({ shape: cube, indexes: [0, 3, 5], radiusList: [0.3, 0.2, 0.1] });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.9412869655174045);
@@ -400,7 +410,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should not fillet specific edges on the solid by index if radius list does not have the same nr of elements as indexes", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        expect(() => fillets.filletEdges({ shape: cube, indexes: [1, 4, 6], radiusList: [0.3, 0.2] })).toThrowError("Radius not defined, or radiusList not correct length");
+        expect(() => fillets.filletEdges({ shape: cube, indexes: [0, 3, 5], radiusList: [0.3, 0.2] })).toThrow("Radius not defined, or radiusList not correct length");
         cube.delete();
     });
 
@@ -576,7 +586,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should chamfer specific edges selected by indexes with one distance", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const chamferRes = fillets.chamferEdges({ shape: cube, distance: 0.1, indexes: [1, 2, 6] });
+        const chamferRes = fillets.chamferEdges({ shape: cube, distance: 0.1, indexes: [0, 1, 5] });
         const faces = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.9703333333333335);
@@ -589,7 +599,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should chamfer specific edges selected by indexes with specific distances", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const chamferRes = fillets.chamferEdges({ shape: cube, indexes: [1, 2, 6], distanceList: [0.2, 0.3, 0.4] });
+        const chamferRes = fillets.chamferEdges({ shape: cube, indexes: [0, 1, 5], distanceList: [0.2, 0.3, 0.4] });
         const faces = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.714666666666666);

@@ -1,5 +1,5 @@
 import { CSVBitByBit } from "./csv";
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 
 describe("CSV unit tests", () => {
     let csv: CSVBitByBit;

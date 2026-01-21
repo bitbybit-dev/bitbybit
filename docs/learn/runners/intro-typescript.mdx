@@ -66,7 +66,7 @@ Below are the `index.html` and `script.js` files you would use on StackBlitz or 
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
         <link rel="stylesheet" href="styles.css" />
-        <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@latest/runner/bitbybit-runner-babylonjs.js"></script>
+        <script src="https://git-cdn.bitbybit.dev/latest/runner/bitbybit-runner-babylonjs.js"></script>
         <script type="module" src="script.js"></script>
     </head>
     <body>
@@ -123,7 +123,7 @@ async function changeSize(size) {
 window.changeSize = changeSize;
 
 function getInlineScript() {
-        return '{"type":"typescript","version":"0.15.13","script":"async function(t,e,i,n,s){s.mockBitbybitRunnerInputs({size:1});const a=s.getBitbybitRunnerInputs(),{occt:b}=e,u=(async()=>{const t=await b.shapes.solid.createCube({size:a.size,center:[0,0,0]}),i=await b.fillets.filletEdges({shape:t,radius:.4}),n=new s.Inputs.Draw.DrawOcctShapeSimpleOptions;n.faceColour=\\"#0000ff\\",n.edgeWidth=1,n.precision=.005;return{cubeMesh:await e.draw.drawAnyAsync({entity:i,options:n})}})();s.setBitbybitRunnerResult(u)}(BitByBit,bitbybit,bitbybitRunnerResult,bitbybitRunnerInputs,Bit);"}';
+        return '{"type":"typescript","version":"1.0.0-rc.0","script":"async function(t,e,i,n,s){s.mockBitbybitRunnerInputs({size:1});const a=s.getBitbybitRunnerInputs(),{occt:b}=e,u=(async()=>{const t=await b.shapes.solid.createCube({size:a.size,center:[0,0,0]}),i=await b.fillets.filletEdges({shape:t,radius:.4}),n=new s.Inputs.Draw.DrawOcctShapeSimpleOptions;n.faceColour=\\"#0000ff\\",n.edgeWidth=1,n.precision=.005;return{cubeMesh:await e.draw.drawAnyAsync({entity:i,options:n})}})();s.setBitbybitRunnerResult(u)}(BitByBit,bitbybit,bitbybitRunnerResult,bitbybitRunnerInputs,Bit);"}';
 }
 
     ```

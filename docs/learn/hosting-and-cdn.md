@@ -10,7 +10,7 @@ import Admonition from '@theme/Admonition';
 
 # Hosting Bitbybit Assets on Your Own CDN
 
-To simplify the setup process for new users and customers, our runners and various assets are hosted on a generally available CDN called **jsDelivr**. Our online editors and runners that you set up on your website all load critical assets from the jsDelivr CDN. While convenient, this dependency introduces a potential point of failure: what if your website suddenly stops working because jsDelivr went down? This is a realistic scenario that happens more often than we'd like to admit.
+To simplify the setup process for new users and customers, our runners and various assets are hosted on a generally available **Bitbybit CDN**. Our online editors and runners that you set up on your website all load critical assets from this CDN. While convenient, this dependency introduces a potential point of failure: what if your website suddenly stops working because our CDN or the whole Cloudflare went down? This is a realistic scenario that happens more often than we'd like to admit.
 
 The solution? Host Bitbybit assets on your own infrastructure using a CDN provider you trust.
 
@@ -42,9 +42,9 @@ CDNs significantly improve website performance through:
 
 ### Why Consider Self-Hosting Bitbybit Assets?
 
-While we provide jsDelivr hosting for convenience, there are compelling reasons to host assets on your own infrastructure:
+While we provide Bitbybit CDN hosting for convenience, there are compelling reasons to host assets on your own infrastructure:
 
-1. **Reliability & Control**: You're not dependent on third-party uptime. If jsDelivr experiences an outage, your application continues functioning
+1. **Reliability & Control**: You're not dependent on third-party uptime. If Cloudflare experiences an outage, your application continues functioning
 2. **Performance Optimization**: Choose a CDN provider optimized for your specific user base and geographic regions
 3. **Version Stability**: Pin specific versions without worrying about external changes or deprecations
 4. **Compliance & Security**: Meet enterprise requirements for asset hosting and security policies
@@ -80,7 +80,7 @@ Identifying exactly which assets you need depends on the features you're impleme
 2. **Exercise All Features**: Navigate through your application, activating all features and workflows
 3. **Filter CDN Requests**: Look for requests matching the pattern:
    ```
-   https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>
+   https://git-cdn.bitbybit.dev/v<version-number-of-bitbybit>
    ```
 4. **Document Assets**: Note every asset loaded from this domain—these are the files you should migrate to your own hosting
 
@@ -176,6 +176,6 @@ Choose a provider based on your budget, geographic user base, existing infrastru
 
 ## Conclusion
 
-While jsDelivr hosting provides convenience for getting started, self-hosting Bitbybit assets gives you greater control, reliability, and performance optimization opportunities. By carefully selecting the assets you need and configuring a robust CDN solution, you can ensure your Bitbybit-powered applications remain fast, reliable, and independent of third-party infrastructure.
+While Bitbybit CDN hosting provides convenience for getting started, self-hosting Bitbybit assets gives you greater control, reliability, and performance optimization opportunities. By carefully selecting the assets you need and configuring a robust CDN solution, you can ensure your Bitbybit-powered applications remain fast, reliable, and independent of third-party infrastructure.
 
 For more information about using the Bitbybit Runner, see [Introducing Bitbybit Runner](/learn/runners/intro).

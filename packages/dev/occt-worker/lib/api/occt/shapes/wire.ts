@@ -731,6 +731,54 @@ export class OCCTWire {
     }
 
     /**
+     * Creates a 3D helix wire
+     * @param inputs Helix parameters including radius, pitch, height, center and direction
+     * @returns OpenCascade helix wire
+     * @group primitives
+     * @shortname helix
+     * @drawable true
+     */
+    createHelixWire(inputs: Inputs.OCCT.HelixWireDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createHelixWire", inputs);
+    }
+
+    /**
+     * Creates a 3D helix wire by specifying the number of turns
+     * @param inputs Helix parameters including radius, pitch, number of turns, center and direction
+     * @returns OpenCascade helix wire
+     * @group primitives
+     * @shortname helix by turns
+     * @drawable true
+     */
+    createHelixWireByTurns(inputs: Inputs.OCCT.HelixWireByTurnsDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createHelixWireByTurns", inputs);
+    }
+
+    /**
+     * Creates a conical (tapered) helix wire with varying radius
+     * @param inputs Tapered helix parameters including start/end radii, pitch, height, center and direction
+     * @returns OpenCascade tapered helix wire
+     * @group primitives
+     * @shortname tapered helix
+     * @drawable true
+     */
+    createTaperedHelixWire(inputs: Inputs.OCCT.TaperedHelixWireDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createTaperedHelixWire", inputs);
+    }
+
+    /**
+     * Creates a flat (Archimedean) spiral wire lying in a plane
+     * @param inputs Flat spiral parameters including start/end radii, number of turns, center and direction
+     * @returns OpenCascade flat spiral wire
+     * @group primitives
+     * @shortname flat spiral
+     * @drawable true
+     */
+    createFlatSpiralWire(inputs: Inputs.OCCT.FlatSpiralWireDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createFlatSpiralWire", inputs);
+    }
+
+    /**
      * Creates OpenCascade text wires based on simplex font created by Dr. A. V. Hershey
      * @param inputs Text parameters
      * @returns OpenCascade text wires

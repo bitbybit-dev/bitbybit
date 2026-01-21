@@ -1,4 +1,4 @@
-import initOpenCascade, { OpenCascadeInstance, TopoDS_Edge, TopoDS_Face, TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -8,7 +8,7 @@ import { OCCTFace } from "../shapes/face";
 import { OCCTCompound } from "../shapes/compound";
 
 describe("OCCT iterator service unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let occHelper: OccHelper;
     let iteratorService: IteratorService;
     let solid: OCCTSolid;
@@ -16,7 +16,7 @@ describe("OCCT iterator service unit tests", () => {
     let compoundService: OCCTCompound;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
         occHelper = new OccHelper(vec, s, occt);

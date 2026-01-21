@@ -11,7 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@bitbybit-dev/babylonjs": "0.21.1",
+    "@bitbybit-dev/babylonjs": "1.0.0-rc.0",
     "@pinia/nuxt": "^0.5.4",
     "nuxt": "^3.13.0",
     "pinia": "^2.2.2",

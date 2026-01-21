@@ -1,4 +1,4 @@
-import { OpenCascadeInstance } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTCompound } from "./compound";
 import { OCCTVertex } from "./vertex";
@@ -20,7 +20,7 @@ export class OCCTShapes {
     public readonly shape: OCCTShape;
 
     constructor(
-        occ: OpenCascadeInstance,
+        occ: BitbybitOcctModule,
         och: OccHelper,
     ) {
         this.vertex = new OCCTVertex(occ, och);

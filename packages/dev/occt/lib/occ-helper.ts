@@ -1,6 +1,6 @@
-import { OpenCascadeInstance, TopoDS_Face } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Face } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "./api/vector-helper.service";
-import * as Inputs from "./api/inputs/inputs";
+import * as Inputs from "./api/inputs";
 import { ShapesHelperService } from "./api/shapes-helper.service";
 import { OCCReferencedReturns } from "./occ-referenced-returns";
 import { IteratorService } from "./services/base/iterator.service";
@@ -56,7 +56,7 @@ export class OccHelper {
     constructor(
         public readonly vecHelper: VectorHelperService,
         public readonly shapesHelperService: ShapesHelperService,
-        public readonly occ: OpenCascadeInstance,
+        public readonly occ: BitbybitOcctModule,
     ) {
         this.base = new BaseBitByBit();
         this.occRefReturns = new OCCReferencedReturns(occ);
@@ -111,7 +111,7 @@ export class OccHelper {
 
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>) {
         const face = inputs.shape;
-        const surface = this.occ.BRep_Tool.Surface_2(face);
+        const surface = this.occ.BRep_Tool_Surface(face);
         const srf = surface.get();
         return srf;
     }

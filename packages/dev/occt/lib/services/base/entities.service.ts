@@ -1,60 +1,62 @@
 import {
-    Geom_Circle, Geom_Curve, Geom_Ellipse, Geom_Surface, Handle_Geom_Curve, Handle_Geom_Surface, OpenCascadeInstance,
-    TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Vertex, TopoDS_Wire,
-    gp_Ax1, gp_Ax2, gp_Ax22d_2, gp_Ax2d_2, gp_Ax3, gp_Dir2d_4, gp_Dir_4, gp_Pln_3,
-    gp_Pnt2d_3, gp_Pnt_3, gp_Vec2d_4, gp_Vec_4, gp_XYZ_2
+    BitbybitOcctModule,
+    TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire,
+    gp_Ax1, gp_Ax2, gp_Ax22d, gp_Ax2d, gp_Ax3, gp_Dir2d, gp_Dir, gp_Pln,
+    gp_Pnt2d, gp_Pnt, gp_Vec2d, gp_Vec, gp_XYZ
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
+import { Base } from "../../api/inputs";
 
 export class EntitiesService {
 
     constructor(
-        public readonly occ: OpenCascadeInstance,
+        public readonly occ: BitbybitOcctModule,
     ) { }
 
     createCircle(radius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum) {
-        const circle = this.gcMakeCircle(center, direction, radius);
-        if (type === Inputs.OCCT.typeSpecificityEnum.curve) {
-            return circle;
-        } else {
-            const edge = this.bRepBuilderAPIMakeEdge(circle);
-            if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
-                return edge;
-            } else {
-                const circleWire = this.bRepBuilderAPIMakeWire(edge);
-                if (type === Inputs.OCCT.typeSpecificityEnum.wire) {
-                    edge.delete();
-                    return circleWire;
-                } else if (type === Inputs.OCCT.typeSpecificityEnum.face) {
-                    const face = this.bRepBuilderAPIMakeFaceFromWire(circleWire, true);
-                    return face;
-                }
-            }
+        const ax = this.gpAx2(center, direction);
+        if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
+            const edge = this.occ.MakeCircleEdge(ax, radius);
+            ax.delete();
+            return edge;
+        } else if (type === Inputs.OCCT.typeSpecificityEnum.wire) {
+            const wire = this.occ.MakeCircleWire(ax, radius);
+            ax.delete();
+            return wire;
+        } else if (type === Inputs.OCCT.typeSpecificityEnum.face) {
+            const wire = this.occ.MakeCircleWire(ax, radius);
+            ax.delete();
+            const face = this.bRepBuilderAPIMakeFaceFromWire(wire, true);
+            wire.delete();
+            return face;
         }
-        return circle;
+        // Default: return wire for curve type as well (Geom_Curve not exposed)
+        const wire = this.occ.MakeCircleWire(ax, radius);
+        ax.delete();
+        return wire;
     }
 
     createEllipse(minorRadius: number, majorRadius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum) {
-        const ellipse = this.gcMakeEllipse(center, direction, minorRadius, majorRadius);
-        if (type === Inputs.OCCT.typeSpecificityEnum.curve) {
-            return ellipse;
-        } else {
-            const edge = this.bRepBuilderAPIMakeEdge(ellipse);
-            if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
-                return edge;
-            } else {
-                const ellipseWire = this.bRepBuilderAPIMakeWire(edge);
-                if (type === Inputs.OCCT.typeSpecificityEnum.wire) {
-                    edge.delete();
-                    return ellipseWire;
-                } else if (type === Inputs.OCCT.typeSpecificityEnum.face) {
-                    const face = this.bRepBuilderAPIMakeFaceFromWire(ellipseWire, true);
-                    return face;
-                }
-            }
+        const ax = this.gpAx2(center, direction);
+        if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
+            const edge = this.occ.MakeEllipseEdge(ax, majorRadius, minorRadius);
+            ax.delete();
+            return edge;
+        } else if (type === Inputs.OCCT.typeSpecificityEnum.wire) {
+            const wire = this.occ.MakeEllipseWire(ax, majorRadius, minorRadius);
+            ax.delete();
+            return wire;
+        } else if (type === Inputs.OCCT.typeSpecificityEnum.face) {
+            const wire = this.occ.MakeEllipseWire(ax, majorRadius, minorRadius);
+            ax.delete();
+            const face = this.bRepBuilderAPIMakeFaceFromWire(wire, true);
+            wire.delete();
+            return face;
         }
-        return ellipse;
+        // Default: return wire for curve type as well (Geom_Curve not exposed)
+        const wire = this.occ.MakeEllipseWire(ax, majorRadius, minorRadius);
+        ax.delete();
+        return wire;
     }
 
     makeVertex(pt: Base.Point3): TopoDS_Vertex {
@@ -66,161 +68,84 @@ export class EntitiesService {
         return vrt;
     }
 
-    gpPnt2d(point: Base.Point2): gp_Pnt2d_3 {
-        return new this.occ.gp_Pnt2d_3(point[0], point[1]);
+    gpPnt2d(point: Base.Point2): gp_Pnt2d {
+        return new this.occ.gp_Pnt2d(point[0], point[1]);
     }
 
-    gpPnt(point: Base.Point3): gp_Pnt_3 {
-        return new this.occ.gp_Pnt_3(point[0], point[1], point[2]);
+    gpPnt(point: Base.Point3): gp_Pnt {
+        return new this.occ.gp_Pnt(point[0], point[1], point[2]);
     }
 
-    gpVec(vec: Base.Vector3): gp_Vec_4 {
-        return new this.occ.gp_Vec_4(vec[0], vec[1], vec[2]);
+    gpVec(vec: Base.Vector3): gp_Vec {
+        return new this.occ.gp_Vec(vec[0], vec[1], vec[2]);
     }
 
-    gpXYZ(point: Base.Point3): gp_XYZ_2 {
-        return new this.occ.gp_XYZ_2(point[0], point[1], point[2]);
+    gpXYZ(point: Base.Point3): gp_XYZ {
+        return new this.occ.gp_XYZ(point[0], point[1], point[2]);
     }
 
-    gpVec2d(vec: Base.Vector2): gp_Vec2d_4 {
-        return new this.occ.gp_Vec2d_4(vec[0], vec[1]);
+    gpVec2d(vec: Base.Vector2): gp_Vec2d {
+        return new this.occ.gp_Vec2d(vec[0], vec[1]);
     }
 
-    gpDir(direction: Base.Vector3): gp_Dir_4 {
-        return new this.occ.gp_Dir_4(direction[0], direction[1], direction[2]);
+    gpDir(direction: Base.Vector3): gp_Dir {
+        return new this.occ.gp_Dir(direction[0], direction[1], direction[2]);
     }
 
-    gpDir2d(direction: Base.Point2): gp_Dir2d_4 {
-        return new this.occ.gp_Dir2d_4(direction[0], direction[1]);
-    }
-
-    gcMakeCircle(center: Base.Point3, direction: Base.Vector3, radius: number): Geom_Circle {
-        const circle = new this.occ.GC_MakeCircle_2(this.gpAx2(center, direction), radius);
-        const cirVal = circle.Value();
-        const cir = cirVal.get();
-        circle.delete();
-        return cir;
-    }
-
-    gcMakeEllipse(center: Base.Point3, direction: Base.Vector3, minorRadius: number, majorRadius: number): Geom_Ellipse {
-        const ax = this.gpAx2(center, direction);
-        const ellipse = new this.occ.GC_MakeEllipse_2(ax, majorRadius, minorRadius);
-        if (ellipse.IsDone()) {
-            const ellipseVal = ellipse.Value();
-            const ell = ellipseVal.get();
-            ellipse.delete();
-            ax.delete();
-            return ell;
-        } else {
-            throw new Error("Ellipse could not be created.");
-        }
-    }
-
-    bRepBuilderAPIMakeEdge(curve: Geom_Curve): TopoDS_Edge {
-        const crv = this.castToHandleGeomCurve(curve);
-        const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(crv);
-        const ed = edge.Edge();
-        edge.delete();
-        crv.delete();
-        return ed;
+    gpDir2d(direction: Base.Point2): gp_Dir2d {
+        return new this.occ.gp_Dir2d(direction[0], direction[1]);
     }
 
     bRepBuilderAPIMakeWire(edge: TopoDS_Edge): TopoDS_Wire {
-        const wire = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
+        const wire = new this.occ.BRepBuilderAPI_MakeWire(edge);
         const w = wire.Wire();
         wire.delete();
         return w;
     }
 
-    bRepBuilderAPIMakeShell(face: TopoDS_Face): TopoDS_Shell {
-        const srf = this.occ.BRep_Tool.Surface_2(face);
-        const makeShell = new this.occ.BRepBuilderAPI_MakeShell_2(
-            srf,
-            false);
-
-        const shell = makeShell.Shell();
-        makeShell.delete();
-        srf.delete();
-        return shell;
-    }
-
     bRepBuilderAPIMakeFaceFromWires(wires: TopoDS_Wire[], planar: boolean, guideFace?: TopoDS_Face, inside?: boolean): TopoDS_Face {
-        let face;
-        const faces = [];
+        let face: TopoDS_Face | undefined;
+        const faces: TopoDS_Face[] = [];
         wires.forEach(currentWire => {
             if (faces.length > 0) {
-                const faceBuilder = new this.occ.BRepBuilderAPI_MakeFace_22(faces[faces.length - 1], currentWire);
+                const faceBuilder = new this.occ.BRepBuilderAPI_MakeFace(faces[faces.length - 1], currentWire);
                 faces.push(faceBuilder.Face());
                 faceBuilder.delete();
             } else {
-                let faceBuilder;
                 if (!guideFace) {
-                    faceBuilder = new this.occ.BRepBuilderAPI_MakeFace_15(currentWire, planar);
+                    // Use factory function to avoid constructor overload conflicts
+                    const newFace = this.occ.MakeFaceFromWireOnlyPlane(currentWire, planar);
+                    faces.push(newFace);
                 } else {
-                    const surface = this.occ.BRep_Tool.Surface_2(guideFace);
-                    faceBuilder = new this.occ.BRepBuilderAPI_MakeFace_21(surface, currentWire, inside);
+                    // Use factory function for surface-based face creation
+                    const newFace = this.occ.MakeFaceFromFaceSurfaceAndWire(guideFace, currentWire, inside ?? true);
+                    faces.push(newFace);
                 }
-                faces.push(faceBuilder.Face());
-                faceBuilder.delete();
             }
-
         });
         if (faces.length > 0) {
             face = faces.pop();
             faces.forEach(f => f.delete());
         }
-        return face;
+        return face as TopoDS_Face;
     }
 
     bRepBuilderAPIMakeFaceFromWire(wire: TopoDS_Wire, planar: boolean): TopoDS_Face {
-        const faceMaker = new this.occ.BRepBuilderAPI_MakeFace_15(wire, planar);
-        const face = faceMaker.Face();
-        faceMaker.delete();
+        const face = this.occ.MakeFaceFromWireOnlyPlane(wire, planar);
         return face;
     }
 
     bRepBuilderAPIMakeFacesFromWiresOnFace(face: TopoDS_Face, wires: TopoDS_Wire[], inside: boolean): TopoDS_Face[] {
-        const surface = this.occ.BRep_Tool.Surface_2(face);
-        const res = wires.map(wire => this.bRepBuilderAPIMakeFaceFromWireOnSurface(surface, wire, inside));
-        surface.delete();
-        return res;
+        return wires.map(wire => this.occ.MakeFaceFromFaceSurfaceAndWire(face, wire, inside));
     }
 
     bRepBuilderAPIMakeFaceFromWireOnFace(face: TopoDS_Face, wire: TopoDS_Wire, inside: boolean): TopoDS_Face {
-        const surface = this.occ.BRep_Tool.Surface_2(face);
-        const res = this.bRepBuilderAPIMakeFaceFromWireOnSurface(surface, wire, inside);
-        surface.delete();
-        return res;
-    }
-
-    bRepBuilderAPIMakeFaceFromWireOnSurface(surface: Handle_Geom_Surface, wire: TopoDS_Wire, inside: boolean): TopoDS_Face {
-        const faceMaker = new this.occ.BRepBuilderAPI_MakeFace_21(surface, wire, inside);
-        const f = faceMaker.Face();
-        faceMaker.delete();
-        return f;
-    }
-
-    bRepBuilderAPIMakeFaceFromSurface(surface: Geom_Surface, tolDegen: number): TopoDS_Face {
-        const hs = new this.occ.Handle_Geom_Surface_2(surface);
-        const faceMaker = new this.occ.BRepBuilderAPI_MakeFace_8(hs, tolDegen);
-        const face = faceMaker.Face();
-        faceMaker.delete();
-        hs.delete();
-        return face;
-    }
-
-    bRepBuilderAPIMakeFaceFromSurfaceAndWire(surface: Geom_Surface, wire: TopoDS_Wire, inside: boolean): TopoDS_Face {
-        const hs = new this.occ.Handle_Geom_Surface_2(surface);
-        const faceMaker = new this.occ.BRepBuilderAPI_MakeFace_21(hs, wire, inside);
-        const face = faceMaker.Face();
-        faceMaker.delete();
-        hs.delete();
-        return face;
+        return this.occ.MakeFaceFromFaceSurfaceAndWire(face, wire, inside);
     }
 
     bRepPrimAPIMakeSphere(center: Base.Point3, direction: Base.Vector3, radius: number): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
-        const sphereMaker = new this.occ.BRepPrimAPI_MakeSphere_9(ax, radius);
+        const sphereMaker = this.occ.MakeSphereFromAx2(ax, radius);
         const sphere = sphereMaker.Shape();
         sphereMaker.delete();
         ax.delete();
@@ -228,7 +153,7 @@ export class EntitiesService {
     }
 
     gpAx3_3(point: Base.Point3, normal: Base.Vector3, direction: Base.Vector3): gp_Ax3 {
-        return new this.occ.gp_Ax3_3(
+        return new this.occ.gp_Ax3(
             this.gpPnt(point),
             this.gpDir(normal),
             this.gpDir(direction)
@@ -236,21 +161,21 @@ export class EntitiesService {
     }
 
     gpAx3_4(point: Base.Point3, direction: Base.Vector3): gp_Ax3 {
-        return new this.occ.gp_Ax3_4(
+        return new this.occ.gp_Ax3(
             this.gpPnt(point),
             this.gpDir(direction)
         );
     }
 
     gpAx2(point: Base.Point3, direction: Base.Vector3): gp_Ax2 {
-        return new this.occ.gp_Ax2_3(
+        return new this.occ.gp_Ax2(
             this.gpPnt(point),
             this.gpDir(direction)
         );
     }
 
     gpAx2FromTwoVectors(point: Base.Point3, directionFirst: Base.Vector3, directionSecond: Base.Vector3): gp_Ax2 {
-        return new this.occ.gp_Ax2_2(
+        return new this.occ.gp_Ax2(
             this.gpPnt(point),
             this.gpDir(directionFirst),
             this.gpDir(directionSecond)
@@ -258,33 +183,33 @@ export class EntitiesService {
     }
 
     gpAx1(point: Base.Point3, direction: Base.Vector3): gp_Ax1 {
-        return new this.occ.gp_Ax1_2(
+        return new this.occ.gp_Ax1(
             this.gpPnt(point),
             this.gpDir(direction)
         );
     }
 
-    gpAx2d(point: Base.Point2, direction: Base.Vector2): gp_Ax2d_2 {
+    gpAx2d(point: Base.Point2, direction: Base.Vector2): gp_Ax2d {
         const pt = this.gpPnt2d(point);
         const dir = this.gpDir2d(direction);
-        return new this.occ.gp_Ax2d_2(pt, dir);
+        return new this.occ.gp_Ax2d(pt, dir);
     }
 
-    gpAx22d(point: Base.Point2, direction1: Base.Vector2, direction2: Base.Vector2): gp_Ax22d_2 {
+    gpAx22d(point: Base.Point2, direction1: Base.Vector2, direction2: Base.Vector2): gp_Ax22d {
         const pt = this.gpPnt2d(point);
         const dir1 = this.gpDir2d(direction1);
         const dir2 = this.gpDir2d(direction2);
-        const ax = new this.occ.gp_Ax22d_2(pt, dir1, dir2);
+        const ax = new this.occ.gp_Ax22d(pt, dir1, dir2);
         dir1.delete();
         dir2.delete();
         pt.delete();
         return ax;
     }
 
-    gpPln(point: Base.Point3, direction: Base.Vector3): gp_Pln_3 {
+    gpPln(point: Base.Point3, direction: Base.Vector3): gp_Pln {
         const gpPnt = this.gpPnt(point);
         const gpDir = this.gpDir(direction);
-        const pln = new this.occ.gp_Pln_3(gpPnt, gpDir);
+        const pln = new this.occ.gp_Pln(gpPnt, gpDir);
         gpPnt.delete();
         gpDir.delete();
         return pln;
@@ -292,7 +217,7 @@ export class EntitiesService {
 
     bRepPrimAPIMakeCylinder(center: Base.Point3, direction: Base.Vector3, radius: number, height: number, angle: number): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
-        const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder_4(ax, radius, height, angle);
+        const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder(ax, radius, height, angle);
         const cylinder = cylinderMaker.Shape();
         cylinderMaker.delete();
         ax.delete();
@@ -302,10 +227,10 @@ export class EntitiesService {
     bRepPrimAPIMakeCylinderBetweenPoints(start: Base.Point3, end: Base.Point3, radius: number): TopoDS_Shape {
         const center = this.gpPnt(start);
         const pt = this.gpPnt(end);
-        const vec = new this.occ.gp_Vec_5(center, pt);
+        const vec = this.occ.gp_Vec_fromPoints(center, pt);
         const distance = vec.Magnitude();
         const ax = this.gpAx2(start, [vec.X(), vec.Y(), vec.Z()]);
-        const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder_3(ax, radius, distance);
+        const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder(ax, radius, distance);
         const cylinder = cylinderMaker.Shape();
         cylinderMaker.delete();
         ax.delete();
@@ -321,17 +246,9 @@ export class EntitiesService {
             -height / 2 + center[1],
             -length / 2 + center[2]
         ]);
-        const boxMaker = new this.occ.BRepPrimAPI_MakeBox_3(pt, width, height, length);
-        const box = boxMaker.Shape();
-        boxMaker.delete();
+        const box = this.occ.MakeBoxFromPntAndDims(pt, width, height, length);
         pt.delete();
         return box;
     }
-
-    private castToHandleGeomCurve(curve: Geom_Curve): Handle_Geom_Curve {
-        return new this.occ.Handle_Geom_Curve_2(curve);
-    }
-
-    
 
 }

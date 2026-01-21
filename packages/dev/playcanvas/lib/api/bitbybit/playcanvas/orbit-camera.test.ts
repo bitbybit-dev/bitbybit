@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { PlayCanvasOrbitCamera } from "./orbit-camera";
 import { Context } from "../../context";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 import * as pc from "playcanvas";
 import { createOrbitCameraMocks } from "../../__mocks__/test-helpers";
 

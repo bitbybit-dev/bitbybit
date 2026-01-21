@@ -53,4 +53,4 @@ Bit By Bit Developers web platform allows creators to program geometry through s
 
 # Dependencies
 
-This project is based on amazing library opencascade.js that you can find at https://ocjs.org/ and a powerful OpenCascade geometry kernel, check it at https://opencascade.com
+This project is based on amazing [OCCT geometry kernel](https://github.com/Open-Cascade-SAS/OCCT)

@@ -6,3 +6,4 @@ export * from "./draw-helper-core";
 export * from "./worker-utils";
 export * from "./init-kernels";
 export * as Inputs from "./inputs";
+export { Base } from "./inputs/base-inputs";

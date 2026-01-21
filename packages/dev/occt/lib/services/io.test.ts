@@ -1,20 +1,20 @@
-import initOpenCascade, { OpenCascadeInstance, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTSolid, OCCTWire } from "./shapes";
 import { OCCTIO } from "./io";
-import * as Inputs from "../api/inputs/inputs";
+import * as Inputs from "../api/inputs";
 
 describe("OCCT io unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let io: OCCTIO;
     let solid: OCCTSolid;
     let wire: OCCTWire;
     let occHelper: OccHelper;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
 
@@ -782,10 +782,12 @@ describe("OCCT io unit tests", () => {
     });
 
     it("should return undefined for unsupported file extension", () => {
-        const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+        const originalError = console.error;
+        let errorMessage: string | undefined;
+        console.error = (msg: string) => { errorMessage = msg; };
         const result = io.loadSTEPorIGES({ filetext: "some content", fileName: "file.obj", adjustZtoY: false });
         expect(result).toBeUndefined();
-        expect(consoleSpy).toHaveBeenCalledWith("opencascade can't parse this extension! (yet)");
-        consoleSpy.mockRestore();
+        expect(errorMessage).toBe("opencascade can't parse this extension! (yet)");
+        console.error = originalError;
     });
 });

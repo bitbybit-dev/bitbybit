@@ -1,5 +1,5 @@
-import initOpenCascade, { OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../api/inputs/inputs";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../api/inputs";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { OccHelper } from "../occ-helper";
@@ -8,7 +8,7 @@ import { OCCTEdge, OCCTFace, OCCTShell, OCCTSolid, OCCTWire } from "./shapes";
 import { OCCTTransforms } from "./transforms";
 
 describe("OCCT operations unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let operations: OCCTOperations;
     let occHelper: OccHelper;
     let wire: OCCTWire;
@@ -19,7 +19,7 @@ describe("OCCT operations unit tests", () => {
     let transforms: OCCTTransforms;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
         occHelper = new OccHelper(vec, s, occt);
@@ -792,7 +792,7 @@ describe("OCCT operations unit tests", () => {
         const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
         const res = operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle: 90, copy: true });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(24.674021577404435);
+        expect(vol).toBeCloseTo(24.674021577404435, 10);
         circleFace.delete();
         res.delete();
     });
@@ -935,7 +935,7 @@ describe("OCCT operations unit tests", () => {
         const circleWire = wire.createCircleWire({ center: [0, 0, 0], radius: 0.2, direction: [0, 1, 0] });
         const res = operations.pipe({ shape: interpolatedWire, shapes: [circleWire] });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.5499995987174751);
+        expect(vol).toBeCloseTo(0.5499995987174751, 10);
         interpolatedWire.delete();
         circleWire.delete();
         res.delete();
@@ -959,7 +959,7 @@ describe("OCCT operations unit tests", () => {
 
         const res = operations.pipe({ shape: interpolatedWire, shapes: [circleWire1, circleWire2] });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(2.2134035565869317);
+        expect(vol).toBeCloseTo(2.2134035565869317, 10);
         interpolatedWire.delete();
         circleWire1.delete();
         circleWire2.delete();
@@ -999,7 +999,7 @@ describe("OCCT operations unit tests", () => {
         });
         const res = operations.pipeWireCylindrical({ shape: interpolatedWire, radius: 0.2, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.6269086976927102);
+        expect(vol).toBeCloseTo(0.6269086976927102, 10);
         interpolatedWire.delete();
         res.delete();
     });

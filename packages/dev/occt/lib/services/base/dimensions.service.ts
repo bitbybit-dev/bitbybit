@@ -3,7 +3,7 @@ import {
     TopoDS_Edge,
     TopoDS_Shape,
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { TransformsService } from "./transforms.service";
 import { ConverterService } from "./converter.service";
 import { WiresService } from "./wires.service";

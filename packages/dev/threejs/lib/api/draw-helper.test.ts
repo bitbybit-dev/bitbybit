@@ -1,7 +1,7 @@
 import { createDrawHelperMocks, hexToRgb, colorsAreEqual, getMaterialFromMesh, createMockJSCADMesh, createMockOCCTShape, mockWorkerError } from "./__mocks__/test-helpers";
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
-import * as Inputs from "./inputs/inputs";
+import * as Inputs from "./inputs";
 import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";

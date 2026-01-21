@@ -1,8 +1,8 @@
-import initOpenCascade, { OpenCascadeInstance, TopAbs_ShapeEnum } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { CacheHelper } from "./cache-helper";
 
 describe("CacheHelper unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let cacheHelper: CacheHelper;
 
     beforeAll(async () => {
@@ -53,9 +53,9 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should identify real OCCT shapes", () => {
-            const point = new occt.gp_Pnt_3(0, 0, 0);
+            const point = new occt.gp_Pnt(0, 0, 0);
             const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
-            const shape = vertex.Shape();
+            const shape = vertex.Vertex();
             
             expect(cacheHelper.isOCCTObject(shape)).toBe(true);
             
@@ -150,9 +150,9 @@ describe("CacheHelper unit tests", () => {
 
     describe("addToCache and checkCache", () => {
         it("should add and retrieve shape from cache", () => {
-            const point = new occt.gp_Pnt_3(0, 0, 0);
+            const point = new occt.gp_Pnt(0, 0, 0);
             const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
-            const shape = vertex.Shape();
+            const shape = vertex.Vertex();
             
             const hash = "test-hash-123";
             cacheHelper.addToCache(hash, shape);
@@ -182,9 +182,9 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should return null for deleted OCCT shape", () => {
-            const point = new occt.gp_Pnt_3(0, 0, 0);
+            const point = new occt.gp_Pnt(0, 0, 0);
             const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
-            const shape = vertex.Shape();
+            const shape = vertex.Vertex();
             
             const hash = "test-hash-deleted";
             cacheHelper.addToCache(hash, shape);
@@ -201,13 +201,13 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle array of OCCT shapes in cache", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
-            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const point2 = new occt.gp_Pnt(1, 1, 1);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2.Shape();
+            const shape2 = vertex2.Vertex();
             
             const shapes = [shape1, shape2];
             const hash = "array-hash";
@@ -228,13 +228,13 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should return null if any shape in array is deleted", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
-            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const point2 = new occt.gp_Pnt(1, 1, 1);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2.Shape();
+            const shape2 = vertex2.Vertex();
             
             const shapes = [shape1, shape2];
             const hash = "array-hash-deleted";
@@ -297,9 +297,9 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should cache OCCT shapes and return hash reference", () => {
-            const point = new occt.gp_Pnt_3(0, 0, 0);
+            const point = new occt.gp_Pnt(0, 0, 0);
             const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
-            const shape = vertex.Shape();
+            const shape = vertex.Vertex();
             
             const args = { functionName: "createVertex" };
             let cacheMissCallCount = 0;
@@ -330,13 +330,13 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle array of OCCT shapes", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
-            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const point2 = new occt.gp_Pnt(1, 1, 1);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2.Shape();
+            const shape2 = vertex2.Vertex();
             
             const shapes = [shape1, shape2];
             const args = { functionName: "createVertices" };
@@ -358,9 +358,9 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should recalculate when cached shape is deleted", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
             const args = { functionName: "createVertex" };
             let cacheMiss1CallCount = 0;
@@ -377,9 +377,9 @@ describe("CacheHelper unit tests", () => {
             shape1.delete();
             
             // Second call - should detect deleted shape and call cacheMiss again
-            const point2 = new occt.gp_Pnt_3(0, 0, 0);
+            const point2 = new occt.gp_Pnt(0, 0, 0);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2.Shape();
+            const shape2 = vertex2.Vertex();
             let cacheMiss2CallCount = 0;
             const cacheMiss2 = () => {
                 cacheMiss2CallCount++;
@@ -411,9 +411,9 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should clean OCCT shape from cache", () => {
-            const point = new occt.gp_Pnt_3(0, 0, 0);
+            const point = new occt.gp_Pnt(0, 0, 0);
             const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
-            const shape = vertex.Shape();
+            const shape = vertex.Vertex();
             
             const hash = "shape-hash";
             cacheHelper.addToCache(hash, shape);
@@ -451,13 +451,13 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should clean up OCCT shapes", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
-            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const point2 = new occt.gp_Pnt(1, 1, 1);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2.Shape();
+            const shape2 = vertex2.Vertex();
             
             cacheHelper.addToCache("hash1", shape1);
             cacheHelper.addToCache("hash2", shape2);
@@ -475,9 +475,9 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle mixed cache entries (OCCT and non-OCCT)", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
             cacheHelper.addToCache("shape-hash", shape1);
             cacheHelper.addToCache("value-hash", { value: "test" });
@@ -500,13 +500,13 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle arrays of OCCT shapes", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
-            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const point2 = new occt.gp_Pnt(1, 1, 1);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2.Shape();
+            const shape2 = vertex2.Vertex();
             
             cacheHelper.addToCache("array-hash", [shape1, shape2]);
             
@@ -590,13 +590,13 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should clean up OCCT shapes that are no longer used", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
-            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const point2 = new occt.gp_Pnt(1, 1, 1);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2.Shape();
+            const shape2 = vertex2.Vertex();
             
             const args1 = { functionName: "createVertex", point: [0, 0, 0] };
             const args2 = { functionName: "createVertex", point: [1, 1, 1] };
@@ -629,13 +629,13 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle arrays of OCCT shapes during cleanup", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
-            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const point2 = new occt.gp_Pnt(1, 1, 1);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2.Shape();
+            const shape2 = vertex2.Vertex();
             
             const shapes = [shape1, shape2];
             const args = { functionName: "createVertices" };
@@ -715,9 +715,9 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle already deleted shapes gracefully", () => {
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1.Shape();
+            const shape1 = vertex1.Vertex();
             
             const args1 = { functionName: "createVertex" };
             
@@ -802,13 +802,13 @@ describe("CacheHelper unit tests", () => {
     describe("integration tests", () => {
         it("should handle complex caching scenario with multiple shapes", () => {
             // Create multiple shapes
-            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1Builder = new occt.BRepBuilderAPI_MakeVertex(point1);
-            const shape1 = vertex1Builder.Shape();
+            const shape1 = vertex1Builder.Vertex();
             
-            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const point2 = new occt.gp_Pnt(1, 1, 1);
             const vertex2Builder = new occt.BRepBuilderAPI_MakeVertex(point2);
-            const shape2 = vertex2Builder.Shape();
+            const shape2 = vertex2Builder.Vertex();
             
             // Cache them
             const args1 = { functionName: "createVertex", point: [0, 0, 0] };

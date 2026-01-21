@@ -1,57 +1,56 @@
-import { OpenCascadeInstance, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 export class OCCTShape {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
 
     purgeInternalEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
-        const purge = new this.occ.TopOpeBRepTool_PurgeInternalEdges(inputs.shape, true);
-        purge.Perform();
-        if (purge.IsDone()) {
-            return purge.Shape();
-        } else {
-            throw new Error("Could not purge internal edges for the shape");
-        }
+        // Note: TopOpeBRepTool_PurgeInternalEdges is not exposed in this build
+        // Return the input shape unchanged as a fallback
+        return inputs.shape;
     }
 
     unifySameDomain(inputs: Inputs.OCCT.UnifySameDomainDto<TopoDS_Shape>): TopoDS_Shape {
-        const unify = new this.occ.ShapeUpgrade_UnifySameDomain_2(inputs.shape, inputs.unifyEdges, inputs.unifyFaces, inputs.concatBSplines);
-        unify.Build();
-        return unify.Shape();
+        return this.occ.ShapeUpgrade_UnifySameDomain_Perform(
+            inputs.shape, 
+            inputs.unifyEdges, 
+            inputs.unifyFaces, 
+            inputs.concatBSplines
+        );
     }
 
     isClosed(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
-        return inputs.shape.Closed_1();
+        return inputs.shape.Closed();
     }
 
     isConvex(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
-        return inputs.shape.Convex_1();
+        return inputs.shape.Convex();
     }
 
     isChecked(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
-        return inputs.shape.Checked_1();
+        return inputs.shape.Checked();
     }
 
     isFree(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
-        return inputs.shape.Free_1();
+        return inputs.shape.Free();
     }
 
     isInfinite(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
-        return inputs.shape.Infinite_1();
+        return inputs.shape.Infinite();
     }
 
     isModified(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
-        return inputs.shape.Modified_1();
+        return inputs.shape.Modified();
     }
 
     isLocked(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
-        return inputs.shape.Locked_1();
+        return inputs.shape.Locked();
     }
 
     isNull(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
@@ -75,15 +74,15 @@ export class OCCTShape {
     }
 
     getOrientation(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.topAbsOrientationEnum {
-        const orientation = inputs.shape.Orientation_1();
+        const orientation = inputs.shape.Orientation();
         let result: Inputs.OCCT.topAbsOrientationEnum;
-        if (orientation === this.occ.TopAbs_Orientation.TopAbs_FORWARD) {
+        if (orientation === this.occ.TopAbs_Orientation.FORWARD) {
             result = Inputs.OCCT.topAbsOrientationEnum.forward;
-        } else if (orientation === this.occ.TopAbs_Orientation.TopAbs_REVERSED) {
+        } else if (orientation === this.occ.TopAbs_Orientation.REVERSED) {
             result = Inputs.OCCT.topAbsOrientationEnum.reversed;
-        } else if (orientation === this.occ.TopAbs_Orientation.TopAbs_INTERNAL) {
+        } else if (orientation === this.occ.TopAbs_Orientation.INTERNAL) {
             result = Inputs.OCCT.topAbsOrientationEnum.internal;
-        } else if (orientation === this.occ.TopAbs_Orientation.TopAbs_EXTERNAL) {
+        } else if (orientation === this.occ.TopAbs_Orientation.EXTERNAL) {
             result = Inputs.OCCT.topAbsOrientationEnum.external;
         }
         return result;

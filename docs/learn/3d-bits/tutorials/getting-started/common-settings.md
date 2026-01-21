@@ -6,6 +6,8 @@ description: Learn about common settings shared across BITBYBIT VIEWER, RUNNER, 
 tags: [shopify, 3d-bits]
 ---
 
+import Version from '@site/src/components/Version';
+
 # Common Settings
 
 This guide explains settings that are shared across multiple **3D Bits** theme app extension blocks. Understanding these common settings helps you configure your 3D experiences consistently and efficiently.
@@ -121,7 +123,7 @@ These settings are specific to RUNNER and APPS blocks:
 ### Runner CDN Link
 
 **Available in:** VIEWER, RUNNER  
-**Default:** `https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.21.1/runner/bitbybit-runner-babylonjs.js`
+**Default:** `https://git-cdn.bitbybit.dev/v<Version />/runner/bitbybit-runner-babylonjs.js`
 
 Specifies which version of the Bitbybit runner library to use. The runner is the core engine that loads and renders 3D content in your browser.
 
@@ -170,17 +172,17 @@ While the editors provide automatic migration assistance, configurations using a
 
 The URL follows this pattern:
 ```
-https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@{VERSION}/runner/bitbybit-runner-babylonjs.js
+https://git-cdn.bitbybit.dev/v{VERSION}/runner/bitbybit-runner-babylonjs.js
 ```
 
-Replace `{VERSION}` with the desired version number (e.g., `0.21.1`).
+Replace `{VERSION}` with the desired version number (e.g., `<Version />`).
 
 **Self-Hosting on Shopify CDN:**
 
-For additional reliability, you can download the runner file and host it on your Shopify store's CDN. This approach reduces dependency on external CDN services like jsDelivr and provides an extra layer of protection if third-party CDN services experience downtime. 
+For additional reliability, you can download the runner file and host it on your Shopify store's CDN. This approach reduces dependency on external CDN services like Cloudflare and provides an extra layer of protection if third-party CDN services experience downtime. 
 
 To implement this:
-1. Download the runner JavaScript file from the jsDelivr URL
+1. Download the runner JavaScript file from the CDN URL
 2. Upload it to your Shopify theme's assets or files section
 3. Update the Runner CDN Link setting to point to your Shopify-hosted file URL
 

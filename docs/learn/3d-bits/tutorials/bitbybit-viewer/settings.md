@@ -6,6 +6,8 @@ description: Learn about various settings that BITBYBIT VIEWER theme app extensi
 tags: [shopify, 3d-bits]
 ---
 
+import Version from '@site/src/components/Version';
+
 # Block Settings
 
 This guide explains all available settings for the **BITBYBIT VIEWER** theme app extension block in Shopify. Use this block to display 3D models directly on your product pages—no coding required.
@@ -203,7 +205,7 @@ The system automatically detects if you're providing a URL (starting with `http:
 - For complex configurations, use a URL to an external JSON file - it keeps your theme settings cleaner and makes updates easier
 - Use the Viewer Editor to generate valid configurations
 - Test your scene configuration thoroughly before going live
-- The scene configuration follows a [JSON schema](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.21.1.json) that defines all available options
+- The scene configuration follows a [JSON schema](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v<Version />.json) that defines all available options
 :::
 
 ---

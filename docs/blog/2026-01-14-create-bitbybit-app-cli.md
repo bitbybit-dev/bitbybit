@@ -6,6 +6,8 @@ tags: [threejs, babylonjs, playcanvas]
 image: https://ik.imagekit.io/bitbybit/app/assets/blog/create-bitbybit-app-cli/create-bitbybit-app-cli.webp
 ---
 
+import Version from '@site/src/components/Version';
+
 ![Bitbybit Create App CLI in Terminal](https://ik.imagekit.io/bitbybit/app/assets/blog/create-bitbybit-app-cli/create-bitbybit-app-cli.webp "Bitbybit Create App CLI in Terminal")
 
 TLDR
@@ -13,7 +15,7 @@ TLDR
 npx @bitbybit-dev/create-app my-awesome-project
 ```
 
-Bitbybit version 0.21.1 brings a brand new developer experience to the table. Say hello to `@bitbybit-dev/create-app`, a CLI tool that lets you scaffold fully-configured 3D CAD projects in just a few seconds.
+Bitbybit brings a brand new developer experience to the table. Say hello to `@bitbybit-dev/create-app`, a CLI tool that lets you scaffold fully-configured 3D CAD projects in just a few seconds.
 
 <!-- truncate -->
 

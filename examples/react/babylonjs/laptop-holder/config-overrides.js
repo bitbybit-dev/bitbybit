@@ -18,7 +18,8 @@ module.exports = {
             path: false,
             worker_threads: false,
             crypto: false,
-            stream: false
+            stream: false,
+            module: false
         }
         //this is needed for the bitbybit-occt modules
         config.module.rules.push({

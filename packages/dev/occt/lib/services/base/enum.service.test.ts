@@ -1,17 +1,17 @@
-import initOpenCascade, { OpenCascadeInstance } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { EnumService } from "./enum.service";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 
 describe("OCCT enum service unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let enumService: EnumService;
     let occHelper: OccHelper;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         enumService = new EnumService(occt);
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
@@ -20,32 +20,32 @@ describe("OCCT enum service unit tests", () => {
 
     it("should get gcc position unqualified", async () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.unqualified);
-        expect(res).toEqual(occt.GccEnt_Position.GccEnt_unqualified);
+        expect(res).toEqual(occt.GccEnt_Position.unqualified);
     });
 
     it("should get gcc position enclosed", async () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.enclosed);
-        expect(res).toEqual(occt.GccEnt_Position.GccEnt_enclosed);
+        expect(res).toEqual(occt.GccEnt_Position.enclosed);
     });
 
     it("should get gcc position enclosing", async () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.enclosing);
-        expect(res).toEqual(occt.GccEnt_Position.GccEnt_enclosing);
+        expect(res).toEqual(occt.GccEnt_Position.enclosing);
     });
 
     it("should get gcc position outside", async () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.outside);
-        expect(res).toEqual(occt.GccEnt_Position.GccEnt_outside);
+        expect(res).toEqual(occt.GccEnt_Position.outside);
     });
 
     it("should get gcc position noqualifier", async () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.noqualifier);
-        expect(res).toEqual(occt.GccEnt_Position.GccEnt_noqualifier);
+        expect(res).toEqual(occt.GccEnt_Position.noqualifier);
     });
 
     it("should get gcc position noqualifier if unrecognized value is forcefully passed", async () => {
         const res = enumService.getGccEntPositionFromEnum("whatever" as any);
-        expect(res).toEqual(occt.GccEnt_Position.GccEnt_noqualifier);
+        expect(res).toEqual(occt.GccEnt_Position.noqualifier);
     });
 
     it("should get top abs state enum as unknown if unrecognized value is forcefully passed", async () => {
@@ -121,57 +121,57 @@ describe("OCCT enum service unit tests", () => {
     describe("getGeomFillTrihedronEnumOCCTValue", () => {
         it("should return GeomFill_IsConstantNormal for isConstantNormal", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsConstantNormal);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsConstantNormal);
         });
 
         it("should return GeomFill_IsCorrectedFrenet for isCorrectedFrenet", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isCorrectedFrenet);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsCorrectedFrenet);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsCorrectedFrenet);
         });
 
         it("should return GeomFill_IsDarboux for isDarboux", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isDarboux);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsDarboux);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsDarboux);
         });
 
         it("should return GeomFill_IsDiscreteTrihedron for isDiscreteTrihedron", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isDiscreteTrihedron);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsDiscreteTrihedron);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsDiscreteTrihedron);
         });
 
         it("should return GeomFill_IsFixed for isFixed", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isFixed);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsFixed);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsFixed);
         });
 
         it("should return GeomFill_IsFrenet for isFrenet", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isFrenet);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsFrenet);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsFrenet);
         });
 
         it("should return GeomFill_IsGuideAC for isGuideAC", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isGuideAC);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsGuideAC);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsGuideAC);
         });
 
         it("should return GeomFill_IsGuideACWithContact for isGuideACWithContact", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isGuideACWithContact);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsGuideACWithContact);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsGuideACWithContact);
         });
 
         it("should return GeomFill_IsGuidePlan for isGuidePlan", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isGuidePlan);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsGuidePlan);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsGuidePlan);
         });
 
         it("should return GeomFill_IsGuidePlanWithContact for isGuidePlanWithContact", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue(Inputs.OCCT.geomFillTrihedronEnum.isGuidePlanWithContact);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsGuidePlanWithContact);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsGuidePlanWithContact);
         });
 
         it("should return GeomFill_IsConstantNormal as default for unrecognized value", () => {
             const res = enumService.getGeomFillTrihedronEnumOCCTValue("whatever" as any);
-            expect(res).toEqual(occt.GeomFill_Trihedron.GeomFill_IsConstantNormal);
+            expect(res).toEqual(occt.GeomFill_Trihedron.IsConstantNormal);
         });
     });
 });

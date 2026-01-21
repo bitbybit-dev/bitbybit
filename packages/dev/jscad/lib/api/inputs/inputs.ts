@@ -1,2 +1,2 @@
-export * from "./jscad-inputs";
-export * from "./base-inputs";
+// Re-export everything from index for backward compatibility
+export * from "./index";

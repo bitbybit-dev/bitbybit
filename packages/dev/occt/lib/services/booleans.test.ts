@@ -1,4 +1,4 @@
-import initOpenCascade, { OpenCascadeInstance } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
@@ -7,14 +7,14 @@ import { OCCTSolid } from "./shapes/solid";
 import { OCCTWire } from "./shapes/wire";
 
 describe("OCCT booleans unit tests", () => {
-    let occt: OpenCascadeInstance;
+    let occt: BitbybitOcctModule;
     let solid: OCCTSolid;
     let wire: OCCTWire;
     let booleans: OCCTBooleans;
     let occHelper: OccHelper;
 
     beforeAll(async () => {
-        occt = await initOpenCascade();
+        occt = await createBitbybitOcct();
         const vec = new VectorHelperService();
         const s = new ShapesHelperService();
 
@@ -50,7 +50,7 @@ describe("OCCT booleans unit tests", () => {
 
     it("should not compute difference if shapes are empty", async () => {
         const box1 = solid.createBox({ width: 1, height: 2, length: 1, center: [0, 0, 0] });
-        expect(() => booleans.difference({ shape: box1, shapes: [], keepEdges: false })).toThrowError("Shape is not a compound or is null.");
+        expect(() => booleans.difference({ shape: box1, shapes: [], keepEdges: false })).toThrow("Shape is not a compound or is null.");
     });
 
     it("should compute mesh mesh intersection wires of two intersecting boxes", async () => {

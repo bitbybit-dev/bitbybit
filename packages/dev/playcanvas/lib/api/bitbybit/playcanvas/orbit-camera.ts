@@ -1,6 +1,6 @@
 import * as pc from "playcanvas";
 import { Context } from "../../context";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 
 interface OrbitCameraInstance {
     autoRender: boolean;

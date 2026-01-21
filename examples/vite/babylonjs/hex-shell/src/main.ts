@@ -1,6 +1,6 @@
-import './style.css';
-import { BitByBitBase, Inputs, initBitByBit, type InitBitByBitOptions } from '@bitbybit-dev/babylonjs';
-import { model, current } from './models';
+import "./style.css";
+import { BitByBitBase, Inputs, initBitByBit, type InitBitByBitOptions } from "@bitbybit-dev/babylonjs";
+import { model, current } from "./models";
 import {
     initBabylonJS,
     createGui,
@@ -14,7 +14,7 @@ import {
     downloadGLB,
     downloadSTL,
     downloadStep,
-} from './helpers';
+} from "./helpers";
 
 const options: InitBitByBitOptions = {
     enableOCCT: true,

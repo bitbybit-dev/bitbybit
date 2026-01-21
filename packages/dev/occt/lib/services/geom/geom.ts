@@ -1,4 +1,4 @@
-import { OpenCascadeInstance } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTCurves } from "./curves";
 import { OCCTSurfaces } from "./surfaces";
@@ -9,7 +9,7 @@ export class OCCTGeom {
     public readonly surfaces: OCCTSurfaces;
 
     constructor(
-        occ: OpenCascadeInstance,
+        occ: BitbybitOcctModule,
         och: OccHelper
     ) {
         this.curves = new OCCTCurves(occ, och);

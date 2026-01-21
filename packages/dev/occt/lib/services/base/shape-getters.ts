@@ -1,8 +1,8 @@
 import {
-    OpenCascadeInstance, TopoDS_Edge, TopoDS_Face,
+    BitbybitOcctModule, TopoDS_Edge, TopoDS_Face,
     TopoDS_Shape, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Compound
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs/inputs";
+import * as Inputs from "../../api/inputs";
 import { EnumService } from "./enum.service";
 import { IteratorService } from "./iterator.service";
 
@@ -13,7 +13,7 @@ interface TopoDS_ShapeHash extends TopoDS_Shape {
 export class ShapeGettersService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
+        private readonly occ: BitbybitOcctModule,
         private readonly enumService: EnumService,
         private readonly iteratorService: IteratorService,
     ) { }
@@ -32,7 +32,7 @@ export class ShapeGettersService {
 
     getSolidFromCompound(shape: TopoDS_ShapeHash, index: number) {
         if (!shape ||
-            shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID ||
+            shape.ShapeType() > this.occ.TopAbs_ShapeEnum.COMPSOLID ||
             shape.IsNull()
         ) {
             console.error("Not a compound shape!");
@@ -45,7 +45,7 @@ export class ShapeGettersService {
         let innerSolid = shape;
         let solidsFound = 0;
         this.iteratorService.forEachSolid(shape, (i, s) => {
-            if (i === index) { innerSolid = this.occ.TopoDS.Solid_1(s); } solidsFound++;
+            if (i === index) { innerSolid = this.occ.CastToSolid(s); } solidsFound++;
         });
         if (solidsFound === 0) { console.error("NO SOLIDS FOUND IN SHAPE!"); }
         innerSolid.hash = shape.hash + 1;
@@ -67,7 +67,7 @@ export class ShapeGettersService {
     }
 
     getEdge(inputs: Inputs.OCCT.EdgeIndexDto<TopoDS_Shape>): TopoDS_Edge {
-        if (!inputs.shape || (inputs.shape.ShapeType && inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_WIRE) || inputs.shape.IsNull()) {
+        if (!inputs.shape || (inputs.shape.ShapeType && inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.WIRE) || inputs.shape.IsNull()) {
             throw (new Error("Edge can not be found for shape that is not provided or is of incorrect type"));
         }
         if (!inputs.index) { inputs.index = 0; }
@@ -108,7 +108,7 @@ export class ShapeGettersService {
         if (!inputs.index) { inputs.index = 0; }
         let innerWire: TopoDS_Wire | undefined;
         this.iteratorService.forEachWire(inputs.shape, (i, s) => {
-            if (i === inputs.index) { innerWire = this.occ.TopoDS.Wire_1(s); }
+            if (i === inputs.index) { innerWire = this.occ.CastToWire(s); }
         });
         if (!innerWire) {
             throw (Error("Wire not found"));
@@ -145,7 +145,7 @@ export class ShapeGettersService {
         if (!inputs.index) { inputs.index = 0; }
         let innerFace = {}; let facesFound = 0;
         this.iteratorService.forEachFace(inputs.shape, (i, s) => {
-            if (i === inputs.index) { innerFace = this.occ.TopoDS.Face_1(s); } facesFound++;
+            if (i === inputs.index) { innerFace = this.occ.CastToFace(s); } facesFound++;
         });
         if (facesFound < inputs.index || inputs.index < 0) {
             throw (new Error("Face index is out of range"));
