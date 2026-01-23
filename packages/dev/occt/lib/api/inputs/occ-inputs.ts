@@ -7388,19 +7388,19 @@ export namespace OCCT {
         }
         /**
          * The start point for dimension
-         * @default undefined
+         * @default [-1, 0, 0]
          */
-        start: Base.Point3;
+        start: Base.Point3 = [-1, 0, 0];
         /**
          * The end point for dimension
-         * @default undefined
+         * @default [1, 0, 0]
          */
-        end?: Base.Point3;
+        end?: Base.Point3 = [1, 0, 0];
         /**
          * The dimension direction (must include length)
-         * @default undefined
+         * @default [0, 1, 0]
          */
-        direction?: Base.Vector3;
+        direction?: Base.Vector3 = [0, 1, 0];
         /**
          * The dimension label
          * @default 0
