@@ -8,8 +8,7 @@ import { OCCTShapes } from "./services/shapes/shapes";
 import { OCCTTransforms } from "./services/transforms";
 import { OCCTFillets } from "./services/fillets";
 import { OCCTDimensions } from "./services/dimensions";
-
-// import { OCCTAssembly } from "./services/assembly";
+import { OCCTAssembly } from "./services/assembly/assembly";
 import { OccHelper } from "./occ-helper";
 import { OCCTShapeFix } from "./services/shape-fix";
 
@@ -21,7 +20,7 @@ export class OCCTService {
     public readonly booleans: OCCTBooleans;
     public readonly fillets: OCCTFillets;
     public readonly dimensions: OCCTDimensions;
-    // public readonly assembly: OCCTAssembly;
+    public readonly assembly: OCCTAssembly;
     public readonly shapeFix: OCCTShapeFix;
     public readonly io: OCCTIO;
     public plugins?;
@@ -38,7 +37,7 @@ export class OCCTService {
         this.fillets = new OCCTFillets(occ, och);
         this.shapeFix = new OCCTShapeFix(occ, och);
         this.dimensions = new OCCTDimensions(occ, och);
-        // this.assembly = new OCCTAssembly(occ, och);
+        this.assembly = new OCCTAssembly(occ, och);
         this.io = new OCCTIO(occ, och);
     }
 

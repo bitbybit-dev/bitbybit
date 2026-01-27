@@ -14,7 +14,7 @@ import { GlobalCDNProvider } from "@bitbybit-dev/base";
  * @returns Promise that resolves to the initialized OCCT module
  */
 const createBitbybitDevOcct = (moduleOverrides = {}) => {
-    const cdnWasmUrl = GlobalCDNProvider.BITBYBIT_CDN_URL + "/wasm/bitbybit-dev-occt.5e93f201.wasm";
+    const cdnWasmUrl = "https://app-store.bitbybit.dev/files/bitbybit-dev-occt.9467c8eb.wasm";
     
     // If user provided their own locateFile, wrap it to preserve their customizations
     const userLocateFile = moduleOverrides.locateFile;

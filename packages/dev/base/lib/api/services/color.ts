@@ -12,11 +12,83 @@ export class Color {
      * @param inputs Color hex
      * @returns color string
      * @group create
-     * @shortname color
+     * @shortname color hex
      * @drawable false
      */
     hexColor(inputs: Inputs.Color.HexDto): Inputs.Base.Color {
         return inputs.color;
+    }
+
+    /**
+     * Creates and returns rgb color object
+     * @param inputs Color rgb
+     * @returns color object
+     * @group create
+     * @shortname color rgb 0-255
+     * @drawable false
+     */
+    rgb255Color(inputs: Inputs.Color.Rgb255Dto): Inputs.Base.ColorRGB {
+        return inputs.colorRgb;
+    }
+
+    /**
+     * Creates and returns rgb color object
+     * @param inputs Color rgb
+     * @returns color object
+     * @group create
+     * @shortname color rgb 0-1
+     * @drawable false
+     */
+    rgb1Color(inputs: Inputs.Color.Rgb1Dto): Inputs.Base.ColorRGB {
+        return inputs.colorRgb;
+    }
+
+    /**
+     * Creates and returns rgba color object
+     * @param inputs Color rgba
+     * @returns color object
+     * @group create
+     * @shortname color rgba 0-255
+     * @drawable false
+     */
+    rgba255Color(inputs: Inputs.Color.Rgba255Dto): Inputs.Base.ColorRGBA {
+        return inputs.colorRgba;
+    }
+
+    /**
+     * Creates and returns rgba color object
+     * @param inputs Color rgba
+     * @returns color object
+     * @group create
+     * @shortname color rgba 0-1
+     * @drawable false
+     */
+    rgba1Color(inputs: Inputs.Color.Rgba1Dto): Inputs.Base.ColorRGBA {
+        return inputs.colorRgba;
+    }
+
+    /**
+     * Creates atomic rgb color object
+     * @param inputs Color rgb
+     * @returns color object
+     * @group create
+     * @shortname atomic color rgb 0-255
+     * @drawable false
+     */
+    rgbAtomic255Color(inputs: Inputs.Color.RgbAttomic255Dto): Inputs.Base.ColorRGB {
+        return { ...inputs };
+    }
+
+    /**
+     * Creates atomic rgb color object
+     * @param inputs Color rgb
+     * @returns color object
+     * @group create
+     * @shortname atomic color rgb 0-1
+     * @drawable false
+     */
+    rgbAtomic1Color(inputs: Inputs.Color.RgbAttomic1Dto): Inputs.Base.ColorRGB {
+        return { ...inputs };
     }
 
     /**

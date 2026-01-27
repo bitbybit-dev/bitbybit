@@ -107,4 +107,69 @@ export namespace Asset {
          */
         contentType = "text/plain";
     }
+    export class AssetGlbDataDto {
+        constructor(glbData?: Uint8Array, fileName?: string, hidden?: boolean) {
+            if (glbData !== undefined) { this.glbData = glbData; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+        }
+        /**
+         * GLB binary data as Uint8Array (e.g., from OCCT convertStepToGltf)
+         * @default undefined
+         */
+        glbData: Uint8Array;
+        /**
+         * Optional file name for the GLB (used for identification)
+         * @default model.glb
+         */
+        fileName = "model.glb";
+        /**
+         * Import the asset hidden
+         * @default false
+         */
+        hidden = false;
+    }
+    export class BlobToFileDto {
+        constructor(blob?: Blob, fileName?: string, mimeType?: string) {
+            if (blob !== undefined) { this.blob = blob; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (mimeType !== undefined) { this.mimeType = mimeType; }
+        }
+        /**
+         * The blob to convert to a file
+         * @default undefined
+         */
+        blob: Blob;
+        /**
+         * The file name for the resulting file
+         * @default file
+         */
+        fileName = "file";
+        /**
+         * The MIME type for the file (optional, will use blob's type if not specified)
+         * @default undefined
+         * @optional true
+         */
+        mimeType?: string;
+    }
+    export class ArrayBufferToUint8ArrayDto {
+        constructor(arrayBuffer?: ArrayBuffer) {
+            if (arrayBuffer !== undefined) { this.arrayBuffer = arrayBuffer; }
+        }
+        /**
+         * The ArrayBuffer to convert to Uint8Array
+         * @default undefined
+         */
+        arrayBuffer: ArrayBuffer;
+    }
+    export class Uint8ArrayToArrayBufferDto {
+        constructor(uint8Array?: Uint8Array) {
+            if (uint8Array !== undefined) { this.uint8Array = uint8Array; }
+        }
+        /**
+         * The Uint8Array to convert to ArrayBuffer
+         * @default undefined
+         */
+        uint8Array: Uint8Array;
+    }
 }

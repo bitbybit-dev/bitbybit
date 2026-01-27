@@ -17,28 +17,34 @@ export class CacheHelper {
             if (this.argCache[hash]) {
                 try {
                     const cachedItem = this.argCache[hash];
-                    // Only attempt to clean and delete OCCT shapes
+                    // Only attempt to clean and delete OCCT objects
                     if (this.isOCCTObject(cachedItem)) {
                         // Handle arrays of OCCT objects
                         if (Array.isArray(cachedItem)) {
-                            cachedItem.forEach(shape => {
+                            cachedItem.forEach(item => {
                                 try {
-                                    this.occ.BRepTools_Clean_Force(shape, true);
-                                    this.occ.BRepTools_CleanGeometry(shape);
-                                    shape.delete();
+                                    // Shape-specific cleanup only for TopoDS_Shape objects
+                                    if (this.isShape(item)) {
+                                        this.occ.BRepTools_Clean_Force(item, true);
+                                        this.occ.BRepTools_CleanGeometry(item);
+                                    }
+                                    item.delete();
                                 } catch (error) {
-                                    // Ignore errors for already deleted shapes
+                                    // Ignore errors for already deleted objects
                                 }
                             });
                         } else {
-                            this.occ.BRepTools_Clean_Force(cachedItem, true);
-                            this.occ.BRepTools_CleanGeometry(cachedItem);
+                            // Shape-specific cleanup only for TopoDS_Shape objects
+                            if (this.isShape(cachedItem)) {
+                                this.occ.BRepTools_Clean_Force(cachedItem, true);
+                                this.occ.BRepTools_CleanGeometry(cachedItem);
+                            }
                             cachedItem.delete();
                         }
                     }
                 }
                 catch (error) {
-                    // Ignore errors when cleaning shapes that may already be deleted
+                    // Ignore errors when cleaning objects that may already be deleted
                 }
             }
         });
@@ -52,28 +58,34 @@ export class CacheHelper {
         if (this.argCache[hash]) {
             try {
                 const cachedItem = this.argCache[hash];
-                // Only attempt to clean and delete OCCT shapes
+                // Only attempt to clean and delete OCCT objects
                 if (this.isOCCTObject(cachedItem)) {
                     // Handle arrays of OCCT objects
                     if (Array.isArray(cachedItem)) {
-                        cachedItem.forEach(shape => {
+                        cachedItem.forEach(item => {
                             try {
-                                this.occ.BRepTools_Clean_Force(shape, true);
-                                this.occ.BRepTools_CleanGeometry(shape);
-                                shape.delete();
+                                // Shape-specific cleanup only for TopoDS_Shape objects
+                                if (this.isShape(item)) {
+                                    this.occ.BRepTools_Clean_Force(item, true);
+                                    this.occ.BRepTools_CleanGeometry(item);
+                                }
+                                item.delete();
                             } catch (error) {
-                                // Ignore errors for already deleted shapes
+                                // Ignore errors for already deleted objects
                             }
                         });
                     } else {
-                        this.occ.BRepTools_Clean_Force(cachedItem, true);
-                        this.occ.BRepTools_CleanGeometry(cachedItem);
+                        // Shape-specific cleanup only for TopoDS_Shape objects
+                        if (this.isShape(cachedItem)) {
+                            this.occ.BRepTools_Clean_Force(cachedItem, true);
+                            this.occ.BRepTools_CleanGeometry(cachedItem);
+                        }
                         cachedItem.delete();
                     }
                 }
             }
             catch (error) {
-                // Ignore errors when cleaning shapes that may already be deleted
+                // Ignore errors when cleaning objects that may already be deleted
             }
         }
         delete this.argCache[hash];
@@ -95,33 +107,39 @@ export class CacheHelper {
             hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
         }
 
-        // Delete unused shapes and clean them from cache
+        // Delete unused objects and clean them from cache
         if (hashesToDelete.length > 0) {
             hashesToDelete.forEach(hash => {
                 if (this.argCache[hash]) {
                     try {
-                        const shape = this.argCache[hash];
+                        const cachedItem = this.argCache[hash];
                         // Only try to clean and delete if it's an OCCT object
-                        if (this.isOCCTObject(shape)) {
+                        if (this.isOCCTObject(cachedItem)) {
                             // Handle arrays of OCCT objects
-                            if (Array.isArray(shape)) {
-                                shape.forEach(s => {
+                            if (Array.isArray(cachedItem)) {
+                                cachedItem.forEach(item => {
                                     try {
-                                        this.occ.BRepTools_Clean_Force(s, true);
-                                        this.occ.BRepTools_CleanGeometry(s);
-                                        s.delete();
+                                        // Shape-specific cleanup only for TopoDS_Shape objects
+                                        if (this.isShape(item)) {
+                                            this.occ.BRepTools_Clean_Force(item, true);
+                                            this.occ.BRepTools_CleanGeometry(item);
+                                        }
+                                        item.delete();
                                     } catch {
-                                        // Ignore errors for already deleted shapes
+                                        // Ignore errors for already deleted objects
                                     }
                                 });
                             } else {
-                                this.occ.BRepTools_Clean_Force(shape, true);
-                                this.occ.BRepTools_CleanGeometry(shape);
-                                shape.delete();
+                                // Shape-specific cleanup only for TopoDS_Shape objects
+                                if (this.isShape(cachedItem)) {
+                                    this.occ.BRepTools_Clean_Force(cachedItem, true);
+                                    this.occ.BRepTools_CleanGeometry(cachedItem);
+                                }
+                                cachedItem.delete();
                             }
                         }
                     } catch {
-                        // Ignore errors for already deleted or invalid shapes
+                        // Ignore errors for already deleted or invalid objects
                     }
                     delete this.argCache[hash];
                 }
@@ -136,6 +154,32 @@ export class CacheHelper {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isOCCTObject(obj: any): boolean {
         return obj !== undefined && obj !== null && (!Array.isArray(obj) && obj.$$ !== undefined) || (Array.isArray(obj) && obj.length > 0 && obj[0].$$ !== undefined);
+    }
+
+    /**
+     * Checks if an object is a TopoDS_Shape (or subclass).
+     * Shapes have ShapeType() method which returns the shape type enum.
+     * This is a performant check - just property access + typeof, no function call.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    isShape(obj: any): boolean {
+        return obj !== undefined && 
+               obj !== null && 
+               obj.$$ !== undefined && 
+               typeof obj.ShapeType === "function";
+    }
+
+    /**
+     * Checks if an object is a non-shape OCCT entity (e.g., document handle, other handles).
+     * These are OCCT objects (have $$) but do NOT have ShapeType() method.
+     * This distinguishes them from TopoDS_Shape objects.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    isEntityHandle(obj: any): boolean {
+        return obj !== undefined && 
+               obj !== null && 
+               obj.$$ !== undefined && 
+               typeof obj.ShapeType !== "function"; // Key differentiator: entities don't have ShapeType
     }
 
     /** Hashes input arguments and checks the cache for that hash.
@@ -170,6 +214,7 @@ export class CacheHelper {
                     toReturn.hash = curHash;
                     this.addToCache(curHash, toReturn);
                 } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
+                    // Handle ObjectDefinition structure
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
                     const compoundHash = this.computeHash({ ...args, index: "compound" });
@@ -181,6 +226,12 @@ export class CacheHelper {
                         this.addToCache(itemHash, s.shape);
                     });
                     this.addToCache(curHash, { value: objDef });
+                } else if (toReturn && typeof toReturn === "object" && "success" in toReturn && "document" in toReturn && this.isEntityHandle(toReturn.document)) {
+                    // Handle AssemblyDocumentResult structure - cache the document separately
+                    const docHash = this.computeHash({ ...args, index: "document" });
+                    toReturn.document.hash = docHash;
+                    this.addToCache(docHash, toReturn.document);
+                    this.addToCache(curHash, { value: toReturn });
                 }
                 else {
                     this.addToCache(curHash, { value: toReturn });

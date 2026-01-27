@@ -5,3 +5,4 @@ export * from "./fillets";
 export * from "./io";
 export * from "./operations";
 export * from "./transforms";
+export * from "./assembly"; 

@@ -8,6 +8,7 @@ export namespace Base {
     // Re-export all types from base package
     export type Color = BaseTypes.Color;
     export type ColorRGB = BaseTypes.ColorRGB;
+    export type ColorRGBA = BaseTypes.ColorRGBA;
     export type Material = BaseTypes.Material;
     export type Point2 = BaseTypes.Point2;
     export type Vector2 = BaseTypes.Vector2;
