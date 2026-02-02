@@ -93,6 +93,42 @@ export class OCCTAssemblyManager {
     }
 
     /**
+     * Create a part update definition for modifying an existing part in a document.
+     * Part updates can change the shape, name, and/or color of an existing part.
+     * 
+     * @param inputs - Update details including label and optional new shape/name/color
+     * @returns Part update definition that can be added to an assembly structure's partUpdates array
+     * @group assembly
+     * @shortname create part update
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * // Get existing parts from document
+     * const parts = await occt.assembly.query.getDocumentParts({ document });
+     * 
+     * // Create a new shape to replace the old one
+     * const newBox = await occt.shapes.solid.createBox({ width: 20, length: 20, height: 20 });
+     * 
+     * // Create an update definition
+     * const update = await occt.assembly.manager.createPartUpdate({ 
+     *     label: parts[0].label, 
+     *     shape: newBox,
+     *     name: "Bigger Box",
+     *     colorRgba: { r: 0, g: 1, b: 0, a: 1 }
+     * });
+     * 
+     * // Combine with structure and rebuild
+     * const structure = await occt.assembly.manager.combineStructure({ parts: [], nodes: [], partUpdates: [update] });
+     * await occt.assembly.manager.buildAssemblyDocument({ structure, existingDocument: document });
+     * ```
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async createPartUpdate(inputs: Inputs.OCCT.CreatePartUpdateDto<any>): Promise<Models.OCCT.AssemblyPartUpdateDef<any>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.createPartUpdate", inputs);
+    }
+
+    /**
      * Combine parts and nodes into a complete assembly structure definition.
      * This is the final step before calling buildAssemblyDocument.
      * 

@@ -6735,16 +6735,68 @@ export namespace OCCT {
     }
 
     /**
+     * DTO for creating a part update definition.
+     * Part updates specify changes to apply to existing parts in a document.
+     */
+    export class CreatePartUpdateDto<T> {
+        constructor(
+            label?: string,
+            shape?: T,
+            name?: string,
+            colorRgba?: Base.ColorRGBA
+        ) {
+            if (label !== undefined) { this.label = label; }
+            if (shape !== undefined) { this.shape = shape; }
+            if (name !== undefined) { this.name = name; }
+            if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+        }
+        /**
+         * Label of the existing part to update (e.g., "0:1:1:1").
+         * Obtain this from document queries like getDocumentParts.
+         * @default undefined
+         */
+        label: string;
+        /**
+         * New shape to replace the existing shape.
+         * If undefined, the shape is not changed.
+         * @default undefined
+         */
+        shape?: T;
+        /**
+         * New name for the part.
+         * If undefined, the name is not changed.
+         * @default undefined
+         */
+        name?: string;
+        /**
+         * New color for the part.
+         * If undefined, the color is not changed.
+         * @default undefined
+         */
+        colorRgba?: Base.ColorRGBA;
+    }
+
+    /**
      * DTO for combining parts and nodes into an assembly structure.
      * Use this as the final step to create a complete structure definition.
+     * 
+     * For updating existing documents:
+     * - Use `removals` to specify labels to remove
+     * - Use `partUpdates` to update existing parts (shape, name, color)
      */
     export class CombineAssemblyStructureDto<T> {
         constructor(
             parts?: Models.OCCT.AssemblyPartDef<T>[],
-            nodes?: Models.OCCT.AssemblyNodeDef[]
+            nodes?: Models.OCCT.AssemblyNodeDef[],
+            removals?: string[],
+            partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[],
+            clearDocument?: boolean
         ) {
             if (parts !== undefined) { this.parts = parts; }
             if (nodes !== undefined) { this.nodes = nodes; }
+            if (removals !== undefined) { this.removals = removals; }
+            if (partUpdates !== undefined) { this.partUpdates = partUpdates; }
+            if (clearDocument !== undefined) { this.clearDocument = clearDocument; }
         }
         /**
          * List of part definitions (shapes that can be instanced)
@@ -6756,6 +6808,30 @@ export namespace OCCT {
          * @default []
          */
         nodes: Models.OCCT.AssemblyNodeDef[] = [];
+        /**
+         * Labels to remove from existing document.
+         * Can be part labels, instance labels, or assembly labels.
+         * Ignored when creating a new document (no existingDocument provided).
+         * @default undefined
+         */
+        removals?: string[];
+        /**
+         * Updates to apply to existing parts in the document.
+         * Each update can change the shape, name, and/or color of a part.
+         * Ignored when creating a new document (no existingDocument provided).
+         * @default undefined
+         */
+        partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[];
+        /**
+         * Whether to clear the existing document before adding new content.
+         * Only relevant when an existingDocument is provided to buildAssemblyDocument.
+         * 
+         * - `true`: Clear all existing shapes, then add new parts/nodes (full rebuild)
+         * - `false`: Keep existing shapes, apply removals/updates, add new parts/nodes (incremental)
+         * 
+         * @default false
+         */
+        clearDocument = false;
     }
 
     /**
@@ -6933,14 +7009,14 @@ export namespace OCCT {
         fileName = "assembly.step";
         /**
          * Author name for the STEP header (optional)
-         * @default empty string
+         * @default Bitbybit user
          */
-        author = "";
+        author = "Bitbybit user";
         /**
          * Organization name for the STEP header (optional)
-         * @default empty string
+         * @default Bitbybit
          */
-        organization = "";
+        organization = "Bitbybit";
         /**
          * Whether to compress as STEP-Z (gzip)
          * @default false

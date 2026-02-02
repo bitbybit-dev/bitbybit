@@ -430,7 +430,7 @@ export interface BitbybitOcctModule {
    * Build an assembly document from a structure definition and return the document handle directly.
    * The caller is responsible for managing the document lifetime.
    * 
-   * Structure JSON format:
+   * Structure JSON format (for creating new assembly):
    * {
    *   "parts": [
    *     { "id": "part-1", "shapeIndex": 0, "name": "Box", "color": { "r": 1, "g": 0, "b": 0, "a": 1 } }
@@ -442,9 +442,18 @@ export interface BitbybitOcctModule {
    *   ]
    * }
    * 
-   * @param structureJson - JSON string with assembly structure
-   * @param shapesArray - Array of TopoDS_Shape objects, referenced by shapeIndex in parts
-   * @param existingDoc - Optional existing document handle to reuse (clears and updates instead of creating new)
+   * When updating an existing document, you can also include:
+   * - "removals": ["0:1:1:2", "0:1:1:3:1"] - Labels to remove (parts, instances, or assemblies)
+   * - "partUpdates": [{ "label": "0:1:1:1", "shapeIndex": 0, "name": "New Name", "color": {...} }] - Updates to apply
+   * 
+   * Processing order for updates:
+   * 1. Removals are applied first
+   * 2. Part updates are applied second  
+   * 3. New parts and nodes are added last
+   * 
+   * @param structureJson - JSON string with assembly structure (parts, nodes, optional removals/partUpdates)
+   * @param shapesArray - Array of TopoDS_Shape objects, referenced by shapeIndex in parts and partUpdates
+   * @param existingDoc - Optional existing document handle to update (for removals/partUpdates/additions)
    * @returns Handle to the created/updated document. Call IsNull() to check for errors.
    */
   BuildAssemblyDocument(structureJson: string, shapesArray: TopoDS_Shape[], existingDoc?: Handle_TDocStd_Document): Handle_TDocStd_Document;

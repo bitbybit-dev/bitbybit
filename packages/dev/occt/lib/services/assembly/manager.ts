@@ -88,6 +88,43 @@ export class OCCTAssemblyManager {
     }
 
     /**
+     * Create a part update definition for modifying an existing part in a document.
+     * Part updates can change the shape, name, and/or color of an existing part.
+     * 
+     * @param inputs - Update details including label and optional new shape/name/color
+     * @returns Part update definition that can be added to an assembly structure's partUpdates array
+     * 
+     * @example
+     * ```typescript
+     * // Get existing parts from document
+     * const parts = occt.assembly.query.getDocumentParts({ document });
+     * 
+     * // Create a new shape to replace the old one
+     * const newBox = occt.shapes.solid.createBox({ width: 20, length: 20, height: 20 });
+     * 
+     * // Create an update definition
+     * const update = occt.assembly.manager.createPartUpdate({ 
+     *     label: parts[0].label, 
+     *     shape: newBox,
+     *     name: "Bigger Box",
+     *     colorRgba: { r: 0, g: 1, b: 0, a: 1 }
+     * });
+     * 
+     * // Combine with structure and rebuild
+     * const structure = occt.assembly.manager.combineStructure({ parts: [], nodes: [], partUpdates: [update] });
+     * occt.assembly.manager.buildAssemblyDocument({ structure, existingDocument: document });
+     * ```
+     */
+    createPartUpdate(inputs: Inputs.OCCT.CreatePartUpdateDto<TopoDS_Shape>): Models.OCCT.AssemblyPartUpdateDef<TopoDS_Shape> {
+        return {
+            label: inputs.label,
+            shape: inputs.shape,
+            name: inputs.name,
+            colorRgba: inputs.colorRgba
+        };
+    }
+
+    /**
      * Combine parts and nodes into a complete assembly structure definition.
      * This is the final step before calling buildAssemblyDocument.
      * 
@@ -97,7 +134,10 @@ export class OCCTAssemblyManager {
     combineStructure(inputs: Inputs.OCCT.CombineAssemblyStructureDto<TopoDS_Shape>): Models.OCCT.AssemblyStructureDef<TopoDS_Shape> {
         return {
             parts: inputs.parts ?? [],
-            nodes: inputs.nodes ?? []
+            nodes: inputs.nodes ?? [],
+            removals: inputs.removals,
+            partUpdates: inputs.partUpdates,
+            clearDocument: inputs.clearDocument
         };
     }
 
@@ -110,6 +150,13 @@ export class OCCTAssemblyManager {
      * updated instead of creating a new one. This is useful for updating an assembly
      * without allocating a new document each time.
      * 
+     * When updating an existing document (existingDocument provided):
+     * - If `structure.removals` is provided, those labels are removed first
+     * - If `structure.partUpdates` is provided, those parts are updated (shape, name, color)
+     * - New `parts` and `nodes` are added to the document
+     * - If neither `removals` nor `partUpdates` is provided, the document is cleared first (backward compatible)
+     * - Use `clearDocument: false` in structure to preserve existing content while adding new parts/nodes
+     * 
      * @param inputs - Assembly structure definition and optional existing document
      * @returns The document handle (new or updated)
      * @throws Error if assembly building fails
@@ -120,6 +167,7 @@ export class OCCTAssemblyManager {
         const shapes: TopoDS_Shape[] = [];
         const partsJson: { id: string; shapeIndex: number; name: string; colorRgba?: Inputs.Base.ColorRGBA }[] = [];
         
+        // Add new parts to shapes array
         for (const part of structure.parts) {
             partsJson.push({
                 id: part.id,
@@ -130,9 +178,33 @@ export class OCCTAssemblyManager {
             shapes.push(part.shape);
         }
         
+        // Process partUpdates - add their shapes to the shapes array and reference by index
+        const partUpdatesJson: { label: string; shapeIndex?: number; name?: string; colorRgba?: Inputs.Base.ColorRGBA }[] = [];
+        if (structure.partUpdates) {
+            for (const update of structure.partUpdates) {
+                const updateJson: { label: string; shapeIndex?: number; name?: string; colorRgba?: Inputs.Base.ColorRGBA } = {
+                    label: update.label
+                };
+                if (update.shape) {
+                    updateJson.shapeIndex = shapes.length;
+                    shapes.push(update.shape);
+                }
+                if (update.name !== undefined) {
+                    updateJson.name = update.name;
+                }
+                if (update.colorRgba !== undefined) {
+                    updateJson.colorRgba = update.colorRgba;
+                }
+                partUpdatesJson.push(updateJson);
+            }
+        }
+        
         const structureJson = JSON.stringify({
             parts: partsJson,
-            nodes: structure.nodes
+            nodes: structure.nodes,
+            removals: structure.removals,
+            partUpdates: partUpdatesJson.length > 0 ? partUpdatesJson : undefined,
+            clearDocument: structure.clearDocument
         });
         
         const document = this.occ.BuildAssemblyDocument(structureJson, shapes, existingDocument);
