@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8 एरे को एरे बफर में",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Uint8Array को ArrayBuffer में कन्वर्ट करता है।",
     "uint8Array": "uint8 एरे",
-    "preview assembly hierarchy": "occt असेंबली हायरार्की पूर्वावलोकन करें"
+    "preview assembly hierarchy": "occt असेंबली हायरार्की पूर्वावलोकन करें",
+    "bitbybit.previewAssemblyHierarchy": "OCCT असेंबली हायरार्की पूर्वावलोकन करें"
 }

@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8 masīvu uz masīva buferi",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Konvertē Uint8Array uz ArrayBuffer.",
     "uint8Array": "uint8 masīvs",
-    "preview assembly hierarchy": "priekšskatīt occt montāžas hierarhiju"
+    "preview assembly hierarchy": "priekšskatīt occt montāžas hierarhiju",
+    "bitbybit.previewAssemblyHierarchy": "priekšskatīt occt montāžas hierarhiju"
 }

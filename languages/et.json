@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8 massiiv massiivipuhvriks",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Teisendab Uint8Array ArrayBuffer'iks.",
     "uint8Array": "uint8 massiiv",
-    "preview assembly hierarchy": "eelvaade occt koost hierarhiale"
+    "preview assembly hierarchy": "eelvaade occt koost hierarhiale",
+    "bitbybit.previewAssemblyHierarchy": "eelvaade occt koost hierarhiale"
 }

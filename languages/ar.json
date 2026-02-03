@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "مصفوفة uint8 إلى مخزن المصفوفة",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "يحول Uint8Array إلى ArrayBuffer.",
     "uint8Array": "مصفوفة uint8",
-    "preview assembly hierarchy": "معاينة التسلسل الهرمي لتجميع occt"
+    "preview assembly hierarchy": "معاينة التسلسل الهرمي لتجميع occt",
+    "bitbybit.previewAssemblyHierarchy": "معاينة التسلسل الهرمي لتجميع occt"
 }

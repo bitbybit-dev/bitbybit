@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8 array do bufora tablicy",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Konwertuje Uint8Array na ArrayBuffer.",
     "uint8Array": "uint8 array",
-    "preview assembly hierarchy": "podgląd hierarchii zespołu occt"
+    "preview assembly hierarchy": "podgląd hierarchii zespołu occt",
+    "bitbybit.previewAssemblyHierarchy": "podgląd hierarchii zespołu occt"
 }

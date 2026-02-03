@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "matriz uint8 a buffer de matriz",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Convierte un Uint8Array a un ArrayBuffer.",
     "uint8Array": "matriz uint8",
-    "preview assembly hierarchy": "previsualizar jerarquía de ensamblaje occt"
+    "preview assembly hierarchy": "previsualizar jerarquía de ensamblaje occt",
+    "bitbybit.previewAssemblyHierarchy": "previsualizar jerarquía de ensamblaje occt"
 }

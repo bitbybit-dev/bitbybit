@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8 array vers tampon tableau",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Convertit un Uint8Array en ArrayBuffer.",
     "uint8Array": "uint8 array",
-    "preview assembly hierarchy": "aperçu de la hiérarchie d'assemblage occt"
+    "preview assembly hierarchy": "aperçu de la hiérarchie d'assemblage occt",
+    "bitbybit.previewAssemblyHierarchy": "aperçu de la hiérarchie d'assemblage occt"
 }

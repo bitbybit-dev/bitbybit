@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8数组转数组缓冲区",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "将Uint8Array转换为ArrayBuffer。",
     "uint8Array": "uint8数组",
-    "preview assembly hierarchy": "预览occt装配层次结构"
+    "preview assembly hierarchy": "预览occt装配层次结构",
+    "bitbybit.previewAssemblyHierarchy": "预览occt装配层次结构"
 }

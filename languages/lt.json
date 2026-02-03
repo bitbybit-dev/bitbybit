@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8 masyvą į masyvo buferį",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Konvertuoja Uint8Array į ArrayBuffer.",
     "uint8Array": "uint8 masyvas",
-    "preview assembly hierarchy": "peržiūrėti occt surinkimo hierarchiją"
+    "preview assembly hierarchy": "peržiūrėti occt surinkimo hierarchiją",
+    "bitbybit.previewAssemblyHierarchy": "peržiūrėti occt surinkimo hierarchiją"
 }

@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "Uint8-Array zu Array-Buffer",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Konvertiert ein Uint8Array in einen ArrayBuffer.",
     "uint8Array": "Uint8-Array",
-    "preview assembly hierarchy": "Vorschau OCCT-Baugruppenhierarchie"
+    "preview assembly hierarchy": "Vorschau OCCT-Baugruppenhierarchie",
+    "bitbybit.previewAssemblyHierarchy": "OCCT-Baugruppenhierarchie-Vorschau"
 }

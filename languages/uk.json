@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8 масив в буфер масиву",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Конвертує Uint8Array в ArrayBuffer.",
     "uint8Array": "uint8 масив",
-    "preview assembly hierarchy": "попередній перегляд ієрархії збірки occt"
+    "preview assembly hierarchy": "попередній перегляд ієрархії збірки occt",
+    "bitbybit.previewAssemblyHierarchy": "попередній перегляд ієрархії збірки occt"
 }

@@ -6083,5 +6083,6 @@
     "uint8ArrayToArrayBuffer": "uint8-taulukko taulukkopuskuriksi",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Muuntaa Uint8Arrayn ArrayBufferiksi.",
     "uint8Array": "uint8-taulukko",
-    "preview assembly hierarchy": "esikatsele occt kokoonpanohierarkia"
+    "preview assembly hierarchy": "esikatsele occt kokoonpanohierarkia",
+    "bitbybit.previewAssemblyHierarchy": "esikatsele occt kokoonpanohierarkia"
 }
