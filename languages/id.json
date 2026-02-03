@@ -6082,5 +6082,6 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer": "uint8 array ke array buffer",
     "uint8ArrayToArrayBuffer": "uint8 array ke array buffer",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Mengkonversi Uint8Array ke ArrayBuffer.",
-    "uint8Array": "uint8 array"
+    "uint8Array": "uint8 array",
+    "preview assembly hierarchy": "pratinjau hierarki assembly occt"
 }

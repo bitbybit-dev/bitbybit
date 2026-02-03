@@ -6082,5 +6082,6 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer": "uint8 массив в буфер массива",
     "uint8ArrayToArrayBuffer": "uint8 массив в буфер массива",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Конвертирует Uint8Array в ArrayBuffer.",
-    "uint8Array": "uint8 массив"
+    "uint8Array": "uint8 массив",
+    "preview assembly hierarchy": "предпросмотр иерархии сборки occt"
 }

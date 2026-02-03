@@ -6082,5 +6082,6 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer": "uint8 অ্যারে থেকে অ্যারে বাফার",
     "uint8ArrayToArrayBuffer": "uint8 অ্যারে থেকে অ্যারে বাফার",
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "একটি Uint8Array কে ArrayBuffer এ রূপান্তর করে।",
-    "uint8Array": "uint8 অ্যারে"
+    "uint8Array": "uint8 অ্যারে",
+    "preview assembly hierarchy": "occt সমাবেশ হায়ারার্কি প্রিভিউ"
 }
