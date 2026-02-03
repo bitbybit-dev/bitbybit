@@ -19,6 +19,24 @@ export class OCCTWorkerManager {
         return this.occWorker ? true : false;
     }
 
+    /**
+     * Convert File/Blob to Uint8Array if needed, before sending to worker.
+     * File/Blob objects cannot be cloned for postMessage, so we convert them first.
+     * ArrayBuffer is also converted to Uint8Array for WASM compatibility.
+     */
+    async prepareStepData(data: string | ArrayBuffer | Uint8Array | File | Blob): Promise<string | Uint8Array> {
+        if (typeof File !== "undefined" && data instanceof File) {
+            return new Uint8Array(await data.arrayBuffer());
+        }
+        if (typeof Blob !== "undefined" && data instanceof Blob) {
+            return new Uint8Array(await data.arrayBuffer());
+        }
+        if (data instanceof ArrayBuffer) {
+            return new Uint8Array(data);
+        }
+        return data as string | Uint8Array;
+    }
+
     setOccWorker(worker: Worker | OCCTWorkerMock): void {
         this.occWorker = worker;
         this.occWorker.onmessage = ({ data }) => {

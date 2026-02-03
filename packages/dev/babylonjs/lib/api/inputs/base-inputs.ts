@@ -9,6 +9,7 @@ export namespace Base {
     // Re-export all types from core package (which includes base types)
     export type Color = CoreBase.Color;
     export type ColorRGB = CoreBase.ColorRGB;
+    export type ColorRGBA = CoreBase.ColorRGBA;
     export type Material = CoreBase.Material;
     export type Point2 = CoreBase.Point2;
     export type Vector2 = CoreBase.Vector2;

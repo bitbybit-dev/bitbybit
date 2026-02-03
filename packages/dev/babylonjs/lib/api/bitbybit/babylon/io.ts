@@ -18,6 +18,7 @@ export class BabylonIO {
      * @returns scene loaded mesh
      * @group load
      * @shortname asset
+     * @drawable true
      */
     async loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<BABYLON.Mesh> {
         const type = inputs.assetFile.name.split(".").pop();
@@ -51,6 +52,7 @@ export class BabylonIO {
      * @returns scene loaded mesh
      * @group load
      * @shortname asset from url
+     * @drawable true
      */
     async loadAssetIntoSceneFromRootUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<BABYLON.Mesh> {
         const type = inputs.assetFile.split(".").pop();
@@ -76,6 +78,35 @@ export class BabylonIO {
     async loadAssetIntoSceneFromRootUrlNoReturn(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<void> {
         this.loadAssetIntoSceneFromRootUrl(inputs);
     }
+    /**
+     * Loads GLB binary data directly into the scene from a Uint8Array.
+     * This is useful when you have GLB data from sources like OCCT's convertStepToGltf method.
+     * @param inputs GLB data as Uint8Array and optional configuration
+     * @returns scene loaded mesh
+     * @group load
+     * @shortname glb from array buffer
+     * @drawable true
+     */
+    async loadGlbFromArrayBuffer(inputs: Inputs.Asset.AssetGlbDataDto): Promise<BABYLON.Mesh> {
+        // Create a copy to ensure we have a regular ArrayBuffer (not SharedArrayBuffer)
+        const buffer = inputs.glbData.buffer.slice(inputs.glbData.byteOffset, inputs.glbData.byteOffset + inputs.glbData.byteLength) as ArrayBuffer;
+        const blob = new Blob([buffer], { type: "model/gltf-binary" });
+        const file = new File([blob], inputs.fileName, { type: "model/gltf-binary" });
+        return await this.loadAsset("", "", file, inputs.hidden);
+    }
+
+    /**
+     * Loads GLB binary data directly into the scene from a Uint8Array without returning the mesh.
+     * This is useful when you have GLB data from sources like OCCT's convertStepToGltf method.
+     * @param inputs GLB data as Uint8Array and optional configuration
+     * @group load
+     * @shortname glb from array buffer no return
+     * @drawable true
+     */
+    async loadGlbFromArrayBufferNoReturn(inputs: Inputs.Asset.AssetGlbDataDto): Promise<void> {
+        this.loadGlbFromArrayBuffer(inputs);
+    }
+
     /**
      * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
      * @param inputs filename

@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/base",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "description": "Bit By Bit Developers Base CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {

@@ -203,6 +203,378 @@ export interface BitbybitOcctModule {
   // STEPCAF Reader (reads STEP with assembly structure)
   STEPCAFControl_Reader_ReadFile(filePath: string, appName: string): Handle_TDocStd_Document;
 
+  // =====================================================================================
+  // HIGH-LEVEL ASSEMBLY CONVERSION FUNCTIONS (run entirely in C++ for performance)
+  // =====================================================================================
+  
+  /**
+   * Convert STEP file to glTF format.
+   * Runs entirely in C++ for maximum performance.
+   * Preserves assembly hierarchy, colors, materials, and transformations.
+   * 
+   * @param stepFilePath - Path to input STEP file (in virtual filesystem)
+   * @param gltfFilePath - Path to output glTF/GLB file (in virtual filesystem)
+   * @param meshPrecision - Mesh deflection for triangulation (smaller = more triangles)
+   * @param isBinary - true for GLB (binary), false for glTF+bin (JSON)
+   * @returns true on success
+   */
+  ConvertStepToGltf(stepFilePath: string, gltfFilePath: string, meshPrecision: number, isBinary: boolean): boolean;
+
+  /**
+   * Advanced STEP to glTF conversion with full control over reading and export options.
+   * Use this for file system based conversion (e.g., in Node.js or with virtual filesystem).
+   * 
+   * STEP Reading Options (affect parsing speed - disable what you don't need):
+   * @param stepFilePath - Path to input STEP file (in virtual filesystem)
+   * @param gltfFilePath - Path for output glTF/GLB file
+   * @param readColors - Read color attributes (needed for colored glTF)
+   * @param readNames - Read name attributes (for glTF node names)
+   * @param readMaterials - Read material attributes (for glTF materials)
+   * @param readLayers - Read layer attributes (usually not needed for glTF, set false)
+   * @param readProps - Read validation properties (usually not needed for glTF, set false)
+   * 
+   * Mesh Options:
+   * @param meshDeflection - Mesh deflection (precision) - smaller = more detailed mesh
+   * @param meshAngle - Mesh angular deflection in radians (default 0.5)
+   * @param meshParallel - Enable parallel meshing (for multi-threaded builds)
+   * @param faceCountThreshold - Face count threshold for adaptive meshing (-1 to disable)
+   * 
+   * glTF Writer Options:
+   * @param isBinary - true for GLB (binary), false for glTF (JSON)
+   * @param mergeFaces - Merge faces within a single part (smaller file size)
+   * @param splitIndices16 - Prefer 16-bit indices when merging (smaller binary)
+   * @param parallelWrite - Enable parallel glTF writing
+   * @param embedTextures - Embed textures in GLB (only for binary mode)
+   * @param forceUVExport - Export UV coordinates even without textures
+   * @param nodeNameFormat - Node naming format:
+   *        0=Empty, 1=Product, 2=Instance, 3=InstanceOrProduct, 4=ProductOrInstance, 5=ProductAndInstance, 6=ProductAndInstanceAndOcaf
+   * @param meshNameFormat - Mesh naming format (same values as nodeNameFormat)
+   * @param trsfFormat - Transformation format: 0=Compact (TRS), 1=Mat4, 2=TRS
+   * 
+   * Coordinate System Options:
+   * @param adjustZtoY - Convert Z-up (OCCT) to Y-up (glTF standard), default true
+   * @param scale - Scale factor for the model (e.g., 0.001 to convert mm to m), default 1.0
+   * 
+   * @returns true on success, false on failure
+   */
+  ConvertStepToGltfAdvanced(
+    stepFilePath: string,
+    gltfFilePath: string,
+    // STEP reading options
+    readColors: boolean,
+    readNames: boolean,
+    readMaterials: boolean,
+    readLayers: boolean,
+    readProps: boolean,
+    // Mesh options
+    meshDeflection: number,
+    meshAngle: number,
+    meshParallel: boolean,
+    faceCountThreshold: number,
+    // glTF writer options
+    isBinary: boolean,
+    mergeFaces: boolean,
+    splitIndices16: boolean,
+    parallelWrite: boolean,
+    embedTextures: boolean,
+    forceUVExport: boolean,
+    nodeNameFormat: number,
+    meshNameFormat: number,
+    trsfFormat: number,
+    // Coordinate system options
+    adjustZtoY: boolean,
+    scale: number
+  ): boolean;
+  
+  /**
+   * Parse STEP file and return assembly structure as JSON.
+   * Runs entirely in C++ for maximum performance.
+   * Returns JSON with nodes containing: id, name, isAssembly, visible, color, transform.
+   * 
+   * @param stepFilePath - Path to input STEP file (in virtual filesystem)
+   * @returns JSON string with assembly structure
+   */
+  ParseStepAssemblyToJson(stepFilePath: string): string;
+  
+  /**
+   * Convert STEP content to GLB format from memory.
+   * For browser use - reads STEP from string, returns GLB as byte array.
+   * Automatically detects and decompresses STEP-Z (.stpz) gzip-compressed files.
+   * 
+   * @param stepContent - STEP file content as string (supports gzip-compressed STEP-Z)
+   * @param meshPrecision - Mesh deflection for triangulation
+   * @param faceCountThreshold - Compounds with more faces than this are meshed per-solid
+   *        to avoid WASM stack overflow. Set to -1 to always mesh as single unit.
+   *        Default is 50000. Recommended range: 10000-50000.
+   * @returns GLB binary data as Uint8Array (empty on failure)
+   */
+  ConvertStepToGltfFromMemory(stepContent: string, meshPrecision: number, faceCountThreshold?: number): Uint8Array;
+  
+  /**
+   * Parse STEP assembly from memory to JSON.
+   * For browser use - reads STEP from string, returns JSON string.
+   * Automatically detects and decompresses STEP-Z (.stpz) gzip-compressed files.
+   * 
+   * @param stepContent - STEP file content as string (supports gzip-compressed STEP-Z)
+   * @returns JSON string with assembly structure
+   */
+  ParseStepAssemblyToJsonFromMemory(stepContent: string): string;
+
+  /**
+   * Convert STEP to GLB format from binary data.
+   * Use this for compressed STEP-Z files - read with FileReader.readAsArrayBuffer.
+   * 
+   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
+   * @param meshPrecision - Mesh deflection for triangulation
+   * @param faceCountThreshold - Compounds with more faces than this are meshed per-solid.
+   *        Default is 50000. Set to -1 to always mesh as single unit.
+   * @returns GLB binary data as Uint8Array (empty on failure)
+   */
+  ConvertStepToGltfFromBinary(stepData: Uint8Array, meshPrecision: number, faceCountThreshold?: number): Uint8Array;
+
+  /**
+   * Advanced STEP to GLB conversion with full control over reading and export options.
+   * Use this for maximum control over conversion behavior and performance tuning.
+   * 
+   * STEP Reading Options (affect parsing speed - disable what you don't need):
+   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
+   * @param readColors - Read color attributes (needed for colored glTF)
+   * @param readNames - Read name attributes (for glTF node names)
+   * @param readMaterials - Read material attributes (for glTF materials)
+   * @param readLayers - Read layer attributes (usually not needed for glTF, set false)
+   * @param readProps - Read validation properties (usually not needed for glTF, set false)
+   * 
+   * Mesh Options:
+   * @param meshDeflection - Mesh deflection (precision) - smaller = more detailed mesh
+   * @param meshAngle - Mesh angular deflection in radians (default 0.5)
+   * @param meshParallel - Enable parallel meshing (for multi-threaded builds)
+   * @param faceCountThreshold - Face count threshold for adaptive meshing (-1 to disable)
+   * 
+   * glTF Writer Options:
+   * @param mergeFaces - Merge faces within a single part (smaller JSON size)
+   * @param splitIndices16 - Prefer 16-bit indices when merging (smaller binary)
+   * @param parallelWrite - Enable parallel glTF writing
+   * @param embedTextures - Embed textures in GLB (only for binary mode)
+   * @param forceUVExport - Export UV coordinates even without textures
+   * @param nodeNameFormat - Node naming format:
+   *        0=Empty, 1=Product, 2=Instance, 3=InstanceOrProduct, 4=ProductOrInstance, 5=ProductAndInstance, 6=ProductAndInstanceAndOcaf
+   * @param meshNameFormat - Mesh naming format (same values as nodeNameFormat)
+   * @param trsfFormat - Transformation format: 0=Compact (TRS), 1=Mat4, 2=TRS
+   * 
+   * Coordinate System Options:
+   * @param adjustZtoY - Convert Z-up (OCCT) to Y-up (glTF standard), default true
+   * @param scale - Scale factor for the model (e.g., 0.001 to convert mm to m), default 1.0
+   * 
+   * @returns GLB binary data as Uint8Array (empty on failure)
+   */
+  ConvertStepToGltfFromBinaryAdvanced(
+    stepData: Uint8Array,
+    // STEP reading options
+    readColors: boolean,
+    readNames: boolean,
+    readMaterials: boolean,
+    readLayers: boolean,
+    readProps: boolean,
+    // Mesh options
+    meshDeflection: number,
+    meshAngle: number,
+    meshParallel: boolean,
+    faceCountThreshold: number,
+    // glTF writer options
+    mergeFaces: boolean,
+    splitIndices16: boolean,
+    parallelWrite: boolean,
+    embedTextures: boolean,
+    forceUVExport: boolean,
+    nodeNameFormat: number,
+    meshNameFormat: number,
+    trsfFormat: number,
+    // Coordinate system options
+    adjustZtoY: boolean,
+    scale: number
+  ): Uint8Array;
+
+  /**
+   * Parse STEP assembly from binary data to JSON.
+   * Use this for compressed STEP-Z files - read with FileReader.readAsArrayBuffer.
+   * 
+   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
+   * @returns JSON string with assembly structure
+   */
+  ParseStepAssemblyToJsonFromBinary(stepData: Uint8Array): string;
+
+  /**
+   * Read STEP from binary data.
+   * Use this for compressed STEP-Z files - read with FileReader.readAsArrayBuffer.
+   * 
+   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
+   * @returns The shape read from STEP, or null shape on failure
+   */
+  ReadSTEPFromBinary(stepData: Uint8Array): TopoDS_Shape;
+
+  /**
+   * Read IGES from binary data.
+   * Use this for compressed IGES files - read with FileReader.readAsArrayBuffer.
+   * 
+   * @param igesData - IGES file content as Uint8Array (supports gzip-compressed)
+   * @returns The shape read from IGES, or null shape on failure
+   */
+  ReadIGESFromBinary(igesData: Uint8Array): TopoDS_Shape;
+
+  // =====================================================================================
+  // ASSEMBLY CREATION FUNCTIONS (Document-based API for visual programming)
+  // These functions return document handles directly - caller manages lifetime.
+  // =====================================================================================
+
+  /**
+   * Build an assembly document from a structure definition and return the document handle directly.
+   * The caller is responsible for managing the document lifetime.
+   * 
+   * Structure JSON format (for creating new assembly):
+   * {
+   *   "parts": [
+   *     { "id": "part-1", "shapeIndex": 0, "name": "Box", "color": { "r": 1, "g": 0, "b": 0, "a": 1 } }
+   *   ],
+   *   "nodes": [
+   *     { "id": "asm-1", "type": "assembly", "name": "Root" },
+   *     { "id": "inst-1", "type": "instance", "parentId": "asm-1", "partId": "part-1", 
+   *       "name": "Box 1", "translation": [10, 0, 0], "rotation": [0, 0, 45], "scale": 1.0 }
+   *   ]
+   * }
+   * 
+   * When updating an existing document, you can also include:
+   * - "removals": ["0:1:1:2", "0:1:1:3:1"] - Labels to remove (parts, instances, or assemblies)
+   * - "partUpdates": [{ "label": "0:1:1:1", "shapeIndex": 0, "name": "New Name", "color": {...} }] - Updates to apply
+   * 
+   * Processing order for updates:
+   * 1. Removals are applied first
+   * 2. Part updates are applied second  
+   * 3. New parts and nodes are added last
+   * 
+   * @param structureJson - JSON string with assembly structure (parts, nodes, optional removals/partUpdates)
+   * @param shapesArray - Array of TopoDS_Shape objects, referenced by shapeIndex in parts and partUpdates
+   * @param existingDoc - Optional existing document handle to update (for removals/partUpdates/additions)
+   * @returns Handle to the created/updated document. Call IsNull() to check for errors.
+   */
+  BuildAssemblyDocument(structureJson: string, shapesArray: TopoDS_Shape[], existingDoc?: Handle_TDocStd_Document): Handle_TDocStd_Document;
+
+  /**
+   * Export a document to STEP format (takes document handle directly).
+   * Unlike ExportAssemblyToStepBinary, this does not use global document storage.
+   * 
+   * @param document - Document handle from BuildAssemblyDocument
+   * @param fileName - File name for the STEP header
+   * @param author - Author name for the STEP header
+   * @param organization - Organization name for the STEP header
+   * @returns STEP file content as Uint8Array, or undefined on failure
+   */
+  ExportDocumentToStep(document: Handle_TDocStd_Document, fileName: string, author: string, organization: string): Uint8Array | undefined;
+
+  /**
+   * Export a document to compressed STEP-Z format (takes document handle directly).
+   * Unlike ExportAssemblyToStepZ, this does not use global document storage.
+   * 
+   * @param document - Document handle from BuildAssemblyDocument
+   * @param fileName - File name for the STEP header
+   * @param author - Author name for the STEP header
+   * @param organization - Organization name for the STEP header
+   * @returns Compressed STEP-Z content as Uint8Array, or undefined on failure
+   */
+  ExportDocumentToStepZ(document: Handle_TDocStd_Document, fileName: string, author: string, organization: string): Uint8Array | undefined;
+
+  /**
+   * Export a document to glTF binary (GLB) format (takes document handle directly).
+   * Unlike ExportAssemblyToGltf, this does not use global document storage.
+   * 
+   * @param document - Document handle from BuildAssemblyDocument
+   * @param meshDeflection - Mesh precision for triangulation (default 0.1)
+   * @param meshAngle - Angular deflection for meshing in radians (default 0.5)
+   * @param mergeFaces - Whether to merge faces with same material (default false)
+   * @param forceUVExport - Whether to export texture coordinates (default false)
+   * @returns GLB content as Uint8Array, or undefined on failure
+   */
+  ExportDocumentToGltf(document: Handle_TDocStd_Document, meshDeflection: number, meshAngle: number, mergeFaces: boolean, forceUVExport: boolean): Uint8Array | undefined;
+
+  // =====================================================================================
+  // DOCUMENT-BASED QUERY FUNCTIONS
+  // These functions take a document handle directly and do not use global storage.
+  // =====================================================================================
+
+  /**
+   * Get all parts and assemblies in a document.
+   * @param document - Document handle from BuildAssemblyDocument or LoadStepToDoc
+   * @returns JSON string with array of part info objects
+   */
+  GetDocumentPartsFromDoc(document: Handle_TDocStd_Document): string;
+
+  /**
+   * Get a shape from a label in a document.
+   * @param document - Document handle
+   * @param label - Label string (e.g., "0:1:1:1")
+   * @returns Shape at the label
+   */
+  GetShapeFromDocLabel(document: Handle_TDocStd_Document, label: string): TopoDS_Shape;
+
+  /**
+   * Get the color of a label in a document.
+   * @param document - Document handle
+   * @param label - Label string
+   * @returns JSON string with color info: { hasColor, r, g, b, a }
+   */
+  GetDocLabelColor(document: Handle_TDocStd_Document, label: string): string;
+
+  /**
+   * Get the transform of a label in a document.
+   * @param document - Document handle
+   * @param label - Label string
+   * @returns JSON string with transform info: { matrix, translation, quaternion, scale }
+   */
+  GetDocLabelTransform(document: Handle_TDocStd_Document, label: string): string;
+
+  /**
+   * Get detailed info about a label in a document.
+   * @param document - Document handle
+   * @param label - Label string
+   * @returns JSON string with label info: { label, name, type, isAssembly, children, etc. }
+   */
+  GetDocLabelInfo(document: Handle_TDocStd_Document, label: string): string;
+
+  /**
+   * Get full assembly hierarchy from a document.
+   * @param document - Document handle
+   * @returns JSON string with hierarchy: { nodes: [...] }
+   */
+  GetDocAssemblyHierarchy(document: Handle_TDocStd_Document): string;
+
+  /**
+   * Set color on a label in a document.
+   * @param document - Document handle
+   * @param label - Label string
+   * @param r - Red component (0-1)
+   * @param g - Green component (0-1)
+   * @param b - Blue component (0-1)
+   * @param a - Alpha component (0-1)
+   * @returns true on success
+   */
+  SetDocLabelColor(document: Handle_TDocStd_Document, label: string, r: number, g: number, b: number, a: number): boolean;
+
+  /**
+   * Set name on a label in a document.
+   * @param document - Document handle
+   * @param label - Label string
+   * @param name - New name
+   * @returns true on success
+   */
+  SetDocLabelName(document: Handle_TDocStd_Document, label: string, name: string): boolean;
+
+  /**
+   * Load STEP data and return document handle directly.
+   * Supports both regular STEP and gzip-compressed STEP-Z.
+   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
+   * @returns Document handle. Call IsNull() to check for errors. Caller manages lifetime.
+   */
+  LoadStepToDoc(stepData: Uint8Array): Handle_TDocStd_Document;
+
   // BRep Builder
   BRep_Builder: BRep_Builder_Constructor;
 
@@ -519,14 +891,25 @@ export interface BitbybitOcctModule {
   // Browser-based STEP/IGES/BREP I/O
   // ==========================================================================
   // These functions work with strings for in-browser file operations
+  // Compressed files (STEP-Z, gzip IGES) are automatically detected and decompressed
   
-  /** Read STEP file content from string (in-memory operation for browser) */
+  /**
+   * Read STEP file content from string (in-memory operation for browser).
+   * Automatically detects and decompresses STEP-Z (.stpz) gzip-compressed files.
+   * @param stepContent STEP file content as string (supports gzip-compressed STEP-Z)
+   * @returns The shape read from STEP, or null shape on failure
+   */
   ReadSTEPFromString(stepContent: string): TopoDS_Shape;
   
   /** Write shape to STEP format string (returns STEP file content) */
   WriteSTEPToString(shape: TopoDS_Shape): string;
   
-  /** Read IGES file content from string */
+  /**
+   * Read IGES file content from string (in-memory operation for browser).
+   * Automatically detects and decompresses gzip-compressed IGES files (.igz, .igs.gz).
+   * @param igesContent IGES file content as string (supports gzip-compressed)
+   * @returns The shape read from IGES, or null shape on failure
+   */
   ReadIGESFromString(igesContent: string): TopoDS_Shape;
   
   /** Write shape to IGES format string */
@@ -1219,6 +1602,166 @@ export interface BitbybitOcctModule {
   
   /** std::vector<int> for C++ interop */
   VectorInt: VectorInt_Constructor;
+
+  // ==========================================================================
+  // Assembly Parsing Helper Types (Extended XCAF Support)
+  // ==========================================================================
+  
+  /** FaceTriangulationInfo value object for face->triangle mapping */
+  FaceTriangulationInfo: FaceTriangulationInfo;
+  
+  /** SubShapeInfo value object for labeled sub-shapes */
+  SubShapeInfo: SubShapeInfo;
+  
+  /** PartDefinitionInfo value object for part definition data */
+  PartDefinitionInfo: PartDefinitionInfo;
+  
+  /** std::vector<FaceTriangulationInfo> for C++ interop */
+  VectorFaceTriangulationInfo: VectorFaceTriangulationInfo_Constructor;
+  
+  /** std::vector<SubShapeInfo> for C++ interop */
+  VectorSubShapeInfo: VectorSubShapeInfo_Constructor;
+
+  // ==========================================================================
+  // XCAFDoc_ShapeTool Extended Static Methods
+  // ==========================================================================
+  
+  /**
+   * Get sub-shapes labels for a shape label
+   * @param L The shape label
+   * @param Labels Output sequence of sub-shape labels
+   * @returns True if sub-shapes were found
+   */
+  XCAFDoc_ShapeTool_GetSubShapes(L: TDF_Label, Labels: TDF_LabelSequence): boolean;
+  
+  /**
+   * Check if label represents a sub-shape
+   * @param L The label to check
+   * @returns True if label is a sub-shape
+   */
+  XCAFDoc_ShapeTool_IsSubShape(L: TDF_Label): boolean;
+  
+  /**
+   * Check if label represents a compound shape
+   * @param L The label to check
+   * @returns True if label is a compound
+   */
+  XCAFDoc_ShapeTool_IsCompound(L: TDF_Label): boolean;
+  
+  /**
+   * Check if label is free (not used by any assembly)
+   * @param L The label to check
+   * @returns True if label is free
+   */
+  XCAFDoc_ShapeTool_IsFree(L: TDF_Label): boolean;
+  
+  /**
+   * Get users (assemblies) that reference a shape
+   * @param L The shape label
+   * @param Labels Output sequence of user labels
+   * @param getSubChilds Whether to include sub-children
+   * @returns Number of users found
+   */
+  XCAFDoc_ShapeTool_GetUsers(L: TDF_Label, Labels: TDF_LabelSequence, getSubChilds: boolean): number;
+  
+  /**
+   * Find sub-shape label within a parent shape
+   * @param theTool The shape tool instance
+   * @param shapeL The parent shape label
+   * @param sub The sub-shape to find
+   * @param L Output label for the found sub-shape
+   * @returns True if sub-shape was found
+   */
+  XCAFDoc_ShapeTool_FindSubShape(theTool: XCAFDoc_ShapeTool, shapeL: TDF_Label, sub: TopoDS_Shape, L: TDF_Label): boolean;
+  
+  /**
+   * Add sub-shape label to a parent shape
+   * @param theTool The shape tool instance
+   * @param shapeL The parent shape label
+   * @param sub The sub-shape to add
+   * @returns The created label for the sub-shape
+   */
+  XCAFDoc_ShapeTool_AddSubShape(theTool: XCAFDoc_ShapeTool, shapeL: TDF_Label, sub: TopoDS_Shape): TDF_Label;
+  
+  /**
+   * Find main (parent) shape that contains a sub-shape
+   * @param theTool The shape tool instance
+   * @param sub The sub-shape
+   * @returns The label of the main shape
+   */
+  XCAFDoc_ShapeTool_FindMainShape(theTool: XCAFDoc_ShapeTool, sub: TopoDS_Shape): TDF_Label;
+
+  // ==========================================================================
+  // Assembly Parsing Helper Functions
+  // ==========================================================================
+  
+  /**
+   * Get part definition info for a label
+   * @param L The label to get info for
+   * @returns PartDefinitionInfo with label metadata
+   */
+  GetPartDefinitionInfo(L: TDF_Label): PartDefinitionInfo;
+  
+  /**
+   * Get face triangulation mapping for a shape.
+   * Returns a vector of FaceTriangulationInfo with face->triangle index mapping.
+   * This is useful for face selection - mapping picked triangles back to faces.
+   * @param theShape The shape to get face triangulation mapping for
+   * @returns Vector of FaceTriangulationInfo
+   */
+  GetFaceTriangulationMapping(theShape: TopoDS_Shape): VectorFaceTriangulationInfo;
+  
+  /**
+   * Get labeled sub-shapes with their colors
+   * @param shapeL The parent shape label
+   * @param shapeTool The shape tool instance
+   * @param colorTool The color tool instance
+   * @returns Vector of SubShapeInfo
+   */
+  GetLabeledSubShapes(shapeL: TDF_Label, shapeTool: XCAFDoc_ShapeTool, colorTool: XCAFDoc_ColorTool): VectorSubShapeInfo;
+  
+  /**
+   * Get surface type name for a face (plane, cylinder, cone, sphere, torus, bspline, etc.)
+   * @param theFace The face to get surface type for
+   * @returns Surface type string: "plane", "cylinder", "cone", "sphere", "torus", 
+   *          "bspline", "bezier", "revolution", "extrusion", "offset", "trimmed", "other", or "unknown"
+   */
+  GetFaceSurfaceType(theFace: TopoDS_Face): string;
+  
+  /**
+   * Count faces in a shape
+   * @param theShape The shape to count faces in
+   * @returns Number of faces
+   */
+  CountFaces(theShape: TopoDS_Shape): number;
+  
+  /**
+   * Count edges in a shape
+   * @param theShape The shape to count edges in
+   * @returns Number of edges
+   */
+  CountEdges(theShape: TopoDS_Shape): number;
+  
+  /**
+   * Count vertices in a shape
+   * @param theShape The shape to count vertices in
+   * @returns Number of vertices
+   */
+  CountVertices(theShape: TopoDS_Shape): number;
+  
+  /**
+   * Count solids in a shape
+   * @param theShape The shape to count solids in
+   * @returns Number of solids
+   */
+  CountSolids(theShape: TopoDS_Shape): number;
+  
+  /**
+   * Get entry string for a label (hierarchical address like "0:1:1:2")
+   * @param L The label to get entry for
+   * @returns Entry string
+   */
+  GetLabelEntry(L: TDF_Label): string;
 }
 
 // =============================================================================
@@ -1256,6 +1799,100 @@ export interface VectorInt {
 
 export interface VectorInt_Constructor {
   new(): VectorInt;
+}
+
+// =============================================================================
+// Assembly Parsing Value Objects (Extended XCAF Support)
+// =============================================================================
+
+/**
+ * Face triangulation mapping info - maps faces to their triangles in mesh data.
+ * This is essential for face selection: when a user picks a triangle,
+ * this mapping allows finding which face it belongs to.
+ */
+export interface FaceTriangulationInfo {
+  /** Zero-based index of the face in TopExp_Explorer order */
+  readonly faceIndex: number;
+  /** Start index of triangles for this face in the mesh triangle array */
+  readonly triangleStartIndex: number;
+  /** Number of triangles belonging to this face */
+  readonly triangleCount: number;
+  /** Start index of nodes for this face in the mesh vertex array */
+  readonly nodeStartIndex: number;
+  /** Number of nodes belonging to this face */
+  readonly nodeCount: number;
+}
+
+/**
+ * Labeled sub-shape information with color data.
+ * Used for sub-shapes that have explicit labels in XCAF (faces/edges with colors, etc.)
+ */
+export interface SubShapeInfo {
+  /** Zero-based index of the sub-shape */
+  readonly index: number;
+  /** Tag of the TDF_Label for this sub-shape */
+  readonly labelTag: number;
+  /** Shape type: "vertex", "edge", "wire", "face", "shell", "solid", "compound", or "unknown" */
+  readonly shapeType: string;
+  /** Whether this sub-shape has an explicit color assigned */
+  readonly hasColor: boolean;
+  /** Red component of the color (0-1) */
+  readonly colorR: number;
+  /** Green component of the color (0-1) */
+  readonly colorG: number;
+  /** Blue component of the color (0-1) */
+  readonly colorB: number;
+  /** Alpha component of the color (0-1) */
+  readonly colorA: number;
+}
+
+/**
+ * Part definition info - metadata about a shape label in XCAF.
+ * Used to determine the type of node during assembly tree traversal.
+ */
+export interface PartDefinitionInfo {
+  /** Tag of the TDF_Label */
+  readonly labelTag: number;
+  /** Name attribute of the label (if present) */
+  readonly name: string;
+  /** True if this label represents an assembly (has components) */
+  readonly isAssembly: boolean;
+  /** True if this label is a reference to another shape */
+  readonly isReference: boolean;
+  /** True if this label represents a simple shape (not assembly, not reference) */
+  readonly isSimpleShape: boolean;
+  /** True if the shape is a compound */
+  readonly isCompound: boolean;
+  /** Number of components (children) for assemblies */
+  readonly nbComponents: number;
+}
+
+/**
+ * std::vector<FaceTriangulationInfo> wrapper for face triangulation mapping results
+ */
+export interface VectorFaceTriangulationInfo {
+  size(): number;
+  get(index: number): FaceTriangulationInfo;
+  push_back(value: FaceTriangulationInfo): void;
+  delete(): void;
+}
+
+export interface VectorFaceTriangulationInfo_Constructor {
+  new(): VectorFaceTriangulationInfo;
+}
+
+/**
+ * std::vector<SubShapeInfo> wrapper for labeled sub-shapes results
+ */
+export interface VectorSubShapeInfo {
+  size(): number;
+  get(index: number): SubShapeInfo;
+  push_back(value: SubShapeInfo): void;
+  delete(): void;
+}
+
+export interface VectorSubShapeInfo_Constructor {
+  new(): VectorSubShapeInfo;
 }
 
 // =============================================================================
