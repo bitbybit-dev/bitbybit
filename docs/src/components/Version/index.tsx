@@ -2,7 +2,7 @@ import React, { type ReactNode } from "react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 interface VersionProps {
-    /** Optional prefix to add before the version (e.g., "v" for "v1.0.0-rc.0") */
+    /** Optional prefix to add before the version (e.g., "v" for "v1.0.0-rc.1") */
     prefix?: string;
     /** Optional suffix to add after the version */
     suffix?: string;
@@ -12,8 +12,8 @@ interface VersionProps {
  * A component that displays the current Bitbybit version from package.json.
  * 
  * Usage in MDX files:
- * - Just the version: <Version />  → "1.0.0-rc.0"
- * - With v prefix: <Version prefix="v" />  → "v1.0.0-rc.0"
+ * - Just the version: <Version />  → "1.0.0-rc.1"
+ * - With v prefix: <Version prefix="v" />  → "v1.0.0-rc.1"
  * - In a link: [Download](https://example.com/<Version prefix="v" />/file.md)
  */
 export default function Version({ prefix = "", suffix = "" }: VersionProps): ReactNode {

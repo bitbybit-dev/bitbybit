@@ -16,6 +16,11 @@ export interface PreviewCSVInterface {
     hidden?: boolean;
 }
 
+export interface PreviewAssemblyHierarchyInterface {
+    data: any;
+    hidden?: boolean;
+}
+
 export class ContextBase {
     blocklyWorkspace: any;
     verb: any;
@@ -27,6 +32,7 @@ export class ContextBase {
     promptPrint: (prompt: PrintSaveInterface) => void;
     promptPreviewData: (data: PreviewDataInterface) => void;
     promptPreviewCSV: (data: PreviewCSVInterface) => void;
+    promptPreviewAssemblyHierarchy: (data: PreviewAssemblyHierarchyInterface) => void;
 
     rerenderScene: () => void;
     tolerance = 0.00001;

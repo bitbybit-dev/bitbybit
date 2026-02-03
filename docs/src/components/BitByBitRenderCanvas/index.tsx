@@ -64,7 +64,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     const canvasContainerRef = useRef<HTMLDivElement>(null);
     const uniqueId = useId();
     const { siteConfig } = useDocusaurusContext();
-    const defaultVersion = siteConfig.customFields?.bitbybitVersion as string || "1.0.0-rc.0";
+    const defaultVersion = siteConfig.customFields?.bitbybitVersion as string || "1.0.0-rc.1";
 
     const [isIframeReady, setIsIframeReady] = useState(false);
     const [loadIframe, setLoadIframe] = useState(!requireManualStart);

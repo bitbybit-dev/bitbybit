@@ -391,7 +391,7 @@ async function main(): Promise<void> {
     program
         .name("@bitbybit-dev/create-app")
         .description("Scaffold a new Bit By Bit Developers 3D/CAD project")
-        .version("1.0.0-rc.0")
+        .version("1.0.0-rc.1")
         .argument("[project-name]", "Name of the project to create")
         .option("-e, --engine <engine>", "Game engine to use (threejs, babylonjs, playcanvas)")
         .option("-o, --occt-architecture <arch>", "OCCT worker architecture (32, 64, 64-mt). Default: 32")

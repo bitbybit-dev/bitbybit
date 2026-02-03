@@ -1,20 +1,23 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "@bitbybit-dev/base";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
+import * as Models from "../models"
 
 export namespace OCCT {
 
-    export type GeomCurvePointer = { hash: number, type: string };
-    export type Geom2dCurvePointer = { hash: number, type: string };
-    export type GeomSurfacePointer = { hash: number, type: string };
-    export type TopoDSVertexPointer = { hash: number, type: string };
-    export type TopoDSEdgePointer = { hash: number, type: string };
-    export type TopoDSWirePointer = { hash: number, type: string };
-    export type TopoDSFacePointer = { hash: number, type: string };
-    export type TopoDSShellPointer = { hash: number, type: string };
-    export type TopoDSSolidPointer = { hash: number, type: string };
-    export type TopoDSCompSolidPointer = { hash: number, type: string };
-    export type TopoDSCompoundPointer = { hash: number, type: string };
+    export type GeomCurvePointer = { hash: number, type: "occ-shape" };
+    export type Geom2dCurvePointer = { hash: number, type: "occ-shape" };
+    export type GeomSurfacePointer = { hash: number, type: "occ-shape" };
+    export type TopoDSVertexPointer = { hash: number, type: "occ-shape" };
+    export type TopoDSEdgePointer = { hash: number, type: "occ-shape" };
+    export type TopoDSWirePointer = { hash: number, type: "occ-shape" };
+    export type TopoDSFacePointer = { hash: number, type: "occ-shape" };
+    export type TopoDSShellPointer = { hash: number, type: "occ-shape" };
+    export type TopoDSSolidPointer = { hash: number, type: "occ-shape" };
+    export type TopoDSCompSolidPointer = { hash: number, type: "occ-shape" };
+    export type TopoDSCompoundPointer = { hash: number, type: "occ-shape" };
+
+    export type TDocStdDocumentPointer = { hash: number, type: "occ-entity" };
 
     export type TopoDSShapePointer = TopoDSVertexPointer | TopoDSEdgePointer | TopoDSWirePointer | TopoDSFacePointer | TopoDSShellPointer | TopoDSSolidPointer | TopoDSCompoundPointer;
 
@@ -6279,6 +6282,11 @@ export namespace OCCT {
          */
         adjustZtoY = true;
     }
+
+    /**
+     * Options for loading STEP or IGES files.
+     * Accepts text content (string) for plain files, or binary content (ArrayBuffer) for compressed files.
+     */
     export class LoadStepOrIgesDto {
         constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean) {
             if (filetext !== undefined) { this.filetext = filetext; }
@@ -6286,21 +6294,801 @@ export namespace OCCT {
             if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
         }
         /**
-         * File text
+         * File content:
+         * - string: for plain text files (.step, .stp, .iges, .igs)
+         * - ArrayBuffer: for compressed files (.stpz, .igz)
          * @default undefined
          */
         filetext: string | ArrayBuffer;
         /**
-         * File name
-         * @default shape.igs
+         * File name (used to determine file type)
+         * @default shape.step
          */
-        fileName = "shape.igs";
+        fileName = "shape.step";
         /**
          * Adjusts models that use Z coordinate as up to Y up system.
          * @default true
          */
         adjustZtoY = true;
     }
+
+    /**
+     * Options for parsing STEP assemblies to JSON using native C++ XCAF traversal.
+     * This is the fast, native approach that runs entirely in C++.
+     */
+    export class ParseStepAssemblyToJsonDto {
+        constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
+            if (stepData !== undefined) { this.stepData = stepData; }
+        }
+        /**
+         * STEP data as string (for plain text files), ArrayBuffer, Uint8Array, File, or Blob.
+         * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
+         * @default undefined
+         */
+        stepData: string | ArrayBuffer | Uint8Array | File | Blob;
+    }
+
+    /**
+     * Options for converting STEP to glTF format.
+     * Uses native OCCT RWGltf_CafWriter for fast conversion with full attribute preservation.
+     */
+    export class ConvertStepToGltfDto {
+        constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
+            if (stepData !== undefined) { this.stepData = stepData; }
+        }
+        /**
+         * STEP data as string (for plain text files), ArrayBuffer, Uint8Array, File, or Blob.
+         * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
+         * @default undefined
+         */
+        stepData: string | ArrayBuffer | Uint8Array | File | Blob;
+        /**
+         * Mesh precision (linear deflection) for triangulation.
+         * Smaller values produce finer meshes but increase file size.
+         * @default 0.1
+         * @minimum 0.001
+         * @maximum 10
+         * @step 0.01
+         */
+        meshPrecision = 0.1;
+    }
+
+    /**
+     * glTF node/mesh naming format options.
+     * Controls how node and mesh names are generated in the output glTF.
+     */
+    export enum gltfNameFormatEnum {
+        /** Omit the name */
+        empty = "empty",
+        /** Use product name (shared by multiple instances) */
+        product = "product",
+        /** Use instance name */
+        instance = "instance",
+        /** Use instance name, fall back to product name */
+        instanceOrProduct = "instanceOrProduct",
+        /** Use product name, fall back to instance name */
+        productOrInstance = "productOrInstance",
+        /** Use both product and instance names "Product [Instance]" */
+        productAndInstance = "productAndInstance",
+        /** Verbose naming combining Product+Instance+OCAF (for debugging) */
+        productAndInstanceAndOcaf = "productAndInstanceAndOcaf"
+    }
+
+    /**
+     * glTF transformation format options.
+     * Controls how node transformations are encoded in the output glTF.
+     */
+    export enum gltfTransformFormatEnum {
+        /** Compact format - uses TRS when possible, Mat4 otherwise */
+        compact = "compact",
+        /** Always use 4x4 matrix format */
+        mat4 = "mat4",
+        /** Always use Translation-Rotation-Scale format */
+        trs = "trs"
+    }
+
+    /**
+     * Advanced options for converting STEP to glTF format.
+     * Provides full control over STEP reading, meshing, and glTF export options.
+     * Use this for performance tuning - disable features you don't need.
+     */
+    export class ConvertStepToGltfAdvancedDto {
+        constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
+            if (stepData !== undefined) { this.stepData = stepData; }
+        }
+
+        /**
+         * STEP data as string (for plain text files), ArrayBuffer, Uint8Array, File, or Blob.
+         * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
+         * @default undefined
+         */
+        stepData: string | ArrayBuffer | Uint8Array | File | Blob;
+
+        // ==================== STEP Reading Options ====================
+
+        /**
+         * Read color attributes from STEP file.
+         * Required for colored glTF output.
+         * @default true
+         */
+        readColors = true;
+
+        /**
+         * Read name attributes from STEP file.
+         * Disable for faster parsing if names are not needed.
+         * @default true
+         */
+        readNames = true;
+
+        /**
+         * Read material attributes from STEP file.
+         * Required for material properties in glTF.
+         * @default true
+         */
+        readMaterials = true;
+
+        /**
+         * Read layer attributes from STEP file.
+         * Usually not needed for glTF output.
+         * @default false
+         */
+        readLayers = false;
+
+        /**
+         * Read validation properties from STEP file.
+         * Usually not needed for glTF output.
+         * @default false
+         */
+        readProps = false;
+
+        // ==================== Mesh Options ====================
+
+        /**
+         * Mesh precision (linear deflection) for triangulation.
+         * Smaller values produce finer meshes but increase file size.
+         * @default 0.1
+         * @minimum 0.001
+         * @maximum 10
+         * @step 0.01
+         */
+        meshDeflection = 0.1;
+
+        /**
+         * Mesh angular deflection in radians.
+         * Controls curvature-based refinement.
+         * @default 0.5
+         * @minimum 0.01
+         * @maximum 3.14159
+         * @step 0.1
+         */
+        meshAngle = 0.5;
+
+        /**
+         * Enable parallel meshing for multi-threaded builds.
+         * Recommended to keep enabled.
+         * @default true
+         */
+        meshParallel = true;
+
+        /**
+         * Face count threshold for adaptive meshing.
+         * Compounds with more faces are meshed per-solid to avoid stack overflow.
+         * Set to -1 to always mesh as single unit.
+         * @default 50000
+         * @minimum -1
+         * @maximum 500000
+         * @step 10000
+         */
+        faceCountThreshold = 50000;
+
+        // ==================== glTF Writer Options ====================
+
+        /**
+         * Merge faces within a single part into one mesh.
+         * Produces smaller file sizes.
+         * @default true
+         */
+        mergeFaces = true;
+
+        /**
+         * Prefer 16-bit indices when merging faces.
+         * Produces smaller binary data when mesh fits in 16-bit indices.
+         * @default true
+         */
+        splitIndices16 = true;
+
+        /**
+         * Enable parallel glTF writing.
+         * Recommended for large files.
+         * @default true
+         */
+        parallelWrite = true;
+
+        /**
+         * Embed textures in GLB output.
+         * Only applies to binary (GLB) format.
+         * @default true
+         */
+        embedTextures = true;
+
+        /**
+         * Export UV coordinates even without textures.
+         * @default false
+         */
+        forceUVExport = false;
+
+        /**
+         * Node naming format in output glTF.
+         * @default instance
+         */
+        nodeNameFormat: gltfNameFormatEnum = gltfNameFormatEnum.instance;
+
+        /**
+         * Mesh naming format in output glTF.
+         * @default instance
+         */
+        meshNameFormat: gltfNameFormatEnum = gltfNameFormatEnum.instance;
+
+        /**
+         * Transformation format in output glTF.
+         * @default compact
+         */
+        transformFormat: gltfTransformFormatEnum = gltfTransformFormatEnum.compact;
+
+        // ==================== Coordinate System Options ====================
+
+        /**
+         * Convert Z-up (OCCT default) to Y-up (glTF standard).
+         * Set to false to keep Z-up coordinate system.
+         * @default true
+         */
+        adjustZtoY = true;
+
+        /**
+         * Scale factor for the model.
+         * Useful for unit conversion (e.g., 0.001 to convert mm to meters).
+         * Set to 1.0 for no scaling.
+         * @default 1.0
+         * @minimum 0.000001
+         * @maximum 1000000
+         * @step 0.001
+         */
+        scale = 1.0;
+    }
+
+    // =====================================================
+    // Document-based Assembly API DTOs
+    // These DTOs work with document handles directly instead of docId strings.
+    // The caller is responsible for managing document lifetime via document.delete().
+    // =====================================================
+
+    /**
+     * DTO for building an assembly document.
+     * Returns a document handle that the caller manages.
+     * @typeParam T - Shape type (TopoDS_Shape or pointer)
+     * @typeParam D - Document type (Handle_TDocStd_Document or pointer)
+     */
+    export class BuildAssemblyDocumentDto<T, D> {
+        constructor(structure?: Models.OCCT.AssemblyStructureDef<T>, existingDocument?: D) {
+            if (structure !== undefined) { this.structure = structure; }
+            if (existingDocument !== undefined) { this.existingDocument = existingDocument; }
+        }
+        /**
+         * Assembly structure definition with parts and nodes
+         * @default undefined
+         */
+        structure: Models.OCCT.AssemblyStructureDef<T>;
+        /**
+         * Optional existing document handle to reuse.
+         * If provided and valid, the document will be cleared and updated instead of creating a new one.
+         * This is useful for updating an assembly without creating a new document each time.
+         * @default undefined
+         * @optional true
+         */
+        existingDocument?: D;
+    }
+
+    /**
+     * DTO for creating a single assembly part definition.
+     * Use this in visual programming to define a part that can be instanced.
+     */
+    export class CreateAssemblyPartDto<T> {
+        constructor(
+            id?: string,
+            shape?: T,
+            name?: string,
+            colorRgba?: Base.ColorRGBA
+        ) {
+            if (id !== undefined) { this.id = id; }
+            if (shape !== undefined) { this.shape = shape; }
+            if (name !== undefined) { this.name = name; }
+            if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+        }
+        /**
+         * Unique identifier for referencing this part in nodes
+         * @default undefined
+         */
+        id: string;
+        /**
+         * The shape for this part
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Display name for the part (appears in STEP file and viewers)
+         * @default undefined
+         */
+        name: string;
+        /**
+         * Optional color for the part (RGBA, values 0-1)
+         * @default {"r":0.5,"g":0.5,"b":0.5,"a":1}
+         * @min 0
+         * @max 1
+         */
+        colorRgba?: Base.ColorRGBA;
+    }
+
+    /**
+     * DTO for creating an assembly node (container for other nodes).
+     * Assembly nodes group instances and other assemblies together.
+     */
+    export class CreateAssemblyNodeDto {
+        constructor(
+            id?: string,
+            name?: string,
+            parentId?: string,
+            colorRgba?: Base.ColorRGBA
+        ) {
+            if (id !== undefined) { this.id = id; }
+            if (name !== undefined) { this.name = name; }
+            if (parentId !== undefined) { this.parentId = parentId; }
+            if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+        }
+        /**
+         * Unique identifier for this assembly node
+         * @default undefined
+         */
+        id: string;
+        /**
+         * Display name for the assembly
+         * @default undefined
+         */
+        name: string;
+        /**
+         * Parent node ID. Leave undefined for root level assembly.
+         * @default undefined
+         */
+        parentId?: string;
+        /**
+         * Optional color for the assembly
+         * @default {"r":0.5,"g":0.5,"b":0.5,"a":1}
+         * @min 0
+         * @max 1
+         */
+        colorRgba?: Base.ColorRGBA = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
+    }
+
+    /**
+     * DTO for creating an instance node (reference to a part with transform).
+     * Instance nodes place a part at a specific location with optional transform.
+     */
+    export class CreateInstanceNodeDto {
+        constructor(
+            id?: string,
+            partId?: string,
+            name?: string,
+            parentId?: string,
+            translation?: Base.Point3,
+            rotation?: Base.Vector3,
+            scale?: number,
+            colorRgba?: Base.ColorRGBA
+        ) {
+            if (id !== undefined) { this.id = id; }
+            if (partId !== undefined) { this.partId = partId; }
+            if (name !== undefined) { this.name = name; }
+            if (parentId !== undefined) { this.parentId = parentId; }
+            if (translation !== undefined) { this.translation = translation; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (scale !== undefined) { this.scale = scale; }
+            if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+        }
+        /**
+         * Unique identifier for this instance node
+         * @default undefined
+         */
+        id: string;
+        /**
+         * ID of the part to instance (must match a part's id)
+         * @default undefined
+         */
+        partId: string;
+        /**
+         * Display name for this instance
+         * @default undefined
+         */
+        name: string;
+        /**
+         * Parent assembly node ID. Leave undefined for root level.
+         * @default undefined
+         */
+        parentId?: string;
+        /**
+         * Translation as [x, y, z]
+         * @default [0, 0, 0]
+         */
+        translation?: Base.Point3 = [0, 0, 0];
+        /**
+         * Rotation as [rx, ry, rz] in degrees (Euler ZYX order)
+         * @default [0, 0, 0]
+         */
+        rotation?: Base.Vector3 = [0, 0, 0];
+        /**
+         * Uniform scale factor
+         * @default 1.0
+         */
+        scale? = 1.0;
+        /**
+         * Optional color override for this instance
+         * @default undefined
+         */
+        colorRgba?: Base.ColorRGBA;
+    }
+
+    /**
+     * DTO for creating a part update definition.
+     * Part updates specify changes to apply to existing parts in a document.
+     */
+    export class CreatePartUpdateDto<T> {
+        constructor(
+            label?: string,
+            shape?: T,
+            name?: string,
+            colorRgba?: Base.ColorRGBA
+        ) {
+            if (label !== undefined) { this.label = label; }
+            if (shape !== undefined) { this.shape = shape; }
+            if (name !== undefined) { this.name = name; }
+            if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+        }
+        /**
+         * Label of the existing part to update (e.g., "0:1:1:1").
+         * Obtain this from document queries like getDocumentParts.
+         * @default undefined
+         */
+        label: string;
+        /**
+         * New shape to replace the existing shape.
+         * If undefined, the shape is not changed.
+         * @default undefined
+         */
+        shape?: T;
+        /**
+         * New name for the part.
+         * If undefined, the name is not changed.
+         * @default undefined
+         */
+        name?: string;
+        /**
+         * New color for the part.
+         * If undefined, the color is not changed.
+         * @default undefined
+         */
+        colorRgba?: Base.ColorRGBA;
+    }
+
+    /**
+     * DTO for combining parts and nodes into an assembly structure.
+     * Use this as the final step to create a complete structure definition.
+     * 
+     * For updating existing documents:
+     * - Use `removals` to specify labels to remove
+     * - Use `partUpdates` to update existing parts (shape, name, color)
+     */
+    export class CombineAssemblyStructureDto<T> {
+        constructor(
+            parts?: Models.OCCT.AssemblyPartDef<T>[],
+            nodes?: Models.OCCT.AssemblyNodeDef[],
+            removals?: string[],
+            partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[],
+            clearDocument?: boolean
+        ) {
+            if (parts !== undefined) { this.parts = parts; }
+            if (nodes !== undefined) { this.nodes = nodes; }
+            if (removals !== undefined) { this.removals = removals; }
+            if (partUpdates !== undefined) { this.partUpdates = partUpdates; }
+            if (clearDocument !== undefined) { this.clearDocument = clearDocument; }
+        }
+        /**
+         * List of part definitions (shapes that can be instanced)
+         * @default []
+         */
+        parts: Models.OCCT.AssemblyPartDef<T>[] = [];
+        /**
+         * List of node definitions (assemblies and instances)
+         * @default []
+         */
+        nodes: Models.OCCT.AssemblyNodeDef[] = [];
+        /**
+         * Labels to remove from existing document.
+         * Can be part labels, instance labels, or assembly labels.
+         * Ignored when creating a new document (no existingDocument provided).
+         * @default undefined
+         */
+        removals?: string[];
+        /**
+         * Updates to apply to existing parts in the document.
+         * Each update can change the shape, name, and/or color of a part.
+         * Ignored when creating a new document (no existingDocument provided).
+         * @default undefined
+         */
+        partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[];
+        /**
+         * Whether to clear the existing document before adding new content.
+         * Only relevant when an existingDocument is provided to buildAssemblyDocument.
+         * 
+         * - `true`: Clear all existing shapes, then add new parts/nodes (full rebuild)
+         * - `false`: Keep existing shapes, apply removals/updates, add new parts/nodes (incremental)
+         * 
+         * @default false
+         */
+        clearDocument = false;
+    }
+
+    /**
+     * DTO for setting the color of a label in a document.
+     * Takes the document handle directly instead of docId.
+     */
+    export class SetDocLabelColorDto<T> {
+        constructor(
+            document?: T,
+            label?: string,
+            r?: number,
+            g?: number,
+            b?: number,
+            a?: number
+        ) {
+            if (document !== undefined) { this.document = document; }
+            if (label !== undefined) { this.label = label; }
+            if (r !== undefined) { this.r = r; }
+            if (g !== undefined) { this.g = g; }
+            if (b !== undefined) { this.b = b; }
+            if (a !== undefined) { this.a = a; }
+        }
+        /**
+         * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+         * @default undefined
+         */
+        document: T;
+        /**
+         * Label of the part/instance to color
+         * @default undefined
+         */
+        label: string;
+        /**
+         * Red component (0.0 - 1.0)
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.01
+         */
+        r = 0.5;
+        /**
+         * Green component (0.0 - 1.0)
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.01
+         */
+        g = 0.5;
+        /**
+         * Blue component (0.0 - 1.0)
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.01
+         */
+        b = 0.5;
+        /**
+         * Alpha component (0.0 - 1.0, 1.0 = opaque)
+         * @default 1.0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.01
+         */
+        a = 1.0;
+    }
+
+    /**
+     * DTO for setting the name of a label in a document.
+     * Takes the document handle directly instead of docId.
+     */
+    export class SetDocLabelNameDto<T> {
+        constructor(document?: T, label?: string, name?: string) {
+            if (document !== undefined) { this.document = document; }
+            if (label !== undefined) { this.label = label; }
+            if (name !== undefined) { this.name = name; }
+        }
+        /**
+         * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+         * @default undefined
+         */
+        document: T;
+        /**
+         * Label to rename
+         * @default undefined
+         */
+        label: string;
+        /**
+         * New name
+         * @default Renamed
+         */
+        name = "Renamed";
+    }
+
+    /**
+     * DTO for querying a document (e.g., get parts, hierarchy).
+     * Takes the document handle directly.
+     */
+    export class DocumentQueryDto<T> {
+        constructor(document?: T) {
+            if (document !== undefined) { this.document = document; }
+        }
+        /**
+         * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+         * @default undefined
+         */
+        document: T;
+    }
+
+    /**
+     * DTO for querying a specific label in a document.
+     * Takes the document handle directly.
+     */
+    export class DocumentLabelQueryDto<T> {
+        constructor(document?: T, label?: string) {
+            if (document !== undefined) { this.document = document; }
+            if (label !== undefined) { this.label = label; }
+        }
+        /**
+         * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+         * @default undefined
+         */
+        document: T;
+        /**
+         * Label entry string (e.g., "0:1:1:1")
+         * @default undefined
+         */
+        label: string;
+    }
+
+    /**
+     * DTO for loading a STEP file and returning a document handle.
+     */
+    export class LoadStepToDocDto {
+        constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
+            if (stepData !== undefined) { this.stepData = stepData; }
+        }
+        /**
+         * STEP file content.
+         * Accepts string, ArrayBuffer, Uint8Array, File, or Blob.
+         * Supports both regular STEP and gzip-compressed STEP-Z.
+         * @default undefined
+         */
+        stepData: string | ArrayBuffer | Uint8Array | File | Blob;
+    }
+
+    /**
+     * DTO for exporting an assembly document to STEP format.
+     * Takes the document handle directly.
+     */
+    export class ExportDocumentToStepDto<T> {
+        constructor(
+            document?: T,
+            fileName?: string,
+            author?: string,
+            organization?: string,
+            compress?: boolean,
+            tryDownload?: boolean
+        ) {
+            if (document !== undefined) { this.document = document; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (author !== undefined) { this.author = author; }
+            if (organization !== undefined) { this.organization = organization; }
+            if (compress !== undefined) { this.compress = compress; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+         * @default undefined
+         */
+        document: T;
+        /**
+         * File name for the STEP header and download
+         * @default assembly.step
+         */
+        fileName = "assembly.step";
+        /**
+         * Author name for the STEP header (optional)
+         * @default Bitbybit user
+         */
+        author = "Bitbybit user";
+        /**
+         * Organization name for the STEP header (optional)
+         * @default Bitbybit
+         */
+        organization = "Bitbybit";
+        /**
+         * Whether to compress as STEP-Z (gzip)
+         * @default false
+         */
+        compress = false;
+        /**
+         * Whether to trigger a file download in the browser
+         * @default false
+         */
+        tryDownload = false;
+    }
+
+    /**
+     * DTO for exporting an assembly document directly to glTF (GLB) format.
+     * Takes the document handle directly.
+     */
+    export class ExportDocumentToGltfDto<T> {
+        constructor(
+            document?: T,
+            meshDeflection?: number,
+            meshAngle?: number,
+            mergeFaces?: boolean,
+            forceUVExport?: boolean,
+            fileName?: string,
+            tryDownload?: boolean
+        ) {
+            if (document !== undefined) { this.document = document; }
+            if (meshDeflection !== undefined) { this.meshDeflection = meshDeflection; }
+            if (meshAngle !== undefined) { this.meshAngle = meshAngle; }
+            if (mergeFaces !== undefined) { this.mergeFaces = mergeFaces; }
+            if (forceUVExport !== undefined) { this.forceUVExport = forceUVExport; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+         * @default undefined
+         */
+        document: T;
+        /**
+         * Mesh precision for triangulation. Lower values = finer mesh.
+         * @default 0.1
+         */
+        meshDeflection = 0.1;
+        /**
+         * Angular deflection for meshing in radians. Lower values = smoother curves.
+         * @default 0.5
+         */
+        meshAngle = 0.5;
+        /**
+         * Whether to merge faces with same material for optimization.
+         * Set to false to preserve face boundaries.
+         * @default false
+         */
+        mergeFaces = false;
+        /**
+         * Whether to export texture coordinates (UVs).
+         * @default false
+         */
+        forceUVExport = false;
+        /**
+         * File name for download (optional, should end with .glb)
+         * @default assembly.glb
+         */
+        fileName = "assembly.glb";
+        /**
+         * Whether to trigger a file download in the browser
+         * @default false
+         */
+        tryDownload = false;
+    }
+
     export class CompoundShapesDto<T> {
         constructor(shapes?: T[]) {
             if (shapes !== undefined) { this.shapes = shapes; }

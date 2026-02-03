@@ -147,4 +147,75 @@ export class Asset {
         this.assetManager.downloadFile(blob, inputs.fileName, inputs.extension, inputs.contentType);
     }
 
+    /**
+     * Converts a File or Blob to an ArrayBuffer.
+     * @param inputs file or blob to convert
+     * @returns ArrayBuffer
+     * @group convert
+     * @shortname to array buffer
+     */
+    async toArrayBuffer(inputs: Inputs.Asset.FileDto): Promise<ArrayBuffer> {
+        return await inputs.file.arrayBuffer();
+    }
+
+    /**
+     * Converts a File or Blob to a Uint8Array.
+     * @param inputs file or blob to convert
+     * @returns Uint8Array
+     * @group convert
+     * @shortname to uint8 array
+     */
+    async toUint8Array(inputs: Inputs.Asset.FileDto): Promise<Uint8Array> {
+        const buffer = await inputs.file.arrayBuffer();
+        return new Uint8Array(buffer);
+    }
+
+    /**
+     * Converts a Blob to a File.
+     * @param inputs blob, file name, and optional MIME type
+     * @returns File
+     * @group convert
+     * @shortname blob to file
+     */
+    blobToFile(inputs: Inputs.Asset.BlobToFileDto): File {
+        const type = inputs.mimeType ?? inputs.blob.type;
+        return new File([inputs.blob], inputs.fileName, { type });
+    }
+
+    /**
+     * Converts a File to a Blob.
+     * @param inputs file to convert
+     * @returns Blob
+     * @group convert
+     * @shortname file to blob
+     */
+    fileToBlob(inputs: Inputs.Asset.FileDto): Blob {
+        return inputs.file.slice(0, inputs.file.size, inputs.file.type);
+    }
+
+    /**
+     * Converts an ArrayBuffer to a Uint8Array.
+     * @param inputs ArrayBuffer to convert
+     * @returns Uint8Array
+     * @group convert
+     * @shortname array buffer to uint8 array
+     */
+    arrayBufferToUint8Array(inputs: Inputs.Asset.ArrayBufferToUint8ArrayDto): Uint8Array {
+        return new Uint8Array(inputs.arrayBuffer);
+    }
+
+    /**
+     * Converts a Uint8Array to an ArrayBuffer.
+     * @param inputs Uint8Array to convert
+     * @returns ArrayBuffer
+     * @group convert
+     * @shortname uint8 array to array buffer
+     */
+    uint8ArrayToArrayBuffer(inputs: Inputs.Asset.Uint8ArrayToArrayBufferDto): ArrayBuffer {
+        return inputs.uint8Array.buffer.slice(
+            inputs.uint8Array.byteOffset,
+            inputs.uint8Array.byteOffset + inputs.uint8Array.byteLength
+        ) as ArrayBuffer;
+    }
+
 }

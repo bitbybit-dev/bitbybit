@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/babylonjs": "1.0.0-rc.0",
+    "@bitbybit-dev/babylonjs": "1.0.0-rc.1",
     "lil-gui": "0.20.0"
   },
   "devDependencies": {

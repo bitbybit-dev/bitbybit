@@ -787,7 +787,7 @@ describe("OCCT io unit tests", () => {
         console.error = (msg: string) => { errorMessage = msg; };
         const result = io.loadSTEPorIGES({ filetext: "some content", fileName: "file.obj", adjustZtoY: false });
         expect(result).toBeUndefined();
-        expect(errorMessage).toBe("opencascade can't parse this extension! (yet)");
+        expect(errorMessage).toBe("opencascade can't parse this extension!");
         console.error = originalError;
     });
 });

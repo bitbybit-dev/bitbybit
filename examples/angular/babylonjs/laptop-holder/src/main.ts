@@ -300,25 +300,25 @@ export class App {
 
     async ngOnInit() {
         const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
-        
+
         this.engine = new Engine(canvas, true);
         this.engine.setHardwareScalingLevel(0.5);
         this.scene = new Scene(this.engine);
         this.scene.clearColor = new Color4(0.73, 0.73, 0.73, 1);
-        
+
         const camera = new ArcRotateCamera("Camera", 1.2, 1.0, 50, new Vector3(0, 11, 5), this.scene);
         camera.attachControl(canvas, true);
         camera.wheelPrecision = 30;
         camera.panningSensibility = 1000;
-        
+
         const light = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), this.scene);
         light.intensityMode = Light.INTENSITYMODE_ILLUMINANCE;
         light.intensity = 1;
-        
+
         const pointLight = new PointLight("PointLight", new Vector3(-15, 20, -5), this.scene);
         pointLight.intensity = 8000;
         pointLight.diffuse = new Color3(0.2, 0.2, 1);
-        
+
         this.scene.metadata = { shadowGenerators: [] };
 
         const options: InitBitByBitOptions = {
@@ -342,7 +342,7 @@ export class App {
         this.showSpinner.set(false);
         this.bitbybitInitialised.set(true);
         this.engine.resize();
-        
+
         this.laptopService = new LaptopLogic(this.bitbybit);
         await this.laptopService.do();
 
