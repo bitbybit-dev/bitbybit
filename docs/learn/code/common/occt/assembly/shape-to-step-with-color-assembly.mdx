@@ -1,8 +1,8 @@
 ---
 sidebar_position: 4
-title: "Shape With Color to STEP"
-sidebar_label: Shape with color to STEP
-description: Learn
+title: "Export Shapes with Color"
+sidebar_label: Shape with Color to STEP
+description: Export OCCT shapes to STEP files with preserved colors using the assembly document structure for CAD software compatibility.
 tags: [occt, assembly, step, gltf, cad]
 ---
 
@@ -10,7 +10,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 
-# OCCT Assembly Structure
+# Preserve Colors in STEP Exports
 
 <img 
   class="category-icon-small" 
@@ -18,9 +18,11 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
   alt="OCCT category icon with a stylized logo representation" 
   title="OCCT category icon" />
 
-## Preserving Colors
+Standard STEP files store only geometry — no color information. To preserve colors, you need to use the assembly document structure. This was one of our most requested features, and it's finally available!
 
-In order to preserve colors in your STEP files, you have to use assemblies. While fundamental, this was always one of the most requested features of our users, but it required full Assembly support in order to function properly. It's nice that it finally arrived.
+## Why Colors Require Assemblies
+
+The XCAF (Extended CAD Application Framework) format used by OCCT can embed colors into assembly structures. By wrapping shapes in an assembly with color-assigned instances, you ensure colors transfer correctly to other CAD applications.
 
 ## What These Scripts Do
 

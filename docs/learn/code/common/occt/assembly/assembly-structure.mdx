@@ -1,8 +1,8 @@
 ---
 sidebar_position: 3
-title: "Structure"
+title: "Parse Assembly Structure"
 sidebar_label: Structure
-description: Learn how to analyze the structure of assembly. Bitbybit probides dedicated preview components for Visual Programmers.
+description: Extract and navigate assembly hierarchy from STEP files - find part labels, retrieve shapes, and apply custom styling to individual components.
 tags: [occt, assembly, step, gltf, cad]
 ---
 
@@ -10,7 +10,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 
-# OCCT Assembly Structure
+# Navigate and Extract Assembly Parts
 
 <img 
   class="category-icon-small" 
@@ -18,11 +18,11 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
   alt="OCCT category icon with a stylized logo representation" 
   title="OCCT category icon" />
 
-Understanding assembly structure is essential when working with CAD models. Think of an assembly like a family tree for 3D parts - it shows how different components are organized and related to each other. Let's explore how to navigate this structure and extract the parts you need.
+When you need to access individual parts from a STEP file, understanding the assembly structure is key. This tutorial shows you how to explore the hierarchy, find specific parts using their labels, and render them with custom colors.
 
-## What is Assembly Structure?
+## How the Hierarchy Works
 
-When engineers design complex products (like machines, robots, or buildings), they don't create one giant 3D shape. Instead, they build **assemblies** - collections of individual parts organized in a hierarchy. Each part has:
+Assemblies organize parts in a tree structure. Each part has:
 
 - A **label** (like an address): `0:1:1:3` tells you exactly where the part lives in the structure
 - A **name**: Human-readable identifier like "Mounting Plate" or "Screw"

@@ -1,8 +1,8 @@
 ---
-sidebar_position: 4
-title: "Create Assembly"
+sidebar_position: 5
+title: "Build and Export Assemblies"
 sidebar_label: Creating Assembly
-description: Learn how to create OCCT assembly documents with parts, instances, and hierarchies. Export structured STEP files compatible with FreeCAD, Fusion 360, SolidWorks, and other CAD software.
+description: Create structured CAD assemblies with parts, instances, and hierarchies. Export STEP files compatible with FreeCAD, Fusion 360, and SolidWorks.
 tags: [occt, assembly, step, gltf, cad]
 ---
 
@@ -10,7 +10,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 
-# OCCT Assembly Structure
+# Build Multi-Part Assemblies from Scratch
 
 <img 
   class="category-icon-small" 
@@ -18,11 +18,11 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
   alt="OCCT category icon with a stylized logo representation" 
   title="OCCT category icon" />
 
-## What is an Assembly Document?
+This tutorial demonstrates how to create an assembly programmatically using parts and instances, then export it as a structured STEP file.
 
-An **assembly document** is a structured CAD file format that organizes your 3D model into a hierarchy of **parts** and **instances**. Unlike a flat shape export where all geometry is merged into a single blob, an assembly preserves the logical structure of your design.
+## Parts, Instances, and Nodes
 
-Think of it like building a car:
+An **assembly document** organizes your 3D model into a hierarchy:
 - **Parts** are the unique component designs (e.g., a wheel, a door, an engine)
 - **Instances** are the actual placements of those parts in your model (e.g., "put a wheel at each corner of the chassis")
 - **Assembly nodes** are containers that group related instances together (e.g., "the drivetrain" containing engine and transmission)

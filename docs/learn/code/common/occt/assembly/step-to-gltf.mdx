@@ -1,8 +1,8 @@
 ---
 sidebar_position: 2
-title: "STEP to GLTF"
+title: "Convert STEP to GLTF"
 sidebar_label: STEP to GLTF
-description: While displaying GLTF model is very useful, you can use Bitbybit browser based algorithms for conversions too. In this tutorial you'll learn how to do that.
+description: Convert STEP files to web-optimized GLTF/GLB format directly in the browser with privacy-preserving local processing.
 tags: [occt, assembly, step, gltf, cad]
 ---
 
@@ -10,7 +10,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 
-# Exporting GLTF files produced from STEP files
+# Export STEP Files to GLTF
 
 <img 
   class="category-icon-small" 
@@ -18,18 +18,11 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
   alt="OCCT category icon with a stylized logo representation" 
   title="OCCT category icon" />
 
-Converting STEP files to GLTF is one of the most practical operations you can perform with CAD data. This tutorial shows you how to transform engineering CAD files into web-friendly 3D formats - all running directly in your browser!
+This tutorial shows you how to convert STEP files to web-optimized GLTF/GLB format — with all processing happening directly in your browser.
 
-## Why Convert STEP to GLTF?
+## Why Export to GLTF?
 
-**STEP files** are the gold standard for exchanging CAD data between professional engineering software. They preserve exact geometry, assembly structure, colors, and metadata. However, they're not designed for web viewing.
-
-**GLTF (GL Transmission Format)** is the "JPEG of 3D" - a lightweight, web-optimized format that loads quickly in browsers, game engines, and 3D viewers. The binary version (**.glb**) packages everything into a single file.
-
-By converting STEP to GLTF, you get the best of both worlds:
-- ✅ Start with precise engineering data
-- ✅ End with a fast-loading web-ready model
-- ✅ Preserve colors and structure from the original CAD file
+STEP files preserve precise CAD geometry but aren't optimized for web viewing. GLTF (the "JPEG of 3D") loads quickly in browsers and 3D engines while preserving colors and structure from the original file.
 
 ## Browser-Based Conversion
 

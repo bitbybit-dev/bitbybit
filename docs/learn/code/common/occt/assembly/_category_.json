@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "OCCT Assembly",
-        "description": "Learn how to create OCCT assemblies and manage complex parts.",
+        "description": "Work with OCCT assemblies: load STEP files, export to GLTF, parse hierarchy, create multi-part models, and preserve colors for CAD visualization.",
         "slug": "/code/common/occt/assembly"
     }
 }
