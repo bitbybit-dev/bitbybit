@@ -43,6 +43,16 @@ occt:
   permalink: /occt
   description: Open CASCADE Technology (OCCT) is a kernel for 3D CAD, CAM, CAE, and more.
 
+step:
+  label: STEP
+  permalink: /step
+  description: STEP is a standard for the exchange of product model data, widely used in CAD applications.
+
+assembly:
+  label: Assembly
+  permalink: /assembly
+  description: Assembly is a category in Bitbybit OCCT kernel that deals with assembling multiple parts into a single model.
+
 vector:
   label: Vector
   permalink: /vector
