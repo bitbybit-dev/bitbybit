@@ -1,0 +1,108 @@
+---
+sidebar_position: 2
+title: "Convert STEP to GLTF"
+sidebar_label: STEP to GLTF
+description: Convert STEP files to web-optimized GLTF/GLB format directly in the browser with privacy-preserving local processing.
+tags: [occt, assembly, step, gltf, cad]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# Export STEP Files to GLTF
+
+<img 
+  class="category-icon-small" 
+  src="https://s.bitbybit.dev/assets/icons/white/occt-icon.svg" 
+  alt="OCCT category icon with a stylized logo representation" 
+  title="OCCT category icon" />
+
+This tutorial shows you how to convert STEP files to web-optimized GLTF/GLB format - with all processing happening directly in your browser.
+
+## Why Export to GLTF?
+
+STEP files preserve precise CAD geometry but aren't optimized for web viewing. GLTF (the "JPEG of 3D") loads quickly in browsers and 3D engines while preserving colors and structure from the original file.
+
+## Browser-Based Conversion
+
+All conversions happen **entirely in your browser** - no files are uploaded to any cloud servers. This has important implications:
+
+### Privacy Advantage
+Your CAD files never leave your computer. While you do need to use Bitbybit editors to run these conversions, your files are processed locally and are not uploaded to any cloud servers. This is critical for confidential engineering data, proprietary designs, or any situation where data privacy matters.
+
+:::tip Local File Storage
+If you cannot host your files on publicly accessible hosting providers, you can upload them to local browser storage instead. Learn more about this option in our [Local Assets guide](/learn/getting-started/basics/assets/local/intro).
+:::
+
+### Performance Considerations
+Since everything runs locally, conversion speed depends on your device's hardware. For most models, this works great. However, for large or complex STEP files, you may encounter memory limitations.
+
+:::warning Memory Limits for Large Models
+The standard 32-bit version of Bitbybit can use up to **2 GB of RAM**, which may not be enough for larger STEP files. If you're working with complex assemblies or high-detail models, consider using the **64-bit version** which supports up to **16 GB of RAM**. This makes a significant difference for industrial-scale CAD data.
+:::
+
+## The Conversion Process
+
+The workflow is simple:
+
+1. **Fetch the STEP file** - Download the compressed `.stpZ` file from a URL
+2. **Load into OCCT document** - Parse it using OpenCASCADE's assembly parser
+3. **Export to GLTF** - Convert the document to binary GLB format with automatic download
+
+## Export Settings Explained
+
+| Setting | Value | Purpose |
+|---------|-------|---------|
+| `meshDeflection` | 0.05 | Controls mesh accuracy - smaller = more triangles, higher quality |
+| `meshAngle` | 0.5 | Angular tolerance for curved surfaces (in radians) |
+| `mergeFaces` | false | Keep faces separate (useful for per-part coloring) |
+| `forceUVExport` | true | Include texture coordinates for future texturing |
+| `fileName` | "assembly.glb" | Output filename with `.glb` extension for binary format |
+| `tryDownload` | true | Automatically trigger browser download when complete |
+
+:::tip Mesh Quality vs. File Size
+Lower `meshDeflection` values create smoother, more accurate meshes but result in larger files. For web use, values between 0.01 and 0.1 usually provide a good balance. Start with 0.05 and adjust based on your needs.
+
+For **larger models**, use higher precision values (e.g., 0.1 or higher) to reduce mesh complexity, processing time, and output file size. This helps prevent memory issues and speeds up the conversion.
+:::
+
+<Tabs groupId="step-to-gltf-export">
+<TabItem value="rete-step-to-gltf-export" label="Rete">
+    <BitByBitRenderCanvas
+    requireManualStart={true}
+    script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"e0e94797745b9499\":{\"id\":\"e0e94797745b9499\",\"name\":\"bitbybit.asset.fetchFile\",\"customName\":\"fetch file\",\"async\":true,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"url\":\"https://learn.bitbybit.dev/files/3d/Soil-Sensor.stpZ\"},\"inputs\":{},\"position\":[447.0390625,364.58203125]},\"7985d5e3152d08c3\":{\"id\":\"7985d5e3152d08c3\",\"name\":\"bitbybit.occt.assembly.manager.exportDocumentToGltf\",\"customName\":\"export document to gltf\",\"async\":true,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"meshDeflection\":0.05,\"meshAngle\":0.5,\"mergeFaces\":false,\"forceUVExport\":true,\"fileName\":\"assembly.glb\",\"tryDownload\":true},\"inputs\":{\"document\":{\"connections\":[{\"node\":\"eec47f3f5ee010c6\",\"output\":\"result\",\"data\":{}}]}},\"position\":[1188.0355897483525,362.60328664485473]},\"eec47f3f5ee010c6\":{\"id\":\"eec47f3f5ee010c6\",\"name\":\"bitbybit.occt.assembly.manager.loadStepToDoc\",\"customName\":\"load step to doc\",\"async\":true,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false}},\"inputs\":{\"stepData\":{\"connections\":[{\"node\":\"e0e94797745b9499\",\"output\":\"result\",\"data\":{}}]}},\"position\":[814.4055721184509,361.15777915160345]}}}","type":"rete"}}
+    title="STEP to gLTF Export"
+    />
+  </TabItem>
+<TabItem value="blockly-step-to-gltf-export" label="Blockly">
+    <BitByBitRenderCanvas
+    requireManualStart={true}
+    script={{"script":"<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"stepData\">stepData</variable><variable id=\"document\">document</variable><variable id=\"gltf\">gltf</variable></variables><block type=\"variables_set\" id=\"fetchStep\" x=\"-562\" y=\"-36\"><field name=\"VAR\" id=\"stepData\">stepData</field><value name=\"VALUE\"><block type=\"bitbybit.asset.fetchFile\" id=\"fetchFile\"><value name=\"Url\"><block type=\"text\" id=\"urlText\"><field name=\"TEXT\">https://learn.bitbybit.dev/files/3d/Soil-Sensor.stpZ</field></block></value></block></value><next><block type=\"variables_set\" id=\"loadDoc\"><field name=\"VAR\" id=\"document\">document</field><value name=\"VALUE\"><block type=\"bitbybit.occt.assembly.manager.loadStepToDoc\" id=\"loadStepToDoc\"><value name=\"StepData\"><block type=\"variables_get\" id=\"getStepData\"><field name=\"VAR\" id=\"stepData\">stepData</field></block></value></block></value><next><block type=\"variables_set\" id=\"exportGltf\"><field name=\"VAR\" id=\"gltf\">gltf</field><value name=\"VALUE\"><block type=\"bitbybit.occt.assembly.manager.exportDocumentToGltf\" id=\"exportDoc\"><value name=\"Document\"><block type=\"variables_get\" id=\"getDoc\"><field name=\"VAR\" id=\"document\">document</field></block></value><value name=\"MeshDeflection\"><block type=\"math_number\" id=\"meshDeflection\"><field name=\"NUM\">0.05</field></block></value><value name=\"MeshAngle\"><block type=\"math_number\" id=\"meshAngle\"><field name=\"NUM\">0.5</field></block></value><value name=\"MergeFaces\"><block type=\"logic_boolean\" id=\"mergeFaces\"><field name=\"BOOL\">FALSE</field></block></value><value name=\"ForceUVExport\"><block type=\"logic_boolean\" id=\"forceUV\"><field name=\"BOOL\">TRUE</field></block></value><value name=\"FileName\"><block type=\"text\" id=\"fileName\"><field name=\"TEXT\">assembly.glb</field></block></value><value name=\"TryDownload\"><block type=\"logic_boolean\" id=\"tryDownload\"><field name=\"BOOL\">TRUE</field></block></value></block></value></block></next></block></next></block></xml>","type":"blockly"}}
+    title="STEP to gLTF Export"
+    />
+  </TabItem>
+
+<TabItem value="typescript-step-to-gltf-export" label="TypeScript">
+<BitByBitRenderCanvas
+    requireManualStart={true}
+    script={{"script":"// Import required DTOs for assembly operations\nconst { LoadStepToDocDto, ExportDocumentToGltfDto } = Bit.Inputs.OCCT;\ntype TDocStdDocumentPointer = Bit.Inputs.OCCT.TDocStdDocumentPointer;\n\n// Get access to modules\nconst { asset } = bitbybit;\nconst { manager } = bitbybit.occt.assembly;\n\nconst start = async () => {\n    // Fetch the STEP file from URL\n    const stepData = await asset.fetchFile({\n        url: \"https://learn.bitbybit.dev/files/3d/Soil-Sensor.stpZ\"\n    });\n\n    // Load STEP data into an OCCT document\n    const loadDocOpt = new LoadStepToDocDto();\n    loadDocOpt.stepData = stepData;\n    const document = await manager.loadStepToDoc(loadDocOpt);\n\n    // Export the document to GLTF (binary GLB format)\n    const exportOpt = new ExportDocumentToGltfDto<TDocStdDocumentPointer>();\n    exportOpt.document = document;\n    exportOpt.meshDeflection = 0.05;\n    exportOpt.meshAngle = 0.5;\n    exportOpt.mergeFaces = false;\n    exportOpt.forceUVExport = true;\n    exportOpt.fileName = \"assembly.glb\";\n    exportOpt.tryDownload = true;\n\n    const gltfData = await manager.exportDocumentToGltf(exportOpt);\n    console.log(\"GLTF exported successfully!\", gltfData);\n}\n\n// Execute the main function\nstart();","type":"typescript"}}
+    title="STEP to gLTF Export"
+    />
+</TabItem>
+</Tabs>
+
+## What Happens After Export?
+
+When you run these examples with `tryDownload: true`, your browser will automatically download the GLB file. You can then:
+
+- **View it** in any GLTF viewer (like [gltf-viewer.donmccurdy.com](https://gltf-viewer.donmccurdy.com/))
+- **Use it** in game engines like Unity, Unreal, or Godot
+- **Embed it** in websites using Three.js, BabylonJS, or model-viewer
+- **Share it** with clients who don't have CAD software
+
+## Conclusion
+
+You've learned how to convert STEP files to GLTF directly in the browser - no server or desktop software required! This opens up powerful possibilities for CAD visualization, e-commerce product displays, and engineering documentation.
+
+The key takeaway: Bitbybit brings industrial-grade CAD processing to the web, making it easy to bridge the gap between engineering data and modern 3D experiences.
