@@ -119,6 +119,11 @@ describe("Text unit tests", () => {
         expect(result).toEqual("Hello World, Matas");
     });
 
+    it("should format strings 10 and 11", () => {
+        const result = text.format({ text: "Hello {0}, {1}", values: ["10", "11"] });
+        expect(result).toEqual("Hello 10, 11");
+    });
+
     it("should not format string if there are no values", () => {
         const result = text.format({ text: "Hello {0}, {1}", values: [] });
         expect(result).toEqual("Hello {0}, {1}");

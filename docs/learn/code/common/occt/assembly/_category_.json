@@ -1,0 +1,10 @@
+{
+    "label": "Assembly",
+    "position": 7,
+    "link": {
+        "type": "generated-index",
+        "title": "OCCT Assembly",
+        "description": "Work with OCCT assemblies: load STEP files, export to GLTF, parse hierarchy, create multi-part models, and preserve colors for CAD visualization.",
+        "slug": "/code/common/occt/assembly"
+    }
+}

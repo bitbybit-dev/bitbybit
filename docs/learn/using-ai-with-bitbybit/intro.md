@@ -8,7 +8,7 @@ tags: [ai]
 
 # AI-Powered 3D Development
 
-Bitbybit has 1300+ API functions across three CAD kernels. That's a lot to remember. AI coding assistants can help you write Bitbybit code faster and more accurately - if you give them the right context.
+Bitbybit has 1400+ API functions across three CAD kernels. That's a lot to remember. AI coding assistants can help you write Bitbybit code faster and more accurately - if you give them the right context.
 
 ## The Challenge
 

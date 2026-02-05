@@ -1,819 +1,829 @@
 getting-started:
   label: Getting Started
   permalink: /getting-started
-  description: Getting started with Bitbybit, a platform for building and sharing 3D applications.
+  description: First steps with Bitbybit - setting up your account, creating projects, and building your first 3D application.
 
 rete:
   label: Rete
   permalink: /rete
-  description: Rete is a visual-programming environment for building parametric 3D models and applications.
+  description: Node-based visual programming with drag-and-drop components for building parametric 3D models.
 
 blockly:
   label: Blockly
   permalink: /blockly
-  description: Blockly is a visual programming library for building web applications with a block-based interface.
+  description: Beginner-friendly block-based programming, great for learning 3D logic without typing code.
 
 typescript:
   label: TypeScript
   permalink: /typescript
-  description: TypeScript is a superset of JavaScript that adds static types, enhancing code quality and maintainability.
+  description: Writing code with full type safety, autocompletion, and access to all Bitbybit APIs.
 
 monaco:
   label: Monaco Editor
   permalink: /monaco-editor
-  description: Monaco Editor is a powerful code editor that provides rich editing features for web applications.
+  description: The code editor powering Bitbybit's TypeScript environment, same as VS Code.
 
 threejs:
   label: Three.js
   permalink: /threejs
-  description: Three.js is a JavaScript library that simplifies the creation of 3D graphics in the browser.
+  description: Rendering 3D scenes with the popular Three.js library for lightweight web graphics.
 
 babylonjs:
   label: Babylon.js
   permalink: /babylonjs
-  description: Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework.
+  description: Full-featured 3D engine with advanced rendering, physics, and post-processing effects.
 
 playcanvas:
   label: PlayCanvas
   permalink: /playcanvas
-  description: PlayCanvas is a web-based game engine and development platform for building 3D applications.
+  description: Game-engine style 3D development for interactive experiences and applications.
 
 occt:
   label: OCCT
   permalink: /occt
-  description: Open CASCADE Technology (OCCT) is a kernel for 3D CAD, CAM, CAE, and more.
+  description: OpenCASCADE geometry kernel for precise CAD operations like booleans, fillets, and STEP export.
+
+step:
+  label: STEP
+  permalink: /step
+  description: ISO standard CAD format for exchanging engineering data with desktop software.
+
+assembly:
+  label: Assembly
+  permalink: /assembly
+  description: Multi-part CAD models with hierarchies, instances, and preserved colors.
 
 vector:
   label: Vector
   permalink: /vector
-  description: Vector is a category in Bitbybit that deals with vectors and operations on vectors.
+  description: Direction and magnitude operations - normalize, dot product, cross product, angles.
 
 point:
   label: Point
   permalink: /point
-  description: Point is a category in Bitbybit that deals with points and operations on points.
+  description: 3D coordinate operations - distances, midpoints, transformations, grids.
 
 math:
   label: Math
   permalink: /math
-  description: Math is a category in Bitbybit that deals with mathematical operations and functions.
+  description: Numeric functions - rounding, clamping, trigonometry, random values, sequences.
 
 color:
   label: Color
   permalink: /color
-  description: Color is a category in Bitbybit that deals with colors and color operations.
+  description: Color creation and conversion between hex, RGB, HSL, and other formats.
 
 logic:
   label: Logic
   permalink: /logic
-  description: Logic is a category in Bitbybit that deals with logical operations and boolean algebra.
+  description: Boolean operations, conditionals, comparisons, and flow control.
 
 mesh:
   label: Mesh
   permalink: /mesh
-  description: Mesh is a category in Bitbybit that deals with 3D meshes and operations on meshes.
+  description: Triangle-based 3D geometry for fast rendering and game-engine compatibility.
 
 lists:
   label: Lists
   permalink: /lists
-  description: Lists is a category in Bitbybit that deals with lists and operations on lists.
+  description: Array operations - sorting, filtering, mapping, grouping, flattening.
 
 text:
   label: Text
   permalink: /text
-  description: Text is a category in Bitbybit that deals with text manipulation and operations.
+  description: String manipulation - splitting, joining, formatting, parsing.
 
 dates:
   label: Dates
   permalink: /dates
-  description: Dates is a category in Bitbybit that deals with date and time operations.
+  description: Date and time formatting, calculations, and timezone handling.
 
 line:
   label: Line
   permalink: /line
-  description: Line is a category in Bitbybit that deals with lines and operations on lines.
+  description: Straight line geometry - creation, intersection, projection, subdivision.
 
 polyline:
   label: Polyline
   permalink: /polyline
-  description: Polyline is a category in Bitbybit that deals with polylines and operations on polylines.
+  description: Connected line segments forming paths, profiles, and wire-frame geometry.
 
 manifold:
   label: Manifold
   permalink: /manifold
-  description: Manifold is a geometry kernel for building 3D geometries and applications.
+  description: Fast CSG geometry kernel optimized for boolean operations and 3D printing.
 
 jscad:
   label: JSCAD
   permalink: /jscad
-  description: JSCAD is a JavaScript-based CSG modeling kernel for creating 3D models programmatically.
+  description: JavaScript-based solid modeling with CSG primitives and operations.
 
 npm-packages:
   label: NPM Packages
   permalink: /npm-packages
-  description: NPM packages are reusable Bitbybit code modules that can be shared and used in JavaScript & TypeScript applications.
+  description: Publishing and using Bitbybit scripts as reusable NPM modules.
 
 configurators:
   label: Configurators
   permalink: /configurators
-  description: Configurators are 3D applications that allow users to customize and configure products interactively.
+  description: Interactive 3D product customizers for e-commerce and sales tools.
 
 github:
   label: GitHub
   permalink: /github
-  description: GitHub is a platform for version control and collaboration, allowing developers to work together on projects.
+  description: Connecting Bitbybit projects to GitHub repositories for version control.
 
 projects:
   label: Projects
   permalink: /projects
-  description: Category that discusses how to manage projects inside Bitbybit
+  description: Creating, organizing, and managing your Bitbybit projects and files.
 
 scripts:
   label: Scripts
   permalink: /scripts
-  description: Category that discusses how to manage script inside Bitbybit projects
+  description: Writing and organizing executable code files within projects.
 
 assets:
   label: Assets
   permalink: /assets
-  description: Assets are usually files that you can upload to Bitbybit and use in your projects, such as images, 3D models, and other media.
+  description: Uploading and managing images, 3D models, textures, and other media files.
 
 runners:
   label: Runners
   permalink: /runners
-  description: The Runner is a tool for executing scripts and automating tasks in Bitbybit projects.
+  description: Executing scripts in different environments - browser, server, or embedded.
 
 unit-tests:
   label: Unit Tests
   permalink: /unit-tests
-  description: Unit tests are automated tests that verify the functionality of individual components in Bitbybit projects.
+  description: Automated testing to verify your scripts work correctly as you make changes.
 
 development:
   label: Development
   permalink: /development
-  description: Development refers to the process of creating and maintaining Bitbybit projects, including coding, testing, and deployment.
+  description: Local development setup, debugging, and integrating Bitbybit into your workflow.
 
 code:
   label: Code
   permalink: /code
-  description: Code examples and snippets for Bit by Bit projects.
+  description: Programming examples and patterns for common 3D tasks.
 
 base:
   label: Base
   permalink: /base
-  description: Base is a category in Bitbybit that provides foundational components such as math, vector, point, color and other.
+  description: Foundational utilities - math, vectors, points, colors, and data transformations.
 
 draw:
   label: Draw
   permalink: /draw
-  description: Explains Bitbybit coding category called "draw"
+  description: Rendering geometry to the 3D viewport with materials, colors, and edge styling.
 
 shopify:
   label: Shopify
   permalink: /shopify
-  description: Shopify is an e-commerce platform that allows you to create and manage online stores.
+  description: Integrating 3D configurators and viewers into Shopify stores.
 
 3d-bits:
   label: 3D Bits
   permalink: /3d-bits
-  description: 3D Bits is application that Bitbybit has developed for Shopify merchants - it can be installed on their webshops.
+  description: Our Shopify app for adding interactive 3D product visualization to online stores.
 
 open-source:
   label: Open Source
   permalink: /open-source
-  description: Open source refers to software whose source code is available for anyone to view, use, modify, and distribute.
+  description: Bitbybit's open-source libraries and how to contribute.
 
 licensing:
   label: Licensing
   permalink: /licensing
-  description: Licensing refers to the legal permissions and restrictions associated with using, modifying, and distributing software.
+  description: Understanding license terms for Bitbybit libraries and commercial use.
 
 ai:
   label: AI
   permalink: /ai
-  description: AI refers to artificial intelligence technologies and applications, including machine learning and natural language processing.
+  description: Using AI assistants to generate and modify 3D scripts with natural language prompts.
 
 viewer-editor:
  label: Viewer Editor
  permalink: /viewer-editor
- description: Viewer Editor is powerful No-Code eCommerce solution
+ description: No-code tool for configuring 3D product viewers without writing any scripts.
 
 canvas:
  label: Canvas
  permalink: /canvas
- description: Canvas refers to the 3D viewport and rendering area in Bitbybit applications.
+ description: The 3D viewport where models are rendered and users interact with the scene.
 
 styling:
  label: Styling
  permalink: /styling
- description: Styling refers to customizing the visual appearance of 3D elements and UI components.
+ description: Customizing colors, materials, and visual appearance of 3D elements.
 
 layout:
  label: Layout
  permalink: /layout
- description: Layout refers to the arrangement and organization of UI elements and 3D scenes.
+ description: Arranging UI panels, controls, and 3D viewports in your application.
 
 architecture:
  label: Architecture
  permalink: /architecture
- description: Architecture refers to the technical design and structure of Bitbybit applications.
+ description: How Bitbybit apps are structured and best practices for organizing code.
 
 security:
  label: Security
  permalink: /security
- description: Security refers to protecting data, assets, and user information in Bitbybit applications.
+ description: Protecting scripts, assets, and user data in production applications.
 
 advanced:
  label: Advanced
  permalink: /advanced
- description: Advanced features and techniques for experienced Bitbybit users.
+ description: Complex techniques for experienced users pushing beyond the basics.
 
 rotation:
  label: Rotation
  permalink: /rotation
- description: Rotation refers to rotating 3D objects and camera movements in 3D space.
+ description: Spinning objects and controlling orientation in 3D space.
 
 animation:
  label: Animation
  permalink: /animation
- description: Animation refers to creating motion and transitions in 3D scenes.
+ description: Creating movement, transitions, and dynamic behavior in 3D scenes.
 
 auto-rotate:
  label: Auto-Rotate
  permalink: /auto-rotate
- description: Auto-rotate refers to automatic rotation of 3D models for showcasing products.
+ description: Automatic spinning of products when users aren't interacting.
 
 idle:
  label: Idle
  permalink: /idle
- description: Idle state refers to automatic behaviors when users are not interacting with the application.
+ description: Behaviors triggered after a period of user inactivity.
 
 multiple-models:
  label: Multiple Models
  permalink: /multiple-models
- description: Working with multiple 3D models in a single scene.
+ description: Loading and managing several 3D models in one scene.
 
 scene-management:
  label: Scene Management
  permalink: /scene-management
- description: Managing and organizing complex 3D scenes with multiple objects.
+ description: Organizing objects, lights, and cameras in complex 3D scenes.
 
 performance:
  label: Performance
  permalink: /performance
- description: Performance optimization techniques for faster loading and rendering.
+ description: Making your 3D applications load faster and render smoothly.
 
 organization:
  label: Organization
  permalink: /organization
- description: Organizing and structuring projects, files, and 3D assets.
+ description: Structuring projects, naming conventions, and file management.
 
 options:
  label: Options
  permalink: /options
- description: Product options and configuration settings for eCommerce configurators.
+ description: Product configuration choices that users can select.
 
 mapping:
  label: Mapping
  permalink: /mapping
- description: Mapping between different data structures and naming conventions.
+ description: Connecting user selections to 3D changes like materials or visibility.
 
 compatibility:
  label: Compatibility
  permalink: /compatibility
- description: Ensuring compatibility across different platforms and versions.
+ description: Ensuring apps work across browsers, devices, and platforms.
 
 maintenance:
  label: Maintenance
  permalink: /maintenance
- description: Maintaining and updating applications over time.
+ description: Updating and maintaining applications after deployment.
 
 tutorial:
  label: Tutorial
  permalink: /tutorial
- description: Step-by-step tutorials for learning Bitbybit features.
+ description: Step-by-step guides walking through specific features or projects.
 
 interface:
  label: Interface
  permalink: /interface
- description: User interface components and interactions.
+ description: Bitbybit's user interface and how to navigate it.
 
 ui:
  label: UI
  permalink: /ui
- description: User interface design and components.
+ description: Building user interface elements and controls for your apps.
 
 overview:
  label: Overview
  permalink: /overview
- description: Overview and introduction to Bitbybit features.
+ description: High-level introductions to Bitbybit concepts and capabilities.
 
 no-code:
  label: No-Code
  permalink: /no-code
- description: No-code tools and visual programming interfaces.
+ description: Building 3D applications without writing any code.
 
 toolbar:
  label: Toolbar
  permalink: /toolbar
- description: Toolbar buttons and controls in Bitbybit applications.
+ description: Toolbar controls and actions available in the editor.
 
 reference:
  label: Reference
  permalink: /reference
- description: Reference documentation and API guides.
+ description: Technical documentation and API details for developers.
 
 dimensions:
  label: Dimensions
  permalink: /dimensions
- description: Dimension annotations and measurements on 3D models.
+ description: Adding measurement labels and size annotations to 3D models.
 
 angular:
  label: Angular
  permalink: /angular
- description: Angular dimensions for measuring angles.
+ description: Angle measurements between edges or surfaces.
 
 angles:
  label: Angles
  permalink: /angles
- description: Angle measurements and calculations.
+ description: Working with angular values and rotations.
 
 measurements:
  label: Measurements
  permalink: /measurements
- description: Measurements and dimension annotations.
+ description: Displaying sizes, distances, and dimensions on models.
 
 degrees:
  label: Degrees
  permalink: /degrees
- description: Degree units for angle measurements.
+ description: Angle units and degree-based calculations.
 
 bounding-box:
  label: Bounding Box
  permalink: /bounding-box
- description: Bounding box dimensions showing overall product size.
+ description: Overall dimensions showing how much space a model occupies.
 
 overall-size:
  label: Overall Size
  permalink: /overall-size
- description: Overall dimensions of products.
+ description: Total width, height, and depth of configured products.
 
 shipping:
  label: Shipping
  permalink: /shipping
- description: Shipping dimensions and logistics information.
+ description: Package dimensions and logistics information for e-commerce.
 
 space-planning:
  label: Space Planning
  permalink: /space-planning
- description: Space planning and room layout visualization.
+ description: Visualizing how products fit in rooms or spaces.
 
 diametral:
  label: Diametral
  permalink: /diametral
- description: Diametral dimensions for measuring diameters.
+ description: Diameter annotations for circular features.
 
 diameter:
  label: Diameter
  permalink: /diameter
- description: Diameter measurements of circular features.
+ description: Measuring across circular shapes.
 
 circles:
  label: Circles
  permalink: /circles
- description: Circular shapes and features.
+ description: Circular geometry and arc-based shapes.
 
 cylinders:
  label: Cylinders
  permalink: /cylinders
- description: Cylindrical shapes and objects.
+ description: Cylindrical shapes and tube-like geometry.
 
 annotations:
  label: Annotations
  permalink: /annotations
- description: Annotations and labels on 3D models.
+ description: Text labels, callouts, and markers on 3D models.
 
 technical:
  label: Technical
  permalink: /technical
- description: Technical specifications and documentation.
+ description: Detailed technical specifications and engineering data.
 
 professional:
  label: Professional
  permalink: /professional
- description: Professional tier features and capabilities.
+ description: Features available on the Professional subscription tier.
 
 enterprise:
  label: Enterprise
  permalink: /enterprise
- description: Enterprise tier features and capabilities.
+ description: Features available on the Enterprise subscription tier.
 
 linear:
  label: Linear
  permalink: /linear
- description: Linear dimensions for straight-line measurements.
+ description: Straight-line distance measurements.
 
 width:
  label: Width
  permalink: /width
- description: Width measurements.
+ description: Horizontal size measurements.
 
 height:
  label: Height
  permalink: /height
- description: Height measurements.
+ description: Vertical size measurements.
 
 depth:
  label: Depth
  permalink: /depth
- description: Depth measurements.
+ description: Front-to-back size measurements.
 
 ordinate:
  label: Ordinate
  permalink: /ordinate
- description: Ordinate dimensions with coordinate-based measurements.
+ description: Coordinate-based dimension chains from a reference point.
 
 coordinates:
  label: Coordinates
  permalink: /coordinates
- description: Coordinate systems and positioning.
+ description: X, Y, Z positioning and coordinate systems.
 
 cad:
  label: CAD
  permalink: /cad
- description: Computer-Aided Design tools and formats.
+ description: Computer-Aided Design techniques and file formats.
 
 radial:
  label: Radial
  permalink: /radial
- description: Radial dimensions for measuring radii.
+ description: Radius measurements from center to edge.
 
 radius:
  label: Radius
  permalink: /radius
- description: Radius measurements of curved features.
+ description: Distance from circle center to circumference.
 
 curves:
  label: Curves
  permalink: /curves
- description: Curved shapes and bezier curves.
+ description: Bezier curves, splines, and smooth paths.
 
 export:
  label: Export
  permalink: /export
- description: Exporting data and configurations.
+ description: Saving data, configurations, or 3D files for external use.
 
 json:
  label: JSON
  permalink: /json
- description: JSON data format and configurations.
+ description: JSON data format for configurations and data exchange.
 
 deployment:
  label: Deployment
  permalink: /deployment
- description: Deploying applications to production.
+ description: Publishing apps to production environments.
 
 integration:
  label: Integration
  permalink: /integration
- description: Integration with external platforms and services.
+ description: Connecting Bitbybit with external platforms and services.
 
 ecommerce:
  label: eCommerce
  permalink: /ecommerce
- description: eCommerce platforms and online stores.
+ description: Online store integrations and product visualization.
 
 metafields:
  label: Metafields
  permalink: /metafields
- description: Shopify metafields for storing custom data.
+ description: Shopify custom data fields for storing configuration data.
 
 validation:
  label: Validation
  permalink: /validation
- description: Data validation and error checking.
+ description: Checking user inputs and ensuring valid configurations.
 
 errors:
  label: Errors
  permalink: /errors
- description: Error handling and troubleshooting.
+ description: Understanding and handling error messages.
 
 debugging:
  label: Debugging
  permalink: /debugging
- description: Debugging techniques and tools.
+ description: Finding and fixing problems in your scripts.
 
 quality-assurance:
  label: Quality Assurance
  permalink: /quality-assurance
- description: Quality assurance and testing processes.
+ description: Testing and verifying applications work correctly.
 
 gltf:
  label: GLTF
  permalink: /gltf
- description: GLTF 3D model format.
+ description: Web-optimized 3D format for fast loading in browsers.
 
 nodes:
  label: Nodes
  permalink: /nodes
- description: Node-based structure in 3D models.
+ description: Individual objects and hierarchy in 3D scenes.
 
 visibility:
  label: Visibility
  permalink: /visibility
- description: Controlling visibility of 3D objects.
+ description: Showing and hiding objects based on user selections.
 
 structure:
  label: Structure
  permalink: /structure
- description: Structure and organization of data and files.
+ description: How data and files are organized.
 
 optimization:
  label: Optimization
  permalink: /optimization
- description: Optimization techniques for performance.
+ description: Improving speed, memory usage, and file sizes.
 
 management:
  label: Management
  permalink: /management
- description: Managing projects and resources.
+ description: Organizing and maintaining projects and assets.
 
 materials:
  label: Materials
  permalink: /materials
- description: Materials and textures for 3D models.
+ description: Surface appearance - colors, textures, metallic, roughness.
 
 variants:
  label: Variants
  permalink: /variants
- description: Product variants and configurations.
+ description: Different versions of products or materials.
 
 KHR_materials_variants:
  label: KHR Materials Variants
  permalink: /khr-materials-variants
- description: GLTF extension for material variants.
+ description: GLTF extension for switching between material sets.
 
 models:
  label: Models
  permalink: /models
- description: 3D models and assets.
+ description: 3D model files and geometry assets.
 
 glb:
  label: GLB
  permalink: /glb
- description: GLB binary 3D model format.
+ description: Binary GLTF format - compact, single-file 3D models.
 
 properties:
  label: Properties
  permalink: /properties
- description: Properties and attributes of objects.
+ description: Object attributes like position, name, and custom data.
 
 transform:
  label: Transform
  permalink: /transform
- description: Transform operations like position, rotation, and scale.
+ description: Position, rotation, and scale changes.
 
 formats:
  label: Formats
  permalink: /formats
- description: File formats and data structures.
+ description: File types and data formats supported by Bitbybit.
 
 navigation:
  label: Navigation
  permalink: /navigation
- description: Navigation controls and camera movement.
+ description: Moving around 3D scenes with pan, zoom, and rotate.
 
 camera:
  label: Camera
  permalink: /camera
- description: Camera controls and settings.
+ description: Viewpoint settings, angles, and camera controls.
 
 animations:
  label: Animations
  permalink: /animations
- description: Animations and motion in 3D scenes.
+ description: Motion, transitions, and dynamic visual effects.
 
 transitions:
  label: Transitions
  permalink: /transitions
- description: Smooth transitions and animations.
+ description: Smooth changes between states or camera positions.
 
 easing:
  label: Easing
  permalink: /easing
- description: Easing functions for smooth animations.
+ description: Animation curves that control acceleration and deceleration.
 
 poi:
  label: POI
  permalink: /poi
- description: Points of Interest for guided product tours.
+ description: Points of Interest for camera focus and guided tours.
 
 points-of-interest:
  label: Points of Interest
  permalink: /points-of-interest
- description: Points of Interest for guided product tours.
+ description: Saved camera positions highlighting product features.
 
 hotspots:
  label: Hotspots
  permalink: /hotspots
- description: Interactive hotspots on 3D models.
+ description: Clickable markers on 3D models showing information.
 
 tours:
  label: Tours
  permalink: /tours
- description: Guided tours and walkthroughs.
+ description: Guided sequences moving through points of interest.
 
 customization:
  label: Customization
  permalink: /customization
- description: Customizing appearance and behavior.
+ description: Tailoring appearance and behavior to your needs.
 
 branding:
  label: Branding
  permalink: /branding
- description: Branding and visual identity.
+ description: Applying brand colors, logos, and visual identity.
 
 background:
  label: Background
  permalink: /background
- description: Background colors and images.
+ description: Scene backgrounds - colors, gradients, or images.
 
 scene:
  label: Scene
  permalink: /scene
- description: 3D scene setup and configuration.
+ description: The 3D environment containing objects, lights, and cameras.
 
 colors:
  label: Colors
  permalink: /colors
- description: Colors and color palettes.
+ description: Color values, palettes, and color-related operations.
 
 gradients:
  label: Gradients
  permalink: /gradients
- description: Color gradients and transitions.
+ description: Smooth color transitions for backgrounds and materials.
 
 images:
  label: Images
  permalink: /images
- description: Images and textures.
+ description: Texture images, backgrounds, and image processing.
 
 arc-rotate:
  label: Arc Rotate
  permalink: /arc-rotate
- description: Arc rotate camera for 3D navigation.
+ description: Orbital camera that rotates around a target point.
 
 controls:
  label: Controls
  permalink: /controls
- description: User controls and interactions.
+ description: User input handling - mouse, touch, keyboard.
 
 zoom:
  label: Zoom
  permalink: /zoom
- description: Zoom controls and settings.
+ description: Camera zoom levels and magnification controls.
 
 interaction:
  label: Interaction
  permalink: /interaction
- description: User interaction and controls.
+ description: How users interact with 3D objects and UI.
 
 lighting:
  label: Lighting
  permalink: /lighting
- description: Lighting setup and configuration.
+ description: Light sources that illuminate 3D scenes.
 
 directional-light:
  label: Directional Light
  permalink: /directional-light
- description: Directional light sources.
+ description: Parallel light rays simulating distant sources like the sun.
 
 shadows:
  label: Shadows
  permalink: /shadows
- description: Shadow rendering and settings.
+ description: Dynamic shadows cast by objects in the scene.
 
 intensity:
  label: Intensity
  permalink: /intensity
- description: Light intensity and brightness.
+ description: Brightness levels for lights and effects.
 
 loading:
  label: Loading
  permalink: /loading
- description: Loading screens and progress indicators.
+ description: Asset loading, progress indicators, and initialization.
 
 progress:
  label: Progress
  permalink: /progress
- description: Progress indicators and loading states.
+ description: Loading progress bars and status indicators.
 
 user-experience:
  label: User Experience
  permalink: /user-experience
- description: User experience design and optimization.
+ description: Making apps intuitive and pleasant to use.
 
 skybox:
  label: Skybox
  permalink: /skybox
- description: Skybox environments for 3D scenes.
+ description: 360-degree environment surrounding the scene.
 
 hdr:
  label: HDR
  permalink: /hdr
- description: High Dynamic Range imaging.
+ description: High Dynamic Range images for realistic lighting.
 
 environment:
  label: Environment
  permalink: /environment
- description: Environment maps and lighting.
+ description: Surrounding imagery that affects lighting and reflections.
 
 reflections:
  label: Reflections
  permalink: /reflections
- description: Reflections and mirror effects.
+ description: Mirror-like surface effects on shiny materials.
 
 pbr:
  label: PBR
  permalink: /pbr
- description: Physically Based Rendering.
+ description: Physically Based Rendering for realistic material appearance.
 
 subscription:
  label: Subscription
  permalink: /subscription
- description: Subscription plans and tiers.
+ description: Bitbybit subscription plans and account tiers.
 
 plans:
  label: Plans
  permalink: /plans
- description: Pricing plans and packages.
+ description: Available subscription options and what they include.
 
 pricing:
  label: Pricing
  permalink: /pricing
- description: Pricing information and tiers.
+ description: Costs and pricing information for Bitbybit services.
 
 troubleshooting:
  label: Troubleshooting
  permalink: /troubleshooting
- description: Troubleshooting guides and solutions.
+ description: Solving common problems and finding fixes.
 
 faq:
  label: FAQ
  permalink: /faq
- description: Frequently Asked Questions.
+ description: Answers to frequently asked questions.
 
 help:
  label: Help
  permalink: /help
- description: Help and support resources.
+ description: Getting support and finding documentation.
 
 mobile:
  label: Mobile
  permalink: /mobile
- description: Mobile devices and responsive design.
+ description: Mobile device support and responsive design.
 
 loading-speed:
  label: Loading Speed
  permalink: /loading-speed
- description: Loading speed and optimization.
+ description: How fast your 3D content loads for users.
 
 fps:
  label: FPS
  permalink: /fps
- description: Frames per second and performance.
+ description: Frames per second - measuring rendering smoothness.
 
 advanced-matching:
  label: Advanced Matching
  permalink: /advanced-matching
- description: Advanced variant matching with complex logic.
+ description: Complex logic for mapping options to 3D changes.
 
 expressions:
  label: Expressions
  permalink: /expressions
- description: Expressions and conditional logic.
+ description: Formulas and conditional logic in configurations.
 
 simple-matching:
  label: Simple Matching
  permalink: /simple-matching
- description: Simple variant matching with equality.
+ description: Basic one-to-one mapping between options and 3D states.
 
 product-options:
  label: Product Options
  permalink: /product-options
- description: Product options and configurations.
+ description: Configurable choices customers can make.
 
 cdn:
  label: CDN
  permalink: /cdn
- description: Content Delivery Network and caching.
+ description: Content Delivery Networks for fast global asset loading.
 
 hosting:
  label: Hosting
  permalink: /hosting
- description: Web hosting and server management.
+ description: Where your 3D assets and applications are served from.
 
 coverage:
  label: Coverage
  permalink: /coverage
- description: Unit test coverage
+ description: How much of your code is tested by unit tests.
