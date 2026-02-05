@@ -1,64 +1,89 @@
 bitbybit:
   label: Bitbybit
   permalink: /bitbybit
-  description: Blog posts about Bitbybit
+  description: Platform updates, new features, and tutorials for the Bitbybit visual programming environment.
 
 cloud:
   label: Cloud
   permalink: /cloud
-  description: Blog posts about Cloud
+  description: Cloud, server-side services, and scalable 3D workflows.
 
 ai:
   label: AI
   permalink: /ai
-  description: Blog posts about Artificial Intelligence
+  description: Using AI assistants and machine learning with 3D modeling and CAD automation.
 
 cad:
   label: CAD
   permalink: /cad
-  description: Blog posts about Computer-Aided Design
+  description: Computer-Aided Design techniques, precision modeling, and engineering workflows.
 
 xr:
   label: XR
   permalink: /xr
-  description: Blog posts about Extended Reality
+  description: Extended Reality experiences combining AR, VR, and mixed reality with 3D content.
 
 vr:
   label: VR
   permalink: /vr
-  description: Blog posts about Virtual Reality
+  description: Virtual Reality applications for immersive 3D visualization and interaction.
 
 3d-bits:
   label: 3D Bits
   permalink: /3d-bits
-  description: Blog posts about 3D Bits app for Shopify and its use cases
+  description: Our Shopify app for embedding interactive 3D product configurators in online stores.
 
 shopify:
   label: Shopify
   permalink: /shopify
-  description: Blog posts about Shopify integrations via 3D Bits app
+  description: E-commerce integrations, product visualization, and 3D configurators for Shopify stores.
 
 case-study:
   label: Case Study
   permalink: /case-study
-  description: Case studies related to Bitbybit, 3D Bits and Shopify
+  description: Real-world examples of how businesses use Bitbybit and 3D Bits to solve problems.
 
 fitness-equipment:
   label: Fitness Equipment
   permalink: /fitness-equipment
-  description: Blog posts about fitness equipment industry and 3D visualization
+  description: 3D visualization and configuration solutions for gym and fitness equipment retailers.
 
 babylonjs:
   label: BabylonJS
   permalink: /babylonjs
-  description: Blog posts about Babylon.js 3D engine
+  description: Using the Babylon.js WebGL engine for real-time 3D graphics in the browser.
 
 threejs:
   label: ThreeJS
   permalink: /threejs
-  description: Blog posts about Three.js 3D library
+  description: Working with Three.js for lightweight 3D scenes and custom rendering pipelines.
 
 playcanvas:
   label: PlayCanvas
   permalink: /playcanvas
-  description: Blog posts about PlayCanvas 3D engine
+  description: PlayCanvas engine integration for game-like 3D experiences and interactive apps.
+
+occt:
+  label: OCCT
+  permalink: /occt
+  description: OpenCASCADE Technology - the open-source CAD kernel powering our geometry operations.
+
+assembly:
+  label: Assembly
+  permalink: /assembly
+  description: Working with multi-part CAD assemblies, hierarchies, and component structures.
+
+step:
+  label: STEP
+  permalink: /step
+  description: The ISO 10303 standard format for exchanging CAD data between different software.
+
+gltf:
+  label: GLTF
+  permalink: /gltf
+  description: The web-optimized 3D format for fast loading and rendering in browsers and apps.
+
+freecad:
+  label: FreeCAD
+  permalink: /freecad
+  description: Interoperability with FreeCAD, the popular open-source parametric CAD modeler.

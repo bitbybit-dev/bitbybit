@@ -18,61 +18,19 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
   alt="OCCT category icon with a stylized logo representation" 
   title="OCCT category icon" />
 
-Standard STEP files store only geometry — no color information. To preserve colors, you need to use the assembly document structure. This was one of our most requested features, and it's finally available!
+When you export a shape to a regular STEP file, it loses all color information. The geometry is preserved, but open that file in FreeCAD or Fusion 360 and everything will be gray. That's just how STEP files work.
 
-## Why Colors Require Assemblies
+To keep colors, you need to wrap your shapes in an assembly document. This uses OCCT's XCAF format, which stores both geometry and appearance data. It's an extra step, but it means your colors will show up correctly in other CAD software.
 
-The XCAF (Extended CAD Application Framework) format used by OCCT can embed colors into assembly structures. By wrapping shapes in an assembly with color-assigned instances, you ensure colors transfer correctly to other CAD applications.
+## What This Example Does
 
-## What These Scripts Do
+The scripts below create a "pod shell" shape and export it as a colored STEP file. The geometry part uses several OCCT operations (points, wires, faces, mirrors, fillets) to build an interesting 3D solid. But the important part for this tutorial is at the end.
 
-The examples below demonstrate how to create a 3D shape in Bitbybit and export it as a STEP file with color information preserved. The exported file can then be opened in other CAD software like **FreeCAD**, **Fusion 360**, **SolidWorks**, or **Blender** with the assigned colors intact.
+Once we have the shape, we create an assembly structure around it. We define a part, put it inside an assembly, and assign it a white color. Then we export the whole thing to a `.stpZ` file (compressed STEP format). When you open that file in FreeCAD, the shape appears in white, just as we specified.
 
-### Script Breakdown
+## Try It Yourself
 
-**1. Scene Setup**
-- Configures directional lighting with shadows for realistic preview
-- Sets up a radial gradient background for visual appeal
-- Enables a hidden skybox to provide environment-based lighting
-
-**2. Geometry Creation**
-The scripts build a "pod shell" shape through several OCCT operations:
-- **Points & Wires**: Defines 5 key points and creates 4 polygon wires connecting them
-- **Faces**: Converts wires into planar faces
-- **Face with Hole**: Offsets a wire inward, fillets the corners, reverses it, and uses it to create a face with a cutout
-- **Shell Assembly**: Sews all faces together into a single shell
-- **Mirror**: Duplicates the shell across the Z-axis to create symmetry
-- **Fillet Edges**: Rounds the sharp edges where the two halves meet
-- **Thick Solid**: Adds wall thickness to convert the shell into a solid
-
-**3. Visual Rendering**
-- Creates a PBR (Physically Based Rendering) metallic material
-- Draws the solid with black edge outlines for better visibility
-
-**4. Assembly & Color Assignment**
-This is where the color preservation happens:
-- **Create Part**: Registers the shape as a named part (`pod-shell`)
-- **Create Assembly Node**: Creates a container for organizing parts (`Pod Assembly`)
-- **Create Instance Node**: Places the part in the assembly with a **white color** (RGB: 1, 1, 1)
-- **Combine Structure**: Merges parts and nodes into a complete assembly structure
-- **Build Document**: Generates the XCAF document that stores shapes with their colors
-
-**5. STEP Export**
-- Exports the assembly document to a `.stpZ` file (compressed STEP format)
-- The file includes the white color assigned to the instance
-- When opened in FreeCAD or other CAD software, the shape will display with the correct color
-
-### Why Use Assemblies for Color?
-
-Standard STEP files store only geometry—no color information. However, the XCAF (Extended CAD Application Framework) format used by OCCT can embed colors into assembly structures. By wrapping your shape in an assembly with color-assigned instances, you ensure that:
-
-- Colors transfer correctly to other CAD applications
-- You can assign different colors to different instances of the same part
-- The file structure is compatible with professional CAD software workflows
-
-### Try It Yourself
-
-Run the script, and a `pods.stpZ` file will download automatically. Open it in FreeCAD (File → Import), and you'll see the pod shape rendered in white—exactly as specified in the script.
+Run the script and a `pods.stpZ` file will download automatically. Open it in FreeCAD (File → Import) and you'll see the pod shape with its white color intact.
 
 <Tabs groupId="rete-shape-with-color-to-step-export">
 <TabItem value="rete-shape-with-color-to-step-export" label="Rete">
