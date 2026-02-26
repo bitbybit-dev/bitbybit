@@ -1,0 +1,103 @@
+---
+slug: introducing-managed-bitbybit-3d-cad-cloud-rest-api
+title: "Introducing Managed Bitbybit CAD Cloud with RESTful API"
+authors: [ubarevicius]
+tags: [cloud, api, cad, enterprise, rest, architecture]
+image: /img/blog/bitbybit-3d-cad-cloud.webp
+description: "Learn how the Managed Bitbybit CAD Cloud and RESTful API empower enterprise users to run proprietary 3D algorithms on distributed server infrastructure. Scale your 3D configurators beyond the browser, secure your intellectual property, and automate complex geometry exports with our new managed cloud solutions."
+---
+
+![Bitbybit CAD Cloud](/img/blog/bitbybit-3d-cad-cloud.webp "Bitbybit CAD Cloud")
+
+
+**Bit by bit developers** has always championed the democratization of CAD. The platform empowers users to run complex 3D algorithms directly in the browser - zero installation, zero friction. But as customer ambitions grow, so must the infrastructure.
+
+Today marks the next evolution of the Bitbybit ecosystem: **Managed Bitbybit CAD Cloud**, powered by a **RESTful API**.
+
+This is a fundamental expansion designed for enterprise B2B customers who demand more compute power, better IP protection, and scalable workflows than a browser-only environment can provide.
+
+<!-- truncate -->
+
+## The Need for Power: Beyond the Browser
+
+Traditionally, Bitbybit has operated on a "client-side first" philosophy. When you run a script on the platform, your machine does the heavy lifting. This model is fantastic for accessibility - it mimics traditional CAD without the install bloat.
+
+However, real-world enterprise scenarios often hit a ceiling:
+
+* **Device Limitations:** Complex parametric objects and intense 3D configurators can bring mobile devices or lower-end laptops to a crawl.
+* **Proprietary IP:** B2B customers developing custom algorithms often need a secure environment where their code isn't exposed to the client-side browser.
+* **Heavy Computation:** Generating complex STEP, gLTF, or STL files for large assemblies requires distributed, parallel computing power that a single PC cannot offer.
+
+<!-- ![Cloud computing server architecture vs local client processing](/img/blog/cloud-vs-local-architecture.png)
+*Visualizing the shift from local processing to distributed cloud computing.* -->
+
+The new Cloud infrastructure addresses these tradeoffs head-on. By offloading heavy geometry processing to managed servers, it becomes possible to run long-lasting computations and manage massive data sets without freezing the user's interface.
+
+---
+
+## Bridging the Gap: How Cloud Enhances the Experience
+
+How does this new server-side infrastructure tie into the Bitbybit you already know? Improvements will be rolling out steadily across four key areas:
+
+### 1. Supercharged Visual Programming
+Paying subscribers will gain access to cloud-capable components integrated directly into the visual programming editors (Blockly, Rete). Soon, drag-and-drop nodes that execute heavy tasks on the cloud will return results instantly to your canvas.
+
+### 2. Next-Gen 3D Configurators
+High-tier (Silver and Gold) parametric models are being actively migrated to the cloud. This migration means smoother performance for complex models and opens the door for **intricate parametric configurators** that were previously impossible to run in a browser.
+
+### 3. Enterprise Deployment & Consulting
+Subscribers hitting scale or resource limits can now access paid consulting to deploy custom algorithms directly to tenant-based infrastructure. This makes it possible to scale workflows without building a separate server backend.
+
+### 4. Unified Architecture
+Internally, the cloud runs the same robust algorithms found in the open-source NPM packages and Runners. This ensures consistency: if it works in your browser prototype, it will work on the enterprise cloud.
+
+### A New Workflow for Complex Assemblies
+
+This infrastructure enables a "Hybrid" approach to 3D configuration. Imagine building a product assembly with thousands of parts:
+
+1.  **Real-time Preview:** The user interacts with a lightweight, abstracted preview in the browser (fast and responsive).
+2.  **Cloud Compute:** Once parameters are final, the user hits "Compute."
+3.  **Delivery:** The server processes the high-fidelity geometry and returns a detailed STEP file or final design link in minutes.
+
+---
+
+![Bitbybit CAD Cloud](/img/blog/enterprise-3d-cad.webp "Bitbybit CAD Cloud")
+
+## The RESTful API: Integration Your Way
+
+Previously, integrating Bitbybit meant using NPM packages or Runners on the frontend. The new **RESTful API** opens up deep backend integration for B2B clients and third-party CAD software.
+
+Three distinct ways to leverage this API are available:
+
+| Access Type | Description |
+| :--- | :--- |
+| **Indirect** | Premium applications powered by the API will be exposed directly. Users benefit from the speed and power without ever needing to touch code or manage keys. |
+| **Direct (Public)** | Clients can purchase **API Keys** to access ready-made cloud solutions. Pricing is flexible, based on the scope of access, compute time and storage requirements. |
+| **Direct (Enterprise)** | For clients with custom CAD workflows, **Tenant-Based Infrastructure** is available. A custom contract covers hosting, maintaining, and securing your proprietary algorithms, with API keys that point either to our general servers shared with others or exclusive to your dedicated server environment. |
+
+---
+
+## Commitment to Open Source
+
+With all this talk of "proprietary algorithms" and "cloud infrastructure," you might wonder: *What about Open Source?*
+
+**Nothing changes.**
+
+The commitment to open-sourcing fundamental core 3D algorithms remains steadfast. The tools you use to learn, experiment, and build - like the core NPM packages - will remain free and open. The Cloud API is an additive layer for those who need enterprise-grade scale and privacy, not a replacement for community tools.
+
+[Read More About Open Source Strategy](/learn/open-source-approach)
+
+## Ready to Scale?
+
+First version of Managed Bitbybit CAD Cloud is live already. Whether you need to protect your IP, speed up your configurators, or generate massive 3D datasets, we have built the infrastructure for the task.
+
+:::note
+Server infrastructure is exclusively managed by the Bit by bit developers company.
+:::
+
+**Would you like to discuss a custom enterprise integration and request an API key?**
+
+
+[**Contact Us Today**](mailto:info@bitbybit.dev)
+
+[**Learn more about B2B offerings**](https://bitbybit.dev/b2b)
