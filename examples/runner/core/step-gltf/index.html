@@ -581,6 +581,33 @@
         }
         .preview-toolbar .close-preview svg { width: 18px; height: 18px; }
 
+        .ground-toggle {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            padding: .4rem .85rem;
+            font-family: inherit;
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: color .2s, border-color .2s, background .2s;
+            white-space: nowrap;
+        }
+        .ground-toggle:hover {
+            color: var(--text);
+            border-color: rgba(255,255,255,.2);
+        }
+        .ground-toggle.active {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: rgba(240,206,187,.08);
+        }
+        .ground-toggle svg { width: 16px; height: 16px; }
+
         .preview-canvas-wrap {
             flex: 1;
             position: relative;
@@ -1106,6 +1133,10 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Download GLB
                     </button>
+                    <button class="ground-toggle" id="groundToggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="17" rx="10" ry="4"/><line x1="12" y1="3" x2="12" y2="13"/><polyline points="8 9 12 13 16 9"/></svg>
+                        Ground
+                    </button>
                     <button class="close-preview" id="closePreview">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
@@ -1126,6 +1157,7 @@
             const canvasWrap = modal.querySelector('#previewCanvasWrap');
             const closeBtn = modal.querySelector('#closePreview');
             const previewDlBtn = modal.querySelector('#previewDownloadBtn');
+            const groundToggleBtn = modal.querySelector('#groundToggle');
 
             // Download from preview
             previewDlBtn.addEventListener('click', () => {
@@ -1183,6 +1215,7 @@
             const grid = new GridHelper(50, 50, 0x333333, 0x222222);
             grid.material.opacity = 0.3;
             grid.material.transparent = true;
+            grid.visible = false;
             scene.add(grid);
 
             // Shadow-receiving ground plane (sits just below grid to avoid z-fighting)
@@ -1192,7 +1225,16 @@
             ground.rotation.x = -Math.PI / 2;
             ground.receiveShadow = true;
             ground.renderOrder = -1;
+            ground.visible = false;
             scene.add(ground);
+
+            // Ground toggle
+            groundToggleBtn.addEventListener('click', () => {
+                const show = !ground.visible;
+                ground.visible = show;
+                grid.visible = show;
+                groundToggleBtn.classList.toggle('active', show);
+            });
 
             // Controls
             const controls = new OrbitControls(camera, renderer.domElement);
