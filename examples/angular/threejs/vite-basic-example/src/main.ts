@@ -16,7 +16,7 @@ import { initWithKernels } from "./init-kernels";
     >
       <img
         alt="Logo of Bit by bit developers company"
-        src="https://bitbybit.dev/assets/logo-gold-small.png"
+        src="https://bitbybit.dev/logo-gold-small.png"
       />
       <div>bitbybit.dev</div>
       <br />

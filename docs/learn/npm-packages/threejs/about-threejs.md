@@ -15,7 +15,7 @@ ThreeJS is a cross-browser JavaScript library used to create and display animate
 **Visit the official ThreeJS homepage:** <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">threejs.org</a>
 
 <img 
-  src="https://bitbybit.dev/assets/threejs-logo.png" 
+  src="https://bitbybit.dev/threejs-logo.png" 
   width="150"
   alt="ThreeJS Logo" 
   title="ThreeJS Logo" />

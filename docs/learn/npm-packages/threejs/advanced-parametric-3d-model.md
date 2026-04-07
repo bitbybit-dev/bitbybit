@@ -90,7 +90,7 @@ The HTML file is straightforward, providing the basic structure for our 3D appli
     >
       <img
         alt="Logo of Bit by bit developers company"
-        src="https://bitbybit.dev/assets/logo-gold-small.png"
+        src="https://bitbybit.dev/logo-gold-small.png"
       />
       <div>bitbybit.dev</div>
       <br />
