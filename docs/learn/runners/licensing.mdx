@@ -1,0 +1,128 @@
+---
+sidebar_position: 12
+title: Runner Licensing — Understanding the Bitbybit Runner License
+sidebar_label: Runner Licensing
+description: Understand the licensing model for Bitbybit Runners, including the proprietary Runner License, open-source component licenses (MIT, LGPL, Apache), and LGPL compliance for OpenCASCADE.
+tags: [runners, licensing]
+---
+
+import Admonition from '@theme/Admonition';
+
+# Bitbybit Runner Licensing
+
+The Bitbybit Runner has a **dual-origin licensing model**. The Runner bundle contains both proprietary components authored by Bitbybit and open-source components governed by their own licenses. Understanding this distinction is important if you plan to use, embed, or self-host the Runner.
+
+## The Short Version
+
+- **You can use the Runner freely**, including for commercial purposes, without a bitbybit.dev account.
+- **You can embed it** in your own products, apps, and websites.
+- **You can self-host** the Runner files on your own CDN.
+- **You cannot** reverse-engineer the proprietary parts, modify the bundle, or redistribute it as a standalone product.
+- **Open-source components** (OCCT, BabylonJS, Three.js, PlayCanvas, JSCAD, Manifold, etc.) keep their own licenses — your rights under those licenses are not restricted.
+
+## Bitbybit Runner License
+
+The Runner bundle as a whole is governed by the **Bitbybit Runner License**, a custom license distributed with each Runner release. Key terms:
+
+| What You Can Do | What You Cannot Do |
+|---|---|
+| Use in any application (commercial or personal) | Reverse-engineer proprietary algorithms |
+| Embed in products you distribute to end-users | Modify or patch the Runner bundle files |
+| Self-host on your own infrastructure | Redistribute as a standalone product or public CDN |
+| Use without a bitbybit.dev account | Remove copyright or license notices |
+
+The full license text is included in the [`LICENSE` file](https://github.com/bitbybit-dev/bitbybit-assets/blob/main/LICENSE) distributed with the Runner files.
+
+## Open-Source Components
+
+The Runner incorporates the following open-source software, each governed by its own license:
+
+| Component | License | How It's Used |
+|---|---|---|
+| **OpenCASCADE (OCCT)** | LGPL v2.1 | Separate Web Worker + WASM binary, loaded at runtime |
+| **BabylonJS** | Apache 2.0 | Bundled in full BabylonJS runner; excluded from lite |
+| **Three.js** | MIT | Bundled in full Three.js runner; excluded from lite |
+| **PlayCanvas** | MIT | Bundled in full PlayCanvas runner; excluded from lite |
+| **JSCAD** | MIT | Separate Web Worker, loaded at runtime |
+| **Manifold** | Apache 2.0 | Separate Web Worker + WASM binary, loaded at runtime |
+| **Havok Physics** | Havok License | Optional separate script (BabylonJS runner only) |
+| **opentype.js** | MIT | Used for font parsing in CAD text operations |
+| **JSONPath Plus** | MIT | Bundled via `@bitbybit-dev/core` for JSONPath queries |
+| **Bitbybit Core Libraries** | MIT | `@bitbybit-dev/core`, `@bitbybit-dev/occt`, etc. |
+
+A complete listing is provided in the `NOTICE` file distributed with each Runner release.
+
+<Admonition type="info" title="Havok Physics Licensing">
+Havok Physics is available in the BabylonJS runner and Bitbybit does not prevent its use. However, Havok has its own licensing terms — if you use Havok in a commercial product, you are responsible for verifying your compliance with Havok's licensing requirements.
+</Admonition>
+
+## LGPL Compliance (OpenCASCADE)
+
+OpenCASCADE Technology (OCCT) is licensed under **LGPL v2.1**, which requires that users can replace the LGPL-licensed library with their own version. The Bitbybit Runner architecture satisfies this requirement:
+
+### How OCCT Is Separated
+
+OCCT is **not compiled into** the Runner bundle. Instead:
+
+1. The OCCT Web Worker (`bitbybit-dev-occt-webworker.js`) is a **separate JavaScript file** loaded from the CDN at runtime
+2. The OCCT WASM binary (`bitbybit-dev-occt.*.wasm`) is a **separate WebAssembly file** loaded by the worker
+3. Communication between the Runner and the OCCT worker uses a **documented message protocol** — the Runner sends commands, the worker processes them and returns results
+
+This is **dynamic linking** — the OCCT component is loaded and linked at runtime, not at compile time.
+
+### How to Replace OCCT
+
+You can replace the OCCT worker and WASM binary using the `cdnUrl` configuration option:
+
+```javascript
+const runner = window.bitbybitRunner.getRunnerInstance();
+await runner.run({
+    canvasId: 'myCanvas',
+    enableOCCT: true,
+    cdnUrl: 'https://your-server.com/bitbybit-assets/'
+});
+```
+
+Your custom server must host compatible replacement files:
+```
+https://your-server.com/bitbybit-assets/
+├── workers/
+│   └── bitbybit-dev-occt-webworker.js    ← your custom OCCT worker
+└── wasm/
+    └── bitbybit-dev-occt.*.wasm          ← your custom OCCT WASM
+```
+
+Your replacement worker must implement the same message protocol as the original. See the [Worker Protocol Specification](/learn/runners/worker-protocol) for the complete interface documentation.
+
+### OCCT Source Code
+
+The OpenCASCADE source code is publicly available at [https://dev.opencascade.org/](https://dev.opencascade.org/). You can compile your own modified version to WebAssembly and use it as a drop-in replacement.
+
+## Build Tooling
+
+The build scripts, webpack configurations, and tooling used to compile and assemble the Runner are **proprietary**. They are not included in the Runner distribution and are not part of any license grant. If you want to work with the open-source components independently, their source code is available at [https://github.com/bitbybit-dev/bitbybit](https://github.com/bitbybit-dev/bitbybit).
+
+## Terms and Conditions
+
+If you have a bitbybit.dev account, the [Terms and Conditions](/terms-and-conditions) apply to your use of the Platform and Services in addition to the Runner License. Section 9 ("Our License to You") contains specific provisions about the Runner, including:
+
+- The relationship between the Runner License and the Terms and Conditions
+- Open-source component obligations
+- LGPL compliance details
+- CDN availability disclaimers
+- Self-hosting permissions and responsibilities
+
+If you do **not** have a bitbybit.dev account and only use the Runner, you are governed by the Bitbybit Runner License (and the respective open-source licenses for Open-Source Components).
+
+## Questions
+
+For licensing questions, contact [info@bitbybit.dev](mailto:info@bitbybit.dev).
+
+For commercial licensing inquiries (including white-label, OEM, or redistribution rights), contact [info@bitbybit.dev](mailto:info@bitbybit.dev).
+
+## Related Pages
+
+- [Bitbybit Runner Introduction](/learn/runners/intro)
+- [OCCT Worker Protocol Specification](/learn/runners/worker-protocol)
+- [Self-Hosting Bitbybit Assets](/learn/hosting-and-cdn)
+- [Open Source Approach](/learn/open-source-approach)
