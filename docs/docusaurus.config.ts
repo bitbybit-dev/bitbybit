@@ -13,6 +13,71 @@ const config: Config = {
     tagline: "Learn How To Use The Platform",
     favicon: "img/logo-gold-small.png",
 
+    headTags: [
+        {
+            tagName: "script",
+            attributes: { type: "application/ld+json" },
+            innerHTML: JSON.stringify({
+                "@context": "https://schema.org",
+                "@graph": [
+                    {
+                        "@type": "Organization",
+                        "@id": "https://bitbybit.dev/#organization",
+                        "name": "Bit by bit developers",
+                        "url": "https://bitbybit.dev",
+                        "logo": {
+                            "@type": "ImageObject",
+                            "url": "https://bitbybit.dev/logo-gold-small.png"
+                        },
+                        "sameAs": [
+                            "https://github.com/bitbybit-dev/bitbybit",
+                            "https://discord.gg/GSe3VMe",
+                            "https://www.youtube.com/@bitbybitdev",
+                            "https://www.linkedin.com/company/bitbybit-dev",
+                            "https://x.com/bitbybit_dev",
+                            "https://www.instagram.com/bitbybit.dev/"
+                        ]
+                    },
+                    {
+                        "@type": "WebSite",
+                        "@id": "https://learn.bitbybit.dev/#website",
+                        "url": "https://learn.bitbybit.dev",
+                        "name": "Bitbybit Learning Center",
+                        "description": "Tutorials, guides, and blog posts for learning 3D CAD programming with bitbybit.dev – visual programming, TypeScript, OpenCascade, BabylonJS, Three.js, and PlayCanvas.",
+                        "publisher": { "@id": "https://bitbybit.dev/#organization" },
+                        "isPartOf": { "@id": "https://bitbybit.dev/#website" }
+                    },
+                    {
+                        "@type": "Course",
+                        "@id": "https://learn.bitbybit.dev/#course",
+                        "name": "Learn Bitbybit 3D CAD Programming",
+                        "url": "https://learn.bitbybit.dev/learn/intro",
+                        "description": "Free learning resources for browser-based 3D CAD development. Covers getting started, visual programming with Rete nodes, block-based coding with Blockly, TypeScript API usage, and integration with BabylonJS, Three.js, and PlayCanvas.",
+                        "provider": { "@id": "https://bitbybit.dev/#organization" },
+                        "educationalLevel": "Beginner to Advanced",
+                        "inLanguage": "en",
+                        "isAccessibleForFree": true,
+                        "hasCourseInstance": {
+                            "@type": "CourseInstance",
+                            "courseMode": "online",
+                            "courseWorkload": "Self-paced"
+                        }
+                    },
+                    {
+                        "@type": "Blog",
+                        "@id": "https://learn.bitbybit.dev/#blog",
+                        "name": "Bitbybit Blog",
+                        "url": "https://learn.bitbybit.dev/blog",
+                        "description": "News, tutorials, and updates from the bitbybit.dev 3D CAD platform.",
+                        "publisher": { "@id": "https://bitbybit.dev/#organization" },
+                        "isPartOf": { "@id": "https://learn.bitbybit.dev/#website" },
+                        "inLanguage": "en"
+                    }
+                ]
+            })
+        }
+    ],
+
     // Set the production url of your site here
     url: "https://learn.bitbybit.dev",
     // Set the /<baseUrl>/ pathname under which your site is served
