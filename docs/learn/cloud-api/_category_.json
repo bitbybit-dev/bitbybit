@@ -1,0 +1,8 @@
+{
+    "label": "Cloud API",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "description": "Bitbybit Cloud CAD API — generate models, convert files, and run CAD operations via HTTP."
+    }
+}

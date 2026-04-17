@@ -1,6 +1,7 @@
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 import packageJson from "./package.json";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -132,6 +133,48 @@ const config: Config = {
             } as Preset.Options,
         ],
     ],
+    plugins: [
+        "docusaurus-plugin-sass",
+        function polyfillPlugin() {
+            return {
+                name: "node-polyfills",
+                configureWebpack() {
+                    return {
+                        resolve: {
+                            fallback: {
+                                path: require.resolve("path-browserify"),
+                            },
+                        },
+                    };
+                },
+            };
+        },
+        [
+            "docusaurus-plugin-openapi-docs",
+            {
+                id: "openapi",
+                docsPluginId: "api",
+                config: {
+                    "openapi-docs": {
+                        specPath: "static/openapi.json",
+                        outputDir: "api/openapi-docs",
+                        hideSendButton: true,
+                    } as OpenApiPlugin.Options,
+                },
+            },
+        ],
+        [
+            "@docusaurus/plugin-content-docs",
+            {
+                id: "api",
+                path: "api",
+                routeBasePath: "api",
+                sidebarPath: "./sidebarsApi.ts",
+                docItemComponent: "@theme/ApiItem",
+            },
+        ],
+    ],
+    themes: ["docusaurus-theme-openapi-docs"],
     themeConfig: {
         // Replace with your project's social card
         image: "img/learn-bitbybit-social-card.jpeg",
@@ -159,6 +202,7 @@ const config: Config = {
                 { to: "/learn/getting-started/engines/babylonjs", label: "BabylonJS", position: "left" },
                 { to: "/learn/getting-started/engines/playcanvas", label: "PlayCanvas", position: "left" },
                 { to: "/blog", label: "Blog", position: "left" },
+                { to: "/api/openapi-docs/bitbybit-cad-cloud-api", label: "API", position: "left" },
                 { to: "https://bitbybit.dev", label: "Home", position: "left" },
                 {
                     href: "https://bitbybit.dev/auth/pick-plan",

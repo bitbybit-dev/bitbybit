@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["names"],"properties":{"names":{"type":"array","items":{"type":"string"},"maxItems":50,"example":["dragon-cup","phone-nest"]}}}}}}}
