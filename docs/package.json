@@ -5,8 +5,10 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "generate-llms": "node scripts/generate-llms.js",
+    "generate-api-docs": "docusaurus gen-api-docs openapi-docs",
+    "clean-api-docs": "docusaurus clean-api-docs openapi-docs",
     "start": "npm run generate-llms && docusaurus start",
-    "build": "npm run generate-llms && docusaurus build",
+    "build": "npm run generate-llms && npm run clean-api-docs && npm run generate-api-docs && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -20,10 +22,15 @@
     "@docusaurus/preset-classic": "3.7.0",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
+    "docusaurus-plugin-openapi-docs": "^4.7.1",
+    "docusaurus-plugin-sass": "^0.2.6",
+    "docusaurus-theme-openapi-docs": "^4.7.1",
+    "path-browserify": "^1.0.1",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
+    "react-cookie-consent": "9.0.0",
     "react-dom": "^19.0.0",
-    "react-cookie-consent": "9.0.0"
+    "sass": "^1.99.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.7.0",

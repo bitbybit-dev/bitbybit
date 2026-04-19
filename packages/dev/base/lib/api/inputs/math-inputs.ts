@@ -529,4 +529,14 @@ export namespace Math {
          */
         maxDelta = 0.1;
     }
+    export class EvalArithmeticDto {
+        constructor(expression?: string) {
+            if (expression !== undefined) { this.expression = expression; }
+        }
+        /**
+         * Arithmetic expression containing numbers, +, -, *, /, and parentheses
+         * @default "1+1"
+         */
+        expression = "1+1";
+    }
 }

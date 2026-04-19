@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Bitbybit — STEP to GLTF Converter</title>
+    <base href="/">
+    <link rel="icon" type="image/x-icon" href="https://bitbybit.dev/favicon.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Convert STEP / STPZ files to GLTF (GLB) with full control over conversion options. Powered by Bitbybit Core Runner.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script defer src="https://git-cdn.bitbybit.dev/v1.0.0-rc.1.1/runner/bitbybit-runner-core.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+    }
+    </script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #1A1C1F;
+            --surface: rgba(30, 32, 36, .85);
+            --surface-solid: #232528;
+            --surface2: #2a2c30;
+            --border: rgba(255,255,255,.07);
+            --border-bright: rgba(255,255,255,.12);
+            --text: #edeae8;
+            --text-dim: #8a8380;
+            --accent: #F0CEBB;
+            --accent2: #e0b49e;
+            --accent-glow: rgba(240,206,187,.35);
+            --success: #34d399;
+            --success-glow: rgba(52,211,153,.3);
+            --danger: #f87171;
+            --radius: 14px;
+            --radius-sm: 8px;
+        }
+
+        html { font-size: 14px; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Animated background noise */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(240,206,187,.1) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 100%, rgba(224,180,158,.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hidden { display: none !important; }
+
+        /* ─── Header ─── */
+        header {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(26,28,31,.85);
+            backdrop-filter: blur(24px) saturate(1.4);
+            -webkit-backdrop-filter: blur(24px) saturate(1.4);
+        }
+        header .logo {
+            width: 30px; height: 30px;
+            border-radius: 6px;
+        }
+        header h1 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        header .badge {
+            margin-left: auto;
+            font-size: .7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-dim);
+            padding: .25rem .65rem;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            text-decoration: none;
+            transition: color .2s, border-color .2s;
+        }
+        header .badge:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* ─── Footer ─── */
+        footer {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem 1.5rem;
+            background: rgba(26,28,31,.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        footer a {
+            font-size: .78rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+        }
+        footer a:hover { color: var(--accent); }
+        footer a svg { width: 14px; height: 14px; }
+        footer .sep {
+            width: 1px;
+            height: 14px;
+            background: var(--border-bright);
+        }
+
+        /* ─── Main container ─── */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 820px;
+            padding: 2.5rem 1.5rem 5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* ─── Glass card mixin ─── */
+        .glass {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(1.3);
+            -webkit-backdrop-filter: blur(20px) saturate(1.3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        /* ─── Dropzone ─── */
+        .dropzone {
+            position: relative;
+            padding: 3.5rem 2rem 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .3s, background .3s, box-shadow .3s;
+        }
+        .dropzone::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 2px dashed rgba(240,206,187,.2);
+            border-radius: 10px;
+            pointer-events: none;
+            transition: border-color .3s;
+        }
+        .dropzone:hover::before,
+        .dropzone.drag-over::before {
+            border-color: var(--accent);
+        }
+        .dropzone:hover, .dropzone.drag-over {
+            background: rgba(240,206,187,.05);
+            box-shadow: 0 0 40px rgba(240,206,187,.08);
+        }
+        .dropzone input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2;
+        }
+        .dropzone-icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .dropzone-icon svg {
+            width: 52px; height: 52px;
+            opacity: .5;
+            transition: opacity .3s;
+        }
+        .dropzone:hover .dropzone-icon svg,
+        .dropzone.drag-over .dropzone-icon svg { opacity: .85; }
+
+        .dropzone-label { color: var(--text-dim); line-height: 1.7; font-size: .92rem; }
+        .dropzone-label strong { color: var(--text); font-weight: 600; }
+
+        /* File selected state */
+        .dropzone.has-file::before { border-color: var(--success); border-style: solid; }
+        .dropzone.has-file { background: rgba(52,211,153,.04); }
+        .file-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
+            margin-top: 1.25rem;
+        }
+        .file-info svg { width: 18px; height: 18px; color: var(--success); flex-shrink: 0; }
+        .file-info span {
+            font-size: .88rem;
+            font-weight: 500;
+            color: var(--success);
+        }
+        .file-info .file-size {
+            color: var(--text-dim);
+            font-weight: 400;
+            font-size: .8rem;
+        }
+        .file-info button {
+            margin-left: .5rem;
+            background: rgba(248,113,113,.1);
+            border: 1px solid rgba(248,113,113,.2);
+            border-radius: 6px;
+            color: var(--danger);
+            cursor: pointer;
+            padding: .25rem .55rem;
+            font-size: .75rem;
+            font-weight: 600;
+            font-family: inherit;
+            transition: background .2s;
+        }
+        .file-info button:hover { background: rgba(248,113,113,.2); }
+
+        /* ─── Options ─── */
+        .options-panel { overflow: hidden; }
+        .options-header {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .9rem 1.25rem;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid var(--border);
+            transition: background .2s;
+        }
+        .options-header:hover { background: rgba(255,255,255,.02); }
+        .options-header svg {
+            width: 18px; height: 18px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        .options-header h2 {
+            font-size: .88rem;
+            font-weight: 600;
+            flex: 1;
+        }
+        .options-header .chevron-icon {
+            width: 16px; height: 16px;
+            color: var(--text-dim);
+            transition: transform .3s;
+        }
+        .options-header.open .chevron-icon { transform: rotate(180deg); }
+
+        .options-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .45s cubic-bezier(.4,0,.2,1);
+        }
+        .options-body.open { max-height: 2200px; }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: .9rem;
+            padding: 1.25rem;
+        }
+
+        .field { display: flex; flex-direction: column; gap: .3rem; }
+        .field label {
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .field input[type="number"],
+        .field input[type="text"],
+        .field select {
+            background: rgba(0,0,0,.35);
+            border: 1px solid var(--border-bright);
+            border-radius: var(--radius-sm);
+            padding: .5rem .7rem;
+            color: var(--text);
+            font-family: inherit;
+            font-size: .88rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(240,206,187,.12);
+        }
+        .field select { cursor: pointer; }
+        .field select option { background: var(--surface-solid); }
+
+        /* Toggle switch */
+        .toggle-field {
+            flex-direction: row;
+            align-items: center;
+            gap: .65rem;
+            padding: .3rem 0;
+        }
+        .toggle-field label {
+            text-transform: none;
+            font-size: .85rem;
+            color: var(--text);
+            font-weight: 400;
+        }
+        .switch {
+            position: relative;
+            width: 38px; height: 20px;
+            flex-shrink: 0;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .switch .slider {
+            position: absolute; inset: 0;
+            background: rgba(255,255,255,.08);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background .3s;
+        }
+        .switch .slider::before {
+            content: '';
+            position: absolute;
+            left: 2px; top: 2px;
+            width: 16px; height: 16px;
+            background: var(--text-dim);
+            border-radius: 50%;
+            transition: transform .3s, background .3s;
+        }
+        .switch input:checked + .slider { background: var(--accent); }
+        .switch input:checked + .slider::before {
+            transform: translateX(18px);
+            background: #fff;
+        }
+
+        .section-title {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--accent);
+            padding-bottom: .4rem;
+            margin-top: .35rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title svg { width: 14px; height: 14px; }
+
+        /* ─── Convert button ─── */
+        .convert-btn {
+            position: relative;
+            width: 100%;
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: #1A1C1F;
+            background: linear-gradient(135deg, #F0CEBB 0%, #e0b49e 50%, #F0CEBB 100%);
+            background-size: 200% 200%;
+            animation: shiftGrad 4s ease infinite;
+            box-shadow: 0 4px 24px var(--accent-glow);
+            transition: opacity .2s, transform .15s, box-shadow .3s;
+            display: flex; align-items: center; justify-content: center; gap: .6rem;
+            letter-spacing: -.01em;
+        }
+        @keyframes shiftGrad {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .convert-btn svg { width: 20px; height: 20px; }
+        .convert-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+        .convert-btn:active:not(:disabled) { transform: translateY(0); }
+        .convert-btn:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+            box-shadow: none;
+            animation: none;
+        }
+
+        /* ─── Status area ─── */
+        .status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 2.5rem 2rem;
+        }
+
+        /* Spinner */
+        .spinner {
+            position: relative;
+            width: 52px; height: 52px;
+        }
+        .spinner::before, .spinner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+        }
+        .spinner::before {
+            border: 3px solid rgba(240,206,187,.12);
+        }
+        .spinner::after {
+            border: 3px solid transparent;
+            border-top-color: var(--accent);
+            border-right-color: var(--accent2);
+            animation: spin .9s cubic-bezier(.4,.15,.6,.85) infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .status-text {
+            font-size: .92rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        .elapsed-text {
+            font-size: .82rem;
+            color: var(--text-dim);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Success icon (animated check) */
+        .success-icon {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: rgba(52,211,153,.1);
+            border: 2px solid var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: popIn .4s cubic-bezier(.2,.8,.3,1.2);
+        }
+        .success-icon svg { width: 26px; height: 26px; color: var(--success); }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .55rem;
+            padding: .8rem 2.2rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            box-shadow: 0 4px 24px var(--success-glow);
+            transition: opacity .2s, transform .15s, box-shadow .3s;
+            letter-spacing: -.01em;
+        }
+        .download-btn svg { width: 20px; height: 20px; }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--success-glow);
+        }
+        .download-btn:active { transform: translateY(0); }
+
+        .preview-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .55rem;
+            padding: .8rem 2.2rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1A1C1F;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            box-shadow: 0 4px 24px var(--accent-glow);
+            transition: opacity .2s, transform .15s, box-shadow .3s;
+            letter-spacing: -.01em;
+        }
+        .preview-btn svg { width: 20px; height: 20px; }
+        .preview-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+        .preview-btn:active { transform: translateY(0); }
+
+        .result-buttons {
+            display: flex;
+            gap: .75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ─── 3D Preview Modal ─── */
+        .preview-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: #111214;
+            display: flex;
+            flex-direction: column;
+            transition: opacity .3s;
+        }
+        .preview-modal.fade-in { animation: fadeIn .3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .preview-toolbar {
+            display: flex;
+            align-items: center;
+            padding: .75rem 1.25rem;
+            background: rgba(20,22,26,.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            gap: .75rem;
+            z-index: 1;
+        }
+        .preview-toolbar h3 {
+            flex: 1;
+            font-size: .9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .preview-toolbar .close-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px; height: 34px;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,.04);
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: color .2s, border-color .2s;
+        }
+        .preview-toolbar .close-preview:hover {
+            color: var(--text);
+            border-color: rgba(255,255,255,.2);
+        }
+        .preview-toolbar .close-preview svg { width: 18px; height: 18px; }
+
+        .ground-toggle {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            padding: .4rem .85rem;
+            font-family: inherit;
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: color .2s, border-color .2s, background .2s;
+            white-space: nowrap;
+        }
+        .ground-toggle:hover {
+            color: var(--text);
+            border-color: rgba(255,255,255,.2);
+        }
+        .ground-toggle.active {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: rgba(240,206,187,.08);
+        }
+        .ground-toggle svg { width: 16px; height: 16px; }
+
+        .preview-canvas-wrap {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        .preview-canvas-wrap canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .preview-hint {
+            position: absolute;
+            bottom: 3.2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: .75rem;
+            color: rgba(255,255,255,.35);
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .preview-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem;
+            padding: .55rem 1rem;
+            background: rgba(20,22,26,.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255,255,255,.06);
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        .preview-footer a {
+            font-size: .75rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color .2s;
+        }
+        .preview-footer a:hover { color: var(--accent); }
+        .preview-footer .preview-badge {
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: .01em;
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: .88rem;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* ─── Init overlay ─── */
+        .init-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            z-index: 100;
+            transition: opacity .5s;
+        }
+        .init-overlay.fade-out { opacity: 0; pointer-events: none; }
+        .init-overlay p {
+            color: var(--text-dim);
+            font-size: .95rem;
+            font-weight: 500;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .container { padding: 1.5rem 1rem 3rem; }
+            header .badge { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Init overlay while OCCT kernel loads -->
+    <div class="init-overlay" id="initOverlay">
+        <div class="spinner"></div>
+        <p>Initializing OCCT kernel…</p>
+    </div>
+
+    <header>
+        <a href="https://bitbybit.dev" target="_blank" rel="noopener">
+            <img class="logo" src="https://bitbybit.dev/favicon.png" alt="Bitbybit logo">
+        </a>
+        <h1>STEP → GLTF Converter</h1>
+        <a class="badge" href="https://bitbybit.dev" target="_blank" rel="noopener">Powered by Bitbybit</a>
+    </header>
+
+    <main class="container">
+
+        <!-- Dropzone -->
+        <div class="dropzone glass" id="dropzone">
+            <input type="file" id="fileInput" accept=".step,.stp,.stpz,.stpZ,.STEP,.STP,.STPZ">
+            <div class="dropzone-icon">
+                <!-- Upload cloud icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
+                    <path d="M12 12v9"/>
+                    <path d="m16 16-4-4-4 4"/>
+                </svg>
+            </div>
+            <p class="dropzone-label" id="dropzoneLabel"><strong>Drop your STEP / STPZ file here</strong><br>or click to browse</p>
+            <div class="file-info hidden" id="fileInfo">
+                <!-- Check circle icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span id="fileName"></span>
+                <span class="file-size" id="fileSize"></span>
+                <button id="removeFile" type="button">Remove</button>
+            </div>
+        </div>
+
+        <!-- Options panel -->
+        <div class="options-panel glass">
+            <div class="options-header" id="optionsToggle">
+                <!-- Settings gear icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <h2>Conversion Options</h2>
+                <!-- Chevron -->
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="options-body" id="optionsBody">
+                <div class="options-grid">
+
+                    <!-- Data Reading -->
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        Data Reading
+                    </div>
+
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="readColors" checked><span class="slider"></span></label>
+                        <label for="readColors">Read Colors</label>
+                    </div>
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="readNames" checked><span class="slider"></span></label>
+                        <label for="readNames">Read Names</label>
+                    </div>
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="readMaterials" checked><span class="slider"></span></label>
+                        <label for="readMaterials">Read Materials</label>
+                    </div>
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="readLayers"><span class="slider"></span></label>
+                        <label for="readLayers">Read Layers</label>
+                    </div>
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="readProps"><span class="slider"></span></label>
+                        <label for="readProps">Read Properties</label>
+                    </div>
+
+                    <!-- Mesh Settings -->
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                        Mesh Settings
+                    </div>
+
+                    <div class="field">
+                        <label for="meshDeflection">Mesh Deflection</label>
+                        <input type="number" id="meshDeflection" value="5" min="0.01" step="0.1">
+                    </div>
+                    <div class="field">
+                        <label for="meshAngle">Mesh Angle</label>
+                        <input type="number" id="meshAngle" value="15" min="0.01" step="0.5">
+                    </div>
+                    <div class="field">
+                        <label for="faceCountThreshold">Face Count Threshold</label>
+                        <input type="number" id="faceCountThreshold" value="50000" min="1" step="1000">
+                    </div>
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="mergeFaces" checked><span class="slider"></span></label>
+                        <label for="mergeFaces">Merge Faces</label>
+                    </div>
+
+                    <!-- Export Settings -->
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export Settings
+                    </div>
+
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="splitIndices16" checked><span class="slider"></span></label>
+                        <label for="splitIndices16">Split Indices (16-bit)</label>
+                    </div>
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="embedTextures" checked><span class="slider"></span></label>
+                        <label for="embedTextures">Embed Textures</label>
+                    </div>
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="forceUVExport" checked><span class="slider"></span></label>
+                        <label for="forceUVExport">Force UV Export</label>
+                    </div>
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="adjustZtoY"><span class="slider"></span></label>
+                        <label for="adjustZtoY">Adjust Z to Y Up</label>
+                    </div>
+                    <div class="field">
+                        <label for="scale">Scale</label>
+                        <input type="number" id="scale" value="1.0" min="0.001" step="0.1">
+                    </div>
+
+                    <!-- Naming & Transforms -->
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                        Naming &amp; Transform Format
+                    </div>
+
+                    <div class="field">
+                        <label for="nodeNameFormat">Node Name Format</label>
+                        <select id="nodeNameFormat">
+                            <option value="empty">empty</option>
+                            <option value="product">product</option>
+                            <option value="instance" selected>instance</option>
+                            <option value="instanceOrProduct">instanceOrProduct</option>
+                            <option value="productOrInstance">productOrInstance</option>
+                            <option value="productAndInstance">productAndInstance</option>
+                            <option value="productAndInstanceAndOcaf">productAndInstanceAndOcaf</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="meshNameFormat">Mesh Name Format</label>
+                        <select id="meshNameFormat">
+                            <option value="empty">empty</option>
+                            <option value="product">product</option>
+                            <option value="instance" selected>instance</option>
+                            <option value="instanceOrProduct">instanceOrProduct</option>
+                            <option value="productOrInstance">productOrInstance</option>
+                            <option value="productAndInstance">productAndInstance</option>
+                            <option value="productAndInstanceAndOcaf">productAndInstanceAndOcaf</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="transformFormat">Transform Format</label>
+                        <select id="transformFormat">
+                            <option value="compact" selected>compact</option>
+                            <option value="mat4">mat4</option>
+                            <option value="trs">trs</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="outputFileName">Output File Name</label>
+                        <input type="text" id="outputFileName" value="converted">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Convert button -->
+        <button class="convert-btn" id="convertBtn" disabled>
+            <!-- Arrow right circle icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            Convert to GLTF
+        </button>
+
+        <!-- Status area -->
+        <div class="status glass hidden" id="statusArea">
+            <div class="spinner" id="spinner"></div>
+            <div class="success-icon hidden" id="successIcon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <p class="status-text" id="statusText">Converting…</p>
+            <p class="elapsed-text hidden" id="elapsedText"></p>
+            <div class="result-buttons hidden" id="resultButtons">
+                <button class="download-btn" id="downloadBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download GLB
+                </button>
+                <button class="preview-btn" id="previewBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Preview 3D
+                </button>
+            </div>
+            </button>
+            <p class="error-text hidden" id="errorText"></p>
+        </div>
+
+    </main>
+
+    <script type="module">
+        // ── Initialise OCCT kernel ──────────────────────────────────
+        const runnerOptions = {
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableManifold: false,
+            occtArch: "32"
+        };
+
+        const runner = window.bitbybitRunner.getRunnerInstance();
+        const { bitbybit, Bit } = await runner.run(runnerOptions);
+
+        const { ConvertStepToGltfAdvancedDto } = Bit.Inputs.OCCT;
+        const { asset } = bitbybit;
+        const { io } = bitbybit.occt;
+
+        // Hide init overlay
+        const overlay = document.getElementById('initOverlay');
+        overlay.classList.add('fade-out');
+        setTimeout(() => overlay.remove(), 500);
+
+        // ── DOM refs ────────────────────────────────────────────────
+        const dropzone      = document.getElementById('dropzone');
+        const fileInput     = document.getElementById('fileInput');
+        const dropzoneLabel = document.getElementById('dropzoneLabel');
+        const fileInfo      = document.getElementById('fileInfo');
+        const fileNameEl    = document.getElementById('fileName');
+        const fileSizeEl    = document.getElementById('fileSize');
+        const removeFileBtn = document.getElementById('removeFile');
+        const convertBtn    = document.getElementById('convertBtn');
+        const statusArea    = document.getElementById('statusArea');
+        const spinner       = document.getElementById('spinner');
+        const successIcon   = document.getElementById('successIcon');
+        const statusText    = document.getElementById('statusText');
+        const elapsedText   = document.getElementById('elapsedText');
+        const resultButtons = document.getElementById('resultButtons');
+        const downloadBtn   = document.getElementById('downloadBtn');
+        const previewBtn    = document.getElementById('previewBtn');
+        const errorText     = document.getElementById('errorText');
+        const optionsToggle = document.getElementById('optionsToggle');
+        const optionsBody   = document.getElementById('optionsBody');
+
+        let selectedFile = null;
+        let resultBlob   = null;
+        let conversionStart = 0;
+        let elapsedTimer = null;
+
+        // ── Elapsed time helpers ──────────────────────────────────
+        function formatDuration(ms) {
+            if (ms < 1000) return ms + ' ms';
+            const secs = ms / 1000;
+            if (secs < 60) return secs.toFixed(1) + ' s';
+            const mins = Math.floor(secs / 60);
+            const remSecs = (secs % 60).toFixed(0);
+            return mins + ' min ' + remSecs + ' s';
+        }
+        function startElapsedTimer() {
+            conversionStart = performance.now();
+            elapsedText.classList.remove('hidden');
+            elapsedText.textContent = 'Elapsed: 0 s';
+            elapsedTimer = setInterval(() => {
+                const elapsed = performance.now() - conversionStart;
+                elapsedText.textContent = 'Elapsed: ' + formatDuration(Math.round(elapsed));
+            }, 500);
+        }
+        function stopElapsedTimer() {
+            if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
+        }
+
+        // ── Options panel toggle ────────────────────────────────────
+        optionsToggle.addEventListener('click', () => {
+            optionsToggle.classList.toggle('open');
+            optionsBody.classList.toggle('open');
+        });
+
+        // ── Helpers ─────────────────────────────────────────────────
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        // ── File handling ───────────────────────────────────────────
+        function setFile(file) {
+            if (!file) return;
+            const name = file.name.toLowerCase();
+            if (!name.endsWith('.step') && !name.endsWith('.stp') && !name.endsWith('.stpz')) {
+                alert('Please select a valid STEP (.step, .stp) or compressed STEP (.stpz) file.');
+                return;
+            }
+            selectedFile = file;
+            fileNameEl.textContent = file.name;
+            fileSizeEl.textContent = '(' + formatBytes(file.size) + ')';
+            fileInfo.classList.remove('hidden');
+            dropzone.classList.add('has-file');
+            convertBtn.disabled = false;
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.classList.add('hidden');
+            dropzone.classList.remove('has-file');
+            convertBtn.disabled = true;
+        }
+
+        fileInput.addEventListener('change', (e) => setFile(e.target.files[0]));
+        removeFileBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); clearFile(); });
+
+        // Drag & drop
+        ['dragenter', 'dragover'].forEach(evt =>
+            dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); })
+        );
+        ['dragleave', 'drop'].forEach(evt =>
+            dropzone.addEventListener(evt, () => dropzone.classList.remove('drag-over'))
+        );
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) setFile(file);
+        });
+
+        // ── Read helpers ────────────────────────────────────────────
+        const val   = (id) => document.getElementById(id).value;
+        const num   = (id) => parseFloat(document.getElementById(id).value);
+        const bool  = (id) => document.getElementById(id).checked;
+
+        // ── Conversion ──────────────────────────────────────────────
+        convertBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            // Reset UI
+            resultBlob = null;
+            statusArea.classList.remove('hidden');
+            spinner.classList.remove('hidden');
+            successIcon.classList.add('hidden');
+            statusText.classList.remove('hidden');
+            statusText.textContent = 'Reading file…';
+            resultButtons.classList.add('hidden');
+            errorText.classList.add('hidden');
+            elapsedText.classList.add('hidden');
+            convertBtn.disabled = true;
+
+            // Start elapsed timer
+            startElapsedTimer();
+
+            try {
+                const fileBuffer = await selectedFile.arrayBuffer();
+                const stepData = new Uint8Array(fileBuffer);
+
+                statusText.textContent = 'Converting — this may take a while…';
+
+                // Build options from form
+                const exportOpt = new ConvertStepToGltfAdvancedDto();
+                exportOpt.stepData = stepData;
+                exportOpt.readColors        = bool('readColors');
+                exportOpt.readNames         = bool('readNames');
+                exportOpt.readMaterials     = bool('readMaterials');
+                exportOpt.readLayers        = bool('readLayers');
+                exportOpt.readProps         = bool('readProps');
+                exportOpt.meshDeflection    = num('meshDeflection');
+                exportOpt.meshAngle         = num('meshAngle');
+                exportOpt.faceCountThreshold = num('faceCountThreshold');
+                exportOpt.mergeFaces        = bool('mergeFaces');
+                exportOpt.splitIndices16    = bool('splitIndices16');
+                exportOpt.embedTextures     = bool('embedTextures');
+                exportOpt.forceUVExport     = bool('forceUVExport');
+                exportOpt.adjustZtoY        = bool('adjustZtoY');
+                exportOpt.scale             = num('scale');
+                exportOpt.nodeNameFormat    = Bit.Inputs.OCCT.gltfNameFormatEnum[val('nodeNameFormat')];
+                exportOpt.meshNameFormat    = Bit.Inputs.OCCT.gltfNameFormatEnum[val('meshNameFormat')];
+                exportOpt.transformFormat   = Bit.Inputs.OCCT.gltfTransformFormatEnum[val('transformFormat')];
+
+                const res = await io.convertStepToGltfAdvanced(exportOpt);
+                resultBlob = new Blob([res], { type: 'model/gltf-binary' });
+
+                // Show success — hide spinner, show check
+                stopElapsedTimer();
+                const totalMs = Math.round(performance.now() - conversionStart);
+                spinner.classList.add('hidden');
+                successIcon.classList.remove('hidden');
+                statusText.textContent = 'Conversion complete!';
+                elapsedText.textContent = 'Completed in ' + formatDuration(totalMs);
+                resultButtons.classList.remove('hidden');
+            } catch (err) {
+                stopElapsedTimer();
+                spinner.classList.add('hidden');
+                statusText.classList.add('hidden');
+                errorText.textContent = 'Conversion failed: ' + (err.message || err);
+                errorText.classList.remove('hidden');
+                console.error(err);
+            } finally {
+                convertBtn.disabled = !selectedFile;
+            }
+        });
+
+        // ── Download ────────────────────────────────────────────────
+        downloadBtn.addEventListener('click', () => {
+            if (!resultBlob) return;
+            const outName = (val('outputFileName') || 'converted') + '.glb';
+            const url = URL.createObjectURL(resultBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = outName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        });
+
+        // ── 3D Preview ───────────────────────────────────────────────
+        previewBtn.addEventListener('click', () => {
+            if (!resultBlob) return;
+            openPreview(resultBlob);
+        });
+
+        async function openPreview(blob) {
+            const { Scene, PerspectiveCamera, WebGLRenderer, Color, Box3, Vector3,
+                    AmbientLight, DirectionalLight, HemisphereLight, PMREMGenerator,
+                    ACESFilmicToneMapping, SRGBColorSpace, GridHelper,
+                    CircleGeometry, MeshStandardMaterial, Mesh, PCFSoftShadowMap } = await import('three');
+            const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+            const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+            const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'preview-modal fade-in';
+            modal.innerHTML = `
+                <div class="preview-toolbar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:var(--accent);flex-shrink:0"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    <h3>3D Preview</h3>
+                    <button class="download-btn" id="previewDownloadBtn" style="padding:.5rem 1.2rem;font-size:.8rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download GLB
+                    </button>
+                    <button class="ground-toggle" id="groundToggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="17" rx="10" ry="4"/><line x1="12" y1="3" x2="12" y2="13"/><polyline points="8 9 12 13 16 9"/></svg>
+                        Ground
+                    </button>
+                    <button class="close-preview" id="closePreview">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="preview-canvas-wrap" id="previewCanvasWrap">
+                    <p class="preview-hint">Click & drag to rotate · Scroll to zoom · Right-click to pan</p>
+                </div>
+                <div class="preview-footer">
+                    <a class="preview-badge" href="https://bitbybit.dev" target="_blank" rel="noopener">Powered by Bitbybit</a>
+                    <a href="https://docs.bitbybit.dev" target="_blank" rel="noopener">Docs</a>
+                    <a href="https://github.com/bitbybit-dev" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://www.npmjs.com/org/bitbybit-dev" target="_blank" rel="noopener">npm</a>
+                    <a href="https://discord.gg/GSe3VMe" target="_blank" rel="noopener">Discord</a>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            const canvasWrap = modal.querySelector('#previewCanvasWrap');
+            const closeBtn = modal.querySelector('#closePreview');
+            const previewDlBtn = modal.querySelector('#previewDownloadBtn');
+            const groundToggleBtn = modal.querySelector('#groundToggle');
+
+            // Download from preview
+            previewDlBtn.addEventListener('click', () => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'model.glb';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            });
+
+            // Three.js setup
+            const scene = new Scene();
+            scene.background = new Color('#1e2024');
+
+            const camera = new PerspectiveCamera(45, canvasWrap.clientWidth / canvasWrap.clientHeight, 0.01, 10000);
+            const renderer = new WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(canvasWrap.clientWidth, canvasWrap.clientHeight);
+            renderer.toneMapping = ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            renderer.outputColorSpace = SRGBColorSpace;
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = PCFSoftShadowMap;
+            canvasWrap.appendChild(renderer.domElement);
+
+            // Environment lighting (studio-like)
+            const pmremGenerator = new PMREMGenerator(renderer);
+            pmremGenerator.compileEquirectangularShader();
+            const envTexture = pmremGenerator.fromScene(new RoomEnvironment()).texture;
+            scene.environment = envTexture;
+
+            // Additional lights for better fill
+            scene.add(new HemisphereLight(0xfff5eb, 0x1a1c1f, 0.6));
+            const dirLight = new DirectionalLight(0xffffff, 1.2);
+            dirLight.position.set(5, 10, 7);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.bias = -0.0001;
+            dirLight.shadow.normalBias = 0.05;
+            scene.add(dirLight);
+            const dirLight2 = new DirectionalLight(0xf0cebb, 0.5);
+            dirLight2.position.set(-5, 3, -5);
+            dirLight2.castShadow = true;
+            dirLight2.shadow.mapSize.width = 1024;
+            dirLight2.shadow.mapSize.height = 1024;
+            dirLight2.shadow.bias = -0.0001;
+            dirLight2.shadow.normalBias = 0.05;
+            scene.add(dirLight2);
+
+            // Grid
+            const grid = new GridHelper(50, 50, 0x333333, 0x222222);
+            grid.material.opacity = 0.3;
+            grid.material.transparent = true;
+            grid.visible = false;
+            scene.add(grid);
+
+            // Shadow-receiving ground plane (sits just below grid to avoid z-fighting)
+            const groundGeo = new CircleGeometry(100, 128);
+            const groundMat = new MeshStandardMaterial({ color: 0x1e2024, roughness: 1, metalness: 0 });
+            const ground = new Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            ground.renderOrder = -1;
+            ground.visible = false;
+            scene.add(ground);
+
+            // Ground toggle
+            groundToggleBtn.addEventListener('click', () => {
+                const show = !ground.visible;
+                ground.visible = show;
+                grid.visible = show;
+                groundToggleBtn.classList.toggle('active', show);
+            });
+
+            // Controls
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.08;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 1.5;
+
+            // Load GLB
+            const loader = new GLTFLoader();
+            const arrayBuf = await blob.arrayBuffer();
+            loader.parse(arrayBuf, '', (gltf) => {
+                const model = gltf.scene;
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                scene.add(model);
+
+                // Auto-fit camera to model
+                const box = new Box3().setFromObject(model);
+                const center = box.getCenter(new Vector3());
+                const size = box.getSize(new Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const dist = maxDim * 1.8;
+
+                // Adapt camera clipping planes to model scale
+                camera.near = maxDim * 0.001;
+                camera.far  = maxDim * 100;
+                camera.updateProjectionMatrix();
+
+                camera.position.set(center.x + dist * 0.6, center.y + dist * 0.5, center.z + dist * 0.7);
+                camera.lookAt(center);
+                controls.target.copy(center);
+                controls.minDistance = maxDim * 0.05;
+                controls.maxDistance = maxDim * 20;
+                controls.update();
+
+                // Position grid & ground at model bottom
+                grid.position.y = box.min.y;
+                const gridScale = maxDim * 3;
+                grid.scale.set(gridScale / 50, 1, gridScale / 50);
+                grid.position.x = center.x;
+                grid.position.z = center.z;
+
+                ground.position.set(center.x, box.min.y - maxDim * 0.001, center.z);
+                const groundRadius = maxDim * 2;
+                const groundScale = groundRadius / 100;
+                ground.scale.set(groundScale, groundScale, 1);
+
+                // Fit shadow camera frustum to model
+                const shadowPad = maxDim * 1.5;
+                const shadowNear = maxDim * 0.01;
+                const shadowFar  = maxDim * 20;
+                [dirLight, dirLight2].forEach(l => {
+                    l.shadow.camera.left   = -shadowPad;
+                    l.shadow.camera.right  =  shadowPad;
+                    l.shadow.camera.top    =  shadowPad;
+                    l.shadow.camera.bottom = -shadowPad;
+                    l.shadow.camera.near   = shadowNear;
+                    l.shadow.camera.far    = shadowFar;
+                    l.shadow.camera.updateProjectionMatrix();
+                    l.target.position.copy(center);
+                    scene.add(l.target);
+                    l.target.updateMatrixWorld();
+                });
+                // Use small fixed bias values — scaling bias causes shadows to detach
+                dirLight.shadow.bias       = -0.00015;
+                dirLight.shadow.normalBias  = 0.02;
+                dirLight2.shadow.bias       = -0.00015;
+                dirLight2.shadow.normalBias = 0.02;
+                dirLight.position.set(center.x + maxDim, center.y + maxDim * 2, center.z + maxDim);
+                dirLight2.position.set(center.x - maxDim, center.y + maxDim, center.z - maxDim);
+            }, (err) => {
+                console.error('Failed to load GLB preview:', err);
+            });
+
+            // Render loop
+            let animId;
+            function animate() {
+                animId = requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Resize
+            const onResize = () => {
+                const w = canvasWrap.clientWidth;
+                const h = canvasWrap.clientHeight;
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            };
+            window.addEventListener('resize', onResize);
+
+            // Close
+            function closeModal() {
+                cancelAnimationFrame(animId);
+                renderer.dispose();
+                pmremGenerator.dispose();
+                envTexture.dispose();
+                window.removeEventListener('resize', onResize);
+                modal.remove();
+            }
+            closeBtn.addEventListener('click', closeModal);
+            document.addEventListener('keydown', function escHandler(e) {
+                if (e.key === 'Escape') { closeModal(); document.removeEventListener('keydown', escHandler); }
+            });
+        }
+    </script>
+
+    <footer>
+        <a href="https://bitbybit.dev" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            bitbybit.dev
+        </a>
+        <span class="sep"></span>
+        <a href="https://learn.bitbybit.dev" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Learn
+        </a>
+        <span class="sep"></span>
+        <a href="https://github.com/bitbybit-dev/bitbybit" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 0 0-1.34-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 0 1 1.84 1.24 2.56 2.56 0 0 0 3.5 1 2.56 2.56 0 0 1 .76-1.6c-2.67-.3-5.47-1.34-5.47-5.94a4.64 4.64 0 0 1 1.24-3.23 4.32 4.32 0 0 1 .12-3.18s1-.33 3.3 1.23a11.38 11.38 0 0 1 6 0c2.3-1.56 3.3-1.23 3.3-1.23a4.32 4.32 0 0 1 .12 3.18 4.64 4.64 0 0 1 1.24 3.23c0 4.61-2.81 5.63-5.48 5.93a2.86 2.86 0 0 1 .82 2.23v3.3c0 .32.22.7.82.58A12 12 0 0 0 12 .3"/></svg>
+            GitHub
+        </a>
+        <span class="sep"></span>
+        <a href="https://www.npmjs.com/org/bitbybit-dev" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="18" rx="2"/><path d="M7 7v10"/><path d="M12 7v6"/><path d="M17 7v10"/></svg>
+            npm Packages
+        </a>
+        <span class="sep"></span>
+        <a href="https://discord.gg/GSe3VMe" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.32 4.37A19.8 19.8 0 0 0 15.42 3c-.22.4-.47.93-.64 1.35a18.35 18.35 0 0 0-5.56 0A13.64 13.64 0 0 0 8.58 3 19.74 19.74 0 0 0 3.68 4.37 20.26 20.26 0 0 0 .14 17.94a19.9 19.9 0 0 0 6.07 3.06 14.82 14.82 0 0 0 1.3-2.1 12.87 12.87 0 0 1-2.04-.98c.17-.13.34-.26.5-.39a14.17 14.17 0 0 0 12.06 0c.16.14.33.27.5.4a12.97 12.97 0 0 1-2.05.97 14.82 14.82 0 0 0 1.3 2.1 19.86 19.86 0 0 0 6.08-3.06A20.2 20.2 0 0 0 20.32 4.37zM8.01 15.33c-1.18 0-2.15-1.08-2.15-2.42s.95-2.42 2.15-2.42 2.17 1.09 2.15 2.42c0 1.34-.95 2.42-2.15 2.42zm7.98 0c-1.18 0-2.15-1.08-2.15-2.42s.95-2.42 2.15-2.42 2.17 1.09 2.15 2.42c0 1.34-.95 2.42-2.15 2.42z"/></svg>
+            Discord
+        </a>
+    </footer>
+</body>
+
+</html>

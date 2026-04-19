@@ -93,7 +93,7 @@ The `index.html` file provides the basic webpage structure.
         >
         <img
             alt="Logo of Bit by bit developers company"
-            src="https://bitbybit.dev/assets/logo-gold-small.png"
+            src="https://bitbybit.dev/logo-gold-small.png"
         />
         <div>bitbybit.dev</div>
         <br />
