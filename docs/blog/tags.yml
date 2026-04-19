@@ -87,3 +87,24 @@ freecad:
   label: FreeCAD
   permalink: /freecad
   description: Interoperability with FreeCAD, the popular open-source parametric CAD modeler.
+
+api:
+  label: API
+  permalink: /api
+  description: RESTful and programmatic interfaces for integrating 3D CAD capabilities into external applications and services.
+
+enterprise:
+  label: Enterprise
+  permalink: /enterprise
+  description: Enterprise-grade solutions for B2B customers requiring scalable infrastructure, IP protection, and managed deployments.
+
+rest:
+  label: REST
+  permalink: /rest
+  description: RESTful API design patterns, endpoints, and best practices for server-side 3D geometry processing.
+
+architecture:
+  label: Architecture
+  permalink: /architecture
+  description: System design, infrastructure decisions, and technical architecture behind the Bitbybit platform and cloud services.
+

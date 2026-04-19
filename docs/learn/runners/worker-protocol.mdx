@@ -1,0 +1,247 @@
+---
+sidebar_position: 11
+title: OCCT Worker Protocol — Replace or Customize the CAD Kernel
+sidebar_label: Worker Protocol (OCCT)
+description: Technical specification of the OCCT Web Worker message protocol used by Bitbybit Runners. Use this to build compatible custom workers or replace the OpenCASCADE component.
+tags: [runners, occt, advanced]
+---
+
+import Admonition from '@theme/Admonition';
+
+# OCCT Worker Protocol Specification
+
+The OpenCASCADE Technology (OCCT) component in Bitbybit Runners is loaded as a **separate Web Worker** at runtime. It is not compiled into the main runner bundle. This means you can replace it with your own build of OpenCASCADE (or any compatible CAD kernel) by hosting custom worker files and pointing the runner to them.
+
+This document specifies the complete message protocol between the runner (main thread) and the OCCT worker, enabling you to build a compatible replacement.
+
+<Admonition type="info" title="Why This Page Exists">
+OCCT is licensed under LGPL v2.1, which requires that users can replace the LGPL-licensed component with their own version. This specification ensures you have the information needed to do so. See the <a href="/learn/runners/licensing">Runner Licensing</a> page for details.
+</Admonition>
+
+## Architecture Overview
+
+```
+Main Thread (Runner)                    OCCT Web Worker
+┌─────────────────────┐                ┌─────────────────────────┐
+│                     │  postMessage   │                         │
+│  Runner init        │ ──────────────►│  Load WASM              │
+│                     │  {type:        │  Load fonts             │
+│                     │   "initialise"}│  Init OCCT kernel       │
+│                     │                │                         │
+│                     │◄────────────── │  postMessage            │
+│  State: initialised │  "occ-         │  ("occ-initialised")    │
+│                     │   initialised" │                         │
+│                     │                │                         │
+│  API call           │ ──────────────►│  Execute function       │
+│  {action, uid}      │                │  Return result          │
+│                     │◄────────────── │  {uid, result}          │
+│                     │                │                         │
+└─────────────────────┘                └─────────────────────────┘
+```
+
+The worker is spawned as an **ES module** worker:
+```javascript
+const workerUrl = URL.createObjectURL(
+    new Blob([`import "${cdnUrl}/workers/bitbybit-dev-occt-webworker.js";`],
+             { type: "text/javascript" })
+);
+const worker = new Worker(workerUrl, { type: "module", name: "OCC_WORKER" });
+```
+
+## Message Protocol
+
+### 1. Initialization
+
+**Main thread → Worker:**
+```javascript
+worker.postMessage({
+    type: "initialise",
+    loadFonts: ["Roboto", "Tektur"]  // array of font family names, or []
+});
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `type` | `string` | Must be exactly `"initialise"` (British spelling) |
+| `loadFonts` | `string[]` | Font families to load for CAD text operations. Pass `[]` to skip font loading. |
+
+**Worker → Main thread (on success):**
+```javascript
+postMessage("occ-initialised")
+```
+
+The worker must post the exact string `"occ-initialised"` when the WASM kernel is loaded, initialized, and ready to accept API calls. The runner will not send any API calls until this message is received.
+
+### 2. API Calls
+
+**Main thread → Worker:**
+```javascript
+worker.postMessage({
+    action: {
+        functionName: "shapes.wire.createCircleWire",
+        inputs: {
+            radius: 5,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        }
+    },
+    uid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+});
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `action.functionName` | `string` | Dot-path identifying the OCCT function (e.g., `"shapes.wire.createCircleWire"`, `"operations.extrude"`, `"io.saveShapeSTEP"`) |
+| `action.inputs` | `object` | Key-value pairs matching the function's parameters. Shape references use the format described below. |
+| `uid` | `string` | Unique identifier for correlating request/response. Any unique string (e.g., a UUID). |
+
+### 3. Responses
+
+For every API call, the worker posts **two** messages:
+
+**Step 1 — Busy notification:**
+```javascript
+postMessage("busy")
+```
+The exact string `"busy"` signals that computation has started.
+
+**Step 2a — Success:**
+```javascript
+postMessage({
+    uid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",  // echoed from request
+    result: { type: "occ-shape", hash: "abc123" }  // or any serializable value
+})
+```
+
+**Step 2b — Error:**
+```javascript
+postMessage({
+    uid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    result: undefined,
+    error: "OCCT computation failed. <Error message> While executing function - shapes.wire.createCircleWire. Input values were: {radius: 5}. "
+})
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `uid` | `string` | Must match the request `uid` |
+| `result` | `any` | The function's return value. `undefined` on error. |
+| `error` | `string` | Error description. Present only on failure. |
+
+### 4. Shape References
+
+Shapes (TopoDS_Shape objects) cannot be sent across the worker boundary directly. They are represented as references:
+
+```javascript
+// Shape reference (TopoDS_Shape and subclasses)
+{ type: "occ-shape", hash: "abc123def" }
+
+// Entity reference (documents, assembly nodes, non-shape OCCT objects)
+{ type: "occ-entity", hash: "xyz789" }
+```
+
+- When the main thread sends a shape reference in `inputs`, the worker must resolve it to the actual cached shape object.
+- When the worker returns a shape, it must return a reference (not the raw object).
+- The `hash` is an opaque identifier managed by the worker's internal cache.
+
+### 5. Reserved Functions
+
+These function names have special behavior and bypass the standard function dispatch:
+
+| Function Name | Purpose |
+|---|---|
+| `shapeToMesh` | Convert a shape to mesh data for rendering |
+| `shapesToMeshes` | Convert multiple shapes to mesh data |
+| `deleteShape` | Remove a single shape from the internal cache |
+| `deleteShapes` | Remove multiple shapes from the internal cache |
+| `startedTheRun` | Signal a new computation run; may clean cache if too large |
+| `cleanAllCache` | Clear all cached shapes and entities |
+| `saveShapeSTEP` | Export a shape to STEP format |
+
+### 6. Worker State Lifecycle
+
+```
+loading → initialised → loaded ↔ computing
+```
+
+| State | Meaning |
+|---|---|
+| `loading` | Worker is spawned but WASM not yet initialized |
+| `initialised` | WASM loaded, fonts loaded, ready for API calls |
+| `computing` | Processing an API call (triggered by `"busy"` message) |
+| `loaded` | Idle, no pending calls in the queue |
+
+## Replacing the OCCT Worker
+
+### Using `cdnUrl` (Recommended)
+
+The simplest way to replace OCCT is to host your own worker and WASM files, maintaining the expected directory structure:
+
+```
+https://your-cdn.com/bitbybit/
+├── workers/
+│   └── bitbybit-dev-occt-webworker.js    ← your custom worker
+└── wasm/
+    └── bitbybit-dev-occt.*.wasm          ← your custom WASM binary
+```
+
+Then initialize the runner with your CDN URL:
+```javascript
+const runner = window.bitbybitRunner.getRunnerInstance();
+await runner.run({
+    canvasId: 'myCanvas',
+    enableOCCT: true,
+    cdnUrl: 'https://your-cdn.com/bitbybit/'
+});
+```
+
+<Admonition type="warning" title="File Names Matter">
+The runner constructs worker URLs by appending fixed file names to the <code>cdnUrl</code>. Your replacement files must use the same names as the originals (e.g., <code>bitbybit-dev-occt-webworker.js</code>).
+</Admonition>
+
+### WASM Resolution
+
+Inside the worker, the WASM binary path is resolved via Emscripten's `locateFile` hook:
+
+```javascript
+locateFile(path, scriptDirectory) {
+    if (path.endsWith(".wasm")) {
+        return cdnUrl + "/wasm/bitbybit-dev-occt.<hash>.wasm";
+    }
+    return scriptDirectory + path;
+}
+```
+
+If you build your own WASM, update `locateFile` in your worker to point to your binary.
+
+### Building a Compatible Worker
+
+Your custom worker must:
+
+1. **Listen for `"initialise"` messages** and load your WASM kernel
+2. **Post `"occ-initialised"`** when ready
+3. **Listen for API call messages** with `{ action: { functionName, inputs }, uid }` format
+4. **Post `"busy"`** before each computation
+5. **Post `{ uid, result }` or `{ uid, result: undefined, error }` responses** for each call
+6. **Handle shape references** (`{ type: "occ-shape", hash }`) in inputs and outputs
+7. **Implement the reserved functions** listed above
+
+The OpenCASCADE source code is available at [https://dev.opencascade.org/](https://dev.opencascade.org/).
+
+## Worker Variants
+
+Three OCCT worker variants exist, selectable via the `occtArch` option:
+
+| Option | Worker File | WASM | Notes |
+|---|---|---|---|
+| `"32"` (default) | `bitbybit-dev-occt-webworker.js` | `bitbybit-dev-occt.*.wasm` | Single-threaded, 32-bit |
+| `"64"` | `bitbybit-dev-occt-64-bit-webworker.js` | `bitbybit-dev-occt-64-bit.*.wasm` | Single-threaded, 64-bit |
+| `"64-mt"` | `bitbybit-dev-occt-64-bit-mt-webworker.js` | `bitbybit-dev-occt-64-bit-mt.*.wasm` | Multi-threaded (pthreads), 64-bit |
+
+The multi-threaded variant additionally spawns pthread sub-workers. If replacing the 64-bit MT worker, you must also handle `mainScriptUrlOrBlob` for cross-origin pthread loading.
+
+## Related Pages
+
+- [Bitbybit Runner Introduction](/learn/runners/intro)
+- [Self-Hosting Bitbybit Assets](/learn/hosting-and-cdn)
+- [Runner Licensing](/learn/runners/licensing)

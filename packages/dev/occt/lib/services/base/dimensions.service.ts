@@ -47,8 +47,8 @@ export class DimensionsService {
                 return expression.replace(/val/g, formattedValue);
             }
             
-            // Evaluate mathematical expression and apply decimal places
-            const result = Function("\"use strict\"; return (" + safeExpression + ")")();
+            // Evaluate using safe arithmetic parser from base library (no eval/Function)
+            const result = this.base.math.evalArithmetic({ expression: safeExpression });
             return removeTrailingZeros
                 ? this.base.math.roundAndRemoveTrailingZeros({ number: result, decimalPlaces }).toString()
                 : result.toFixed(decimalPlaces);

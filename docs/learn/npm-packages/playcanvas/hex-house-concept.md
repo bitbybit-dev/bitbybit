@@ -83,7 +83,7 @@ The `index.html` file is the standard entry point, providing a canvas for PlayCa
   </head>
   <body>
     <a class="logo" href="https://bitbybit.dev" target="_blank" rel="noopener noreferrer">
-      <img alt="Logo of Bit by bit developers company" src="https://bitbybit.dev/assets/logo-gold-small.png" />
+      <img alt="Logo of Bit by bit developers company" src="https://bitbybit.dev/logo-gold-small.png" />
       <div>bitbybit.dev</div><br />
       <div>support the mission - subscribe</div>
     </a>

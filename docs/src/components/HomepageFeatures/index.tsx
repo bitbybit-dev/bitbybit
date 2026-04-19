@@ -93,7 +93,7 @@ export default function HomepageFeatures(): ReactNode {
                     <div className="col">
                         <div className={`${styles.centerText} ${styles.discord}` }>
                             <a  href="https://discord.gg/GSe3VMe" title="Discord" target="_blank">
-                                <img alt="Discord social network" width="40" src="https://bitbybit.dev/assets/social/logo-discord.svg" />
+                                <img alt="Discord social network" width="40" src="https://bitbybit.dev/social/logo-discord.svg" />
                                 <span className={styles.discordText}>JOIN US ON DISCORD!</span>
                             </a>
                         </div>

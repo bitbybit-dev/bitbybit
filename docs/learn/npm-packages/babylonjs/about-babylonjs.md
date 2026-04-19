@@ -15,7 +15,7 @@ BabylonJS is a powerful, beautiful, simple, and open game and rendering engine p
 **Visit the official BabylonJS homepage:** <a href="https://babylonjs.com/" target="_blank" rel="noopener noreferrer">babylonjs.com</a>
 
 <img 
-  src="https://bitbybit.dev/assets/babylon_logo.png" 
+  src="https://bitbybit.dev/babylon_logo.png" 
   width="150"
   alt="BabylonJS Logo" 
   title="BabylonJS Logo" />

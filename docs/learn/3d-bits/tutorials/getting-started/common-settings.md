@@ -123,13 +123,26 @@ These settings are specific to RUNNER and APPS blocks:
 ### Runner CDN Link
 
 **Available in:** VIEWER, RUNNER  
-**Default:** `https://git-cdn.bitbybit.dev/v<Version />/runner/bitbybit-runner-babylonjs.js`
+**Default:** <b>{'https://git-cdn.bitbybit.dev/v'}<Version /></b>
 
-Specifies which version of the Bitbybit runner library to use. The runner is the core engine that loads and renders 3D content in your browser.
+Specifies the CDN location from which the Bitbybit runner and all its assets (workers, WASM files, BabylonJS scripts, fonts, etc.) are loaded. The runner is the core engine that loads and renders 3D content in your browser.
+
+**Accepted Formats:**
+
+This field accepts two types of values:
+
+- **Base URL** (recommended): A URL pointing to the root of the assets folder, e.g. <b>{'https://git-cdn.bitbybit.dev/v'}<Version /></b> or <b>{'https://cdn.yourcompany.com/bitbybit/v'}<Version />{'/'}</b>. The runner script path (`runner/bitbybit-runner-babylonjs.js`) is appended automatically. Trailing slash is optional.
+- **Full JS URL** (legacy, backward-compatible): A direct URL to the runner JavaScript file, e.g. <b>{'https://git-cdn.bitbybit.dev/v'}<Version />{'/runner/bitbybit-runner-babylonjs.js'}</b>. This format is still supported for backward compatibility with existing configurations.
+
+**Why Base URL is Preferred:**
+
+When you provide a base URL, the system uses it for **all** assets — not just the runner script, but also the web workers (OCCT, JSCAD, Manifold), WASM binaries, BabylonJS engine files, physics engine, and fonts. This means that if you host assets on your own CDN, everything loads from your infrastructure consistently.
+
+With the legacy full `.js` URL, the runner script loads from the specified URL, and the base CDN is derived automatically by stripping the known path. While this works, it's less explicit and only supports the standard runner path structure.
 
 **When to Change:**
 
-You should update this URL when you need features from a newer version of Bitbybit, when working with scripts created in a specific version of the [bitbybit.dev](https://bitbybit.dev) editor, or when you need to roll back to a previous version for compatibility reasons.
+You should update this setting when you need features from a newer version of Bitbybit, when working with scripts created in a specific version of the [bitbybit.dev](https://bitbybit.dev) editor, when you need to roll back to a previous version for compatibility reasons, or when you want to host assets on your own CDN.
 
 **Why Manual Updates?**
 
@@ -168,28 +181,47 @@ The resolution approach depends on which block type you're using:
 While the editors provide automatic migration assistance, configurations using advanced features or direct game engine APIs may need manual review and adjustment. Test thoroughly after each update.
 :::
 
-**URL Format:**
+**URL Format Examples:**
 
-The URL follows this pattern:
+Base URL format (recommended):
+```
+https://git-cdn.bitbybit.dev/v{VERSION}
+```
+
+Full JS URL format (legacy, backward-compatible):
 ```
 https://git-cdn.bitbybit.dev/v{VERSION}/runner/bitbybit-runner-babylonjs.js
 ```
 
-Replace `{VERSION}` with the desired version number (e.g., `<Version />`).
+Self-hosted base URL:
+```
+https://cdn.yourcompany.com/bitbybit/v{VERSION}/
+```
 
-**Self-Hosting on Shopify CDN:**
+Replace `{VERSION}` with the desired version number (e.g., <b><Version /></b>).
 
-For additional reliability, you can download the runner file and host it on your Shopify store's CDN. This approach reduces dependency on external CDN services like Cloudflare and provides an extra layer of protection if third-party CDN services experience downtime. 
+**Self-Hosting Assets on Your Own CDN:**
 
-To implement this:
-1. Download the runner JavaScript file from the CDN URL
-2. Upload it to your Shopify theme's assets or files section
-3. Update the Runner CDN Link setting to point to your Shopify-hosted file URL
+For production-critical applications, we strongly recommend hosting Bitbybit assets on your own CDN infrastructure. This provides several important benefits:
 
-:::info Important Consideration
-While self-hosting the main runner file improves reliability, the runner itself loads additional dependencies from CDN services during initialization. This means complete isolation from external CDN services isn't possible, but self-hosting the primary runner file does reduce overall dependency and provides better control over the core library version.
+- **Reliability**: Your configurators continue working even if the Bitbybit CDN or its underlying provider (e.g., Cloudflare) experiences downtime
+- **Performance**: Choose a CDN provider optimized for your customers' geographic regions
+- **Control**: Pin specific versions and manage updates on your own schedule
+- **Compliance**: Meet enterprise requirements for asset hosting and security policies
 
-In the event of widespread CDN service disruptions, the Bitbybit team will release updates that switch to alternative CDN providers to maintain service continuity.
+To self-host:
+1. Download the assets from the [Bitbybit Assets Releases](https://github.com/bitbybit-dev/bitbybit-assets/releases) on GitHub
+2. Upload them to your CDN, preserving the folder structure
+3. Set the Runner CDN Link to your CDN's base URL (e.g., <b>{'https://cdn.yourcompany.com/bitbybit/v'}<Version />{'/'}</b>)
+
+When you provide a base URL pointing to your own CDN, **all** assets — the runner script, web workers, WASM files, and engine dependencies — load from your infrastructure. This gives you complete control over availability and performance.
+
+:::tip Learn more about self-hosting
+For a comprehensive guide on downloading assets, identifying which files you need, configuring CDN providers, and testing your setup, see [Hosting Bitbybit Assets on Your Own CDN](/learn/hosting-and-cdn).
+:::
+
+:::info CDN Failover
+In the event that the primary CDN fails to load the runner script, the 3D Bits app will attempt to load it from a fallback CDN automatically. This provides an additional safety net, but should not be relied upon as a primary strategy. For mission-critical applications, self-hosting your assets is the most reliable approach.
 :::
 
 :::tip

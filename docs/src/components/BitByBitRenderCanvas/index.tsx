@@ -39,7 +39,7 @@ interface IframeReadyMessage {
     source?: string;
 }
 
-const LOGO_BASE_URL = "https://bitbybit.dev/assets/";
+const LOGO_BASE_URL = "https://bitbybit.dev/";
 const SCRIPT_TYPE_LOGOS: Record<ScriptType, string> = {
     rete: `${LOGO_BASE_URL}rete_logo_mini.png`,
     blockly: `${LOGO_BASE_URL}blockly_logo_mini.png`,
@@ -54,7 +54,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     description,
     iframeUrl: baseUrl = "https://s.bitbybit.dev",
     requireManualStart = false,
-    backgroundImageUrl = "https://bitbybit.dev/assets/landscape.jpeg",
+    backgroundImageUrl = "https://bitbybit.dev/landscape.jpeg",
     height = "600px",
     style: customCanvasContainerStyle = {},
     className: customCanvasContainerClassName,

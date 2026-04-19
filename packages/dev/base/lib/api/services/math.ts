@@ -708,6 +708,93 @@ export class MathBitByBit {
         return inputs.current + Math.sign(delta) * inputs.maxDelta;
     }
 
+    /**
+     * Safely evaluates a simple arithmetic expression containing only
+     * numbers, +, -, *, /, parentheses, and whitespace.
+     * Uses the shunting-yard algorithm — no eval/Function.
+     * Example: "(3+2)*4" → 20, "10/3" → 3.3333...
+     * @param inputs arithmetic expression string
+     * @returns evaluated result
+     * @group operations
+     * @shortname eval arithmetic
+     * @drawable false
+     */
+    evalArithmetic(inputs: Inputs.Math.EvalArithmeticDto): number {
+        const expr = inputs.expression;
+        const tokens: string[] = [];
+        let i = 0;
+        while (i < expr.length) {
+            const ch = expr[i];
+            if (ch === " ") { i++; continue; }
+            if (ch === "(" || ch === ")") { tokens.push(ch); i++; continue; }
+            if (ch === "+" || ch === "*" || ch === "/") { tokens.push(ch); i++; continue; }
+            if (ch === "-") {
+                const prev = tokens.length > 0 ? tokens[tokens.length - 1] : undefined;
+                if (prev === undefined || prev === "(" || prev === "+" || prev === "-" || prev === "*" || prev === "/") {
+                    let num = "-";
+                    i++;
+                    while (i < expr.length && (expr[i] >= "0" && expr[i] <= "9" || expr[i] === ".")) {
+                        num += expr[i]; i++;
+                    }
+                    if (num === "-") { throw new Error("Invalid expression"); }
+                    tokens.push(num);
+                    continue;
+                }
+                tokens.push(ch); i++; continue;
+            }
+            if ((ch >= "0" && ch <= "9") || ch === ".") {
+                let num = "";
+                while (i < expr.length && (expr[i] >= "0" && expr[i] <= "9" || expr[i] === ".")) {
+                    num += expr[i]; i++;
+                }
+                tokens.push(num);
+                continue;
+            }
+            throw new Error("Invalid character in expression");
+        }
+
+        const output: number[] = [];
+        const ops: string[] = [];
+        const prec: Record<string, number> = { "+": 1, "-": 1, "*": 2, "/": 2 };
+
+        const applyOp = () => {
+            const op = ops.pop()!;
+            const b = output.pop()!;
+            const a = output.pop()!;
+            switch (op) {
+                case "+": output.push(a + b); break;
+                case "-": output.push(a - b); break;
+                case "*": output.push(a * b); break;
+                case "/": output.push(a / b); break;
+            }
+        };
+
+        for (const tok of tokens) {
+            if (tok === "(") {
+                ops.push(tok);
+            } else if (tok === ")") {
+                while (ops.length > 0 && ops[ops.length - 1] !== "(") { applyOp(); }
+                if (ops.length === 0) { throw new Error("Mismatched parentheses"); }
+                ops.pop();
+            } else if (tok in prec) {
+                while (ops.length > 0 && ops[ops.length - 1] !== "(" && (prec[ops[ops.length - 1]] ?? 0) >= prec[tok]) {
+                    applyOp();
+                }
+                ops.push(tok);
+            } else {
+                const n = parseFloat(tok);
+                if (isNaN(n)) { throw new Error("Invalid number"); }
+                output.push(n);
+            }
+        }
+        while (ops.length > 0) {
+            if (ops[ops.length - 1] === "(") { throw new Error("Mismatched parentheses"); }
+            applyOp();
+        }
+        if (output.length !== 1) { throw new Error("Invalid expression"); }
+        return output[0];
+    }
+
     private easeInSine(x: number): number {
         return 1 - Math.cos((x * Math.PI) / 2);
     }

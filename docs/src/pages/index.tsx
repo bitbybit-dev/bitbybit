@@ -64,7 +64,7 @@ const technologies = [
     description: "Integrate Bitbybit's CAD capabilities with the popular Three.js rendering engine.",
     link: "/learn/getting-started/engines/threejs",
     color: "#049EF4",
-    logo: "https://bitbybit.dev/assets/threejs-logo.png",
+    logo: "https://bitbybit.dev/threejs-logo.png",
     isGameEngine: true,
   },
   {
@@ -72,7 +72,7 @@ const technologies = [
     description: "Build powerful 3D experiences combining Bitbybit geometry with Babylon.js features.",
     link: "/learn/getting-started/engines/babylonjs",
     color: "#BB464B",
-    logo: "https://bitbybit.dev/assets/babylon_logo.png",
+    logo: "https://bitbybit.dev/babylon_logo.png",
     isGameEngine: true,
   },
   {
@@ -361,7 +361,7 @@ function CommunitySection() {
             </p>
             <div className={styles.communityButtons}>
               <a href="https://discord.gg/GSe3VMe" target="_blank" className={styles.discordButton}>
-                <img src="https://bitbybit.dev/assets/social/logo-discord.svg" alt="Discord" />
+                <img src="https://bitbybit.dev/social/logo-discord.svg" alt="Discord" />
                 Join Discord
               </a>
               <a href="https://github.com/bitbybit-dev/bitbybit" target="_blank" className={styles.githubButton}>
