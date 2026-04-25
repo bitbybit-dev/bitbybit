@@ -88,6 +88,16 @@ freecad:
   permalink: /freecad
   description: Interoperability with FreeCAD, the popular open-source parametric CAD modeler.
 
+librecad:
+  label: LibreCAD
+  permalink: /librecad
+  description: Interoperability with LibreCAD, the open-source 2D CAD application for working with DXF drawings.
+
+dxf:
+  label: DXF
+  permalink: /dxf
+  description: The Drawing Exchange Format for sharing 2D CAD drawings and laser-cutting profiles between applications.
+
 api:
   label: API
   permalink: /api
@@ -108,3 +118,57 @@ architecture:
   permalink: /architecture
   description: System design, infrastructure decisions, and technical architecture behind the Bitbybit platform and cloud services.
 
+client:
+  label: Client
+  permalink: /client
+  description: The blog posts about our clients and their use cases, showcasing how they leverage Bitbybit for their businesses and projects.
+
+customer:
+  label: Customer
+  permalink: /customer
+  description: Stories and testimonials from our customers, highlighting their successes and experiences with Bitbybit.
+
+manufacturing:
+  label: Manufacturing
+  permalink: /manufacturing
+  description: Applications of Bitbybit in manufacturing workflows, including CNC machining, 3D printing, laser-cutting and fabrication.
+
+laser-cutting:
+  label: Laser Cutting
+  permalink: /laser-cutting
+  description: Using Bitbybit for laser-cutting workflows, from design to production.
+
+shims:
+  label: Shims
+  permalink: /shims
+  description: Designing shims for precision adjustments in mechanical assemblies and manufacturing processes via Bitbybit.
+
+woocommerce: 
+  label: WooCommerce
+  permalink: /woocommerce
+  description: Integrating Bitbybit with WooCommerce for interactive 3D product visualization and configuration in online stores.
+
+wordpress:
+  label: WordPress
+  permalink: /wordpress
+  description: Using Bitbybit with WordPress for embedding interactive 3D content and product configurators in websites and blogs.
+
+runner:
+  label: Runner
+  permalink: /runner
+  description: Our single javascript file interface to Bitbybit - automating kernel initializations, running CAD algorithms and more.
+
+usa:
+  label: United States of America
+  permalink: /usa
+  description: Posts about our operations, customers, and activities in the United States.
+
+italy:
+  label: Italy
+  permalink: /italy
+  description: Posts about our operations, customers, and activities in Italy.
+
+germany:
+  label: Germany
+  permalink: /germany
+  description: Posts about our operations, customers, and activities in Germany.
