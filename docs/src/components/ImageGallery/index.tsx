@@ -73,27 +73,31 @@ export default function ImageGallery({
             onClick={(e) => e.stopPropagation()}
           />
 
-          <button
-            className={`${styles.navButton} ${styles.navLeft}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpen((open - 1 + images.length) % images.length);
-            }}
-            aria-label="Previous image"
-          >
-            ‹
-          </button>
+          {images.length > 1 && (
+            <button
+              className={`${styles.navButton} ${styles.navLeft}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen((open - 1 + images.length) % images.length);
+              }}
+              aria-label="Previous image"
+            >
+              ‹
+            </button>
+          )}
 
-          <button
-            className={`${styles.navButton} ${styles.navRight}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpen((open + 1) % images.length);
-            }}
-            aria-label="Next image"
-          >
-            ›
-          </button>
+          {images.length > 1 && (
+            <button
+              className={`${styles.navButton} ${styles.navRight}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen((open + 1) % images.length);
+              }}
+              aria-label="Next image"
+            >
+              ›
+            </button>
+          )}
 
           <button
             className={styles.closeButton}
@@ -103,9 +107,11 @@ export default function ImageGallery({
             ×
           </button>
 
-          <span className={styles.counter}>
-            {open + 1} / {images.length}
-          </span>
+          {images.length > 1 && (
+            <span className={styles.counter}>
+              {open + 1} / {images.length}
+            </span>
+          )}
         </div>
       )}
     </>

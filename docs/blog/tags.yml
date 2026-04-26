@@ -93,6 +93,11 @@ librecad:
   permalink: /librecad
   description: Interoperability with LibreCAD, the open-source 2D CAD application for working with DXF drawings.
 
+blender:
+  label: Blender
+  permalink: /blender
+  description: Interoperability with Blender, the open-source 3D modeling and animation software.
+
 dxf:
   label: DXF
   permalink: /dxf
@@ -172,3 +177,13 @@ germany:
   label: Germany
   permalink: /germany
   description: Posts about our operations, customers, and activities in Germany.
+
+gym:
+  label: Gym
+  permalink: /gym
+  description: Posts about our work with gym and fitness equipment retailers, showcasing 3D visualization and configuration solutions for the industry.
+
+fitness:
+  label: Fitness
+  permalink: /fitness
+  description: Posts about our work with gym and fitness equipment retailers, showcasing 3D visualization and configuration solutions for the industry.
