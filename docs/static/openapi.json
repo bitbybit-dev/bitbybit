@@ -3,7 +3,7 @@
     "info": {
         "title": "Bitbybit CAD Cloud API",
         "version": "1.0.0-rc.1",
-        "description": "High-performance parametric CAD model generation, STEP conversion, and CAD operation execution via a Bitbybit cloud API.\n\nAll async endpoints return **HTTP 202** with a task ID. Poll the task until completion, then retrieve the result download URL.\n\n**Base URL:** `https://api.bitbybit.dev`\n\n**Authentication:** Pass your API key via the `x-api-key` header. Keys are scoped - each endpoint documents which scope is required.\n\n**TypeScript SDK:** Install `@bitbybit-dev/cad-cloud-api` for a type-safe Node.js client with built-in polling.",
+        "description": "High-performance parametric CAD model generation, STEP conversion, and CAD operation execution via a Bitbybit cloud API.\n\nAll async endpoints return **HTTP 202** with a task ID. Poll the task until completion, then retrieve the result download URL.\n\n**Base URL:** `https://api.bitbybit.dev`\n\n**Authentication:** Pass your API key via the `x-api-key` header. Keys are scoped - each endpoint documents which scope is required.\n\n**TypeScript SDK:** Install `@bitbybit-dev/cad-cloud-sdk` for a type-safe Node.js client with built-in polling.",
         "contact": {
             "name": "Bitbybit",
             "url": "https://bitbybit.dev",

@@ -13,7 +13,7 @@ The Bitbybit Cloud CAD API lets you generate parametric 3D models, convert STEP 
 | Resource | Link |
 |----------|------|
 | **Interactive API reference** | [API Reference](/api/openapi-docs/bitbybit-cad-cloud-api) |
-| **TypeScript SDK** | [`@bitbybit-dev/cad-cloud-api`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-api) |
+| **TypeScript SDK** | [`@bitbybit-dev/cad-cloud-sdk`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) |
 | **Base URL** | `https://api.bitbybit.dev` |
 
 ## Authentication
@@ -58,11 +58,11 @@ All model parameters are optional — default values produce a valid model. See 
 ## SDK quickstart
 
 ```bash
-npm install @bitbybit-dev/cad-cloud-api
+npm install @bitbybit-dev/cad-cloud-sdk
 ```
 
 ```typescript
-import { BitbybitClient } from "@bitbybit-dev/cad-cloud-api";
+import { BitbybitClient } from "@bitbybit-dev/cad-cloud-sdk";
 
 const client = new BitbybitClient({ apiKey: "bbk_your_key" });
 

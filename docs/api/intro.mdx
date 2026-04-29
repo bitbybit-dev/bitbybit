@@ -32,10 +32,10 @@ The REST API at `https://api.bitbybit.dev`. All endpoints require an API key pas
 
 ### TypeScript SDK
 
-The [`@bitbybit-dev/cad-cloud-api`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-api) npm package provides a type-safe client for Node.js and edge runtimes. It handles request construction, error mapping, and includes a built-in polling helper.
+The [`@bitbybit-dev/cad-cloud-sdk`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) npm package provides a type-safe client for Node.js and edge runtimes. It handles request construction, error mapping, and includes a built-in polling helper.
 
 ```bash
-npm install @bitbybit-dev/cad-cloud-api
+npm install @bitbybit-dev/cad-cloud-sdk
 ```
 
 ## Getting an API key
@@ -74,7 +74,7 @@ curl https://api.bitbybit.dev/api/v1/tasks/TASK_ID/result/glb \
 ### Initialize the client
 
 ```typescript
-import { BitbybitClient } from "@bitbybit-dev/cad-cloud-api";
+import { BitbybitClient } from "@bitbybit-dev/cad-cloud-sdk";
 
 const client = new BitbybitClient({
     apiKey: process.env.BITBYBIT_API_KEY,
@@ -156,7 +156,7 @@ console.log("Download:", result.downloadUrl);
 
 ```typescript
 import express from "express";
-import { BitbybitClient } from "@bitbybit-dev/cad-cloud-api";
+import { BitbybitClient } from "@bitbybit-dev/cad-cloud-sdk";
 
 const app = express();
 app.use(express.json());
@@ -202,7 +202,7 @@ app.listen(3000);
 
 Full working examples are available in the open-source GitHub repo:
 
-- [**Node.js + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-sdk) — Express server using `@bitbybit-dev/cad-cloud-api`
+- [**Node.js + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-sdk) — Express server using `@bitbybit-dev/cad-cloud-sdk`
 - [**Node.js + REST**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-rest) — Express server using raw `fetch` calls
 - [**Hono + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/hono-sdk) — Cloudflare Workers using the SDK
 - [**Hono + REST**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/hono-rest) — Cloudflare Workers using raw `fetch` calls
@@ -213,4 +213,4 @@ Each example includes a complete server with API routes and a browser frontend f
 
 - [**Studio introduction**](/api/studio/intro) — explore the visual dashboard
 - [**API Reference**](/api/openapi-docs/bitbybit-cad-cloud-api) — full endpoint documentation with schemas and examples
-- [**TypeScript SDK on npm**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-api) — package details and changelog
+- [**TypeScript SDK on npm**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) — package details and changelog
