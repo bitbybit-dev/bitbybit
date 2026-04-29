@@ -187,3 +187,23 @@ fitness:
   label: Fitness
   permalink: /fitness
   description: Posts about our work with gym and fitness equipment retailers, showcasing 3D visualization and configuration solutions for the industry.
+
+b2b:
+  label: B2B
+  permalink: /b2b
+  description: Posts about our business-to-business customers, partnerships, and enterprise solutions.
+
+material-handling:
+  label: Material Handling
+  permalink: /material-handling
+  description: Posts about our work with material handling equipment manufacturers, showcasing 3D visualization and configuration solutions for the industry.
+
+modex:
+  label: MODEX
+  permalink: /modex
+  description: The leading supply chain and logistics trade show, showcasing solutions for material handling and warehouse equipment manufacturers.
+
+hannover-messe:
+  label: Hannover Messe
+  permalink: /hannover-messe
+  description: The world's largest industrial trade show, showcasing solutions for manufacturing, automation, and industrial technology.
