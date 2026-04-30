@@ -1,0 +1,1 @@
+{"parameters":[{"name":"taskId","in":"path","required":true,"schema":{"type":"string","format":"uuid"},"description":"Task ID"},{"name":"format","in":"path","required":true,"schema":{"type":"string"},"description":"Result format (e.g. glb, step, stpz, metadata, decomposed-mesh)"}]}

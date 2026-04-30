@@ -1,1 +1,0 @@
-{"parameters":[{"name":"modelName","in":"path","required":true,"schema":{"type":"string"},"example":"dragon-cup"}]}

@@ -1,2470 +1,3159 @@
 {
-    "openapi": "3.1.0",
-    "info": {
-        "title": "Bitbybit CAD Cloud API",
-        "version": "1.0.0-rc.1",
-        "description": "High-performance parametric CAD model generation, STEP conversion, and CAD operation execution via a Bitbybit cloud API.\n\nAll async endpoints return **HTTP 202** with a task ID. Poll the task until completion, then retrieve the result download URL.\n\n**Base URL:** `https://api.bitbybit.dev`\n\n**Authentication:** Pass your API key via the `x-api-key` header. Keys are scoped - each endpoint documents which scope is required.\n\n**TypeScript SDK:** Install `@bitbybit-dev/cad-cloud-sdk` for a type-safe Node.js client with built-in polling.",
-        "contact": {
-            "name": "Bitbybit",
-            "url": "https://bitbybit.dev",
-            "email": "info@bitbybit.dev"
-        },
-        "license": {
-            "name": "Proprietary",
-            "url": "https://bitbybit.dev/terms-and-conditions"
-        }
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Bitbybit CAD Cloud API",
+    "version": "1.0.0",
+    "description": "High-performance parametric CAD model generation API backed by Bitbybit CAD worker pool. Supports multi-format output (STEP, GLTF, decomposed mesh), pipeline execution, file-based conversion, and async job processing.",
+    "contact": {
+      "name": "Bitbybit",
+      "url": "https://bitbybit.dev"
     },
-    "servers": [
-        {
-            "url": "https://api.bitbybit.dev",
-            "description": "Production"
-        }
-    ],
-    "tags": [
-        {
-            "name": "Health",
-            "description": "Service health checks (no auth required)"
-        },
-        {
-            "name": "Models",
-            "description": "Parametric CAD model generation. Requires the `models` scope."
-        },
-        {
-            "name": "Tasks",
-            "description": "Async task management — status, results, cancellation, retry. Requires the `tasks` scope."
-        },
-        {
-            "name": "CAD",
-            "description": "Direct CAD operations — execute, pipeline, compound. Requires the `cad` scope."
-        },
-        {
-            "name": "Convert",
-            "description": "STEP → glTF file conversion. Requires the `convert` scope."
-        },
-        {
-            "name": "Files",
-            "description": "File upload, confirmation, and management. Requires the `files` scope."
-        }
-    ],
-    "paths": {
-        "/health": {
-            "get": {
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Health check",
-                "operationId": "healthCheck",
-                "security": [],
-                "responses": {
-                    "200": {
-                        "description": "Service is healthy",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "ok": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "instance": {
-                                            "type": "string"
-                                        },
-                                        "timestamp": {
-                                            "type": "string",
-                                            "format": "date-time"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/models": {
-            "get": {
-                "tags": [
-                    "Models"
-                ],
-                "summary": "List available models",
-                "operationId": "listModels",
-                "responses": {
-                    "200": {
-                        "description": "List of registered parametric model names",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_ModelList"
-                                },
-                                "example": {
-                                    "ok": true,
-                                    "data": {
-                                        "models": [
-                                            "dragon-cup",
-                                            "phone-nest"
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/models/{modelName}/params": {
-            "get": {
-                "tags": [
-                    "Models"
-                ],
-                "summary": "Get model parameter definitions",
-                "operationId": "getModelParams",
-                "parameters": [
-                    {
-                        "name": "modelName",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "example": "dragon-cup"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Parameter definitions with types, descriptions, and defaults",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_ModelDefinition"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/models/definitions": {
-            "post": {
-                "tags": [
-                    "Models"
-                ],
-                "summary": "Batch-fetch model definitions",
-                "operationId": "batchModelDefinitions",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "required": [
-                                    "names"
-                                ],
-                                "properties": {
-                                    "names": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "maxItems": 50,
-                                        "example": [
-                                            "dragon-cup",
-                                            "phone-nest"
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Definitions keyed by model name",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_BatchDefinitions"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/models/{modelName}": {
-            "post": {
-                "tags": [
-                    "Models"
-                ],
-                "summary": "Generate a parametric model",
-                "operationId": "generateModel",
-                "description": "Submits a parametric model for generation. Returns **202 Accepted** with a task ID.\n\nPoll `GET /api/v1/tasks/{taskId}` until `status` is `completed`, then fetch the result via `GET /api/v1/tasks/{taskId}/result/{format}`.\n\nSee the model-specific examples below. All model parameters are optional — defaults produce a valid model.",
-                "parameters": [
-                    {
-                        "name": "modelName",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "dragon-cup": {
-                                "value": "dragon-cup"
-                            },
-                            "phone-nest": {
-                                "value": "phone-nest"
-                            }
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ModelSubmission"
-                            },
-                            "examples": {
-                                "dragon-cup": {
-                                    "summary": "Dragon Cup — all parameters (defaults)",
-                                    "value": {
-                                        "params": {
-                                            "height": 8,
-                                            "radiusBottom": 4,
-                                            "radiusTopOffset": 2,
-                                            "radiusMidOffset": 2,
-                                            "rotationTopAngle": 20,
-                                            "rotationMidAngle": 20,
-                                            "nrSkinCellsVertical": 5,
-                                            "nrSkinCellsHorizontal": 10,
-                                            "nrSkinCellDivisionsTop": 1,
-                                            "nrSkinCellDivisionsBottom": 3,
-                                            "skinCellOuterHeight": 0.4,
-                                            "skinCellInnerHeight": 0.3,
-                                            "skinCellBottomHeight": 0.4,
-                                            "skinCellTopHeight": 0.4,
-                                            "thickness": 0.6,
-                                            "bottomThickness": 1,
-                                            "precision": 0.01,
-                                            "rotation": 0,
-                                            "scale": 1,
-                                            "origin": [
-                                                0,
-                                                0,
-                                                0
-                                            ],
-                                            "direction": [
-                                                0,
-                                                1,
-                                                0
-                                            ]
-                                        },
-                                        "outputs": {
-                                            "formats": [
-                                                "gltf"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "phone-nest": {
-                                    "summary": "Phone Nest — all parameters (defaults)",
-                                    "value": {
-                                        "params": {
-                                            "heightBottom": 5,
-                                            "heightTop": 16,
-                                            "widthBack": 25,
-                                            "widthFront": 10,
-                                            "length": 16,
-                                            "backOffset": 6,
-                                            "thickness": 0.4,
-                                            "applyOrnaments": false,
-                                            "filletRadius": 2,
-                                            "phoneHeight": 16.8,
-                                            "phoneWidth": 7.8,
-                                            "phoneThickness": 0.7,
-                                            "precision": 0.01,
-                                            "rotation": 0,
-                                            "scale": 1,
-                                            "origin": [
-                                                0,
-                                                0,
-                                                0
-                                            ],
-                                            "direction": [
-                                                0,
-                                                1,
-                                                0
-                                            ]
-                                        },
-                                        "outputs": {
-                                            "formats": [
-                                                "gltf"
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "202": {
-                        "$ref": "#/components/responses/TaskCreated"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/ValidationError"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/models/{modelName}/batch": {
-            "post": {
-                "tags": [
-                    "Models"
-                ],
-                "summary": "Generate a batch of parametric models",
-                "operationId": "generateModelBatch",
-                "description": "Submits up to 50 variations of a parametric model for parallel generation. Returns **202 Accepted** with a compound task ID and sub-task details.\n\nAll items share the same `outputs` configuration. Each item can override `params` independently.\n\nPoll `GET /api/v1/tasks/{taskId}` until the compound task reaches a terminal status, then retrieve individual sub-task results via `GET /api/v1/tasks/{subTaskId}/result/{format}`.",
-                "parameters": [
-                    {
-                        "name": "modelName",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "dragon-cup": {
-                                "value": "dragon-cup"
-                            },
-                            "phone-nest": {
-                                "value": "phone-nest"
-                            }
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/BatchModelSubmission"
-                            },
-                            "examples": {
-                                "dragon-cup": {
-                                    "summary": "Dragon Cup — batch of 2 variations",
-                                    "value": {
-                                        "items": [
-                                            {
-                                                "params": {
-                                                    "height": 8,
-                                                    "radiusBottom": 4,
-                                                    "radiusTopOffset": 2,
-                                                    "radiusMidOffset": 2,
-                                                    "rotationTopAngle": 20,
-                                                    "rotationMidAngle": 20,
-                                                    "nrSkinCellsVertical": 5,
-                                                    "nrSkinCellsHorizontal": 10,
-                                                    "nrSkinCellDivisionsTop": 1,
-                                                    "nrSkinCellDivisionsBottom": 3,
-                                                    "skinCellOuterHeight": 0.4,
-                                                    "skinCellInnerHeight": 0.3,
-                                                    "skinCellBottomHeight": 0.4,
-                                                    "skinCellTopHeight": 0.4,
-                                                    "thickness": 0.6,
-                                                    "bottomThickness": 1,
-                                                    "precision": 0.01,
-                                                    "rotation": 0,
-                                                    "scale": 1,
-                                                    "origin": [
-                                                        0,
-                                                        0,
-                                                        0
-                                                    ],
-                                                    "direction": [
-                                                        0,
-                                                        1,
-                                                        0
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "params": {
-                                                    "height": 8,
-                                                    "radiusBottom": 4,
-                                                    "radiusTopOffset": 2,
-                                                    "radiusMidOffset": 2,
-                                                    "rotationTopAngle": 20,
-                                                    "rotationMidAngle": 20,
-                                                    "nrSkinCellsVertical": 5,
-                                                    "nrSkinCellsHorizontal": 10,
-                                                    "nrSkinCellDivisionsTop": 1,
-                                                    "nrSkinCellDivisionsBottom": 3,
-                                                    "skinCellOuterHeight": 0.4,
-                                                    "skinCellInnerHeight": 0.3,
-                                                    "skinCellBottomHeight": 0.4,
-                                                    "skinCellTopHeight": 0.4,
-                                                    "thickness": 0.6,
-                                                    "bottomThickness": 1,
-                                                    "precision": 0.01,
-                                                    "rotation": 0,
-                                                    "scale": 1,
-                                                    "origin": [
-                                                        0,
-                                                        0,
-                                                        0
-                                                    ],
-                                                    "direction": [
-                                                        0,
-                                                        1,
-                                                        0
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "outputs": {
-                                            "formats": [
-                                                "gltf",
-                                                "stpz"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "phone-nest": {
-                                    "summary": "Phone Nest — batch of 2 variations",
-                                    "value": {
-                                        "items": [
-                                            {
-                                                "params": {
-                                                    "heightBottom": 5,
-                                                    "heightTop": 16,
-                                                    "widthBack": 25,
-                                                    "widthFront": 10,
-                                                    "length": 16,
-                                                    "backOffset": 6,
-                                                    "thickness": 0.4,
-                                                    "applyOrnaments": false,
-                                                    "filletRadius": 2,
-                                                    "phoneHeight": 16.8,
-                                                    "phoneWidth": 7.8,
-                                                    "phoneThickness": 0.7,
-                                                    "precision": 0.01,
-                                                    "rotation": 0,
-                                                    "scale": 1,
-                                                    "origin": [
-                                                        0,
-                                                        0,
-                                                        0
-                                                    ],
-                                                    "direction": [
-                                                        0,
-                                                        1,
-                                                        0
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "params": {
-                                                    "heightBottom": 5,
-                                                    "heightTop": 16,
-                                                    "widthBack": 25,
-                                                    "widthFront": 10,
-                                                    "length": 16,
-                                                    "backOffset": 6,
-                                                    "thickness": 0.4,
-                                                    "applyOrnaments": false,
-                                                    "filletRadius": 2,
-                                                    "phoneHeight": 16.8,
-                                                    "phoneWidth": 7.8,
-                                                    "phoneThickness": 0.7,
-                                                    "precision": 0.01,
-                                                    "rotation": 0,
-                                                    "scale": 1,
-                                                    "origin": [
-                                                        0,
-                                                        0,
-                                                        0
-                                                    ],
-                                                    "direction": [
-                                                        0,
-                                                        1,
-                                                        0
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "outputs": {
-                                            "formats": [
-                                                "gltf",
-                                                "stpz"
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "202": {
-                        "$ref": "#/components/responses/CompoundTaskCreated"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/ValidationError"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/tasks": {
-            "get": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "List tasks",
-                "operationId": "listTasks",
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "default": 1
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "maximum": 50,
-                            "default": 20
-                        }
-                    },
-                    {
-                        "name": "status",
-                        "in": "query",
-                        "schema": {
-                            "$ref": "#/components/schemas/TaskStatus"
-                        }
-                    },
-                    {
-                        "name": "kind",
-                        "in": "query",
-                        "schema": {
-                            "$ref": "#/components/schemas/TaskKind"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Paginated task list",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_TaskList"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/tasks/{taskId}": {
-            "get": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Get task status",
-                "operationId": "getTask",
-                "parameters": [
-                    {
-                        "name": "taskId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Task details",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_TaskDetail"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Cancel a task",
-                "operationId": "cancelTask",
-                "parameters": [
-                    {
-                        "name": "taskId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Task cancelled",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "ok": {
-                                            "type": "boolean",
-                                            "enum": [
-                                                true
-                                            ]
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "cancelled": {
-                                                    "type": "boolean"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/tasks/{taskId}/retry": {
-            "post": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Retry a failed or cancelled task",
-                "operationId": "retryTask",
-                "parameters": [
-                    {
-                        "name": "taskId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "202": {
-                        "$ref": "#/components/responses/TaskCreated"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/tasks/{taskId}/result": {
-            "get": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Get task result (default format)",
-                "operationId": "getTaskResult",
-                "parameters": [
-                    {
-                        "name": "taskId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Pre-signed download URL",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_TaskResultDownload"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/tasks/{taskId}/result/{format}": {
-            "get": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Get task result in a specific format",
-                "operationId": "getTaskResultByFormat",
-                "parameters": [
-                    {
-                        "name": "taskId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    },
-                    {
-                        "name": "format",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "glb",
-                                "step",
-                                "stpz",
-                                "metadata",
-                                "decomposed-mesh"
-                            ]
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Pre-signed download URL for the requested format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_TaskResultDownload"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/cad/execute": {
-            "post": {
-                "tags": [
-                    "CAD"
-                ],
-                "summary": "Execute a single CAD operation",
-                "operationId": "cadExecute",
-                "description": "Runs one OCCT operation by its dotted path (e.g. `occt.shapes.solid.createSphere`). Returns **202 Accepted** with a task ID.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CadExecuteRequest"
-                            },
-                            "example": {
-                                "operation": "occt.shapes.solid.createSphere",
-                                "params": {
-                                    "radius": 5,
-                                    "center": [
-                                        0,
-                                        0,
-                                        0
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "202": {
-                        "$ref": "#/components/responses/TaskCreated"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/ValidationError"
-                    }
-                }
-            }
-        },
-        "/api/v1/cad/pipeline": {
-            "post": {
-                "tags": [
-                    "CAD"
-                ],
-                "summary": "Execute a chained pipeline",
-                "operationId": "cadPipeline",
-                "description": "Runs multiple operations sequentially in a single worker. Use `$ref:N` in params to reference step N's result. Optionally pass `outputs` to convert the final OCCT shape result into downloadable formats (STEP, GLB, decomposed mesh).",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CadPipelineRequest"
-                            },
-                            "example": {
-                                "steps": [
-                                    {
-                                        "operation": "occt.shapes.solid.createSphere",
-                                        "params": {
-                                            "radius": 5,
-                                            "center": [
-                                                0,
-                                                0,
-                                                0
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        "operation": "occt.shapes.solid.createCube",
-                                        "params": {
-                                            "size": 3,
-                                            "center": [
-                                                0,
-                                                3,
-                                                0
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        "operation": "occt.booleans.union",
-                                        "params": {
-                                            "shapes": [
-                                                "$ref:0",
-                                                "$ref:1"
-                                            ],
-                                            "keepEdges": false
-                                        }
-                                    }
-                                ],
-                                "outputs": {
-                                    "formats": [
-                                        "step",
-                                        "gltf"
-                                    ],
-                                    "adjustYtoZ": true
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "202": {
-                        "$ref": "#/components/responses/TaskCreated"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/ValidationError"
-                    }
-                }
-            }
-        },
-        "/api/v1/convert/step-to-gltf": {
-            "post": {
-                "tags": [
-                    "Convert"
-                ],
-                "summary": "Convert STEP to glTF (simple)",
-                "operationId": "convertStepToGltf",
-                "description": "Upload a STEP file first via the Files API, then convert it to glTF. Returns **202 Accepted** with a task ID.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ConvertSimpleRequest"
-                            },
-                            "example": {
-                                "stepFileId": "file-uuid-here",
-                                "meshPrecision": 0.1
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "202": {
-                        "$ref": "#/components/responses/TaskCreated"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/ValidationError"
-                    }
-                }
-            }
-        },
-        "/api/v1/convert/step-to-gltf-advanced": {
-            "post": {
-                "tags": [
-                    "Convert"
-                ],
-                "summary": "Convert STEP to glTF (advanced)",
-                "operationId": "convertStepToGltfAdvanced",
-                "description": "Full-control STEP → glTF conversion with mesh, export, and coordinate options. Returns **202 Accepted** with a task ID.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ConvertAdvancedRequest"
-                            },
-                            "example": {
-                                "stepFileId": "file-uuid-here",
-                                "options": {
-                                    "readColors": true,
-                                    "readNames": true,
-                                    "readMaterials": true,
-                                    "readLayers": false,
-                                    "readProps": false,
-                                    "meshDeflection": 0.01,
-                                    "meshAngle": 0.5,
-                                    "meshParallel": true,
-                                    "faceCountThreshold": -1,
-                                    "mergeFaces": false,
-                                    "splitIndices16": false,
-                                    "parallelWrite": false,
-                                    "embedTextures": true,
-                                    "forceUVExport": false,
-                                    "nodeNameFormat": "instanceOrProduct",
-                                    "meshNameFormat": "instanceOrProduct",
-                                    "transformFormat": "compact",
-                                    "adjustZtoY": true,
-                                    "scale": 1
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "202": {
-                        "$ref": "#/components/responses/TaskCreated"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/ValidationError"
-                    }
-                }
-            }
-        },
-        "/api/v1/files/upload": {
-            "post": {
-                "tags": [
-                    "Files"
-                ],
-                "summary": "Request a file upload URL",
-                "operationId": "requestUpload",
-                "description": "Returns a pre-signed URL. PUT your file bytes to that URL, then call `POST /api/v1/files/{fileId}/confirm`.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UploadRequest"
-                            },
-                            "example": {
-                                "filename": "model.stp",
-                                "contentType": "application/octet-stream",
-                                "bytes": 102400,
-                                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Upload URL created",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_UploadResult"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/files/{fileId}/confirm": {
-            "post": {
-                "tags": [
-                    "Files"
-                ],
-                "summary": "Confirm file upload",
-                "operationId": "confirmUpload",
-                "description": "Call after PUTting file bytes to the pre-signed upload URL.",
-                "parameters": [
-                    {
-                        "name": "fileId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "File confirmed",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_ConfirmResult"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/files/{fileId}": {
-            "get": {
-                "tags": [
-                    "Files"
-                ],
-                "summary": "Get file details",
-                "operationId": "getFile",
-                "parameters": [
-                    {
-                        "name": "fileId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "File details",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_FileDetail"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Files"
-                ],
-                "summary": "Delete a file",
-                "operationId": "deleteFile",
-                "parameters": [
-                    {
-                        "name": "fileId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "File deleted",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "ok": {
-                                            "type": "boolean",
-                                            "enum": [
-                                                true
-                                            ]
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "deleted": {
-                                                    "type": "boolean"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/v1/files": {
-            "get": {
-                "tags": [
-                    "Files"
-                ],
-                "summary": "List files",
-                "operationId": "listFiles",
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "default": 1
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "maximum": 50,
-                            "default": 20
-                        }
-                    },
-                    {
-                        "name": "status",
-                        "in": "query",
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "pending",
-                                "confirmed",
-                                "expired"
-                            ]
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Paginated file list",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessResponse_FileList"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "components": {
-        "responses": {
-            "TaskCreated": {
-                "description": "Task accepted for processing",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/SuccessResponse_TaskCreated"
-                        },
-                        "example": {
-                            "ok": true,
-                            "data": {
-                                "taskId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                                "status": "queued",
-                                "statusUrl": "/api/v1/tasks/a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-                            }
-                        }
-                    }
-                }
-            },
-            "CompoundTaskCreated": {
-                "description": "Compound task accepted — sub-tasks created",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/SuccessResponse_CompoundTaskCreated"
-                        },
-                        "example": {
-                            "ok": true,
-                            "data": {
-                                "taskId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                                "kind": "compound",
-                                "subTaskCount": 3,
-                                "statusUrl": "/api/v1/tasks/a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                                "subTasks": [
-                                    {
-                                        "taskId": "sub-1",
-                                        "index": 0,
-                                        "status": "queued",
-                                        "progress": null,
-                                        "computeMs": null,
-                                        "error": null,
-                                        "downloadFormats": []
-                                    },
-                                    {
-                                        "taskId": "sub-2",
-                                        "index": 1,
-                                        "status": "queued",
-                                        "progress": null,
-                                        "computeMs": null,
-                                        "error": null,
-                                        "downloadFormats": []
-                                    },
-                                    {
-                                        "taskId": "sub-3",
-                                        "index": 2,
-                                        "status": "waiting",
-                                        "progress": null,
-                                        "computeMs": null,
-                                        "error": null,
-                                        "downloadFormats": []
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                }
-            },
-            "ValidationError": {
-                "description": "Request validation failed",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/ErrorResponse"
-                        },
-                        "example": {
-                            "ok": false,
-                            "error": {
-                                "code": "VALIDATION_ERROR",
-                                "message": "'outputs.formats' must be a non-empty array"
-                            }
-                        }
-                    }
-                }
-            },
-            "NotFound": {
-                "description": "Resource not found",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/ErrorResponse"
-                        },
-                        "example": {
-                            "ok": false,
-                            "error": {
-                                "code": "NOT_FOUND",
-                                "message": "Task not found"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "schemas": {
-            "ErrorResponse": {
-                "type": "object",
-                "required": [
-                    "ok",
-                    "error"
-                ],
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            false
-                        ]
-                    },
-                    "error": {
-                        "type": "object",
-                        "required": [
-                            "code",
-                            "message"
-                        ],
-                        "properties": {
-                            "code": {
-                                "type": "string",
-                                "example": "VALIDATION_ERROR"
-                            },
-                            "message": {
-                                "type": "string"
-                            },
-                            "details": {
-                                "description": "Optional structured error context"
-                            },
-                            "requestId": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "TaskStatus": {
-                "type": "string",
-                "enum": [
-                    "waiting",
-                    "queued",
-                    "processing",
-                    "completed",
-                    "failed",
-                    "cancelled",
-                    "expired"
-                ]
-            },
-            "TaskKind": {
-                "type": "string",
-                "enum": [
-                    "cad",
-                    "model",
-                    "convert-simple",
-                    "convert-advanced",
-                    "pipeline",
-                    "compound"
-                ]
-            },
-            "ResultPartMeta": {
-                "type": "object",
-                "properties": {
-                    "mime": {
-                        "type": "string"
-                    },
-                    "bytes": {
-                        "type": "integer"
-                    }
-                }
-            },
-            "TaskDetail": {
-                "type": "object",
-                "required": [
-                    "taskId",
-                    "kind",
-                    "label",
-                    "status",
-                    "createdAt",
-                    "expiresAt"
-                ],
-                "properties": {
-                    "taskId": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "kind": {
-                        "$ref": "#/components/schemas/TaskKind"
-                    },
-                    "label": {
-                        "type": "string",
-                        "example": "Model: dragon-cup"
-                    },
-                    "status": {
-                        "$ref": "#/components/schemas/TaskStatus"
-                    },
-                    "progress": {
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 1,
-                        "nullable": true
-                    },
-                    "error": {
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "resultParts": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/ResultPartMeta"
-                        },
-                        "nullable": true
-                    },
-                    "metadata": {
-                        "type": "object",
-                        "nullable": true
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "startedAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                    },
-                    "finishedAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                    },
-                    "expiresAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
-            },
-            "TaskCreatedResult": {
-                "type": "object",
-                "required": [
-                    "taskId",
-                    "status",
-                    "statusUrl"
-                ],
-                "properties": {
-                    "taskId": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "queued"
-                        ]
-                    },
-                    "statusUrl": {
-                        "type": "string",
-                        "example": "/api/v1/tasks/{taskId}"
-                    }
-                }
-            },
-            "TaskResultDownload": {
-                "type": "object",
-                "required": [
-                    "downloadUrl",
-                    "filename"
-                ],
-                "properties": {
-                    "downloadUrl": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "filename": {
-                        "type": "string",
-                        "example": "result.glb"
-                    }
-                }
-            },
-            "OutputFormat": {
-                "type": "string",
-                "enum": [
-                    "step",
-                    "stpz",
-                    "decomposed-mesh",
-                    "gltf"
-                ]
-            },
-            "OutputOptions": {
-                "type": "object",
-                "required": [
-                    "formats"
-                ],
-                "properties": {
-                    "formats": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/OutputFormat"
-                        },
-                        "minItems": 1,
-                        "description": "Output formats to generate"
-                    },
-                    "meshPrecision": {
-                        "type": "number",
-                        "minimum": 0.005,
-                        "maximum": 10,
-                        "description": "Mesh tessellation precision (lower = finer)"
-                    },
-                    "gltfMeshPrecision": {
-                        "type": "number",
-                        "minimum": 0.005,
-                        "maximum": 10,
-                        "description": "glTF-specific mesh deflection"
-                    },
-                    "adjustYtoZ": {
-                        "type": "boolean",
-                        "default": false,
-                        "description": "Swap Y↔Z axis for mesh/glTF output"
-                    }
-                }
-            },
-            "ModelSubmission": {
-                "type": "object",
-                "required": [
-                    "outputs"
-                ],
-                "properties": {
-                    "params": {
-                        "type": "object",
-                        "description": "Model-specific parameters (all optional, defaults apply)"
-                    },
-                    "outputs": {
-                        "$ref": "#/components/schemas/OutputOptions"
-                    }
-                }
-            },
-            "BatchModelSubmission": {
-                "type": "object",
-                "required": [
-                    "items",
-                    "outputs"
-                ],
-                "properties": {
-                    "items": {
-                        "type": "array",
-                        "minItems": 1,
-                        "maxItems": 50,
-                        "description": "Array of parameter variations. Each item generates a separate sub-task.",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "params": {
-                                    "type": "object",
-                                    "description": "Model-specific parameters (all optional, defaults apply)"
-                                }
-                            }
-                        }
-                    },
-                    "outputs": {
-                        "$ref": "#/components/schemas/OutputOptions",
-                        "description": "Shared output configuration applied to every item"
-                    }
-                }
-            },
-            "SubTaskSummary": {
-                "type": "object",
-                "required": [
-                    "taskId",
-                    "index",
-                    "status",
-                    "downloadFormats"
-                ],
-                "properties": {
-                    "taskId": {
-                        "type": "string"
-                    },
-                    "index": {
-                        "type": "integer"
-                    },
-                    "status": {
-                        "$ref": "#/components/schemas/TaskStatus"
-                    },
-                    "progress": {
-                        "type": "number",
-                        "nullable": true
-                    },
-                    "computeMs": {
-                        "type": "number",
-                        "nullable": true
-                    },
-                    "error": {
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "downloadFormats": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "Available result formats for download (populated once completed)"
-                    }
-                }
-            },
-            "CompoundTaskCreatedResult": {
-                "type": "object",
-                "required": [
-                    "taskId",
-                    "kind",
-                    "subTaskCount",
-                    "statusUrl",
-                    "subTasks"
-                ],
-                "properties": {
-                    "taskId": {
-                        "type": "string"
-                    },
-                    "kind": {
-                        "type": "string",
-                        "enum": [
-                            "compound"
-                        ]
-                    },
-                    "subTaskCount": {
-                        "type": "integer"
-                    },
-                    "statusUrl": {
-                        "type": "string",
-                        "example": "/api/v1/tasks/{taskId}"
-                    },
-                    "subTasks": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/SubTaskSummary"
-                        }
-                    }
-                }
-            },
-            "ModelParamDefinition": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string",
-                        "enum": [
-                            "number",
-                            "integer",
-                            "boolean",
-                            "array"
-                        ]
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "default": {},
-                    "items": {
-                        "type": "object"
-                    }
-                }
-            },
-            "ModelDefinition": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "displayName": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "params": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ModelParamDefinition"
-                        }
-                    },
-                    "defaults": {
-                        "type": "object"
-                    }
-                }
-            },
-            "CadExecuteRequest": {
-                "type": "object",
-                "required": [
-                    "operation"
-                ],
-                "properties": {
-                    "operation": {
-                        "type": "string",
-                        "description": "Dotted path to an OCCT operation",
-                        "example": "occt.shapes.solid.createSphere"
-                    },
-                    "params": {
-                        "type": "object",
-                        "description": "Operation-specific parameters"
-                    }
-                }
-            },
-            "CadPipelineRequest": {
-                "type": "object",
-                "required": [
-                    "steps"
-                ],
-                "properties": {
-                    "steps": {
-                        "type": "array",
-                        "minItems": 1,
-                        "maxItems": 50,
-                        "items": {
-                            "type": "object",
-                            "required": [
-                                "operation"
-                            ],
-                            "properties": {
-                                "operation": {
-                                    "type": "string"
-                                },
-                                "params": {
-                                    "type": "object",
-                                    "description": "Use `$ref:N` to reference step N's result"
-                                }
-                            }
-                        }
-                    },
-                    "outputs": {
-                        "$ref": "#/components/schemas/OutputOptions",
-                        "description": "Optional. When provided, the final pipeline result (if it is an OCCT shape) is converted to the requested formats and the task produces downloadable result parts (step, glb, decomposed-mesh, etc.). When omitted, the raw pipeline result is returned as JSON."
-                    }
-                }
-            },
-            "CadCompoundRequest": {
-                "type": "object",
-                "required": [
-                    "parallel",
-                    "items"
-                ],
-                "properties": {
-                    "parallel": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "items": {
-                        "type": "array",
-                        "minItems": 1,
-                        "maxItems": 100,
-                        "items": {
-                            "type": "object",
-                            "required": [
-                                "operation"
-                            ],
-                            "properties": {
-                                "operation": {
-                                    "type": "string"
-                                },
-                                "params": {
-                                    "type": "object"
-                                },
-                                "inputFiles": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "fileId": {
-                                                "type": "string"
-                                            },
-                                            "role": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                },
-                                "outputFormats": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    },
-                                    "maxItems": 10
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ConvertSimpleRequest": {
-                "type": "object",
-                "required": [
-                    "stepFileId"
-                ],
-                "properties": {
-                    "stepFileId": {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "File ID from POST /api/v1/files/upload + confirm"
-                    },
-                    "meshPrecision": {
-                        "type": "number",
-                        "minimum": 0.005,
-                        "maximum": 10,
-                        "description": "Mesh tessellation precision"
-                    }
-                }
-            },
-            "ConvertAdvancedRequest": {
-                "type": "object",
-                "required": [
-                    "stepFileId"
-                ],
-                "properties": {
-                    "stepFileId": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "options": {
-                        "type": "object",
-                        "description": "Advanced conversion options — all optional",
-                        "properties": {
-                            "readColors": {
-                                "type": "boolean"
-                            },
-                            "readNames": {
-                                "type": "boolean"
-                            },
-                            "readMaterials": {
-                                "type": "boolean"
-                            },
-                            "readLayers": {
-                                "type": "boolean"
-                            },
-                            "readProps": {
-                                "type": "boolean"
-                            },
-                            "meshDeflection": {
-                                "type": "number",
-                                "minimum": 0.005,
-                                "maximum": 10
-                            },
-                            "meshAngle": {
-                                "type": "number",
-                                "minimum": 0.01,
-                                "maximum": 3.14159
-                            },
-                            "meshParallel": {
-                                "type": "boolean"
-                            },
-                            "faceCountThreshold": {
-                                "type": "integer",
-                                "minimum": -1,
-                                "maximum": 500000
-                            },
-                            "mergeFaces": {
-                                "type": "boolean"
-                            },
-                            "splitIndices16": {
-                                "type": "boolean"
-                            },
-                            "parallelWrite": {
-                                "type": "boolean"
-                            },
-                            "embedTextures": {
-                                "type": "boolean"
-                            },
-                            "forceUVExport": {
-                                "type": "boolean"
-                            },
-                            "nodeNameFormat": {
-                                "type": "string",
-                                "enum": [
-                                    "empty",
-                                    "product",
-                                    "instance",
-                                    "instanceOrProduct",
-                                    "productOrInstance",
-                                    "productAndInstance",
-                                    "productAndInstanceAndOcaf"
-                                ]
-                            },
-                            "meshNameFormat": {
-                                "type": "string",
-                                "enum": [
-                                    "empty",
-                                    "product",
-                                    "instance",
-                                    "instanceOrProduct",
-                                    "productOrInstance",
-                                    "productAndInstance",
-                                    "productAndInstanceAndOcaf"
-                                ]
-                            },
-                            "transformFormat": {
-                                "type": "string",
-                                "enum": [
-                                    "compact",
-                                    "mat4",
-                                    "trs"
-                                ]
-                            },
-                            "adjustZtoY": {
-                                "type": "boolean"
-                            },
-                            "scale": {
-                                "type": "number",
-                                "minimum": 0.000001,
-                                "maximum": 1000
-                            }
-                        }
-                    }
-                }
-            },
-            "UploadRequest": {
-                "type": "object",
-                "required": [
-                    "filename",
-                    "contentType",
-                    "bytes"
-                ],
-                "properties": {
-                    "filename": {
-                        "type": "string",
-                        "maxLength": 255
-                    },
-                    "contentType": {
-                        "type": "string",
-                        "maxLength": 255
-                    },
-                    "bytes": {
-                        "type": "integer",
-                        "minimum": 1
-                    },
-                    "sha256": {
-                        "type": "string",
-                        "description": "Optional hash for deduplication"
-                    }
-                }
-            },
-            "UploadResult": {
-                "type": "object",
-                "properties": {
-                    "fileId": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "uploadUrl": {
-                        "type": "string",
-                        "format": "uri",
-                        "description": "PUT file bytes here"
-                    },
-                    "expiresIn": {
-                        "type": "integer"
-                    },
-                    "maxBytes": {
-                        "type": "integer"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "pending"
-                        ]
-                    }
-                }
-            },
-            "ConfirmResult": {
-                "type": "object",
-                "properties": {
-                    "fileId": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "confirmed"
-                        ]
-                    },
-                    "bytes": {
-                        "type": "integer"
-                    },
-                    "contentType": {
-                        "type": "string"
-                    }
-                }
-            },
-            "FileDetail": {
-                "type": "object",
-                "properties": {
-                    "fileId": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "filename": {
-                        "type": "string"
-                    },
-                    "contentType": {
-                        "type": "string"
-                    },
-                    "bytes": {
-                        "type": "integer",
-                        "nullable": true
-                    },
-                    "sha256": {
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "pending",
-                            "confirmed",
-                            "expired"
-                        ]
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "confirmedAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                    },
-                    "downloadUrl": {
-                        "type": "string",
-                        "format": "uri"
-                    }
-                }
-            },
-            "SuccessResponse_TaskCreated": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/TaskCreatedResult"
-                    }
-                }
-            },
-            "SuccessResponse_TaskDetail": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/TaskDetail"
-                    }
-                }
-            },
-            "SuccessResponse_TaskList": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "type": "object",
-                        "properties": {
-                            "tasks": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/TaskDetail"
-                                }
-                            },
-                            "page": {
-                                "type": "integer"
-                            },
-                            "limit": {
-                                "type": "integer"
-                            },
-                            "total": {
-                                "type": "integer"
-                            }
-                        }
-                    }
-                }
-            },
-            "SuccessResponse_TaskResultDownload": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/TaskResultDownload"
-                    }
-                }
-            },
-            "SuccessResponse_ModelList": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "type": "object",
-                        "properties": {
-                            "models": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SuccessResponse_ModelDefinition": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/ModelDefinition"
-                    }
-                }
-            },
-            "SuccessResponse_BatchDefinitions": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "type": "object",
-                        "properties": {
-                            "definitions": {
-                                "type": "object",
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/ModelDefinition"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SuccessResponse_UploadResult": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/UploadResult"
-                    }
-                }
-            },
-            "SuccessResponse_ConfirmResult": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/ConfirmResult"
-                    }
-                }
-            },
-            "SuccessResponse_FileDetail": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/FileDetail"
-                    }
-                }
-            },
-            "SuccessResponse_FileList": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "type": "object",
-                        "properties": {
-                            "files": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/FileDetail"
-                                }
-                            },
-                            "page": {
-                                "type": "integer"
-                            },
-                            "limit": {
-                                "type": "integer"
-                            },
-                            "total": {
-                                "type": "integer"
-                            }
-                        }
-                    }
-                }
-            },
-            "SuccessResponse_CompoundTaskCreated": {
-                "type": "object",
-                "properties": {
-                    "ok": {
-                        "type": "boolean",
-                        "enum": [
-                            true
-                        ]
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/CompoundTaskCreatedResult"
-                    }
-                }
-            },
-            "DragonCupParams": {
-                "type": "object",
-                "description": "Dragon Cup parameters — all optional, sane defaults apply",
-                "properties": {
-                    "height": {
-                        "type": "number",
-                        "description": "Total cup height (cm)",
-                        "default": 8
-                    },
-                    "radiusBottom": {
-                        "type": "number",
-                        "description": "Radius at the base (cm)",
-                        "default": 4
-                    },
-                    "radiusTopOffset": {
-                        "type": "number",
-                        "description": "How much the top radius differs from bottom",
-                        "default": 2
-                    },
-                    "radiusMidOffset": {
-                        "type": "number",
-                        "description": "Mid-section radius offset",
-                        "default": 2
-                    },
-                    "rotationTopAngle": {
-                        "type": "number",
-                        "description": "Top twist angle (degrees)",
-                        "default": 20
-                    },
-                    "rotationMidAngle": {
-                        "type": "number",
-                        "description": "Mid twist angle (degrees)",
-                        "default": 20
-                    },
-                    "nrSkinCellsVertical": {
-                        "type": "integer",
-                        "description": "Vertical skin cell count",
-                        "default": 5
-                    },
-                    "nrSkinCellsHorizontal": {
-                        "type": "integer",
-                        "description": "Horizontal skin cell count",
-                        "default": 10
-                    },
-                    "nrSkinCellDivisionsTop": {
-                        "type": "integer",
-                        "description": "Subdivisions at top of each cell",
-                        "default": 1
-                    },
-                    "nrSkinCellDivisionsBottom": {
-                        "type": "integer",
-                        "description": "Subdivisions at bottom of each cell",
-                        "default": 3
-                    },
-                    "skinCellOuterHeight": {
-                        "type": "number",
-                        "description": "Outer cell extrusion height",
-                        "default": 0.4
-                    },
-                    "skinCellInnerHeight": {
-                        "type": "number",
-                        "description": "Inner cell extrusion height",
-                        "default": 0.3
-                    },
-                    "skinCellBottomHeight": {
-                        "type": "number",
-                        "description": "Bottom cell height",
-                        "default": 0.4
-                    },
-                    "skinCellTopHeight": {
-                        "type": "number",
-                        "description": "Top cell height",
-                        "default": 0.4
-                    },
-                    "thickness": {
-                        "type": "number",
-                        "description": "Shell wall thickness",
-                        "default": 0.6
-                    },
-                    "bottomThickness": {
-                        "type": "number",
-                        "description": "Bottom plate thickness",
-                        "default": 1
-                    },
-                    "precision": {
-                        "type": "number",
-                        "description": "OCCT geometry precision (lower = finer)",
-                        "default": 0.01
-                    },
-                    "rotation": {
-                        "type": "number",
-                        "description": "Final rotation angle (degrees)",
-                        "default": 0
-                    },
-                    "scale": {
-                        "type": "number",
-                        "description": "Uniform scale factor",
-                        "default": 1
-                    },
-                    "origin": {
-                        "type": "array",
-                        "description": "[x, y, z] placement origin",
-                        "default": [
-                            0,
-                            0,
-                            0
-                        ],
-                        "items": {
-                            "type": "number"
-                        }
-                    },
-                    "direction": {
-                        "type": "array",
-                        "description": "[x, y, z] up direction",
-                        "default": [
-                            0,
-                            1,
-                            0
-                        ],
-                        "items": {
-                            "type": "number"
-                        }
-                    }
-                }
-            },
-            "PhoneNestParams": {
-                "type": "object",
-                "description": "Phone Nest parameters — all optional, sane defaults apply",
-                "properties": {
-                    "heightBottom": {
-                        "type": "number",
-                        "description": "Height of the bottom section (cm)",
-                        "default": 5
-                    },
-                    "heightTop": {
-                        "type": "number",
-                        "description": "Height of the top section (cm)",
-                        "default": 16
-                    },
-                    "widthBack": {
-                        "type": "number",
-                        "description": "Width at the back (cm)",
-                        "default": 25
-                    },
-                    "widthFront": {
-                        "type": "number",
-                        "description": "Width at the front (cm)",
-                        "default": 10
-                    },
-                    "length": {
-                        "type": "number",
-                        "description": "Depth / length (cm)",
-                        "default": 16
-                    },
-                    "backOffset": {
-                        "type": "number",
-                        "description": "Back curve offset (cm)",
-                        "default": 6
-                    },
-                    "thickness": {
-                        "type": "number",
-                        "description": "Shell wall thickness",
-                        "default": 0.4
-                    },
-                    "applyOrnaments": {
-                        "type": "boolean",
-                        "description": "Add decorative perforations to the surface",
-                        "default": false
-                    },
-                    "filletRadius": {
-                        "type": "number",
-                        "description": "Fillet radius on loft edges",
-                        "default": 2
-                    },
-                    "phoneHeight": {
-                        "type": "number",
-                        "description": "Phone mock-up height (cm)",
-                        "default": 16.8
-                    },
-                    "phoneWidth": {
-                        "type": "number",
-                        "description": "Phone mock-up width (cm)",
-                        "default": 7.8
-                    },
-                    "phoneThickness": {
-                        "type": "number",
-                        "description": "Phone mock-up thickness (cm)",
-                        "default": 0.7
-                    },
-                    "precision": {
-                        "type": "number",
-                        "description": "OCCT geometry precision (lower = finer)",
-                        "default": 0.01
-                    },
-                    "rotation": {
-                        "type": "number",
-                        "description": "Final rotation angle (degrees)",
-                        "default": 0
-                    },
-                    "scale": {
-                        "type": "number",
-                        "description": "Uniform scale factor",
-                        "default": 1
-                    },
-                    "origin": {
-                        "type": "array",
-                        "description": "[x, y, z] placement origin",
-                        "default": [
-                            0,
-                            0,
-                            0
-                        ],
-                        "items": {
-                            "type": "number"
-                        }
-                    },
-                    "direction": {
-                        "type": "array",
-                        "description": "[x, y, z] up direction",
-                        "default": [
-                            0,
-                            1,
-                            0
-                        ],
-                        "items": {
-                            "type": "number"
-                        }
-                    }
-                }
-            }
-        }
+    "termsOfService": "https://bitbybit.dev/terms-and-conditions",
+    "license": {
+      "name": "Proprietary",
+      "url": "https://bitbybit.dev/terms-and-conditions"
     }
+  },
+  "servers": [
+    {
+      "url": "https://api.bitbybit.dev",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health check",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cad/execute": {
+      "post": {
+        "tags": [
+          "CAD Operations"
+        ],
+        "summary": "Execute a single CAD operation",
+        "description": "Runs one OCCT operation by its dotted path.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CadOperationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cad/pipeline": {
+      "post": {
+        "tags": [
+          "CAD Operations"
+        ],
+        "summary": "Execute a chained pipeline of CAD operations",
+        "description": "Runs multiple operations sequentially in a single worker. Use '$ref:N' in params to reference step N's result.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PipelineBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pipeline result (last step)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CadOperationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cad/compound": {
+      "post": {
+        "tags": [
+          "CAD Operations"
+        ],
+        "summary": "Execute compound (parallel) CAD operations",
+        "description": "Runs multiple independent operations in parallel.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompoundExecuteBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Compound result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CadOperationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "List available parametric models",
+        "responses": {
+          "200": {
+            "description": "Model name list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models/definitions": {
+      "post": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Batch-fetch model definitions",
+        "description": "Returns parameter schemas and defaults for the requested model names.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DefinitionsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Model definitions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelBatchDefinitionsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models/{modelName}": {
+      "post": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Execute a parametric CAD model",
+        "description": "Generic endpoint — works for any registered model. See model-specific endpoints for fully typed parameters. Always returns 202 with a task ID for polling.",
+        "parameters": [
+          {
+            "name": "modelName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Model slug (e.g. dragon-cup, phone-nest)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models/{modelName}/batch": {
+      "post": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Generate a batch of parametric models",
+        "description": "Creates a compound task with one sub-task per item. Each item can have different parameters but shares the same output config.",
+        "parameters": [
+          {
+            "name": "modelName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Model slug (e.g. dragon-cup, phone-nest)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchModelSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Compound task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompoundTaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models/{modelName}/params": {
+      "get": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Get model parameter definitions",
+        "description": "Returns parameter schema, types, defaults, and limits for the specified model.",
+        "parameters": [
+          {
+            "name": "modelName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Model slug (e.g. dragon-cup, phone-nest)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Model definition",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelDefinitionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models/dragon-cup": {
+      "post": {
+        "tags": [
+          "Models — Dragon Cup"
+        ],
+        "summary": "Build a Dragon Cup",
+        "description": "Parametric dragon-scale textured cup with twisted lofted body, voronoi-like skin cells, and configurable shell thickness. All parameters are optional — defaults produce a ready-to-print model.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "params": {
+                  "height": 8,
+                  "radiusBottom": 4,
+                  "radiusTopOffset": 2,
+                  "radiusMidOffset": 2,
+                  "rotationTopAngle": 20,
+                  "rotationMidAngle": 20,
+                  "nrSkinCellsVertical": 5,
+                  "nrSkinCellsHorizontal": 10,
+                  "nrSkinCellDivisionsTop": 1,
+                  "nrSkinCellDivisionsBottom": 3,
+                  "skinCellOuterHeight": 0.4,
+                  "skinCellInnerHeight": 0.3,
+                  "skinCellBottomHeight": 0.4,
+                  "skinCellTopHeight": 0.4,
+                  "thickness": 0.6,
+                  "bottomThickness": 1,
+                  "precision": 0.01,
+                  "rotation": 0,
+                  "scale": 1,
+                  "origin": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "direction": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "outputs": {
+                  "formats": [
+                    "step",
+                    "gltf"
+                  ]
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/DragonCupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models/phone-nest": {
+      "post": {
+        "tags": [
+          "Models — Phone Nest"
+        ],
+        "summary": "Build a Phone Nest",
+        "description": "Parametric 3D-printable desktop phone holder/stand with a lofted cradle surface, optional ornamental perforations, and a phone mock-up shape. All parameters are optional — defaults produce a ready-to-print model.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "params": {
+                  "heightBottom": 5,
+                  "heightTop": 16,
+                  "widthBack": 25,
+                  "widthFront": 10,
+                  "length": 16,
+                  "backOffset": 6,
+                  "thickness": 0.4,
+                  "applyOrnaments": false,
+                  "filletRadius": 2,
+                  "phoneHeight": 16.8,
+                  "phoneWidth": 7.8,
+                  "phoneThickness": 0.7,
+                  "precision": 0.01,
+                  "rotation": 0,
+                  "scale": 1,
+                  "origin": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "direction": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "outputs": {
+                  "formats": [
+                    "step",
+                    "gltf"
+                  ]
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/PhoneNestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/convert/step-to-gltf": {
+      "post": {
+        "tags": [
+          "Convert"
+        ],
+        "summary": "Convert a STEP file to GLTF (.glb)",
+        "description": "Simple STEP → glTF conversion using a previously uploaded file. Requires the 'convert' API key scope. Returns 202 with a task ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepToGltfBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/convert/step-to-gltf-advanced": {
+      "post": {
+        "tags": [
+          "Convert"
+        ],
+        "summary": "Convert a STEP file to GLTF (.glb) - advanced options",
+        "description": "Full-control STEP → glTF conversion with fine-grained mesh, export, and coordinate options. Requires the 'convert' API key scope. Returns 202 with a task ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepToGltfAdvancedBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/files/upload": {
+      "post": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Request a file upload URL",
+        "description": "Returns a pre-signed URL for uploading a file via PUT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUploadBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Upload URL and file ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/files": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "List uploaded files",
+        "description": "Returns paginated list of uploaded files.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "confirmed",
+                "expired"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/files/{fileId}": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Get file details",
+        "description": "Returns metadata and download URL for a single file.",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "File ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileDetailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Delete a file",
+        "description": "Permanently removes a file and its stored blob.",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "File ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteFileResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/files/{fileId}/confirm": {
+      "post": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Confirm file upload",
+        "description": "Confirms that the file was successfully uploaded to the pre-signed URL.",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "File ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File confirmed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tasks": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "List tasks",
+        "description": "Returns paginated list of tasks.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "waiting",
+                "queued",
+                "processing",
+                "completed",
+                "failed",
+                "cancelled",
+                "expired"
+              ]
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "cad",
+                "model",
+                "convert-simple",
+                "convert-advanced",
+                "pipeline",
+                "compound"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tasks/{taskId}": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Get task status",
+        "description": "Returns the current status and metadata of a task.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskDetailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Cancel a task",
+        "description": "Cancels a waiting or queued task. Has no effect on completed/failed tasks.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelTaskResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tasks/{taskId}/result": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Get task result (default format)",
+        "description": "Returns a download URL for the task's primary result. For compound tasks, returns a manifest with per-sub-task download links.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result download link (standard) or compound manifest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskOrCompoundResultResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Task is not yet completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tasks/{taskId}/result/{format}": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Get task result in a specific format",
+        "description": "Returns a download URL for the requested output format (e.g. glb, step, stpz).",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Task ID"
+          },
+          {
+            "name": "format",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Result format (e.g. glb, step, stpz, metadata, decomposed-mesh)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result download link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResultResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Task is not yet completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tasks/{taskId}/retry": {
+      "post": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Retry a failed or cancelled task",
+        "description": "Re-queues a failed or cancelled task with the same parameters.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Task re-queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Task is not in a retryable state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ExecuteBody": {
+        "type": "object",
+        "properties": {
+          "operation": {
+            "type": "string",
+            "minLength": 1,
+            "description": "OCCT operation name (e.g. 'shapes.solid.createBox')"
+          },
+          "params": {
+            "description": "Operation-specific parameters"
+          }
+        },
+        "required": [
+          "operation"
+        ],
+        "additionalProperties": false,
+        "description": "Request body for single CAD operation execution"
+      },
+      "PipelineBody": {
+        "type": "object",
+        "properties": {
+          "steps": {
+            "minItems": 1,
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipelineStep"
+            },
+            "description": "Ordered list of CAD operations to execute sequentially"
+          },
+          "outputs": {
+            "description": "Output format options (applied to final result)",
+            "$ref": "#/components/schemas/OutputOptions"
+          }
+        },
+        "required": [
+          "steps"
+        ],
+        "additionalProperties": false,
+        "description": "Request body for CAD pipeline (sequential operations)"
+      },
+      "PipelineStep": {
+        "type": "object",
+        "properties": {
+          "operation": {
+            "type": "string",
+            "minLength": 1,
+            "description": "OCCT operation name"
+          },
+          "params": {
+            "description": "Operation parameters"
+          }
+        },
+        "required": [
+          "operation",
+          "params"
+        ],
+        "description": "A single step in a CAD pipeline"
+      },
+      "OutputOptions": {
+        "type": "object",
+        "properties": {
+          "formats": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutputFormat"
+            },
+            "description": "List of output formats to generate"
+          },
+          "meshPrecision": {
+            "description": "Override mesh precision for decomposed-mesh output",
+            "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "gltfMeshPrecision": {
+            "description": "Override mesh precision for glTF output",
+            "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "adjustYtoZ": {
+            "description": "Swap Y and Z axes in output (for Z-up coordinate systems)",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "formats"
+        ],
+        "additionalProperties": false,
+        "description": "Output format options for model/CAD tasks"
+      },
+      "OutputFormat": {
+        "type": "string",
+        "enum": [
+          "step",
+          "stpz",
+          "decomposed-mesh",
+          "gltf"
+        ],
+        "description": "Supported output file formats"
+      },
+      "MeshPrecision": {
+        "type": "number",
+        "minimum": 0.005,
+        "maximum": 10,
+        "description": "Mesh tessellation precision (lower = finer). Range: [0.005, 10]"
+      },
+      "CompoundExecuteBody": {
+        "type": "object",
+        "properties": {
+          "parallel": {
+            "type": "boolean",
+            "const": true,
+            "description": "Must be true — compound tasks run sub-items in parallel"
+          },
+          "items": {
+            "minItems": 1,
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompoundItem"
+            },
+            "description": "List of operations to execute in parallel"
+          }
+        },
+        "required": [
+          "parallel",
+          "items"
+        ],
+        "additionalProperties": false,
+        "description": "Request body for compound (parallel) CAD task execution"
+      },
+      "CompoundItem": {
+        "type": "object",
+        "properties": {
+          "operation": {
+            "type": "string",
+            "minLength": 1,
+            "description": "OCCT operation name"
+          },
+          "params": {
+            "description": "Operation parameters"
+          },
+          "inputFiles": {
+            "description": "References to previously uploaded files",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fileId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Uploaded file ID"
+                },
+                "role": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Role of the file in the operation (e.g. 'step-input')"
+                }
+              },
+              "required": [
+                "fileId",
+                "role"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "outputFormats": {
+            "description": "Per-item output format overrides",
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "operation"
+        ],
+        "additionalProperties": false,
+        "description": "A single item in a compound (parallel) task"
+      },
+      "DefinitionsRequest": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Model slugs to fetch definitions for"
+          }
+        },
+        "required": [
+          "names"
+        ],
+        "additionalProperties": false,
+        "description": "Request body for batch model definitions"
+      },
+      "ModelSubmission": {
+        "type": "object",
+        "properties": {
+          "params": {
+            "description": "Model-specific parameters",
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "outputs": {
+            "$ref": "#/components/schemas/OutputOptions"
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "BatchModelSubmission": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "minItems": 1,
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "description": "Array of parameter variations"
+          },
+          "outputs": {
+            "description": "Shared output configuration applied to every item",
+            "$ref": "#/components/schemas/OutputOptions"
+          }
+        },
+        "required": [
+          "items",
+          "outputs"
+        ]
+      },
+      "DragonCupRequest": {
+        "type": "object",
+        "properties": {
+          "params": {
+            "$ref": "#/components/schemas/DragonCupParams"
+          },
+          "outputs": {
+            "$ref": "#/components/schemas/OutputOptions"
+          }
+        },
+        "required": [
+          "outputs"
+        ],
+        "additionalProperties": false,
+        "description": "Request body for the Dragon Cup model"
+      },
+      "DragonCupParams": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "description": "Total cup height (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "radiusBottom": {
+            "description": "Radius at the base (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 30
+          },
+          "radiusTopOffset": {
+            "description": "How much the top radius differs from bottom",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 20
+          },
+          "radiusMidOffset": {
+            "description": "Mid-section radius offset",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 20
+          },
+          "rotationTopAngle": {
+            "description": "Top twist angle (degrees)",
+            "type": "number",
+            "minimum": -360,
+            "maximum": 360
+          },
+          "rotationMidAngle": {
+            "description": "Mid twist angle (degrees)",
+            "type": "number",
+            "minimum": -360,
+            "maximum": 360
+          },
+          "nrSkinCellsVertical": {
+            "description": "Vertical skin cell count",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 30
+          },
+          "nrSkinCellsHorizontal": {
+            "description": "Horizontal skin cell count",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "nrSkinCellDivisionsTop": {
+            "description": "Subdivisions at top of each cell",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 10
+          },
+          "nrSkinCellDivisionsBottom": {
+            "description": "Subdivisions at bottom of each cell",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 10
+          },
+          "skinCellOuterHeight": {
+            "description": "Outer cell extrusion height",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 5
+          },
+          "skinCellInnerHeight": {
+            "description": "Inner cell extrusion height",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 5
+          },
+          "skinCellBottomHeight": {
+            "description": "Bottom cell height",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 5
+          },
+          "skinCellTopHeight": {
+            "description": "Top cell height",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 5
+          },
+          "thickness": {
+            "description": "Shell wall thickness",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 5
+          },
+          "bottomThickness": {
+            "description": "Bottom plate thickness",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 5
+          },
+          "precision": {
+            "description": "OCCT geometry precision (lower = finer)",
+            "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "rotation": {
+            "description": "Final rotation angle (degrees)",
+            "type": "number",
+            "minimum": -360,
+            "maximum": 360
+          },
+          "scale": {
+            "description": "Uniform scale factor",
+            "$ref": "#/components/schemas/PositiveScale"
+          },
+          "origin": {
+            "description": "[x, y, z] placement origin",
+            "$ref": "#/components/schemas/Point3"
+          },
+          "direction": {
+            "description": "[x, y, z] up direction",
+            "$ref": "#/components/schemas/Point3"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Dragon Cup model parameters — all optional, sane defaults apply"
+      },
+      "PositiveScale": {
+        "type": "number",
+        "minimum": 0.000001,
+        "maximum": 1000,
+        "description": "Uniform scale factor. Range: [1e-6, 1000]"
+      },
+      "Point3": {
+        "type": "array",
+        "prefixItems": [
+          {
+            "type": "number",
+            "minimum": -1000,
+            "maximum": 1000
+          },
+          {
+            "type": "number",
+            "minimum": -1000,
+            "maximum": 1000
+          },
+          {
+            "type": "number",
+            "minimum": -1000,
+            "maximum": 1000
+          }
+        ],
+        "description": "3D point as [x, y, z] tuple, each coordinate in [-1000, 1000]"
+      },
+      "PhoneNestRequest": {
+        "type": "object",
+        "properties": {
+          "params": {
+            "$ref": "#/components/schemas/PhoneNestParams"
+          },
+          "outputs": {
+            "$ref": "#/components/schemas/OutputOptions"
+          }
+        },
+        "required": [
+          "outputs"
+        ],
+        "additionalProperties": false,
+        "description": "Request body for the Phone Nest model"
+      },
+      "PhoneNestParams": {
+        "type": "object",
+        "properties": {
+          "heightBottom": {
+            "description": "Height of the bottom section (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "heightTop": {
+            "description": "Height of the top section (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "widthBack": {
+            "description": "Width at the back (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "widthFront": {
+            "description": "Width at the front (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "length": {
+            "description": "Depth / length (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "backOffset": {
+            "description": "Back curve offset (cm)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "thickness": {
+            "description": "Shell wall thickness",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 5
+          },
+          "applyOrnaments": {
+            "description": "Add decorative perforations to the surface",
+            "type": "boolean"
+          },
+          "filletRadius": {
+            "description": "Fillet radius on loft edges",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 15
+          },
+          "phoneHeight": {
+            "description": "Phone mock-up height (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 35
+          },
+          "phoneWidth": {
+            "description": "Phone mock-up width (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 35
+          },
+          "phoneThickness": {
+            "description": "Phone mock-up thickness (cm)",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 3
+          },
+          "precision": {
+            "description": "OCCT geometry precision (lower = finer)",
+            "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "rotation": {
+            "description": "Final rotation angle (degrees)",
+            "type": "number",
+            "minimum": -360,
+            "maximum": 360
+          },
+          "scale": {
+            "description": "Uniform scale factor",
+            "$ref": "#/components/schemas/PositiveScale"
+          },
+          "origin": {
+            "description": "[x, y, z] placement origin",
+            "$ref": "#/components/schemas/Point3"
+          },
+          "direction": {
+            "description": "[x, y, z] up direction",
+            "$ref": "#/components/schemas/Point3"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Phone Nest model parameters — all optional, sane defaults apply"
+      },
+      "StepToGltfBody": {
+        "type": "object",
+        "properties": {
+          "stepFileId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the previously uploaded STEP file"
+          },
+          "meshPrecision": {
+            "description": "Tessellation precision for the glTF mesh",
+            "$ref": "#/components/schemas/MeshPrecision"
+          }
+        },
+        "required": [
+          "stepFileId"
+        ],
+        "additionalProperties": false,
+        "description": "Request body for simple STEP → glTF conversion"
+      },
+      "StepToGltfAdvancedBody": {
+        "type": "object",
+        "properties": {
+          "stepFileId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the previously uploaded STEP file"
+          },
+          "options": {
+            "description": "Advanced conversion options",
+            "$ref": "#/components/schemas/ConvertAdvancedOptions"
+          }
+        },
+        "required": [
+          "stepFileId"
+        ],
+        "additionalProperties": false,
+        "description": "Request body for advanced STEP → glTF conversion"
+      },
+      "ConvertAdvancedOptions": {
+        "type": "object",
+        "properties": {
+          "readColors": {
+            "description": "Read color attributes from STEP",
+            "type": "boolean"
+          },
+          "readNames": {
+            "description": "Read name attributes from STEP",
+            "type": "boolean"
+          },
+          "readMaterials": {
+            "description": "Read material attributes from STEP",
+            "type": "boolean"
+          },
+          "readLayers": {
+            "description": "Read layer information from STEP",
+            "type": "boolean"
+          },
+          "readProps": {
+            "description": "Read custom properties from STEP",
+            "type": "boolean"
+          },
+          "meshDeflection": {
+            "description": "Linear deflection for mesh tessellation",
+            "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "meshAngle": {
+            "description": "Angular deflection for mesh tessellation (radians)",
+            "$ref": "#/components/schemas/MeshAngle"
+          },
+          "meshParallel": {
+            "description": "Enable parallel tessellation",
+            "type": "boolean"
+          },
+          "faceCountThreshold": {
+            "description": "Max face count before LOD reduction (-1 = unlimited)",
+            "type": "integer",
+            "minimum": -1,
+            "maximum": 500000
+          },
+          "mergeFaces": {
+            "description": "Merge co-planar faces in output",
+            "type": "boolean"
+          },
+          "splitIndices16": {
+            "description": "Split meshes to fit 16-bit index buffers",
+            "type": "boolean"
+          },
+          "parallelWrite": {
+            "description": "Enable parallel glTF writing",
+            "type": "boolean"
+          },
+          "embedTextures": {
+            "description": "Embed textures in the glTF file",
+            "type": "boolean"
+          },
+          "forceUVExport": {
+            "description": "Force UV coordinate export even if no textures",
+            "type": "boolean"
+          },
+          "nodeNameFormat": {
+            "description": "How glTF node names are derived",
+            "$ref": "#/components/schemas/GltfNameFormat"
+          },
+          "meshNameFormat": {
+            "description": "How glTF mesh names are derived",
+            "$ref": "#/components/schemas/GltfNameFormat"
+          },
+          "transformFormat": {
+            "description": "Transform representation in glTF",
+            "$ref": "#/components/schemas/GltfTransformFormat"
+          },
+          "adjustZtoY": {
+            "description": "Swap Z and Y axes (Z-up to Y-up)",
+            "type": "boolean"
+          },
+          "scale": {
+            "description": "Uniform scale applied to the model",
+            "$ref": "#/components/schemas/PositiveScale"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Advanced options for STEP → glTF conversion"
+      },
+      "MeshAngle": {
+        "type": "number",
+        "minimum": 0.01,
+        "maximum": 3.141592653589793,
+        "description": "Mesh angular deflection in radians. Range: [0.01, π]"
+      },
+      "GltfNameFormat": {
+        "type": "string",
+        "enum": [
+          "empty",
+          "product",
+          "instance",
+          "instanceOrProduct",
+          "productOrInstance",
+          "productAndInstance",
+          "productAndInstanceAndOcaf"
+        ],
+        "description": "How node/mesh names are derived from STEP product/instance labels"
+      },
+      "GltfTransformFormat": {
+        "type": "string",
+        "enum": [
+          "compact",
+          "mat4",
+          "trs"
+        ],
+        "description": "Transform representation in glTF output"
+      },
+      "FileUploadBody": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Original filename (e.g. 'part.step')"
+          },
+          "contentType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "MIME type of the file (e.g. 'application/step')"
+          },
+          "bytes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "File size in bytes"
+          },
+          "sha256": {
+            "description": "Optional SHA-256 hash for integrity verification",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "filename",
+          "contentType",
+          "bytes"
+        ],
+        "additionalProperties": false,
+        "description": "Request body to initiate a file upload"
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/HealthStatus"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "HealthStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "description": "Overall health status"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "ISO 8601 timestamp"
+          }
+        },
+        "required": [
+          "status",
+          "timestamp"
+        ],
+        "additionalProperties": false
+      },
+      "CadOperationResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/CadResultData"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "Success envelope wrapping a CAD operation result"
+      },
+      "CadResultData": {
+        "description": "Operation-specific result (shape varies by OCCT command)"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": false
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "required": [
+          "ok",
+          "error"
+        ],
+        "additionalProperties": false,
+        "description": "Standard error envelope"
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Machine-readable error code",
+            "example": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "details": {
+            "description": "Optional structured error context"
+          },
+          "requestId": {
+            "description": "Request ID for tracing",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "ModelListResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/ModelListData"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ModelListData": {
+        "type": "object",
+        "properties": {
+          "models": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Available model slugs"
+          }
+        },
+        "required": [
+          "models"
+        ],
+        "additionalProperties": false,
+        "description": "List of available parametric model names"
+      },
+      "ModelBatchDefinitionsResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/ModelBatchDefinitionsData"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ModelBatchDefinitionsData": {
+        "type": "object",
+        "properties": {
+          "definitions": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ModelDefinition"
+            },
+            "description": "Model definitions keyed by model name"
+          }
+        },
+        "required": [
+          "definitions"
+        ],
+        "additionalProperties": false,
+        "description": "Multiple model definitions in a single response"
+      },
+      "ModelDefinition": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Model slug"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Human-readable name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Model description"
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelParamDefinition"
+            },
+            "description": "Parameter definitions"
+          },
+          "defaults": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {},
+            "description": "Default parameter values"
+          }
+        },
+        "required": [
+          "name",
+          "displayName",
+          "description",
+          "params",
+          "defaults"
+        ],
+        "additionalProperties": false
+      },
+      "ModelParamDefinition": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Parameter name"
+          },
+          "type": {
+            "description": "Parameter type",
+            "$ref": "#/components/schemas/ModelParamApiType"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description"
+          },
+          "default": {
+            "description": "Default value"
+          },
+          "items": {
+            "description": "Array item type (arrays only)",
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "name",
+          "type",
+          "description",
+          "default"
+        ],
+        "additionalProperties": false
+      },
+      "ModelParamApiType": {
+        "type": "string",
+        "enum": [
+          "number",
+          "integer",
+          "boolean",
+          "array"
+        ],
+        "description": "Supported parameter types for model definitions"
+      },
+      "TaskAcceptedResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/TaskCreatedResult"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "Returned (HTTP 202) when task is accepted"
+      },
+      "TaskCreatedResult": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Unique task identifier",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "const": "queued",
+            "description": "Initial status"
+          },
+          "statusUrl": {
+            "type": "string",
+            "description": "URL to poll for task status",
+            "example": "/api/v1/tasks/{taskId}"
+          }
+        },
+        "required": [
+          "taskId",
+          "status",
+          "statusUrl"
+        ],
+        "additionalProperties": false,
+        "description": "Returned when a task is accepted"
+      },
+      "CompoundTaskAcceptedResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/CompoundTaskCreatedResult"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "CompoundTaskCreatedResult": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Compound task ID"
+          },
+          "kind": {
+            "type": "string",
+            "const": "compound"
+          },
+          "subTaskCount": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Number of sub-tasks created"
+          },
+          "statusUrl": {
+            "type": "string",
+            "description": "URL to poll",
+            "example": "/api/v1/tasks/{taskId}"
+          },
+          "subTasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubTaskSummary"
+            }
+          }
+        },
+        "required": [
+          "taskId",
+          "kind",
+          "subTaskCount",
+          "statusUrl",
+          "subTasks"
+        ],
+        "additionalProperties": false
+      },
+      "SubTaskSummary": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Sub-task ID"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Zero-based index in the compound"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Progress 0-100 or null"
+          },
+          "computeMs": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Compute time in ms"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Error message if failed"
+          },
+          "downloadFormats": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Available download format keys"
+          }
+        },
+        "required": [
+          "taskId",
+          "index",
+          "status",
+          "progress",
+          "computeMs",
+          "error",
+          "downloadFormats"
+        ],
+        "additionalProperties": false,
+        "description": "Summary of a sub-task within a compound"
+      },
+      "TaskStatus": {
+        "type": "string",
+        "enum": [
+          "waiting",
+          "queued",
+          "processing",
+          "completed",
+          "failed",
+          "cancelled",
+          "expired"
+        ],
+        "description": "Task lifecycle state"
+      },
+      "ModelDefinitionResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/ModelDefinition"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "UploadResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/UploadResult"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "UploadResult": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "File identifier",
+            "format": "uuid"
+          },
+          "uploadUrl": {
+            "type": "string",
+            "description": "PUT file bytes here",
+            "format": "uri"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Upload URL expiration in seconds"
+          },
+          "maxBytes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Maximum allowed file size"
+          },
+          "status": {
+            "type": "string",
+            "const": "pending"
+          }
+        },
+        "required": [
+          "fileId",
+          "uploadUrl",
+          "expiresIn",
+          "maxBytes",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "FileListResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/FileListData"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "FileListData": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileDetail"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 1000
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "files",
+          "page",
+          "limit",
+          "total"
+        ],
+        "additionalProperties": false
+      },
+      "FileDetail": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "Unique file identifier",
+            "format": "uuid"
+          },
+          "filename": {
+            "type": "string",
+            "description": "Original filename"
+          },
+          "contentType": {
+            "type": "string",
+            "description": "MIME type"
+          },
+          "bytes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "File size in bytes"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "SHA-256 hash"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FileStatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "ISO 8601 creation timestamp"
+          },
+          "confirmedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When upload was confirmed"
+          },
+          "downloadUrl": {
+            "description": "Pre-signed download URL (confirmed files)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fileId",
+          "filename",
+          "contentType",
+          "bytes",
+          "sha256",
+          "status",
+          "createdAt",
+          "confirmedAt"
+        ],
+        "additionalProperties": false
+      },
+      "FileStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "confirmed",
+          "expired"
+        ]
+      },
+      "FileDetailResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/FileDetail"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "DeleteFileResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/DeleteResult"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "DeleteResult": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "additionalProperties": false
+      },
+      "ConfirmResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/ConfirmResult"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ConfirmResult": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "File identifier",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "const": "confirmed"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Final file size"
+          },
+          "contentType": {
+            "type": "string",
+            "description": "File MIME type"
+          }
+        },
+        "required": [
+          "fileId",
+          "status",
+          "bytes",
+          "contentType"
+        ],
+        "additionalProperties": false
+      },
+      "TaskListResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/TaskListData"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "TaskListData": {
+        "type": "object",
+        "properties": {
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskDetail"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 1000
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "tasks",
+          "page",
+          "limit",
+          "total"
+        ],
+        "additionalProperties": false
+      },
+      "TaskDetail": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Unique task identifier",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/TaskKind"
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable label",
+            "example": "Model: dragon-cup"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Progress 0-100 or null"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Error message (status=failed only)"
+          },
+          "resultParts": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/ResultPartMeta"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Available results by key"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Task metadata"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "ISO 8601 creation timestamp"
+          },
+          "startedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When processing began"
+          },
+          "finishedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the task finished"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "When the result will be deleted"
+          }
+        },
+        "required": [
+          "taskId",
+          "kind",
+          "label",
+          "status",
+          "progress",
+          "error",
+          "resultParts",
+          "metadata",
+          "createdAt",
+          "startedAt",
+          "finishedAt",
+          "expiresAt"
+        ],
+        "additionalProperties": false,
+        "description": "Full task status and metadata"
+      },
+      "TaskKind": {
+        "type": "string",
+        "enum": [
+          "cad",
+          "model",
+          "convert-simple",
+          "convert-advanced",
+          "pipeline",
+          "compound",
+          "tenant"
+        ],
+        "description": "Task type"
+      },
+      "ResultPartMeta": {
+        "type": "object",
+        "properties": {
+          "mime": {
+            "type": "string",
+            "description": "MIME type of the result part"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Size in bytes"
+          }
+        },
+        "required": [
+          "mime",
+          "bytes"
+        ],
+        "additionalProperties": false
+      },
+      "TaskDetailResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/TaskDetail"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "CancelTaskResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/CancelResult"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "CancelResult": {
+        "type": "object",
+        "properties": {
+          "cancelled": {
+            "type": "boolean",
+            "const": true
+          },
+          "previousStatus": {
+            "type": "string",
+            "description": "Status before cancellation"
+          }
+        },
+        "required": [
+          "cancelled",
+          "previousStatus"
+        ],
+        "additionalProperties": false
+      },
+      "TaskOrCompoundResultResponse": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TaskResultResponse"
+          },
+          {
+            "$ref": "#/components/schemas/CompoundResultManifestResponse"
+          }
+        ]
+      },
+      "TaskResultResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/TaskResultDownload"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "TaskResultDownload": {
+        "type": "object",
+        "properties": {
+          "downloadUrl": {
+            "type": "string",
+            "description": "Pre-signed download URL",
+            "format": "uri"
+          },
+          "filename": {
+            "type": "string",
+            "description": "Suggested filename",
+            "example": "result.glb"
+          }
+        },
+        "required": [
+          "downloadUrl",
+          "filename"
+        ],
+        "additionalProperties": false
+      },
+      "CompoundResultManifestResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/CompoundResultManifest"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "CompoundResultManifest": {
+        "type": "object",
+        "properties": {
+          "manifest": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompoundResultEntry"
+            },
+            "description": "Per-sub-task status and download links"
+          }
+        },
+        "required": [
+          "manifest"
+        ],
+        "additionalProperties": false,
+        "description": "Result manifest for a completed compound task"
+      },
+      "CompoundResultEntry": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Sub-task ID"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Position in the compound task"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "downloadUrls": {
+            "description": "Download URLs keyed by format (only if completed)",
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "taskId",
+          "index",
+          "status"
+        ],
+        "additionalProperties": false,
+        "description": "Status/result info for one sub-task in a compound manifest"
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Scoped API key. Scopes: models, cad, convert, * (wildcard). A key without the required scope receives 403 INSUFFICIENT_SCOPE."
+      }
+    }
+  }
 }
