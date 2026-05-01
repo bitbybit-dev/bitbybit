@@ -232,7 +232,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DefinitionsRequest"
+                "$ref": "#/components/schemas/DefinitionsBody"
               }
             }
           }
@@ -284,7 +284,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ModelSubmission"
+                "$ref": "#/components/schemas/ModelSubmissionBody"
               }
             }
           }
@@ -356,7 +356,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BatchModelSubmission"
+                "$ref": "#/components/schemas/BatchModelSubmissionBody"
               }
             }
           }
@@ -498,7 +498,7 @@
                 }
               },
               "schema": {
-                "$ref": "#/components/schemas/DragonCupRequest"
+                "$ref": "#/components/schemas/DragonCupBody"
               }
             }
           }
@@ -584,7 +584,7 @@
                 }
               },
               "schema": {
-                "$ref": "#/components/schemas/PhoneNestRequest"
+                "$ref": "#/components/schemas/PhoneNestBody"
               }
             }
           }
@@ -1487,7 +1487,7 @@
         "additionalProperties": false,
         "description": "A single item in a compound (parallel) task"
       },
-      "DefinitionsRequest": {
+      "DefinitionsBody": {
         "type": "object",
         "properties": {
           "names": {
@@ -1506,7 +1506,7 @@
         "additionalProperties": false,
         "description": "Request body for batch model definitions"
       },
-      "ModelSubmission": {
+      "ModelSubmissionBody": {
         "type": "object",
         "properties": {
           "params": {
@@ -1525,7 +1525,7 @@
           "outputs"
         ]
       },
-      "BatchModelSubmission": {
+      "BatchModelSubmissionBody": {
         "type": "object",
         "properties": {
           "items": {
@@ -1556,7 +1556,7 @@
           "outputs"
         ]
       },
-      "DragonCupRequest": {
+      "DragonCupBody": {
         "type": "object",
         "properties": {
           "params": {
@@ -1724,7 +1724,7 @@
         ],
         "description": "3D point as [x, y, z] tuple, each coordinate in [-1000, 1000]"
       },
-      "PhoneNestRequest": {
+      "PhoneNestBody": {
         "type": "object",
         "properties": {
           "params": {
@@ -2138,7 +2138,7 @@
             "const": true
           },
           "data": {
-            "$ref": "#/components/schemas/ModelListData"
+            "$ref": "#/components/schemas/ModelList"
           }
         },
         "required": [
@@ -2147,7 +2147,7 @@
         ],
         "additionalProperties": false
       },
-      "ModelListData": {
+      "ModelList": {
         "type": "object",
         "properties": {
           "models": {
@@ -2172,7 +2172,7 @@
             "const": true
           },
           "data": {
-            "$ref": "#/components/schemas/ModelBatchDefinitionsData"
+            "$ref": "#/components/schemas/ModelBatchDefinitions"
           }
         },
         "required": [
@@ -2181,7 +2181,7 @@
         ],
         "additionalProperties": false
       },
-      "ModelBatchDefinitionsData": {
+      "ModelBatchDefinitions": {
         "type": "object",
         "properties": {
           "definitions": {
@@ -2554,7 +2554,7 @@
             "const": true
           },
           "data": {
-            "$ref": "#/components/schemas/FileListData"
+            "$ref": "#/components/schemas/FileList"
           }
         },
         "required": [
@@ -2563,7 +2563,7 @@
         ],
         "additionalProperties": false
       },
-      "FileListData": {
+      "FileList": {
         "type": "object",
         "properties": {
           "files": {
@@ -2782,7 +2782,7 @@
             "const": true
           },
           "data": {
-            "$ref": "#/components/schemas/TaskListData"
+            "$ref": "#/components/schemas/TaskList"
           }
         },
         "required": [
@@ -2791,7 +2791,7 @@
         ],
         "additionalProperties": false
       },
-      "TaskListData": {
+      "TaskList": {
         "type": "object",
         "properties": {
           "tasks": {
