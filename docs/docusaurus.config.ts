@@ -202,7 +202,7 @@ const config: Config = {
                 { to: "/learn/getting-started/engines/babylonjs", label: "BabylonJS", position: "left" },
                 { to: "/learn/getting-started/engines/playcanvas", label: "PlayCanvas", position: "left" },
                 { to: "/blog", label: "Blog", position: "left" },
-                { to: "/api/openapi-docs/bitbybit-cad-cloud-api", label: "API", position: "left" },
+                { to: "/api/cloud-api", label: "API", position: "left" },
                 { to: "https://bitbybit.dev", label: "Home", position: "left" },
                 {
                     href: "https://bitbybit.dev/auth/pick-plan",
