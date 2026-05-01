@@ -3,7 +3,7 @@
   "info": {
     "title": "Bitbybit CAD Cloud API",
     "version": "1.0.0",
-    "description": "High-performance parametric CAD model generation API backed by Bitbybit CAD worker pool. Supports multi-format output (STEP, GLTF, decomposed mesh), pipeline execution, file-based conversion, and async job processing.",
+    "description": "High-performance parametric CAD model generation API. Supports multi-format output (STEP, GLTF, decomposed mesh), pipeline execution, file-based conversion, and async job processing.",
     "contact": {
       "name": "Bitbybit",
       "url": "https://bitbybit.dev"
@@ -53,7 +53,7 @@
           "CAD Operations"
         ],
         "summary": "Execute a single CAD operation",
-        "description": "Runs one OCCT operation by its dotted path.",
+        "description": "Runs a single CAD operation by its fully-qualified identifier.",
         "requestBody": {
           "required": true,
           "content": {
@@ -104,7 +104,7 @@
           "CAD Operations"
         ],
         "summary": "Execute a chained pipeline of CAD operations",
-        "description": "Runs multiple operations sequentially in a single worker. Use '$ref:N' in params to reference step N's result.",
+        "description": "Runs multiple operations sequentially. Use '$ref:N' in params to reference step N's result.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1312,17 +1312,17 @@
           "operation": {
             "type": "string",
             "minLength": 1,
-            "description": "OCCT operation name (e.g. 'shapes.solid.createBox')"
+            "description": "Fully-qualified CAD operation identifier (e.g. 'occt.shapes.solid.createBox', 'manifold.primitives.cube', 'jscad.booleans.union'). Supports OCCT, Manifold, JSCAD, and vector/math operations."
           },
           "params": {
-            "description": "Operation-specific parameters"
+            "description": "Operation-specific parameters — varies by operation. See model definitions for available parameters."
           }
         },
         "required": [
           "operation"
         ],
         "additionalProperties": false,
-        "description": "Request body for single CAD operation execution"
+        "description": "Execute a single Bitbybit CAD operation. The operation runs asynchronously and returns a task ID for polling."
       },
       "PipelineBody": {
         "type": "object",
@@ -1334,10 +1334,10 @@
             "items": {
               "$ref": "#/components/schemas/PipelineStep"
             },
-            "description": "Ordered list of CAD operations to execute sequentially"
+            "description": "Ordered list of CAD operations executed sequentially. Later steps can reference earlier results using '$ref:N' syntax."
           },
           "outputs": {
-            "description": "Output format options (applied to final result)",
+            "description": "Output format options applied to the final pipeline result. If omitted, raw result data is stored.",
             "$ref": "#/components/schemas/OutputOptions"
           }
         },
@@ -1345,7 +1345,7 @@
           "steps"
         ],
         "additionalProperties": false,
-        "description": "Request body for CAD pipeline (sequential operations)"
+        "description": "Execute a chain of Bitbybit CAD operations sequentially. Each step can reference earlier step outputs via '$ref:N'. The final step's output is stored as the task result."
       },
       "PipelineStep": {
         "type": "object",
@@ -1353,17 +1353,17 @@
           "operation": {
             "type": "string",
             "minLength": 1,
-            "description": "OCCT operation name"
+            "description": "Fully-qualified CAD operation identifier (e.g. 'occt.shapes.solid.createSphere'). Supports OCCT, Manifold, JSCAD, and vector/math operations."
           },
           "params": {
-            "description": "Operation parameters"
+            "description": "Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index."
           }
         },
         "required": [
           "operation",
           "params"
         ],
-        "description": "A single step in a CAD pipeline"
+        "description": "A single step in a sequential CAD pipeline. Steps can reference outputs of earlier steps via $ref."
       },
       "OutputOptions": {
         "type": "object",
@@ -1374,18 +1374,18 @@
             "items": {
               "$ref": "#/components/schemas/OutputFormat"
             },
-            "description": "List of output formats to generate"
+            "description": "Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) — each produces a separate downloadable result. Do not include both 'step' and 'stpz' — only one STEP variant is supported per request."
           },
           "meshPrecision": {
-            "description": "Override mesh precision for decomposed-mesh output",
+            "description": "Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. Only ignored when output is limited to step/stpz formats.",
             "$ref": "#/components/schemas/MeshPrecision"
           },
           "gltfMeshPrecision": {
-            "description": "Override mesh precision for glTF output",
+            "description": "Override tessellation precision specifically for glTF output. When set, takes precedence over meshPrecision for glTF only.",
             "$ref": "#/components/schemas/MeshPrecision"
           },
           "adjustYtoZ": {
-            "description": "Swap Y and Z axes in output (for Z-up coordinate systems)",
+            "description": "Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up.",
             "type": "boolean"
           }
         },
@@ -1393,7 +1393,7 @@
           "formats"
         ],
         "additionalProperties": false,
-        "description": "Output format options for model/CAD tasks"
+        "description": "Controls which output formats are generated and their quality settings"
       },
       "OutputFormat": {
         "type": "string",
@@ -1403,7 +1403,7 @@
           "decomposed-mesh",
           "gltf"
         ],
-        "description": "Supported output file formats"
+        "description": "Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive — choose one or the other, not both."
       },
       "MeshPrecision": {
         "type": "number",
@@ -1417,7 +1417,7 @@
           "parallel": {
             "type": "boolean",
             "const": true,
-            "description": "Must be true — compound tasks run sub-items in parallel"
+            "description": "Must be true — signals that items should be processed concurrently"
           },
           "items": {
             "minItems": 1,
@@ -1426,7 +1426,7 @@
             "items": {
               "$ref": "#/components/schemas/CompoundItem"
             },
-            "description": "List of operations to execute in parallel"
+            "description": "List of independent CAD operations to execute in parallel. Each item becomes a sub-task."
           }
         },
         "required": [
@@ -1434,7 +1434,7 @@
           "items"
         ],
         "additionalProperties": false,
-        "description": "Request body for compound (parallel) CAD task execution"
+        "description": "Execute multiple independent Bitbybit CAD operations in parallel. Each item runs as a separate sub-task and can be polled individually."
       },
       "CompoundItem": {
         "type": "object",
@@ -1442,13 +1442,13 @@
           "operation": {
             "type": "string",
             "minLength": 1,
-            "description": "OCCT operation name"
+            "description": "Fully-qualified CAD operation identifier. Supports OCCT, Manifold, JSCAD, and vector/math operations."
           },
           "params": {
-            "description": "Operation parameters"
+            "description": "Operation-specific parameters for this sub-task"
           },
           "inputFiles": {
-            "description": "References to previously uploaded files",
+            "description": "References to previously uploaded files to be used as inputs for this operation",
             "type": "array",
             "items": {
               "type": "object",
@@ -1456,12 +1456,12 @@
                 "fileId": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "Uploaded file ID"
+                  "description": "ID of a previously uploaded file (from POST /files/upload)"
                 },
                 "role": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "Role of the file in the operation (e.g. 'step-input')"
+                  "description": "Role identifier for the file (e.g. 'step-input'). Determines how the file is used during processing."
                 }
               },
               "required": [
@@ -1472,7 +1472,7 @@
             }
           },
           "outputFormats": {
-            "description": "Per-item output format overrides",
+            "description": "Per-item output format overrides. If omitted, the task produces raw result data.",
             "maxItems": 10,
             "type": "array",
             "items": {
@@ -1485,7 +1485,7 @@
           "operation"
         ],
         "additionalProperties": false,
-        "description": "A single item in a compound (parallel) task"
+        "description": "A single operation within a compound (parallel) task. Each item runs independently."
       },
       "DefinitionsBody": {
         "type": "object",
@@ -1497,20 +1497,20 @@
               "type": "string",
               "minLength": 1
             },
-            "description": "Model slugs to fetch definitions for"
+            "description": "Array of model slugs to fetch definitions for (e.g. ['dragon-cup', 'phone-nest'])"
           }
         },
         "required": [
           "names"
         ],
         "additionalProperties": false,
-        "description": "Request body for batch model definitions"
+        "description": "Fetch parameter definitions for one or more parametric models. Returns available parameters, types, defaults, and constraints."
       },
       "ModelSubmissionBody": {
         "type": "object",
         "properties": {
           "params": {
-            "description": "Model-specific parameters",
+            "description": "Model-specific parameters. Omitted params use their defaults. See model definition for available options.",
             "type": "object",
             "propertyNames": {
               "type": "string"
@@ -1523,7 +1523,8 @@
         },
         "required": [
           "outputs"
-        ]
+        ],
+        "description": "Submit a parametric model for generation with specified parameters and output formats"
       },
       "BatchModelSubmissionBody": {
         "type": "object",
@@ -1544,17 +1545,18 @@
                 }
               }
             },
-            "description": "Array of parameter variations"
+            "description": "Array of parameter variations. Each item produces a separate output with the same model."
           },
           "outputs": {
-            "description": "Shared output configuration applied to every item",
+            "description": "Output format configuration applied to every item in the batch",
             "$ref": "#/components/schemas/OutputOptions"
           }
         },
         "required": [
           "items",
           "outputs"
-        ]
+        ],
+        "description": "Submit multiple parameter variations of the same model for parallel generation"
       },
       "DragonCupBody": {
         "type": "object",
@@ -1672,7 +1674,7 @@
             "maximum": 5
           },
           "precision": {
-            "description": "OCCT geometry precision (lower = finer)",
+            "description": "Geometry precision (lower = finer)",
             "$ref": "#/components/schemas/MeshPrecision"
           },
           "rotation": {
@@ -1814,7 +1816,7 @@
             "maximum": 3
           },
           "precision": {
-            "description": "OCCT geometry precision (lower = finer)",
+            "description": "Geometry precision (lower = finer)",
             "$ref": "#/components/schemas/MeshPrecision"
           },
           "rotation": {
@@ -1845,10 +1847,10 @@
           "stepFileId": {
             "type": "string",
             "minLength": 1,
-            "description": "ID of the previously uploaded STEP file"
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
           },
           "meshPrecision": {
-            "description": "Tessellation precision for the glTF mesh",
+            "description": "Tessellation precision controlling mesh density. Lower values produce finer meshes with more triangles.",
             "$ref": "#/components/schemas/MeshPrecision"
           }
         },
@@ -1856,7 +1858,7 @@
           "stepFileId"
         ],
         "additionalProperties": false,
-        "description": "Request body for simple STEP → glTF conversion"
+        "description": "Convert a STEP file to glTF format with default settings. Upload the STEP file first, then pass its ID here."
       },
       "StepToGltfAdvancedBody": {
         "type": "object",
@@ -1864,10 +1866,10 @@
           "stepFileId": {
             "type": "string",
             "minLength": 1,
-            "description": "ID of the previously uploaded STEP file"
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
           },
           "options": {
-            "description": "Advanced conversion options",
+            "description": "Advanced conversion settings. If omitted, sensible defaults are used.",
             "$ref": "#/components/schemas/ConvertAdvancedOptions"
           }
         },
@@ -1875,92 +1877,92 @@
           "stepFileId"
         ],
         "additionalProperties": false,
-        "description": "Request body for advanced STEP → glTF conversion"
+        "description": "Convert a STEP file to glTF with full control over tessellation, naming, coordinate systems, and output format."
       },
       "ConvertAdvancedOptions": {
         "type": "object",
         "properties": {
           "readColors": {
-            "description": "Read color attributes from STEP",
+            "description": "Extract color attributes from the STEP file and apply to glTF materials",
             "type": "boolean"
           },
           "readNames": {
-            "description": "Read name attributes from STEP",
+            "description": "Extract product/instance names from the STEP file and apply to glTF node names",
             "type": "boolean"
           },
           "readMaterials": {
-            "description": "Read material attributes from STEP",
+            "description": "Extract material definitions from the STEP file",
             "type": "boolean"
           },
           "readLayers": {
-            "description": "Read layer information from STEP",
+            "description": "Extract layer/group structure from the STEP file",
             "type": "boolean"
           },
           "readProps": {
-            "description": "Read custom properties from STEP",
+            "description": "Extract custom properties (e.g. part numbers, metadata) from the STEP file",
             "type": "boolean"
           },
           "meshDeflection": {
-            "description": "Linear deflection for mesh tessellation",
+            "description": "Linear deflection for mesh tessellation — maximum allowed distance between the mesh and the true surface",
             "$ref": "#/components/schemas/MeshPrecision"
           },
           "meshAngle": {
-            "description": "Angular deflection for mesh tessellation (radians)",
+            "description": "Angular deflection for mesh tessellation (radians) — controls curvature approximation",
             "$ref": "#/components/schemas/MeshAngle"
           },
           "meshParallel": {
-            "description": "Enable parallel tessellation",
+            "description": "Enable parallel tessellation for faster processing",
             "type": "boolean"
           },
           "faceCountThreshold": {
-            "description": "Max face count before LOD reduction (-1 = unlimited)",
+            "description": "Maximum triangle count before LOD reduction kicks in. Set -1 to disable the limit entirely.",
             "type": "integer",
             "minimum": -1,
             "maximum": 500000
           },
           "mergeFaces": {
-            "description": "Merge co-planar faces in output",
+            "description": "Merge co-planar adjacent faces to reduce mesh complexity",
             "type": "boolean"
           },
           "splitIndices16": {
-            "description": "Split meshes to fit 16-bit index buffers",
+            "description": "Split meshes so each uses 16-bit index buffers (max 65535 vertices per mesh). Improves compatibility with some renderers.",
             "type": "boolean"
           },
           "parallelWrite": {
-            "description": "Enable parallel glTF writing",
+            "description": "Write glTF output in parallel for faster file generation",
             "type": "boolean"
           },
           "embedTextures": {
-            "description": "Embed textures in the glTF file",
+            "description": "Embed texture data directly in the .glb file instead of referencing external URIs",
             "type": "boolean"
           },
           "forceUVExport": {
-            "description": "Force UV coordinate export even if no textures",
+            "description": "Generate UV coordinates even when no textures are present (useful for post-processing)",
             "type": "boolean"
           },
           "nodeNameFormat": {
-            "description": "How glTF node names are derived",
+            "description": "Strategy for naming glTF nodes from STEP product/instance labels",
             "$ref": "#/components/schemas/GltfNameFormat"
           },
           "meshNameFormat": {
-            "description": "How glTF mesh names are derived",
+            "description": "Strategy for naming glTF meshes from STEP product/instance labels",
             "$ref": "#/components/schemas/GltfNameFormat"
           },
           "transformFormat": {
-            "description": "Transform representation in glTF",
+            "description": "Transform representation in glTF: 'compact' (default), 'mat4' (4x4 matrix), or 'trs' (translation/rotation/scale)",
             "$ref": "#/components/schemas/GltfTransformFormat"
           },
           "adjustZtoY": {
-            "description": "Swap Z and Y axes (Z-up to Y-up)",
+            "description": "Convert from Z-up (CAD convention) to Y-up (glTF/WebGL convention) coordinate system",
             "type": "boolean"
           },
           "scale": {
-            "description": "Uniform scale applied to the model",
+            "description": "Uniform scale factor applied to the entire model (e.g. 0.001 to convert mm to meters)",
             "$ref": "#/components/schemas/PositiveScale"
           }
         },
         "additionalProperties": false,
-        "description": "Advanced options for STEP → glTF conversion"
+        "description": "Fine-grained options controlling STEP → glTF conversion: tessellation quality, attribute extraction, coordinate systems, and output format."
       },
       "MeshAngle": {
         "type": "number",
@@ -1997,22 +1999,22 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 255,
-            "description": "Original filename (e.g. 'part.step')"
+            "description": "Original filename including extension (e.g. 'part.step', 'model.obj'). Used for display and format detection."
           },
           "contentType": {
             "type": "string",
             "minLength": 1,
             "maxLength": 255,
-            "description": "MIME type of the file (e.g. 'application/step')"
+            "description": "MIME type of the file (e.g. 'application/step', 'model/gltf-binary'). Must match the actual file content."
           },
           "bytes": {
             "type": "integer",
             "exclusiveMinimum": 0,
-            "maximum": 9007199254740991,
-            "description": "File size in bytes"
+            "maximum": 1073741824,
+            "description": "Exact file size in bytes. Must match the Content-Length of the subsequent PUT to the upload URL. Maximum: 1 GB."
           },
           "sha256": {
-            "description": "Optional SHA-256 hash for integrity verification",
+            "description": "SHA-256 hex digest of the file content. When provided, enables server-side deduplication — if an identical file was previously uploaded under this API key, the existing file is reused and no upload is needed.",
             "type": "string",
             "minLength": 1,
             "maxLength": 128
@@ -2024,7 +2026,7 @@
           "bytes"
         ],
         "additionalProperties": false,
-        "description": "Request body to initiate a file upload"
+        "description": "Request a pre-signed upload URL. After receiving the URL, PUT the raw file bytes to it within the expiration window."
       },
       "HealthResponse": {
         "type": "object",
@@ -2041,7 +2043,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope for health check"
       },
       "HealthStatus": {
         "type": "object",
@@ -2063,7 +2066,8 @@
           "status",
           "timestamp"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "API health check result indicating overall system status"
       },
       "CadOperationResponse": {
         "type": "object",
@@ -2081,10 +2085,10 @@
           "data"
         ],
         "additionalProperties": false,
-        "description": "Success envelope wrapping a CAD operation result"
+        "description": "Success envelope wrapping a Bitbybit CAD operation result"
       },
       "CadResultData": {
-        "description": "Operation-specific result (shape varies by OCCT command)"
+        "description": "Operation-specific result data. Shape varies by the CAD algorithm executed (OCCT, Manifold, JSCAD, or vector/math operations)."
       },
       "ErrorResponse": {
         "type": "object",
@@ -2128,7 +2132,8 @@
           "code",
           "message"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Structured error information with machine-readable code and optional debugging context"
       },
       "ModelListResponse": {
         "type": "object",
@@ -2145,7 +2150,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing the list of available models"
       },
       "ModelList": {
         "type": "object",
@@ -2155,14 +2161,14 @@
             "items": {
               "type": "string"
             },
-            "description": "Available model slugs"
+            "description": "Available model slugs that can be used with the /models/{name} endpoints"
           }
         },
         "required": [
           "models"
         ],
         "additionalProperties": false,
-        "description": "List of available parametric model names"
+        "description": "List of all available parametric models"
       },
       "ModelBatchDefinitionsResponse": {
         "type": "object",
@@ -2179,7 +2185,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing multiple model definitions"
       },
       "ModelBatchDefinitions": {
         "type": "object",
@@ -2192,36 +2199,36 @@
             "additionalProperties": {
               "$ref": "#/components/schemas/ModelDefinition"
             },
-            "description": "Model definitions keyed by model name"
+            "description": "Model definitions keyed by slug. Each contains parameter schemas and defaults."
           }
         },
         "required": [
           "definitions"
         ],
         "additionalProperties": false,
-        "description": "Multiple model definitions in a single response"
+        "description": "Definitions for multiple models in a single response"
       },
       "ModelDefinition": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "description": "Model slug"
+            "description": "Model slug used in API paths (e.g. 'dragon-cup')"
           },
           "displayName": {
             "type": "string",
-            "description": "Human-readable name"
+            "description": "Human-friendly model name for UI display"
           },
           "description": {
             "type": "string",
-            "description": "Model description"
+            "description": "What this model creates and its key characteristics"
           },
           "params": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ModelParamDefinition"
             },
-            "description": "Parameter definitions"
+            "description": "All accepted parameters with types, descriptions, and defaults"
           },
           "defaults": {
             "type": "object",
@@ -2229,7 +2236,7 @@
               "type": "string"
             },
             "additionalProperties": {},
-            "description": "Default parameter values"
+            "description": "Complete default parameter values map"
           }
         },
         "required": [
@@ -2239,28 +2246,29 @@
           "params",
           "defaults"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Full definition of a parametric model including all parameters and their constraints"
       },
       "ModelParamDefinition": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "description": "Parameter name"
+            "description": "Parameter name as used in the request body"
           },
           "type": {
-            "description": "Parameter type",
+            "description": "Expected data type for this parameter",
             "$ref": "#/components/schemas/ModelParamApiType"
           },
           "description": {
             "type": "string",
-            "description": "Human-readable description"
+            "description": "Human-readable explanation of what this parameter controls"
           },
           "default": {
-            "description": "Default value"
+            "description": "Default value used when the parameter is omitted"
           },
           "items": {
-            "description": "Array item type (arrays only)",
+            "description": "Element type descriptor (only present for array parameters)",
             "type": "object",
             "properties": {
               "type": {
@@ -2279,7 +2287,8 @@
           "description",
           "default"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Schema definition for a single model parameter"
       },
       "ModelParamApiType": {
         "type": "string",
@@ -2289,7 +2298,7 @@
           "boolean",
           "array"
         ],
-        "description": "Supported parameter types for model definitions"
+        "description": "Data type of a model parameter: 'number' (float), 'integer' (whole number), 'boolean' (true/false), 'array' (list of values)"
       },
       "TaskAcceptedResponse": {
         "type": "object",
@@ -2307,24 +2316,24 @@
           "data"
         ],
         "additionalProperties": false,
-        "description": "Returned (HTTP 202) when task is accepted"
+        "description": "HTTP 202 response when a task is accepted for async processing"
       },
       "TaskCreatedResult": {
         "type": "object",
         "properties": {
           "taskId": {
             "type": "string",
-            "description": "Unique task identifier",
+            "description": "Unique task identifier — use this to poll for status and retrieve results",
             "format": "uuid"
           },
           "status": {
             "type": "string",
             "const": "queued",
-            "description": "Initial status"
+            "description": "Initial task status (always 'queued' upon creation)"
           },
           "statusUrl": {
             "type": "string",
-            "description": "URL to poll for task status",
+            "description": "Relative URL to poll for task status updates",
             "example": "/api/v1/tasks/{taskId}"
           }
         },
@@ -2334,7 +2343,7 @@
           "statusUrl"
         ],
         "additionalProperties": false,
-        "description": "Returned when a task is accepted"
+        "description": "Returned when a CAD task is accepted. Poll the statusUrl to track progress."
       },
       "CompoundTaskAcceptedResponse": {
         "type": "object",
@@ -2351,14 +2360,15 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "HTTP 202 response when a compound (parallel) task is accepted"
       },
       "CompoundTaskCreatedResult": {
         "type": "object",
         "properties": {
           "taskId": {
             "type": "string",
-            "description": "Compound task ID"
+            "description": "Parent compound task ID for tracking overall progress"
           },
           "kind": {
             "type": "string",
@@ -2366,13 +2376,13 @@
           },
           "subTaskCount": {
             "type": "integer",
-            "minimum": -9007199254740991,
+            "exclusiveMinimum": 0,
             "maximum": 9007199254740991,
-            "description": "Number of sub-tasks created"
+            "description": "Total number of sub-tasks created (one per item in the request)"
           },
           "statusUrl": {
             "type": "string",
-            "description": "URL to poll",
+            "description": "Relative URL to poll the parent task status",
             "example": "/api/v1/tasks/{taskId}"
           },
           "subTasks": {
@@ -2389,20 +2399,21 @@
           "statusUrl",
           "subTasks"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Returned when a compound (parallel) task is accepted. Contains initial status for all sub-tasks."
       },
       "SubTaskSummary": {
         "type": "object",
         "properties": {
           "taskId": {
             "type": "string",
-            "description": "Sub-task ID"
+            "description": "Unique identifier for this sub-task (can be polled individually)"
           },
           "index": {
             "type": "integer",
-            "minimum": -9007199254740991,
+            "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "Zero-based index in the compound"
+            "description": "Zero-based position of this sub-task within the compound"
           },
           "status": {
             "$ref": "#/components/schemas/TaskStatus"
@@ -2416,7 +2427,7 @@
                 "type": "null"
               }
             ],
-            "description": "Progress 0-100 or null"
+            "description": "Completion percentage (0–100) or null if not yet started"
           },
           "computeMs": {
             "anyOf": [
@@ -2427,7 +2438,7 @@
                 "type": "null"
               }
             ],
-            "description": "Compute time in ms"
+            "description": "Actual compute time in milliseconds (null until completed)"
           },
           "error": {
             "anyOf": [
@@ -2438,14 +2449,14 @@
                 "type": "null"
               }
             ],
-            "description": "Error message if failed"
+            "description": "Error message if sub-task failed, null otherwise"
           },
           "downloadFormats": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Available download format keys"
+            "description": "Available output format keys (e.g. ['glb', 'stpz']) for downloading results"
           }
         },
         "required": [
@@ -2458,7 +2469,7 @@
           "downloadFormats"
         ],
         "additionalProperties": false,
-        "description": "Summary of a sub-task within a compound"
+        "description": "Status summary for one sub-task within a compound (parallel) task"
       },
       "TaskStatus": {
         "type": "string",
@@ -2471,7 +2482,7 @@
           "cancelled",
           "expired"
         ],
-        "description": "Task lifecycle state"
+        "description": "Task lifecycle state: waiting (pending dependencies), queued (in queue), processing (actively computing), completed (result available), failed (error occurred), cancelled (user-cancelled), expired (result TTL exceeded)"
       },
       "ModelDefinitionResponse": {
         "type": "object",
@@ -2488,7 +2499,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing a single model's definition"
       },
       "UploadResponse": {
         "type": "object",
@@ -2505,32 +2517,33 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing the pre-signed upload URL and file metadata"
       },
       "UploadResult": {
         "type": "object",
         "properties": {
           "fileId": {
             "type": "string",
-            "description": "File identifier",
+            "description": "Assigned file identifier — use this to reference the file in subsequent API calls",
             "format": "uuid"
           },
           "uploadUrl": {
             "type": "string",
-            "description": "PUT file bytes here",
+            "description": "Pre-signed URL to PUT the raw file bytes to. Send the file content with Content-Type and Content-Length headers matching the request.",
             "format": "uri"
           },
           "expiresIn": {
             "type": "integer",
-            "minimum": -9007199254740991,
+            "exclusiveMinimum": 0,
             "maximum": 9007199254740991,
-            "description": "Upload URL expiration in seconds"
+            "description": "Seconds until the upload URL expires. You must complete the PUT within this window."
           },
           "maxBytes": {
             "type": "integer",
-            "minimum": -9007199254740991,
+            "exclusiveMinimum": 0,
             "maximum": 9007199254740991,
-            "description": "Maximum allowed file size"
+            "description": "Maximum allowed file size in bytes for this upload. Determined by your plan tier."
           },
           "status": {
             "type": "string",
@@ -2544,7 +2557,8 @@
           "maxBytes",
           "status"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Response after requesting a file upload. Contains the pre-signed URL to PUT your file to."
       },
       "FileListResponse": {
         "type": "object",
@@ -2561,7 +2575,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing a paginated file list"
       },
       "FileList": {
         "type": "object",
@@ -2594,36 +2609,37 @@
           "limit",
           "total"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Paginated list of uploaded files with total count"
       },
       "FileDetail": {
         "type": "object",
         "properties": {
           "fileId": {
             "type": "string",
-            "description": "Unique file identifier",
+            "description": "Unique file identifier used to reference this file in CAD operations",
             "format": "uuid"
           },
           "filename": {
             "type": "string",
-            "description": "Original filename"
+            "description": "Original filename as provided during upload request"
           },
           "contentType": {
             "type": "string",
-            "description": "MIME type"
+            "description": "MIME type of the file content"
           },
           "bytes": {
             "anyOf": [
               {
                 "type": "integer",
-                "minimum": -9007199254740991,
+                "minimum": 0,
                 "maximum": 9007199254740991
               },
               {
                 "type": "null"
               }
             ],
-            "description": "File size in bytes"
+            "description": "File size in bytes. Null while status is 'pending' (not yet uploaded)."
           },
           "sha256": {
             "anyOf": [
@@ -2634,14 +2650,14 @@
                 "type": "null"
               }
             ],
-            "description": "SHA-256 hash"
+            "description": "SHA-256 hex digest of the file content. Null if not provided during upload. Used for deduplication."
           },
           "status": {
             "$ref": "#/components/schemas/FileStatus"
           },
           "createdAt": {
             "type": "string",
-            "description": "ISO 8601 creation timestamp"
+            "description": "ISO 8601 timestamp when the upload was initiated"
           },
           "confirmedAt": {
             "anyOf": [
@@ -2652,10 +2668,10 @@
                 "type": "null"
               }
             ],
-            "description": "When upload was confirmed"
+            "description": "ISO 8601 timestamp when the upload was confirmed. Null if not yet confirmed."
           },
           "downloadUrl": {
-            "description": "Pre-signed download URL (confirmed files)",
+            "description": "Pre-signed download URL. Only present for confirmed files. Expires after 1 hour.",
             "type": "string"
           }
         },
@@ -2669,7 +2685,8 @@
           "createdAt",
           "confirmedAt"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Full metadata for an uploaded file"
       },
       "FileStatus": {
         "type": "string",
@@ -2677,7 +2694,8 @@
           "pending",
           "confirmed",
           "expired"
-        ]
+        ],
+        "description": "File lifecycle state: 'pending' (upload URL issued, awaiting PUT), 'confirmed' (upload verified and file is usable), 'expired' (upload URL expired before completion)"
       },
       "FileDetailResponse": {
         "type": "object",
@@ -2694,7 +2712,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing a single file's metadata"
       },
       "DeleteFileResponse": {
         "type": "object",
@@ -2711,7 +2730,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success response for file deletion"
       },
       "DeleteResult": {
         "type": "object",
@@ -2724,7 +2744,8 @@
         "required": [
           "deleted"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Confirmation that a resource was successfully deleted"
       },
       "ConfirmResponse": {
         "type": "object",
@@ -2741,14 +2762,15 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope confirming a file upload was verified"
       },
       "ConfirmResult": {
         "type": "object",
         "properties": {
           "fileId": {
             "type": "string",
-            "description": "File identifier",
+            "description": "File identifier that was confirmed",
             "format": "uuid"
           },
           "status": {
@@ -2757,13 +2779,13 @@
           },
           "bytes": {
             "type": "integer",
-            "minimum": -9007199254740991,
+            "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "Final file size"
+            "description": "Actual file size in bytes as stored on the server"
           },
           "contentType": {
             "type": "string",
-            "description": "File MIME type"
+            "description": "MIME type of the confirmed file"
           }
         },
         "required": [
@@ -2772,7 +2794,8 @@
           "bytes",
           "contentType"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Returned after a file upload is verified. The file is now ready to be used in CAD operations."
       },
       "TaskListResponse": {
         "type": "object",
@@ -2789,7 +2812,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing a paginated task list"
       },
       "TaskList": {
         "type": "object",
@@ -2822,14 +2846,15 @@
           "limit",
           "total"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Paginated list of tasks with total count"
       },
       "TaskDetail": {
         "type": "object",
         "properties": {
           "taskId": {
             "type": "string",
-            "description": "Unique task identifier",
+            "description": "Unique task identifier for polling and result retrieval",
             "format": "uuid"
           },
           "kind": {
@@ -2837,7 +2862,7 @@
           },
           "label": {
             "type": "string",
-            "description": "Human-readable label",
+            "description": "Human-readable task label",
             "example": "Model: dragon-cup"
           },
           "status": {
@@ -2852,7 +2877,7 @@
                 "type": "null"
               }
             ],
-            "description": "Progress 0-100 or null"
+            "description": "Completion percentage (0–100) or null if progress is not tracked for this task kind"
           },
           "error": {
             "anyOf": [
@@ -2863,7 +2888,7 @@
                 "type": "null"
               }
             ],
-            "description": "Error message (status=failed only)"
+            "description": "Error message when status is 'failed'. Null for all other statuses."
           },
           "resultParts": {
             "anyOf": [
@@ -2880,7 +2905,7 @@
                 "type": "null"
               }
             ],
-            "description": "Available results by key"
+            "description": "Available result files keyed by format (e.g. 'glb', 'step'). Null until task completes."
           },
           "metadata": {
             "anyOf": [
@@ -2895,11 +2920,11 @@
                 "type": "null"
               }
             ],
-            "description": "Task metadata"
+            "description": "Additional task metadata (e.g. resolved parameters, model name). Shape varies by task kind."
           },
           "createdAt": {
             "type": "string",
-            "description": "ISO 8601 creation timestamp"
+            "description": "ISO 8601 timestamp when the task was created"
           },
           "startedAt": {
             "anyOf": [
@@ -2910,7 +2935,7 @@
                 "type": "null"
               }
             ],
-            "description": "When processing began"
+            "description": "ISO 8601 timestamp when processing began. Null if still queued."
           },
           "finishedAt": {
             "anyOf": [
@@ -2921,11 +2946,11 @@
                 "type": "null"
               }
             ],
-            "description": "When the task finished"
+            "description": "ISO 8601 timestamp when the task completed (success or failure). Null if still running."
           },
           "expiresAt": {
             "type": "string",
-            "description": "When the result will be deleted"
+            "description": "ISO 8601 timestamp when task results will be automatically deleted"
           }
         },
         "required": [
@@ -2943,7 +2968,7 @@
           "expiresAt"
         ],
         "additionalProperties": false,
-        "description": "Full task status and metadata"
+        "description": "Complete task status including lifecycle timestamps, progress, and result metadata"
       },
       "TaskKind": {
         "type": "string",
@@ -2956,27 +2981,28 @@
           "compound",
           "tenant"
         ],
-        "description": "Task type"
+        "description": "Type of work: 'cad' (single operation), 'model' (parametric model), 'convert-simple'/'convert-advanced' (file conversion), 'pipeline' (sequential chain), 'compound' (parallel batch), 'tenant' (tenant-scoped)"
       },
       "ResultPartMeta": {
         "type": "object",
         "properties": {
           "mime": {
             "type": "string",
-            "description": "MIME type of the result part"
+            "description": "MIME type of the result file (e.g. 'model/gltf-binary', 'application/step')"
           },
           "bytes": {
             "type": "integer",
-            "minimum": -9007199254740991,
+            "minimum": 0,
             "maximum": 9007199254740991,
-            "description": "Size in bytes"
+            "description": "Size of the result file in bytes"
           }
         },
         "required": [
           "mime",
           "bytes"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Metadata about a single downloadable result part"
       },
       "TaskDetailResponse": {
         "type": "object",
@@ -2993,7 +3019,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing a single task's full details"
       },
       "CancelTaskResponse": {
         "type": "object",
@@ -3010,7 +3037,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success response for task cancellation"
       },
       "CancelResult": {
         "type": "object",
@@ -3028,7 +3056,8 @@
           "cancelled",
           "previousStatus"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Confirmation that a task was successfully cancelled"
       },
       "TaskOrCompoundResultResponse": {
         "anyOf": [
@@ -3038,7 +3067,8 @@
           {
             "$ref": "#/components/schemas/CompoundResultManifestResponse"
           }
-        ]
+        ],
+        "description": "Result download link for standard tasks, or a compound manifest with per-sub-task download links"
       },
       "TaskResultResponse": {
         "type": "object",
@@ -3055,19 +3085,20 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing a download link for a task result"
       },
       "TaskResultDownload": {
         "type": "object",
         "properties": {
           "downloadUrl": {
             "type": "string",
-            "description": "Pre-signed download URL",
+            "description": "Pre-signed URL to download the result file. Expires after 1 hour.",
             "format": "uri"
           },
           "filename": {
             "type": "string",
-            "description": "Suggested filename",
+            "description": "Suggested filename for the download",
             "example": "result.glb"
           }
         },
@@ -3075,7 +3106,8 @@
           "downloadUrl",
           "filename"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Download information for a completed task result"
       },
       "CompoundResultManifestResponse": {
         "type": "object",
@@ -3092,7 +3124,8 @@
           "ok",
           "data"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Success envelope containing the compound task result manifest with per-sub-task download links"
       },
       "CompoundResultManifest": {
         "type": "object",
