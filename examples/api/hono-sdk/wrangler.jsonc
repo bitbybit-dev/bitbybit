@@ -1,0 +1,10 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "bitbybit-api-sdk-threejs-example",
+    "main": "src/index.ts",
+    "compatibility_date": "2025-04-16",
+    "compatibility_flags": ["nodejs_compat"],
+    "vars": {
+        "BITBYBIT_API_URL": "https://api.bitbybit.dev"
+    }
+}

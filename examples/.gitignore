@@ -5,5 +5,4 @@ node_modules
 .output
 
 test-chainable-api
-api/hono-sdk
 api/nodejs-sdk
