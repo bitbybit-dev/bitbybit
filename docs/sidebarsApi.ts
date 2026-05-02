@@ -5,6 +5,28 @@ const sidebars: SidebarsConfig = {
         "intro",
         {
             type: "category",
+            label: "SDK",
+            items: [
+                {
+                    type: "category",
+                    label: "TypeScript",
+                    link: {
+                        type: "doc",
+                        id: "sdk/typescript/intro",
+                    },
+                    items: [
+                        "sdk/typescript/validation",
+                        "sdk/typescript/models",
+                        "sdk/typescript/cad-operations",
+                        "sdk/typescript/conversion",
+                        "sdk/typescript/tasks",
+                        "sdk/typescript/files",
+                    ],
+                },
+            ],
+        },
+        {
+            type: "category",
             label: "Studio",
             items: [
                 "studio/intro",
