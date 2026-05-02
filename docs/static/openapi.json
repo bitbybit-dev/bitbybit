@@ -1250,6 +1250,59 @@
         }
       }
     },
+    "/api/v1/tasks/{taskId}/results": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Get all task results",
+        "description": "Returns download URLs for every available result format in a single call. Use this instead of making multiple requests to /result/{format}.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Download links for all available formats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResultsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Task is not yet completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/tasks/{taskId}/retry": {
       "post": {
         "tags": [
@@ -3178,6 +3231,63 @@
         ],
         "additionalProperties": false,
         "description": "Status/result info for one sub-task in a compound manifest"
+      },
+      "TaskResultsResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/TaskResultsDownload"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "Success envelope containing download links for all result formats"
+      },
+      "TaskResultsDownload": {
+        "type": "object",
+        "properties": {
+          "downloads": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "format": {
+                  "type": "string",
+                  "description": "Result format key (e.g. 'glb', 'step', 'metadata')"
+                },
+                "downloadUrl": {
+                  "type": "string",
+                  "description": "Pre-signed URL to download the result file. Expires after 1 hour.",
+                  "format": "uri"
+                },
+                "filename": {
+                  "type": "string",
+                  "description": "Suggested filename for the download",
+                  "example": "result.glb"
+                }
+              },
+              "required": [
+                "format",
+                "downloadUrl",
+                "filename"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Download links for all available result formats"
+          }
+        },
+        "required": [
+          "downloads"
+        ],
+        "additionalProperties": false,
+        "description": "Download information for all available result formats of a completed task"
       }
     },
     "securitySchemes": {
