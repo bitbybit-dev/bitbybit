@@ -26,6 +26,9 @@
         "build": "tsc --project tsconfig.build.json",
         "clean": "rm -rf dist",
         "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "coverage": "vitest run --coverage",
         "prepublishOnly": "npm run clean && npm run build"
     },
     "engines": {
@@ -74,7 +77,12 @@
     },
     "homepage": "https://bitbybit.dev",
     "devDependencies": {
+        "@vitest/coverage-v8": "^4.1.5",
         "openapi-typescript": "^7.13.0",
-        "typescript": "^5.8.0"
+        "typescript": "^5.8.0",
+        "vitest": "^4.1.5"
+    },
+    "dependencies": {
+        "@cfworker/json-schema": "^4.1.1"
     }
 }

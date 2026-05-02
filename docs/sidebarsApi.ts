@@ -15,6 +15,7 @@ const sidebars: SidebarsConfig = {
                         id: "sdk/typescript/intro",
                     },
                     items: [
+                        "sdk/typescript/validation",
                         "sdk/typescript/models",
                         "sdk/typescript/cad-operations",
                         "sdk/typescript/conversion",

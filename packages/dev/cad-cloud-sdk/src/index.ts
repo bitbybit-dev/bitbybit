@@ -8,6 +8,7 @@ export type { BitbybitClientOptions } from "./client.js";
 
 // Errors
 export { BitbybitApiError } from "./errors.js";
+export { BitbybitValidationError } from "./validation/index.js";
 
 // Utilities
 export { unwrap } from "./unwrap.js";

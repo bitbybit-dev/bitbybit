@@ -7,6 +7,7 @@ import { TasksEndpoint } from "./endpoints/tasks.js";
 import { CadEndpoint } from "./endpoints/cad.js";
 import { ConvertEndpoint } from "./endpoints/convert.js";
 import { FilesEndpoint } from "./endpoints/files.js";
+import { validateRequestBody, getEndpointSchema } from "./validation/index.js";
 
 const DEFAULT_BASE_URL = "https://api.bitbybit.dev";
 
@@ -18,6 +19,12 @@ export interface BitbybitClientOptions {
      * @default "https://api.bitbybit.dev"
      */
     baseUrl?: string;
+    /**
+     * Validate request bodies against JSON Schema before sending.
+     * Catches parameter errors early with clear messages.
+     * @default true
+     */
+    validate?: boolean;
 }
 
 /**
@@ -56,6 +63,7 @@ export class BitbybitClient {
 
     private readonly baseUrl: string;
     private readonly apiKey: string;
+    private readonly validate: boolean;
 
     constructor(opts: BitbybitClientOptions) {
         if (!opts.apiKey) {
@@ -64,6 +72,7 @@ export class BitbybitClient {
 
         this.apiKey = opts.apiKey;
         this.baseUrl = (opts.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
+        this.validate = opts.validate !== false;
 
         const fetcher = this.request.bind(this);
         this.models = new ModelsEndpoint(fetcher);
@@ -84,6 +93,16 @@ export class BitbybitClient {
      * Can also be used directly for custom / future endpoints.
      */
     async request(method: string, path: string, body?: unknown): Promise<Response> {
+        if (this.validate && body != null && method !== "GET") {
+            const endpointKey = pathToEndpointKey(path);
+            if (endpointKey) {
+                const schemaName = getEndpointSchema(endpointKey);
+                if (schemaName) {
+                    validateRequestBody(schemaName, body);
+                }
+            }
+        }
+
         const url = `${this.baseUrl}${path}`;
         const headers: Record<string, string> = {
             "x-api-key": this.apiKey,
@@ -98,4 +117,43 @@ export class BitbybitClient {
 
         return res;
     }
+}
+
+// ---------------------------------------------------------------------------
+// Path → endpoint key mapping for validation lookup
+// ---------------------------------------------------------------------------
+
+const STATIC_PATH_MAP: Record<string, string> = {
+    "/api/v1/cad/execute": "cad.execute",
+    "/api/v1/cad/pipeline": "cad.pipeline",
+    "/api/v1/cad/compound": "cad.compound",
+    "/api/v1/models/definitions": "models.definitions",
+    "/api/v1/convert/step-to-gltf": "convert.stepToGltf",
+    "/api/v1/convert/step-to-gltf-advanced": "convert.stepToGltfAdvanced",
+    "/api/v1/files/upload": "files.upload",
+};
+
+const MODEL_PATH_RE = /^\/api\/v1\/models\/([a-z][a-z0-9-]*)$/;
+const MODEL_BATCH_PATH_RE = /^\/api\/v1\/models\/([a-z][a-z0-9-]*)\/batch$/;
+
+function pathToEndpointKey(path: string): string | undefined {
+    const staticKey = STATIC_PATH_MAP[path];
+    if (staticKey) return staticKey;
+
+    // /api/v1/models/{slug}/batch → models.batchSubmit
+    const batchMatch = MODEL_BATCH_PATH_RE.exec(path);
+    if (batchMatch) return "models.batchSubmit";
+
+    // /api/v1/models/{slug} → models.submit.{slug} (per-model) or models.submit (generic)
+    const modelMatch = MODEL_PATH_RE.exec(path);
+    if (modelMatch) {
+        const slug = modelMatch[1];
+        // Try per-model schema first (e.g. models.submit.dragon-cup)
+        // Caller falls back to generic if per-model is not found
+        const perModel = `models.submit.${slug}`;
+        if (getEndpointSchema(perModel)) return perModel;
+        return "models.submit";
+    }
+
+    return undefined;
 }

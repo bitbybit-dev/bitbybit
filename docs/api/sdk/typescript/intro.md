@@ -34,6 +34,7 @@ const client = new BitbybitClient({
 |--------|------|---------|-------------|
 | `apiKey` | `string` | *required* | Your API key. Get one at [bitbybit.dev/auth/pick-plan](https://bitbybit.dev/auth/pick-plan). |
 | `baseUrl` | `string` | `https://api.bitbybit.dev` | API base URL. |
+| `validate` | `boolean` | `true` | Validate request bodies before sending. See [Validation](./validation). |
 
 ## Your first model
 
