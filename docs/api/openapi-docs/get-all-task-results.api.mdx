@@ -1,0 +1,70 @@
+---
+id: get-all-task-results
+title: "Get all task results"
+description: "Returns download URLs for every available result format in a single call. Use this instead of making multiple requests to /result/{format}."
+sidebar_label: "Get all task results"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWFFv2zYQ/isHviQZZDnZ+jK/eUnaGesSw06GAYFR0ORFZk2RKkm5MQz99+FIK5bttGlfhgHrk22J/O7j3fedTt6wwAvPBg/sjvulZ7OMSfTCqSooa9iATTDUzniQ9rPRlku4n7z38Ggd4ArdGviKK83nGsGhr3WgWyUPoAxw8MoUGkFwrXO49whhoTwo4wNyCfYRSr5UpoCy1kFVEeNTjT54CBb6CbC/SYhNzjJWccdLDOiI8oYZXiIbsMD9ciRZxhQxrnhYsIwRlHIo2SC4GjPmxQJLzgYbFtYV7fLBKVOwjCV8NmB1rSRrDjNAiYHRFWtmBOorazx6wvn5/Jw+9ldftXnSyixTorjWnTSlaJ5lTFgT0ATC4FWlleCE0f/oCWhzTNjOP6IIlAVnK3RBJRp22Vkzt1YjNwndh3R4OhIP3wDVFtl3lnLn+JpyG7D0r0O0yTxO86GuumpZ4hpOMS9yOCn0/CSDEx+wos8SAyfyJ2exMluC906/HmLssOdVYTCKliT1LOKw2OlVaczh+qlSDj3wx4AOLmBha5fvacMpIkCrk+peiz6tiwJ9QAntnigGitzSYBnDJ15WmmASnbzQc9Y0Xfk+tCT2j9/hMssYl1JRYK7HnXI8cu3xSNCvSnTPyf6Izk4lXw/8xbjKJGhlzavRqUtwEJayRMkkr7OMBRVi1sicSUq+hT/ia2lDNMD38Z3WQqD3gGaF2lYIZFiuDHUs+XIODzL3Is/JtoewpiGmb87fHHeRG0sgtZH/VptolYLOWfc6mLDyGyzwJxcLZbDnkMtY2ogOcXNX+n8N34+uhnej25sP15PJ7YSMVqL3vPiGIL/XJTeHIdrdUfuBK+2Pc3xbJR2AD64WoXYonwmagE+BbXWEPozk8f5JugWjq2Rsx0Xit8/3UI3b07cMv1OSh1S7VvqswgLKw5xTPOBGgm3PK3FeFwWpuD3oTqfXhHoVU/ayj5JAvpc1N5K7lnPrp8OwR8b49Tjp8WGsPBgbYI1h1xh+GOWHUf6XRokSCAsr2YAVGBVIA/CA9Xml+quLPj0xfX+ThuRmO1XTs8mjW7WTdE0DFVuEUPlBn3bmcxXm67kKucTVC6OVlbWIP2gs9ihqp8I6Qg0r9QeuhzWReJh1b0/JgckX3UW7UTNebOf4BXKJjmXtlP93bzge9dKCg7QJW6GE4XhEg2QO8bcfQGklap+B4DKjEq7QhQx+gtPPSkvBnTzLYRhnT1KErcN2LkyVBE8w4FCgWqGHN+e/wOhmev/27ehydH1z92F6eTu+zmP1SV3xINsy/bZNHlwOr+BS2zqyYxmjhCfSF/l5fn5sUlUsehW6KFYjELZvPE6JiBWPBAUadEnLw/Eoh2ldVdYFn16ketuh2tahqgOcTu+uxxm8e3/3NgOJ1DGtR0nWX5xlUKkKtTII+ISiJswsTqy9OadVKW0+XiZzcL82Aj7aOVTO0nikTJFvmy8Xsflu69XmgGUH6tpTVpOxgK70t49TdCsl8AsL+3FVjxvZE9YkR5GItRJIVtjFJZc5hYG79VdDv4xI1aysDyU3Hcx3GOJ8RyaCnYP2arfZPYD+Y2/NW3tRB+tXmitDWa/TK1RqFg/kPZLnBS2P/wRkbPD8Xt2eeJaxhaWn4APbbEgf9043DV3+VKMj+88ytuJO0dFiM5DK03f5csPrpux0svXdGbRv3F9g3nYLQ/VdcV3TL5axJa53fwY0syZrWwgRSTeHQmAVOtuOBgXqV8/99N31HWuafwCbRQJI
+sidebar_class_name: "get api-method"
+info_path: api/open/bitbybit-cad-cloud-api
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all task results"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/v1/tasks/{taskId}/results"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Returns download URLs for every available result format in a single call. Use this instead of making multiple requests to /result/\{format\}.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./get-all-task-results.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./get-all-task-results.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./get-all-task-results.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

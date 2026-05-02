@@ -1,0 +1,1 @@
+{"parameters":[{"name":"page","in":"query","required":false,"schema":{"type":"integer","default":1}},{"name":"limit","in":"query","required":false,"schema":{"type":"integer","default":20}},{"name":"status","in":"query","required":false,"schema":{"type":"string","enum":["pending","confirmed","expired"]}}]}

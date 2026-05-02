@@ -59,7 +59,7 @@ The dashboard gives you an overview of your compute usage (minutes used vs. plan
 
 Studio is a visual frontend to the same Cloud API documented in the [API Reference](/api/openapi-docs/bitbybit-cad-cloud-api). Everything you do in Studio — generating a model, converting a file, running a pipeline — maps directly to an API endpoint. This means:
 
-- Workflows you prototype in Studio can be automated via HTTP calls or the [TypeScript SDK](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-api)
+- Workflows you prototype in Studio can be automated via HTTP calls or the [TypeScript SDK](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk)
 - The same OCCT kernel operations, parameters, and defaults apply in both
 - Output formats (STEP, glTF, GLB, Decomposed Mesh) are shared between Studio and the API
 - Tasks created via the API from your code are visible in Studio — you can inspect their status, view results, download outputs, and preview models in 3D, regardless of whether the task was submitted from Studio or programmatically
@@ -69,4 +69,4 @@ Studio is a visual frontend to the same Cloud API documented in the [API Referen
 1. **Sign up** at [bitbybit.dev/auth/sign-up](https://bitbybit.dev/auth/sign-up)
 2. **Open Studio** — generate a model or convert a file to see the workflow in action
 3. **Get an API key** — create a scoped key from your dashboard
-4. **Call the API** — use the [API Reference](/api/openapi-docs/bitbybit-cad-cloud-api) or the [TypeScript SDK](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-api) to automate the same workflows programmatically
+4. **Call the API** — use the [API Reference](/api/openapi-docs/bitbybit-cad-cloud-api) or the [TypeScript SDK](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) to automate the same workflows programmatically

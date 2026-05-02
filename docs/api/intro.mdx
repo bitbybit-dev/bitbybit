@@ -1,24 +1,71 @@
 ---
 sidebar_position: 0
 title: Bitbybit CAD Cloud API
-description: Bitbybit CAD Cloud API — generate parametric 3D CAD models, convert STEP files to glTF, run OCCT pipelines, and download results via HTTP. TypeScript SDK available. Works with any language.
+description: Bitbybit CAD Cloud API — generate parametric 3D CAD models, convert STEP files to glTF, run CAD pipelines, and download results via HTTP. TypeScript SDK available. Works with any language.
 slug: /cloud-api
 ---
 
 # Bitbybit CAD Cloud API
 
-The Bitbybit CAD Cloud API lets you generate parametric 3D CAD models, convert STEP files to glTF, and run OCCT kernel operations — all via HTTP from any backend, in any programming language.
+The Bitbybit CAD Cloud API lets you generate parametric 3D CAD models, convert STEP files to glTF, and run CAD kernel operations — all via HTTP from any backend, in any programming language.
 
-Every request runs asynchronously on managed compute infrastructure powered by Bitbybit servers. You submit a job, get a task ID, poll for completion, and download the result in the format you need (STEP, glTF/GLB, Decomposed Mesh, and more).
+Every request runs asynchronously on managed compute infrastructure. You submit a job, get a task ID, poll for completion, and download the result in the format you need (STEP, glTF/GLB, Decomposed Mesh, and more).
+
+## Quick links
+
+| Resource | Link |
+|----------|------|
+| **Interactive API reference** | [API Reference](/api/openapi-docs/bitbybit-cad-cloud-api) |
+| **TypeScript SDK** | [`@bitbybit-dev/cad-cloud-sdk`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) |
+| **Base URL** | `https://api.bitbybit.dev` |
 
 ## What you can do
 
 - **Generate parametric models** — submit parameters for registered models (e.g. Dragon Cup, Phone Nest) and get downloadable 3D files
 - **Convert STEP → glTF** — upload a STEP/STP file and convert it with simple or advanced options (mesh precision, face merging, coordinate adjustment, texture embedding, and more)
-- **Run CAD pipelines** — chain OCCT operations (primitives, booleans, transforms, fillets) in a single request where steps can reference each other's outputs
-- **Execute single CAD operations** — run any OCCT operation by its dotted path (e.g. `occt.shapes.solid.createSphere`)
+- **Run CAD pipelines** — chain operations (primitives, booleans, transforms, fillets) in a single request where steps can reference each other's outputs
+- **Execute single CAD operations** — run any supported operation by its fully-qualified identifier (e.g. `occt.shapes.solid.createSphere`)
 - **Manage tasks** — poll status, cancel, retry, list, and download results in multiple formats
 - **Upload files** — upload STEP files for conversion via pre-signed URLs
+
+## Authentication
+
+All endpoints (except `/health`) require an API key passed as the `x-api-key` header:
+
+```bash
+curl https://api.bitbybit.dev/api/v1/models \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Keys are scoped — each key carries permissions for specific endpoint groups (`models`, `cad`, `convert`, `files`, `tasks`).
+
+## Async task model
+
+Every operation that creates or transforms geometry is **asynchronous**:
+
+1. **Submit** — `POST` your request → receive **202 Accepted** with a `taskId`
+2. **Poll** — `GET /api/v1/tasks/{taskId}` until `status` is `completed` (or `failed`)
+3. **Download** — `GET /api/v1/tasks/{taskId}/result/{format}` → pre-signed download URL
+
+The SDK handles polling automatically via `models.run()`, `cad.executeAndPoll()`, etc.
+
+## Output formats
+
+| Format | Extension | Description |
+|--------|-----------|-------------|
+| `gltf` | `.glb` | Web-ready 3D mesh (glTF 2.0 binary) |
+| `step` | `.stp` | Native CAD exchange format |
+| `stpz` | `.stpz` | Compressed STEP (gzip) |
+| `decomposed-mesh` | `.json` | Structured mesh data with face/edge decomposition |
+
+## Available models
+
+| Model | Description |
+|-------|-------------|
+| `dragon-cup` | Parametric dragon-scale cup with configurable height, radius, thickness, cell pattern |
+| `phone-nest` | Parametric phone stand/nest with optional ornamental perforations |
+
+All model parameters are optional — default values produce a valid model. See the [interactive API reference](/api/openapi-docs/bitbybit-cad-cloud-api) for full parameter documentation.
 
 ## Key components
 
@@ -32,10 +79,10 @@ The REST API at `https://api.bitbybit.dev`. All endpoints require an API key pas
 
 ### TypeScript SDK
 
-The [`@bitbybit-dev/cad-cloud-api`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-api) npm package provides a type-safe client for Node.js and edge runtimes. It handles request construction, error mapping, and includes a built-in polling helper.
+The [`@bitbybit-dev/cad-cloud-sdk`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) npm package provides a type-safe client for Node.js and edge runtimes. It handles request construction, error mapping, and includes a built-in polling helper.
 
 ```bash
-npm install @bitbybit-dev/cad-cloud-api
+npm install @bitbybit-dev/cad-cloud-sdk
 ```
 
 ## Getting an API key
@@ -74,7 +121,7 @@ curl https://api.bitbybit.dev/api/v1/tasks/TASK_ID/result/glb \
 ### Initialize the client
 
 ```typescript
-import { BitbybitClient } from "@bitbybit-dev/cad-cloud-api";
+import { BitbybitClient } from "@bitbybit-dev/cad-cloud-sdk";
 
 const client = new BitbybitClient({
     apiKey: process.env.BITBYBIT_API_KEY,
@@ -105,7 +152,7 @@ console.log("Download:", downloadUrl);
 
 ### Run a CAD pipeline
 
-Chain multiple OCCT operations — each step can reference previous steps' outputs using `$ref:N`:
+Chain multiple CAD operations — each step can reference previous steps' outputs using `$ref:N`:
 
 ```typescript
 const created = await client.cad.pipeline({
@@ -156,7 +203,7 @@ console.log("Download:", result.downloadUrl);
 
 ```typescript
 import express from "express";
-import { BitbybitClient } from "@bitbybit-dev/cad-cloud-api";
+import { BitbybitClient } from "@bitbybit-dev/cad-cloud-sdk";
 
 const app = express();
 app.use(express.json());
@@ -198,11 +245,46 @@ app.get("/api/task/:id", async (req, res) => {
 app.listen(3000);
 ```
 
+## Endpoints overview
+
+### Models
+- `GET /api/v1/models` — list available models
+- `GET /api/v1/models/{name}/params` — get parameter definitions
+- `POST /api/v1/models/definitions` — batch-fetch model definitions
+- `POST /api/v1/models/{name}` — generate a model (async)
+- `POST /api/v1/models/{name}/batch` — generate multiple variations (async)
+
+### CAD operations
+- `POST /api/v1/cad/execute` — run a single CAD operation (async)
+- `POST /api/v1/cad/pipeline` — run a chained pipeline (async)
+- `POST /api/v1/cad/compound` — run parallel operations (async)
+
+### Conversion
+- `POST /api/v1/convert/step-to-gltf` — simple STEP → glTF (async)
+- `POST /api/v1/convert/step-to-gltf-advanced` — full-control conversion (async)
+
+### Files
+- `POST /api/v1/files/upload` — get a pre-signed upload URL
+- `POST /api/v1/files/{id}/confirm` — confirm upload
+- `GET /api/v1/files` — list files
+- `GET /api/v1/files/{id}` — get file details
+- `DELETE /api/v1/files/{id}` — delete a file
+
+### Tasks
+- `GET /api/v1/tasks` — list tasks
+- `GET /api/v1/tasks/{id}` — get task status
+- `GET /api/v1/tasks/{id}/result` — download default result
+- `GET /api/v1/tasks/{id}/result/{format}` — download specific format
+- `DELETE /api/v1/tasks/{id}` — cancel a task
+- `POST /api/v1/tasks/{id}/retry` — retry a failed task
+
+For full request/response schemas, see the [interactive API reference](/api/openapi-docs/bitbybit-cad-cloud-api).
+
 ## Code examples
 
 Full working examples are available in the open-source GitHub repo:
 
-- [**Node.js + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-sdk) — Express server using `@bitbybit-dev/cad-cloud-api`
+- [**Node.js + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-sdk) — Express server using `@bitbybit-dev/cad-cloud-sdk`
 - [**Node.js + REST**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-rest) — Express server using raw `fetch` calls
 - [**Hono + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/hono-sdk) — Cloudflare Workers using the SDK
 - [**Hono + REST**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/hono-rest) — Cloudflare Workers using raw `fetch` calls
@@ -213,4 +295,4 @@ Each example includes a complete server with API routes and a browser frontend f
 
 - [**Studio introduction**](/api/studio/intro) — explore the visual dashboard
 - [**API Reference**](/api/openapi-docs/bitbybit-cad-cloud-api) — full endpoint documentation with schemas and examples
-- [**TypeScript SDK on npm**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-api) — package details and changelog
+- [**TypeScript SDK on npm**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) — package details and changelog

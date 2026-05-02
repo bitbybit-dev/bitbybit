@@ -1,1 +1,0 @@
-{"parameters":[{"name":"taskId","in":"path","required":true,"schema":{"type":"string","format":"uuid"}},{"name":"format","in":"path","required":true,"schema":{"type":"string","enum":["glb","step","stpz","metadata","decomposed-mesh"]}}]}
