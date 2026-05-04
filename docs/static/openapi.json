@@ -65,12 +65,12 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Operation result",
+          "202": {
+            "description": "Task accepted",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CadOperationResponse"
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
                 }
               }
             }
@@ -116,12 +116,12 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Pipeline result (last step)",
+          "202": {
+            "description": "Task accepted",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CadOperationResponse"
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
                 }
               }
             }
@@ -167,12 +167,12 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Compound result",
+          "202": {
+            "description": "Compound task accepted",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CadOperationResponse"
+                  "$ref": "#/components/schemas/CompoundTaskAcceptedResponse"
                 }
               }
             }
@@ -1385,20 +1385,76 @@
             "maxItems": 50,
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PipelineStep"
+              "$ref": "#/components/schemas/PipelineAnyStep"
             },
-            "description": "Ordered list of CAD operations executed sequentially. Later steps can reference earlier results using '$ref:N' syntax."
+            "description": "Ordered list of CAD operations executed sequentially. Later steps can reference earlier results using '$ref:N' syntax. Supports map and choice control-flow steps."
+          },
+          "inputFiles": {
+            "description": "References to previously uploaded files. Use '$file:N' in step params to inject file contents.",
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InputFileItem"
+            }
           },
           "outputs": {
-            "description": "Output format options applied to the final pipeline result. If omitted, raw result data is stored.",
-            "$ref": "#/components/schemas/OutputOptions"
+            "description": "Output format options applied to the final pipeline result. Supports json, csv, stl, 3mf in addition to standard formats. If omitted, raw result data is stored.",
+            "$ref": "#/components/schemas/PipelineOutputOptions"
           }
         },
         "required": [
           "steps"
         ],
         "additionalProperties": false,
-        "description": "Execute a chain of Bitbybit CAD operations sequentially. Each step can reference earlier step outputs via '$ref:N'. The final step's output is stored as the task result."
+        "description": "Execute a chain of Bitbybit CAD operations sequentially. Supports $ref:N step references, $file:N file inputs, map iteration, and choice conditionals."
+      },
+      "PipelineAnyStep": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/MapStep"
+          },
+          {
+            "$ref": "#/components/schemas/ChoiceStep"
+          },
+          {
+            "$ref": "#/components/schemas/PipelineStep"
+          }
+        ],
+        "description": "A pipeline step — either a plain operation, a map (iteration), or a choice (conditional)."
+      },
+      "MapStep": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "map",
+            "description": "Declares this step as a map (iteration) step"
+          },
+          "items": {
+            "description": "Source array to iterate over. Typically a '$ref:N' reference to a previous step that produced an array."
+          },
+          "steps": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipelineStep"
+            },
+            "description": "Sub-steps to execute for each item. Use '$item' for the current element, '$index' for the iteration number."
+          },
+          "reduce": {
+            "description": "Optional sub-steps to combine map results. Use '$mapResult' to reference the collected array of iteration outputs.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipelineStep"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "items",
+          "steps"
+        ],
+        "description": "Iterate over an array, executing sub-steps for each element. Produces an array of results (or a reduced value)."
       },
       "PipelineStep": {
         "type": "object",
@@ -1409,28 +1465,108 @@
             "description": "Fully-qualified CAD operation identifier (e.g. 'occt.shapes.solid.createSphere'). Supports OCCT, Manifold, JSCAD, and vector/math operations."
           },
           "params": {
-            "description": "Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index."
+            "description": "Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index. Use '$file:N' to reference an input file's contents."
+          },
+          "output": {
+            "description": "When true, this step's result is included in a separate result.json output alongside any shape files.",
+            "type": "boolean"
           }
         },
         "required": [
           "operation",
           "params"
         ],
-        "description": "A single step in a sequential CAD pipeline. Steps can reference outputs of earlier steps via $ref."
+        "description": "A single step in a sequential CAD pipeline. Steps can reference outputs of earlier steps via $ref or input files via $file."
       },
-      "OutputOptions": {
+      "ChoiceStep": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "choice",
+            "description": "Declares this step as a choice (conditional) step"
+          },
+          "value": {
+            "description": "Value to compare. Typically a '$ref:N' reference to a previous step result."
+          },
+          "operator": {
+            "description": "Comparison operator to apply between value and compareTo",
+            "$ref": "#/components/schemas/ComparisonOperator"
+          },
+          "compareTo": {
+            "description": "Value to compare against. Not required for 'exists' operator."
+          },
+          "then": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipelineStep"
+            },
+            "description": "Sub-steps to execute when condition is true"
+          },
+          "else": {
+            "description": "Sub-steps to execute when condition is false. If omitted, produces null.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipelineStep"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "value",
+          "operator",
+          "then"
+        ],
+        "description": "Conditional execution — evaluate a condition and run the matching branch."
+      },
+      "ComparisonOperator": {
+        "type": "string",
+        "enum": [
+          "eq",
+          "neq",
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "exists"
+        ],
+        "description": "Comparison operator: 'eq' (equal), 'neq' (not equal), 'gt' (greater than), 'gte' (greater or equal), 'lt' (less than), 'lte' (less or equal), 'exists' (value is not null/undefined)."
+      },
+      "InputFileItem": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of a previously uploaded file (from POST /files/upload)"
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Role identifier for the file (e.g. 'step-model', 'coordinates-csv')"
+          }
+        },
+        "required": [
+          "fileId",
+          "role"
+        ],
+        "additionalProperties": false,
+        "description": "Reference to an uploaded file to be used as input"
+      },
+      "PipelineOutputOptions": {
         "type": "object",
         "properties": {
           "formats": {
             "minItems": 1,
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/OutputFormat"
+              "$ref": "#/components/schemas/PipelineOutputFormat"
             },
-            "description": "Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) — each produces a separate downloadable result. Do not include both 'step' and 'stpz' — only one STEP variant is supported per request."
+            "description": "Output formats to generate. Supports standard CAD formats (step, stpz, gltf, decomposed-mesh) plus pipeline-specific formats (json, csv, stl, 3mf)."
           },
           "meshPrecision": {
-            "description": "Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. Only ignored when output is limited to step/stpz formats.",
+            "description": "Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes.",
             "$ref": "#/components/schemas/MeshPrecision"
           },
           "gltfMeshPrecision": {
@@ -1440,29 +1576,38 @@
           "adjustYtoZ": {
             "description": "Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up.",
             "type": "boolean"
+          },
+          "includePipelineInMetadata": {
+            "description": "Include the full pipeline definition in metadata.json. Defaults to true. Set to false to exclude it for smaller metadata.",
+            "type": "boolean"
           }
         },
         "required": [
           "formats"
         ],
         "additionalProperties": false,
-        "description": "Controls which output formats are generated and their quality settings"
+        "description": "Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf) beyond standard model outputs."
       },
-      "OutputFormat": {
+      "PipelineOutputFormat": {
         "type": "string",
         "enum": [
           "step",
           "stpz",
           "decomposed-mesh",
-          "gltf"
+          "gltf",
+          "json",
+          "csv",
+          "stl",
+          "3mf"
         ],
-        "description": "Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive — choose one or the other, not both."
+        "description": "Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh — Manifold/JSCAD only), '3mf' (3MF mesh package — Manifold/JSCAD only)."
       },
       "MeshPrecision": {
         "type": "number",
-        "minimum": 0.005,
+        "minimum": 0.0001,
         "maximum": 10,
-        "description": "Mesh tessellation precision (lower = finer). Range: [0.005, 10]"
+        "description": "Mesh tessellation precision (lower = finer). Range: [0.0001, 10]",
+        "example": 0.1
       },
       "CompoundExecuteBody": {
         "type": "object",
@@ -1504,24 +1649,7 @@
             "description": "References to previously uploaded files to be used as inputs for this operation",
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "fileId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "description": "ID of a previously uploaded file (from POST /files/upload)"
-                },
-                "role": {
-                  "type": "string",
-                  "minLength": 1,
-                  "description": "Role identifier for the file (e.g. 'step-input'). Determines how the file is used during processing."
-                }
-              },
-              "required": [
-                "fileId",
-                "role"
-              ],
-              "additionalProperties": false
+              "$ref": "#/components/schemas/InputFileItem"
             }
           },
           "outputFormats": {
@@ -1578,6 +1706,46 @@
           "outputs"
         ],
         "description": "Submit a parametric model for generation with specified parameters and output formats"
+      },
+      "OutputOptions": {
+        "type": "object",
+        "properties": {
+          "formats": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutputFormat"
+            },
+            "description": "Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) — each produces a separate downloadable result. Do not include both 'step' and 'stpz' — only one STEP variant is supported per request."
+          },
+          "meshPrecision": {
+            "description": "Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. Only ignored when output is limited to step/stpz formats.",
+            "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "gltfMeshPrecision": {
+            "description": "Override tessellation precision specifically for glTF output. When set, takes precedence over meshPrecision for glTF only.",
+            "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "adjustYtoZ": {
+            "description": "Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "formats"
+        ],
+        "additionalProperties": false,
+        "description": "Controls which output formats are generated and their quality settings"
+      },
+      "OutputFormat": {
+        "type": "string",
+        "enum": [
+          "step",
+          "stpz",
+          "decomposed-mesh",
+          "gltf"
+        ],
+        "description": "Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive — choose one or the other, not both."
       },
       "BatchModelSubmissionBody": {
         "type": "object",
@@ -2122,7 +2290,7 @@
         "additionalProperties": false,
         "description": "API health check result indicating overall system status"
       },
-      "CadOperationResponse": {
+      "TaskAcceptedResponse": {
         "type": "object",
         "properties": {
           "ok": {
@@ -2130,7 +2298,7 @@
             "const": true
           },
           "data": {
-            "$ref": "#/components/schemas/CadResultData"
+            "$ref": "#/components/schemas/TaskCreatedResult"
           }
         },
         "required": [
@@ -2138,10 +2306,34 @@
           "data"
         ],
         "additionalProperties": false,
-        "description": "Success envelope wrapping a Bitbybit CAD operation result"
+        "description": "HTTP 202 response when a task is accepted for async processing"
       },
-      "CadResultData": {
-        "description": "Operation-specific result data. Shape varies by the CAD algorithm executed (OCCT, Manifold, JSCAD, or vector/math operations)."
+      "TaskCreatedResult": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Unique task identifier — use this to poll for status and retrieve results",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "const": "queued",
+            "description": "Initial task status (always 'queued' upon creation)"
+          },
+          "statusUrl": {
+            "type": "string",
+            "description": "Relative URL to poll for task status updates",
+            "example": "/api/v1/tasks/{taskId}"
+          }
+        },
+        "required": [
+          "taskId",
+          "status",
+          "statusUrl"
+        ],
+        "additionalProperties": false,
+        "description": "Returned when a CAD task is accepted. Poll the statusUrl to track progress."
       },
       "ErrorResponse": {
         "type": "object",
@@ -2187,6 +2379,145 @@
         ],
         "additionalProperties": false,
         "description": "Structured error information with machine-readable code and optional debugging context"
+      },
+      "CompoundTaskAcceptedResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/CompoundTaskCreatedResult"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "HTTP 202 response when a compound (parallel) task is accepted"
+      },
+      "CompoundTaskCreatedResult": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Parent compound task ID for tracking overall progress"
+          },
+          "kind": {
+            "type": "string",
+            "const": "compound"
+          },
+          "subTaskCount": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Total number of sub-tasks created (one per item in the request)"
+          },
+          "statusUrl": {
+            "type": "string",
+            "description": "Relative URL to poll the parent task status",
+            "example": "/api/v1/tasks/{taskId}"
+          },
+          "subTasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubTaskSummary"
+            }
+          }
+        },
+        "required": [
+          "taskId",
+          "kind",
+          "subTaskCount",
+          "statusUrl",
+          "subTasks"
+        ],
+        "additionalProperties": false,
+        "description": "Returned when a compound (parallel) task is accepted. Contains initial status for all sub-tasks."
+      },
+      "SubTaskSummary": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Unique identifier for this sub-task (can be polled individually)"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Zero-based position of this sub-task within the compound"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Completion percentage (0–100) or null if not yet started"
+          },
+          "computeMs": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Actual compute time in milliseconds (null until completed)"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Error message if sub-task failed, null otherwise"
+          },
+          "downloadFormats": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Available output format keys (e.g. ['glb', 'stpz']) for downloading results"
+          }
+        },
+        "required": [
+          "taskId",
+          "index",
+          "status",
+          "progress",
+          "computeMs",
+          "error",
+          "downloadFormats"
+        ],
+        "additionalProperties": false,
+        "description": "Status summary for one sub-task within a compound (parallel) task"
+      },
+      "TaskStatus": {
+        "type": "string",
+        "enum": [
+          "waiting",
+          "queued",
+          "processing",
+          "completed",
+          "failed",
+          "cancelled",
+          "expired"
+        ],
+        "description": "Task lifecycle state: waiting (pending dependencies), queued (in queue), processing (actively computing), completed (result available), failed (error occurred), cancelled (user-cancelled), expired (result TTL exceeded)"
       },
       "ModelListResponse": {
         "type": "object",
@@ -2352,190 +2683,6 @@
           "array"
         ],
         "description": "Data type of a model parameter: 'number' (float), 'integer' (whole number), 'boolean' (true/false), 'array' (list of values)"
-      },
-      "TaskAcceptedResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "const": true
-          },
-          "data": {
-            "$ref": "#/components/schemas/TaskCreatedResult"
-          }
-        },
-        "required": [
-          "ok",
-          "data"
-        ],
-        "additionalProperties": false,
-        "description": "HTTP 202 response when a task is accepted for async processing"
-      },
-      "TaskCreatedResult": {
-        "type": "object",
-        "properties": {
-          "taskId": {
-            "type": "string",
-            "description": "Unique task identifier — use this to poll for status and retrieve results",
-            "format": "uuid"
-          },
-          "status": {
-            "type": "string",
-            "const": "queued",
-            "description": "Initial task status (always 'queued' upon creation)"
-          },
-          "statusUrl": {
-            "type": "string",
-            "description": "Relative URL to poll for task status updates",
-            "example": "/api/v1/tasks/{taskId}"
-          }
-        },
-        "required": [
-          "taskId",
-          "status",
-          "statusUrl"
-        ],
-        "additionalProperties": false,
-        "description": "Returned when a CAD task is accepted. Poll the statusUrl to track progress."
-      },
-      "CompoundTaskAcceptedResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "const": true
-          },
-          "data": {
-            "$ref": "#/components/schemas/CompoundTaskCreatedResult"
-          }
-        },
-        "required": [
-          "ok",
-          "data"
-        ],
-        "additionalProperties": false,
-        "description": "HTTP 202 response when a compound (parallel) task is accepted"
-      },
-      "CompoundTaskCreatedResult": {
-        "type": "object",
-        "properties": {
-          "taskId": {
-            "type": "string",
-            "description": "Parent compound task ID for tracking overall progress"
-          },
-          "kind": {
-            "type": "string",
-            "const": "compound"
-          },
-          "subTaskCount": {
-            "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 9007199254740991,
-            "description": "Total number of sub-tasks created (one per item in the request)"
-          },
-          "statusUrl": {
-            "type": "string",
-            "description": "Relative URL to poll the parent task status",
-            "example": "/api/v1/tasks/{taskId}"
-          },
-          "subTasks": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SubTaskSummary"
-            }
-          }
-        },
-        "required": [
-          "taskId",
-          "kind",
-          "subTaskCount",
-          "statusUrl",
-          "subTasks"
-        ],
-        "additionalProperties": false,
-        "description": "Returned when a compound (parallel) task is accepted. Contains initial status for all sub-tasks."
-      },
-      "SubTaskSummary": {
-        "type": "object",
-        "properties": {
-          "taskId": {
-            "type": "string",
-            "description": "Unique identifier for this sub-task (can be polled individually)"
-          },
-          "index": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991,
-            "description": "Zero-based position of this sub-task within the compound"
-          },
-          "status": {
-            "$ref": "#/components/schemas/TaskStatus"
-          },
-          "progress": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Completion percentage (0–100) or null if not yet started"
-          },
-          "computeMs": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Actual compute time in milliseconds (null until completed)"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error message if sub-task failed, null otherwise"
-          },
-          "downloadFormats": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Available output format keys (e.g. ['glb', 'stpz']) for downloading results"
-          }
-        },
-        "required": [
-          "taskId",
-          "index",
-          "status",
-          "progress",
-          "computeMs",
-          "error",
-          "downloadFormats"
-        ],
-        "additionalProperties": false,
-        "description": "Status summary for one sub-task within a compound (parallel) task"
-      },
-      "TaskStatus": {
-        "type": "string",
-        "enum": [
-          "waiting",
-          "queued",
-          "processing",
-          "completed",
-          "failed",
-          "cancelled",
-          "expired"
-        ],
-        "description": "Task lifecycle state: waiting (pending dependencies), queued (in queue), processing (actively computing), completed (result available), failed (error occurred), cancelled (user-cancelled), expired (result TTL exceeded)"
       },
       "ModelDefinitionResponse": {
         "type": "object",

@@ -43,8 +43,10 @@ async function apiRequest(env: Env, method: string, path: string, body?: unknown
     const url = `${env.BITBYBIT_API_URL}${path}`;
     const headers: Record<string, string> = {
         "x-api-key": env.BITBYBIT_API_KEY,
-        "Content-Type": "application/json",
     };
+    if (body != null) {
+        headers["Content-Type"] = "application/json";
+    }
 
     return fetch(url, {
         method,
@@ -53,7 +55,7 @@ async function apiRequest(env: Env, method: string, path: string, body?: unknown
     });
 }
 
-export async function createDragonCup(env: Env): Promise<{ taskId: string; downloadUrl: string }> {
+export async function createDragonCup(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     // 1. Create dragon cup model — returns 202 with taskId
     const createRes = await apiRequest(env, "POST", "/api/v1/models/dragon-cup", {
         params: {
@@ -87,8 +89,8 @@ export async function createDragonCup(env: Env): Promise<{ taskId: string; downl
     }
 
     const { taskId } = createData.data;
-    const downloadUrl = await pollAndGetResult(env, taskId);
-    return { taskId, downloadUrl };
+    const downloads = await pollAndGetResult(env, taskId);
+    return { taskId, downloads };
 }
 
 export async function createDragonCupBatch(
@@ -162,7 +164,7 @@ export async function createDragonCupBatch(
     return { taskId, downloadUrls };
 }
 
-export async function getTaskResult(env: Env, taskId: string): Promise<{ status: string; downloadUrl?: string }> {
+export async function getTaskResult(env: Env, taskId: string): Promise<{ status: string; downloads?: { format: string; downloadUrl: string; filename: string }[] }> {
     const statusRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}`);
     const statusData: TaskResponse = await statusRes.json() as TaskResponse;
 
@@ -180,14 +182,14 @@ export async function getTaskResult(env: Env, taskId: string): Promise<{ status:
         return { status };
     }
 
-    const resultRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}/result/glb`);
-    const resultData: ResultResponse = await resultRes.json() as ResultResponse;
+    const resultRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}/results`);
+    const resultData = await resultRes.json() as { ok: boolean; data?: { downloads: { format: string; downloadUrl: string; filename: string }[] }; error?: { message: string } };
 
-    if (!resultData.ok || !resultData.data?.downloadUrl) {
-        throw new Error(`Result error: ${resultData.error?.message ?? "no download URL"}`);
+    if (!resultData.ok || !resultData.data?.downloads) {
+        throw new Error(`Result error: ${resultData.error?.message ?? "no downloads"}`);
     }
 
-    return { status: "completed", downloadUrl: resultData.data.downloadUrl };
+    return { status: "completed", downloads: resultData.data.downloads };
 }
 
 async function pollUntilDone(env: Env, taskId: string): Promise<void> {
@@ -213,17 +215,171 @@ async function pollUntilDone(env: Env, taskId: string): Promise<void> {
     throw new Error("Polling timed out");
 }
 
-async function pollAndGetResult(env: Env, taskId: string): Promise<string> {
+async function pollAndGetResult(env: Env, taskId: string): Promise<{ format: string; downloadUrl: string; filename: string }[]> {
     await pollUntilDone(env, taskId);
 
-    const resultRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}/result/glb`);
-    const resultData: ResultResponse = await resultRes.json() as ResultResponse;
+    const resultRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}/results`);
+    const resultData = await resultRes.json() as { ok: boolean; data?: { downloads: { format: string; downloadUrl: string; filename: string }[] }; error?: { message: string } };
 
-    if (!resultData.ok || !resultData.data?.downloadUrl) {
-        throw new Error(`Result error: ${resultData.error?.message ?? "no download URL"}`);
+    if (!resultData.ok || !resultData.data?.downloads) {
+        throw new Error(`Result error: ${resultData.error?.message ?? "no downloads"}`);
     }
 
-    return resultData.data.downloadUrl;
+    return resultData.data.downloads;
+}
+
+// ---------------------------------------------------------------------------
+// Pipeline examples
+// ---------------------------------------------------------------------------
+
+async function submitPipeline(env: Env, body: unknown): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
+    const createRes = await apiRequest(env, "POST", "/api/v1/cad/pipeline", body);
+    if (!createRes.ok && createRes.status !== 202) {
+        const err = await createRes.text();
+        throw new Error(`Pipeline failed: ${createRes.status} ${err}`);
+    }
+
+    const createData: TaskResponse = await createRes.json() as TaskResponse;
+    if (!createData.ok || !createData.data?.taskId) {
+        throw new Error(`API error: ${createData.error?.message ?? "unknown"}`);
+    }
+
+    const { taskId } = createData.data;
+    const downloads = await pollAndGetResult(env, taskId);
+    return { taskId, downloads };
+}
+
+/**
+ * Translate, Union + Fillet: createBox → translate → union → fillet
+ */
+export async function runTranslateUnionFilletPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
+    return submitPipeline(env, {
+        steps: [
+            { operation: "occt.shapes.solid.createBox", params: { width: 8, length: 6, height: 4, center: [0, 0, 0] } },
+            { operation: "occt.transforms.translate", params: { shape: "$ref:0", translation: [4, 2, 3] } },
+            { operation: "occt.booleans.union", params: { shapes: ["$ref:0", "$ref:1"] } },
+            { operation: "occt.fillets.filletEdges", params: { shape: "$ref:2", radius: 0.5 } },
+        ],
+        outputs: { formats: ["stpz", "gltf"] },
+    });
+}
+
+/**
+ * Map: Cylinders at Positions
+ */
+export async function runMapCylindersPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
+    return submitPipeline(env, {
+        steps: [
+            { operation: "json.parse", params: { text: "[[0,0,0],[1.5,0,0],[3,0,0],[4.5,0,0]]" } },
+            {
+                type: "map",
+                items: "$ref:0",
+                steps: [{ operation: "occt.shapes.solid.createCylinder", params: { radius: 1, height: 5, center: "$item" } }],
+            },
+            { operation: "occt.booleans.union", params: { shapes: "$ref:5" } },
+        ],
+        outputs: { formats: ["stpz", "gltf"] },
+    });
+}
+
+/**
+ * Map: Spheres at Different Radii
+ */
+export async function runMapSpheresPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
+    return submitPipeline(env, {
+        steps: [
+            { operation: "json.parse", params: { text: "[[0,0,0],[4,0,0],[10,0,0],[18,0,0],[28,0,0]]" } },
+            {
+                type: "map",
+                items: "$ref:0",
+                steps: [
+                    { operation: "math.twoNrOperation", params: { first: "$index", second: 1, operation: "add" } },
+                    { operation: "occt.shapes.solid.createSphere", params: { radius: "$prev", center: "$item" } },
+                ],
+            },
+            { operation: "occt.shapes.compound.makeCompound", params: { shapes: "$ref:11" } },
+        ],
+        outputs: { formats: ["stpz", "gltf"] },
+    });
+}
+
+/**
+ * Choice: Conditional Shape Size
+ */
+export async function runChoicePipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
+    return submitPipeline(env, {
+        steps: [
+            { operation: "json.parse", params: { text: "10" } },
+            { operation: "math.twoNrOperation", params: { first: "$ref:0", second: 1, operation: "add" } },
+            {
+                type: "choice",
+                value: "$ref:1",
+                operator: "gt",
+                compareTo: 5,
+                then: [{ operation: "occt.shapes.solid.createBox", params: { width: 10, length: 10, height: 10, center: [0, 0, 0] } }],
+                else: [{ operation: "occt.shapes.solid.createSphere", params: { radius: 2, center: [0, 0, 0] } }],
+            },
+        ],
+        outputs: { formats: ["stpz", "gltf"] },
+    });
+}
+
+/**
+ * File-input pipeline: upload a STEP file, fillet all edges, export.
+ */
+export async function runFileInputPipeline(env: Env, fileId: string): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
+    return submitPipeline(env, {
+        steps: [
+            { operation: "occt.io.loadSTEPorIGES", params: { filetext: "$file:0", fileName: "shape.step", adjustZtoY: true } },
+            { operation: "occt.fillets.filletEdges", params: { shape: "$ref:0", radius: 0.1 } },
+        ],
+        inputFiles: [{ fileId, role: "input" }],
+        outputs: { formats: ["stpz", "gltf"], meshPrecision: 0.001 },
+    });
+}
+
+/**
+ * Upload a file to the Bitbybit API, returns a fileId for use in pipelines.
+ */
+export async function uploadFile(env: Env, fileBuffer: ArrayBuffer, filename: string): Promise<string> {
+    // 1. Request a pre-signed upload URL
+    const uploadRes = await apiRequest(env, "POST", "/api/v1/files/upload", {
+        filename,
+        contentType: "application/octet-stream",
+        bytes: fileBuffer.byteLength,
+    });
+
+    if (!uploadRes.ok) {
+        const err = await uploadRes.text();
+        throw new Error(`File upload request failed: ${uploadRes.status} ${err}`);
+    }
+
+    const uploadData = await uploadRes.json() as { ok: boolean; data?: { fileId: string; uploadUrl: string }; error?: { message: string } };
+    if (!uploadData.ok || !uploadData.data?.uploadUrl) {
+        throw new Error(`Upload error: ${uploadData.error?.message ?? "no uploadUrl"}`);
+    }
+
+    const { fileId, uploadUrl } = uploadData.data;
+
+    // 2. PUT raw bytes to the pre-signed URL
+    const putRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": "application/octet-stream" },
+        body: fileBuffer,
+    });
+
+    if (!putRes.ok) {
+        throw new Error(`PUT to upload URL failed: ${putRes.status} ${putRes.statusText}`);
+    }
+
+    // 3. Confirm the upload
+    const confirmRes = await apiRequest(env, "POST", `/api/v1/files/${encodeURIComponent(fileId)}/confirm`);
+    if (!confirmRes.ok) {
+        const err = await confirmRes.text();
+        throw new Error(`File confirm failed: ${confirmRes.status} ${err}`);
+    }
+
+    return fileId;
 }
 
 function sleep(ms: number): Promise<void> {

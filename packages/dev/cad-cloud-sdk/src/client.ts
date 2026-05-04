@@ -106,13 +106,18 @@ export class BitbybitClient {
         const url = `${this.baseUrl}${path}`;
         const headers: Record<string, string> = {
             "x-api-key": this.apiKey,
-            "Content-Type": "application/json",
         };
+
+        let serializedBody: string | undefined;
+        if (body != null) {
+            headers["Content-Type"] = "application/json";
+            serializedBody = JSON.stringify(body);
+        }
 
         const res = await fetch(url, {
             method,
             headers,
-            body: body != null ? JSON.stringify(body) : undefined,
+            body: serializedBody,
         });
 
         return res;
