@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------
 
 import type { ExecuteBody, PipelineBody, CompoundExecuteBody, TaskCreatedResult, CompoundTaskCreatedResult, TaskDownload } from "../types/index.js";
+import type { TypedPipelineBody } from "../types/pipeline-operations.js";
 import type { PollOptions } from "../polling.js";
 import { pollTask } from "../polling.js";
 import { unwrap } from "../unwrap.js";
@@ -19,7 +20,7 @@ export class CadEndpoint {
     }
 
     /** Submit a CAD pipeline (sequential steps with $ref references). */
-    async pipeline(body: PipelineBody): Promise<TaskCreatedResult> {
+    async pipeline(body: PipelineBody | TypedPipelineBody): Promise<TaskCreatedResult> {
         return unwrap(await this.fetch("POST", "/api/v1/cad/pipeline", body));
     }
 
@@ -45,7 +46,7 @@ export class CadEndpoint {
      * Submit a pipeline, poll until complete, and return all downloads.
      */
     async pipelineAndPoll(
-        body: PipelineBody,
+        body: PipelineBody | TypedPipelineBody,
         opts?: PollOptions,
     ): Promise<{ taskId: string; downloads: TaskDownload[] }> {
         const created = await this.pipeline(body);

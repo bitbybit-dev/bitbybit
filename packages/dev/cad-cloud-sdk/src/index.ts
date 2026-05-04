@@ -23,5 +23,8 @@ export { CadEndpoint } from "./endpoints/cad.js";
 export { ConvertEndpoint } from "./endpoints/convert.js";
 export { FilesEndpoint } from "./endpoints/files.js";
 
-// All types (re-exported from schema-exports + custom)
+// Pipeline builder helper
+export { step } from "./types/pipeline-operations.js";
+
+// All types (re-exported from schema-exports + custom + pipeline-operations)
 export type * from "./types/index.js";

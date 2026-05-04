@@ -18,6 +18,7 @@ const sidebars: SidebarsConfig = {
                         "sdk/typescript/validation",
                         "sdk/typescript/models",
                         "sdk/typescript/cad-operations",
+                        "sdk/typescript/pipelines",
                         "sdk/typescript/conversion",
                         "sdk/typescript/tasks",
                         "sdk/typescript/files",
