@@ -66,13 +66,13 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Operation result */
-                200: {
+                /** @description Task accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["CadOperationResponse"];
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
                     };
                 };
                 /** @description Validation error */
@@ -127,13 +127,13 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Pipeline result (last step) */
-                200: {
+                /** @description Task accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["CadOperationResponse"];
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
                     };
                 };
                 /** @description Validation error */
@@ -188,13 +188,13 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Compound result */
-                200: {
+                /** @description Compound task accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["CadOperationResponse"];
+                        "application/json": components["schemas"]["CompoundTaskAcceptedResponse"];
                     };
                 };
                 /** @description Validation error */
@@ -1472,37 +1472,92 @@ export interface components {
             /** @description Operation-specific parameters — varies by operation. See model definitions for available parameters. */
             params?: unknown;
         };
-        /** @description Execute a chain of Bitbybit CAD operations sequentially. Each step can reference earlier step outputs via '$ref:N'. The final step's output is stored as the task result. */
+        /** @description Execute a chain of Bitbybit CAD operations sequentially. Supports $ref:N step references, $file:N file inputs, map iteration, and choice conditionals. */
         PipelineBody: {
-            /** @description Ordered list of CAD operations executed sequentially. Later steps can reference earlier results using '$ref:N' syntax. */
-            steps: components["schemas"]["PipelineStep"][];
-            /** @description Output format options applied to the final pipeline result. If omitted, raw result data is stored. */
-            outputs?: components["schemas"]["OutputOptions"];
+            /** @description Ordered list of CAD operations executed sequentially. Later steps can reference earlier results using '$ref:N' syntax. Supports map and choice control-flow steps. */
+            steps: components["schemas"]["PipelineAnyStep"][];
+            /** @description References to previously uploaded files. Use '$file:N' in step params to inject file contents. */
+            inputFiles?: components["schemas"]["InputFileItem"][];
+            /** @description Output format options applied to the final pipeline result. Supports json, csv, stl, 3mf in addition to standard formats. If omitted, raw result data is stored. */
+            outputs?: components["schemas"]["PipelineOutputOptions"];
         };
-        /** @description A single step in a sequential CAD pipeline. Steps can reference outputs of earlier steps via $ref. */
+        /** @description A pipeline step — either a plain operation, a map (iteration), or a choice (conditional). */
+        PipelineAnyStep: components["schemas"]["MapStep"] | components["schemas"]["ChoiceStep"] | components["schemas"]["PipelineStep"];
+        /** @description Iterate over an array, executing sub-steps for each element. Produces an array of results (or a reduced value). */
+        MapStep: {
+            /**
+             * @description Declares this step as a map (iteration) step
+             * @constant
+             */
+            type: "map";
+            /** @description Source array to iterate over. Typically a '$ref:N' reference to a previous step that produced an array. */
+            items: unknown;
+            /** @description Sub-steps to execute for each item. Use '$item' for the current element, '$index' for the iteration number. */
+            steps: components["schemas"]["PipelineStep"][];
+            /** @description Optional sub-steps to combine map results. Use '$mapResult' to reference the collected array of iteration outputs. */
+            reduce?: components["schemas"]["PipelineStep"][];
+        };
+        /** @description A single step in a sequential CAD pipeline. Steps can reference outputs of earlier steps via $ref or input files via $file. */
         PipelineStep: {
             /** @description Fully-qualified CAD operation identifier (e.g. 'occt.shapes.solid.createSphere'). Supports OCCT, Manifold, JSCAD, and vector/math operations. */
             operation: string;
-            /** @description Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index. */
+            /** @description Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index. Use '$file:N' to reference an input file's contents. */
             params: unknown;
+            /** @description When true, this step's result is included in a separate result.json output alongside any shape files. */
+            output?: boolean;
         };
-        /** @description Controls which output formats are generated and their quality settings */
-        OutputOptions: {
-            /** @description Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) — each produces a separate downloadable result. Do not include both 'step' and 'stpz' — only one STEP variant is supported per request. */
-            formats: components["schemas"]["OutputFormat"][];
-            /** @description Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. Only ignored when output is limited to step/stpz formats. */
+        /** @description Conditional execution — evaluate a condition and run the matching branch. */
+        ChoiceStep: {
+            /**
+             * @description Declares this step as a choice (conditional) step
+             * @constant
+             */
+            type: "choice";
+            /** @description Value to compare. Typically a '$ref:N' reference to a previous step result. */
+            value: unknown;
+            /** @description Comparison operator to apply between value and compareTo */
+            operator: components["schemas"]["ComparisonOperator"];
+            /** @description Value to compare against. Not required for 'exists' operator. */
+            compareTo?: unknown;
+            /** @description Sub-steps to execute when condition is true */
+            then: components["schemas"]["PipelineStep"][];
+            /** @description Sub-steps to execute when condition is false. If omitted, produces null. */
+            else?: components["schemas"]["PipelineStep"][];
+        };
+        /**
+         * @description Comparison operator: 'eq' (equal), 'neq' (not equal), 'gt' (greater than), 'gte' (greater or equal), 'lt' (less than), 'lte' (less or equal), 'exists' (value is not null/undefined).
+         * @enum {string}
+         */
+        ComparisonOperator: "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "exists";
+        /** @description Reference to an uploaded file to be used as input */
+        InputFileItem: {
+            /** @description ID of a previously uploaded file (from POST /files/upload) */
+            fileId: string;
+            /** @description Role identifier for the file (e.g. 'step-model', 'coordinates-csv') */
+            role: string;
+        };
+        /** @description Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf) beyond standard model outputs. */
+        PipelineOutputOptions: {
+            /** @description Output formats to generate. Supports standard CAD formats (step, stpz, gltf, decomposed-mesh) plus pipeline-specific formats (json, csv, stl, 3mf). */
+            formats: components["schemas"]["PipelineOutputFormat"][];
+            /** @description Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. */
             meshPrecision?: components["schemas"]["MeshPrecision"];
             /** @description Override tessellation precision specifically for glTF output. When set, takes precedence over meshPrecision for glTF only. */
             gltfMeshPrecision?: components["schemas"]["MeshPrecision"];
             /** @description Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up. */
             adjustYtoZ?: boolean;
+            /** @description Include the full pipeline definition in metadata.json. Defaults to true. Set to false to exclude it for smaller metadata. */
+            includePipelineInMetadata?: boolean;
         };
         /**
-         * @description Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive — choose one or the other, not both.
+         * @description Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh — Manifold/JSCAD only), '3mf' (3MF mesh package — Manifold/JSCAD only).
          * @enum {string}
          */
-        OutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf";
-        /** @description Mesh tessellation precision (lower = finer). Range: [0.005, 10] */
+        PipelineOutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf" | "json" | "csv" | "stl" | "3mf";
+        /**
+         * @description Mesh tessellation precision (lower = finer). Range: [0.0001, 10]
+         * @example 0.1
+         */
         MeshPrecision: number;
         /** @description Execute multiple independent Bitbybit CAD operations in parallel. Each item runs as a separate sub-task and can be polled individually. */
         CompoundExecuteBody: {
@@ -1521,12 +1576,7 @@ export interface components {
             /** @description Operation-specific parameters for this sub-task */
             params?: unknown;
             /** @description References to previously uploaded files to be used as inputs for this operation */
-            inputFiles?: {
-                /** @description ID of a previously uploaded file (from POST /files/upload) */
-                fileId: string;
-                /** @description Role identifier for the file (e.g. 'step-input'). Determines how the file is used during processing. */
-                role: string;
-            }[];
+            inputFiles?: components["schemas"]["InputFileItem"][];
             /** @description Per-item output format overrides. If omitted, the task produces raw result data. */
             outputFormats?: string[];
         };
@@ -1543,6 +1593,22 @@ export interface components {
             };
             outputs: components["schemas"]["OutputOptions"];
         };
+        /** @description Controls which output formats are generated and their quality settings */
+        OutputOptions: {
+            /** @description Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) — each produces a separate downloadable result. Do not include both 'step' and 'stpz' — only one STEP variant is supported per request. */
+            formats: components["schemas"]["OutputFormat"][];
+            /** @description Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. Only ignored when output is limited to step/stpz formats. */
+            meshPrecision?: components["schemas"]["MeshPrecision"];
+            /** @description Override tessellation precision specifically for glTF output. When set, takes precedence over meshPrecision for glTF only. */
+            gltfMeshPrecision?: components["schemas"]["MeshPrecision"];
+            /** @description Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up. */
+            adjustYtoZ?: boolean;
+        };
+        /**
+         * @description Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive — choose one or the other, not both.
+         * @enum {string}
+         */
+        OutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf";
         /** @description Submit multiple parameter variations of the same model for parallel generation */
         BatchModelSubmissionBody: {
             /** @description Array of parameter variations. Each item produces a separate output with the same model. */
@@ -1748,14 +1814,30 @@ export interface components {
             /** @description ISO 8601 timestamp */
             timestamp: string;
         };
-        /** @description Success envelope wrapping a Bitbybit CAD operation result */
-        CadOperationResponse: {
+        /** @description HTTP 202 response when a task is accepted for async processing */
+        TaskAcceptedResponse: {
             /** @constant */
             ok: true;
-            data: components["schemas"]["CadResultData"];
+            data: components["schemas"]["TaskCreatedResult"];
         };
-        /** @description Operation-specific result data. Shape varies by the CAD algorithm executed (OCCT, Manifold, JSCAD, or vector/math operations). */
-        CadResultData: unknown;
+        /** @description Returned when a CAD task is accepted. Poll the statusUrl to track progress. */
+        TaskCreatedResult: {
+            /**
+             * Format: uuid
+             * @description Unique task identifier — use this to poll for status and retrieve results
+             */
+            taskId: string;
+            /**
+             * @description Initial task status (always 'queued' upon creation)
+             * @constant
+             */
+            status: "queued";
+            /**
+             * @description Relative URL to poll for task status updates
+             * @example /api/v1/tasks/{taskId}
+             */
+            statusUrl: string;
+        };
         /** @description Standard error envelope */
         ErrorResponse: {
             /** @constant */
@@ -1776,6 +1858,48 @@ export interface components {
             /** @description Request ID for tracing */
             requestId?: string;
         };
+        /** @description HTTP 202 response when a compound (parallel) task is accepted */
+        CompoundTaskAcceptedResponse: {
+            /** @constant */
+            ok: true;
+            data: components["schemas"]["CompoundTaskCreatedResult"];
+        };
+        /** @description Returned when a compound (parallel) task is accepted. Contains initial status for all sub-tasks. */
+        CompoundTaskCreatedResult: {
+            /** @description Parent compound task ID for tracking overall progress */
+            taskId: string;
+            /** @constant */
+            kind: "compound";
+            /** @description Total number of sub-tasks created (one per item in the request) */
+            subTaskCount: number;
+            /**
+             * @description Relative URL to poll the parent task status
+             * @example /api/v1/tasks/{taskId}
+             */
+            statusUrl: string;
+            subTasks: components["schemas"]["SubTaskSummary"][];
+        };
+        /** @description Status summary for one sub-task within a compound (parallel) task */
+        SubTaskSummary: {
+            /** @description Unique identifier for this sub-task (can be polled individually) */
+            taskId: string;
+            /** @description Zero-based position of this sub-task within the compound */
+            index: number;
+            status: components["schemas"]["TaskStatus"];
+            /** @description Completion percentage (0–100) or null if not yet started */
+            progress: number | null;
+            /** @description Actual compute time in milliseconds (null until completed) */
+            computeMs: number | null;
+            /** @description Error message if sub-task failed, null otherwise */
+            error: string | null;
+            /** @description Available output format keys (e.g. ['glb', 'stpz']) for downloading results */
+            downloadFormats: string[];
+        };
+        /**
+         * @description Task lifecycle state: waiting (pending dependencies), queued (in queue), processing (actively computing), completed (result available), failed (error occurred), cancelled (user-cancelled), expired (result TTL exceeded)
+         * @enum {string}
+         */
+        TaskStatus: "waiting" | "queued" | "processing" | "completed" | "failed" | "cancelled" | "expired";
         /** @description Success envelope containing the list of available models */
         ModelListResponse: {
             /** @constant */
@@ -1835,72 +1959,6 @@ export interface components {
          * @enum {string}
          */
         ModelParamApiType: "number" | "integer" | "boolean" | "array";
-        /** @description HTTP 202 response when a task is accepted for async processing */
-        TaskAcceptedResponse: {
-            /** @constant */
-            ok: true;
-            data: components["schemas"]["TaskCreatedResult"];
-        };
-        /** @description Returned when a CAD task is accepted. Poll the statusUrl to track progress. */
-        TaskCreatedResult: {
-            /**
-             * Format: uuid
-             * @description Unique task identifier — use this to poll for status and retrieve results
-             */
-            taskId: string;
-            /**
-             * @description Initial task status (always 'queued' upon creation)
-             * @constant
-             */
-            status: "queued";
-            /**
-             * @description Relative URL to poll for task status updates
-             * @example /api/v1/tasks/{taskId}
-             */
-            statusUrl: string;
-        };
-        /** @description HTTP 202 response when a compound (parallel) task is accepted */
-        CompoundTaskAcceptedResponse: {
-            /** @constant */
-            ok: true;
-            data: components["schemas"]["CompoundTaskCreatedResult"];
-        };
-        /** @description Returned when a compound (parallel) task is accepted. Contains initial status for all sub-tasks. */
-        CompoundTaskCreatedResult: {
-            /** @description Parent compound task ID for tracking overall progress */
-            taskId: string;
-            /** @constant */
-            kind: "compound";
-            /** @description Total number of sub-tasks created (one per item in the request) */
-            subTaskCount: number;
-            /**
-             * @description Relative URL to poll the parent task status
-             * @example /api/v1/tasks/{taskId}
-             */
-            statusUrl: string;
-            subTasks: components["schemas"]["SubTaskSummary"][];
-        };
-        /** @description Status summary for one sub-task within a compound (parallel) task */
-        SubTaskSummary: {
-            /** @description Unique identifier for this sub-task (can be polled individually) */
-            taskId: string;
-            /** @description Zero-based position of this sub-task within the compound */
-            index: number;
-            status: components["schemas"]["TaskStatus"];
-            /** @description Completion percentage (0–100) or null if not yet started */
-            progress: number | null;
-            /** @description Actual compute time in milliseconds (null until completed) */
-            computeMs: number | null;
-            /** @description Error message if sub-task failed, null otherwise */
-            error: string | null;
-            /** @description Available output format keys (e.g. ['glb', 'stpz']) for downloading results */
-            downloadFormats: string[];
-        };
-        /**
-         * @description Task lifecycle state: waiting (pending dependencies), queued (in queue), processing (actively computing), completed (result available), failed (error occurred), cancelled (user-cancelled), expired (result TTL exceeded)
-         * @enum {string}
-         */
-        TaskStatus: "waiting" | "queued" | "processing" | "completed" | "failed" | "cancelled" | "expired";
         /** @description Success envelope containing a single model's definition */
         ModelDefinitionResponse: {
             /** @constant */

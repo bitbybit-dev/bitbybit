@@ -32,6 +32,51 @@ export const schemaBundle = {
         "outputs"
       ]
     },
+    "ChoiceStep": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "choice"
+        },
+        "value": {},
+        "operator": {
+          "$ref": "#/$defs/ComparisonOperator"
+        },
+        "compareTo": {},
+        "then": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PipelineStep"
+          }
+        },
+        "else": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PipelineStep"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "value",
+        "operator",
+        "then"
+      ]
+    },
+    "ComparisonOperator": {
+      "type": "string",
+      "enum": [
+        "eq",
+        "neq",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+        "exists"
+      ]
+    },
     "CompoundExecuteBody": {
       "type": "object",
       "properties": {
@@ -65,22 +110,7 @@ export const schemaBundle = {
         "inputFiles": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "fileId": {
-                "type": "string",
-                "minLength": 1
-              },
-              "role": {
-                "type": "string",
-                "minLength": 1
-              }
-            },
-            "required": [
-              "fileId",
-              "role"
-            ],
-            "additionalProperties": false
+            "$ref": "#/$defs/InputFileItem"
           }
         },
         "outputFormats": {
@@ -362,6 +392,52 @@ export const schemaBundle = {
         "trs"
       ]
     },
+    "InputFileItem": {
+      "type": "object",
+      "properties": {
+        "fileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "fileId",
+        "role"
+      ],
+      "additionalProperties": false
+    },
+    "MapStep": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "map"
+        },
+        "items": {},
+        "steps": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PipelineStep"
+          }
+        },
+        "reduce": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PipelineStep"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "items",
+        "steps"
+      ]
+    },
     "MeshAngle": {
       "type": "number",
       "minimum": 0.01,
@@ -369,8 +445,9 @@ export const schemaBundle = {
     },
     "MeshPrecision": {
       "type": "number",
-      "minimum": 0.005,
-      "maximum": 10
+      "minimum": 0.0001,
+      "maximum": 10,
+      "example": 0.1
     },
     "ModelSubmissionBody": {
       "type": "object",
@@ -520,6 +597,19 @@ export const schemaBundle = {
       },
       "additionalProperties": false
     },
+    "PipelineAnyStep": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MapStep"
+        },
+        {
+          "$ref": "#/$defs/ChoiceStep"
+        },
+        {
+          "$ref": "#/$defs/PipelineStep"
+        }
+      ]
+    },
     "PipelineBody": {
       "type": "object",
       "properties": {
@@ -528,15 +618,63 @@ export const schemaBundle = {
           "maxItems": 50,
           "type": "array",
           "items": {
-            "$ref": "#/$defs/PipelineStep"
+            "$ref": "#/$defs/PipelineAnyStep"
+          }
+        },
+        "inputFiles": {
+          "maxItems": 5,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InputFileItem"
           }
         },
         "outputs": {
-          "$ref": "#/$defs/OutputOptions"
+          "$ref": "#/$defs/PipelineOutputOptions"
         }
       },
       "required": [
         "steps"
+      ],
+      "additionalProperties": false
+    },
+    "PipelineOutputFormat": {
+      "type": "string",
+      "enum": [
+        "step",
+        "stpz",
+        "decomposed-mesh",
+        "gltf",
+        "json",
+        "csv",
+        "stl",
+        "3mf"
+      ]
+    },
+    "PipelineOutputOptions": {
+      "type": "object",
+      "properties": {
+        "formats": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PipelineOutputFormat"
+          }
+        },
+        "meshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "gltfMeshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "adjustYtoZ": {
+          "type": "boolean"
+        },
+        "includePipelineInMetadata": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "formats"
       ],
       "additionalProperties": false
     },
@@ -547,7 +685,10 @@ export const schemaBundle = {
           "type": "string",
           "minLength": 1
         },
-        "params": {}
+        "params": {},
+        "output": {
+          "type": "boolean"
+        }
       },
       "required": [
         "operation",

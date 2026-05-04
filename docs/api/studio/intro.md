@@ -30,7 +30,7 @@ A simple visual pipeline builder designed to illustrate how CAD pipelines work. 
 - **Transforms** — Translate, Scale
 - **Fillets** — Fillet Edges, Chamfer Edges
 
-Steps can reference each other's outputs, forming a DAG-style pipeline. The goal isn't to replace a full CAD tool — it's to show you how chained operations, output references, and format selection work so you can build real pipelines via the API or SDK with confidence.
+Steps can reference each other's outputs, forming a DAG-style pipeline. The goal isn't to replace a full CAD tool — it's to show you how chained operations, output references, and format selection work so you can build real pipelines via the API or SDK with confidence. For a full guide on pipeline features (Map, Choice, file inputs, output formats), see [Pipelines](/api/sdk/typescript/pipelines).
 
 ### Task Management
 

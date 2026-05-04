@@ -10,14 +10,14 @@ import type { components, paths } from "./generated.js";
 
 /** Submit multiple parameter variations of the same model for parallel generation */
 export type BatchModelSubmissionBody = components["schemas"]["BatchModelSubmissionBody"];
-/** Success envelope wrapping a Bitbybit CAD operation result */
-export type CadOperationResponse = components["schemas"]["CadOperationResponse"];
-/** Operation-specific result data. Shape varies by the CAD algorithm executed (OCCT, Manifold, JSCAD, or vector/math operations). */
-export type CadResultData = components["schemas"]["CadResultData"];
 /** Confirmation that a task was successfully cancelled */
 export type CancelResult = components["schemas"]["CancelResult"];
 /** Success response for task cancellation */
 export type CancelTaskResponse = components["schemas"]["CancelTaskResponse"];
+/** Conditional execution — evaluate a condition and run the matching branch. */
+export type ChoiceStep = components["schemas"]["ChoiceStep"];
+/** Comparison operator: 'eq' (equal), 'neq' (not equal), 'gt' (greater than), 'gte' (greater or equal), 'lt' (less than), 'lte' (less or equal), 'exists' (value is not null/undefined). */
+export type ComparisonOperator = components["schemas"]["ComparisonOperator"];
 /** Execute multiple independent Bitbybit CAD operations in parallel. Each item runs as a separate sub-task and can be polled individually. */
 export type CompoundExecuteBody = components["schemas"]["CompoundExecuteBody"];
 /** A single operation within a compound (parallel) task. Each item runs independently. */
@@ -74,9 +74,13 @@ export type GltfTransformFormat = components["schemas"]["GltfTransformFormat"];
 export type HealthResponse = components["schemas"]["HealthResponse"];
 /** API health check result indicating overall system status */
 export type HealthStatus = components["schemas"]["HealthStatus"];
+/** Reference to an uploaded file to be used as input */
+export type InputFileItem = components["schemas"]["InputFileItem"];
+/** Iterate over an array, executing sub-steps for each element. Produces an array of results (or a reduced value). */
+export type MapStep = components["schemas"]["MapStep"];
 /** Mesh angular deflection in radians. Range: [0.01, π] */
 export type MeshAngle = components["schemas"]["MeshAngle"];
-/** Mesh tessellation precision (lower = finer). Range: [0.005, 10] */
+/** Mesh tessellation precision (lower = finer). Range: [0.0001, 10] */
 export type MeshPrecision = components["schemas"]["MeshPrecision"];
 /** Definitions for multiple models in a single response */
 export type ModelBatchDefinitions = components["schemas"]["ModelBatchDefinitions"];
@@ -104,9 +108,15 @@ export type OutputOptions = components["schemas"]["OutputOptions"];
 export type PhoneNestBody = components["schemas"]["PhoneNestBody"];
 /** Phone Nest model parameters — all optional, sane defaults apply */
 export type PhoneNestParams = components["schemas"]["PhoneNestParams"];
-/** Execute a chain of Bitbybit CAD operations sequentially. Each step can reference earlier step outputs via '$ref:N'. The final step's output is stored as the task result. */
+/** A pipeline step — either a plain operation, a map (iteration), or a choice (conditional). */
+export type PipelineAnyStep = components["schemas"]["PipelineAnyStep"];
+/** Execute a chain of Bitbybit CAD operations sequentially. Supports $ref:N step references, $file:N file inputs, map iteration, and choice conditionals. */
 export type PipelineBody = components["schemas"]["PipelineBody"];
-/** A single step in a sequential CAD pipeline. Steps can reference outputs of earlier steps via $ref. */
+/** Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh — Manifold/JSCAD only), '3mf' (3MF mesh package — Manifold/JSCAD only). */
+export type PipelineOutputFormat = components["schemas"]["PipelineOutputFormat"];
+/** Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf) beyond standard model outputs. */
+export type PipelineOutputOptions = components["schemas"]["PipelineOutputOptions"];
+/** A single step in a sequential CAD pipeline. Steps can reference outputs of earlier steps via $ref or input files via $file. */
 export type PipelineStep = components["schemas"]["PipelineStep"];
 /** 3D point as [x, y, z] tuple, each coordinate in [-1000, 1000] */
 export type Point3 = components["schemas"]["Point3"];
