@@ -110,8 +110,8 @@ export function createOcctWorkerFromCDN(cdnUrl?: string, loadFonts?: string[], a
     const worker = new Worker(workerUrl, { type: "module", name: "OCC_WORKER" });
         URL.revokeObjectURL(workerUrl);
     
-    // Pass empty array if loadFonts is undefined to avoid loading all fonts by default
-    worker.postMessage({ type: "initialise", loadFonts: loadFonts ?? [] });
+    // Pass cdnUrl so the worker can override GlobalCDNProvider before loading WASM
+    worker.postMessage({ type: "initialise", loadFonts: loadFonts ?? [], cdnUrl: baseUrl });
     return worker;
 }
 
@@ -146,6 +146,8 @@ export function createManifoldWorkerFromCDN(cdnUrl?: string): Worker {
     const workerUrl = getClassicWorkerURL(scriptUrl);
     const worker = new Worker(workerUrl, { name: "MANIFOLD_WORKER" });
     URL.revokeObjectURL(workerUrl);
+    // Pass cdnUrl so the worker can override GlobalCDNProvider before loading WASM
+    worker.postMessage({ type: "initialise", cdnUrl: baseUrl });
     return worker;
 }
 
