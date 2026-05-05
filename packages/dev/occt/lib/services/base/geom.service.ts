@@ -25,6 +25,7 @@ export class GeomService {
         const gpPnt = this.entitiesService.gpPnt([0, 0, 0]);
         const param = this.vecHelper.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
         curve.D0(param, gpPnt);
+        console.log(curve);
         const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
         gpPnt.delete();
         return pt;
