@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/threejs",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "Bit By Bit Developers THREEJS CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {
@@ -54,8 +54,8 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "@bitbybit-dev/core": "1.0.0-rc.1",
-    "three": "0.182.0"
+    "@bitbybit-dev/core": "1.0.0-rc.2",
+    "three": "0.184.0"
   },
   "devDependencies": {
     "@babel/core": "7.28.6",
@@ -63,7 +63,7 @@
     "@babel/preset-typescript": "7.28.5",
     "@testing-library/jest-dom": "6.9.1",
     "@types/jest": "30.0.0",
-    "@types/three": "0.182.0",
+    "@types/three": "0.184.0",
     "babel-jest": "30.2.0",
     "jest": "30.2.0",
     "jest-environment-jsdom": "30.2.0",

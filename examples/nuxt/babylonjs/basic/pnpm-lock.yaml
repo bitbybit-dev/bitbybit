@@ -1973,7 +1973,7 @@ packages:
     resolution: {integrity: sha512-BSLE3HnV2syZ0FK0iMA/yUGplUeMmNz4AW5fnTunbCIqZi4vG3WjJT9FHMy5D69xmAYBHXQhJdALdpwVxV501A==}
     engines: {node: '>=6'}
 
-  is-core-module@2.15.1:
+  is-core-module@2.18.1:
     resolution: {integrity: sha512-z0vtXSwucUJtANQWldhbtbt7BnL0vxiFjIdDLAatwhDYty2bad6s+rijD6Ri4YuYJubLzIJLUidCh09e1djEVQ==}
     engines: {node: '>= 0.4'}
 
@@ -3247,7 +3247,7 @@ packages:
     engines: {node: '>=12'}
     hasBin: true
     peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
+      '@vue/composition-api': ^1.0.0-rc.2
       vue: ^3.0.0-0 || ^2.6.0
     peerDependenciesMeta:
       '@vue/composition-api':
@@ -5415,7 +5415,7 @@ snapshots:
     dependencies:
       builtin-modules: 3.3.0
 
-  is-core-module@2.15.1:
+  is-core-module@2.18.1:
     dependencies:
       hasown: 2.0.2
 
@@ -6272,7 +6272,7 @@ snapshots:
 
   resolve@1.22.8:
     dependencies:
-      is-core-module: 2.15.1
+      is-core-module: 2.18.1
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
 
