@@ -1,6 +1,6 @@
 # Bitbybit CAD Cloud API — Example Projects
 
-This folder contains a **shared React frontend** and **four interchangeable backend implementations** that demonstrate how to integrate the Bitbybit CAD Cloud API into a web application.
+This folder contains a **shared React frontend** and **five interchangeable backend implementations** that demonstrate how to integrate the Bitbybit CAD Cloud API into a web application.
 
 ## Architecture
 
@@ -12,7 +12,7 @@ This folder contains a **shared React frontend** and **four interchangeable back
 └─────────────────────────────┘        └─────────────────────────────┘
 ```
 
-The frontend never calls the Bitbybit API directly — your **API key stays on the server**. Vite's dev proxy forwards `/api/*` requests to `localhost:3000`, so the frontend works identically with any of the four backends.
+The frontend never calls the Bitbybit API directly — your **API key stays on the server**. Vite's dev proxy forwards `/api/*` requests to `localhost:3000`, so the frontend works identically with any of the five backends.
 
 ## Backend Variants
 
@@ -22,8 +22,9 @@ The frontend never calls the Bitbybit API directly — your **API key stays on t
 | `hono-sdk/` | Hono (Cloudflare Workers) | TypeScript SDK | Uses `@bitbybit-dev/cad-cloud-sdk` with client-side validation |
 | `nodejs-rest/` | Express 5 (Node.js) | Raw REST | Direct `fetch` calls to the Bitbybit REST API |
 | `nodejs-sdk/` | Express 5 (Node.js) | TypeScript SDK | Uses `@bitbybit-dev/cad-cloud-sdk` with client-side validation |
+| `dotnet-rest/` | ASP.NET Core (.NET 10) | Raw REST | Direct `HttpClient` calls to the Bitbybit REST API |
 
-All four backends expose the same `/api/*` routes, so the frontend is completely interchangeable between them.
+All five backends expose the same `/api/*` routes, so the frontend is completely interchangeable between them.
 
 ### REST vs SDK
 
@@ -32,7 +33,8 @@ All four backends expose the same `/api/*` routes, so the frontend is completely
 
 ## Prerequisites
 
-- **Node.js** ≥ 20
+- **Node.js** ≥ 20 (for the frontend and Node.js/Hono backends)
+- **.NET** ≥ 10 (only for the `dotnet-rest` backend)
 - A **Bitbybit API key** — get one from [bitbybit.dev](https://bitbybit.dev)
 - For Hono backends: **Wrangler** CLI (installed as a dev dependency)
 
@@ -63,12 +65,32 @@ BITBYBIT_API_KEY=your-api-key-here
 BITBYBIT_API_URL=https://api.bitbybit.dev
 ```
 
+**For the .NET backend** (`dotnet-rest/`):
+
+Edit `appsettings.Development.json` (gitignored):
+
+```json
+{
+  "Bitbybit": {
+    "ApiKey": "your-api-key-here",
+    "ApiUrl": "https://api.bitbybit.dev"
+  }
+}
+```
+
 ### 2. Install dependencies and start the backend
 
 ```bash
 cd nodejs-sdk          # or whichever backend you chose
 npm install
 npm run dev            # starts on port 3000
+```
+
+**For the .NET backend:**
+
+```bash
+cd dotnet-rest
+dotnet run             # starts on port 3000
 ```
 
 ### 3. Start the frontend (in a separate terminal)
@@ -142,6 +164,12 @@ nodejs-sdk/                  # Express backend (SDK)
 │   ├── bitbybit-client.ts   # API calls via BitbybitClient SDK
 │   └── types.ts
 └── package.json
+
+dotnet-rest/                 # ASP.NET Core backend (raw HttpClient)
+├── Program.cs               # Minimal API routes
+├── BitbybitClient.cs        # API calls via HttpClient + polling
+├── appsettings.json         # Config (API key in Development override)
+└── dotnet-rest.csproj       # .NET project file
 ```
 
 ## API Routes
@@ -164,6 +192,6 @@ All backends expose these routes (consumed by the frontend):
 ## Tips
 
 - **Switching backends**: Stop the current backend, `cd` into a different one, run `npm run dev`. The frontend doesn't need to restart.
-- **Environment variables**: Node.js backends use `.env`, Hono backends use `.dev.vars`.
+- **Environment variables**: Node.js backends use `.env`, Hono backends use `.dev.vars`, .NET uses `appsettings.Development.json`.
 - **CORS**: Not an issue in development because Vite proxies `/api` requests. In production, configure CORS on your backend or serve the frontend from the same origin.
 - **File uploads**: The frontend sends files as `multipart/form-data`. The backend uploads them to Bitbybit via a 3-step presigned URL flow, then passes the `fileId` to the pipeline.

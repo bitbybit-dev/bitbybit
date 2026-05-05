@@ -2,13 +2,13 @@
 sidebar_position: 2
 title: Example Projects
 sidebar_label: Examples
-description: "Run the Bitbybit CAD Cloud API example projects locally — React frontend with four interchangeable backend implementations."
+description: "Run the Bitbybit CAD Cloud API example projects locally — React frontend with five interchangeable backend implementations (Node.js, Hono, .NET)."
 tags: [examples, quickstart, api, react, threejs]
 ---
 
 # Example Projects
 
-The SDK ships with a complete set of working examples: a **shared React frontend** and **four interchangeable backend implementations**. They show how to integrate the Bitbybit CAD Cloud API into a real web application — from single CAD operations to multi-step pipelines with file uploads.
+The SDK ships with a complete set of working examples: a **shared React frontend** and **five interchangeable backend implementations**. They show how to integrate the Bitbybit CAD Cloud API into a real web application — from single CAD operations to multi-step pipelines with file uploads.
 
 :::tip Source code
 All examples live in the [`examples/api/`](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api) folder of the repository.
@@ -21,11 +21,12 @@ All examples live in the [`examples/api/`](https://github.com/bitbybit-dev/bitby
 │        frontend/            │        │  (choose one backend)       │
 │  React 19 + Vite + Three.js │──/api──▶  hono-rest | hono-sdk      │──▶  api.bitbybit.dev
 │  Port 5173                  │ proxy  │  nodejs-rest | nodejs-sdk   │
+│                             │        │  dotnet-rest               │
 └─────────────────────────────┘        │  Port 3000                  │
                                        └─────────────────────────────┘
 ```
 
-The frontend never talks to the Bitbybit API directly — your **API key stays on the server**. Vite's development proxy forwards all `/api/*` requests to `localhost:3000`, so the same frontend works with any of the four backends.
+The frontend never talks to the Bitbybit API directly — your **API key stays on the server**. Vite's development proxy forwards all `/api/*` requests to `localhost:3000`, so the same frontend works with any of the five backends.
 
 ## Backend Variants
 
@@ -35,6 +36,7 @@ The frontend never talks to the Bitbybit API directly — your **API key stays o
 | **hono-sdk** | [Hono](https://hono.dev) (Cloudflare Workers) | TypeScript SDK | Type-safe SDK with client-side validation |
 | **nodejs-rest** | [Express 5](https://expressjs.com) (Node.js) | Raw REST | Direct `fetch` calls — no SDK dependency |
 | **nodejs-sdk** | [Express 5](https://expressjs.com) (Node.js) | TypeScript SDK | Type-safe SDK with client-side validation |
+| **dotnet-rest** | [ASP.NET Core](https://learn.microsoft.com/aspnet/core) (.NET 10) | Raw REST | Direct `HttpClient` calls — no SDK dependency |
 
 ### REST vs SDK
 
@@ -47,7 +49,8 @@ The two approaches exist so you can choose the right level of abstraction:
 
 ### Prerequisites
 
-- **Node.js** ≥ 20
+- **Node.js** ≥ 20 (for the frontend and Node.js/Hono backends)
+- **.NET** ≥ 10 (only for the `dotnet-rest` backend)
 - A **Bitbybit API key** — get one from [bitbybit.dev](https://bitbybit.dev)
 
 ### 1. Configure your API key
@@ -66,12 +69,30 @@ BITBYBIT_API_KEY=your-api-key-here
 BITBYBIT_API_URL=https://api.bitbybit.dev
 ```
 
+**.NET backend** (`dotnet-rest/`) uses `appsettings.Development.json` (gitignored):
+
+```json title="dotnet-rest/appsettings.Development.json"
+{
+  "Bitbybit": {
+    "ApiKey": "your-api-key-here",
+    "ApiUrl": "https://api.bitbybit.dev"
+  }
+}
+```
+
 ### 2. Start a backend
 
 ```bash
 cd examples/api/nodejs-sdk   # or hono-sdk, nodejs-rest, hono-rest
 npm install
 npm run dev                   # starts on port 3000
+```
+
+For the .NET backend:
+
+```bash
+cd examples/api/dotnet-rest
+dotnet run                    # starts on port 3000
 ```
 
 ### 3. Start the frontend
@@ -118,7 +139,7 @@ For a deep dive into pipeline syntax and features, see the [Pipelines guide](/ap
 
 ## API Routes
 
-All four backends expose the same routes so the frontend is fully interchangeable:
+All five backends expose the same routes so the frontend is fully interchangeable:
 
 | Method | Route | Description |
 |--------|-------|-------------|
@@ -143,7 +164,7 @@ The API uses a **3-step presigned URL flow** for file uploads:
 2. `PUT` the raw bytes to the presigned URL.
 3. `POST /api/v1/files/:id/confirm` — confirm the upload.
 
-The SDK handles this automatically via `client.files.uploadBytes()`. The REST examples implement it manually in `bitbybit-client.ts`.
+The SDK handles this automatically via `client.files.uploadBytes()`. The REST examples implement it manually in `bitbybit-client.ts` (TypeScript) or `BitbybitClient.cs` (C#).
 
 ### Download Proxy
 
@@ -155,9 +176,10 @@ Three.js's `GLTFLoader` can't load cross-origin URLs without CORS headers. The b
 |-------------|------|-----------|
 | Node.js | `.env` | `BITBYBIT_API_KEY`, `BITBYBIT_API_URL` |
 | Hono | `.dev.vars` | `BITBYBIT_API_KEY`, `BITBYBIT_API_URL` |
+| .NET | `appsettings.Development.json` | `Bitbybit:ApiKey`, `Bitbybit:ApiUrl` |
 
 :::warning Security
-Never commit your API key to version control. Both `.env` and `.dev.vars` are listed in `.gitignore`.
+Never commit your API key to version control. `.env`, `.dev.vars`, and `appsettings.Development.json` are all listed in `.gitignore`.
 :::
 
 ## Project Structure
@@ -185,8 +207,13 @@ examples/api/
 │       ├── index.ts          # Express routes
 │       └── bitbybit-client.ts
 │
-└── nodejs-sdk/               # Express 5 (SDK)
-    └── src/
-        ├── index.ts          # Express routes + validation error handling
-        └── bitbybit-client.ts
+├── nodejs-sdk/               # Express 5 (SDK)
+│   └── src/
+│       ├── index.ts          # Express routes + validation error handling
+│       └── bitbybit-client.ts
+│
+└── dotnet-rest/              # ASP.NET Core (.NET 10, raw HttpClient)
+    ├── Program.cs            # Minimal API routes
+    ├── BitbybitClient.cs     # API calls via HttpClient + polling
+    └── appsettings.json      # Config (API key in Development override)
 ```
