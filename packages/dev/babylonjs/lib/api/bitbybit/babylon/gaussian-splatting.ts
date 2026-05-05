@@ -36,7 +36,7 @@ export class BabylonGaussianSplatting {
      * @shortname clone splat
      * @disposableOutput true
      */
-    clone(inputs: Inputs.BabylonGaussianSplatting.GaussianSplattingMeshDto): BABYLON.GaussianSplattingMesh {
+    clone(inputs: Inputs.BabylonGaussianSplatting.GaussianSplattingMeshDto): BABYLON.GaussianSplattingMeshBase {
         return inputs.babylonMesh.clone(`gaussian-splatting-${Math.random()}`);
     }
 

@@ -535,7 +535,7 @@ export namespace Math {
         }
         /**
          * Arithmetic expression containing numbers, +, -, *, /, and parentheses
-         * @default "1+1"
+         * @default 1+1
          */
         expression = "1+1";
     }

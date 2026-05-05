@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/cad-cloud-sdk",
-    "version": "1.0.0-rc.1.1",
+    "version": "1.0.0-rc.2",
     "description": "Type-safe SDK for the Bitbybit CAD Cloud API — parametric models, CAD operations, file conversion, and task management",
     "author": "Bit By Bit Developers",
     "license": "MIT",
