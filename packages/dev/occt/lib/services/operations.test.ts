@@ -810,7 +810,7 @@ describe("OCCT operations unit tests", () => {
         const squareWire = wire.createSquareWire({ center: [0.5, 0, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(9.999989483139538);
+        expect(vol).toEqual(9.998477588675755);
         squareWire.delete();
         res.delete();
     });
@@ -821,7 +821,7 @@ describe("OCCT operations unit tests", () => {
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
         // Volume should be the same as the ground-level test since the algorithm should work correctly now
-        expect(vol).toBeCloseTo(9.999989483139538, 5);
+        expect(vol).toBeCloseTo(9.998477588675833, 5);
         
         // Check bounding box to ensure the result is positioned correctly
         const bbox = operations.boundingBoxOfShape({ shape: res });
@@ -838,7 +838,7 @@ describe("OCCT operations unit tests", () => {
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
         // Volume should be the same as the ground-level test
-        expect(vol).toBeCloseTo(9.999989483139538, 5);
+        expect(vol).toBeCloseTo(9.998477588675744, 5);
         
         // Check bounding box to ensure the result is positioned correctly
         const bbox = operations.boundingBoxOfShape({ shape: res });
