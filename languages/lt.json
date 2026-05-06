@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Konvertuoja Uint8Array į ArrayBuffer.",
     "uint8Array": "uint8 masyvas",
     "preview assembly hierarchy": "peržiūrėti occt surinkimo hierarchiją",
-    "bitbybit.previewAssemblyHierarchy": "peržiūrėti occt surinkimo hierarchiją"
+    "bitbybit.previewAssemblyHierarchy": "peržiūrėti occt surinkimo hierarchiją",
+    "meshRelative": "santykinis tinklelis",
+    "internalVerticesMode": "vidinių viršūnių režimas",
+    "controlSurfaceDeflection": "valdymo paviršiaus nuokrypis",
+    "bitbybit.math.evalArithmetic": "įvertinti aritmetiką",
+    "evalArithmetic": "įvertinti aritmetiką",
+    "bitbybit.math.evalArithmetic_description": "Saugiai įvertina paprastą aritmentinę išraišką, kurioje yra tik skaičiai, +, -, *, /, skliaustai ir tarpai. Naudoja shunting-yard algoritmą — be eval funkcijos. Pavyzdys: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "išraiška"
 }

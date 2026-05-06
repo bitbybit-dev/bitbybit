@@ -197,7 +197,6 @@ describe("OCCT shape unit tests", () => {
         f.SetInfinite(true);
         const res = shape.isInfinite({ shape: f });
         expect(res).toBe(true);
-        cylSurface.delete();
         f.delete();
     });
 

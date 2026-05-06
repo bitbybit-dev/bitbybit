@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Mengkonversi Uint8Array ke ArrayBuffer.",
     "uint8Array": "uint8 array",
     "preview assembly hierarchy": "pratinjau hierarki assembly occt",
-    "bitbybit.previewAssemblyHierarchy": "pratinjau hierarki assembly occt"
+    "bitbybit.previewAssemblyHierarchy": "pratinjau hierarki assembly occt",
+    "meshRelative": "mesh relatif",
+    "internalVerticesMode": "mode verteks internal",
+    "controlSurfaceDeflection": "defleksi permukaan kontrol",
+    "bitbybit.math.evalArithmetic": "evaluasi aritmatika",
+    "evalArithmetic": "evaluasi aritmatika",
+    "bitbybit.math.evalArithmetic_description": "Mengevaluasi dengan aman ekspresi aritmatika sederhana yang hanya berisi angka, +, -, *, /, tanda kurung, dan spasi. Menggunakan algoritma shunting-yard — tanpa fungsi eval. Contoh: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "ekspresi"
 }
