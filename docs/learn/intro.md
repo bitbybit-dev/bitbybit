@@ -36,9 +36,16 @@ To get started:
 *   We offer [**NPM packages**](/learn/npm-packages/intro) that you can incorporate into your own websites.
     *   *Note: These packages do not include our proprietary advanced algorithms or the models available in the 3D Models section.*
 *   Check out how to set up our algorithms with [**Three.JS**](/learn/npm-packages/threejs), [**Babylon.JS**](/learn/npm-packages/babylonjs) or [**PlayCanvas**](/learn/npm-packages/playcanvas). We include some complete powerful demos with explanations.
+*   Need server-side CAD? Our [**CAD Cloud API**](/api/cloud-api) lets you generate parametric models, convert STEP files to glTF, and run CAD kernel operations via HTTP from any backend. A [**TypeScript SDK**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) is available.
 *   Also consider our course: [**Introduction To Programming 3D In TypeScript**](https://bitbybit.dev/school/courses/introduction-to-programming-3d-in-typescript).
 *   Or, if you're familiar with BabylonJS: [**Bitbybit For BabylonJS Developers**](https://bitbybit.dev/school/courses/bitbybit-for-babylonjs-developers).
     These courses explore how our algorithms can create 3D CAD applications.
+
+### Do you sell on Shopify?
+
+Our [**3D Bits app for Shopify**](https://apps.shopify.com/3d-bits-1) lets you add interactive 3D product viewers, parametric configurators, and even Gaussian Splatting scans directly to your Shopify product pages — no coding required. Design your 3D experience in our editors, export it, and paste it into a product metafield. The app's theme extension handles the rest.
+
+*   Learn more in our [**3D Bits tutorials**](/learn/3d-bits/tutorials/videos-tutorials/set-up).
 
 ### Are you looking for ready-made 3D models?
 

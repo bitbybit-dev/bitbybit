@@ -27,7 +27,7 @@ We believe that for a true 3D metaverse to flourish, and for 3D literacy to beco
 **Our Mission:**
 We strongly believe that educated users of 3D experiences will become the next wave of creators and innovators. The knowledge of 3D programming needs to spread, and that's why "Bit By Bit Developers" exists. Our mission is to build the fundamental blocks of code that empower you to easily create 3D worlds with your own rules and forces of nature.
 
-We don't aim to reinvent the web but to leverage its best parts and standards. This includes providing **open-source NPM packages and runners** that allow developers to integrate our powerful geometry engine directly into their own websites and custom applications, truly embodying the web's spirit of interoperability and pushing 3D education and creativity forward.
+We don't aim to reinvent the web but to leverage its best parts and standards. This includes providing **open-source NPM packages and runners** that allow developers to integrate our powerful geometry engine directly into their own websites and custom applications, truly embodying the web's spirit of interoperability and pushing 3D education and creativity forward. We also provide managed **CAD Cloud infrastructure** so teams can run geometry operations server-side without maintaining their own compute, and a **3D Bits app for Shopify** that brings interactive 3D product experiences to e-commerce.
 
 ## Our Platform Components
 
@@ -37,6 +37,8 @@ Our platform is designed to provide a comprehensive environment for 3D creation,
 2.  **Cloud Services for Collaboration and Sharing**
 3.  **Online School for Structured Learning**
 4.  **NPM Packages & Runners for Custom Integration**
+5.  **CAD Cloud API for Server-Side Geometry**
+6.  **3D Bits App for Shopify**
 
 ### 1. 3D Model Configurators & Parametric Editors
 
@@ -93,6 +95,29 @@ Beyond our hosted platform, we empower developers to take our core technology in
 *   **Runners:** For even simpler integration of pre-built Bitbybit scripts or functionalities into web pages, we offer runners that can execute these scripts within a defined context on your site.
 
 This extensibility ensures that Bitbybit can be a foundational layer for a wide array of web-based 3D solutions, from educational tools in **STEM classrooms** to bespoke configurators on e-commerce sites.
+
+### 5. CAD Cloud API for Server-Side Geometry
+
+Not every 3D workflow belongs in the browser. Our **CAD Cloud API** provides fully managed compute infrastructure for running CAD kernel operations server-side. Submit a job via HTTP, poll for completion, and download the result — from any backend, in any programming language.
+
+*   **Parametric Model Generation:** Generate 3D models on demand using our library of parametric templates.
+*   **File Conversion:** Convert STEP files to glTF and other formats at scale.
+*   **CAD Operations:** Run boolean operations, fillets, transforms, and full CAD pipelines without managing OCCT or WASM yourself.
+*   **Bitbybit Studio:** A browser-based dashboard at [**studio.bitbybit.dev**](https://studio.bitbybit.dev) for managing API keys, testing models, converting files, and monitoring tasks.
+*   **TypeScript SDK:** The [`@bitbybit-dev/cad-cloud-sdk`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) package provides a convenient client for Node.js, Deno, Bun, and Cloudflare Workers.
+
+Learn more in our [**CAD Cloud API documentation**](/api/cloud-api).
+
+### 6. 3D Bits App for Shopify
+
+For Shopify merchants, our [**3D Bits app**](https://apps.shopify.com/3d-bits-1) brings interactive 3D experiences directly to product pages without any coding.
+
+*   **3D Product Viewers:** Display GLTF models, Gaussian Splatting scans, and other 3D assets on your storefront.
+*   **Parametric Configurators:** Let customers customize products in real time using CAD-powered configurators you design in our editors.
+*   **Theme App Extensions:** Drop pre-built blocks — **BITBYBIT RUNNER**, **BITBYBIT VIEWER**, and **BITBYBIT PREVIEW** — into your Shopify theme. No code changes to your theme are required.
+*   **Variant Integration:** Connect 3D scene changes to Shopify product variants and custom option apps for a seamless shopping experience.
+
+Get started with our [**3D Bits tutorials**](/learn/3d-bits/tutorials/videos-tutorials/set-up) or install the app from the [**Shopify App Store**](https://apps.shopify.com/3d-bits-1).
 
 ---
 

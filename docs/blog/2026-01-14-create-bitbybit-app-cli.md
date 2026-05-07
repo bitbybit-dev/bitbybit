@@ -71,6 +71,20 @@ PlayCanvas offers a fast and lightweight approach to WebGL development. It's des
 
 No matter which engine you choose, the Bitbybit geometry kernels work with all of them. You can create complex CAD geometry with OCCT and render it beautifully in any of these engines.
 
+## Cloud Projects: Server-Side CAD
+
+The CLI isn't just for frontend apps anymore. You can now scaffold **cloud** projects that pair a backend server with a React + Three.js frontend, connecting to our [CAD Cloud API](/api/cloud-api) for server-side model generation, STEP-to-glTF conversion, and CAD pipelines.
+
+Run the CLI and select the **cloud** app type when prompted. Then pick from five backend templates:
+
+- **Hono + SDK** — TypeScript SDK on Cloudflare Workers
+- **Hono + REST** — raw `fetch` on Cloudflare Workers
+- **Node.js + SDK** — TypeScript SDK on Express 5
+- **Node.js + REST** — raw `fetch` on Express 5
+- **.NET + REST** — `HttpClient` on ASP.NET Core (.NET 10)
+
+Your API key stays on the server, and the frontend proxies all requests through your backend. Add your key, run `npm install`, and you're building a full-stack CAD application.
+
 ## Why This Matters
 
 We believe that the future of CAD and 3D design is on the web. Browser-based tools are accessible to everyone, require no installation, and can run on virtually any device. But building these tools has been harder than it should be.
