@@ -1,6 +1,6 @@
 # @bitbybit-dev/create-app
 
-🚀 **CLI tool to scaffold Bit By Bit Developers 3D/CAD projects — browser-based frontend apps and CAD Cloud backend projects**
+🚀 **CLI tool to scaffold Bit By Bit Developers 3D/CAD projects - browser-based frontend apps and CAD Cloud backend projects**
 
 Create stunning 3D/CAD applications with ease using our powerful geometry kernels: OCCT (OpenCascade), JSCAD, and Manifold. Or scaffold a full-stack project that connects to our [CAD Cloud API](https://learn.bitbybit.dev/api/cloud-api) for server-side model generation and file conversion.
 
@@ -98,6 +98,8 @@ npm run dev
 
 ## Project Structure
 
+### Frontend Projects
+
 ```
 my-project/
 ├── index.html
@@ -111,12 +113,32 @@ my-project/
     └── vite-env.d.ts
 ```
 
+### Cloud Projects
+
+```
+my-cloud-project/
+├── README.md
+├── frontend/
+│   ├── src/
+│   │   ├── App.tsx
+│   │   ├── components/    # Three.js viewer, header, API key warning
+│   │   └── panels/        # Models and Pipelines UI panels
+│   ├── vite.config.ts     # Dev proxy: /api → localhost:3000
+│   └── package.json
+└── backend/
+    ├── src/
+    │   ├── index.ts           # Routes
+    │   └── bitbybit-client.ts # API calls
+    └── package.json
+```
+
 ## Links
 
 - 🌐 **Website**: [https://bitbybit.dev](https://bitbybit.dev)
 - 📚 **Documentation**: [https://bitbybit.dev/docs](https://bitbybit.dev/docs)
 - 💬 **Discord Community**: [https://discord.gg/GSe3VMe](https://discord.gg/GSe3VMe)
 - 🐛 **Issues**: [https://github.com/bitbybit-dev/bitbybit/issues](https://github.com/bitbybit-dev/bitbybit/issues)
+- 📦 **Monorepo**: [https://github.com/bitbybit-dev/bitbybit](https://github.com/bitbybit-dev/bitbybit)
 
 ## Support Us
 

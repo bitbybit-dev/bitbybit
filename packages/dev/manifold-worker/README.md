@@ -1,67 +1,99 @@
-## Bit By Bit Developers Manifold based CAD library in webworker
+# @bitbybit-dev/manifold-worker
 
-Visit [bitbybit.dev](https://bitbybit.dev) to use our full cloud platform.   
-Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
-Buy unique products from our [Crafts shop](https://crafts.bitbybit.dev) all designed with Bitbybit algorithms       
-Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1) also used in our Crafts shop   
+Non-blocking WebWorker wrapper for [@bitbybit-dev/manifold](https://www.npmjs.com/package/@bitbybit-dev/manifold) - run Manifold mesh boolean operations asynchronously without freezing the UI.
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This project exposes 3D algorithms based on manifold-3d 3D CAD kernel via webworker. Manifold project is developed by Emmett Lalish and Chun Kit LAM, you can find it on https://github.com/elalish/manifold. Bit By Bit Developers platform integrates this kernel into it's platform via this library. Currently we try to expose Manifold library 1:1 in terms of functionality through our structured API, but as time goes we will have more unique algorithms in this package, which will be tuned specifically to our users.
+## Overview
 
-This package should be used in browser based applications. If you want to use our manifold library in Node apps, consider checking @bitbybit-dev/manifold npm package, which this library wraps through webworker.
+This package exposes Manifold 3D algorithms from Bitbybit via a WebWorker, making all mesh boolean operations asynchronous and non-blocking. Use it for fast union, intersection, and difference operations on watertight geometry.
 
-## Github
-https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/manifold-worker
-## NPM
-https://www.npmjs.com/package/@bitbybit-dev/manifold-worker
+Designed for **browser environments**. For Node.js, use [@bitbybit-dev/manifold](https://www.npmjs.com/package/@bitbybit-dev/manifold) directly.
 
-## THREEJS Example Applications Using Manifold  
-[Manifold Sliced Mesh](https://app-store.bitbybit.dev/manifold-sliced-mesh/)   
-[Github Source Code](https://github.com/bitbybit-dev/app-examples/blob/main/webpack/threejs/src/code/manifold-sliced-mesh.ts)   
+## Quick Start
 
-## Other THREEJS Applications   
-[Vase](https://app-store.bitbybit.dev/vase)
-[Github source code](https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase)
+The fastest way to scaffold a project with Manifold pre-configured:
 
-## Other Example Applications
-[Laptop Holder](https://app-store.bitbybit.dev/laptop-holder)   
-[Github Source Code Angular](https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder)   
-[Github Source Code React](https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder)   
-  
-[Cup Configurator](https://app-store.bitbybit.dev/cup)    
-[Github Source Code](https://github.com/bitbybit-dev/app-examples/tree/main/react/cup)
+```bash
+npx @bitbybit-dev/create-app my-project --engine threejs
+cd my-project
+npm install
+npm run dev
+```
 
-## Closed Source Example Applications
-[Terrace Furniture](https://app-store.bitbybit.dev/terrace-furniture)
+This creates a complete Vite + TypeScript project with Manifold (via WebWorker), OCCT, and JSCAD kernels ready to use. [Learn more about the CLI](https://learn.bitbybit.dev/learn/npm-packages/intro).
 
-## Build package
+### Need Server-Side CAD?
+
+The CLI first asks you to choose between a **Frontend** app or a **CAD Cloud** app. Select "cloud" to scaffold a full-stack project with a backend (Hono on Cloudflare Workers, Node.js Express, or ASP.NET Core) and a React + Three.js frontend. Your API key stays on the server and the frontend proxies requests through your backend:
+
+```bash
+npx @bitbybit-dev/create-app my-cloud-project --type cloud
+```
+
+Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js + REST, or .NET + REST. Each includes ready-to-run examples with model generation, batch operations, and [CAD pipelines](https://learn.bitbybit.dev/api/sdk/typescript/pipelines). [Learn more](https://learn.bitbybit.dev/api/cloud-api).
+
+## Links
+
+| Resource | URL |
+|----------|-----|
+| **GitHub** | https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/manifold-worker |
+| **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
+| **NPM** | https://www.npmjs.com/package/@bitbybit-dev/manifold-worker |
+| **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/intro |
+| **Unit Test Coverage** | https://tests.bitbybit.dev/manifold |
+
+## Example Applications
+
+| App | Source Code |
+|-----|-------------|
+| [Manifold Sliced Mesh](https://app-store.bitbybit.dev/manifold-sliced-mesh) | [GitHub](https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase) |
+| [Hex Shell](https://learn.bitbybit.dev/learn/npm-packages/threejs/advanced-parametric-3d-model) | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/hex-shell) |
+| [Terrace Furniture](https://app-store.bitbybit.dev/terrace-furniture) (BabylonJS) | Closed source |
+
+## Development
+
+```bash
+# Build package
 npm run build-p
 
-## Run unit tests and generate test coverage
+# Run unit tests with coverage
 npm run test-c
 
-## Run live unit tests and generate test coverage on save
+# Run live unit tests with coverage on save
 npm run test-c-l
+```
 
-## Unit test coverage report online
-https://tests.bitbybit.dev/threejs
+## Bitbybit Platform
 
-## Media Channels
-Discord: https://discord.gg/GSe3VMe  
-Youtube: https://www.youtube.com/@bitbybitdev?sub_confirmation=1  
-Instagram: https://www.instagram.com/bitbybit.dev  
-Twitter: https://twitter.com/bitbybit_dev  
-LinkedIn: https://lnkd.in/gQjEQA2  
-Facebook: https://www.facebook.com/bitbybitdev  
-Medium: https://bitbybit-dev.medium.com/  
+Beyond NPM packages, Bitbybit offers:
 
-## Principles
-Bit By Bit Developers company will keep these core algorithms that you can find in this repository free and opensource for its users. These algorithms are based on other open-source projects, run and are deployed on the browser, thus there is no point of closing them down from public.
+- **[Visual Programming Editors](https://bitbybit.dev)** - Rete & Blockly drag-and-drop 3D modeling, plus a Monaco TypeScript editor  
+- **[CAD Cloud API](https://learn.bitbybit.dev/api/cloud-api)** - Build full [pipelines](https://learn.bitbybit.dev/api/sdk/typescript/pipelines) that compose all Bitbybit algorithms, where each step can reference outputs of previous steps. Supports parametric model generation, STEP-to-glTF conversion, and complex CAD workflows via HTTP  
+- **[Bitbybit Studio](https://studio.bitbybit.dev)** - A growing visual dashboard where API Key users can generate models, convert files, build [pipelines with a GUI](https://learn.bitbybit.dev/api/studio/intro), inspect tasks, and preview 3D results  
+- **[3D Bits for Shopify](https://apps.shopify.com/3d-bits-1)** - Interactive 3D product configurators for e-commerce  
+- **[Script Runners](https://learn.bitbybit.dev/learn/runners/intro)** - Execute visual scripts directly on your website  
+- **[AI-Assisted Development](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - Context files for GitHub Copilot, Claude, and ChatGPT  
+- **[Business & Enterprise](https://bitbybit.dev/b2b)** - We help businesses and enterprises develop custom applications and spin up optimized CAD tenant workflows on our managed servers  
 
-## About Bit By Bit Developers platform
-Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
+## Support the Project
+
+This package is part of the open-source Bitbybit ecosystem. Your subscription helps fund continued development.
+
+⭐ **[Subscribe - Silver or Gold plan](https://bitbybit.dev/auth/pick-plan)** | **[Get API Key for CAD Cloud](https://bitbybit.dev/auth/pick-plan?api-keys=true)**
+
+## Community
+
+- [Discord](https://discord.gg/GSe3VMe)  
+- [YouTube](https://www.youtube.com/@bitbybitdev?sub_confirmation=1)  
+- [LinkedIn](https://www.linkedin.com/company/bitbybit-dev)  
+- [X (Twitter)](https://x.com/bitbybit_dev)  
+- [Blog](https://learn.bitbybit.dev/blog)  
 
 ## Major Dependencies
-Manifold
-https://github.com/elalish/manifold
+
+[Manifold](https://github.com/elalish/manifold)
+
+## License
+
+MIT © [Bit By Bit Developers](https://bitbybit.dev)
