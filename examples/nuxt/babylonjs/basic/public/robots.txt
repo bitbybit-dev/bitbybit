@@ -1,1 +1,5 @@
+User-agent: *
+Disallow: /
+
+# Demo app — not meant for indexing.
 

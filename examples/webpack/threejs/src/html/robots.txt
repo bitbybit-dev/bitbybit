@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# app-store.bitbybit.dev hosts interactive demo apps embedded in iframes.
+# No content here is meant for search engine indexing.
