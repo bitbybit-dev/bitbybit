@@ -130,6 +130,11 @@ const config: Config = {
                 theme: {
                     customCss: "./src/css/custom.css",
                 },
+                sitemap: {
+                    lastmod: "date",
+                    changefreq: null,
+                    priority: null,
+                },
             } as Preset.Options,
         ],
     ],

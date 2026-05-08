@@ -53,6 +53,10 @@
     },
     "author": "Bit by bit developers",
     "license": "MIT",
+    "funding": {
+        "type": "corporate",
+        "url": "https://bitbybit.dev/auth/pick-plan"
+    },
     "types": "./index.d.ts",
     "type": "module",
     "dependencies": {

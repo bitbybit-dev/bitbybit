@@ -7,7 +7,7 @@ For full SDK documentation, see the [TypeScript SDK guide](https://learn.bitbybi
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) 18+
-- A Bitbybit API key — get one at [bitbybit.dev/auth/pick-plan](https://bitbybit.dev/auth/pick-plan)
+- A Bitbybit API key - get one at [bitbybit.dev/auth/pick-plan](https://bitbybit.dev/auth/pick-plan)
 
 ## Setup
 
@@ -49,8 +49,8 @@ npm run deploy
 
 ## How It Works
 
-1. **Frontend** (`/`) — A minimal Three.js page with buttons to generate models.
-2. **Backend** (`POST /api/generate`) — Uses `BitbybitClient` from the SDK to create a dragon cup model, automatically polls the task until complete, and returns a pre-signed GLB download URL.
+1. **Frontend** (`/`) - A minimal Three.js page with buttons to generate models.
+2. **Backend** (`POST /api/generate`) - Uses `BitbybitClient` from the SDK to create a dragon cup model, automatically polls the task until complete, and returns a pre-signed GLB download URL.
 3. **Frontend** loads the GLB URL into Three.js via `GLTFLoader`.
 
 ## Learn More

@@ -1,45 +1,108 @@
-## Bit By Bit Developers CAD library for PlayCanvas game engine
+# @bitbybit-dev/playcanvas
 
-Visit [bitbybit.dev](https://bitbybit.dev) to use our full cloud platform.   
-Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
-Buy unique products from our [Crafts shop](https://crafts.bitbybit.dev) all designed with Bitbybit algorithms       
-Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1) also used in our Crafts shop   
+[PlayCanvas](https://playcanvas.com/) game engine integration for [Bitbybit](https://bitbybit.dev) - draw and interact with CAD geometry from OCCT, JSCAD, and Manifold kernels directly in your PlayCanvas applications.
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This project exposes 3D algorithms of Bit By Bit Developers platform through PlayCanvas game engine. Code is open-sourced under MIT license.
+## Overview
 
-## Github
-https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/playcanvas
-## NPM
-https://www.npmjs.com/package/@bitbybit-dev/playcanvas
+This package connects Bitbybit's powerful CAD kernels to the PlayCanvas rendering engine. It includes `playcanvas` as a dependency, so you don't need to install PlayCanvas separately. Create parametric 3D models with professional CAD operations and render them with PlayCanvas's high-performance WebGL engine.
 
-## Build package
+## Quick Start
+
+The fastest way to scaffold a PlayCanvas + Bitbybit project:
+
+```bash
+npx @bitbybit-dev/create-app my-project --engine playcanvas
+cd my-project
+npm install
+npm run dev
+```
+
+This creates a complete Vite + TypeScript project with all three CAD kernels (OCCT, JSCAD, Manifold) pre-configured and rendering through PlayCanvas. [Learn more about the CLI](https://learn.bitbybit.dev/learn/npm-packages/intro).
+
+### Need Server-Side CAD?
+
+The CLI first asks you to choose between a **Frontend** app or a **CAD Cloud** app. Select "cloud" to scaffold a full-stack project with a backend (Hono on Cloudflare Workers, Node.js Express, or ASP.NET Core) and a React + Three.js frontend. Your API key stays on the server and the frontend proxies requests through your backend:
+
+```bash
+npx @bitbybit-dev/create-app my-cloud-project --type cloud
+```
+
+Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js + REST, or .NET + REST. Each includes ready-to-run examples with model generation, batch operations, and [CAD pipelines](https://learn.bitbybit.dev/api/sdk/typescript/pipelines). [Learn more](https://learn.bitbybit.dev/api/cloud-api).
+
+## Learn
+
+| Topic | Link |
+|-------|------|
+| **Quick Start Tutorial** | https://learn.bitbybit.dev/learn/npm-packages/playcanvas/start-with-playcanvas |
+| **About PlayCanvas Integration** | https://learn.bitbybit.dev/learn/npm-packages/playcanvas/about-playcanvas |
+| **Advanced Parametric Model** | https://learn.bitbybit.dev/learn/npm-packages/playcanvas/advanced-parametric-3d-model |
+| **Hex House Concept** | https://learn.bitbybit.dev/learn/npm-packages/playcanvas/hex-house-concept |
+| **PlayCanvas Engine Setup** | https://learn.bitbybit.dev/learn/getting-started/engines/playcanvas |
+| **AI-Assisted Development** | https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro |
+
+## Links
+
+| Resource | URL |
+|----------|-----|
+| **GitHub** | https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/playcanvas |
+| **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
+| **NPM** | https://www.npmjs.com/package/@bitbybit-dev/playcanvas |
+| **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/playcanvas/start-with-playcanvas |
+| **Unit Test Coverage** | https://tests.bitbybit.dev/playcanvas |
+
+## Example Applications
+
+| App | Source Code |
+|-----|-------------|
+| [Hex Shell](https://learn.bitbybit.dev/learn/npm-packages/threejs/advanced-parametric-3d-model) | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/playcanvas/starter-template) |
+| [Starter Template](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/playcanvas/starter-template) | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/playcanvas/starter-template) |
+| [Terrace Furniture](https://app-store.bitbybit.dev/terrace-furniture) (BabylonJS) | Closed source |
+
+## Development
+
+```bash
+# Build package
 npm run build-p
 
-## Run unit tests and generate test coverage
+# Run unit tests with coverage
 npm run test-c
 
-## Run live unit tests and generate test coverage on save
+# Run live unit tests with coverage on save
 npm run test-c-l
+```
 
-## Unit test coverage report online
-https://tests.bitbybit.dev/playcanvas
+## Bitbybit Platform
 
-## Media Channels
-Discord: https://discord.gg/GSe3VMe  
-Youtube: https://www.youtube.com/@bitbybitdev?sub_confirmation=1  
-Instagram: https://www.instagram.com/bitbybit.dev  
-Twitter: https://twitter.com/bitbybit_dev  
-LinkedIn: https://lnkd.in/gQjEQA2  
-Facebook: https://www.facebook.com/bitbybitdev  
-Medium: https://bitbybit-dev.medium.com/  
+Beyond NPM packages, Bitbybit offers:
 
-## Principles
-Bit By Bit Developers company will keep these core algorithms that you can find in this repository free and opensource for its users. These algorithms are based on other open-source projects, run and are deployed on the browser, thus there is no point of closing them down from public.
+- **[Visual Programming Editors](https://bitbybit.dev)** - Rete & Blockly drag-and-drop 3D modeling, plus a Monaco TypeScript editor  
+- **[CAD Cloud API](https://learn.bitbybit.dev/api/cloud-api)** - Build full [pipelines](https://learn.bitbybit.dev/api/sdk/typescript/pipelines) that compose all Bitbybit algorithms, where each step can reference outputs of previous steps. Supports parametric model generation, STEP-to-glTF conversion, and complex CAD workflows via HTTP  
+- **[Bitbybit Studio](https://studio.bitbybit.dev)** - A growing visual dashboard where API Key users can generate models, convert files, build [pipelines with a GUI](https://learn.bitbybit.dev/api/studio/intro), inspect tasks, and preview 3D results  
+- **[3D Bits for Shopify](https://apps.shopify.com/3d-bits-1)** - Interactive 3D product configurators for e-commerce  
+- **[Script Runners](https://learn.bitbybit.dev/learn/runners/intro)** - Execute visual scripts directly on your website  
+- **[AI-Assisted Development](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - Context files for GitHub Copilot, Claude, and ChatGPT  
+- **[Business & Enterprise](https://bitbybit.dev/b2b)** - We help businesses and enterprises develop custom applications and spin up optimized CAD tenant workflows on our managed servers  
 
-## About Bit By Bit Developers platform
-Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
+## Support the Project
+
+This package is part of the open-source Bitbybit ecosystem. Your subscription helps fund continued development.
+
+⭐ **[Subscribe - Silver or Gold plan](https://bitbybit.dev/auth/pick-plan)** | **[Get API Key for CAD Cloud](https://bitbybit.dev/auth/pick-plan?api-keys=true)**
+
+## Community
+
+- [Discord](https://discord.gg/GSe3VMe)  
+- [YouTube](https://www.youtube.com/@bitbybitdev?sub_confirmation=1)  
+- [LinkedIn](https://www.linkedin.com/company/bitbybit-dev)  
+- [X (Twitter)](https://x.com/bitbybit_dev)  
+- [Blog](https://learn.bitbybit.dev/blog)  
 
 ## Major Dependencies
-PlayCanvas, OpenCascade, JSCAD, Verbnurbs
+
+PlayCanvas, OpenCascade, JSCAD, Manifold, Verbnurbs
+
+## License
+
+MIT © [Bit By Bit Developers](https://bitbybit.dev)

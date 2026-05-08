@@ -1,4 +1,4 @@
-# Bitbybit CAD Cloud API — Example Projects
+# Bitbybit CAD Cloud API - Example Projects
 
 This folder contains a **shared React frontend** and **five interchangeable backend implementations** that demonstrate how to integrate the Bitbybit CAD Cloud API into a web application.
 
@@ -12,7 +12,7 @@ This folder contains a **shared React frontend** and **five interchangeable back
 └─────────────────────────────┘        └─────────────────────────────┘
 ```
 
-The frontend never calls the Bitbybit API directly — your **API key stays on the server**. Vite's dev proxy forwards `/api/*` requests to `localhost:3000`, so the frontend works identically with any of the five backends.
+The frontend never calls the Bitbybit API directly - your **API key stays on the server**. Vite's dev proxy forwards `/api/*` requests to `localhost:3000`, so the frontend works identically with any of the five backends.
 
 ## Backend Variants
 
@@ -35,7 +35,7 @@ All five backends expose the same `/api/*` routes, so the frontend is completely
 
 - **Node.js** ≥ 20 (for the frontend and Node.js/Hono backends)
 - **.NET** ≥ 10 (only for the `dotnet-rest` backend)
-- A **Bitbybit API key** — get one from [bitbybit.dev](https://bitbybit.dev)
+- A **Bitbybit API key** - get one from [bitbybit.dev](https://bitbybit.dev)
 - For Hono backends: **Wrangler** CLI (installed as a dev dependency)
 
 ## Quick Start
@@ -118,18 +118,18 @@ The app includes several pipeline examples accessible via dedicated buttons:
 
 | Pipeline | What it does |
 |----------|-------------|
-| **Translate → Union → Fillet** | Creates two boxes, translates one, unions them, fillets edges — demonstrates `$ref:N` step references |
-| **Map Cylinders** | Uses a `map` step to create cylinders at different positions — demonstrates iteration with `$item` and `$index` |
-| **Map Spheres** | Maps over an array of radii to create multiple spheres — demonstrates `$item` references |
-| **Choice** | Uses a `choice` step to conditionally create a box or cylinder — demonstrates branching logic |
-| **File Input** | Upload a STEP file, fillet its edges — demonstrates `$file:N` references and the file upload flow |
+| **Translate → Union → Fillet** | Creates two boxes, translates one, unions them, fillets edges - demonstrates `$ref:N` step references |
+| **Map Cylinders** | Uses a `map` step to create cylinders at different positions - demonstrates iteration with `$item` and `$index` |
+| **Map Spheres** | Maps over an array of radii to create multiple spheres - demonstrates `$item` references |
+| **Choice** | Uses a `choice` step to conditionally create a box or cylinder - demonstrates branching logic |
+| **File Input** | Upload a STEP file, fillet its edges - demonstrates `$file:N` references and the file upload flow |
 
 ## Project Structure
 
 ```
 frontend/
 ├── src/
-│   ├── App.tsx              # Main app — orchestrates panels
+│   ├── App.tsx              # Main app - orchestrates panels
 │   ├── panels/              # UI panels for each feature
 │   └── components/          # Three.js viewer, shared UI
 ├── vite.config.ts           # Dev proxy: /api → localhost:3000

@@ -1,6 +1,6 @@
 # Bitbybit Monorepo
 
-This git repo contains multiple bitbybit packages and code for core 3D algorithms of Bitbybit platform which are open-sourced under MIT license.
+Open-source 3D CAD algorithms for the web - MIT licensed. This monorepo contains all Bitbybit NPM packages plus example applications.
 
 # [FULL PLATFORM AT BITBYBIT.DEV](https://bitbybit.dev)   
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   
@@ -10,86 +10,107 @@ Essential introduction by Matas
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-## SUPPORT THE MISSION
-Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
-Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1) also used in our Crafts shop   
-Buy unique products from our [Crafts shop](https://crafts.bitbybit.dev) all designed with Bitbybit algorithms       
+## Quick Start
 
-Your contributions allow this project to exist.
+Scaffold a fully-configured 3D CAD project in seconds:
+
+```bash
+npx @bitbybit-dev/create-app my-project
+```
+
+The CLI first asks you to pick an **app type**:
+
+- **Frontend** - Browser-based 3D/CAD app. Choose a game engine (Three.js, Babylon.js, or PlayCanvas) and OCCT architecture (32-bit, 64-bit, or 64-bit MT). You get a Vite + TypeScript project with all three CAD kernels (OCCT, JSCAD, Manifold) pre-configured.
+- **CAD Cloud** - Full-stack project with server-side CAD via our [CAD Cloud API](https://learn.bitbybit.dev/api/cloud-api). Choose a backend template (Hono + SDK, Hono + REST, Node.js + SDK, Node.js + REST, or .NET + REST). You get a React + Three.js frontend that proxies requests through your backend - your API key never leaves the server.
+
+```bash
+cd my-project
+npm install
+npm run dev
+```
+
+## Support the Mission
+
+⭐ **[Subscribe - Silver or Gold plan](https://bitbybit.dev/auth/pick-plan)** | **[Get API Key for CAD Cloud](https://bitbybit.dev/auth/pick-plan?api-keys=true)**
+
+Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1) - interactive 3D product configurators for e-commerce.
+
+Your subscription directly funds continued open-source development of these packages.
 
 ## Important Topics
-[Getting Started With Bitbybit Platform](https://learn.bitbybit.dev/learn/getting-started/overview)     
-[Integrate With ThreeJS](https://learn.bitbybit.dev/learn/npm-packages/threejs)     
-[Integrate With BabylonJS](https://learn.bitbybit.dev/learn/npm-packages/babylonjs)     
-[Bitbybit Runners](https://learn.bitbybit.dev/learn/runners)    
-[Bitbybit Blog](https://learn.bitbybit.dev/blog)        
-[3D Bits App For Shopify](https://learn.bitbybit.dev/learn/3d-bits/intro)
-[Unit Testing Approach](https://learn.bitbybit.dev/learn/github/unit-tests)        
-[Live Unit Test Coverage](https://learn.bitbybit.dev/learn/github/live-unit-test-coverage)          
 
-## Github
-https://github.com/bitbybit-dev/bitbybit  
+| Topic | Link |
+|-------|------|
+| Getting Started | https://learn.bitbybit.dev/learn/getting-started/overview |
+| NPM Packages Intro | https://learn.bitbybit.dev/learn/npm-packages/intro |
+| Integrate with Three.js | https://learn.bitbybit.dev/learn/npm-packages/threejs/start-with-three-js |
+| Integrate with BabylonJS | https://learn.bitbybit.dev/learn/npm-packages/babylonjs/start-with-babylon-js |
+| Integrate with PlayCanvas | https://learn.bitbybit.dev/learn/npm-packages/playcanvas/start-with-playcanvas |
+| CAD Cloud API | https://learn.bitbybit.dev/api/cloud-api |
+| Script Runners | https://learn.bitbybit.dev/learn/runners/intro |
+| 3D Bits for Shopify | https://learn.bitbybit.dev/learn/3d-bits/intro |
+| AI-Assisted Development | https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro |
+| Unit Testing Approach | https://learn.bitbybit.dev/learn/github/unit-tests |
+| Live Unit Test Coverage | https://learn.bitbybit.dev/learn/github/live-unit-test-coverage |
+| Blog | https://learn.bitbybit.dev/blog |
 
 ## NPM Packages
 
-[@bitbybit-dev/babylonjs](https://www.npmjs.com/package/@bitbybit-dev/babylonjs)   
-BabylonJS game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
-[@bitbybit-dev/threejs](https://www.npmjs.com/package/@bitbybit-dev/threejs)   
-ThreeJS game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
-[@bitbybit-dev/playcanvas](https://www.npmjs.com/package/@bitbybit-dev/playcanvas)   
-PlayCanvas game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
-[@bitbybit-dev/core](https://www.npmjs.com/package/@bitbybit-dev/core)   
-Assembles various packages and provides additional features that may combine all CAD kernels   
-[@bitbybit-dev/jscad](https://www.npmjs.com/package/@bitbybit-dev/jscad)   
-Wraps JSCAD with additional algorithms offered by bitbybit.dev   
-[@bitbybit-dev/jscad-worker](https://www.npmjs.com/package/@bitbybit-dev/jscad-worker)   
-Exposes @bitbybit-dev/jscad package via webworker and makes all calls asynchronouse and non-blocking   
-[@bitbybit-dev/manifold](https://www.npmjs.com/package/@bitbybit-dev/manifold)   
-Wraps MANIFOLD with additional algorithms offered by bitbybit.dev   
-[@bitbybit-dev/manifold-worker](https://www.npmjs.com/package/@bitbybit-dev/manifold-worker)   
-Exposes @bitbybit-dev/manifold package via webworker and makes all calls asynchronouse and non-blocking   
-[@bitbybit-dev/occt](https://www.npmjs.com/package/@bitbybit-dev/occt)   
-Wraps OpenCascade with additional algorithms offered by bitbybit.dev   
-[@bitbybit-dev/occt-worker](https://www.npmjs.com/package/@bitbybit-dev/occt-worker)   
-Exposes @bitbybit-dev/occt package via webworker and makes all calls asynchronouse and non-blocking      
-[@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base)   
-Contains various base algorithms used in all other layers, such as vector math.   
-
-To understand the structure of these packages better we provided this diagram:
+| Package | Description |
+|---------|-------------|
+| [@bitbybit-dev/babylonjs](https://www.npmjs.com/package/@bitbybit-dev/babylonjs) | BabylonJS engine integration for drawing CAD geometry |
+| [@bitbybit-dev/threejs](https://www.npmjs.com/package/@bitbybit-dev/threejs) | Three.js engine integration for drawing CAD geometry |
+| [@bitbybit-dev/playcanvas](https://www.npmjs.com/package/@bitbybit-dev/playcanvas) | PlayCanvas engine integration for drawing CAD geometry |
+| [@bitbybit-dev/core](https://www.npmjs.com/package/@bitbybit-dev/core) | Core assembly layer combining all CAD kernels |
+| [@bitbybit-dev/occt](https://www.npmjs.com/package/@bitbybit-dev/occt) | OpenCascade CAD kernel (works in Node.js & browser) |
+| [@bitbybit-dev/occt-worker](https://www.npmjs.com/package/@bitbybit-dev/occt-worker) | OCCT via WebWorker (non-blocking, browser only) |
+| [@bitbybit-dev/manifold](https://www.npmjs.com/package/@bitbybit-dev/manifold) | Manifold fast mesh booleans (works in Node.js & browser) |
+| [@bitbybit-dev/manifold-worker](https://www.npmjs.com/package/@bitbybit-dev/manifold-worker) | Manifold via WebWorker (non-blocking, browser only) |
+| [@bitbybit-dev/jscad](https://www.npmjs.com/package/@bitbybit-dev/jscad) | JSCAD solid modeling (works in Node.js & browser) |
+| [@bitbybit-dev/jscad-worker](https://www.npmjs.com/package/@bitbybit-dev/jscad-worker) | JSCAD via WebWorker (non-blocking, browser only) |
+| [@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base) | Base math/vector/matrix algorithms used by all packages |
+| [@bitbybit-dev/create-app](https://www.npmjs.com/package/@bitbybit-dev/create-app) | CLI tool to scaffold 3D/CAD projects |
+| [@bitbybit-dev/cad-cloud-sdk](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) | TypeScript SDK for the CAD Cloud API |
 
 ## NPM Package Architecture
+
 <img src="https://app.bitbybit.dev/assets/npm-package-architecture.jpeg" alt="Schematic diagram showing the architecture of all NPM packages">
 
 ## Example Applications
-Laptop Holder   
-https://app-store.bitbybit.dev/laptop-holder    
-Github Source Code Angular   
-https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder   
-Github Source Code React   
-https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder   
-  
-Cup Configurator    
-https://app-store.bitbybit.dev/cup   
-Github Source Code   
-https://github.com/bitbybit-dev/app-examples/tree/main/react/cup  
 
-## Closed Source Example Applications
-https://app-store.bitbybit.dev/terrace-furniture   
+All examples live in the [`examples/`](https://github.com/bitbybit-dev/bitbybit/tree/master/examples) directory of this monorepo:
 
-## Media Channels
-Discord: https://discord.gg/GSe3VMe  
-Youtube: https://www.youtube.com/@bitbybitdev?sub_confirmation=1  
-Instagram: https://www.instagram.com/bitbybit.dev  
-Twitter: https://twitter.com/bitbybit_dev  
-LinkedIn: https://lnkd.in/gQjEQA2  
-Facebook: https://www.facebook.com/bitbybitdev  
-Medium: https://bitbybit-dev.medium.com/  
+| App | Engine | Source Code |
+|-----|--------|-------------|
+| [Hex Shell](https://learn.bitbybit.dev/learn/npm-packages/threejs/advanced-parametric-3d-model) | Three.js | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/hex-shell) |
+| [Cup Configurator](https://app-store.bitbybit.dev/cup) | Three.js | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/cup) |
+| [Hex House Concept](https://learn.bitbybit.dev/learn/npm-packages/threejs/hex-house-concept) | Three.js | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/hex-house-concept) |
+| Starter Template | BabylonJS | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/babylonjs/starter-template) |
+| Starter Template | Three.js | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/starter-template) |
+| Starter Template | PlayCanvas | [GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/playcanvas/starter-template) |
+| [Terrace Furniture](https://app-store.bitbybit.dev/terrace-furniture) | BabylonJS | Closed source |
 
-## Principles
-Bit By Bit Developers company will keep these core algorithms that you can find in this repository free and opensource for its users. These algorithms are based on other open-source projects, run and are deployed on the browser, thus there is no point of closing them down from public.
+## Bitbybit Platform
 
-## About Bit By Bit Developers platform
-Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
+Beyond these open-source NPM packages, the Bitbybit platform includes:
+
+- **[Visual Programming Editors](https://bitbybit.dev)** - Rete & Blockly drag-and-drop 3D modeling, plus a Monaco TypeScript editor with full IntelliSense  
+- **[CAD Cloud API](https://learn.bitbybit.dev/api/cloud-api)** - Build full [pipelines](https://learn.bitbybit.dev/api/sdk/typescript/pipelines) that compose all Bitbybit algorithms, where each step can reference outputs of previous steps. Supports parametric model generation, STEP-to-glTF conversion, and complex CAD workflows via HTTP. [TypeScript SDK available](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk).  
+- **[Bitbybit Studio](https://studio.bitbybit.dev)** - A growing visual dashboard where API Key users can generate models, convert files, build [pipelines with a GUI](https://learn.bitbybit.dev/api/studio/intro), inspect tasks, and preview 3D results  
+- **[3D Bits for Shopify](https://apps.shopify.com/3d-bits-1)** - Interactive 3D product configurators for your Shopify store. [Documentation](https://learn.bitbybit.dev/learn/3d-bits/intro).  
+- **[Script Runners](https://learn.bitbybit.dev/learn/runners/intro)** - Execute Rete/Blockly/TypeScript scripts directly on your website without writing code  
+- **[AI-Assisted Development](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - Context files for GitHub Copilot, Claude, and ChatGPT. [MCP integration](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/context-7) available.  
+- **[Business & Enterprise](https://bitbybit.dev/b2b)** - We help businesses and enterprises develop custom applications and spin up optimized CAD tenant workflows on our managed servers  
+
+## Community
+
+- [Discord](https://discord.gg/GSe3VMe)  
+- [YouTube](https://www.youtube.com/@bitbybitdev?sub_confirmation=1)  
+- [LinkedIn](https://www.linkedin.com/company/bitbybit-dev)  
+- [X (Twitter)](https://x.com/bitbybit_dev)  
+- [Instagram](https://www.instagram.com/bitbybit.dev)  
+- [Facebook](https://www.facebook.com/bitbybitdev)  
+- [Blog](https://learn.bitbybit.dev/blog)  
 
 # Development Setup
 
