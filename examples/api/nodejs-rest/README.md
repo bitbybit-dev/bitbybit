@@ -5,7 +5,7 @@ A Node.js server built with Express that creates a Dragon Cup via the bitbybit R
 ## Prerequisites
 
 - Node.js 18+
-- A bitbybit API key — purchase one at bitbybit.dev/auth/pick-plan. The key needs the **models** and **tasks** scopes.
+- A bitbybit API key - purchase one at bitbybit.dev/auth/pick-plan. The key needs the **models** and **tasks** scopes.
 
 ## Setup
 
@@ -37,6 +37,6 @@ Open http://localhost:3000
 
 ## How It Works
 
-1. **Frontend** (`/`) — Three.js page with a "Generate Dragon Cup" button.
-2. **Backend** (`POST /api/generate`) — Calls `api.bitbybit.dev`, polls the task until complete, returns a pre-signed GLB download URL.
+1. **Frontend** (`/`) - Three.js page with a "Generate Dragon Cup" button.
+2. **Backend** (`POST /api/generate`) - Calls `api.bitbybit.dev`, polls the task until complete, returns a pre-signed GLB download URL.
 3. **Frontend** loads the GLB into Three.js via `GLTFLoader`.
