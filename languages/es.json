@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Convierte un Uint8Array a un ArrayBuffer.",
     "uint8Array": "matriz uint8",
     "preview assembly hierarchy": "previsualizar jerarquía de ensamblaje occt",
-    "bitbybit.previewAssemblyHierarchy": "previsualizar jerarquía de ensamblaje occt"
+    "bitbybit.previewAssemblyHierarchy": "previsualizar jerarquía de ensamblaje occt",
+    "meshRelative": "malla relativa",
+    "internalVerticesMode": "modo de vértices internos",
+    "controlSurfaceDeflection": "deflexión de superficie de control",
+    "bitbybit.math.evalArithmetic": "evaluar aritmética",
+    "evalArithmetic": "evaluar aritmética",
+    "bitbybit.math.evalArithmetic_description": "Evalúa de forma segura una expresión aritmética simple que contiene solo números, +, -, *, /, paréntesis y espacios. Usa el algoritmo shunting-yard — sin función eval. Ejemplo: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "expresión"
 }

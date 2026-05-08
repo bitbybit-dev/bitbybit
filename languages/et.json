@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Teisendab Uint8Array ArrayBuffer'iks.",
     "uint8Array": "uint8 massiiv",
     "preview assembly hierarchy": "eelvaade occt koost hierarhiale",
-    "bitbybit.previewAssemblyHierarchy": "eelvaade occt koost hierarhiale"
+    "bitbybit.previewAssemblyHierarchy": "eelvaade occt koost hierarhiale",
+    "meshRelative": "suhteline võrk",
+    "internalVerticesMode": "sisemiste tippude režiim",
+    "controlSurfaceDeflection": "juhtpinna läbipaine",
+    "bitbybit.math.evalArithmetic": "aritmeetika hindamine",
+    "evalArithmetic": "aritmeetika hindamine",
+    "bitbybit.math.evalArithmetic_description": "Hindab turvaliselt lihtsat aritmeetilist avaldist, mis sisaldab ainult numbreid, +, -, *, /, sulge ja tühikuid. Kasutab shunting-yard algoritmi — ilma eval-funktsioonita. Näide: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "avaldis"
 }

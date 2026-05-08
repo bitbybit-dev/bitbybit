@@ -237,6 +237,9 @@ export interface BitbybitOcctModule {
    * @param meshDeflection - Mesh deflection (precision) - smaller = more detailed mesh
    * @param meshAngle - Mesh angular deflection in radians (default 0.5)
    * @param meshParallel - Enable parallel meshing (for multi-threaded builds)
+   * @param meshRelative - Use relative deflection per-face bounding box (slower, set false for speed)
+   * @param internalVerticesMode - Add internal vertices for better mesh quality (slower, set false for speed)
+   * @param controlSurfaceDeflection - Perform extra surface deviation checks (slower, set false for speed)
    * @param faceCountThreshold - Face count threshold for adaptive meshing (-1 to disable)
    * 
    * glTF Writer Options:
@@ -270,6 +273,9 @@ export interface BitbybitOcctModule {
     meshDeflection: number,
     meshAngle: number,
     meshParallel: boolean,
+    meshRelative: boolean,
+    internalVerticesMode: boolean,
+    controlSurfaceDeflection: boolean,
     faceCountThreshold: number,
     // glTF writer options
     isBinary: boolean,
@@ -348,6 +354,9 @@ export interface BitbybitOcctModule {
    * @param meshDeflection - Mesh deflection (precision) - smaller = more detailed mesh
    * @param meshAngle - Mesh angular deflection in radians (default 0.5)
    * @param meshParallel - Enable parallel meshing (for multi-threaded builds)
+   * @param meshRelative - Use relative deflection per-face bounding box (slower, set false for speed)
+   * @param internalVerticesMode - Add internal vertices for better mesh quality (slower, set false for speed)
+   * @param controlSurfaceDeflection - Perform extra surface deviation checks (slower, set false for speed)
    * @param faceCountThreshold - Face count threshold for adaptive meshing (-1 to disable)
    * 
    * glTF Writer Options:
@@ -379,6 +388,9 @@ export interface BitbybitOcctModule {
     meshDeflection: number,
     meshAngle: number,
     meshParallel: boolean,
+    meshRelative: boolean,
+    internalVerticesMode: boolean,
+    controlSurfaceDeflection: boolean,
     faceCountThreshold: number,
     // glTF writer options
     mergeFaces: boolean,
@@ -484,7 +496,7 @@ export interface BitbybitOcctModule {
 
   /**
    * Export a document to glTF binary (GLB) format (takes document handle directly).
-   * Unlike ExportAssemblyToGltf, this does not use global document storage.
+   * Uses optimized mesh parameters (no internal vertices, no surface deflection control).
    * 
    * @param document - Document handle from BuildAssemblyDocument
    * @param meshDeflection - Mesh precision for triangulation (default 0.1)

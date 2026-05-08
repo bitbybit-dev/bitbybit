@@ -712,7 +712,7 @@ export class MathBitByBit {
      * Safely evaluates a simple arithmetic expression containing only
      * numbers, +, -, *, /, parentheses, and whitespace.
      * Uses the shunting-yard algorithm — no eval/Function.
-     * Example: "(3+2)*4" → 20, "10/3" → 3.3333...
+     * Example: '(3+2)*4' → 20, '10/3' → 3.3333...
      * @param inputs arithmetic expression string
      * @returns evaluated result
      * @group operations

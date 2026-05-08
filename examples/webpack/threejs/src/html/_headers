@@ -1,0 +1,14 @@
+# Cloudflare Pages headers for app-store.bitbybit.dev
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Robots-Tag: noindex, nofollow
+
+# CRA hashed JS bundles
+/*/static/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*/static/css/*
+  Cache-Control: public, max-age=31536000, immutable

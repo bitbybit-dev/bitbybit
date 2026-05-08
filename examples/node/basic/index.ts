@@ -11,7 +11,7 @@ async function run() {
     console.log("initializing...");
     
     // For Node.js, we need to specify the path to the WASM file
-    const wasmPath = require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt.f6d9fd19.wasm");
+    const wasmPath = require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt.9b6220e2.wasm");
     
     const occ = await initOpenCascade({
         locateFile: (path: string) => {

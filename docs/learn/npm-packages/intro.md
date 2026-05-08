@@ -14,21 +14,23 @@ When developing standalone applications in TypeScript or JavaScript, you often u
 
 ## Quick Start with CLI
 
-The fastest way to get started is with our CLI tool. Scaffold a fully-configured 3D CAD project in seconds:
+The fastest way to get started is with our CLI tool. Scaffold a fully-configured project in seconds:
 
 ```bash
 npx @bitbybit-dev/create-app my-awesome-project
 ```
 
-The CLI guides you through an interactive setup where you choose your preferred 3D engine (Three.js, Babylon.js, or PlayCanvas). You can also specify the engine directly:
+The CLI guides you through an interactive setup where you first choose the **app type** — a browser-based **frontend** 3D app or a **cloud** project that pairs a backend with a frontend for server-side CAD via our [CAD Cloud API](/api/cloud-api).
+
+### Frontend Projects
+
+Choose your preferred 3D engine (Three.js, Babylon.js, or PlayCanvas). You can also specify it directly:
 
 ```bash
 npx @bitbybit-dev/create-app my-project --engine babylonjs
 ```
 
-### What You Get
-
-Your scaffolded project includes:
+Your scaffolded frontend project includes:
 
 - **Vite** for fast development and optimized production builds
 - **TypeScript** configured out of the box
@@ -38,6 +40,20 @@ Your scaffolded project includes:
   - **Manifold** for fast mesh boolean operations
 - **Starter code** demonstrating each kernel's capabilities
 
+### Cloud (Backend + Frontend) Projects
+
+When you select the **cloud** app type, the CLI scaffolds a full-stack project with a backend server that communicates with the Bitbybit CAD Cloud API and a React + Three.js frontend for visualizing results. Choose from five backend templates:
+
+| Template | Framework | API Style |
+|----------|-----------|----------|
+| **Hono + SDK** | Hono (Cloudflare Workers) | TypeScript SDK |
+| **Hono + REST** | Hono (Cloudflare Workers) | Raw REST |
+| **Node.js + SDK** | Express 5 (Node.js) | TypeScript SDK |
+| **Node.js + REST** | Express 5 (Node.js) | Raw REST |
+| **.NET + REST** | ASP.NET Core (.NET 10) | Raw REST |
+
+Your API key stays on the server — the frontend proxies requests through your backend, so credentials are never exposed to the browser. Learn more in the [CAD Cloud API documentation](/api/cloud-api).
+
 ### Development Workflow
 
 ```bash
@@ -46,7 +62,7 @@ npm install
 npm run dev
 ```
 
-Your browser opens with a live 3D preview at `http://localhost:5173`. Changes appear instantly with hot reload.
+For frontend projects, your browser opens with a live 3D preview at `http://localhost:5173`. Changes appear instantly with hot reload. For cloud projects, follow the backend-specific setup instructions in the generated README to configure your API key and start both the backend and frontend.
 
 ---
 
@@ -149,3 +165,18 @@ Contains Manifold 3D algorithms. The Manifold geometry kernel was started by Emm
 -   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/base)
 
 Contains foundational algorithms for the Bitbybit platform, used in all higher-level NPM packages. Includes utilities for vectors, math, text manipulation, and other basic operations.
+
+---
+
+## CAD Cloud SDK
+
+If you need server-side CAD operations without managing your own infrastructure, our **CAD Cloud API** provides managed compute for generating parametric 3D models, converting STEP files to glTF, and running CAD kernel operations — all via HTTP from any backend, in any programming language.
+
+### @bitbybit-dev/cad-cloud-sdk
+
+-   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk)
+-   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/cad-cloud-sdk)
+
+The official TypeScript SDK for the Bitbybit CAD Cloud API. Works in Node.js, Deno, Bun, and Cloudflare Workers. Submit CAD jobs, poll for completion, and download results in formats like glTF, STEP, and decomposed mesh JSON.
+
+To learn more about the CAD Cloud API, Bitbybit Studio dashboard, and full example projects, visit our [**CAD Cloud API documentation**](/api/cloud-api).

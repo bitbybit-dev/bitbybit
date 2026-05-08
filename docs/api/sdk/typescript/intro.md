@@ -32,7 +32,7 @@ const client = new BitbybitClient({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `apiKey` | `string` | *required* | Your API key. Get one at [bitbybit.dev/auth/pick-plan](https://bitbybit.dev/auth/pick-plan). |
+| `apiKey` | `string` | *required* | Your API key. Get one at [bitbybit.dev/auth/pick-plan](https://bitbybit.dev/auth/pick-plan?api-keys=true). |
 | `baseUrl` | `string` | `https://api.bitbybit.dev` | API base URL. |
 | `validate` | `boolean` | `true` | Validate request bodies before sending. See [Validation](./validation). |
 

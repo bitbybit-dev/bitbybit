@@ -187,6 +187,31 @@ body {
     color: #ff6b6b;
 }
 
+.api-key-warning {
+    position: fixed;
+    top: 65px; left: 0; right: 0;
+    z-index: 25;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 24px;
+    background: rgba(180, 80, 20, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 160, 60, 0.4);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.api-key-warning-icon { font-size: 20px; flex-shrink: 0; }
+
+.api-key-warning-content strong { display: block; margin-bottom: 4px; }
+
+.api-key-warning-content a {
+    color: #ffe0a0;
+    text-decoration: underline;
+}
+
 .json-preview {
     margin-top: 12px;
     max-width: 600px;

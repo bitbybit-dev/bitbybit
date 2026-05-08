@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Konvertiert ein Uint8Array in einen ArrayBuffer.",
     "uint8Array": "Uint8-Array",
     "preview assembly hierarchy": "Vorschau OCCT-Baugruppenhierarchie",
-    "bitbybit.previewAssemblyHierarchy": "OCCT-Baugruppenhierarchie-Vorschau"
+    "bitbybit.previewAssemblyHierarchy": "OCCT-Baugruppenhierarchie-Vorschau",
+    "meshRelative": "Netz relativ",
+    "internalVerticesMode": "Interne-Vertices-Modus",
+    "controlSurfaceDeflection": "Steuerflächenablenkung",
+    "bitbybit.math.evalArithmetic": "Arithmetik auswerten",
+    "evalArithmetic": "Arithmetik auswerten",
+    "bitbybit.math.evalArithmetic_description": "Wertet sicher einen einfachen arithmetischen Ausdruck aus, der nur Zahlen, +, -, *, /, Klammern und Leerzeichen enthält. Verwendet den Shunting-Yard-Algorithmus — keine eval-Funktion. Beispiel: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "Ausdruck"
 }

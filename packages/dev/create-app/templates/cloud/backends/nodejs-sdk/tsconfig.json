@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ES2022",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "skipLibCheck": true,
+        "lib": ["ES2022"],
+        "types": ["node"],
+        "outDir": "dist",
+        "rootDir": "src",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "esModuleInterop": true
+    },
+    "include": ["src/**/*.ts"]
+}

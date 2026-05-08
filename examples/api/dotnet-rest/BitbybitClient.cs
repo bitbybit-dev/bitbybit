@@ -17,7 +17,12 @@ public class BitbybitClient
     public BitbybitClient(HttpClient http, IConfiguration config)
     {
         _http = http;
-        _apiKey = config["Bitbybit:ApiKey"] ?? throw new InvalidOperationException("Bitbybit:ApiKey is required");
+        _apiKey = config["Bitbybit:ApiKey"] ?? throw new InvalidOperationException(
+            "Bitbybit:ApiKey is not configured. " +
+            "You need a Bitbybit API key to run this server. " +
+            "Create an account on https://bitbybit.dev and purchase an API key plan at " +
+            "https://bitbybit.dev/auth/pick-plan?api-keys=true to get access to managed CAD cloud servers. " +
+            "Then add your key to appsettings.Development.json under Bitbybit:ApiKey.");
         _apiUrl = config["Bitbybit:ApiUrl"] ?? "https://api.bitbybit.dev";
     }
 
