@@ -1,0 +1,25 @@
+# Cloudflare Pages headers for learn.bitbybit.dev
+
+# ── Global: security headers + noindex by default ──
+# All responses get noindex. HTML pages override this below.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Robots-Tag: noindex, nofollow
+
+# ── HTML pages should be indexable ──
+/*.html
+  ! X-Robots-Tag
+
+/
+  ! X-Robots-Tag
+
+/learn/*
+  ! X-Robots-Tag
+
+/blog/*
+  ! X-Robots-Tag
+
+/api/*
+  ! X-Robots-Tag

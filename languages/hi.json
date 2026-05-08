@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Uint8Array को ArrayBuffer में कन्वर्ट करता है।",
     "uint8Array": "uint8 एरे",
     "preview assembly hierarchy": "occt असेंबली हायरार्की पूर्वावलोकन करें",
-    "bitbybit.previewAssemblyHierarchy": "OCCT असेंबली हायरार्की पूर्वावलोकन करें"
+    "bitbybit.previewAssemblyHierarchy": "OCCT असेंबली हायरार्की पूर्वावलोकन करें",
+    "meshRelative": "सापेक्ष जाल",
+    "internalVerticesMode": "आंतरिक शीर्ष मोड",
+    "controlSurfaceDeflection": "नियंत्रण सतह विक्षेपण",
+    "bitbybit.math.evalArithmetic": "अंकगणित मूल्यांकन",
+    "evalArithmetic": "अंकगणित मूल्यांकन",
+    "bitbybit.math.evalArithmetic_description": "केवल संख्याओं, +, -, *, /, कोष्ठकों और रिक्त स्थानों वाले एक साधारण अंकगणितीय व्यंजक का सुरक्षित रूप से मूल्यांकन करता है। शंटिंग-यार्ड एल्गोरिथम का उपयोग करता है — कोई eval फ़ंक्शन नहीं। उदाहरण: '(3+2)*4' → 20, '10/3' → 3.3333...",
+    "expression": "व्यंजक"
 }

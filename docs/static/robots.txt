@@ -1,6 +1,12 @@
 User-agent: *
 Allow: /
 
+# Prevent crawling of static asset bundles (saves crawl budget).
+# Googlebot can still render pages from cache; these hashed files
+# rarely change and are not content pages.
+Disallow: /assets/js/
+Disallow: /assets/css/
+
 Sitemap: https://learn.bitbybit.dev/sitemap.xml
 
 # LLM Context

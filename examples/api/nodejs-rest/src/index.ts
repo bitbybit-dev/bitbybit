@@ -12,10 +12,17 @@ const env: Env = {
     BITBYBIT_API_URL: process.env.BITBYBIT_API_URL ?? "https://api.bitbybit.dev",
 };
 
-if (!env.BITBYBIT_API_KEY) {
-    console.error("BITBYBIT_API_KEY environment variable is required");
-    process.exit(1);
-}
+// Check for missing API key and return a helpful error
+app.use("/api", (_req, res, next) => {
+    if (!env.BITBYBIT_API_KEY) {
+        res.status(503).json({
+            error: "BITBYBIT_API_KEY is not configured.",
+            help: "You need a Bitbybit API key to use this service. Create an account on https://bitbybit.dev and purchase an API key plan at https://bitbybit.dev/auth/pick-plan?api-keys=true to get access to managed CAD cloud servers.",
+        });
+        return;
+    }
+    next();
+});
 
 // Backend endpoint — calls bitbybit API with server-side API key
 app.post("/api/generate", async (_req, res) => {

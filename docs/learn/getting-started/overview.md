@@ -2,8 +2,8 @@
 sidebar_position: 1
 title: Getting Started Overview
 sidebar_label: Overview
-description: Learn about the different ways to use our platform, including 3D Model Configurators, Rete, Blockly, and Monaco (TypeScript) editors.
-tags: [getting-started, typescript, occt, jscad, manifold, rete, blockly]
+description: Learn about the different ways to use our platform, including 3D Model Configurators, Rete, Blockly, and Monaco (TypeScript) editors, CAD Cloud API, and 3D Bits for Shopify.
+tags: [getting-started, typescript, occt, jscad, manifold, rete, blockly, cad-cloud, shopify]
 ---
 
 import Admonition from '@theme/Admonition';
@@ -96,6 +96,7 @@ npx @bitbybit-dev/create-app my-project --engine babylonjs
 # or --engine threejs
 # or --engine playcanvas
 ```
+The CLI also supports scaffolding **CAD Cloud** backend projects. Run it without arguments and select the **cloud** app type to generate a full-stack project with your choice of backend (Hono, Node.js, or .NET) and a React + Three.js frontend. See the [CAD Cloud API docs](/api/cloud-api) for details.
 </Admonition>
 
 <Admonition type="info" title="What's Included (and Not Included)">
@@ -110,6 +111,20 @@ npx @bitbybit-dev/create-app my-project --engine babylonjs
 </Admonition>
 
 For a comprehensive list of available NPM packages and more detailed guides, please visit our [**NPM Packages documentation page**](/learn/npm-packages/intro).
+
+## CAD Cloud API
+
+If your workflow requires server-side CAD operations — for example, generating models on demand from a backend, converting STEP files to glTF at scale, or running boolean and fillet operations without shipping WASM to the browser — our **CAD Cloud API** handles the heavy lifting on managed infrastructure.
+
+Every request follows an asynchronous task model: submit a job, receive a task ID, poll for completion, and download the result in your preferred format (glTF, STEP, or decomposed mesh JSON). You can manage everything through the [**Bitbybit Studio**](https://studio.bitbybit.dev) dashboard or integrate programmatically using our [**TypeScript SDK**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk).
+
+For full details, see our [**CAD Cloud API documentation**](/api/cloud-api).
+
+## 3D Bits App for Shopify
+
+Selling physical products online? Our [**3D Bits app for Shopify**](https://apps.shopify.com/3d-bits-1) lets you embed interactive 3D product viewers, parametric configurators, and Gaussian Splatting scans directly into your Shopify storefront. Design your 3D experience in any of our editors, then drop it onto a product page using theme app extension blocks — no theme code changes needed.
+
+Learn how to set it up in our [**3D Bits tutorials**](/learn/3d-bits/tutorials/videos-tutorials/set-up).
 
 ## API Documentation
 

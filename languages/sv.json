@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Konverterar en Uint8Array till ArrayBuffer.",
     "uint8Array": "uint8-array",
     "preview assembly hierarchy": "förhandsgranska occt sammansättningshierarki",
-    "bitbybit.previewAssemblyHierarchy": "förhandsgranska occt sammansättningshierarki"
+    "bitbybit.previewAssemblyHierarchy": "förhandsgranska occt sammansättningshierarki",
+    "meshRelative": "relativt nät",
+    "internalVerticesMode": "internt hörnpunktsläge",
+    "controlSurfaceDeflection": "styrytans avböjning",
+    "bitbybit.math.evalArithmetic": "beräkna aritmetik",
+    "evalArithmetic": "beräkna aritmetik",
+    "bitbybit.math.evalArithmetic_description": "Utvärderar säkert ett enkelt aritmetiskt uttryck som bara innehåller siffror, +, -, *, /, parenteser och mellanslag. Använder shunting-yard-algoritmen — ingen eval-funktion. Exempel: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "uttryck"
 }

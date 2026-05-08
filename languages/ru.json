@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Конвертирует Uint8Array в ArrayBuffer.",
     "uint8Array": "uint8 массив",
     "preview assembly hierarchy": "предпросмотр иерархии сборки occt",
-    "bitbybit.previewAssemblyHierarchy": "предпросмотр иерархии сборки occt"
+    "bitbybit.previewAssemblyHierarchy": "предпросмотр иерархии сборки occt",
+    "meshRelative": "относительная сетка",
+    "internalVerticesMode": "режим внутренних вершин",
+    "controlSurfaceDeflection": "отклонение управляющей поверхности",
+    "bitbybit.math.evalArithmetic": "вычислить арифметику",
+    "evalArithmetic": "вычислить арифметику",
+    "bitbybit.math.evalArithmetic_description": "Безопасно вычисляет простое арифметическое выражение, содержащее только числа, +, -, *, /, скобки и пробелы. Использует алгоритм shunting-yard — без функции eval. Пример: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "выражение"
 }

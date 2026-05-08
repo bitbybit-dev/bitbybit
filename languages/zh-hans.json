@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "将Uint8Array转换为ArrayBuffer。",
     "uint8Array": "uint8数组",
     "preview assembly hierarchy": "预览occt装配层次结构",
-    "bitbybit.previewAssemblyHierarchy": "预览occt装配层次结构"
+    "bitbybit.previewAssemblyHierarchy": "预览occt装配层次结构",
+    "meshRelative": "相对网格",
+    "internalVerticesMode": "内部顶点模式",
+    "controlSurfaceDeflection": "控制曲面偏差",
+    "bitbybit.math.evalArithmetic": "计算算术",
+    "evalArithmetic": "计算算术",
+    "bitbybit.math.evalArithmetic_description": "安全地计算仅包含数字、+、-、*、/、括号和空格的简单算术表达式。使用调度场算法 — 无 eval 函数。示例：'(3+2)*4' → 20，'10/3' → 3.3333...",
+    "expression": "表达式"
 }

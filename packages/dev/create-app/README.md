@@ -1,8 +1,8 @@
 # @bitbybit-dev/create-app
 
-🚀 **CLI tool to scaffold Bit By Bit Developers 3D/CAD projects with your favorite game engine**
+🚀 **CLI tool to scaffold Bit By Bit Developers 3D/CAD projects — browser-based frontend apps and CAD Cloud backend projects**
 
-Create stunning 3D/CAD applications with ease using our powerful geometry kernels: OCCT (OpenCascade), JSCAD, and Manifold.
+Create stunning 3D/CAD applications with ease using our powerful geometry kernels: OCCT (OpenCascade), JSCAD, and Manifold. Or scaffold a full-stack project that connects to our [CAD Cloud API](https://learn.bitbybit.dev/api/cloud-api) for server-side model generation and file conversion.
 
 ## Quick Start
 
@@ -29,8 +29,10 @@ npm init @bitbybit-dev/app my-project
 ```
 
 You'll be prompted to select:
-- 🎮 **Game Engine**: Three.js, Babylon.js, or PlayCanvas
-- ⚙️ **OCCT Architecture**: 32-bit, 64-bit, or 64-bit Multi-threaded
+- 📦 **App Type**: Frontend (browser 3D app) or Cloud (backend + frontend for CAD Cloud API)
+- 🎮 **Game Engine** (frontend): Three.js, Babylon.js, or PlayCanvas
+- ⚙️ **OCCT Architecture** (frontend): 32-bit, 64-bit, or 64-bit Multi-threaded
+- 🖥️ **Backend Template** (cloud): Hono + SDK, Hono + REST, Node.js + SDK, Node.js + REST, or .NET + REST
 
 ### CLI Options
 
@@ -62,7 +64,9 @@ When you select 64-bit MT, a `vite.config.ts` is automatically created with thes
 
 ## What You Get
 
-Each scaffolded project includes:
+### Frontend Projects
+
+Each scaffolded frontend project includes:
 
 - ⚡ **Vite** - Lightning fast build tool
 - 📘 **TypeScript** - Type-safe development
@@ -71,6 +75,16 @@ Each scaffolded project includes:
   - **JSCAD** - Programmatic solid modeling
   - **Manifold** - Fast mesh boolean operations
 - 🎮 **Your chosen 3D engine** - Three.js, Babylon.js, or PlayCanvas
+
+### Cloud Projects
+
+Each scaffolded cloud project includes:
+
+- 🖥️ **Your chosen backend** - Hono (Cloudflare Workers), Express 5 (Node.js), or ASP.NET Core (.NET 10)
+- 🌐 **React + Three.js frontend** - shared across all backends for visualizing CAD results
+- 🔑 **Secure API key handling** - keys stay on the server; the frontend proxies requests through your backend
+- 📘 **TypeScript SDK or raw REST** - depending on your chosen template
+- 📖 **Ready-to-run examples** - model generation, CAD pipelines, file conversion, and file uploads
 
 ## After Scaffolding
 

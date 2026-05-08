@@ -6481,6 +6481,24 @@ export namespace OCCT {
          */
         faceCountThreshold = 50000;
 
+        /**
+         * Use relative deflection (relative to edge length) instead of absolute.
+         * @default false
+         */
+        meshRelative = false;
+
+        /**
+         * Enable internal vertices mode for more accurate mesh on complex faces.
+         * @default false
+         */
+        internalVerticesMode = false;
+
+        /**
+         * Enable control surface deflection for better quality on curved surfaces.
+         * @default false
+         */
+        controlSurfaceDeflection = false;
+
         // ==================== glTF Writer Options ====================
 
         /**

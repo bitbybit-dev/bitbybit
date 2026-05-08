@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Konvertē Uint8Array uz ArrayBuffer.",
     "uint8Array": "uint8 masīvs",
     "preview assembly hierarchy": "priekšskatīt occt montāžas hierarhiju",
-    "bitbybit.previewAssemblyHierarchy": "priekšskatīt occt montāžas hierarhiju"
+    "bitbybit.previewAssemblyHierarchy": "priekšskatīt occt montāžas hierarhiju",
+    "meshRelative": "relatīvs tīkls",
+    "internalVerticesMode": "iekšējo virsotņu režīms",
+    "controlSurfaceDeflection": "vadības virsmas novirze",
+    "bitbybit.math.evalArithmetic": "novērtēt aritmētiku",
+    "evalArithmetic": "novērtēt aritmētiku",
+    "bitbybit.math.evalArithmetic_description": "Droši novērtē vienu viencītu aritmētisko izteiksmi, kas satur tikai skaitļus, +, -, *, /, iekavas un atstarpes. Izmanto shunting-yard algoritmu — bez eval funkcijas. Piemērs: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "izteiksme"
 }

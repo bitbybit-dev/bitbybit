@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Muuntaa Uint8Arrayn ArrayBufferiksi.",
     "uint8Array": "uint8-taulukko",
     "preview assembly hierarchy": "esikatsele occt kokoonpanohierarkia",
-    "bitbybit.previewAssemblyHierarchy": "esikatsele occt kokoonpanohierarkia"
+    "bitbybit.previewAssemblyHierarchy": "esikatsele occt kokoonpanohierarkia",
+    "meshRelative": "suhteellinen verkko",
+    "internalVerticesMode": "sisäisten pisteiden tila",
+    "controlSurfaceDeflection": "ohjauspinnan taipuma",
+    "bitbybit.math.evalArithmetic": "aritmeetikan arviointi",
+    "evalArithmetic": "aritmeetikan arviointi",
+    "bitbybit.math.evalArithmetic_description": "Arvioi turvallisesti yksinkertaisen aritmeettisen lausekkeen, joka sisältää vain numeroita, +, -, *, /, sulkeita ja välilyöntejä. Käyttää shunting-yard-algoritmia — ei eval-funktiota. Esimerkki: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "lauseke"
 }

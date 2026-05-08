@@ -4,6 +4,17 @@ import { createDragonCup, createDragonCupBatch, getTaskResult, runTranslateUnion
 
 const app = new Hono<{ Bindings: Env }>();
 
+// Check for missing API key and return a helpful error
+app.use("/api/*", async (c, next) => {
+    if (!c.env.BITBYBIT_API_KEY) {
+        return c.json({
+            error: "BITBYBIT_API_KEY is not configured.",
+            help: "You need a Bitbybit API key to use this service. Create an account on https://bitbybit.dev and purchase an API key plan at https://bitbybit.dev/auth/pick-plan?api-keys=true to get access to managed CAD cloud servers.",
+        }, 503);
+    }
+    await next();
+});
+
 // Backend endpoint — calls bitbybit API with server-side API key
 app.post("/api/generate", async (c) => {
     try {

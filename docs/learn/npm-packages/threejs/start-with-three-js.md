@@ -27,8 +27,8 @@ npm run dev`}
 
 This creates a complete project with Vite, TypeScript, and all three CAD kernels (OCCT, JSCAD, Manifold) pre-configured.
 
-<Admonition type="tip" title="New to Bitbybit?">
-Check out the [Getting Started with ThreeJS](/learn/getting-started/engines/threejs) page for an overview of all integration approaches including runners.
+<Admonition type="info" title="Need Server-Side CAD?">
+The CLI can also scaffold **cloud** projects that pair a backend with a React + Three.js frontend for server-side CAD operations via our [CAD Cloud API](/api/cloud-api). Run it without `--engine` and select the **cloud** app type.
 </Admonition>
 
 ---

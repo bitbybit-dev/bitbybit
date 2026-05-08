@@ -6084,5 +6084,12 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "يحول Uint8Array إلى ArrayBuffer.",
     "uint8Array": "مصفوفة uint8",
     "preview assembly hierarchy": "معاينة التسلسل الهرمي لتجميع occt",
-    "bitbybit.previewAssemblyHierarchy": "معاينة التسلسل الهرمي لتجميع occt"
+    "bitbybit.previewAssemblyHierarchy": "معاينة التسلسل الهرمي لتجميع occt",
+    "meshRelative": "شبكة نسبية",
+    "internalVerticesMode": "وضع الرؤوس الداخلية",
+    "controlSurfaceDeflection": "انحراف سطح التحكم",
+    "bitbybit.math.evalArithmetic": "تقييم حسابي",
+    "evalArithmetic": "تقييم حسابي",
+    "bitbybit.math.evalArithmetic_description": "يقيّم بأمان تعبيرًا حسابيًا بسيطًا يحتوي فقط على أرقام و+ و- و* و/ وأقواس ومسافات. يستخدم خوارزمية ساحة التحويل — بدون دالة eval. مثال: '(3+2)*4' → 20، '10/3' → 3.3333...",
+    "expression": "تعبير"
 }
