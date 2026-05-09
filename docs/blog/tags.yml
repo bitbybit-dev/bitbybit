@@ -207,3 +207,17 @@ hannover-messe:
   label: Hannover Messe
   permalink: /hannover-messe
   description: The world's largest industrial trade show, showcasing solutions for manufacturing, automation, and industrial technology.
+sdk:
+  label: SDK
+  permalink: /sdk
+  description: Software Development Kits and libraries for integrating Bitbybit with your applications.
+
+studio:
+  label: Studio
+  permalink: /studio
+  description: Bitbybit Studio features, updates, and tutorials for the visual programming environment.
+
+release:
+  label: Release
+  permalink: /release
+  description: Major version releases, product updates, and platform announcements.

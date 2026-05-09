@@ -15,7 +15,7 @@ Pipelines let you chain multiple CAD operations in a single request. Each step c
 You don't need to write pipeline JSON by hand. The [Bitbybit Studio](https://studio.bitbybit.dev) includes a visual pipeline builder where you can add operations, configure parameters with form controls, and wire step references using dropdowns. The generated JSON is shown in a live preview panel — you can copy it for use with the SDK or REST API.
 
 <div style={{textAlign: 'center'}}>
-    <img src="/img/cad-cloud/bitbybit-cad-cloud-studio-pipeline-builder.webp" alt="Bitbybit Studio pipeline builder showing a three-step pipeline with createSphere, createBox, and boolean difference operations" style={{maxWidth: '100%'}} />
+    <img src="/img/cad-cloud/bitbybit-cad-cloud-pipeline-union-and-fillet.webp" alt="Bitbybit Studio pipeline builder showing a three-step pipeline with createSphere, createBox, and boolean difference operations" style={{maxWidth: '100%'}} />
 </div>
 
 :::info Compute minutes

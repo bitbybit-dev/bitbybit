@@ -4,6 +4,8 @@ title: Bitbybit Studio
 description: Bitbybit Studio — browser-based dashboard for the CAD Cloud API. Generate parametric 3D models, convert STEP files to glTF, build CAD pipelines, manage async tasks, preview results in 3D, and track API key usage.
 ---
 
+import ImageGallery from '@site/src/components/ImageGallery';
+
 # Bitbybit Studio
 
 Bitbybit Studio is your homepage and playground for the CAD Cloud API. It's a place to experiment with parametric models, STEP file conversions, and CAD pipelines — but it's also capable of serious work. Generate production-ready models, fine-tune conversion settings, chain multi-step operations, manage tasks, and preview results in 3D — all from your browser, without writing code or making raw API calls.
@@ -13,6 +15,12 @@ Bitbybit Studio is your homepage and playground for the CAD Cloud API. It's a pl
 ### Model Generator
 
 Browse the catalog of registered parametric models, fill in typed parameters via a form, and submit a generation task. Each model exposes its own set of parameters (dimensions, toggles, precision controls) with sensible defaults, so you can generate a valid model with a single click or fine-tune every detail.
+
+<ImageGallery
+  images={['/img/cad-cloud/bitbybit-cad-cloud-batch-model-generation.webp']}
+  columns={1}
+  altPrefix="Bitbybit Studio model generator interface"
+/>
 
 ### File Converter
 
@@ -30,11 +38,29 @@ A simple visual pipeline builder designed to illustrate how CAD pipelines work. 
 - **Transforms** — Translate, Scale
 - **Fillets** — Fillet Edges, Chamfer Edges
 
+<ImageGallery
+  images={[
+    '/img/cad-cloud/bitbybit-cad-cloud-pipeline-function-selector.webp',
+    '/img/cad-cloud/bitbybit-cad-cloud-pipeline-union-and-fillet.webp'
+  ]}
+  columns={2}
+  altPrefix="CAD visual playground operators and pipeline execution"
+/>
+
 Steps can reference each other's outputs, forming a DAG-style pipeline. The goal isn't to replace a full CAD tool — it's to show you how chained operations, output references, and format selection work so you can build real pipelines via the API or SDK with confidence. For a full guide on pipeline features (Map, Choice, file inputs, output formats), see [Pipelines](/api/sdk/typescript/pipelines).
 
 ### Task Management
 
 All operations run asynchronously. The Tasks page gives you:
+
+<ImageGallery
+  images={[
+    '/img/cad-cloud/bitbybit-cad-cloud-batch-compound-task-processing.webp',
+    '/img/cad-cloud/bitbybit-cad-cloud-pipeline-task-computing.webp'
+  ]}
+  columns={2}
+  altPrefix="CAD Cloud task processing status tracking"
+/>
 
 - A paginated list of all your tasks, filterable by status and kind
 - Live polling so you can watch tasks progress in real time
@@ -46,6 +72,15 @@ All operations run asynchronously. The Tasks page gives you:
 ### 3D Viewer
 
 A full-page 3D preview that loads directly from a completed task's output. Renders glTF/GLB models in an interactive scene so you can inspect results before downloading.
+
+<ImageGallery
+  images={[
+    '/img/cad-cloud/bitbybit-cad-cloud-viewer-phone-nest.webp',
+    '/img/cad-cloud/bitbybit-cad-cloud-viewer-batch-compute-result.webp'
+  ]}
+  columns={2}
+  altPrefix="Interactive 3D preview of generated parametric models in CAD Cloud"
+/>
 
 ### Dashboard & Account Management
 
