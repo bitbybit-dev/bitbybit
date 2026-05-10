@@ -27,7 +27,7 @@ The `bitbybit` global constant is the heart of the platform. It's a comprehensiv
 
 **Structure and Usage:**
 
-All functionalities within `bitbybit` are exposed as functions. Each function is designed to perform a specific operation—such as creating a 3D shape, performing a boolean operation between shapes, applying a fillet, or exporting a model. Crucially, each function typically expects a single JavaScript object as its argument. This object, often referred to as an `input` or a `DTO` (Data Transfer Object), contains all the parameters and data required for the function to perform its task.
+All functionalities within `bitbybit` are exposed as functions. Each function is designed to perform a specific operation-such as creating a 3D shape, performing a boolean operation between shapes, applying a fillet, or exporting a model. Crucially, each function typically expects a single JavaScript object as its argument. This object, often referred to as an `input` or a `DTO` (Data Transfer Object), contains all the parameters and data required for the function to perform its task.
 
 The `bitbybit` constant is structured hierarchically, making it easy to navigate and find the functions you need. For example:
 
@@ -212,4 +212,4 @@ start();
 
 ## Conclusion
 
-The Monaco editor, when combined with the globally available `bitbybit` constant and the `Bit` type definitions, creates a potent and highly accessible environment for scripting 3D models and automating CAD/CAM workflows directly within your browser. By grasping these core components—Monaco as the interactive editor, `bitbybit` as the functional toolkit, and `Bit` as the type-safe guide—you are well-equipped to explore and harness the full capabilities of the `bitbybit` platform. Happy coding!
+The Monaco editor, when combined with the globally available `bitbybit` constant and the `Bit` type definitions, creates a potent and highly accessible environment for scripting 3D models and automating CAD/CAM workflows directly within your browser. By grasping these core components-Monaco as the interactive editor, `bitbybit` as the functional toolkit, and `Bit` as the type-safe guide-you are well-equipped to explore and harness the full capabilities of the `bitbybit` platform. Happy coding!

@@ -20,7 +20,7 @@ We are thrilled to announce the release of two new open-source NPM packages desi
 
 ### Why We Did It: Embracing Versatility
 
-Our main objective with these new releases is to make our CAD tools more versatile and accessible. By decoupling our core algorithmic layer from a single game engine, we are opening the door for developers to integrate Bitbybit.dev's technology with their preferred 3D rendering tools—most notably, **ThreeJS**.
+Our main objective with these new releases is to make our CAD tools more versatile and accessible. By decoupling our core algorithmic layer from a single game engine, we are opening the door for developers to integrate Bitbybit.dev's technology with their preferred 3D rendering tools-most notably, **ThreeJS**.
 
 This strategic move significantly broadens our reach and aligns perfectly with our vision of an open, adaptable CAD platform that meets the diverse needs of the global 3D developer community. Now, developers can leverage Bitbybit.dev's powerful CAD functionalities within their existing ThreeJS projects, or choose between ThreeJS and BabylonJS based on their project requirements.
 
@@ -42,7 +42,7 @@ For users already working within the Bitbybit.dev ecosystem, there will be no di
 
 From the outset, we built the Bitbybit.dev platform in a series of modular layers, balancing open-source accessibility with proprietary elements to create a powerful, flexible CAD solution. Our core algorithmic layer was initially designed with open-source ideals in mind, making it available for developers to integrate into their own projects.
 
-However, this core layer remained deeply intertwined with the BabylonJS game engine—an integration we have always appreciated and continue to utilize extensively in our parametric design editors and internal projects. Yet, this dependency also presented challenges. It limited our ability to easily support other popular game engines and 3D libraries, which, in turn, created a barrier to our vision of a truly democratic and widely adoptable CAD platform. Recognizing the immense popularity and robust ecosystems of other engines, like ThreeJS and PlayCanvas, we decided it was time to refactor our core to make it more versatile and engine-agnostic.
+However, this core layer remained deeply intertwined with the BabylonJS game engine-an integration we have always appreciated and continue to utilize extensively in our parametric design editors and internal projects. Yet, this dependency also presented challenges. It limited our ability to easily support other popular game engines and 3D libraries, which, in turn, created a barrier to our vision of a truly democratic and widely adoptable CAD platform. Recognizing the immense popularity and robust ecosystems of other engines, like ThreeJS and PlayCanvas, we decided it was time to refactor our core to make it more versatile and engine-agnostic.
 
 ### The New Packages: `@bitbybit-dev/threejs` and `@bitbybit-dev/babylonjs`
 

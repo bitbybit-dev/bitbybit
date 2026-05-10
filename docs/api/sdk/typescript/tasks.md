@@ -2,7 +2,7 @@
 sidebar_position: 5
 title: Tasks
 sidebar_label: Tasks
-description: "Manage async CAD tasks — poll for status, list, cancel, retry, and download results with the Bitbybit SDK."
+description: "Manage async CAD tasks - poll for status, list, cancel, retry, and download results with the Bitbybit SDK."
 tags: [sdk, typescript, tasks]
 ---
 
@@ -93,7 +93,7 @@ Wait for a task to complete:
 const task = await client.tasks.poll(taskId, {
     intervalMs: 2000,
     maxAttempts: 120,
-    onProgress: (t) => console.log(`${t.status} — ${t.progress}%`),
+    onProgress: (t) => console.log(`${t.status} - ${t.progress}%`),
     signal: AbortSignal.timeout(120_000),
 });
 ```

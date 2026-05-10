@@ -18,7 +18,7 @@ A common question we receive is: "Why is the 3D canvas so small on my product pa
 
 ### What This Means for You
 
-The size and placement of your 3D viewer is **controlled by your theme's layout, not by the 3D Bits app**. This is by design, following the same philosophy outlined in [Under the Hood](./under-the-hood)—we focus on what we do best (3D visualization) and integrate with your existing store structure rather than trying to override it.
+The size and placement of your 3D viewer is **controlled by your theme's layout, not by the 3D Bits app**. This is by design, following the same philosophy outlined in [Under the Hood](./under-the-hood)-we focus on what we do best (3D visualization) and integrate with your existing store structure rather than trying to override it.
 
 **Default canvas styling:**
 - **Width:** 100% of parent container (fully responsive)
@@ -208,7 +208,7 @@ Canvas sizing becomes especially important on mobile devices where screen real e
 
 ### "The canvas looks different on mobile vs. desktop"
 
-**Solution:** This is expected behavior—responsive themes adapt layouts for different screen sizes. Use theme settings to control mobile-specific layouts, or add custom responsive CSS for precise control.
+**Solution:** This is expected behavior-responsive themes adapt layouts for different screen sizes. Use theme settings to control mobile-specific layouts, or add custom responsive CSS for precise control.
 
 ### "Can 3D Bits override my theme layout automatically?"
 

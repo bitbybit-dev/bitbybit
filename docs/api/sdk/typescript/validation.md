@@ -2,13 +2,13 @@
 sidebar_position: 2
 title: Validation
 sidebar_label: Validation
-description: "Client-side request validation in @bitbybit-dev/cad-cloud-sdk — catch parameter errors before they reach the API."
+description: "Client-side request validation in @bitbybit-dev/cad-cloud-sdk - catch parameter errors before they reach the API."
 tags: [sdk, typescript, validation]
 ---
 
 # Client-side validation
 
-The SDK validates every request body **before** it leaves your server. This catches parameter errors instantly with clear messages — no round-trip to the API required.
+The SDK validates every request body **before** it leaves your server. This catches parameter errors instantly with clear messages - no round-trip to the API required.
 
 Validation is **enabled by default** and covers all `POST` requests (model submissions, CAD operations, file uploads, etc.).
 
@@ -18,18 +18,18 @@ When you call any SDK method that sends a request body, the SDK:
 
 1. Looks up the JSON Schema for the target endpoint
 2. Validates your data against it using a lightweight, eval-free validator
-3. Throws `BitbybitValidationError` immediately if invalid — the request never reaches the network
+3. Throws `BitbybitValidationError` immediately if invalid - the request never reaches the network
 4. Sends the request normally if valid
 
 This works in all runtimes: Node.js, Cloudflare Workers, Deno, Bun.
 
 ## Why it matters
 
-Although the API server always validates incoming requests, **invalid requests that reach the server may still consume compute resources** — and those resources can count toward your usage. Client-side validation prevents bad requests from hitting the server at all, which means:
+Although the API server always validates incoming requests, **invalid requests that reach the server may still consume compute resources** - and those resources can count toward your usage. Client-side validation prevents bad requests from hitting the server at all, which means:
 
-- **Cost savings** — no compute time wasted on requests that would be rejected anyway
-- **Faster feedback** — validation errors appear in microseconds, not after a network round-trip
-- **Better developer experience** — error messages reference your local data (e.g. `#/params/height must be <= 50`) instead of a generic server response
+- **Cost savings** - no compute time wasted on requests that would be rejected anyway
+- **Faster feedback** - validation errors appear in microseconds, not after a network round-trip
+- **Better developer experience** - error messages reference your local data (e.g. `#/params/height must be <= 50`) instead of a generic server response
 
 ## Catching validation errors
 
@@ -90,10 +90,10 @@ Each registered model has its own schema with parameter-specific constraints. Fo
 ### Generic schemas
 
 Operations without model-specific schemas still validate against generic schemas:
-- `ExecuteBody` — requires `operation` (string)
-- `PipelineBody` — requires `steps` (non-empty array)
-- `FileUploadBody` — requires `filename`, `contentType`, `bytes`
-- `BatchModelSubmissionBody` — requires `items` (1–50) and `outputs`
+- `ExecuteBody` - requires `operation` (string)
+- `PipelineBody` - requires `steps` (non-empty array)
+- `FileUploadBody` - requires `filename`, `contentType`, `bytes`
+- `BatchModelSubmissionBody` - requires `items` (1–50) and `outputs`
 
 ## Disabling validation
 
@@ -108,7 +108,7 @@ const client = new BitbybitClient({
 
 This is useful when:
 - The API has added new endpoints/models that your SDK version doesn't have schemas for yet
-- You want to skip the validation overhead in a hot path (the overhead is minimal — microseconds)
+- You want to skip the validation overhead in a hot path (the overhead is minimal - microseconds)
 - You're proxying raw user input and prefer the server's error response format
 
 :::tip
@@ -126,7 +126,7 @@ try {
     await client.cad.execute(body);
 } catch (err) {
     if (err instanceof BitbybitValidationError) {
-        // Request never sent — fix the input
+        // Request never sent - fix the input
         console.error("Invalid input:", err.message);
     } else if (err instanceof BitbybitApiError) {
         // Server returned an error

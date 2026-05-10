@@ -98,7 +98,7 @@ This extensibility ensures that Bitbybit can be a foundational layer for a wide 
 
 ### 5. CAD Cloud API for Server-Side Geometry
 
-Not every 3D workflow belongs in the browser. Our **CAD Cloud API** provides fully managed compute infrastructure for running CAD kernel operations server-side. Submit a job via HTTP, poll for completion, and download the result — from any backend, in any programming language.
+Not every 3D workflow belongs in the browser. Our **CAD Cloud API** provides fully managed compute infrastructure for running CAD kernel operations server-side. Submit a job via HTTP, poll for completion, and download the result - from any backend, in any programming language.
 
 *   **Parametric Model Generation:** Generate 3D models on demand using our library of parametric templates.
 *   **File Conversion:** Convert STEP files to glTF and other formats at scale.
@@ -114,7 +114,7 @@ For Shopify merchants, our [**3D Bits app**](https://apps.shopify.com/3d-bits-1)
 
 *   **3D Product Viewers:** Display GLTF models, Gaussian Splatting scans, and other 3D assets on your storefront.
 *   **Parametric Configurators:** Let customers customize products in real time using CAD-powered configurators you design in our editors.
-*   **Theme App Extensions:** Drop pre-built blocks — **BITBYBIT RUNNER**, **BITBYBIT VIEWER**, and **BITBYBIT PREVIEW** — into your Shopify theme. No code changes to your theme are required.
+*   **Theme App Extensions:** Drop pre-built blocks - **BITBYBIT RUNNER**, **BITBYBIT VIEWER**, and **BITBYBIT PREVIEW** - into your Shopify theme. No code changes to your theme are required.
 *   **Variant Integration:** Connect 3D scene changes to Shopify product variants and custom option apps for a seamless shopping experience.
 
 Get started with our [**3D Bits tutorials**](/learn/3d-bits/tutorials/videos-tutorials/set-up) or install the app from the [**Shopify App Store**](https://apps.shopify.com/3d-bits-1).

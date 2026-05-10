@@ -12,13 +12,13 @@ Ensuring the reliability, correctness, and stability of a 3D modeling and develo
 
 ## Why Are Unit Tests Important?
 
-Unit tests are automated tests that verify individual "units" of source code—typically functions, methods, or classes—in isolation. Their importance cannot be overstated:
+Unit tests are automated tests that verify individual "units" of source code-typically functions, methods, or classes-in isolation. Their importance cannot be overstated:
 
 1.  **Early Bug Detection:** They catch bugs early in the development cycle, when they are cheapest and easiest to fix.
 2.  **Code Quality & Design:** Writing testable code often leads to better-designed, more modular, and maintainable software.
 3.  **Refactoring Confidence:** With a solid test suite, developers can refactor and improve code with greater confidence, knowing that the tests will alert them if any existing functionality breaks.
 4.  **Living Documentation:** Well-written unit tests can serve as a form of documentation, illustrating how specific parts of the code are intended to be used and what their expected behavior is.
-5.  **Regression Prevention:** They help prevent regressions—where previously fixed bugs reappear or new changes break existing functionality.
+5.  **Regression Prevention:** They help prevent regressions-where previously fixed bugs reappear or new changes break existing functionality.
 6.  **Faster Feedback Loop:** Automated tests provide quick feedback to developers, allowing for rapid iteration.
 
 ## Our Approach: Practical Testing for 3D Algorithms

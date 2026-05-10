@@ -2,13 +2,13 @@
 sidebar_position: 1
 title: TypeScript SDK
 sidebar_label: Overview
-description: "@bitbybit-dev/cad-cloud-sdk — type-safe TypeScript SDK for the Bitbybit CAD Cloud API. Install, initialize, and start generating 3D models in minutes."
+description: "@bitbybit-dev/cad-cloud-sdk - type-safe TypeScript SDK for the Bitbybit CAD Cloud API. Install, initialize, and start generating 3D models in minutes."
 tags: [sdk, typescript, api]
 ---
 
 # TypeScript SDK
 
-The [`@bitbybit-dev/cad-cloud-sdk`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) package gives you a type-safe client for the Bitbybit CAD Cloud API. It works in Node.js, Deno, Bun, and Cloudflare Workers — anywhere that has native `fetch`.
+The [`@bitbybit-dev/cad-cloud-sdk`](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) package gives you a type-safe client for the Bitbybit CAD Cloud API. It works in Node.js, Deno, Bun, and Cloudflare Workers - anywhere that has native `fetch`.
 
 :::warning Server-side only
 Never use this SDK in frontend code. Your API key must stay on the server.
@@ -38,7 +38,7 @@ const client = new BitbybitClient({
 
 ## Your first model
 
-Generate a Dragon Cup and get download URLs — the SDK handles polling automatically:
+Generate a Dragon Cup and get download URLs - the SDK handles polling automatically:
 
 ```ts
 const { taskId, downloads } = await client.models.run("dragon-cup", {
@@ -129,7 +129,7 @@ import type {
 
 Full working examples live in the GitHub repo:
 
-- [**Node.js + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-sdk) — Express server
-- [**Hono + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/hono-sdk) — Cloudflare Workers
+- [**Node.js + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-sdk) - Express server
+- [**Hono + SDK**](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/hono-sdk) - Cloudflare Workers
 
 Each example includes a server with API routes and a Three.js browser frontend for previewing generated models.

@@ -43,7 +43,7 @@ In this tutorial, Matas Ubarevicius walks you through the full process of conver
 5 - Compress your GLTF using the Khronos Compressor web tool.
 6 - Upload to Shopify and import it into the 3D Bits app for seamless store integration.
 
-By the end, you’ll have a streamlined, professional workflow for showcasing interactive 3D products in your online store—fast, optimized, and visually beautiful.
+By the end, you’ll have a streamlined, professional workflow for showcasing interactive 3D products in your online store-fast, optimized, and visually beautiful.
 
 Thanks to [Ironside Armour](https://ironsidearmour.com) for providing the example 3D model.
 

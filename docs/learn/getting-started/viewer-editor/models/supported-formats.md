@@ -278,7 +278,7 @@ BRep formats cannot be directly loaded into Viewer Editor. They must be tessella
    - Original CAD software (SolidWorks, Fusion 360, etc.)
 
 :::warning Tessellation Strategy Matters
-Tessellation settings directly impact triangle count. CAD models can easily generate millions of triangles with high-quality settings, creating files too heavy for web use. For eCommerce, aim for **50,000-500,000 triangles** per model. Use coarser tessellation settings, then manually add detail only where visible. Test file size and loading performance—web models must remain lightweight for smooth customer experience.
+Tessellation settings directly impact triangle count. CAD models can easily generate millions of triangles with high-quality settings, creating files too heavy for web use. For eCommerce, aim for **50,000-500,000 triangles** per model. Use coarser tessellation settings, then manually add detail only where visible. Test file size and loading performance-web models must remain lightweight for smooth customer experience.
 :::
 
 2. **Export as mesh** - Save as OBJ or STL from the CAD tool

@@ -12,7 +12,7 @@ import Admonition from '@theme/Admonition';
 
 
 
-Most important reason - in our experience, clients often see better results when we work together. While we strive to make building 3D experiences on the web as simple as possible, it's often more complex than just uploading images—especially when working with Shopify variants or integrating third-party apps.
+Most important reason - in our experience, clients often see better results when we work together. While we strive to make building 3D experiences on the web as simple as possible, it's often more complex than just uploading images-especially when working with Shopify variants or integrating third-party apps.
 
 That’s why we’re always happy to help. In many cases, we can point you to a helpful tutorial or explain technical concepts in simpler terms.
 
@@ -20,7 +20,7 @@ That’s why we’re always happy to help. In many cases, we can point you to a 
 
 We learn a ton from our clients. Every use case teaches us something new about the wide variety of businesses and products people sell online. This helps us adapt our app to more use cases and serve a broader community of Shopify merchants.
 
-It also exposes **3D Bits** to a variety of new contexts—different themes, third-party apps, and unique setups. While it can be challenging to ensure the app works smoothly across all these environments, we do our best to ensure stability and always look for creative solutions.
+It also exposes **3D Bits** to a variety of new contexts-different themes, third-party apps, and unique setups. While it can be challenging to ensure the app works smoothly across all these environments, we do our best to ensure stability and always look for creative solutions.
 
 ### Why It Helps Us Help You
 

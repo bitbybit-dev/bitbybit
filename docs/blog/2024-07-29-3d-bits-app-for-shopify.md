@@ -55,7 +55,7 @@ Here are a few ideas to get you started on what you can achieve with 3D Bits. Re
 ![A 3D printed laptop holder configurator, showcasing parametric design capabilities for custom manufacturing.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-laptop-holder-configurator-3d-printing.jpeg "3D printing - laptop holder configurator")
 
 *   **3D Scanning Showcase:**
-    No matter what you sell—whether it’s bikes, shoes, plants, flowers, toys, or cars—use your phone to scan your products (e.g., with Gaussian Splatting apps) and showcase them in full 3D to your customers. This allows buyers to inspect products from all angles and even interact with them in novel ways.
+    No matter what you sell-whether it’s bikes, shoes, plants, flowers, toys, or cars-use your phone to scan your products (e.g., with Gaussian Splatting apps) and showcase them in full 3D to your customers. This allows buyers to inspect products from all angles and even interact with them in novel ways.
 *   **Using Existing 3D Models:**
     If you already have 3D models of your products (e.g., from CAD software or artists), you can prepare industry-standard GLTF files and easily load them into your 3D product scenes.
 *   **Enhanced Presentation with BabylonJS:**

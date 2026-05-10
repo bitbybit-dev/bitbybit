@@ -114,7 +114,7 @@ For a comprehensive list of available NPM packages and more detailed guides, ple
 
 ## CAD Cloud API
 
-If your workflow requires server-side CAD operations — for example, generating models on demand from a backend, converting STEP files to glTF at scale, or running boolean and fillet operations without shipping WASM to the browser — our **CAD Cloud API** handles the heavy lifting on managed infrastructure.
+If your workflow requires server-side CAD operations - for example, generating models on demand from a backend, converting STEP files to glTF at scale, or running boolean and fillet operations without shipping WASM to the browser - our **CAD Cloud API** handles the heavy lifting on managed infrastructure.
 
 Every request follows an asynchronous task model: submit a job, receive a task ID, poll for completion, and download the result in your preferred format (glTF, STEP, or decomposed mesh JSON). You can manage everything through the [**Bitbybit Studio**](https://studio.bitbybit.dev) dashboard or integrate programmatically using our [**TypeScript SDK**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk).
 
@@ -122,7 +122,7 @@ For full details, see our [**CAD Cloud API documentation**](/api/cloud-api).
 
 ## 3D Bits App for Shopify
 
-Selling physical products online? Our [**3D Bits app for Shopify**](https://apps.shopify.com/3d-bits-1) lets you embed interactive 3D product viewers, parametric configurators, and Gaussian Splatting scans directly into your Shopify storefront. Design your 3D experience in any of our editors, then drop it onto a product page using theme app extension blocks — no theme code changes needed.
+Selling physical products online? Our [**3D Bits app for Shopify**](https://apps.shopify.com/3d-bits-1) lets you embed interactive 3D product viewers, parametric configurators, and Gaussian Splatting scans directly into your Shopify storefront. Design your 3D experience in any of our editors, then drop it onto a product page using theme app extension blocks - no theme code changes needed.
 
 Learn how to set it up in our [**3D Bits tutorials**](/learn/3d-bits/tutorials/videos-tutorials/set-up).
 

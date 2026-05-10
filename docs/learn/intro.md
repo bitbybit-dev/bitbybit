@@ -43,7 +43,7 @@ To get started:
 
 ### Do you sell on Shopify?
 
-Our [**3D Bits app for Shopify**](https://apps.shopify.com/3d-bits-1) lets you add interactive 3D product viewers, parametric configurators, and even Gaussian Splatting scans directly to your Shopify product pages — no coding required. Design your 3D experience in our editors, export it, and paste it into a product metafield. The app's theme extension handles the rest.
+Our [**3D Bits app for Shopify**](https://apps.shopify.com/3d-bits-1) lets you add interactive 3D product viewers, parametric configurators, and even Gaussian Splatting scans directly to your Shopify product pages - no coding required. Design your 3D experience in our editors, export it, and paste it into a product metafield. The app's theme extension handles the rest.
 
 *   Learn more in our [**3D Bits tutorials**](/learn/3d-bits/tutorials/videos-tutorials/set-up).
 

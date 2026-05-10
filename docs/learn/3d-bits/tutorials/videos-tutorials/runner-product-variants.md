@@ -11,7 +11,7 @@ tags: [shopify, 3d-bits]
 
 ## How to Create Interactive 3D Product Variants
 
-This tutorial will guide you through the process of creating a very basic **3D configurable product**—a simple cube—and making its properties (like size or color) change based on **Shopify product variant inputs**. This is achieved using the "3D Bits" app, in conjunction with the [BITBYBIT RUNNER](/learn/3d-bits/theme-app-extensions/bitbybit-runner).
+This tutorial will guide you through the process of creating a very basic **3D configurable product**-a simple cube-and making its properties (like size or color) change based on **Shopify product variant inputs**. This is achieved using the "3D Bits" app, in conjunction with the [BITBYBIT RUNNER](/learn/3d-bits/theme-app-extensions/bitbybit-runner).
 
 We strongly encourage you to watch the video tutorial and follow along, repeating the steps one by one. This hands-on approach will help you grasp the fundamental concepts needed to create more complex and sophisticated 3D configurable products for your Shopify store in the future.
 

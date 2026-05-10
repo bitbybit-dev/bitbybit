@@ -20,7 +20,7 @@ The fastest way to get started is with our CLI tool. Scaffold a fully-configured
 npx @bitbybit-dev/create-app my-awesome-project
 ```
 
-The CLI guides you through an interactive setup where you first choose the **app type** — a browser-based **frontend** 3D app or a **cloud** project that pairs a backend with a frontend for server-side CAD via our [CAD Cloud API](/api/cloud-api).
+The CLI guides you through an interactive setup where you first choose the **app type** - a browser-based **frontend** 3D app or a **cloud** project that pairs a backend with a frontend for server-side CAD via our [CAD Cloud API](/api/cloud-api).
 
 ### Frontend Projects
 
@@ -52,7 +52,7 @@ When you select the **cloud** app type, the CLI scaffolds a full-stack project w
 | **Node.js + REST** | Express 5 (Node.js) | Raw REST |
 | **.NET + REST** | ASP.NET Core (.NET 10) | Raw REST |
 
-Your API key stays on the server — the frontend proxies requests through your backend, so credentials are never exposed to the browser. Learn more in the [CAD Cloud API documentation](/api/cloud-api).
+Your API key stays on the server - the frontend proxies requests through your backend, so credentials are never exposed to the browser. Learn more in the [CAD Cloud API documentation](/api/cloud-api).
 
 ### Development Workflow
 
@@ -170,7 +170,7 @@ Contains foundational algorithms for the Bitbybit platform, used in all higher-l
 
 ## CAD Cloud SDK
 
-If you need server-side CAD operations without managing your own infrastructure, our **CAD Cloud API** provides managed compute for generating parametric 3D models, converting STEP files to glTF, and running CAD kernel operations — all via HTTP from any backend, in any programming language.
+If you need server-side CAD operations without managing your own infrastructure, our **CAD Cloud API** provides managed compute for generating parametric 3D models, converting STEP files to glTF, and running CAD kernel operations - all via HTTP from any backend, in any programming language.
 
 ### @bitbybit-dev/cad-cloud-sdk
 

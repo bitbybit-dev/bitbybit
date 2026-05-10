@@ -14,19 +14,19 @@ This mindset has transformed how Shopify merchants approach 3D product pages usi
 ## Why Think Like a Game Designer?
 
 ### Products Solve Problems
-Your product isn’t just a “thing.” It fulfills a desire or solves a problem. A gamified product page lets users experience that value interactively. Think of your product page as a level in a game—an invitation for customers to explore, play, and immerse themselves in the experience. With smart storytelling and interactivity, you can make your product page more engaging than visiting a physical store.
+Your product isn’t just a “thing.” It fulfills a desire or solves a problem. A gamified product page lets users experience that value interactively. Think of your product page as a level in a game-an invitation for customers to explore, play, and immerse themselves in the experience. With smart storytelling and interactivity, you can make your product page more engaging than visiting a physical store.
 
 ### Speed and Performance Matter
-Games aren’t just fun—they’re fast. To ensure your configurator feels amazing, apply these practical tips inspired by game development:
+Games aren’t just fun-they’re fast. To ensure your configurator feels amazing, apply these practical tips inspired by game development:
 
 #### Keep Your 3D Assets Lean
-Modern devices can handle a lot, but don’t push it—especially on mobile. Use lightweight, lower-poly models as abstractions of production-grade CAD designs. Learn more about asset preparation in the [3D Assets](./intro.md) section.
+Modern devices can handle a lot, but don’t push it-especially on mobile. Use lightweight, lower-poly models as abstractions of production-grade CAD designs. Learn more about asset preparation in the [3D Assets](./intro.md) section.
 
 #### Use Levels of Detail (LOD)
 Swap in lower-poly models for distant objects in scenes with depth or zoom. This saves performance without sacrificing visuals.
 
 #### Add Animated Assets
-Show your products in action—walking, sitting, swimming, racing or interacting with the environment. Keyframed product animations can bring your scene to life.
+Show your products in action-walking, sitting, swimming, racing or interacting with the environment. Keyframed product animations can bring your scene to life.
 
 #### Prioritize Textures and Materials
 You can fake a lot of depth with smart textures and materials. Avoid modeling every tiny bump or groove.

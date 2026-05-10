@@ -50,7 +50,7 @@ We are committed to open-sourcing the foundational elements that empower develop
     *   We provide example projects and snippets demonstrating how to use our open-source NPM packages.
 
 <Admonition type="success" title="Key Takeaway">
-    The code for all the core building blocks—the mathematical and geometric engines, and fundamental utilities—is available for you to inspect, use, and even contribute to via our main GitHub monorepo.
+    The code for all the core building blocks-the mathematical and geometric engines, and fundamental utilities-is available for you to inspect, use, and even contribute to via our main GitHub monorepo.
 </Admonition>
 
 ## What is NOT Open Source (Proprietary Components)?

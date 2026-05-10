@@ -93,4 +93,4 @@ Please avoid submitting changes that are purely cosmetic (e.g., formatting, whit
 ---
 
 Thanks for helping make Bitbybit better!  
-— The Bit by bit developers team
+- The Bit by bit developers team

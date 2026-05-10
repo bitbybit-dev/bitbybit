@@ -82,7 +82,7 @@ Identifying exactly which assets you need depends on the features you're impleme
    ```
    https://git-cdn.bitbybit.dev/v<version-number-of-bitbybit>
    ```
-4. **Document Assets**: Note every asset loaded from this domain—these are the files you should migrate to your own hosting
+4. **Document Assets**: Note every asset loaded from this domain-these are the files you should migrate to your own hosting
 
 </Admonition>
 
