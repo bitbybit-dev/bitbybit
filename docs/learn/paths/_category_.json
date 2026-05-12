@@ -1,0 +1,10 @@
+{
+    "label": "Choose Your Path",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Choose Your Path",
+        "description": "We serve developers, designers, enterprise teams, merchants, and educators. Pick the path that matches your goals.",
+        "slug": "/paths"
+    }
+}

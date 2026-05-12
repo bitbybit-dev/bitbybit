@@ -12,14 +12,14 @@ Pipelines let you chain multiple CAD operations in a single request. Each step c
 
 ## Studio Pipeline Builder
 
-You don't need to write pipeline JSON by hand. The [Bitbybit Studio](https://studio.bitbybit.dev) includes a visual pipeline builder where you can add operations, configure parameters with form controls, and wire step references using dropdowns. The generated JSON is shown in a live preview panel — you can copy it for use with the SDK or REST API.
+You don't need to write pipeline JSON by hand. The [Bitbybit Studio](https://studio.bitbybit.dev) includes a visual pipeline builder where you can add operations, configure parameters with form controls, and wire step references using dropdowns. The generated JSON is shown in a live preview panel - you can copy it for use with the SDK or REST API.
 
 <div style={{textAlign: 'center'}}>
-    <img src="/img/cad-cloud/bitbybit-cad-cloud-studio-pipeline-builder.webp" alt="Bitbybit Studio pipeline builder showing a three-step pipeline with createSphere, createBox, and boolean difference operations" style={{maxWidth: '100%'}} />
+    <img src="/img/cad-cloud/bitbybit-cad-cloud-pipeline-union-and-fillet.webp" alt="Bitbybit Studio pipeline builder showing a three-step pipeline with createSphere, createBox, and boolean difference operations" style={{maxWidth: '100%'}} />
 </div>
 
 :::info Compute minutes
-Running a pipeline counts toward your plan's compute minutes — whether you trigger it from the SDK, REST API, or Studio. The time billed is the server-side execution time of the pipeline.
+Running a pipeline counts toward your plan's compute minutes - whether you trigger it from the SDK, REST API, or Studio. The time billed is the server-side execution time of the pipeline.
 :::
 
 ## Linear Pipelines
@@ -50,13 +50,13 @@ const { downloads } = await client.cad.pipelineAndPoll({
 });
 ```
 
-Any step can reference any earlier step — not just the immediately preceding one. This gives you DAG-like data flow within a sequential execution model.
+Any step can reference any earlier step - not just the immediately preceding one. This gives you DAG-like data flow within a sequential execution model.
 
 ### All Reference Types
 
 | Reference | Resolves to |
 |-----------|-------------|
-| `$ref:N` | Entry N in the global results array (zero-based). Map inner steps also push results to this array — see the Map section for index counting. |
+| `$ref:N` | Entry N in the global results array (zero-based). Map inner steps also push results to this array - see the Map section for index counting. |
 | `$file:N` | Input file N as UTF-8 text |
 | `$file:N:format` | Input file N in a specific format (`json`, `buffer`, `uint8`, `base64`) |
 | `$prev` | Result of the previous step in the current scope |
@@ -65,7 +65,7 @@ Any step can reference any earlier step — not just the immediately preceding o
 | `$index` | Current iteration index (0-based) inside a map |
 | `$mapResult` | Collected iteration results inside a map's reduce sub-steps |
 
-References are resolved recursively — they work inside objects, arrays, and nested structures anywhere in `params`.
+References are resolved recursively - they work inside objects, arrays, and nested structures anywhere in `params`.
 
 ## File Inputs
 
@@ -123,7 +123,7 @@ Use the `:json` format to skip a `json.parse` step:
 ```ts
 const { downloads } = await client.cad.pipelineAndPoll({
     steps: [
-        // $file:0:json parses the JSON file directly — no json.parse step needed
+        // $file:0:json parses the JSON file directly - no json.parse step needed
         // Assume the file contains: { "width": 10, "length": 20, "height": 5 }
         { operation: "occt.shapes.solid.createBox", params: "$file:0:json" },
     ],
@@ -135,7 +135,7 @@ const { downloads } = await client.cad.pipelineAndPoll({
 ```
 
 :::note
-`$item` resolves to the entire element — there is no dot-path property access like `$item.x`. If you need to extract a nested property from each item, use a `json.query` step inside the map.
+`$item` resolves to the entire element - there is no dot-path property access like `$item.x`. If you need to extract a nested property from each item, use a `json.query` step inside the map.
 :::
 
 ### Limits
@@ -145,7 +145,7 @@ const { downloads } = await client.cad.pipelineAndPoll({
 
 ## Map (Iteration)
 
-Map iterates over an array and runs sub-steps for each item. The result is an array of outputs — one per iteration.
+Map iterates over an array and runs sub-steps for each item. The result is an array of outputs - one per iteration.
 
 :::warning $ref indexing with Map
 Map inner steps push their results into the global results array. This means `$ref:N` indices are offset by the number of inner step executions. For example, if a map runs 6 iterations with 1 inner step each, that consumes 6 indices before the map result itself.
@@ -196,15 +196,15 @@ const { downloads } = await client.cad.pipelineAndPoll({
 ```
 
 Inside a map:
-- `$item` — the current element from the `items` array
-- `$index` — the current iteration index (0-based)
-- `$ref:N` — still references top-level step results
-- `$prev` — the result of the previous step within the current scope
-- `$local:N` — the result of step N within the current scope (0-based, scope-local)
+- `$item` - the current element from the `items` array
+- `$index` - the current iteration index (0-based)
+- `$ref:N` - still references top-level step results
+- `$prev` - the result of the previous step within the current scope
+- `$local:N` - the result of step N within the current scope (0-based, scope-local)
 
 ### Map with Reduce
 
-Map supports an optional `reduce` field — a sub-pipeline that runs after all iterations and receives `$mapResult` (the collected array):
+Map supports an optional `reduce` field - a sub-pipeline that runs after all iterations and receives `$mapResult` (the collected array):
 
 ```ts
 const { downloads } = await client.cad.pipelineAndPoll({
@@ -313,7 +313,7 @@ Use `json.query` steps to extract specific values from intermediate results usin
 ```
 
 :::note
-OCCT shapes are opaque in-memory objects — they don't have JSON properties. To get a volume, call `occt.shapes.solid.getSolidVolume` as a separate step. JSONPath queries work on **data structures** (JSON, arrays, parsed CSV), not geometry.
+OCCT shapes are opaque in-memory objects - they don't have JSON properties. To get a volume, call `occt.shapes.solid.getSolidVolume` as a separate step. JSONPath queries work on **data structures** (JSON, arrays, parsed CSV), not geometry.
 :::
 
 ## Constructing Data
@@ -333,7 +333,7 @@ Combined with Map and `$item`/`$index`, this allows dynamic parameter constructi
 
 ## Marking Steps as Output
 
-By default, pipelines produce a single result based on the **last step** — either a shape file (GLTF/STEP/STL) or a data file (JSON/CSV). But sometimes you want **both**: a shape file plus structured data (measurements, metadata, coordinates).
+By default, pipelines produce a single result based on the **last step** - either a shape file (GLTF/STEP/STL) or a data file (JSON/CSV). But sometimes you want **both**: a shape file plus structured data (measurements, metadata, coordinates).
 
 Add `output: true` to any step to include its result in a separate `result.json` download alongside the shape outputs:
 
@@ -355,7 +355,7 @@ const { downloads } = await client.cad.pipelineAndPoll({
             params: { json: "$ref:4", property: "surfaceArea", value: "$ref:2" },
             output: true,
         },
-        // Step 6: Fillet the box — this is the last step, so it determines the shape output
+        // Step 6: Fillet the box - this is the last step, so it determines the shape output
         { operation: "occt.fillets.filletEdges", params: { shape: "$ref:0", radius: 1 } },
     ],
     outputs: { formats: ["gltf", "step"] },
@@ -366,7 +366,7 @@ const { downloads } = await client.cad.pipelineAndPoll({
 //   - result.json ({"volume": 400, "surfaceArea": 340})
 ```
 
-Multiple steps can have `output: true` — all their results are collected into a single `result.json` array.
+Multiple steps can have `output: true` - all their results are collected into a single `result.json` array.
 
 :::tip
 This is useful for parametric workflows where you need to return computed dimensions, BOM data, or validation results alongside the CAD geometry.
@@ -468,7 +468,7 @@ const { downloads } = await client.cad.pipelineAndPoll({
 });
 ```
 
-The `step()` function narrows the `params` type based on the operation path — your editor will show available parameters, their types, and JSDoc descriptions.
+The `step()` function narrows the `params` type based on the operation path - your editor will show available parameters, their types, and JSDoc descriptions.
 
 ### Available exports
 

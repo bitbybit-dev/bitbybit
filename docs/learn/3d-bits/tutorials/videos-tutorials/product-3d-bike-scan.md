@@ -31,15 +31,15 @@ By the end of this tutorial, you'll be able to showcase a detailed, interactive 
 
 This video provides insights into working with 3D scans, particularly focusing on techniques like Gaussian Splatting, which can produce high-quality results.
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/f3rBNesXD1s?si=RXy1E2knDpdIm6Cz" 
     title="Working with Gaussian Splatting 3D Scans for E-Commerce" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

@@ -27,15 +27,15 @@ This tutorial, led by Matas Ubarevičius, will guide you through:
 
 Watch this step-by-step guide on how to configure and use the BITBYBIT PREVIEW block:
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/xU5seV1NQ5o" 
     title="Tutorial: Using 3D Bits App For Shopify With BITBYBIT PREVIEW Theme App Extension Block for 3D Scans" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

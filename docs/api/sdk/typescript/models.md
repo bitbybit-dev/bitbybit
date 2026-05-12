@@ -2,7 +2,7 @@
 sidebar_position: 2
 title: Models
 sidebar_label: Models
-description: "Generate parametric 3D models with the Bitbybit SDK — submit, poll, batch, and download results with full TypeScript intellisense."
+description: "Generate parametric 3D models with the Bitbybit SDK - submit, poll, batch, and download results with full TypeScript intellisense."
 tags: [sdk, typescript, models]
 ---
 
@@ -141,7 +141,7 @@ const task = await client.tasks.poll(compound.taskId);
 When you pass a known model name, TypeScript provides full intellisense for parameters:
 
 ```ts
-// ✅ TypeScript knows DragonCupParams — autocomplete works
+// ✅ TypeScript knows DragonCupParams - autocomplete works
 await client.models.run("dragon-cup", {
     params: { height: 8, radiusBottom: 4 },
     outputs: { formats: ["gltf"] },

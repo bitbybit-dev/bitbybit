@@ -24,15 +24,15 @@ Completing these steps will lay the foundation for integrating powerful 3D exper
 
 ## Video Tutorial: Initial Setup
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/9jnDHb2MJ3M?si=YrwJe7sFm4_N2ZBH" 
     title="Setting Up 3D Bits E-Commerce Solution for Shopify - Installation and Initial Configuration" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

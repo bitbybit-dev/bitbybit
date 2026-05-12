@@ -77,11 +77,11 @@ The CLI isn't just for frontend apps anymore. You can now scaffold **cloud** pro
 
 Run the CLI and select the **cloud** app type when prompted. Then pick from five backend templates:
 
-- **Hono + SDK** — TypeScript SDK on Cloudflare Workers
-- **Hono + REST** — raw `fetch` on Cloudflare Workers
-- **Node.js + SDK** — TypeScript SDK on Express 5
-- **Node.js + REST** — raw `fetch` on Express 5
-- **.NET + REST** — `HttpClient` on ASP.NET Core (.NET 10)
+- **Hono + SDK** - TypeScript SDK on Cloudflare Workers
+- **Hono + REST** - raw `fetch` on Cloudflare Workers
+- **Node.js + SDK** - TypeScript SDK on Express 5
+- **Node.js + REST** - raw `fetch` on Express 5
+- **.NET + REST** - `HttpClient` on ASP.NET Core (.NET 10)
 
 Your API key stays on the server, and the frontend proxies all requests through your backend. Add your key, run `npm install`, and you're building a full-stack CAD application.
 

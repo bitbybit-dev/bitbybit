@@ -214,4 +214,4 @@ Now that you understand wire shape primitives, you can:
 
 Remember that these wire primitives serve as building blocks for more advanced geometric operations.
 
-The beauty of OCCT wire shape primitives lies in their simplicity of use combined with mathematical precision—they provide professional-grade geometric capabilities while remaining accessible to users at any skill level.
+The beauty of OCCT wire shape primitives lies in their simplicity of use combined with mathematical precision-they provide professional-grade geometric capabilities while remaining accessible to users at any skill level.

@@ -2,17 +2,17 @@
 sidebar_position: 6
 title: Files
 sidebar_label: Files
-description: "Upload, confirm, list, and delete files with the Bitbybit SDK — includes a convenience method for end-to-end upload."
+description: "Upload, confirm, list, and delete files with the Bitbybit SDK - includes a convenience method for end-to-end upload."
 tags: [sdk, typescript, files]
 ---
 
 # Files
 
-The `client.files` endpoint manages file uploads. Files are required for STEP → glTF conversion — upload first, then convert.
+The `client.files` endpoint manages file uploads. Files are required for STEP → glTF conversion - upload first, then convert.
 
 ## Upload a file (easy way)
 
-`uploadBytes()` handles the entire upload flow — request a pre-signed URL, PUT the bytes, confirm:
+`uploadBytes()` handles the entire upload flow - request a pre-signed URL, PUT the bytes, confirm:
 
 ```ts
 import { readFile } from "node:fs/promises";
@@ -36,7 +36,7 @@ const upload = await client.files.upload({
     filename: "part.step",
     contentType: "application/octet-stream",
     bytes: data.byteLength,
-    sha256: "abc123...", // optional — enables deduplication
+    sha256: "abc123...", // optional - enables deduplication
 });
 
 console.log(upload.fileId);    // assigned file ID
@@ -65,7 +65,7 @@ const list = await client.files.list({
 });
 
 for (const file of list.files) {
-    console.log(`${file.filename} — ${file.status} — ${file.bytes} bytes`);
+    console.log(`${file.filename} - ${file.status} - ${file.bytes} bytes`);
 }
 ```
 

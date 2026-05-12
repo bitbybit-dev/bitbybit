@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: OCCT Worker Protocol — Replace or Customize the CAD Kernel
+title: OCCT Worker Protocol - Replace or Customize the CAD Kernel
 sidebar_label: Worker Protocol (OCCT)
 description: Technical specification of the OCCT Web Worker message protocol used by Bitbybit Runners. Use this to build compatible custom workers or replace the OpenCASCADE component.
 tags: [runners, occt, advanced]
@@ -99,13 +99,13 @@ worker.postMessage({
 
 For every API call, the worker posts **two** messages:
 
-**Step 1 — Busy notification:**
+**Step 1 - Busy notification:**
 ```javascript
 postMessage("busy")
 ```
 The exact string `"busy"` signals that computation has started.
 
-**Step 2a — Success:**
+**Step 2a - Success:**
 ```javascript
 postMessage({
     uid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",  // echoed from request
@@ -113,7 +113,7 @@ postMessage({
 })
 ```
 
-**Step 2b — Error:**
+**Step 2b - Error:**
 ```javascript
 postMessage({
     uid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",

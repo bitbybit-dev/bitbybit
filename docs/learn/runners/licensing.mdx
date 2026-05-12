@@ -1,6 +1,6 @@
 ---
 sidebar_position: 12
-title: Runner Licensing — Understanding the Bitbybit Runner License
+title: Runner Licensing - Understanding the Bitbybit Runner License
 sidebar_label: Runner Licensing
 description: Understand the licensing model for Bitbybit Runners, including the proprietary Runner License, open-source component licenses (MIT, LGPL, Apache), and LGPL compliance for OpenCASCADE.
 tags: [runners, licensing]
@@ -18,7 +18,7 @@ The Bitbybit Runner has a **dual-origin licensing model**. The Runner bundle con
 - **You can embed it** in your own products, apps, and websites.
 - **You can self-host** the Runner files on your own CDN.
 - **You cannot** reverse-engineer the proprietary parts, modify the bundle, or redistribute it as a standalone product.
-- **Open-source components** (OCCT, BabylonJS, Three.js, PlayCanvas, JSCAD, Manifold, etc.) keep their own licenses — your rights under those licenses are not restricted.
+- **Open-source components** (OCCT, BabylonJS, Three.js, PlayCanvas, JSCAD, Manifold, etc.) keep their own licenses - your rights under those licenses are not restricted.
 
 ## Bitbybit Runner License
 
@@ -53,7 +53,7 @@ The Runner incorporates the following open-source software, each governed by its
 A complete listing is provided in the `NOTICE` file distributed with each Runner release.
 
 <Admonition type="info" title="Havok Physics Licensing">
-Havok Physics is available in the BabylonJS runner and Bitbybit does not prevent its use. However, Havok has its own licensing terms — if you use Havok in a commercial product, you are responsible for verifying your compliance with Havok's licensing requirements.
+Havok Physics is available in the BabylonJS runner and Bitbybit does not prevent its use. However, Havok has its own licensing terms - if you use Havok in a commercial product, you are responsible for verifying your compliance with Havok's licensing requirements.
 </Admonition>
 
 ## LGPL Compliance (OpenCASCADE)
@@ -66,9 +66,9 @@ OCCT is **not compiled into** the Runner bundle. Instead:
 
 1. The OCCT Web Worker (`bitbybit-dev-occt-webworker.js`) is a **separate JavaScript file** loaded from the CDN at runtime
 2. The OCCT WASM binary (`bitbybit-dev-occt.*.wasm`) is a **separate WebAssembly file** loaded by the worker
-3. Communication between the Runner and the OCCT worker uses a **documented message protocol** — the Runner sends commands, the worker processes them and returns results
+3. Communication between the Runner and the OCCT worker uses a **documented message protocol** - the Runner sends commands, the worker processes them and returns results
 
-This is **dynamic linking** — the OCCT component is loaded and linked at runtime, not at compile time.
+This is **dynamic linking** - the OCCT component is loaded and linked at runtime, not at compile time.
 
 ### How to Replace OCCT
 

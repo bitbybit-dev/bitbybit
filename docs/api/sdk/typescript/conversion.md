@@ -2,7 +2,7 @@
 sidebar_position: 4
 title: Conversion
 sidebar_label: Conversion
-description: "Convert STEP files to glTF with the Bitbybit SDK — simple and advanced modes with full control over tessellation and export options."
+description: "Convert STEP files to glTF with the Bitbybit SDK - simple and advanced modes with full control over tessellation and export options."
 tags: [sdk, typescript, conversion]
 ---
 
@@ -12,7 +12,7 @@ The `client.convert` endpoint converts STEP/STP files to glTF (.glb). Upload the
 
 ## Simple conversion
 
-Default settings — just point it at a file:
+Default settings - just point it at a file:
 
 ```ts
 import { readFile } from "node:fs/promises";
@@ -21,7 +21,7 @@ import { readFile } from "node:fs/promises";
 const data = await readFile("model.step");
 const confirmed = await client.files.uploadBytes("model.step", data);
 
-// 2. Convert — polls automatically, returns all downloads
+// 2. Convert - polls automatically, returns all downloads
 const { downloads } = await client.convert.stepToGltfAndPoll({
     stepFileId: confirmed.fileId,
     meshPrecision: 0.1,
@@ -95,7 +95,7 @@ const { downloads } = await client.convert.stepToGltfAdvancedAndPoll({
 | `readMaterials` | `boolean` | Extract material definitions |
 | `readLayers` | `boolean` | Extract layer/group structure |
 | `readProps` | `boolean` | Extract custom properties (part numbers, metadata) |
-| `meshDeflection` | `number` | Linear deflection `[0.005, 10]` — lower = finer |
+| `meshDeflection` | `number` | Linear deflection `[0.005, 10]` - lower = finer |
 | `meshAngle` | `number` | Angular deflection in radians `[0.01, π]` |
 | `meshParallel` | `boolean` | Parallel tessellation |
 | `faceCountThreshold` | `integer` | Max triangles before LOD reduction (`-1` to disable) |

@@ -77,31 +77,31 @@ The HTML structure will be similar to the previous tutorial but will now include
     <script defer type="module" src="script.js"></script>
   </head>
   <body>
-    <div class="example">
+    <div className="example">
       <a class="logo" href="https://bitbybit.dev" target="_blank" rel="noopener noreferrer">
         <img alt="Logo of Bit by bit developers company" src="https://bitbybit.dev/logo-gold-small.png" />
         <div>bitbybit.dev</div>
       </a>
       <h1>Runner Example - Interactive Rete Script</h1>
-      <div class="myCanvasZone">
+      <div className="myCanvasZone">
         <canvas id="myCanvas"></canvas>
       </div>
 
       {/* Controls for script parameters */}
-      <div class="actions">
+      <div className="actions">
         <div>
           <button onclick="updateProp('radius1', false)" title="Decrease radius1">-</button>
-          <span class="label" id="radius1">Radius1 is 4</span>
+          <span className="label" id="radius1">Radius1 is 4</span>
           <button onclick="updateProp('radius1', true)" title="Increase radius1">+</button>
         </div>
         <div>
           <button onclick="updateProp('radius2', false)" title="Decrease radius2">-</button>
-          <span class="label" id="radius2">Radius2 is 2</span>
+          <span className="label" id="radius2">Radius2 is 2</span>
           <button onclick="updateProp('radius2', true)" title="Increase radius2">+</button>
         </div>
         <div>
           <button onclick="updateProp('distance', false)" title="Decrease distance">-</button>
-          <span class="label" id="distance">Distance is 24</span>
+          <span className="label" id="distance">Distance is 24</span>
           <button onclick="updateProp('distance', true)" title="Increase distance">+</button>
         </div>
       </div>

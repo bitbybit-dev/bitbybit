@@ -18,15 +18,15 @@ This tutorial guides you through creating a "Hex House," an architectural concep
 
 
 In this related video tutorial you can see how the results of this app look like (rendered in Unreal Engine).
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/Bgf-rAqAtdc" 
     title="Unreal Engine 5 Using Assets From Bitbybit ThreeJS Configurator" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

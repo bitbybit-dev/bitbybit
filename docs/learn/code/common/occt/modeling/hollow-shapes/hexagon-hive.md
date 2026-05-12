@@ -123,6 +123,6 @@ const createWavePattern = (faces, amplitude, frequency) => {
 
 The hexagon hive technique demonstrates how parametric design can create sophisticated three-dimensional structures that balance geometric order with organic variation. By generating hollow chambers with controlled random heights, this method produces authentic honeycomb architectures that are both structurally efficient and visually compelling.
 
-The dual-grid approach—combining outer walls with inner cavities—enables the creation of lightweight yet strong elements suitable for architectural facades, acoustic panels, and biomimetic installations. The parametric nature of the system ensures adaptability across different scales and applications while maintaining the fundamental efficiency of hexagonal tessellation.
+The dual-grid approach-combining outer walls with inner cavities-enables the creation of lightweight yet strong elements suitable for architectural facades, acoustic panels, and biomimetic installations. The parametric nature of the system ensures adaptability across different scales and applications while maintaining the fundamental efficiency of hexagonal tessellation.
 
 This technique bridges computational design with natural patterns, offering architects and designers a powerful tool for creating structures that are simultaneously systematic and organic, efficient and expressive.

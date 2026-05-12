@@ -18,15 +18,15 @@ Matas also shares practical advice on how to professionalize your workflow by us
 
 ## Video Tutorial
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/s_bXqLfExco" 
     title="Pack Multiple Product Variants into a Single glTF File for 3D Bits on Shopify" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

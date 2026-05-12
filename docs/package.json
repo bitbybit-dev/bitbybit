@@ -1,56 +1,59 @@
 {
-  "name": "docs",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "docusaurus": "docusaurus",
-    "generate-llms": "node scripts/generate-llms.js",
-    "generate-api-docs": "docusaurus gen-api-docs openapi-docs",
-    "clean-api-docs": "docusaurus clean-api-docs openapi-docs",
-    "start": "npm run generate-llms && docusaurus start",
-    "build": "npm run generate-llms && npm run clean-api-docs && npm run generate-api-docs && docusaurus build",
-    "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
-    "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
-    "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
-  },
-  "dependencies": {
-    "@docusaurus/core": "3.7.0",
-    "@docusaurus/preset-classic": "3.7.0",
-    "@mdx-js/react": "^3.0.0",
-    "clsx": "^2.0.0",
-    "docusaurus-plugin-openapi-docs": "^4.7.1",
-    "docusaurus-plugin-sass": "^0.2.6",
-    "docusaurus-theme-openapi-docs": "^4.7.1",
-    "path-browserify": "^1.0.1",
-    "prism-react-renderer": "^2.3.0",
-    "react": "^19.0.0",
-    "react-cookie-consent": "9.0.0",
-    "react-dom": "^19.0.0",
-    "sass": "^1.99.0"
-  },
-  "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.7.0",
-    "@docusaurus/tsconfig": "3.7.0",
-    "@docusaurus/types": "3.7.0",
-    "typescript": "~5.6.2"
-  },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 3 chrome version",
-      "last 3 firefox version",
-      "last 5 safari version"
-    ]
-  },
-  "engines": {
-    "node": ">=18.0"
-  }
+    "name": "docs",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "docusaurus": "docusaurus",
+        "generate-llms": "node scripts/generate-llms.js",
+        "generate-api-docs": "docusaurus gen-api-docs openapi-docs",
+        "clean-api-docs": "docusaurus clean-api-docs openapi-docs",
+        "start": "npm run generate-llms && docusaurus start",
+        "build": "npm run generate-llms && npm run clean-api-docs && npm run generate-api-docs && docusaurus build",
+        "swizzle": "docusaurus swizzle",
+        "deploy": "docusaurus deploy",
+        "clear": "docusaurus clear",
+        "serve": "docusaurus serve",
+        "write-translations": "docusaurus write-translations",
+        "write-heading-ids": "docusaurus write-heading-ids",
+        "typecheck": "tsc"
+    },
+    "dependencies": {
+        "@docusaurus/core": "3.7.0",
+        "@docusaurus/preset-classic": "3.7.0",
+        "@docusaurus/theme-mermaid": "^3.7.0",
+        "@mdx-js/react": "^3.0.0",
+        "clsx": "^2.0.0",
+        "docusaurus-plugin-openapi-docs": "^4.7.1",
+        "docusaurus-plugin-sass": "^0.2.6",
+        "docusaurus-theme-openapi-docs": "^4.7.1",
+        "mdx-mermaid": "2.0.3",
+        "mermaid": "11.14.0",
+        "path-browserify": "^1.0.1",
+        "prism-react-renderer": "^2.3.0",
+        "react": "^19.0.0",
+        "react-cookie-consent": "9.0.0",
+        "react-dom": "^19.0.0",
+        "sass": "^1.99.0"
+    },
+    "devDependencies": {
+        "@docusaurus/module-type-aliases": "3.7.0",
+        "@docusaurus/tsconfig": "3.7.0",
+        "@docusaurus/types": "3.7.0",
+        "typescript": "~5.6.2"
+    },
+    "browserslist": {
+        "production": [
+            ">0.5%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 3 chrome version",
+            "last 3 firefox version",
+            "last 5 safari version"
+        ]
+    },
+    "engines": {
+        "node": ">=18.0"
+    }
 }

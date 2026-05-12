@@ -8,13 +8,13 @@ tags: [shopify, 3d-bits]
 
 # What are Theme App Extension Blocks?
 
-Shopify uses Theme App Extension Blocks to let third-party apps like 3D Bits render content on your store. You can place these blocks almost anywhere on your site—product pages, blog posts, your homepage, and more.
+Shopify uses Theme App Extension Blocks to let third-party apps like 3D Bits render content on your store. You can place these blocks almost anywhere on your site-product pages, blog posts, your homepage, and more.
 
 # Understanding Shopify Templates
 
-Theme App Extension Blocks live inside Shopify templates. Each product in your store uses a template—new stores typically start with a Default Template. Templates let you customize multiple pages at once instead of editing each page individually.
+Theme App Extension Blocks live inside Shopify templates. Each product in your store uses a template-new stores typically start with a Default Template. Templates let you customize multiple pages at once instead of editing each page individually.
 
-Think of templates like blueprints for your pages. If you have different types of products, you'll likely need different templates. For example, if only some products need 3D viewers while others don't, you'd create separate templates for each type. The same goes for different configurator settings—you might want unique 3D configurations for different product families.
+Think of templates like blueprints for your pages. If you have different types of products, you'll likely need different templates. For example, if only some products need 3D viewers while others don't, you'd create separate templates for each type. The same goes for different configurator settings-you might want unique 3D configurations for different product families.
 
 Without templates, you'd have to apply the same customizations to every single page, which would be incredibly time-consuming.
 
@@ -44,7 +44,7 @@ New templates are typically created by branching from existing ones. Here's how:
 
 # Working with Blocks in Templates
 
-When you edit a template, you'll see various blocks you can add. Shopify provides native blocks like Quantity Selector, Variant Picker, and Buy Buttons. Apps can create their own blocks too—this is how 3D Bits integrates with your store.
+When you edit a template, you'll see various blocks you can add. Shopify provides native blocks like Quantity Selector, Variant Picker, and Buy Buttons. Apps can create their own blocks too-this is how 3D Bits integrates with your store.
 
 ![Theme app extension blocks listed](/img/3d-bits/tutorials/theme-app-extension-blocks.jpg)
 

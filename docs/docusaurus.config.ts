@@ -13,6 +13,7 @@ const config: Config = {
     title: "Bitbybit",
     tagline: "Learn How To Use The Platform",
     favicon: "img/logo-gold-small.png",
+    markdown: { mermaid: true },
 
     headTags: [
         {
@@ -179,7 +180,7 @@ const config: Config = {
             },
         ],
     ],
-    themes: ["docusaurus-theme-openapi-docs"],
+    themes: ["docusaurus-theme-openapi-docs", "@docusaurus/theme-mermaid"],
     themeConfig: {
         // Replace with your project's social card
         image: "img/learn-bitbybit-social-card.jpeg",

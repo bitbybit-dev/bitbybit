@@ -8,7 +8,7 @@ tags: [sdk, typescript, cad]
 
 # CAD Operations
 
-The `client.cad` endpoint lets you run raw CAD kernel operations — anything from creating primitives to boolean operations and transforms. Operations are identified by their fully-qualified name (e.g. `occt.shapes.solid.createSphere`).
+The `client.cad` endpoint lets you run raw CAD kernel operations - anything from creating primitives to boolean operations and transforms. Operations are identified by their fully-qualified name (e.g. `occt.shapes.solid.createSphere`).
 
 ## Execute a single operation
 

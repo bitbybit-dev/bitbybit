@@ -76,7 +76,7 @@ Here's a simple example to illustrate:
 - Map the large mesh to input name `size` with value `large`
 
 **What happens:**
-When users click different options, 3D Bits instantly detects the change and updates the 3D scene—hiding one mesh and showing the other, effectively switching between the models.
+When users click different options, 3D Bits instantly detects the change and updates the 3D scene-hiding one mesh and showing the other, effectively switching between the models.
 
 ### Why This Approach Works
 
@@ -135,7 +135,7 @@ One of the most important aspects to understand is **input name stability**. The
    - Some themes generate random IDs: `options[Color]-12345`
    - These IDs change on every page reload
    - **BITBYBIT VIEWER solution:** Use the `{{id}}` placeholder pattern in Viewer Editor configurations (documented in [Common Settings](./common-settings#dynamic-ids-in-input-names))
-   - **BITBYBIT RUNNER note:** The `{{id}}` placeholder is only available in VIEWER's scene configurations. If you're writing custom scripts with RUNNER, you'll need to handle dynamic IDs yourself using pattern matching or string manipulation in your TypeScript/JavaScript code. 3D Bits will still send the full technical name (including the ID) to your script—you just need to parse it yourself.
+   - **BITBYBIT RUNNER note:** The `{{id}}` placeholder is only available in VIEWER's scene configurations. If you're writing custom scripts with RUNNER, you'll need to handle dynamic IDs yourself using pattern matching or string manipulation in your TypeScript/JavaScript code. 3D Bits will still send the full technical name (including the ID) to your script-you just need to parse it yourself.
 
 3. **Theme changes can alter input structure**
    - Switching themes often changes the entire product form structure
@@ -175,7 +175,7 @@ Let's break down a complete example with multiple options:
 
 **Key attributes explained:**
 
-- **`name` attribute** (`options[Material]-8329`): The technical identifier that groups these radio buttons together. All three inputs share the **same name** because they're part of the same option group—only one can be selected at a time.
+- **`name` attribute** (`options[Material]-8329`): The technical identifier that groups these radio buttons together. All three inputs share the **same name** because they're part of the same option group-only one can be selected at a time.
 
 - **`value` attribute** (`oak_wood`, `maple_wood`, `metal_steel`): The technical value that gets sent when that specific option is selected. Each input has a **different value** to distinguish between the choices.
 
@@ -197,7 +197,7 @@ You would map to the **technical attributes**, not the display text:
 ✅ **No ambiguity:** Multiple products might show "Small" as a label, but values like `size_small` and `dimension_compact` are distinct
 
 ❌ **Display text changes frequently:** Labels change often for marketing, translations, or theme updates  
-❌ **Both can break:** While technical attributes are more stable, poorly maintained apps or themes can change both labels AND technical attributes during updates—this is why monitoring and testing are essential
+❌ **Both can break:** While technical attributes are more stable, poorly maintained apps or themes can change both labels AND technical attributes during updates-this is why monitoring and testing are essential
 
 :::info Debug Mode Is Your Friend
 Use [Debug Mode](./common-settings#enable-debug-mode) to see exactly what input names and values 3D Bits can read on your page. This is essential when setting up new configurations or troubleshooting issues.
@@ -334,7 +334,7 @@ After reading this, you should have a clear understanding of what 3D Bits offers
 - ❌ Expect everything to work perfectly with zero configuration
 
 :::warning Final Reminder
-If the architectural approach described here—with its flexibility, power, and associated responsibilities—is something you cannot work with, **please don't use our application**. We'd rather be honest about our strengths and limitations than promise something we can't deliver.
+If the architectural approach described here-with its flexibility, power, and associated responsibilities-is something you cannot work with, **please don't use our application**. We'd rather be honest about our strengths and limitations than promise something we can't deliver.
 :::
 
 ## Getting Help

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 13
 title: Hosting Bitbybit Assets on Your Own CDN
 sidebar_label: Self-Hosting Assets
 description: Learn how to host Bitbybit assets on your own CDN infrastructure for improved reliability, performance, and control.
@@ -82,7 +82,7 @@ Identifying exactly which assets you need depends on the features you're impleme
    ```
    https://git-cdn.bitbybit.dev/v<version-number-of-bitbybit>
    ```
-4. **Document Assets**: Note every asset loaded from this domain—these are the files you should migrate to your own hosting
+4. **Document Assets**: Note every asset loaded from this domain-these are the files you should migrate to your own hosting
 
 </Admonition>
 

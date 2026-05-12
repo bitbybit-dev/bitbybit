@@ -406,7 +406,7 @@ Remove a model from your scene permanently.
 
 **Purpose:** Create an engaging, rotating display that lets customers see the product from all angles without manual camera navigation.
 
-**Common Use Case:** Imagine a car on a showroom podium—it slowly rotates 360° so customers can admire it from every angle. This same effect works beautifully for jewelry, furniture, electronics, or any product that benefits from a full view.
+**Common Use Case:** Imagine a car on a showroom podium-it slowly rotates 360° so customers can admire it from every angle. This same effect works beautifully for jewelry, furniture, electronics, or any product that benefits from a full view.
 
 **How it works:**
 1. Enable **Animated Rotations** in model properties
@@ -514,7 +514,7 @@ Begin with model-level logic for whole-model visibility. Add node-level logic on
 **Best Practices:**
 - Use consistent tag names (all lowercase, no spaces)
 - Create tags based on your organizational needs
-- Don't over-tag—3-5 tags per model is usually sufficient
+- Don't over-tag-3-5 tags per model is usually sufficient
 - Use tags that will actually help you search later
 
 ## Next Steps

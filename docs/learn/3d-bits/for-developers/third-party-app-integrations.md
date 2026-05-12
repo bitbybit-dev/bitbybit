@@ -11,7 +11,7 @@ import Admonition from '@theme/Admonition';
 
 We'd love to collaborate with product options app developers to create seamless integrations between our apps. This guide explains how implementing a standardized event-based communication layer can benefit our mutual customers who want to build advanced 3D product configurators.
 
-By working together, we can provide customers with stable, reliable experiences where 3D visualizations respond smoothly to product option changes—without either of us worrying about breaking integrations during routine updates. This strengthens the entire ecosystem of advanced product configurators on Shopify and creates better experiences for the customers we both serve.
+By working together, we can provide customers with stable, reliable experiences where 3D visualizations respond smoothly to product option changes-without either of us worrying about breaking integrations during routine updates. This strengthens the entire ecosystem of advanced product configurators on Shopify and creates better experiences for the customers we both serve.
 
 ## The Current Integration Challenge
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 14
 title: Security Policy
 sidebar_label: Security Policy
 description: Guidelines for reporting security vulnerabilities to the Bitbybit team.

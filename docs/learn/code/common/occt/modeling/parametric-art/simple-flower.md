@@ -16,7 +16,7 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
   alt="OCCT category icon with a stylized logo representation" 
   title="OCCT category icon" />
 
-Creating organic, flower-like forms demonstrates the power of parametric design in generating natural-looking geometry through mathematical operations. This tutorial explores how to build a simple flower using curve interpolation, mirroring, and rotational patterns—fundamental techniques that can be applied to create complex botanical forms, decorative elements, and artistic sculptures.
+Creating organic, flower-like forms demonstrates the power of parametric design in generating natural-looking geometry through mathematical operations. This tutorial explores how to build a simple flower using curve interpolation, mirroring, and rotational patterns-fundamental techniques that can be applied to create complex botanical forms, decorative elements, and artistic sculptures.
 
 The flower design process combines several key concepts: defining control points for smooth curves, using symmetry operations to create balanced shapes, and employing rotational arrays to generate repetitive patterns. These techniques are essential for parametric art, architectural ornamentation, and procedural modeling applications.
 
@@ -24,7 +24,7 @@ The flower design process combines several key concepts: defining control points
 
 Our approach breaks down flower creation into logical steps that mirror how natural flowers develop. We start with a single petal defined by a curved path, create symmetry through mirroring, add thickness to make it solid, then rotate copies around a central axis to form the complete flower.
 
-This method is highly parametric—by adjusting the control points, rotation angles, or thickness values, you can quickly generate different flower variations. The same principles apply to creating other organic forms like leaves, shells, or abstract sculptural elements.
+This method is highly parametric-by adjusting the control points, rotation angles, or thickness values, you can quickly generate different flower variations. The same principles apply to creating other organic forms like leaves, shells, or abstract sculptural elements.
 
 <Tabs groupId="simple-flower-live-example">
 <TabItem value="rete" label="Rete">

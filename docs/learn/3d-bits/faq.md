@@ -97,12 +97,12 @@ While you *could* build your own 3D integration from scratch (handling WebGL vie
 *   Easy mapping between product variants and 3D models.
 *   The Runner block, which lets you run your own JavaScript/TypeScript to control the 3D scene and respond to store events.
 
-This means you can focus on what makes your client’s store unique—custom logic, creative 3D experiences, and advanced interactivity—without reinventing the technical foundation every time. We’ve been there, and it’s not fun!
+This means you can focus on what makes your client’s store unique-custom logic, creative 3D experiences, and advanced interactivity-without reinventing the technical foundation every time. We’ve been there, and it’s not fun!
 
 **Need more power? Go Pro!**  
 Our Pro plan is built specifically for development teams building advanced 3D experiences:
 *   Access private TypeScript Vite project templates.
-*   Use any editor you want—VSCode, Visual Studio, XCode, etc.
+*   Use any editor you want-VSCode, Visual Studio, XCode, etc.
 *   Host your codebase on Git for easy team collaboration.
 *   Integrate web game engines such as `ThreeJS`, `BabylonJS`, `PlayCanvas`, or others.
 *   Integrate other web-based packages or technologies as needed.

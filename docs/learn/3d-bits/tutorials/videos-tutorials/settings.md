@@ -20,15 +20,15 @@ By the end of this tutorial, you should feel confident in configuring the "3D Bi
 
 ## Video Tutorial: Navigating "3D Bits" App Settings
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/BAA-qDBxCAk?si=bdkTOh-Q9SDYdP_Q" 
     title="Configuring Settings for the 3D Bits Shopify App" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

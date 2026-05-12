@@ -2,13 +2,13 @@
 sidebar_position: 2
 title: Example Projects
 sidebar_label: Examples
-description: "Run the Bitbybit CAD Cloud API example projects locally — React frontend with five interchangeable backend implementations (Node.js, Hono, .NET)."
+description: "Run the Bitbybit CAD Cloud API example projects locally - React frontend with five interchangeable backend implementations (Node.js, Hono, .NET)."
 tags: [examples, quickstart, api, react, threejs]
 ---
 
 # Example Projects
 
-The SDK ships with a complete set of working examples: a **shared React frontend** and **five interchangeable backend implementations**. They show how to integrate the Bitbybit CAD Cloud API into a real web application — from single CAD operations to multi-step pipelines with file uploads.
+The SDK ships with a complete set of working examples: a **shared React frontend** and **five interchangeable backend implementations**. They show how to integrate the Bitbybit CAD Cloud API into a real web application - from single CAD operations to multi-step pipelines with file uploads.
 
 :::tip Source code
 All examples live in the [`examples/api/`](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api) folder of the repository.
@@ -26,17 +26,17 @@ All examples live in the [`examples/api/`](https://github.com/bitbybit-dev/bitby
                                        └─────────────────────────────┘
 ```
 
-The frontend never talks to the Bitbybit API directly — your **API key stays on the server**. Vite's development proxy forwards all `/api/*` requests to `localhost:3000`, so the same frontend works with any of the five backends.
+The frontend never talks to the Bitbybit API directly - your **API key stays on the server**. Vite's development proxy forwards all `/api/*` requests to `localhost:3000`, so the same frontend works with any of the five backends.
 
 ## Backend Variants
 
 | Folder | Framework | API Style | Key Difference |
 |--------|-----------|-----------|----------------|
-| **hono-rest** | [Hono](https://hono.dev) (Cloudflare Workers) | Raw REST | Direct `fetch` calls — no SDK dependency |
+| **hono-rest** | [Hono](https://hono.dev) (Cloudflare Workers) | Raw REST | Direct `fetch` calls - no SDK dependency |
 | **hono-sdk** | [Hono](https://hono.dev) (Cloudflare Workers) | TypeScript SDK | Type-safe SDK with client-side validation |
-| **nodejs-rest** | [Express 5](https://expressjs.com) (Node.js) | Raw REST | Direct `fetch` calls — no SDK dependency |
+| **nodejs-rest** | [Express 5](https://expressjs.com) (Node.js) | Raw REST | Direct `fetch` calls - no SDK dependency |
 | **nodejs-sdk** | [Express 5](https://expressjs.com) (Node.js) | TypeScript SDK | Type-safe SDK with client-side validation |
-| **dotnet-rest** | [ASP.NET Core](https://learn.microsoft.com/aspnet/core) (.NET 10) | Raw REST | Direct `HttpClient` calls — no SDK dependency |
+| **dotnet-rest** | [ASP.NET Core](https://learn.microsoft.com/aspnet/core) (.NET 10) | Raw REST | Direct `HttpClient` calls - no SDK dependency |
 
 ### REST vs SDK
 
@@ -51,7 +51,7 @@ The two approaches exist so you can choose the right level of abstraction:
 
 - **Node.js** ≥ 20 (for the frontend and Node.js/Hono backends)
 - **.NET** ≥ 10 (only for the `dotnet-rest` backend)
-- A **Bitbybit API key** — get one from [bitbybit.dev](https://bitbybit.dev)
+- A **Bitbybit API key** - get one from [bitbybit.dev](https://bitbybit.dev)
 
 ### 1. Configure your API key
 
@@ -110,7 +110,7 @@ npm run dev                   # starts on port 5173
 Navigate to **http://localhost:5173**. You should see a UI with buttons for each demo scenario.
 
 :::info Switching backends
-Stop the current backend, `cd` into a different one, and run `npm run dev`. The frontend does not need to restart — the Vite proxy automatically picks up the new backend.
+Stop the current backend, `cd` into a different one, and run `npm run dev`. The frontend does not need to restart - the Vite proxy automatically picks up the new backend.
 :::
 
 ## What the Examples Cover
@@ -160,9 +160,9 @@ All five backends expose the same routes so the frontend is fully interchangeabl
 
 The API uses a **3-step presigned URL flow** for file uploads:
 
-1. `POST /api/v1/files/upload` — request an upload slot (returns `fileId` + presigned URL).
+1. `POST /api/v1/files/upload` - request an upload slot (returns `fileId` + presigned URL).
 2. `PUT` the raw bytes to the presigned URL.
-3. `POST /api/v1/files/:id/confirm` — confirm the upload.
+3. `POST /api/v1/files/:id/confirm` - confirm the upload.
 
 The SDK handles this automatically via `client.files.uploadBytes()`. The REST examples implement it manually in `bitbybit-client.ts` (TypeScript) or `BitbybitClient.cs` (C#).
 
@@ -187,7 +187,7 @@ Never commit your API key to version control. `.env`, `.dev.vars`, and `appsetti
 ```
 examples/api/
 ├── frontend/                 # React 19 + Vite + Three.js
-│   ├── src/App.tsx           # Main app — orchestrates panels
+│   ├── src/App.tsx           # Main app - orchestrates panels
 │   ├── src/panels/           # UI panels for each demo
 │   ├── src/components/       # Three.js viewer, shared UI
 │   └── vite.config.ts        # Dev proxy: /api → localhost:3000
