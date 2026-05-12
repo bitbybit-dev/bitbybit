@@ -101,15 +101,15 @@ Available features in the Viewer Editor depend on your subscription plan, for Sh
 ### Chair Configurator with Viewer Editor
 Learn how to build an interactive 3D chair configurator using the Viewer Editor and GLTF material variants:
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/7R6ueAHGFhg" 
     title="3D Configurators On Shopify Product Pages with Bitbybit Viewer Editor And GLTF Assets (No Code)" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

@@ -30,6 +30,6 @@ For the purpose of this tutorial, we'll demonstrate embedding a script that open
   width="100%" 
   height="600px"
   sandbox="allow-scripts allow-same-origin allow-downloads allow-forms allow-popups"
-  frameborder="0"
+  frameBorder="0"
   title="Embedded Bitbybit Script with Editor">
 </iframe>

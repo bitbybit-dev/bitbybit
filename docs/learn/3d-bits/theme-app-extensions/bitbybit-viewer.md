@@ -71,15 +71,15 @@ This is where the **Scene Config JSON** functionality comes in. We have recently
 **In-Depth Tutorial: Viewer Editor & Chair Configurator**
 We highly recommend watching this tutorial where Matas explains how to use the Viewer Editor and set up an interactive 3D chair configurator using Scene Config JSON:
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/7R6ueAHGFhg" 
     title="3D Configurators On Shopify Product Pages with Bitbybit Viewer Editor And GLTF Assets (No Code)" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 
@@ -119,15 +119,15 @@ While our Viewer Editor is the recommended way to create and manage the Scene Co
 
 For a comprehensive step-by-step guide on setting up and using the BITBYBIT VIEWER block, please watch this tutorial:
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/FcvQAVE1tDc" 
     title="Tutorial Explains How To Use 3D Bits App For Shopify With BITBYBIT VIEWER Theme App Extension Block" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

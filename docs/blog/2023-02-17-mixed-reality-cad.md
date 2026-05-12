@@ -20,15 +20,15 @@ Our approach to CAD modelling uses a constraint-driven system, with pre-programm
 
 To showcase our application's capabilities, we have produced a video that depicts a user interacting with a parametric 3D model in a mixed reality environment. The video can also be found on our YouTube channel. Hit subscribe if you enjoy it.
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/4rqxlJcS4eU" 
     title="YouTube video player - Mixed Reality CAD Demo" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

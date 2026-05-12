@@ -164,12 +164,12 @@ For complete control, developers can modify theme templates to create custom lay
 **Example concept:**
 ```liquid
 <!-- Custom product template structure -->
-<div class="custom-product-layout">
-  <div class="fullwidth-canvas">
+<div className="custom-product-layout">
+  <div className="fullwidth-canvas">
     {% render 'bitbybit-canvas-block' %}
   </div>
-  <div class="floating-product-panel">
-    <div class="product-info">
+  <div className="floating-product-panel">
+    <div className="product-info">
       <!-- Product form, options, description -->
     </div>
   </div>

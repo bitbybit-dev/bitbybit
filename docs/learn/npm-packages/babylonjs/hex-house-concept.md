@@ -17,15 +17,15 @@ import Admonition from '@theme/Admonition';
 This tutorial delves into creating a "Hex House," an architectural concept with a distinctive hexagonal shell structure, using Bitbybit's BabylonJS integration. We'll leverage the OpenCascade (OCCT) kernel for sophisticated CAD operations and `lil-gui` for a user interface that allows real-time parameter adjustments.
 
 In this related video tutorial you can see how the results of this app look like (rendered in Unreal Engine).
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/Bgf-rAqAtdc" 
     title="Unreal Engine 5 Using Assets From Bitbybit ThreeJS Configurator" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

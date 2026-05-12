@@ -21,12 +21,11 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.92);
+  background: #1a1c1f;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: zoom-out;
-  padding: 2rem;
   animation: fadeIn 0.15s ease;
 }
 
@@ -36,17 +35,80 @@
 }
 
 .fullImage {
-  max-width: 90vw;
-  max-height: 85vh;
-  border-radius: 8px;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   cursor: default;
   animation: scaleIn 0.15s ease;
+  transition: transform 0.15s ease;
+  user-select: none;
+  touch-action: none;
 }
 
 @keyframes scaleIn {
   from { transform: scale(0.95); opacity: 0; }
   to   { transform: scale(1);    opacity: 1; }
+}
+
+/* ── Image wrapper for zoom containment ── */
+
+.imageWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ── Zoom controls ── */
+
+.zoomControls {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+.zoomButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  font-size: 1.25rem;
+  line-height: 1;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.zoomButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.zoomButton:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.zoomLevel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 3rem;
+  text-align: center;
+  user-select: none;
 }
 
 /* ── Navigation buttons ── */
@@ -55,9 +117,9 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(26, 28, 31, 0.7);
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   font-size: 2rem;
   line-height: 1;
@@ -68,11 +130,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-bottom: 4px;
   transition: background 0.2s;
 }
 
 .navButton:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(26, 28, 31, 0.9);
 }
 
 .navLeft {
@@ -127,7 +190,7 @@
   }
 
   .fullImage {
-    max-width: 95vw;
-    max-height: 80vh;
+    max-width: 100%;
+    max-height: 100%;
   }
 }

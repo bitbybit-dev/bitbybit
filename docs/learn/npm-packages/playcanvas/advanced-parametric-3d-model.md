@@ -22,15 +22,15 @@ This tutorial explores a more advanced example of creating an interactive, param
 </Admonition>
 
 You can see what the results of this app look like (rendered in Unreal Engine):
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/MbiELkXKCcY" 
     title="From Web to Unreal Engine - Parametric Pavilion Design with Bitbybit running in THREEJS & BABYLONJS" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

@@ -26,11 +26,11 @@ Consider the difference between these two approaches:
 ### ❌ Poor Practice - Custom Div Elements
 ```html
 <!-- This won't work with 3D Bits and breaks accessibility -->
-<div class="custom-option" onclick="selectColor('red')" data-value="red">
+<div className="custom-option" onclick="selectColor('red')" data-value="red">
   <img src="red-swatch.jpg" alt="Red color">
   <span>Red</span>
 </div>
-<div class="custom-option" onclick="selectColor('blue')" data-value="blue">
+<div className="custom-option" onclick="selectColor('blue')" data-value="blue">
   <img src="blue-swatch.jpg" alt="Blue color">
   <span>Blue</span>
 </div>
@@ -183,11 +183,11 @@ For example, avoid patterns like this:
 
 ```html
 <!-- DON'T DO THIS - Duplicate names cause confusion -->
-<div class="product-1">
+<div className="product-1">
   <input type="radio" name="color" value="red" />
   <input type="radio" name="color" value="blue" />
 </div>
-<div class="product-2">
+<div className="product-2">
   <input type="radio" name="color" value="red" />
   <input type="radio" name="color" value="blue" />
 </div>
@@ -197,11 +197,11 @@ Instead, use unique, descriptive names:
 
 ```html
 <!-- DO THIS - Unique names are clear and reliable -->
-<div class="product-1">
+<div className="product-1">
   <input type="radio" name="product1_color" value="red" />
   <input type="radio" name="product1_color" value="blue" />
 </div>
-<div class="product-2">
+<div className="product-2">
   <input type="radio" name="product2_color" value="red" />
   <input type="radio" name="product2_color" value="blue" />
 </div>
@@ -218,7 +218,7 @@ Certain HTML patterns will prevent 3D Bits from detecting user selections and cr
 ### Custom Clickable Divs
 ```html
 <!-- Don't do this -->
-<div class="option" onclick="changeOption('blue')">Blue Option</div>
+<div className="option" onclick="changeOption('blue')">Blue Option</div>
 ```
 
 This approach fails because:
@@ -238,7 +238,7 @@ While visually appealing, this pattern excludes users who rely on keyboard navig
 ### JavaScript-Dependent Custom Controls
 ```html
 <!-- Don't do this -->
-<span class="custom-radio" data-value="option1">Custom Option</span>
+<span className="custom-radio" data-value="option1">Custom Option</span>
 ```
 
 Custom controls that rely entirely on JavaScript event handling often lack the semantic meaning and keyboard accessibility of native form elements.
@@ -267,9 +267,9 @@ This pattern is problematic because it duplicates functionality, increases maint
 
 ```html
 <!-- Custom visual interface -->
-<div class="custom-color-picker">
-  <div class="color-option red" onclick="selectColor('red')"></div>
-  <div class="color-option blue" onclick="selectColor('blue')"></div>
+<div className="custom-color-picker">
+  <div className="color-option red" onclick="selectColor('red')"></div>
+  <div className="color-option blue" onclick="selectColor('blue')"></div>
 </div>
 
 <!-- Hidden form element for 3D Bits integration - NOT RECOMMENDED -->

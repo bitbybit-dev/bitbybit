@@ -18,15 +18,15 @@ import Version from '@site/src/components/Version';
 This tutorial explores building a sophisticated, interactive parametric 3D model utilizing Bitbybit's robust integration with the BabylonJS rendering engine. We will construct a configurable "Hex Shell" 3D shape, where its geometry is dynamically controlled by parameters from a `lil-gui` interface. The underlying complex CAD operations will be handled by the OpenCascade (OCCT) kernel, accessed via Bitbybit.
 
 You can see what the results of this app look like (rendered in Unreal Engine):
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/MbiELkXKCcY" 
     title="From Web to Unreal Engine - Parametric Pavilion Design with Bitbybit running in THREEJS & BABYLONJS" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

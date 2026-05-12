@@ -21,15 +21,15 @@ We will code a simple visual program in Blockly that creates a 3D cube. The outc
 
 The use of a simple OCCT cube geometry is intentional. The main goal here is to illustrate how you can integrate visual programming created with Blockly into your JavaScript web development workflows using the Bitbybit Runner.
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/NVT-17RTwUo" 
     title="Introduction To Bitbybit Runner With Blockly" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 
@@ -73,7 +73,7 @@ Below are the `index.html` and `script.js` files you would use on StackBlitz or 
         <script type="module" src="script.js"></script>
     </head>
     <body>
-        <div class="myCanvasZone">
+        <div className="myCanvasZone">
         <canvas id="myCanvas"></canvas>
         </div>
         <label for="size">Size</label>

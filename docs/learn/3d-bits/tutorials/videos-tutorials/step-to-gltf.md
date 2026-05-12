@@ -22,15 +22,15 @@ That’s why it’s essential to choose an efficient workflow for converting STE
 
 ## Video Tutorial: STEP TO GLTF
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/7mqd2FLlpcU" 
     title="From STEP to GLTF - Convert PRO CAD 3D Models For 3D Bits Shopify App" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

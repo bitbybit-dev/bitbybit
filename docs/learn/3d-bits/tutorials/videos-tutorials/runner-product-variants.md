@@ -19,15 +19,15 @@ We strongly encourage you to watch the video tutorial and follow along, repeatin
 
 ## Video Tutorial: Building a 3D Configurable Cube
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/kP8_38k8fg8?si=83S5Qvcby15TAQkd" 
     title="Creating 3D Product Variants on Shopify with 3D Bits App Tutorial" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

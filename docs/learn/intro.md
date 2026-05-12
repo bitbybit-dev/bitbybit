@@ -16,15 +16,15 @@ Bitbybit is a geometry engine for the web. It lets you generate, manipulate, and
 
 In this short video, our founder Matas Ubarevičius walks through the core ideas behind the platform.
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/noc6Rg6tMe0" 
     title="Essential Introduction To BITBYBIT" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

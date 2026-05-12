@@ -14,15 +14,15 @@ In this step-by-step tutorial, you’ll discover how to create, assign, and save
 
 ## Video Tutorial
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/s00GpQp5Qmg" 
     title="Change Materials, Colors, And Textures Of 3D Products On Shopify With 3D Bits App" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 
