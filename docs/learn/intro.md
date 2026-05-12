@@ -2,99 +2,108 @@
 sidebar_position: 1
 title: Start Your Journey
 sidebar_label: Welcome
-description: Get up to speed with our platform and begin coding creative 3D experiences.
-tags: [getting-started]
+description: Bitbybit is a geometry engine and platform for the web. Learn what it offers and find the right starting point for your goals.
+tags: [getting-started, overview, architecture]
 ---
 
-import Admonition from '@theme/Admonition';
+import ImageGallery from '@site/src/components/ImageGallery';
 
-# Welcome! 🎉
+# Welcome to Bitbybit
 
-We're thrilled you're interested in using our platform! This site is designed to help you quickly get up to speed and begin creating amazing 3D experiences.
+Bitbybit is a geometry engine for the web. It lets you generate, manipulate, and render complex 3D shapes - directly in a browser, on a managed server, through visual programming, or inside your own application. Whether you are a developer building a product configurator, a designer exploring parametric form, or a business looking to automate CAD workflows, Bitbybit gives you the tools to make it happen.
 
-In this essential introduction to Bitbybit video Matas Ubarevičius explains the fundamental ideas of the platform - if you haven't watched it yet - it's highly recommended.
+## See It in Action
+
+In this short video, our founder Matas Ubarevičius walks through the core ideas behind the platform.
+
 <div class="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/noc6Rg6tMe0" 
-    title="Essential Introduction To BITBYBIT That Explains You The Most Important Aspects Of The 3D Platform" 
+    title="Essential Introduction To BITBYBIT" 
     frameborder="0" 
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
     allowfullscreen>
   </iframe>
 </div>
 
-Let's find the best starting point for you:
+---
 
-### Are you a programmer?
+## Choose Your Path
 
-If you're a professional programmer, you can jump right into our [**TypeScript Monaco editor**](https://bitbybit.dev/app?editor=typescript). Find the [**API Docs here**](https://docs.bitbybit.dev).
+We serve a wide range of users. Pick the path that matches your goals and we will point you to the right resources.
 
-To get started:
+| You are a... | What you need | Start here |
+| :--- | :--- | :--- |
+| **Software Developer** | Integrate 3D geometry into your web app or backend | [Programmer path](./paths/programmer) |
+| **Enterprise / B2B Team** | Evaluate CAD infrastructure or commission custom solutions | [Enterprise path](./paths/enterprise) |
+| **Computational Designer** | Explore parametric geometry with visual or code tools | [Designer path](./paths/designer) |
+| **Shopify Merchant** | Add 3D product viewers to your storefront | [Shopify Merchant path](./paths/shopify-merchant) |
+| **Educator or Teacher** | Bring geometry programming into the classroom | [Educator path](./paths/educator) |
 
-*   We offer [**NPM packages**](/learn/npm-packages/intro) that you can incorporate into your own websites.
-    *   *Note: These packages do not include our proprietary advanced algorithms or the models available in the 3D Models section.*
-*   Check out how to set up our algorithms with [**Three.JS**](/learn/npm-packages/threejs), [**Babylon.JS**](/learn/npm-packages/babylonjs) or [**PlayCanvas**](/learn/npm-packages/playcanvas). We include some complete powerful demos with explanations.
-*   Need server-side CAD? Our [**CAD Cloud API**](/api/cloud-api) lets you generate parametric models, convert STEP files to glTF, and run CAD kernel operations via HTTP from any backend. A [**TypeScript SDK**](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) is available.
-*   Also consider our course: [**Introduction To Programming 3D In TypeScript**](https://bitbybit.dev/school/courses/introduction-to-programming-3d-in-typescript).
-*   Or, if you're familiar with BabylonJS: [**Bitbybit For BabylonJS Developers**](https://bitbybit.dev/school/courses/bitbybit-for-babylonjs-developers).
-    These courses explore how our algorithms can create 3D CAD applications.
+Not sure where you fit? Keep reading for a quick overview, then explore at your own pace.
 
-### Do you sell on Shopify?
+---
 
-Our [**3D Bits app for Shopify**](https://apps.shopify.com/3d-bits-1) lets you add interactive 3D product viewers, parametric configurators, and even Gaussian Splatting scans directly to your Shopify product pages - no coding required. Design your 3D experience in our editors, export it, and paste it into a product metafield. The app's theme extension handles the rest.
+## How Bitbybit Fits Into Your Website
 
-*   Learn more in our [**3D Bits tutorials**](/learn/3d-bits/tutorials/videos-tutorials/set-up).
+Most of our users - developers and enterprise clients alike - want to bring interactive 3D into their own websites. The diagram below shows the four integration paths available to you.
 
-### Are you looking for ready-made 3D models?
+<ImageGallery
+  images={['/img/bitbybit-dev-cad-platform.webp']}
+  columns={1}
+  altPrefix="Bitbybit Platform Architecture"
+/>
 
-Many of our standalone 3D model configurators require a subscription to our paid plans: Silver or Gold.
+Each path connects your website to a different layer of the Bitbybit ecosystem:
 
-*   **Gold Plan:** Provides access to **all** our configurators and cloud services.
-*   **Silver Plan:** Offers access to simpler, everyday parametric 3D model configurators.
+### Option 1: Bitbybit Runners
 
-Visit the [**3D Models**](https://bitbybit.dev/3d-models) section of our platform, browse through the categories to find what you need, and then decide which plan best suits your requirements.
+Load a single JavaScript file into your frontend - from our CDN or [self-hosted on your own infrastructure](./hosting-and-cdn). The Runner bundles our geometry engine and lets you execute Bitbybit scripts on any webpage - whether exported from our visual editors or written as custom JavaScript with full IntelliSense via our type definition files. No build tools required. [Learn more](./runners/intro)
 
-<Admonition type="info" title="Suggesting New Models">
-  <p>Our list of configurators is constantly growing! If the model you're looking for isn't available yet, feel free to submit a request to our team. We carefully consider each request, and if it aligns with our mission, we'll aim to create a configurator for it.</p>
-  <p><strong>Important:</strong> Suggesting ideas for configurators does not make you the author, grant you any rights to the resulting applications, or entitle you to compensation. We also do not guarantee that suggested configurators will work exactly as you envision. However, you'll benefit from the ability to use the new configurator, which we hope is a great incentive!</p>
-  <p>For more details, please review our <a href="/terms-and-conditions" target="_blank">Terms and Conditions</a>.</p>
-</Admonition>
+### Option 2: Embed a Public Preview
 
-### Are you a beginner computational designer?
+If you have published a project on bitbybit.dev, you can embed it directly into any webpage using an `<iframe>`. This is the simplest path - no code at all - though it depends on the Bitbybit platform being available.
 
-Welcome aboard! We recommend the following path:
+### Option 3: NPM Install
 
-1.  Start with our [**Getting Started**](/learn/getting-started/overview) guide. This will cover the basics.
-2.  Once you've completed that, try building something cool using our editors!
-3.  For more in-depth learning, explore the courses in our [**School**](https://bitbybit.dev/school).
-4.  Curious about why this platform exists? Read our [**About**](./about) section.
-5.  Analyze public scripts from other users on our [**Public Projects**](https://bitbybit.dev/projects/public) page. Reviewing others' work is a fantastic way to learn. Start with shorter scripts and gradually move to more complex ones.
+Install our open-source packages directly into your frontend build (React, Angular, Vue, Svelte, or vanilla JS). This gives you full programmatic control over geometry kernels like OpenCASCADE, JSCAD, and Manifold, running entirely client-side via WebAssembly. Pair them with Three.js, Babylon.js, or PlayCanvas for rendering. [Learn more](./npm-packages/intro)
 
-### Are you an expert computational designer?
+### Option 4: REST API (CAD Cloud)
 
-If you're experienced with computational design tools like Grasshopper, Dynamo, or Blender Nodes, you might want to:
+For server-side workflows, your backend (Node.js, Cloudflare Workers, .NET, or any HTTP client) calls our CAD Cloud API - directly or through our TypeScript SDK. The heavy geometry processing runs on our managed infrastructure and results are returned to your application. You can prototype operations, manage API keys, and preview results through [Bitbybit Studio](https://studio.bitbybit.dev). [Learn more](/api/cloud-api)
 
-*   Dive into creating your own designs using our core algorithms.
-*   Give our **Rete editor** a try for visual node-based programming.
-*   Explore our **Blockly editor** for building more advanced 3D models and real-time simulations with visual programming.
-*   If you're comfortable with code (or eager to learn), check out the "Programmer" section below.
+### Visual IDEs
 
-### Are you a teacher or an educator?
+Our browser-based editors let you create 3D logic without writing traditional code. **Blockly** uses drag-and-drop blocks, **Rete** offers node-based visual programming, and **Monaco** provides a full TypeScript environment. All three are free to use - no account required. You can design in these editors and then deploy via Runners (Option 1), embed via iframe (Option 2), or use the same algorithms through NPM packages (Option 3). [Learn more](./getting-started/overview)
 
-This platform is a great place to teach 3D computational design, mathematics, geometry, and programming.
+### 3D Bits for Shopify
 
-*   We recommend signing up to utilize our cloud services for the full experience.
-*   However, **children can use the editors without any sign-ups or registrations, completely free of charge.** Note that some advanced algorithms and 3D models may not be available in this mode.
+An end-to-end Shopify app that adds interactive 3D product viewers and parametric configurators to your storefront. Includes the **[Viewer Editor](./getting-started/viewer-editor/intro)** - a no-code tool for building 3D configurators visually from your GLTF and 3DGS assets. No coding required. [Learn more](./3d-bits/intro)
 
-<Admonition type="caution" title="Important for Young Learners (No Account Needed)">
-  <p>We prioritize child privacy. Children do not need accounts to use the editors.</p>
-  <ul>
-    <li>They <strong>must remember to manually export and import their scripts</strong> to avoid losing their work, as cloud saving is not available without an account.</li>
-    <li>Sharing projects is not possible without an account.</li>
-    <li>They will need to host any third-party assets locally in their browsers, as cloud asset features are unavailable. Learn how in the <a href="/learn/getting-started/basics/assets/local/intro">Local Assets</a> section of the Getting Started guide.</li>
-  </ul>
-</Admonition>
+---
 
-If you're familiar with our tools and interested in becoming a teacher in our School to share your knowledge, please reach out to us at [info@bitbybit.dev](mailto:info@bitbybit.dev).
+## Free vs. Paid
+
+Our core geometry libraries are **free and open-source** under the MIT license (third-party dependencies like OpenCASCADE retain their own licenses). The visual IDEs are free to use. Runners are free to deploy.
+
+Paid offerings include:
+
+- **Silver & Gold platform subscriptions** - Unlock advanced algorithms, private project storage, and community content within the online editors. [Pick a plan](https://bitbybit.dev/auth/pick-plan).
+- **CAD Cloud API** - Usage-based server-side geometry processing, managed through [Bitbybit Studio](https://studio.bitbybit.dev) where you purchase API keys and monitor tasks.
+- **3D Bits for Shopify** - Subscription tiers (Base / Standard / Pro) for 3D product visualization on Shopify storefronts.
+- **Enterprise services** - Custom development and managed infrastructure for B2B clients.
+
+Revenue from these products directly funds continued development of the open-source core - every paid feature makes the free tools better for everyone.
+
+For a detailed breakdown, see [Platform & Products](./offerings).
+
+---
+
+## Next Steps
+
+- **New to 3D programming?** Start with the [Getting Started guide](./getting-started/overview).
+- **Want to understand the full product suite?** Read [Platform & Products](./offerings).
+- **Curious about our philosophy?** See [Our Vision](./about-us).
+- **Ready to write code right now?** Jump into the [TypeScript editor](https://bitbybit.dev/app?editor=typescript).

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 12
 title: Bitbybit's Open Source Approach
 sidebar_label: Our Approach To Open Source
 description: Understand which parts of the Bitbybit platform are open source and which parts are proprietary. We believe in transparency for our community.

@@ -17,6 +17,12 @@ This post outlines the major architectural changes and new capabilities availabl
 
 <!-- truncate -->
 
+<ImageGallery
+  images={['/img/bitbybit-dev-cad-platform.webp']}
+  columns={1}
+  altPrefix="BITBYBIT CAD PLATFORM OVERVIEW"
+/>
+
 ## Native OCCT 8 Kernel
 
 The biggest change in v1.0.0 happens under the hood. We have transitioned away from our OpenCascade.js dependency and rebuilt Bitbybit's core directly on top of the native [OCCT C++ library](https://github.com/Open-Cascade-SAS/OCCT). By compiling directly to WebAssembly with bindings customized for Bitbybit, we've improved overall performance and maintainability.
