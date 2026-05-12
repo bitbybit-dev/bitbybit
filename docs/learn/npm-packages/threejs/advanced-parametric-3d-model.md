@@ -18,15 +18,15 @@ import Version from '@site/src/components/Version';
 This tutorial explores a more advanced example of creating an interactive, parametric 3D model using Bitbybit's ThreeJS integration. We'll build a configurable 3D shape whose geometry is driven by parameters controlled via a GUI (Graphical User Interface), leveraging the OpenCascade (OCCT) kernel for robust CAD operations.
 
 You can see what the results of this app look like (rendered in Unreal Engine):
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/MbiELkXKCcY" 
     title="From Web to Unreal Engine - Parametric Pavilion Design with Bitbybit running in THREEJS & BABYLONJS" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

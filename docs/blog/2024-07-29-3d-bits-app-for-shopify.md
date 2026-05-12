@@ -18,8 +18,8 @@ Ready to get started? Visit our listing page! 3D Bits is now available for insta
 
 ➡️ **[Install 3D Bits App for Shopify](https://apps.shopify.com/3d-bits-1)**
 
-<div class="video-container">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/UwIEYWxlGQ0" title="3D Bits App For Shopify - Sell Configurable 3D Products On Your Web Stores" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
+<div className="video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/UwIEYWxlGQ0" title="3D Bits App For Shopify - Sell Configurable 3D Products On Your Web Stores" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
 </div>
 
 ### Introducing 3D Bits
@@ -55,7 +55,7 @@ Here are a few ideas to get you started on what you can achieve with 3D Bits. Re
 ![A 3D printed laptop holder configurator, showcasing parametric design capabilities for custom manufacturing.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-laptop-holder-configurator-3d-printing.jpeg "3D printing - laptop holder configurator")
 
 *   **3D Scanning Showcase:**
-    No matter what you sell—whether it’s bikes, shoes, plants, flowers, toys, or cars—use your phone to scan your products (e.g., with Gaussian Splatting apps) and showcase them in full 3D to your customers. This allows buyers to inspect products from all angles and even interact with them in novel ways.
+    No matter what you sell-whether it’s bikes, shoes, plants, flowers, toys, or cars-use your phone to scan your products (e.g., with Gaussian Splatting apps) and showcase them in full 3D to your customers. This allows buyers to inspect products from all angles and even interact with them in novel ways.
 *   **Using Existing 3D Models:**
     If you already have 3D models of your products (e.g., from CAD software or artists), you can prepare industry-standard GLTF files and easily load them into your 3D product scenes.
 *   **Enhanced Presentation with BabylonJS:**

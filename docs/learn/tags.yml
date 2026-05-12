@@ -827,3 +827,88 @@ coverage:
  label: Coverage
  permalink: /coverage
  description: How much of your code is tested by unit tests.
+
+vision:
+ label: Vision
+ permalink: /vision
+ description: The founding philosophy and long-term goals of the Bitbybit platform.
+
+philosophy:
+ label: Philosophy
+ permalink: /philosophy
+ description: Core principles guiding Bitbybit's approach to open-source and 3D on the web.
+
+business-model:
+ label: Business Model
+ permalink: /business-model
+ description: How the open-core model sustains the platform through commercial products.
+
+products:
+ label: Products
+ permalink: /products
+ description: Bitbybit's product offerings — NPM packages, Runners, Cloud API, 3D Bits, and more.
+
+cad-cloud:
+ label: CAD Cloud
+ permalink: /cad-cloud
+ description: Server-side CAD processing via the Bitbybit Cloud API.
+
+design:
+ label: Design
+ permalink: /design
+ description: Computational and parametric design workflows.
+
+parametric:
+ label: Parametric
+ permalink: /parametric
+ description: Geometry driven by adjustable parameters for flexible, rule-based modeling.
+
+visual-programming:
+ label: Visual Programming
+ permalink: /visual-programming
+ description: Building logic with visual nodes or blocks instead of writing text code.
+
+education:
+ label: Education
+ permalink: /education
+ description: Using Bitbybit for teaching and learning in academic settings.
+
+stem:
+ label: STEM
+ permalink: /stem
+ description: Science, Technology, Engineering, and Mathematics education with 3D tools.
+
+classroom:
+ label: Classroom
+ permalink: /classroom
+ description: Practical guidance for using Bitbybit in classroom environments.
+
+teaching:
+ label: Teaching
+ permalink: /teaching
+ description: Resources and approaches for educators using Bitbybit.
+
+b2b:
+ label: B2B
+ permalink: /b2b
+ description: Business-to-business partnerships and enterprise engagements.
+
+custom:
+ label: Custom
+ permalink: /custom
+ description: Bespoke development, custom integrations, and tailored solutions.
+
+developer:
+ label: Developer
+ permalink: /developer
+ description: Resources for software developers integrating Bitbybit into their stack.
+
+npm:
+ label: NPM
+ permalink: /npm
+ description: Node Package Manager — installing and using Bitbybit packages.
+
+api:
+ label: API
+ permalink: /api
+ description: Application Programming Interfaces for interacting with Bitbybit services.

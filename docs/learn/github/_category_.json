@@ -1,6 +1,6 @@
 {
-    "label": "GitHub Souce Code",
-    "position": 7,
+    "label": "GitHub Source Code",
+    "position": 10,
     "link": {
         "type": "generated-index",
         "title": "Bitbybit GitHub Monorepo",

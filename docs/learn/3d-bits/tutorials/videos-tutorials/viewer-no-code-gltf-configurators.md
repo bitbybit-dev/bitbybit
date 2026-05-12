@@ -23,15 +23,15 @@ We've observed that many merchants want to use their ready-made GLTF assets to b
 
 Watch Matas Ubarevičius demonstrate how to use the Viewer Editor and the BITBYBIT VIEWER block to create an interactive 3D chair configurator on Shopify:
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/7R6ueAHGFhg" 
     title="No-Code 3D Configurators on Shopify Product Pages with Bitbybit Viewer Editor and GLTF Assets" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

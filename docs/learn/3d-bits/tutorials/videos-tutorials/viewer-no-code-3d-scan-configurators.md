@@ -23,15 +23,15 @@ This approach is perfect for showcasing products captured through 3D scanning, e
 
 Watch the video below to see how to use the Viewer Editor and the BITBYBIT VIEWER block to create an interactive configurator with 3D scanned Gaussian Splat assets on Shopify:
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/B0N3l5Zl5fw" 
     title="No-Code 3D Scanned Plant Configurators on Shopify with Bitbybit Viewer Editor and Gaussian Splats" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

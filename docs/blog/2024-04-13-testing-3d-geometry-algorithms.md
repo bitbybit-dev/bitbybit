@@ -46,7 +46,7 @@ You can access the report here:
     src="https://tests.bitbybit.dev/occt"
     width="100%"
     height="600px"
-    frameborder="0"
+    frameBorder="0"
     scrolling="yes"
     title="Unit Test Coverage Report for @bitbybit-dev/occt"
     allowfullscreen

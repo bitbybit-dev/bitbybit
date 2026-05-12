@@ -10,7 +10,7 @@ import Version from '@site/src/components/Version';
 
 # Block Settings
 
-This guide explains all available settings for the **BITBYBIT VIEWER** theme app extension block in Shopify. Use this block to display 3D models directly on your product pages—no coding required.
+This guide explains all available settings for the **BITBYBIT VIEWER** theme app extension block in Shopify. Use this block to display 3D models directly on your product pages-no coding required.
 
 You'll find the BITBYBIT VIEWER settings in your theme editor after adding the block to a template.
 

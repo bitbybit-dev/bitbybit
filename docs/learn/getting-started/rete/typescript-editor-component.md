@@ -29,7 +29,7 @@ Wiring algorithms together visually with nodes and connections in Rete is:
 Bitbybit offers a vast library of pre-built Rete components (currently over 1,300 and growing!). These components encapsulate a significant amount of underlying code, making complex operations accessible through simple visual blocks.
 
 <Admonition type="info" title="The Iceberg Analogy">
-    Think of the visual components as the visible tips of icebergs. They are powerful and useful on their own. However, beneath each one lies a much larger, more intricate body of code—the "deep ocean" of algorithms and logic that makes them work.
+    Think of the visual components as the visible tips of icebergs. They are powerful and useful on their own. However, beneath each one lies a much larger, more intricate body of code-the "deep ocean" of algorithms and logic that makes them work.
 </Admonition>
 
 ## Scripting Editors: Your Submarine for Deeper Exploration
@@ -57,7 +57,7 @@ Bitbybit is designed to be a learning platform. We want to help users grow from 
 *   **Visual Programming as a Gateway:** Rete provides an accessible and engaging entry point. It lowers the barrier to creating sophisticated 3D scenes and algorithmic designs.
 *   **Scripting as the Next Step:** As your projects become more ambitious, or your curiosity drives you to understand the "how," the scripting editors are there to support your journey. Learning to read and write code unlocks a new level of capability and understanding.
 
-While "vibe coding" and AI-assisted development are exciting trends, the fundamental ability to understand and write code remains an invaluable skill. Think of visual programming as your map and compass, and scripting as your diving gear—both essential for exploring the vast ocean of possibilities.
+While "vibe coding" and AI-assisted development are exciting trends, the fundamental ability to understand and write code remains an invaluable skill. Think of visual programming as your map and compass, and scripting as your diving gear-both essential for exploring the vast ocean of possibilities.
 
 <Admonition type="tip" title="Practical Example">
     Want to see this hybrid approach in action?
@@ -67,7 +67,7 @@ While "vibe coding" and AI-assisted development are exciting trends, the fundame
     </ul>
 </Admonition>
 
-## It's Not "Either/Or" — It's "Both/And"
+## It's Not "Either/Or" - It's "Both/And"
 
 The inclusion of TypeScript, JavaScript, and JSON editors within the Rete environment isn't about choosing one paradigm over the other. It's about providing a flexible, powerful, and adaptable platform where you can use the best tool for the task at hand, and grow your skills along the way.
 

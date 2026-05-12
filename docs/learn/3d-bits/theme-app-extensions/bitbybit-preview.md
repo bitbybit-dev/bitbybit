@@ -61,15 +61,15 @@ Assuming you have already installed the "3D Bits" app in your Shopify store:
 
 For a step-by-step visual guide on setting up the "3D Bits" app and its blocks, including the PREVIEW block, be sure to check out this video tutorial:
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/9l7run2qy0Q?si=j8uSScxl6ncJaX81" 
     title="3D Bits App For Shopify Fast Introduction" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

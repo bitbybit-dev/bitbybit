@@ -136,7 +136,7 @@ This field accepts two types of values:
 
 **Why Base URL is Preferred:**
 
-When you provide a base URL, the system uses it for **all** assets — not just the runner script, but also the web workers (OCCT, JSCAD, Manifold), WASM binaries, BabylonJS engine files, physics engine, and fonts. This means that if you host assets on your own CDN, everything loads from your infrastructure consistently.
+When you provide a base URL, the system uses it for **all** assets - not just the runner script, but also the web workers (OCCT, JSCAD, Manifold), WASM binaries, BabylonJS engine files, physics engine, and fonts. This means that if you host assets on your own CDN, everything loads from your infrastructure consistently.
 
 With the legacy full `.js` URL, the runner script loads from the specified URL, and the base CDN is derived automatically by stripping the known path. While this works, it's less explicit and only supports the standard runner path structure.
 
@@ -214,7 +214,7 @@ To self-host:
 2. Upload them to your CDN, preserving the folder structure
 3. Set the Runner CDN Link to your CDN's base URL (e.g., <b>{'https://cdn.yourcompany.com/bitbybit/v'}<Version />{'/'}</b>)
 
-When you provide a base URL pointing to your own CDN, **all** assets — the runner script, web workers, WASM files, and engine dependencies — load from your infrastructure. This gives you complete control over availability and performance.
+When you provide a base URL pointing to your own CDN, **all** assets - the runner script, web workers, WASM files, and engine dependencies - load from your infrastructure. This gives you complete control over availability and performance.
 
 :::tip Learn more about self-hosting
 For a comprehensive guide on downloading assets, identifying which files you need, configuring CDN providers, and testing your setup, see [Hosting Bitbybit Assets on Your Own CDN](/learn/hosting-and-cdn).

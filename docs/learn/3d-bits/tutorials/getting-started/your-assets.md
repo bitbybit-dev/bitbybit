@@ -29,7 +29,7 @@ When a customer visits your product page with a 3D configurator:
 3. **Files are publicly accessible** - Anyone who knows the URL can access and download the files
 4. **Technical users can extract assets** - Browser developer tools, network inspection, and other readily available tools make downloading these assets straightforward
 
-This is not a limitation of 3D Bits—**this is how the web works**. It's the same reason why:
+This is not a limitation of 3D Bits-**this is how the web works**. It's the same reason why:
 - People can download images from your product pages
 - Videos on your site can be captured
 - Any publicly accessible content can be saved
@@ -91,7 +91,7 @@ Access-Control-Allow-Headers: Content-Type
 
 **For Textures:**
 - Ensure you have rights to all texture images used
-- Stock texture licenses vary—verify web use is permitted
+- Stock texture licenses vary-verify web use is permitted
 - Custom photography you own is safe to use
 
 **For Sounds:**
@@ -231,7 +231,7 @@ If needed, you can split complex products across multiple GLTF files:
 - Assets can be saved to their computer
 
 **This is Normal Web Behavior:**
-This isn't hacking or unauthorized access—it's how web browsers work. It's the same as right-clicking to save an image, just with 3D files instead.
+This isn't hacking or unauthorized access-it's how web browsers work. It's the same as right-clicking to save an image, just with 3D files instead.
 
 ### What You Can't Prevent
 
@@ -242,7 +242,7 @@ You cannot prevent technically skilled users from:
 - ❌ Importing models into 3D software
 - ❌ Analyzing model structure
 
-**These are not security vulnerabilities**—they're inherent characteristics of how web content works.
+**These are not security vulnerabilities**-they're inherent characteristics of how web content works.
 
 ## Best Practices Summary
 
@@ -298,7 +298,7 @@ Using 3D configurators on your website requires accepting a fundamental trade-of
 **You Accept:**
 - 3D assets are publicly accessible
 - Technical users can download models
-- Models work like images—they're public content
+- Models work like images-they're public content
 - Protection comes from simplification, not restrictions
 
 This is the same trade-off you make with:
@@ -319,13 +319,13 @@ A: No. Models must be publicly accessible for browsers to load them. Password pr
 A: No. This is fundamentally incompatible with how web browsers work. If a browser can display it, a user can access it.
 
 **Q: What if someone steals our 3D models?**
-A: Treat this like product photos—publish only what you're comfortable being public. Use simplified models that don't contain sensitive information. Your legal rights still apply if someone misuses your content, but prevention comes from what you choose to upload.
+A: Treat this like product photos-publish only what you're comfortable being public. Use simplified models that don't contain sensitive information. Your legal rights still apply if someone misuses your content, but prevention comes from what you choose to upload.
 
 **Q: Can we use different models for different customers?**
-A: Technically yes, but they'd still be publicly accessible. The solution isn't access control—it's ensuring public-facing models don't contain sensitive information.
+A: Technically yes, but they'd still be publicly accessible. The solution isn't access control-it's ensuring public-facing models don't contain sensitive information.
 
 **Q: Why can't we make these files private?**
-A: Because customers' browsers need to download the files to display your configurator. "Private web content" is a contradiction—if it's on the web, it's accessible.
+A: Because customers' browsers need to download the files to display your configurator. "Private web content" is a contradiction-if it's on the web, it's accessible.
 
 ### Getting Help
 
@@ -351,7 +351,7 @@ Before using 3D Bits, you must understand and accept:
 2. ✅ **Files can be downloaded** by anyone with technical knowledge
 3. ✅ **You are responsible** for ensuring you have rights to all assets
 4. ✅ **You are responsible** for not uploading confidential information
-5. ✅ **This is how the web works**—not a limitation of 3D Bits
+5. ✅ **This is how the web works**-not a limitation of 3D Bits
 
 If you cannot accept these terms, **do not use 3D models in your online store**. The same principles apply to any 3D content on any website, not just 3D Bits or Shopify.
 :::

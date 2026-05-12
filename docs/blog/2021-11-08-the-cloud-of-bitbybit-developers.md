@@ -33,7 +33,7 @@ Public projects gallery
 
 ### Projects host Scripts and Asset files
 
-We have made it simple to edit your Project details, create scripts, upload optimised pictures and various Asset files related to your Project. As before we support 2 types of coding on our Platform — visual (Blockly) and textual (TypeScript). You are free to choose whichever you prefer.
+We have made it simple to edit your Project details, create scripts, upload optimised pictures and various Asset files related to your Project. As before we support 2 types of coding on our Platform - visual (Blockly) and textual (TypeScript). You are free to choose whichever you prefer.
 
 ![Image showing project editor screen](https://miro.medium.com/max/1400/1*ynLahx1xmiSNlSdvn16oiA.png)
 
@@ -45,7 +45,7 @@ One of the main scenarios that will be allowed by our cloud infrastructure is im
 
 ### Three Plan Tiers
 
-Our plans at this stage differ only in quota limits and access levels to community projects. There are currently no 3D CAD features that differ per tier, so when you opt in to try our platform for FREE you get a good indication of what it will feel like when you would switch to our paid SILVER and GOLD plans. In fact even the ‘old’ style use of our 3D CAD application is still allowed — you can still run and open Public scripts made by others without creating an account. In that case you do loose all the nice features that allow structuring your work into projects, scripts and assets. Importing various Asset files will only be possible for users who have accounts. Next we will briefly discuss different visibility levels that your Projects can have.
+Our plans at this stage differ only in quota limits and access levels to community projects. There are currently no 3D CAD features that differ per tier, so when you opt in to try our platform for FREE you get a good indication of what it will feel like when you would switch to our paid SILVER and GOLD plans. In fact even the ‘old’ style use of our 3D CAD application is still allowed - you can still run and open Public scripts made by others without creating an account. In that case you do loose all the nice features that allow structuring your work into projects, scripts and assets. Importing various Asset files will only be possible for users who have accounts. Next we will briefly discuss different visibility levels that your Projects can have.
 
 #### Public Projects
 

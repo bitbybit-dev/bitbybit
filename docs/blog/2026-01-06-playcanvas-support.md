@@ -19,15 +19,15 @@ We are excited to announce the release of our new open-source NPM package and ru
 *   Documentation: **[PlayCanvas Integration Guide](/learn/npm-packages/playcanvas)**
 
 Short demo of some of the Bitbybit projects rendered via PlayCanvas:
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/z3RFu8HTkcA" 
     title="PlayCanvas Support in Bitbybit CAD Parametric Design Platform" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

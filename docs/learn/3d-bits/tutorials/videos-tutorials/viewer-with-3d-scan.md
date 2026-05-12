@@ -24,15 +24,15 @@ You will learn how to:
 
 ## Video Tutorial: BITBYBIT VIEWER with 3D Scans
 
-<div class="responsive-video-container">
+<div className="responsive-video-container">
   <iframe 
     width="560" 
     height="315" 
     src="https://www.youtube.com/embed/FcvQAVE1tDc" 
     title="Tutorial: Using 3D Bits App For Shopify With BITBYBIT VIEWER Theme App Extension Block for 3D Scans" 
-    frameborder="0" 
+    frameBorder="0" 
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-    allowfullscreen>
+    allowFullScreen>
   </iframe>
 </div>
 

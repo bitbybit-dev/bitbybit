@@ -8,7 +8,7 @@ tags: [shopify, 3d-bits]
 
 # Block Settings
 
-This guide explains all available settings for the **BITBYBIT RUNNER** theme app extension block in Shopify. Use this block to create parametric 3D configurators that generate geometry dynamically based on user input—powered by visual programming or TypeScript code.
+This guide explains all available settings for the **BITBYBIT RUNNER** theme app extension block in Shopify. Use this block to create parametric 3D configurators that generate geometry dynamically based on user input-powered by visual programming or TypeScript code.
 
 You'll find the BITBYBIT RUNNER settings in your theme editor after adding the block to a template.
 
@@ -532,7 +532,7 @@ Bitbybit also allows loading custom fonts through both **Low-Code** and **Pro-Co
 - You must have all legal rights to use custom fonts
 - Custom fonts may contain self-intersections or other geometric problems
 - Some fonts cannot be converted to valid OCCT solids due to these issues
-- Test custom fonts thoroughly—some work perfectly, others may fail
+- Test custom fonts thoroughly-some work perfectly, others may fail
 :::
 
 #### Example Use Cases
@@ -718,7 +718,7 @@ if (inputs.color === "red") {
 }
 ```
 
-This is why RUNNER is more powerful but requires more setup—you're programming the configurator's behavior rather than using a no-code interface.
+This is why RUNNER is more powerful but requires more setup-you're programming the configurator's behavior rather than using a no-code interface.
 
 ## Getting Help
 
