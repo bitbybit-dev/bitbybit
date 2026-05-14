@@ -56,6 +56,20 @@ Most of our users - developers and enterprise clients alike - want to bring inte
   altPrefix="Bitbybit Platform Architecture"
 />
 
+In this deep dive, Matas walks through the diagram above in detail - explaining each integration path with live examples and showing how Bitbybit fits into your website architecture.
+
+<div className="responsive-video-container">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/vz1v18qoxC0"
+    title="Bitbybit v1.0.0 - New Base for Cloud and Web CAD"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+    allowFullScreen>
+  </iframe>
+</div>
+
 Each path connects your website to a different layer of the Bitbybit ecosystem:
 
 ### Option 1: Bitbybit Runners
