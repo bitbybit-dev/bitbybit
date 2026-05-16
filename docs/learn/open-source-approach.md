@@ -12,7 +12,7 @@ import Admonition from '@theme/Admonition';
 
 At Bitbybit, we believe in the power of open source and community collaboration. However, to sustain and grow the platform, some components remain proprietary. This page aims to clearly explain our approach so you know exactly what you can access, modify, and contribute to.
 
-**Our Guiding Principle:** If it's in our main [Bitbybit GitHub Monorepo](https://github.com/bitbybit-dev/bitbybit), it's open source!
+**Our Guiding Principle:** All source code in our main [Bitbybit GitHub Monorepo](https://github.com/bitbybit-dev/bitbybit) is open source (MIT). Documentation text is CC BY 4.0. Logos, trademarks, and media assets are not open-source — see [CONTENT-LICENSE.md](https://github.com/bitbybit-dev/bitbybit/blob/master/CONTENT-LICENSE.md) for the full breakdown.
 
 ## What IS Open Source in Bitbybit?
 
@@ -44,13 +44,20 @@ We are committed to open-sourcing the foundational elements that empower develop
         *   `bitbybit.jscad`
 
 2.  **Official Documentation:**
-    *   This Docusaurus-powered documentation site itself is open source. We encourage contributions to improve clarity and add examples!
+    *   The Docusaurus site source code (`docs/src/`, config files, scripts) is MIT licensed.
+    *   The written documentation text (Markdown in `docs/learn/`, `docs/api/`, `docs/blog/`) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — you can share and adapt it with attribution.
+    *   **However**, logos, trademarks, and media assets (images in `docs/static/img/`, blog post images) are **not** covered by any open-source or permissive license. Bitbybit logos are trademarks of Bit by bit developers, and client/partner logos remain the property of their respective owners. See [CONTENT-LICENSE.md](https://github.com/bitbybit-dev/bitbybit/blob/master/CONTENT-LICENSE.md) for full details.
+    *   We encourage contributions to improve documentation clarity and add examples!
 
 3.  **Application Examples:**
-    *   We provide example projects and snippets demonstrating how to use our open-source NPM packages.
+    *   We provide example projects and snippets demonstrating how to use our open-source NPM packages. The source code in `examples/` is MIT licensed.
+    *   Note: examples may link to or reference assets (such as the Bitbybit logo) that are not themselves open-source.
+
+4.  **Language/Localization Files:**
+    *   All files in `languages/` are MIT licensed.
 
 <Admonition type="success" title="Key Takeaway">
-    The code for all the core building blocks-the mathematical and geometric engines, and fundamental utilities-is available for you to inspect, use, and even contribute to via our main GitHub monorepo.
+    The code for all the core building blocks — the mathematical and geometric engines, and fundamental utilities — is available for you to inspect, use, and even contribute to via our main GitHub monorepo. Documentation text is freely shareable under CC BY 4.0. Logos and trademarks are not open-source — see our [CONTENT-LICENSE.md](https://github.com/bitbybit-dev/bitbybit/blob/master/CONTENT-LICENSE.md) for the full breakdown.
 </Admonition>
 
 ## What is NOT Open Source (Proprietary Components)?
@@ -92,7 +99,8 @@ To support the development and hosting of the Bitbybit platform, certain compone
 ## Our Commitment to Transparency
 
 We aim to be as transparent as possible about our open source model.
-*   **The Rule of Thumb:** If you can't find the source code within the main [Bitbybit GitHub Monorepo](https://github.com/bitbybit-dev/bitbybit), it's likely proprietary and part of our intellectual property. Everything you can install via NPM - is open-source.
+*   **The Rule of Thumb:** If you can't find the source code within the main [Bitbybit GitHub Monorepo](https://github.com/bitbybit-dev/bitbybit), it's likely proprietary and part of our intellectual property. Everything you can install via NPM is open-source.
+*   **Trademarks & Assets:** Logos, brand assets, and third-party trademarks in the repository are **not** open-source, regardless of which directory they appear in. See [CONTENT-LICENSE.md](https://github.com/bitbybit-dev/bitbybit/blob/master/CONTENT-LICENSE.md) for specifics.
 *   **Why This Model?** This hybrid approach allows us to offer powerful core tools to the community while funding the ongoing development, maintenance, and innovation of the broader Bitbybit platform and its advanced features.
 
 We appreciate your understanding and your engagement with both our open source contributions and the Bitbybit platform as a whole! If you have questions about specific components, feel free to reach out.

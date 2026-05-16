@@ -2,6 +2,10 @@
 
 Open-source 3D CAD algorithms for the web - MIT licensed. This monorepo contains all Bitbybit NPM packages plus example applications.
 
+## License
+
+Source code in `packages/`, `languages/`, and `examples/` is [MIT licensed](./LICENSE). Documentation text in `docs/` is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Logos, trademarks, and media assets are **not** open-source — see [CONTENT-LICENSE.md](./CONTENT-LICENSE.md) for details.
+
 # [FULL PLATFORM AT BITBYBIT.DEV](https://bitbybit.dev)   
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   
 
