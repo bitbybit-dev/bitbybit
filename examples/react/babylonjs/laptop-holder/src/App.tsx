@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import { BitByBitBase } from '@bitbybit-dev/babylonjs';
 import { OccStateEnum } from '@bitbybit-dev/occt-worker';
