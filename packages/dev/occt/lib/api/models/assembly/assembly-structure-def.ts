@@ -1,6 +1,7 @@
 import { AssemblyPartDef }  from "./assembly-part-def";
 import { AssemblyNodeDef }  from "./assembly-node-def";
 import { AssemblyPartUpdateDef } from "./assembly-part-update-def";
+import { AssemblyLoadedPartDef } from "./assembly-loaded-part-def";
 
 /**
  * Complete assembly structure definition.
@@ -33,6 +34,14 @@ export interface AssemblyStructureDef<T> {
      * Ignored when creating a new document.
      */
     partUpdates?: AssemblyPartUpdateDef<T>[];
+    /**
+     * Parts imported from other documents (typically STEP-loaded).
+     * Each entry copies a label tree from a source document into this document,
+     * preserving sub-assembly hierarchy, names and colors. The copied root then
+     * behaves as a regular part: instance nodes can reference it by `partId` and
+     * place it multiple times with different transforms.
+     */
+    loadedParts?: AssemblyLoadedPartDef[];
     /**
      * Whether to clear the existing document before adding new content.
      * Only relevant when an existingDocument is provided.

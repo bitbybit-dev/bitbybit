@@ -1,6 +1,6 @@
 {
   "name": "nuxt-bitbybit",
-  "private": false,
+  "private": true,
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -12,9 +12,7 @@
   },
   "dependencies": {
     "@bitbybit-dev/babylonjs": "1.0.0",
-    "@pinia/nuxt": "^0.5.4",
-    "nuxt": "^3.13.0",
-    "pinia": "^2.2.2",
+    "nuxt": "4.4.6",
     "vue": "latest",
     "vue-router": "latest"
   }

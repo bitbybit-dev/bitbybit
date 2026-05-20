@@ -69,6 +69,31 @@ export class OCCTAssemblyManager {
         return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.createAssemblyNode", inputs);
     }
 
+     /**
+     * Create an imported part definition that copies a label tree from another document
+     * (typically a STEP-loaded document) into the new assembly. Preserves sub-assembly
+     * hierarchy, names and colors. The result can be referenced by `partId` from any
+     * instance node to place the imported assembly multiple times.
+     * 
+     * @param inputs - Imported part details: id, sourceDocumentIndex, optional sourceLabel/name/colorRgba
+     * @returns Imported part definition to add to an assembly structure
+     * 
+     * @example
+     * ```typescript
+     * const chairDoc = occt.assembly.manager.loadStepToDoc({ stepData });
+     * const chair = occt.assembly.manager.createImportedPart({
+     *     id: "chair", sourceDocumentIndex: 0, name: "Chair"
+     * });
+     * const i1 = occt.assembly.manager.createInstanceNode({ id: "c1", partId: "chair", name: "Chair 1", translation: [0,0,0] });
+     * const i2 = occt.assembly.manager.createInstanceNode({ id: "c2", partId: "chair", name: "Chair 2", translation: [500,0,0] });
+     * const structure = occt.assembly.manager.combineStructure({ parts: [], nodes: [i1, i2], loadedParts: [chair] });
+     * const doc = occt.assembly.manager.buildAssemblyDocument({ structure, sourceDocuments: [chairDoc] });
+     * ```
+     */
+    createImportedPart(inputs: Inputs.OCCT.CreateImportedPartDto): Promise<Models.OCCT.AssemblyLoadedPartDef> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.createImportedPart", inputs);
+    }
+
     /**
      * Create an instance node definition (a reference to a part with transform).
      * Instance nodes place a part at a specific location with optional translation, rotation, and scale.

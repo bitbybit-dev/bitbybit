@@ -137,7 +137,39 @@ export class OCCTAssemblyManager {
             nodes: inputs.nodes ?? [],
             removals: inputs.removals,
             partUpdates: inputs.partUpdates,
-            clearDocument: inputs.clearDocument
+            clearDocument: inputs.clearDocument,
+            loadedParts: inputs.loadedParts
+        };
+    }
+
+    /**
+     * Create an imported part definition that copies a label tree from another document
+     * (typically a STEP-loaded document) into the new assembly. Preserves sub-assembly
+     * hierarchy, names and colors. The result can be referenced by `partId` from any
+     * instance node to place the imported assembly multiple times.
+     * 
+     * @param inputs - Imported part details: id, sourceDocumentIndex, optional sourceLabel/name/colorRgba
+     * @returns Imported part definition to add to an assembly structure
+     * 
+     * @example
+     * ```typescript
+     * const chairDoc = occt.assembly.manager.loadStepToDoc({ stepData });
+     * const chair = occt.assembly.manager.createImportedPart({
+     *     id: "chair", sourceDocumentIndex: 0, name: "Chair"
+     * });
+     * const i1 = occt.assembly.manager.createInstanceNode({ id: "c1", partId: "chair", name: "Chair 1", translation: [0,0,0] });
+     * const i2 = occt.assembly.manager.createInstanceNode({ id: "c2", partId: "chair", name: "Chair 2", translation: [500,0,0] });
+     * const structure = occt.assembly.manager.combineStructure({ parts: [], nodes: [i1, i2], loadedParts: [chair] });
+     * const doc = occt.assembly.manager.buildAssemblyDocument({ structure, sourceDocuments: [chairDoc] });
+     * ```
+     */
+    createImportedPart(inputs: Inputs.OCCT.CreateImportedPartDto): Models.OCCT.AssemblyLoadedPartDef {
+        return {
+            id: inputs.id,
+            sourceDocumentIndex: inputs.sourceDocumentIndex,
+            sourceLabel: inputs.sourceLabel,
+            name: inputs.name,
+            colorRgba: inputs.colorRgba
         };
     }
 
@@ -162,7 +194,7 @@ export class OCCTAssemblyManager {
      * @throws Error if assembly building fails
      */
     buildAssemblyDocument(inputs: Inputs.OCCT.BuildAssemblyDocumentDto<TopoDS_Shape, Handle_TDocStd_Document>): Handle_TDocStd_Document {
-        const { structure, existingDocument } = inputs;
+        const { structure, existingDocument, sourceDocuments } = inputs;
         
         const shapes: TopoDS_Shape[] = [];
         const partsJson: { id: string; shapeIndex: number; name: string; colorRgba?: Inputs.Base.ColorRGBA }[] = [];
@@ -199,15 +231,32 @@ export class OCCTAssemblyManager {
             }
         }
         
+        // Imported parts reference source documents by index; they carry no shape payload.
+        const loadedPartsJson = structure.loadedParts && structure.loadedParts.length > 0
+            ? structure.loadedParts.map(p => ({
+                id: p.id,
+                sourceDocumentIndex: p.sourceDocumentIndex,
+                sourceLabel: p.sourceLabel,
+                name: p.name,
+                colorRgba: p.colorRgba
+            }))
+            : undefined;
+
         const structureJson = JSON.stringify({
             parts: partsJson,
             nodes: structure.nodes,
             removals: structure.removals,
             partUpdates: partUpdatesJson.length > 0 ? partUpdatesJson : undefined,
-            clearDocument: structure.clearDocument
+            clearDocument: structure.clearDocument,
+            loadedParts: loadedPartsJson
         });
         
-        const document = this.occ.BuildAssemblyDocument(structureJson, shapes, existingDocument);
+        const document = this.occ.BuildAssemblyDocument(
+            structureJson,
+            shapes,
+            existingDocument,
+            sourceDocuments ?? []
+        );
         
         if (document.IsNull()) {
             throw new Error("Failed to create assembly document");
