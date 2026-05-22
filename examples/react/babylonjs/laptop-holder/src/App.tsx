@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import { BitByBitBase } from '@bitbybit-dev/babylonjs';
-import { OccStateEnum } from '@bitbybit-dev/occt-worker';
-import { Scene, Engine, Color4, HemisphericLight, Vector3, ArcRotateCamera, Light } from '@babylonjs/core';
-import { LaptopLogic, Laptop } from './laptop';
-import { Button, TextField } from '@mui/material';
-import { Add, Delete, Download, Menu } from '@mui/icons-material';
-import { usePrevious } from './use-previous';
+import { useEffect, useState } from "react";
+import "./App.css";
+import { BitByBitBase } from "@bitbybit-dev/babylonjs";
+import { OccStateEnum } from "@bitbybit-dev/occt-worker";
+import { Scene, Engine, Color4, HemisphericLight, Vector3, ArcRotateCamera, Light } from "@babylonjs/core";
+import { LaptopLogic, Laptop } from "./laptop";
+import { Button, TextField } from "@mui/material";
+import { Add, Delete, Download, Menu } from "@mui/icons-material";
+import { usePrevious } from "./use-previous";
 
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
         width: 30.41,
         length: 1.5,
         height: 21.24,
-    }])
+    }]);
     const prevLaptops = usePrevious(laptops);
 
     const [menuVisible, setMenuVisible] = useState<boolean>(true);
@@ -27,22 +27,22 @@ function App() {
     useEffect(() => {
 
         const bitbybit = new BitByBitBase();
-        const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+        const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 
         const engine = new Engine(canvas);
         engine.setHardwareScalingLevel(0.5);
         const scene = new Scene(engine);
         scene.clearColor = new Color4(26 / 255, 28 / 255, 31 / 255, 1);
-        const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), scene);
+        const camera = new ArcRotateCamera("Camera", 0, 10, 10, new Vector3(0, 0, 0), scene);
         camera.attachControl(canvas, true);
 
-        const light = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), scene);
+        const light = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
         light.intensityMode = Light.INTENSITYMODE_ILLUMINANCE;
         light.intensity = 1;
         scene.metadata = { shadowGenerators: [] };
 
-        const occt = new Worker(new URL('./occ.worker', import.meta.url), { name: 'OCC', type: 'module' })
-        const jscad = new Worker(new URL('./jscad.worker', import.meta.url), { name: 'JSCAD', type: 'module' })
+        const occt = new Worker(new URL("./occ.worker", import.meta.url), { name: "OCC", type: "module" });
+        const jscad = new Worker(new URL("./jscad.worker", import.meta.url), { name: "JSCAD", type: "module" });
 
         bitbybit.init(scene, occt, jscad);
 
@@ -54,7 +54,7 @@ function App() {
             if (engine) {
                 engine.resize();
             }
-        }
+        };
 
         bitbybit.occtWorkerManager.occWorkerState$.subscribe(s => {
             if (s.state === OccStateEnum.initialised) {
@@ -62,7 +62,7 @@ function App() {
                 setBitByBitInitialised(true);
                 engine.resize();
                 const ll = new LaptopLogic(bitbybit);
-                setLaptopLogic(ll)
+                setLaptopLogic(ll);
                 ll.do();
             } else if (s.state === OccStateEnum.computing) {
                 setShowSpinner(true);
@@ -70,18 +70,18 @@ function App() {
                 setShowSpinner(false);
             }
         });
-    }, [])
+    }, []);
 
     const render = (renderableLaptops: Laptop[]) => {
         if (laptopLogic && renderableLaptops && renderableLaptops.length > 0 && ((prevLaptops && laptopsNotTheSame(prevLaptops, renderableLaptops)) || (!prevLaptops))) {
             laptopLogic.render(renderableLaptops);
         }
-    }
+    };
 
-    const handleLaptopChange = (event, type: 'width' | 'length' | 'height', laptop: Laptop) => {
+    const handleLaptopChange = (event, type: "width" | "length" | "height", laptop: Laptop) => {
         const val = event.target.value;
         let value;
-        if (val !== '') {
+        if (val !== "") {
             value = +val;
             if (value < 0) {
                 value = 0.1;
@@ -89,24 +89,24 @@ function App() {
                 value = 1000;
             }
         } else {
-            value = '';
+            value = "";
         }
         const lap = { ...laptop };
         switch (type) {
-            case 'width':
+            case "width":
                 lap.width = value;
                 break;
-            case 'length':
+            case "length":
                 lap.length = value;
                 break;
-            case 'height':
+            case "height":
                 lap.height = value;
                 break;
             default:
                 break;
         }
-        setLaptops([...laptops.map(l => l.id === laptop.id ? lap : l)])
-    }
+        setLaptops([...laptops.map(l => l.id === laptop.id ? lap : l)]);
+    };
 
     const laptopsNotTheSame = (prev: Laptop[], current: Laptop[]) => {
         let result = false;
@@ -120,24 +120,24 @@ function App() {
                 } else if (laptop.width !== c.width || laptop.height !== c.height || laptop.length !== c.length) {
                     result = true;
                 }
-            })
+            });
         }
         return result;
-    }
+    };
 
     const downloadStep = () => {
         laptopLogic.downloadStep();
-    }
+    };
 
     const downloadStl = () => {
         laptopLogic.downloadStl();
-    }
+    };
 
     const del = (laptop) => {
         const remainingLaptops = [...laptops.filter(l => l.id !== laptop.id)];
         setLaptops(remainingLaptops);
         render(remainingLaptops);
-    }
+    };
 
     const add = () => {
         const newLaptops = [...laptops, {
@@ -148,7 +148,7 @@ function App() {
         }];
         setLaptops(newLaptops);
         render(newLaptops);
-    }
+    };
 
     return (
         <div className="App">
@@ -158,7 +158,7 @@ function App() {
                         <div></div><div></div><div></div><div></div>
                     </div>
                 }
-                <canvas id="renderCanvas" className={bitByBitInitialised ? '' : 'opaque'}>
+                <canvas id="renderCanvas" className={bitByBitInitialised ? "" : "opaque"}>
                 </canvas>
             </div>
             <div className="content">
@@ -216,17 +216,17 @@ function App() {
                                                 </div>
                                                 <div className="input">
                                                     <TextField size="small" label="Width" variant="outlined" type="number" value={laptop.width} onChange={(e) => {
-                                                        handleLaptopChange(e, 'width', laptop)
+                                                        handleLaptopChange(e, "width", laptop);
                                                     }} onBlur={() => render(laptops)} />
                                                 </div>
                                                 <div className="input">
                                                     <TextField size="small" label="Length" variant="outlined" type="number" value={laptop.length} onChange={(e) => {
-                                                        handleLaptopChange(e, 'length', laptop)
+                                                        handleLaptopChange(e, "length", laptop);
                                                     }} onBlur={() => render(laptops)} />
                                                 </div>
                                                 <div className="input">
                                                     <TextField size="small" label="Height" variant="outlined" type="number" value={laptop.height} onChange={(e) => {
-                                                        handleLaptopChange(e, 'height', laptop)
+                                                        handleLaptopChange(e, "height", laptop);
                                                     }} onBlur={() => render(laptops)} />
                                                 </div>
                                             </div>

@@ -6085,11 +6085,20 @@
     "uint8Array": "uint8 массив",
     "preview assembly hierarchy": "предпросмотр иерархии сборки occt",
     "bitbybit.previewAssemblyHierarchy": "предпросмотр иерархии сборки occt",
-    "meshRelative": "относительная сетка",
+    "meshRelative": "сетка относительная",
     "internalVerticesMode": "режим внутренних вершин",
     "controlSurfaceDeflection": "отклонение управляющей поверхности",
     "bitbybit.math.evalArithmetic": "вычислить арифметику",
     "evalArithmetic": "вычислить арифметику",
-    "bitbybit.math.evalArithmetic_description": "Безопасно вычисляет простое арифметическое выражение, содержащее только числа, +, -, *, /, скобки и пробелы. Использует алгоритм shunting-yard — без функции eval. Пример: '(3+2)*4' → 20, '10/3' → 3,3333...",
-    "expression": "выражение"
+    "bitbybit.math.evalArithmetic_description": "Безопасно вычисляет простое арифметическое выражение, содержащее только числа, +, -, *, /, скобки и пробелы. Использует алгоритм shunting-yard — без evalFunction. Пример: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "выражение",
+    "bitbybit.occt.assembly.manager.createImportedPart": "создать импортированную деталь",
+    "createImportedPart": "создать импортированную деталь",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(обычно документ, загруженный в формате STEP) в новую сборку. Сохраняет иерархию подсборок, названия и цвета. На результат можно ссылаться по `partId` из любого",
+    "sourceDocumentIndex": "индекс исходного документа",
+    "sourceLabel": "метка источника",
+    "loadedParts": "загруженные детали",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "исходные документы",
+    "D[]": "D[]"
 }

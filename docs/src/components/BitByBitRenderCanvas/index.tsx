@@ -32,6 +32,7 @@ interface Props {
     style?: CSSProperties;
     className?: string;
     showScriptPreviewInitially?: boolean;
+    startButtonLabel?: string;
 }
 
 interface IframeReadyMessage {
@@ -59,12 +60,13 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     style: customCanvasContainerStyle = {},
     className: customCanvasContainerClassName,
     showScriptPreviewInitially = true,
+    startButtonLabel = "Start Script",
 }: Props) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const canvasContainerRef = useRef<HTMLDivElement>(null);
     const uniqueId = useId();
     const { siteConfig } = useDocusaurusContext();
-    const defaultVersion = siteConfig.customFields?.bitbybitVersion as string || "1.0.0";
+    const defaultVersion = siteConfig.customFields?.bitbybitVersion as string || "1.0.1";
 
     const [isIframeReady, setIsIframeReady] = useState(false);
     const [loadIframe, setLoadIframe] = useState(!requireManualStart);
@@ -238,7 +240,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
                         </a>
                         {title && <h2 style={titleManualStartStyle}>{title}</h2>}
                         <button onClick={handleStartScript} style={startButtonStyle}>
-                            Start Script
+                            {startButtonLabel}
                         </button>
                         {scriptProp && scriptProp.type && (
                             <div style={scriptTypeIndicatorManualStartStyle}>

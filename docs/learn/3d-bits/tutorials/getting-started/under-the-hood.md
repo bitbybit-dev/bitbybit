@@ -12,11 +12,11 @@ Before diving into building 3D configurators with 3D Bits, it's essential to und
 
 ## Our Design Philosophy: Focus on What We Do Best
 
-The power of 3D Bits comes from its adaptive nature and focused approach. We're proud to offer a solution that **does not try to copy or duplicate features already developed by Shopify** or hundreds of third-party option and variant applications. These apps have solved the problems of custom UI forms and price management better than the majority of all-in-one solutions. The diverse nature of these apps means that merchants can pick the tools that work best for their business workflows.
+The power of 3D Bits comes from its adaptive nature and focused approach. We deliberately chose **not to duplicate features already developed by Shopify** or by the many excellent third-party option and variant applications. These apps have solved the problems of custom UI forms and price management really well, and the diverse nature of this ecosystem means merchants can pick the tools that work best for their business workflows.
 
 **Why this approach?**
 
-Managing pricing and checkout flows is a responsible, complex task that must be handled with care and security in mind. Every business has unique requirements for how they price products, calculate discounts, handle bundles, and process checkout flows. Rather than building a one-size-fits-all solution that might suit some customers but disappoint others, we ask our customers to choose the best 3rd party solution for their business. This allows us to focus exclusively on our core expertise: **3D web programming, interactive visualization, CAD operations, and parametric design**.
+Managing pricing and checkout flows is a responsible, complex task that must be handled with care and security in mind. Every business has unique requirements for how they price products, calculate discounts, handle bundles, and process checkout flows. Rather than trying to cover everything in a single app, we let our customers choose the solutions that best fit their business. This allows us to focus exclusively on our core expertise: **3D web programming, interactive visualization, CAD operations, and parametric design**.
 
 ### What 3D Bits Is (and Isn't)
 

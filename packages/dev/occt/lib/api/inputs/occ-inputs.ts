@@ -6343,14 +6343,33 @@ export namespace OCCT {
          */
         stepData: string | ArrayBuffer | Uint8Array | File | Blob;
         /**
-         * Mesh precision (linear deflection) for triangulation.
-         * Smaller values produce finer meshes but increase file size.
-         * @default 0.1
-         * @minimum 0.001
+         * Mesh linear deflection (triangulation precision).
+         * When `meshRelative` is true (default), this is a fraction of each edge's length
+         * (e.g. 0.005 = 0.5%) so small parts get fine meshes and large parts get coarse ones.
+         * When `meshRelative` is false, this is an absolute value in model units (mm for STEP).
+         * @default 0.005
+         * @minimum 0.0001
          * @maximum 10
-         * @step 0.01
+         * @step 0.001
          */
-        meshPrecision = 0.1;
+        meshPrecision = 0.005;
+        /**
+         * Mesh angular deflection in radians (max normal deviation between adjacent triangles).
+         * Smaller values produce smoother curved surfaces but more triangles.
+         * @default 0.5
+         * @minimum 0.01
+         * @maximum 3.14159
+         * @step 0.05
+         */
+        meshAngle = 0.5;
+        /**
+         * Use size-aware relative deflection per face. Recommended default for mixed-scale
+         * assemblies (machine + small fasteners) - dramatically reduces triangle count and
+         * meshing time with negligible visual difference. Set to false for absolute deflection
+         * (the value of `meshPrecision` is then interpreted in model units).
+         * @default true
+         */
+        meshRelative = true;
     }
 
     /**
@@ -6444,14 +6463,16 @@ export namespace OCCT {
         // ==================== Mesh Options ====================
 
         /**
-         * Mesh precision (linear deflection) for triangulation.
-         * Smaller values produce finer meshes but increase file size.
-         * @default 0.1
-         * @minimum 0.001
+         * Mesh linear deflection (triangulation precision).
+         * When `meshRelative` is true (default), this is a fraction of each edge's length
+         * (e.g. 0.005 = 0.5%) so deflection auto-scales with feature size.
+         * When `meshRelative` is false, this is absolute in model units (mm for STEP).
+         * @default 0.005
+         * @minimum 0.0001
          * @maximum 10
-         * @step 0.01
+         * @step 0.001
          */
-        meshDeflection = 0.1;
+        meshDeflection = 0.005;
 
         /**
          * Mesh angular deflection in radians.
@@ -6471,21 +6492,24 @@ export namespace OCCT {
         meshParallel = true;
 
         /**
-         * Face count threshold for adaptive meshing.
-         * Compounds with more faces are meshed per-solid to avoid stack overflow.
-         * Set to -1 to always mesh as single unit.
-         * @default 50000
+         * Face count threshold for the legacy per-sub-shape meshing fallback.
+         * Default -1 means single-pass meshing of the whole compound (fastest, recommended).
+         * Set to a positive value (e.g. 100000) to fall back to per-solid meshing for
+         * very large assemblies in memory-constrained environments.
+         * @default -1
          * @minimum -1
          * @maximum 500000
          * @step 10000
          */
-        faceCountThreshold = 50000;
+        faceCountThreshold = -1;
 
         /**
-         * Use relative deflection (relative to edge length) instead of absolute.
-         * @default false
+         * Use size-aware relative deflection per face (recommended). When true,
+         * `meshDeflection` is interpreted as a fraction of each edge's length.
+         * Set to false to use absolute deflection in model units.
+         * @default true
          */
-        meshRelative = false;
+        meshRelative = true;
 
         /**
          * Enable internal vertices mode for more accurate mesh on complex faces.
@@ -6587,9 +6611,10 @@ export namespace OCCT {
      * @typeParam D - Document type (Handle_TDocStd_Document or pointer)
      */
     export class BuildAssemblyDocumentDto<T, D> {
-        constructor(structure?: Models.OCCT.AssemblyStructureDef<T>, existingDocument?: D) {
+        constructor(structure?: Models.OCCT.AssemblyStructureDef<T>, existingDocument?: D, sourceDocuments?: D[]) {
             if (structure !== undefined) { this.structure = structure; }
             if (existingDocument !== undefined) { this.existingDocument = existingDocument; }
+            if (sourceDocuments !== undefined) { this.sourceDocuments = sourceDocuments; }
         }
         /**
          * Assembly structure definition with parts and nodes
@@ -6604,6 +6629,15 @@ export namespace OCCT {
          * @optional true
          */
         existingDocument?: D;
+        /**
+         * Optional array of source document handles referenced by `structure.loadedParts` entries
+         * via `sourceDocumentIndex`. Typically these are documents previously loaded with
+         * loadStepToDoc. Lifetime of source documents is the caller's responsibility — they are
+         * not modified or deleted by buildAssemblyDocument.
+         * @default undefined
+         * @optional true
+         */
+        sourceDocuments?: D[];
     }
 
     /**
@@ -6808,13 +6842,15 @@ export namespace OCCT {
             nodes?: Models.OCCT.AssemblyNodeDef[],
             removals?: string[],
             partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[],
-            clearDocument?: boolean
+            clearDocument?: boolean,
+            loadedParts?: Models.OCCT.AssemblyLoadedPartDef[]
         ) {
             if (parts !== undefined) { this.parts = parts; }
             if (nodes !== undefined) { this.nodes = nodes; }
             if (removals !== undefined) { this.removals = removals; }
             if (partUpdates !== undefined) { this.partUpdates = partUpdates; }
             if (clearDocument !== undefined) { this.clearDocument = clearDocument; }
+            if (loadedParts !== undefined) { this.loadedParts = loadedParts; }
         }
         /**
          * List of part definitions (shapes that can be instanced)
@@ -6850,6 +6886,64 @@ export namespace OCCT {
          * @default false
          */
         clearDocument = false;
+        /**
+         * Parts imported from other documents (e.g. STEP-loaded). Each entry references a
+         * source document via `sourceDocumentIndex` (matching the order of `sourceDocuments`
+         * on buildAssemblyDocument) and copies a label (or all free shapes) into this assembly,
+         * preserving sub-assembly hierarchy, names and colors. Instance nodes can then reference
+         * them by `partId` to place the imported assembly multiple times with different transforms.
+         * @default undefined
+         */
+        loadedParts?: Models.OCCT.AssemblyLoadedPartDef[];
+    }
+
+    /**
+     * DTO for creating an imported part definition.
+     * Imported parts copy a label tree from a source document (typically STEP-loaded) into
+     * the new assembly, preserving sub-assembly hierarchy. They become referenceable as a
+     * single part (by id) from any instance node.
+     */
+    export class CreateImportedPartDto {
+        constructor(
+            id?: string,
+            sourceDocumentIndex?: number,
+            sourceLabel?: string,
+            name?: string,
+            colorRgba?: Base.ColorRGBA
+        ) {
+            if (id !== undefined) { this.id = id; }
+            if (sourceDocumentIndex !== undefined) { this.sourceDocumentIndex = sourceDocumentIndex; }
+            if (sourceLabel !== undefined) { this.sourceLabel = sourceLabel; }
+            if (name !== undefined) { this.name = name; }
+            if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+        }
+        /**
+         * Unique identifier for referencing this imported part from instance nodes (via partId).
+         * @default undefined
+         */
+        id: string;
+        /**
+         * Index into the `sourceDocuments` array passed to buildAssemblyDocument.
+         * @default 0
+         */
+        sourceDocumentIndex = 0;
+        /**
+         * Optional OCAF entry string of the label to copy from the source document (e.g. "0:1:1:1").
+         * If omitted, all free shapes of the source document are imported (wrapped in a new
+         * assembly compound when there are multiple).
+         * @default undefined
+         */
+        sourceLabel?: string;
+        /**
+         * Optional display name override applied to the imported root label.
+         * @default undefined
+         */
+        name?: string;
+        /**
+         * Optional color override applied to the imported root label.
+         * @default undefined
+         */
+        colorRgba?: Base.ColorRGBA;
     }
 
     /**

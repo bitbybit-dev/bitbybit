@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script defer src="https://git-cdn.bitbybit.dev/v1.0.0/runner/bitbybit-runner-core.js"></script>
+    <script defer src="https://git-cdn.bitbybit.dev/v1.0.1/runner/bitbybit-runner-core.js"></script>
     <script type="importmap">
     {
         "imports": {
@@ -742,120 +742,169 @@
             <div class="options-body" id="optionsBody">
                 <div class="options-grid">
 
-                    <!-- Data Reading -->
-                    <div class="section-title">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                        Data Reading
-                    </div>
-
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="readColors" checked><span class="slider"></span></label>
-                        <label for="readColors">Read Colors</label>
-                    </div>
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="readNames" checked><span class="slider"></span></label>
-                        <label for="readNames">Read Names</label>
-                    </div>
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="readMaterials" checked><span class="slider"></span></label>
-                        <label for="readMaterials">Read Materials</label>
-                    </div>
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="readLayers"><span class="slider"></span></label>
-                        <label for="readLayers">Read Layers</label>
-                    </div>
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="readProps"><span class="slider"></span></label>
-                        <label for="readProps">Read Properties</label>
-                    </div>
-
-                    <!-- Mesh Settings -->
+                    <!-- Mode toggle -->
                     <div class="section-title">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
                         Mesh Settings
                     </div>
 
                     <div class="field">
-                        <label for="meshDeflection">Mesh Deflection</label>
-                        <input type="number" id="meshDeflection" value="5" min="0.01" step="0.1">
+                        <label for="meshPrecision">Mesh Precision (deflection)</label>
+                        <input type="number" id="meshPrecision" value="0.005" min="0.0001" max="10" step="0.001">
                     </div>
                     <div class="field">
-                        <label for="meshAngle">Mesh Angle</label>
-                        <input type="number" id="meshAngle" value="15" min="0.01" step="0.5">
-                    </div>
-                    <div class="field">
-                        <label for="faceCountThreshold">Face Count Threshold</label>
-                        <input type="number" id="faceCountThreshold" value="50000" min="1" step="1000">
+                        <label for="meshAngle">Mesh Angle (radians)</label>
+                        <input type="number" id="meshAngle" value="0.5" min="0.01" max="3.14159" step="0.05">
                     </div>
                     <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="mergeFaces" checked><span class="slider"></span></label>
-                        <label for="mergeFaces">Merge Faces</label>
+                        <label class="switch"><input type="checkbox" id="meshRelative" checked><span class="slider"></span></label>
+                        <label for="meshRelative">Relative Deflection</label>
                     </div>
 
-                    <!-- Export Settings -->
+                    <!-- Advanced mode toggle -->
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        Advanced Mode
+                    </div>
+
+                    <div class="field toggle-field">
+                        <label class="switch"><input type="checkbox" id="advancedMode"><span class="slider"></span></label>
+                        <label for="advancedMode">Enable Advanced Conversion</label>
+                    </div>
+
+                    <!-- Advanced options (hidden by default) -->
+                    <div id="advancedOptionsSection" class="hidden">
+
+                        <!-- Data Reading -->
+                        <div class="section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                            Data Reading
+                        </div>
+
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="readColors" checked><span class="slider"></span></label>
+                            <label for="readColors">Read Colors</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="readNames" checked><span class="slider"></span></label>
+                            <label for="readNames">Read Names</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="readMaterials" checked><span class="slider"></span></label>
+                            <label for="readMaterials">Read Materials</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="readLayers"><span class="slider"></span></label>
+                            <label for="readLayers">Read Layers</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="readProps"><span class="slider"></span></label>
+                            <label for="readProps">Read Properties</label>
+                        </div>
+
+                        <!-- Advanced Mesh Settings -->
+                        <div class="section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                            Advanced Mesh Settings
+                        </div>
+
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="meshParallel" checked><span class="slider"></span></label>
+                            <label for="meshParallel">Parallel Meshing</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="internalVerticesMode"><span class="slider"></span></label>
+                            <label for="internalVerticesMode">Internal Vertices Mode</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="controlSurfaceDeflection"><span class="slider"></span></label>
+                            <label for="controlSurfaceDeflection">Control Surface Deflection</label>
+                        </div>
+                        <div class="field">
+                            <label for="faceCountThreshold">Face Count Threshold (-1 = single-pass)</label>
+                            <input type="number" id="faceCountThreshold" value="-1" min="-1" max="500000" step="10000">
+                        </div>
+
+                        <!-- Export Settings -->
+                        <div class="section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Export Settings
+                        </div>
+
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="mergeFaces" checked><span class="slider"></span></label>
+                            <label for="mergeFaces">Merge Faces</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="splitIndices16" checked><span class="slider"></span></label>
+                            <label for="splitIndices16">Split Indices (16-bit)</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="parallelWrite" checked><span class="slider"></span></label>
+                            <label for="parallelWrite">Parallel Write</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="embedTextures" checked><span class="slider"></span></label>
+                            <label for="embedTextures">Embed Textures</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="forceUVExport"><span class="slider"></span></label>
+                            <label for="forceUVExport">Force UV Export</label>
+                        </div>
+                        <div class="field toggle-field">
+                            <label class="switch"><input type="checkbox" id="adjustZtoY" checked><span class="slider"></span></label>
+                            <label for="adjustZtoY">Adjust Z to Y Up</label>
+                        </div>
+                        <div class="field">
+                            <label for="scale">Scale</label>
+                            <input type="number" id="scale" value="1.0" min="0.000001" max="1000000" step="0.001">
+                        </div>
+
+                        <!-- Naming & Transforms -->
+                        <div class="section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                            Naming &amp; Transform Format
+                        </div>
+
+                        <div class="field">
+                            <label for="nodeNameFormat">Node Name Format</label>
+                            <select id="nodeNameFormat">
+                                <option value="empty">empty</option>
+                                <option value="product">product</option>
+                                <option value="instance" selected>instance</option>
+                                <option value="instanceOrProduct">instanceOrProduct</option>
+                                <option value="productOrInstance">productOrInstance</option>
+                                <option value="productAndInstance">productAndInstance</option>
+                                <option value="productAndInstanceAndOcaf">productAndInstanceAndOcaf</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="meshNameFormat">Mesh Name Format</label>
+                            <select id="meshNameFormat">
+                                <option value="empty">empty</option>
+                                <option value="product">product</option>
+                                <option value="instance" selected>instance</option>
+                                <option value="instanceOrProduct">instanceOrProduct</option>
+                                <option value="productOrInstance">productOrInstance</option>
+                                <option value="productAndInstance">productAndInstance</option>
+                                <option value="productAndInstanceAndOcaf">productAndInstanceAndOcaf</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="transformFormat">Transform Format</label>
+                            <select id="transformFormat">
+                                <option value="compact" selected>compact</option>
+                                <option value="mat4">mat4</option>
+                                <option value="trs">trs</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- Output file name (always visible) -->
                     <div class="section-title">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Export Settings
-                    </div>
-
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="splitIndices16" checked><span class="slider"></span></label>
-                        <label for="splitIndices16">Split Indices (16-bit)</label>
-                    </div>
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="embedTextures" checked><span class="slider"></span></label>
-                        <label for="embedTextures">Embed Textures</label>
-                    </div>
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="forceUVExport" checked><span class="slider"></span></label>
-                        <label for="forceUVExport">Force UV Export</label>
-                    </div>
-                    <div class="field toggle-field">
-                        <label class="switch"><input type="checkbox" id="adjustZtoY"><span class="slider"></span></label>
-                        <label for="adjustZtoY">Adjust Z to Y Up</label>
-                    </div>
-                    <div class="field">
-                        <label for="scale">Scale</label>
-                        <input type="number" id="scale" value="1.0" min="0.001" step="0.1">
-                    </div>
-
-                    <!-- Naming & Transforms -->
-                    <div class="section-title">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-                        Naming &amp; Transform Format
-                    </div>
-
-                    <div class="field">
-                        <label for="nodeNameFormat">Node Name Format</label>
-                        <select id="nodeNameFormat">
-                            <option value="empty">empty</option>
-                            <option value="product">product</option>
-                            <option value="instance" selected>instance</option>
-                            <option value="instanceOrProduct">instanceOrProduct</option>
-                            <option value="productOrInstance">productOrInstance</option>
-                            <option value="productAndInstance">productAndInstance</option>
-                            <option value="productAndInstanceAndOcaf">productAndInstanceAndOcaf</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label for="meshNameFormat">Mesh Name Format</label>
-                        <select id="meshNameFormat">
-                            <option value="empty">empty</option>
-                            <option value="product">product</option>
-                            <option value="instance" selected>instance</option>
-                            <option value="instanceOrProduct">instanceOrProduct</option>
-                            <option value="productOrInstance">productOrInstance</option>
-                            <option value="productAndInstance">productAndInstance</option>
-                            <option value="productAndInstanceAndOcaf">productAndInstanceAndOcaf</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label for="transformFormat">Transform Format</label>
-                        <select id="transformFormat">
-                            <option value="compact" selected>compact</option>
-                            <option value="mat4">mat4</option>
-                            <option value="trs">trs</option>
-                        </select>
+                        Output
                     </div>
                     <div class="field">
                         <label for="outputFileName">Output File Name</label>
@@ -903,13 +952,13 @@
             enableOCCT: true,
             enableJSCAD: false,
             enableManifold: false,
-            occtArch: "32"
+            occtArch: "64"
         };
 
         const runner = window.bitbybitRunner.getRunnerInstance();
         const { bitbybit, Bit } = await runner.run(runnerOptions);
 
-        const { ConvertStepToGltfAdvancedDto } = Bit.Inputs.OCCT;
+        const { ConvertStepToGltfDto, ConvertStepToGltfAdvancedDto } = Bit.Inputs.OCCT;
         const { asset } = bitbybit;
         const { io } = bitbybit.occt;
 
@@ -938,6 +987,8 @@
         const errorText     = document.getElementById('errorText');
         const optionsToggle = document.getElementById('optionsToggle');
         const optionsBody   = document.getElementById('optionsBody');
+        const advancedModeToggle = document.getElementById('advancedMode');
+        const advancedOptionsSection = document.getElementById('advancedOptionsSection');
 
         let selectedFile = null;
         let resultBlob   = null;
@@ -970,6 +1021,15 @@
         optionsToggle.addEventListener('click', () => {
             optionsToggle.classList.toggle('open');
             optionsBody.classList.toggle('open');
+        });
+
+        // ── Advanced mode toggle ────────────────────────────────────
+        advancedModeToggle.addEventListener('change', () => {
+            if (advancedModeToggle.checked) {
+                advancedOptionsSection.classList.remove('hidden');
+            } else {
+                advancedOptionsSection.classList.add('hidden');
+            }
         });
 
         // ── Helpers ─────────────────────────────────────────────────
@@ -1049,28 +1109,47 @@
 
                 statusText.textContent = 'Converting — this may take a while…';
 
-                // Build options from form
-                const exportOpt = new ConvertStepToGltfAdvancedDto();
-                exportOpt.stepData = stepData;
-                exportOpt.readColors        = bool('readColors');
-                exportOpt.readNames         = bool('readNames');
-                exportOpt.readMaterials     = bool('readMaterials');
-                exportOpt.readLayers        = bool('readLayers');
-                exportOpt.readProps         = bool('readProps');
-                exportOpt.meshDeflection    = num('meshDeflection');
-                exportOpt.meshAngle         = num('meshAngle');
-                exportOpt.faceCountThreshold = num('faceCountThreshold');
-                exportOpt.mergeFaces        = bool('mergeFaces');
-                exportOpt.splitIndices16    = bool('splitIndices16');
-                exportOpt.embedTextures     = bool('embedTextures');
-                exportOpt.forceUVExport     = bool('forceUVExport');
-                exportOpt.adjustZtoY        = bool('adjustZtoY');
-                exportOpt.scale             = num('scale');
-                exportOpt.nodeNameFormat    = Bit.Inputs.OCCT.gltfNameFormatEnum[val('nodeNameFormat')];
-                exportOpt.meshNameFormat    = Bit.Inputs.OCCT.gltfNameFormatEnum[val('meshNameFormat')];
-                exportOpt.transformFormat   = Bit.Inputs.OCCT.gltfTransformFormatEnum[val('transformFormat')];
+                let res;
 
-                const res = await io.convertStepToGltfAdvanced(exportOpt);
+                if (bool('advancedMode')) {
+                    // Advanced conversion with full control
+                    const exportOpt = new ConvertStepToGltfAdvancedDto();
+                    exportOpt.stepData = stepData;
+                    exportOpt.readColors             = bool('readColors');
+                    exportOpt.readNames              = bool('readNames');
+                    exportOpt.readMaterials          = bool('readMaterials');
+                    exportOpt.readLayers             = bool('readLayers');
+                    exportOpt.readProps              = bool('readProps');
+                    exportOpt.meshDeflection         = num('meshPrecision');
+                    exportOpt.meshAngle              = num('meshAngle');
+                    exportOpt.meshRelative           = bool('meshRelative');
+                    exportOpt.meshParallel           = bool('meshParallel');
+                    exportOpt.internalVerticesMode   = bool('internalVerticesMode');
+                    exportOpt.controlSurfaceDeflection = bool('controlSurfaceDeflection');
+                    exportOpt.faceCountThreshold     = num('faceCountThreshold');
+                    exportOpt.mergeFaces             = bool('mergeFaces');
+                    exportOpt.splitIndices16         = bool('splitIndices16');
+                    exportOpt.parallelWrite          = bool('parallelWrite');
+                    exportOpt.embedTextures          = bool('embedTextures');
+                    exportOpt.forceUVExport          = bool('forceUVExport');
+                    exportOpt.adjustZtoY             = bool('adjustZtoY');
+                    exportOpt.scale                  = num('scale');
+                    exportOpt.nodeNameFormat          = Bit.Inputs.OCCT.gltfNameFormatEnum[val('nodeNameFormat')];
+                    exportOpt.meshNameFormat          = Bit.Inputs.OCCT.gltfNameFormatEnum[val('meshNameFormat')];
+                    exportOpt.transformFormat         = Bit.Inputs.OCCT.gltfTransformFormatEnum[val('transformFormat')];
+
+                    res = await io.convertStepToGltfAdvanced(exportOpt);
+                } else {
+                    // Basic conversion with sensible defaults
+                    const exportOpt = new ConvertStepToGltfDto();
+                    exportOpt.stepData       = stepData;
+                    exportOpt.meshPrecision  = num('meshPrecision');
+                    exportOpt.meshAngle      = num('meshAngle');
+                    exportOpt.meshRelative   = bool('meshRelative');
+
+                    res = await io.convertStepToGltf(exportOpt);
+                }
+
                 resultBlob = new Blob([res], { type: 'model/gltf-binary' });
 
                 // Show success — hide spinner, show check

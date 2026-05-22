@@ -1,101 +1,129 @@
-'use client'
-import { BitByBitBase } from "@bitbybit-dev/babylonjs";
-import { OccStateEnum } from '@bitbybit-dev/occt-worker';
-import { Engine, Scene, Color4, ArcRotateCamera, Vector3, HemisphericLight, Light } from "@babylonjs/core";
+"use client";
+import { BitByBitBase, Inputs, initBitByBit, initBabylonJS, type InitBitByBitOptions } from "@bitbybit-dev/babylonjs";
 import { useEffect, useRef } from "react";
 
 export default function Bitbybit() {
-    const initialized = useRef(false)
+    const initialized = useRef(false);
 
     useEffect(() => {
         if (!initialized.current) {
-            const bitbybit = new BitByBitBase();
-            const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
-            canvas.onwheel = function (event) {
-                event.preventDefault();
-            };
-
-            const engine = new Engine(canvas);
-            const scene = new Scene(engine);
-            engine.setHardwareScalingLevel(0.5);
-            scene.clearColor = new Color4(26 / 255, 28 / 255, 31 / 255, 1);
-            const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), scene);
-            camera.attachControl(canvas, true);
-
-            const light = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), scene);
-            light.intensityMode = Light.INTENSITYMODE_ILLUMINANCE;
-            light.intensity = 1;
-            scene.metadata = { shadowGenerators: [] };
-
-            const occt = new Worker(new URL('./occ.worker', import.meta.url), { name: 'OCC', type: 'module' })
-            const jscad = new Worker(new URL('./jscad.worker', import.meta.url), { name: 'JSCAD', type: 'module' })
-
-            bitbybit.init(scene, occt, jscad);
-
-            engine.runRenderLoop(() => {
-                scene.render();
-            });
-
-            window.onresize = () => {
-                if (engine) {
-                    engine.resize();
-                }
-            }
-
-            bitbybit.occtWorkerManager.occWorkerState$.subscribe(s => {
-                if (s.state === OccStateEnum.initialised) {
-                    engine.resize();
-
-                    const start = async () => {
-                        const sphere = await bitbybit.occt.shapes.solid.createSphere({
-                            radius: 5,
-                            center: [0, 0, 0]
-                        });
-
-                        const circle = await bitbybit.occt.shapes.wire.createCircleWire({
-                            radius: 10,
-                            center: [0, 0, 0],
-                            direction: [0, 1, 0],
-                        });
-
-                        const points = await bitbybit.occt.shapes.wire.pointsOnWireAtPatternOfLengths({
-                            shape: circle,
-                            lengths: [0.1, 0.3, 0.4],
-                            includeFirst: true,
-                            includeLast: false,
-                            tryNext: false
-                        })
-
-                        bitbybit.draw.drawAnyAsync({
-                            entity: sphere
-                        });
-
-                        bitbybit.draw.drawAnyAsync({
-                            entity: circle
-                        });
-
-                        bitbybit.draw.drawAnyAsync({
-                            entity: points
-                        });
-                    }
-
-                    start();
-                    engine.runRenderLoop(() => {
-                        scene.render();
-                    });
-                } else if (s.state === OccStateEnum.computing) {
-                    // Show Spinner
-                } else if (s.state === OccStateEnum.loaded) {
-                    // Show Spinner
-                }
-            });
+            initialized.current = true;
+            start();
         }
-    }, [])
+    }, []);
 
     return (
-        <>
-            <canvas id="renderCanvas"></canvas>
-            <div>HELLO</div>
-        </>
+        <canvas id="babylon-canvas" style={{ width: "100vw", height: "100vh", display: "block" }} />
     );
+}
+
+async function start() {
+    const sceneOptions = new Inputs.BabylonJSScene.InitBabylonJSDto();
+    sceneOptions.canvasId = "babylon-canvas";
+    sceneOptions.sceneSize = 10;
+    sceneOptions.enableShadows = true;
+    sceneOptions.enableGround = true;
+    sceneOptions.groundColor = "#333333";
+
+    const { scene, engine } = initBabylonJS(sceneOptions);
+    const bitbybit = new BitByBitBase();
+    const options: InitBitByBitOptions = {
+        enableOCCT: true,
+        enableJSCAD: true,
+        enableManifold: true,
+    };
+
+    await initBitByBit(scene, bitbybit, options);
+
+    if (options.enableOCCT) {
+        await createOCCTGeometry(bitbybit, "#ff0000");
+    }
+    if (options.enableManifold) {
+        await createManifoldGeometry(bitbybit, "#00ff00");
+    }
+    if (options.enableJSCAD) {
+        await createJSCADGeometry(bitbybit, "#0000ff");
+    }
+
+    engine.runRenderLoop(() => {
+        if (scene.activeCamera) {
+            scene.render();
+        }
+    });
+}
+
+async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
+    const cubeOptions = new Inputs.OCCT.CubeDto();
+    cubeOptions.size = 2.5;
+    cubeOptions.center = [0, 1.25, 0];
+
+    const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);
+
+    const filletOptions = new Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSShapePointer>();
+    filletOptions.shape = cube;
+    filletOptions.radius = 0.4;
+    const roundedCube = await bitbybit.occt.fillets.filletEdges(filletOptions);
+
+    const drawOptions = new Inputs.Draw.DrawOcctShapeOptions();
+    drawOptions.edgeWidth = 0.5;
+    drawOptions.faceColour = color;
+    drawOptions.drawVertices = true;
+    drawOptions.vertexSize = 0.05;
+    drawOptions.vertexColour = "#ffffff";
+    await bitbybit.draw.drawAnyAsync({
+        entity: roundedCube,
+        options: drawOptions,
+    });
+}
+
+async function createManifoldGeometry(bitbybit: BitByBitBase, color: string) {
+    const sphereOptions = new Inputs.Manifold.SphereDto();
+    sphereOptions.radius = 1.5;
+    sphereOptions.circularSegments = 32;
+    const sphere = await bitbybit.manifold.manifold.shapes.sphere(sphereOptions);
+
+    const cubeOptions = new Inputs.Manifold.CubeDto();
+    cubeOptions.size = 2.5;
+    const cube = await bitbybit.manifold.manifold.shapes.cube(cubeOptions);
+
+    const diffedShape = await bitbybit.manifold.manifold.booleans.differenceTwo({
+        manifold1: cube,
+        manifold2: sphere,
+    });
+
+    const translationOptions = new Inputs.Manifold.TranslateDto<Inputs.Manifold.ManifoldPointer>();
+    translationOptions.manifold = diffedShape;
+    translationOptions.vector = [0, 1.25, -4];
+    const movedShape = await bitbybit.manifold.manifold.transforms.translate(translationOptions);
+
+    const drawOptions = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+    drawOptions.faceColour = color;
+    await bitbybit.draw.drawAnyAsync({
+        entity: movedShape,
+        options: drawOptions,
+    });
+}
+
+async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
+    const geodesicSphereOptions = new Inputs.JSCAD.GeodesicSphereDto();
+    geodesicSphereOptions.radius = 1.5;
+    geodesicSphereOptions.center = [0, 1.5, 4];
+    const geodesicSphere = await bitbybit.jscad.shapes.geodesicSphere(geodesicSphereOptions);
+
+    const sphereOptions = new Inputs.JSCAD.SphereDto();
+    sphereOptions.radius = 1;
+    sphereOptions.center = [0, 3, 4.5];
+    const simpleSphere = await bitbybit.jscad.shapes.sphere(sphereOptions);
+
+    const unionOptions = new Inputs.JSCAD.BooleanTwoObjectsDto();
+    unionOptions.first = geodesicSphere;
+    unionOptions.second = simpleSphere;
+    const unionShape = await bitbybit.jscad.booleans.unionTwo(unionOptions);
+
+    const drawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    drawOptions.colours = color;
+    await bitbybit.draw.drawAnyAsync({
+        entity: unionShape,
+        options: drawOptions,
+    });
 }

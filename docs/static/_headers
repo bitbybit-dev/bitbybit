@@ -15,11 +15,32 @@
 /
   ! X-Robots-Tag
 
+/learn
+  ! X-Robots-Tag
+  ! X-Frame-Options
+  Content-Security-Policy: frame-ancestors 'self' https://admin.shopify.com https://*.myshopify.com https://dev-3d-bits-a6ca0f32432a.herokuapp.com https://prod-3d-bits-baaef5dd0fce.herokuapp.com
+
 /learn/*
   ! X-Robots-Tag
+  ! X-Frame-Options
+  Content-Security-Policy: frame-ancestors 'self' https://admin.shopify.com https://*.myshopify.com https://dev-3d-bits-a6ca0f32432a.herokuapp.com https://prod-3d-bits-baaef5dd0fce.herokuapp.com
+
+/blog
+  ! X-Robots-Tag
+  ! X-Frame-Options
+  Content-Security-Policy: frame-ancestors 'self' https://admin.shopify.com https://*.myshopify.com https://dev-3d-bits-a6ca0f32432a.herokuapp.com https://prod-3d-bits-baaef5dd0fce.herokuapp.com
 
 /blog/*
   ! X-Robots-Tag
+  ! X-Frame-Options
+  Content-Security-Policy: frame-ancestors 'self' https://admin.shopify.com https://*.myshopify.com https://dev-3d-bits-a6ca0f32432a.herokuapp.com https://prod-3d-bits-baaef5dd0fce.herokuapp.com
+
+/api
+  ! X-Robots-Tag
+  ! X-Frame-Options
+  Content-Security-Policy: frame-ancestors 'self' https://admin.shopify.com https://*.myshopify.com https://dev-3d-bits-a6ca0f32432a.herokuapp.com https://prod-3d-bits-baaef5dd0fce.herokuapp.com
 
 /api/*
   ! X-Robots-Tag
+  ! X-Frame-Options
+  Content-Security-Policy: frame-ancestors 'self' https://admin.shopify.com https://*.myshopify.com https://dev-3d-bits-a6ca0f32432a.herokuapp.com https://prod-3d-bits-baaef5dd0fce.herokuapp.com

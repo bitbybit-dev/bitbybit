@@ -1724,9 +1724,15 @@ export interface components {
         StepToGltfBody: {
             /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
             stepFileId: string;
-            /** @description Tessellation precision controlling mesh density. Lower values produce finer meshes with more triangles. */
+            /** @description Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%). When false, it is an absolute value in model units (mm for STEP). */
             meshPrecision?: components["schemas"]["MeshPrecision"];
+            /** @description Angular deflection in radians for mesh tessellation — controls curvature approximation. Smaller values produce smoother curved surfaces. */
+            meshAngle?: components["schemas"]["MeshAngle"];
+            /** @description Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units. */
+            meshRelative?: boolean;
         };
+        /** @description Mesh angular deflection in radians. Range: [0.01, π] */
+        MeshAngle: number;
         /** @description Convert a STEP file to glTF with full control over tessellation, naming, coordinate systems, and output format. */
         StepToGltfAdvancedBody: {
             /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
@@ -1746,13 +1752,19 @@ export interface components {
             readLayers?: boolean;
             /** @description Extract custom properties (e.g. part numbers, metadata) from the STEP file */
             readProps?: boolean;
-            /** @description Linear deflection for mesh tessellation — maximum allowed distance between the mesh and the true surface */
+            /** @description Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%) so deflection auto-scales with feature size. When false, it is absolute in model units (mm for STEP). */
             meshDeflection?: components["schemas"]["MeshPrecision"];
             /** @description Angular deflection for mesh tessellation (radians) — controls curvature approximation */
             meshAngle?: components["schemas"]["MeshAngle"];
             /** @description Enable parallel tessellation for faster processing */
             meshParallel?: boolean;
-            /** @description Maximum triangle count before LOD reduction kicks in. Set -1 to disable the limit entirely. */
+            /** @description Use size-aware relative deflection per face. When true, meshDeflection is a fraction of each edge's length. Set to false for absolute deflection in model units. */
+            meshRelative?: boolean;
+            /** @description Enable internal vertices mode for more accurate mesh on complex faces */
+            internalVerticesMode?: boolean;
+            /** @description Enable control surface deflection for better quality on curved surfaces */
+            controlSurfaceDeflection?: boolean;
+            /** @description Face count threshold for per-sub-shape meshing fallback. Default -1 means single-pass meshing of the whole compound (fastest). Set to a positive value (e.g. 100000) to fall back to per-solid meshing for very large assemblies in memory-constrained environments. */
             faceCountThreshold?: number;
             /** @description Merge co-planar adjacent faces to reduce mesh complexity */
             mergeFaces?: boolean;
@@ -1775,8 +1787,6 @@ export interface components {
             /** @description Uniform scale factor applied to the entire model (e.g. 0.001 to convert mm to meters) */
             scale?: components["schemas"]["PositiveScale"];
         };
-        /** @description Mesh angular deflection in radians. Range: [0.01, π] */
-        MeshAngle: number;
         /**
          * @description How node/mesh names are derived from STEP product/instance labels
          * @enum {string}

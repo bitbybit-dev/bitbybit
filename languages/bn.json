@@ -6085,11 +6085,20 @@
     "uint8Array": "uint8 অ্যারে",
     "preview assembly hierarchy": "occt সমাবেশ হায়ারার্কি প্রিভিউ",
     "bitbybit.previewAssemblyHierarchy": "occt সমাবেশ হায়ারার্কি প্রিভিউ",
-    "meshRelative": "আপেক্ষিক জাল",
+    "meshRelative": "মেশ আপেক্ষিক",
     "internalVerticesMode": "অভ্যন্তরীণ শীর্ষবিন্দু মোড",
     "controlSurfaceDeflection": "নিয়ন্ত্রণ পৃষ্ঠ বিচ্যুতি",
     "bitbybit.math.evalArithmetic": "গাণিতিক মূল্যায়ন",
     "evalArithmetic": "গাণিতিক মূল্যায়ন",
-    "bitbybit.math.evalArithmetic_description": "শুধুমাত্র সংখ্যা, +, -, *, /, বন্ধনী এবং স্পেস সম্বলিত একটি সাধারণ গাণিতিক অভিব্যক্তি নিরাপদে মূল্যায়ন করে। শান্টিং-ইয়ার্ড অ্যালগরিদম ব্যবহার করে — কোনো eval ফাংশন নেই। উদাহরণ: '(3+2)*4' → 20, '10/3' → 3.3333...",
-    "expression": "অভিব্যক্তি"
+    "bitbybit.math.evalArithmetic_description": "নিরাপদে একটি সরল গাণিতিক অভিব্যক্তি মূল্যায়ন করে যাতে শুধুমাত্র সংখ্যা, +, -, *, /, বন্ধনী এবং স্পেস থাকে। shunting-yard অ্যালগরিদম ব্যবহার করে — কোনো evalFunction নেই। উদাহরণ: '(3+2)*4' → 20, '10/3' → 3.3333...",
+    "expression": "অভিব্যক্তি",
+    "bitbybit.occt.assembly.manager.createImportedPart": "আমদানি করা অংশ তৈরি করুন",
+    "createImportedPart": "আমদানি করা অংশ তৈরি করুন",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(সাধারণত একটি STEP-লোডেড ডকুমেন্ট) নতুন অ্যাসেম্বলিতে। সাব-অ্যাসেম্বলি হায়ারার্কি, নাম এবং রঙ সংরক্ষণ করে। ফলাফলটি যেকোনো থেকে `partId` দ্বারা রেফারেন্স করা যেতে পারে",
+    "sourceDocumentIndex": "উৎস নথি সূচক",
+    "sourceLabel": "উৎস লেবেল",
+    "loadedParts": "লোড করা অংশগুলি",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "উৎস নথি",
+    "D[]": "D[]"
 }

@@ -6084,5 +6084,21 @@
     "bitbybit.asset.uint8ArrayToArrayBuffer_description": "Converts a Uint8Array to an ArrayBuffer.",
     "uint8Array": "uint8 array",
     "preview assembly hierarchy": "preview occt assembly hierarchy",
-    "bitbybit.previewAssemblyHierarchy": "preview occt assembly hierarchy"
+    "bitbybit.previewAssemblyHierarchy": "preview occt assembly hierarchy",
+    "bitbybit.occt.assembly.manager.createImportedPart": "create imported part",
+    "createImportedPart": "create imported part",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(typically a STEP-loaded document) into the new assembly. Preserves sub-assembly hierarchy, names and colors. The result can be referenced by `partId` from any",
+    "sourceDocumentIndex": "source document index",
+    "sourceLabel": "source label",
+    "loadedParts": "loaded parts",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "source documents",
+    "D[]": "D[]",
+    "meshRelative": "mesh relative",
+    "internalVerticesMode": "internal vertices mode",
+    "controlSurfaceDeflection": "control surface deflection",
+    "bitbybit.math.evalArithmetic": "eval arithmetic",
+    "evalArithmetic": "eval arithmetic",
+    "bitbybit.math.evalArithmetic_description": "Safely evaluates a simple arithmetic expression containing only numbers, +, -, , , parentheses, and whitespace. Uses the shunting-yard algorithm — no evalFunction. Example: '(3+2)4' → 20, '103' → 3.3333...",
+    "expression": "expression"
 }

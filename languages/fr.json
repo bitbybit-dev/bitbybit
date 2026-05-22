@@ -6086,10 +6086,19 @@
     "preview assembly hierarchy": "aperçu de la hiérarchie d'assemblage occt",
     "bitbybit.previewAssemblyHierarchy": "aperçu de la hiérarchie d'assemblage occt",
     "meshRelative": "maillage relatif",
-    "internalVerticesMode": "mode sommets internes",
-    "controlSurfaceDeflection": "déflexion de surface de contrôle",
+    "internalVerticesMode": "mode des sommets internes",
+    "controlSurfaceDeflection": "déflexion de la surface de contrôle",
     "bitbybit.math.evalArithmetic": "évaluer l'arithmétique",
     "evalArithmetic": "évaluer l'arithmétique",
-    "bitbybit.math.evalArithmetic_description": "Évalue en toute sécurité une expression arithmétique simple contenant uniquement des nombres, +, -, *, /, des parenthèses et des espaces. Utilise l'algorithme shunting-yard — pas de fonction eval. Exemple : '(3+2)*4' → 20, '10/3' → 3,3333...",
-    "expression": "expression"
+    "bitbybit.math.evalArithmetic_description": "Évalue en toute sécurité une expression arithmétique simple contenant uniquement des nombres, +, -, *, /, des parenthèses et des espaces. Utilise l'algorithme shunting-yard — pas de evalFunction. Exemple : '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "expression",
+    "bitbybit.occt.assembly.manager.createImportedPart": "créer une pièce importée",
+    "createImportedPart": "créer une pièce importée",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(généralement un document chargé au format STEP) dans le nouvel assemblage. Préserve la hiérarchie des sous-assemblages, les noms et les couleurs. Le résultat peut être référencé par `partId` depuis n'importe quel",
+    "sourceDocumentIndex": "index du document source",
+    "sourceLabel": "étiquette source",
+    "loadedParts": "pièces chargées",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "documents source",
+    "D[]": "D[]"
 }
