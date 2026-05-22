@@ -221,3 +221,8 @@ release:
   label: Release
   permalink: /release
   description: Major version releases, product updates, and platform announcements.
+
+configurator:
+  label: Configurator
+  permalink: /configurator
+  description: Interactive 3D product configurators built with Bitbybit for e-commerce and online visualization.

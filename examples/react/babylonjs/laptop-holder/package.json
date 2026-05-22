@@ -7,7 +7,7 @@
     "dependencies": {
         "react": "19.2.6",
         "react-dom": "19.2.6",
-        "@bitbybit-dev/babylonjs": "1.0.0",
+        "@bitbybit-dev/babylonjs": "1.0.1",
         "@mui/icons-material": "^7.1.0",
         "@mui/material": "^7.1.0",
         "@emotion/react": "^11.14.0",

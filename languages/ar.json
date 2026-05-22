@@ -6090,6 +6090,15 @@
     "controlSurfaceDeflection": "انحراف سطح التحكم",
     "bitbybit.math.evalArithmetic": "تقييم حسابي",
     "evalArithmetic": "تقييم حسابي",
-    "bitbybit.math.evalArithmetic_description": "يقيّم بأمان تعبيرًا حسابيًا بسيطًا يحتوي فقط على أرقام و+ و- و* و/ وأقواس ومسافات. يستخدم خوارزمية ساحة التحويل — بدون دالة eval. مثال: '(3+2)*4' → 20، '10/3' → 3.3333...",
-    "expression": "تعبير"
+    "bitbybit.math.evalArithmetic_description": "يقيّم بأمان تعبيرًا حسابيًا بسيطًا يحتوي فقط على أرقام و+، -، *، /، أقواس ومسافات. يستخدم خوارزمية shunting-yard — بدون evalFunction. مثال: '(3+2)*4' → 20، '10/3' → 3.3333...",
+    "expression": "تعبير",
+    "bitbybit.occt.assembly.manager.createImportedPart": "إنشاء جزء مستورد",
+    "createImportedPart": "إنشاء جزء مستورد",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(عادةً مستند محمّل بصيغة STEP) في التجميع الجديد. يحافظ على التسلسل الهرمي للتجميعات الفرعية والأسماء والألوان. يمكن الإشارة إلى النتيجة بواسطة `partId` من أي",
+    "sourceDocumentIndex": "فهرس المستند المصدر",
+    "sourceLabel": "تسمية المصدر",
+    "loadedParts": "الأجزاء المحمّلة",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "المستندات المصدر",
+    "D[]": "D[]"
 }

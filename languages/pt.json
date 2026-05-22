@@ -6087,9 +6087,18 @@
     "bitbybit.previewAssemblyHierarchy": "pré-visualizar hierarquia de montagem occt",
     "meshRelative": "malha relativa",
     "internalVerticesMode": "modo de vértices internos",
-    "controlSurfaceDeflection": "deflexão de superfície de controle",
+    "controlSurfaceDeflection": "deflexão da superfície de controle",
     "bitbybit.math.evalArithmetic": "avaliar aritmética",
     "evalArithmetic": "avaliar aritmética",
-    "bitbybit.math.evalArithmetic_description": "Avalia com segurança uma expressão aritmética simples contendo apenas números, +, -, *, /, parênteses e espaços. Usa o algoritmo shunting-yard — sem função eval. Exemplo: '(3+2)*4' → 20, '10/3' → 3,3333...",
-    "expression": "expressão"
+    "bitbybit.math.evalArithmetic_description": "Avalia com segurança uma expressão aritmética simples contendo apenas números, +, -, *, /, parênteses e espaços em branco. Usa o algoritmo shunting-yard — sem evalFunction. Exemplo: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "expressão",
+    "bitbybit.occt.assembly.manager.createImportedPart": "criar peça importada",
+    "createImportedPart": "criar peça importada",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(tipicamente um documento carregado em formato STEP) na nova montagem. Preserva a hierarquia de submontagens, nomes e cores. O resultado pode ser referenciado por `partId` de qualquer",
+    "sourceDocumentIndex": "índice do documento fonte",
+    "sourceLabel": "rótulo de origem",
+    "loadedParts": "peças carregadas",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "documentos fonte",
+    "D[]": "D[]"
 }

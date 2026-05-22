@@ -6090,6 +6090,15 @@
     "controlSurfaceDeflection": "deflexión de superficie de control",
     "bitbybit.math.evalArithmetic": "evaluar aritmética",
     "evalArithmetic": "evaluar aritmética",
-    "bitbybit.math.evalArithmetic_description": "Evalúa de forma segura una expresión aritmética simple que contiene solo números, +, -, *, /, paréntesis y espacios. Usa el algoritmo shunting-yard — sin función eval. Ejemplo: '(3+2)*4' → 20, '10/3' → 3,3333...",
-    "expression": "expresión"
+    "bitbybit.math.evalArithmetic_description": "Evalúa de forma segura una expresión aritmética simple que contiene solo números, +, -, *, /, paréntesis y espacios en blanco. Utiliza el algoritmo shunting-yard — sin evalFunction. Ejemplo: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "expresión",
+    "bitbybit.occt.assembly.manager.createImportedPart": "crear pieza importada",
+    "createImportedPart": "crear pieza importada",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(típicamente un documento cargado en formato STEP) en el nuevo ensamblaje. Preserva la jerarquía de subensamblajes, nombres y colores. El resultado puede ser referenciado por `partId` desde cualquier",
+    "sourceDocumentIndex": "índice del documento fuente",
+    "sourceLabel": "etiqueta de origen",
+    "loadedParts": "piezas cargadas",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "documentos fuente",
+    "D[]": "D[]"
 }

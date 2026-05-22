@@ -6086,10 +6086,19 @@
     "preview assembly hierarchy": "Vorschau OCCT-Baugruppenhierarchie",
     "bitbybit.previewAssemblyHierarchy": "OCCT-Baugruppenhierarchie-Vorschau",
     "meshRelative": "Netz relativ",
-    "internalVerticesMode": "Interne-Vertices-Modus",
-    "controlSurfaceDeflection": "Steuerflächenablenkung",
+    "internalVerticesMode": "Modus für interne Eckpunkte",
+    "controlSurfaceDeflection": "Steuerflächenauslenkung",
     "bitbybit.math.evalArithmetic": "Arithmetik auswerten",
     "evalArithmetic": "Arithmetik auswerten",
-    "bitbybit.math.evalArithmetic_description": "Wertet sicher einen einfachen arithmetischen Ausdruck aus, der nur Zahlen, +, -, *, /, Klammern und Leerzeichen enthält. Verwendet den Shunting-Yard-Algorithmus — keine eval-Funktion. Beispiel: '(3+2)*4' → 20, '10/3' → 3,3333...",
-    "expression": "Ausdruck"
+    "bitbybit.math.evalArithmetic_description": "Wertet sicher einen einfachen arithmetischen Ausdruck aus, der nur Zahlen, +, -, *, /, Klammern und Leerzeichen enthält. Verwendet den Shunting-Yard-Algorithmus — keine evalFunction. Beispiel: '(3+2)*4' → 20, '10/3' → 3,3333...",
+    "expression": "Ausdruck",
+    "bitbybit.occt.assembly.manager.createImportedPart": "importiertes Teil erstellen",
+    "createImportedPart": "importiertes Teil erstellen",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(typischerweise ein STEP-geladenes Dokument) in die neue Baugruppe. Bewahrt die Unterbaugruppen-Hierarchie, Namen und Farben. Das Ergebnis kann über `partId` von jedem referenziert werden",
+    "sourceDocumentIndex": "Quelldokumentindex",
+    "sourceLabel": "Quellbezeichnung",
+    "loadedParts": "geladene Teile",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "Quelldokumente",
+    "D[]": "D[]"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/playcanvas",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bit By Bit Developers PlayCanvas CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {
@@ -41,10 +41,11 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.bitbybit.json",
-    "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
+    "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage && npm run delete-mocks",
     "copy-package": "shx cp -R ./package.json ./dist",
     "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
     "delete-coverage": "shx rm -rf ./dist/coverage || true",
+    "delete-mocks": "shx rm -rf ./dist/__mocks__ || true",
     "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
     "test-c": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=false",
     "test-c-l": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=true"
@@ -58,7 +59,7 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "@bitbybit-dev/core": "1.0.0",
+    "@bitbybit-dev/core": "1.0.1",
     "playcanvas": "2.18.1"
   },
   "devDependencies": {
@@ -69,7 +70,7 @@
     "@types/jest": "30.0.0",
     "babel-jest": "30.4.1",
     "jest": "30.4.2",
-    "jest-environment-jsdom": "30.4.2",
+    "jest-environment-jsdom": "30.4.1",
     "jest-html-reporters": "3.1.7",
     "mvdir": "1.0.22",
     "shx": "0.4.0",
