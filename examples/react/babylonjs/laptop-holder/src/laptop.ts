@@ -12,7 +12,7 @@ export class LaptopLogic {
             length: 1.5,
             height: 21.24,
         }
-    ]
+    ];
 
     private laptopStand;
     private laptopStandMesh;
@@ -29,8 +29,8 @@ export class LaptopLogic {
         [12.5, 0, 0]
     ] as Inputs.Base.Point3[];
 
-    private whiteColor = '#ffffff';
-    private holderColor = '#333333';
+    private whiteColor = "#ffffff";
+    private holderColor = "#333333";
     private laptopLiftedHeight = 3;
     private distanceBetweenLaptops = 1.7;
 
@@ -45,7 +45,7 @@ export class LaptopLogic {
             laptop.center = [0, laptop.height / 2 + this.laptopLiftedHeight, 0] as Inputs.Base.Point3;
         });
 
-        let laptopFillets = [];
+        const laptopFillets = [];
         let totalDistance = 0;
         let previousLaptopLength = 0;
 
@@ -80,7 +80,7 @@ export class LaptopLogic {
             di.faceColour = this.whiteColor;
             const laptopFilletMesh = await this.bitbybit.draw.drawAnyAsync({entity: laptopVisFillet, options: di});
             this.laptopsFilletsMesh.push(laptopFilletMesh);
-        })
+        });
 
         const polygonWire = await this.occt.shapes.wire.createPolygonWire({
             points: this.controlPoints
@@ -108,7 +108,7 @@ export class LaptopLogic {
     }
 
     async do() {
-        this.bitbybit.babylon.scene.backgroundColour({ colour: '#bbbbbb' });
+        this.bitbybit.babylon.scene.backgroundColour({ colour: "#bbbbbb" });
 
         const cameraConf = new Inputs.BabylonScene.CameraConfigurationDto();
         cameraConf.lookAt = [0, 11, 0];
@@ -120,7 +120,7 @@ export class LaptopLogic {
         const pointLightConf = new Inputs.BabylonScene.PointLightDto();
         pointLightConf.position = [-15, 20, -5];
         pointLightConf.intensity = 8000;
-        pointLightConf.diffuse = '#3333ff';
+        pointLightConf.diffuse = "#3333ff";
         pointLightConf.radius = 0;
         const light = this.bitbybit.babylon.scene.drawPointLight(pointLightConf);
         light.shadowMinZ = 0.01;
@@ -137,11 +137,11 @@ export class LaptopLogic {
     }
 
     downloadStep() {
-        this.occt.io.saveShapeSTEP({ shape: this.laptopStand, tryDownload: true, fileName: 'laptop-stand.step', adjustYtoZ: false, });
+        this.occt.io.saveShapeSTEP({ shape: this.laptopStand, tryDownload: true, fileName: "laptop-stand.step", adjustYtoZ: false, });
     }
 
     downloadStl() {
-        this.occt.io.saveShapeStl({ shape: this.laptopStand, tryDownload: true, fileName: 'laptop-stand.stl', precision: 0.001, adjustYtoZ: false });
+        this.occt.io.saveShapeStl({ shape: this.laptopStand, tryDownload: true, fileName: "laptop-stand.stl", precision: 0.001, adjustYtoZ: false });
     }
 
     async render(laptops: Laptop[]) {

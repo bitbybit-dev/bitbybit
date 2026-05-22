@@ -154,6 +154,15 @@ export const schemaBundle = {
         "meshParallel": {
           "type": "boolean"
         },
+        "meshRelative": {
+          "type": "boolean"
+        },
+        "internalVerticesMode": {
+          "type": "boolean"
+        },
+        "controlSurfaceDeflection": {
+          "type": "boolean"
+        },
         "faceCountThreshold": {
           "type": "integer",
           "minimum": -1,
@@ -745,6 +754,12 @@ export const schemaBundle = {
         },
         "meshPrecision": {
           "$ref": "#/$defs/MeshPrecision"
+        },
+        "meshAngle": {
+          "$ref": "#/$defs/MeshAngle"
+        },
+        "meshRelative": {
+          "type": "boolean"
         }
       },
       "required": [

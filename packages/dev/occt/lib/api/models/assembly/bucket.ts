@@ -3,6 +3,7 @@ export * from "./assembly-structure-def";
 export * from "./assembly-node-def";
 export * from "./assembly-part-def";
 export * from "./assembly-part-update-def";
+export * from "./assembly-loaded-part-def";
 export * from "./assembly-node-json";
 export * from "./label-color-info";
 export * from "./label-transform-info";

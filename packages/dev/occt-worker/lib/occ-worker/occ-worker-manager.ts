@@ -55,9 +55,15 @@ export class OCCTWorkerManager {
                     promise.resolve(data.result);
                 } else if (data.error) {
                     if (this.errorCallback) {
-                        this.errorCallback(data.error);
+                        try {
+                            this.errorCallback(data.error);
+                        } catch (cbErr) {
+                            console.error("OCCT errorCallback threw:", cbErr);
+                        }
                     }
-                    promise.reject(data.error);
+                    if (promise) {
+                        promise.reject(data.error);
+                    }
                 }
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
                 if (this.promisesMade.length === 0) {

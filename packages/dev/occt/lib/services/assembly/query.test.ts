@@ -852,13 +852,13 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.loadStepToDoc({ stepData });
 
             // Act
-            const importedParts = query.getDocumentParts({ document: document! });
+            const loadedParts = query.getDocumentParts({ document: document! });
 
             // Assert - at least 2 parts should be preserved
-            expect(importedParts.length).toBeGreaterThanOrEqual(2);
+            expect(loadedParts.length).toBeGreaterThanOrEqual(2);
             
             // Verify geometry is preserved by checking volumes
-            const volumes = importedParts.map(p => {
+            const volumes = loadedParts.map(p => {
                 const shape = query.getShapeFromLabel({ document: document!, label: p.label });
                 const vol = solid.getSolidVolume({ shape });
                 shape.delete();

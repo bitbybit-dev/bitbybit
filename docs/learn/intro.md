@@ -63,7 +63,7 @@ In this deep dive, Matas walks through the diagram above in detail - explaining 
     width="560"
     height="315"
     src="https://www.youtube.com/embed/vz1v18qoxC0"
-    title="Bitbybit v1.0.0 - New Base for Cloud and Web CAD"
+    title="Bitbybit v1.0.1 - New Base for Cloud and Web CAD"
     frameBorder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
     allowFullScreen>

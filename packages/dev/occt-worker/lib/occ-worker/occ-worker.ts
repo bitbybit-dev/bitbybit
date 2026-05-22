@@ -123,17 +123,48 @@ function executeStandardFunction(
  * Formats error information for transmission.
  */
 function formatError(error: unknown, action: DataInput["action"]): string {
+    // Extract meaningful error message
+    let errorMessage: string;
+    if (error instanceof Error) {
+        errorMessage = error.stack || `${error.name}: ${error.message}`;
+    } else if (typeof error === "string") {
+        errorMessage = error;
+    } else {
+        try {
+            errorMessage = JSON.stringify(error);
+        } catch {
+            errorMessage = String(error);
+        }
+    }
+
     let props = "";
     if (action?.inputs) {
         const inputDetails = Object.entries(action.inputs)
-            .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-            .join(",");
-        props = `Input values were: {${inputDetails}}. `;
+            .map(([key, value]) => {
+                // Don't stringify large binary data — it can crash V8
+                if (ArrayBuffer.isView(value)) {
+                    return `${key}: [${value.constructor.name} length=${(value as Uint8Array).byteLength}]`;
+                }
+                if (value instanceof ArrayBuffer) {
+                    return `${key}: [ArrayBuffer byteLength=${value.byteLength}]`;
+                }
+                try {
+                    const str = JSON.stringify(value);
+                    // Truncate very long values to avoid bloating the error message
+                    return str.length > 200
+                        ? `${key}: ${str.slice(0, 200)}…(truncated)`
+                        : `${key}: ${str}`;
+                } catch {
+                    return `${key}: [unserializable]`;
+                }
+            })
+            .join(", ");
+        props = ` Input values were: {${inputDetails}}.`;
     }
     
-    const funcName = action?.functionName ? `- ${action.functionName}` : "";
+    const funcName = action?.functionName ? ` while executing function '${action.functionName}'` : "";
     
-    return `OCCT computation failed. ${error} While executing function ${funcName}. ${props}`;
+    return `OCCT computation failed${funcName}: ${errorMessage}.${props}`;
 }
 
 /**
@@ -175,11 +206,20 @@ export const onMessageInput = (
             result,
         });
     } catch (e) {
-        // Send error response
-        postMessage({
-            uid: d.uid,
-            result: undefined,
-            error: formatError(e, d.action),
-        });
+        // Send error response — wrapped in its own try/catch to guarantee we always reply
+        try {
+            postMessage({
+                uid: d.uid,
+                result: undefined,
+                error: formatError(e, d.action),
+            });
+        } catch (fmtErr) {
+            // formatError itself failed (should not happen, but be defensive)
+            postMessage({
+                uid: d.uid,
+                result: undefined,
+                error: `OCCT computation failed: ${e instanceof Error ? e.message : String(e)} (additionally, error formatting failed: ${fmtErr instanceof Error ? fmtErr.message : String(fmtErr)})`,
+            });
+        }
     }
 };

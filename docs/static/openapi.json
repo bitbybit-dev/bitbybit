@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Bitbybit CAD Cloud API",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "High-performance parametric CAD model generation API. Supports multi-format output (STEP, GLTF, decomposed mesh), pipeline execution, file-based conversion, and async job processing.",
     "contact": {
       "name": "Bitbybit",
@@ -2071,8 +2071,16 @@
             "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
           },
           "meshPrecision": {
-            "description": "Tessellation precision controlling mesh density. Lower values produce finer meshes with more triangles.",
+            "description": "Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%). When false, it is an absolute value in model units (mm for STEP).",
             "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "meshAngle": {
+            "description": "Angular deflection in radians for mesh tessellation — controls curvature approximation. Smaller values produce smoother curved surfaces.",
+            "$ref": "#/components/schemas/MeshAngle"
+          },
+          "meshRelative": {
+            "description": "Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units.",
+            "type": "boolean"
           }
         },
         "required": [
@@ -2080,6 +2088,12 @@
         ],
         "additionalProperties": false,
         "description": "Convert a STEP file to glTF format with default settings. Upload the STEP file first, then pass its ID here."
+      },
+      "MeshAngle": {
+        "type": "number",
+        "minimum": 0.01,
+        "maximum": 3.141592653589793,
+        "description": "Mesh angular deflection in radians. Range: [0.01, π]"
       },
       "StepToGltfAdvancedBody": {
         "type": "object",
@@ -2124,7 +2138,7 @@
             "type": "boolean"
           },
           "meshDeflection": {
-            "description": "Linear deflection for mesh tessellation — maximum allowed distance between the mesh and the true surface",
+            "description": "Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%) so deflection auto-scales with feature size. When false, it is absolute in model units (mm for STEP).",
             "$ref": "#/components/schemas/MeshPrecision"
           },
           "meshAngle": {
@@ -2135,8 +2149,20 @@
             "description": "Enable parallel tessellation for faster processing",
             "type": "boolean"
           },
+          "meshRelative": {
+            "description": "Use size-aware relative deflection per face. When true, meshDeflection is a fraction of each edge's length. Set to false for absolute deflection in model units.",
+            "type": "boolean"
+          },
+          "internalVerticesMode": {
+            "description": "Enable internal vertices mode for more accurate mesh on complex faces",
+            "type": "boolean"
+          },
+          "controlSurfaceDeflection": {
+            "description": "Enable control surface deflection for better quality on curved surfaces",
+            "type": "boolean"
+          },
           "faceCountThreshold": {
-            "description": "Maximum triangle count before LOD reduction kicks in. Set -1 to disable the limit entirely.",
+            "description": "Face count threshold for per-sub-shape meshing fallback. Default -1 means single-pass meshing of the whole compound (fastest). Set to a positive value (e.g. 100000) to fall back to per-solid meshing for very large assemblies in memory-constrained environments.",
             "type": "integer",
             "minimum": -1,
             "maximum": 500000
@@ -2184,12 +2210,6 @@
         },
         "additionalProperties": false,
         "description": "Fine-grained options controlling STEP → glTF conversion: tessellation quality, attribute extraction, coordinate systems, and output format."
-      },
-      "MeshAngle": {
-        "type": "number",
-        "minimum": 0.01,
-        "maximum": 3.141592653589793,
-        "description": "Mesh angular deflection in radians. Range: [0.01, π]"
       },
       "GltfNameFormat": {
         "type": "string",

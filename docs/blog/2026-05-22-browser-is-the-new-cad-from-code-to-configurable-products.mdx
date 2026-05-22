@@ -1,0 +1,160 @@
+---
+slug: browser-is-the-new-cad-from-code-to-configurable-products
+title: "The Browser Is the New CAD: From Code to Configurable Products"
+authors: [ubarevicius]
+tags: [bitbybit, cad, enterprise, cloud, configurator, hannover-messe, ai]
+description: "An introduction to the talk delivered at Hannover Messe 2026 and featured by CAE-Forum: how browser-based CAD configurators extend professional tools into scalable, production-ready web experiences."
+image: /img/blog/the-browser-is-the-new-cad.webp
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+![Matas Ubarevičius at Hannover Messe 2026](/img/blog/the-browser-is-the-new-cad.webp "The Browser Is the New CAD - Hannover Messe 2026")
+
+*In April 2026 Bitbybit travelled to Hannover, where Matas Ubarevičius delivered the [presentation titled "The Browser Is the New CAD: From Code to Configurable Products"](https://www.hannovermesse.de/event/the-browser-is-the-new-cad-from-code-to-configurable-products/tal/97742) at [Hannover Messe](https://www.hannovermesse.de/), the world's leading trade fair for the manufacturing industry. The talk was accepted by [CAE-Forum](https://cae-forum.com/) for their curated presentation stage and featured in their newsletter. In this blog post he shares his experience from the event and explains why this discourse matters for the manufacturing industry today.*
+
+<!-- truncate -->
+
+## Open the Live Presentation
+
+The full Hannover Messe 2026 presentation runs as a browser app. Press **Start Script** below to load it inline, or use the **Fullscreen** button in the embedded toolbar to view it edge-to-edge.
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://app-store.bitbybit.dev/hannover-messe/"
+  title="The Browser Is the New CAD - Hannover Messe 2026 Presentation"
+  description="Interactive presentation app shown at Hannover Messe 2026."
+  startButtonLabel="Enter Presentation"
+  height="700px"
+/>
+
+## A Strange Thing Happened to CAD
+
+For most of its history, CAD lived in a very specific place: on a powerful workstation, behind a license dongle, operated by someone with years of training and a deep mental map of menus, modifiers, and shortcuts. That world is not going away. The engineers, architects, and product designers who shape our physical reality still need professional desktop tools, and they will continue to need them for the foreseeable future.
+
+But something quieter has been happening in parallel, and at [Hannover Messe 2026](./2026-04-09-hannover-messe-2026.mdx) I had the opportunity to talk about it directly to the people who care most: the manufacturers, technology leaders, and industrial innovators who already know how hard it is to translate engineering intent into something a customer can actually use. The [official talk page](https://www.hannovermesse.de/event/the-browser-is-the-new-cad-from-code-to-configurable-products/tal/97742) is still on the Hannover Messe site. I am grateful to [**CAE-Forum**](https://cae-forum.com/), who curated the presentation stage and selected this talk to be featured in their newsletter.
+
+The shift is this. **The browser has quietly become capable enough to be a serious CAD environment.** Not a viewer. Not a thin client streaming pixels from a server. An actual environment where geometry is created, modified, evaluated, and rendered - in real time, on a device almost everyone already owns, behind a URL anyone can open.
+
+That single change has consequences that ripple through how products are sold, configured, manufactured, and supported. And it is what the entire talk was built around.
+
+## Who This Talk Was For
+
+Hannover Messe is not a CAD conference. It is the world's leading trade fair for the manufacturing industry, and the crowd reflects that: people who build machines, run factories, integrate systems, and ship physical products at scale. The motto of the 2026 edition was **"Think Tech Forward,"** and the program leaned heavily into industrial AI, automation, energy infrastructure, and digital manufacturing.
+
+In that context, "CAD for everyone" is the kind of phrase that can earn an eye-roll from a room full of experts - and rightly so. Real engineering is not democratized by sliders and dropdowns. There are tolerances, materials, load paths, regulations, and edge cases that cannot be hidden behind a friendly UI without consequences.
+
+So the talk was not about handing professional CAD to amateurs. It was about something more useful: **how to take the parametric expertise that already exists inside a company and project it outward, into the hands of customers, dealers, sales teams, and end users - without losing control of the engineering intent behind it.**
+
+Most industrial companies recognize that problem immediately. They have configurators, product variants, CPQ systems, order forms, PDFs full of options. What they often do not have is a way to let a customer *see* and *manipulate* the actual product they are buying, in 3D, in the browser, bound to the same rules their engineers already use.
+
+## Opening With the Demos
+
+Rather than build up to the demos slowly, I opened the talk with them. Before any architecture diagrams, before any platform pitch, I wanted the audience to see what browser-based, configurable CAD actually feels like when it is solving a real commercial problem. Each demo was chosen to illustrate a *different* shape of that problem.
+
+### The Shim Shack - real-time CAD kernel in the browser
+
+[![The Shim Shack 3D configurators powered by Bitbybit Runner](/img/blog/the-shim-shack-build-your-parts-3d-configurators-bitbybit-use-case.webp "The Shim Shack - parametric 3D configurators")](./2026-04-25-the-shim-shack-build-your-parts-3d-configurators-use-case.mdx)
+
+**[The Shim Shack](./2026-04-25-the-shim-shack-build-your-parts-3d-configurators-use-case.mdx)** is a real-time, CAD-kernel-driven configurator running fully in the browser. Every change a user makes flows through an actual geometry kernel and produces a precise, manufacturable result on the spot - with STEP and DXF export at the end. This is the case where the browser is doing serious CAD work, not just visualization.
+
+### Strength Shop - 3D Bits for Shopify, tuned for modular products
+
+[![Strength Shop Pro Power Rack 3D Bits configurator on Shopify](/img/blog/strength-shop-riot-mrr-75-power-rack-3d-bits-configurator-on-shopify.webp "Strength Shop - 3D Bits configurator on Shopify")](./2026-04-26-strength-shop-pro-power-rack-3d-bits-configurator-on-shopif.mdx)
+
+**[Strength Shop](./2026-04-26-strength-shop-pro-power-rack-3d-bits-configurator-on-shopif.mdx)** illustrates something quite different: a 3D Bits for Shopify experience, built with Bitbybit's no-code editor and tuned for modular, performant products that need to feel native inside an e-commerce flow. The goal here is not to expose a full kernel - it is to deliver a fast, beautiful, conversion-friendly configurator embedded directly into the webshop.
+
+### Stock MHS - a fully custom configurator for internal sales
+
+[![Stock MHS UHMW spiral chute 3D configurator](/img/blog/stockmhs-uhmw-spiral-chute-3d-configurator.webp "Stock MHS - UHMW spiral chute 3D configurator")](./2026-04-27-stockmhs-uhmw-spiral-chute-3d-configurator.mdx)
+
+**[Stock MHS](./2026-04-27-stockmhs-uhmw-spiral-chute-3d-configurator.mdx)** sits at yet another end of the spectrum: a fully custom configurator built and tuned to support internal sales processes. The interface, the rules, and the workflow are all shaped to how a specific team sells, quotes, and hands work over to production - the configurator is part of their operational toolchain, not a public storefront feature.
+
+Three demos, three very different problem shapes, one underlying platform. That contrast was the point. Browser-based CAD is not a single product category; it is a foundation flexible enough to power a quick Shopify add-on *and* a deep, customer-specific sales tool.
+
+## Extend, Do Not Replace - Usually
+
+The framing I used to tie those demos together is this: **we are extending CAD, not replacing it.**
+
+Professional desktop tools remain the place where complex parametric logic, manufacturing detail, and engineering judgment are encoded. They are excellent at this and, even as AI becomes more capable inside them, they will keep needing to be understandable to humans - because the people accountable for the engineering still need to read, review, and trust what is being produced. AI accelerates the expert; it does not relieve them of the need to comprehend what is on the screen. That constraint is not going away.
+
+What the browser adds is a second surface - an outward-facing one - where the parametric logic encoded by experts can be *consumed* by people who do not need to (and should not have to) understand it.
+
+In this model:
+
+- **The expertise stays with you.** Engineers still own the rules, the constraints, the families, the manufacturing data.
+- **The interface becomes approachable for your customers.** What ends up in the browser is a carefully chosen subset: the parameters that matter to the buyer, the visual feedback that helps them decide, and the validation that prevents them from configuring something you cannot make.
+
+That said, "extend" is the common case, not the universal one. Modern CAD kernels running in the browser and in the cloud are powerful enough that, in some projects, they genuinely **replace** parts of the traditional pipeline - generating parametric models end-to-end without a desktop tool in the loop at all. That is not necessary for most use cases, but it is on the table for more complex applications where it makes sense, and we have shipped projects where it does.
+
+## Where These Configurators Actually Live
+
+A common misunderstanding about browser-based CAD is that it produces standalone tools - little 3D playgrounds that live on their own subdomain and do not connect to anything important. In practice the opposite is true. The configurators shown during the talk live exactly where commerce and operations happen:
+
+- Inside **e-commerce platforms and webshops**, where the 3D model is part of the buying flow.
+- Inside **ERP and PIM systems**, so the configured product maps directly to a SKU, a BOM, and an order.
+- Inside **service portals and dealer tools**, so partners can configure on behalf of customers using the same engine.
+- Inside **internal sales applications**, so quoting and visualization are no longer disconnected.
+
+A configurator that updates the cart, the price, the lead time, and the production order is not a demo. It is infrastructure.
+
+## Client-Side and Server-Side, Together
+
+Can the browser really do all of this? The browser alone, sometimes. The browser plus the cloud, almost always.
+
+The architecture I walked through is deliberately hybrid:
+
+- **Client-side**, the browser handles interaction, visualization, real-time geometry updates, and immediate feedback. When a user drags a slider, rotates the model, or toggles an option, they should not be waiting on a network round-trip. WebGPU, WebAssembly, and SharedArrayBuffer-driven multithreading make this responsiveness possible even for non-trivial geometry.
+- **Server-side**, heavier computation runs where it belongs. This is what [Bitbybit CAD Cloud](./2026-02-12-introducing-managed-bitbybit-3d-cad-cloud-rest-api.mdx) is for: long-running geometry computations, large parametric assembly generation, complex boolean operations, mesh preparation for manufacturing, and any workload that depends on data the browser should not have direct access to. Those jobs are offloaded to scalable cloud workers and streamed back as results.
+
+The point is not to pick a side. It is to put each piece of work where it makes sense, and make the boundary invisible to the end user. From their perspective, they are using a fast, capable 3D tool in a tab. Behind the scenes, the system is quietly deciding what to compute locally and what to delegate to CAD Cloud, and scaling the remote side up or down based on demand.
+
+This is what makes it realistic to serve thousands of concurrent users without compromising on either performance or fidelity - and what makes the same underlying platform suitable for everything from a Shopify-embedded configurator to a heavy internal engineering tool.
+
+## What Makes This Possible Now
+
+It is worth pausing on *why* this is achievable in 2026 specifically. Several independent curves had to cross:
+
+- **WebAssembly** matured to where CAD kernels and geometry libraries that used to require native binaries now run in the browser at near-native speed.
+- **WebGPU** gave browsers direct, modern access to the GPU, closing most of the visual gap between web and desktop 3D.
+- **Browser-based CAD kernels** - including ports of well-known geometry engines - became stable enough to power production applications, not just demos.
+- **Cloud compute** became cheap and elastic enough that the server side of the hybrid architecture is just an implementation detail.
+- **Modern frontend frameworks and 3D engines** made it practical to build configurators that feel like first-class applications.
+
+None of these on their own would be enough. Together, they make browser-based CAD a genuinely viable layer in an industrial software stack.
+
+## Where Bitbybit Fits In
+
+The platform behind every demo in the talk is [bitbybit.dev](https://bitbybit.dev).
+
+Bitbybit is built for developers and CAD professionals who want to bring advanced geometry and parametric workflows to the web. It combines an open-source core with proprietary apps and cloud services, and it exposes that capability through three complementary surfaces:
+
+- **Visual programming**, for people who think in nodes and flows and want to assemble parametric logic without writing code.
+- **TypeScript**, for developers who want full control, version-controlled scripts, and integration with the rest of their stack.
+- **No-code interfaces**, for the end-user side of the equation - the configurators themselves, where the underlying complexity is hidden behind clean, purpose-built UI.
+
+Parallel to all that sits **Bitbybit CAD Cloud**, which carries the heavier loads: long-running geometry computations and parametric assembly generation that would be impractical to run entirely in a browser tab.
+
+The same geometry engine runs across all of these surfaces. A model authored visually can be wrapped in TypeScript, deployed into a webshop, served through the cloud, and exposed to AI agents without doing heavy rewriting on the underlying logic at each step. The same algorithms are accessible throughout the ecosystem.
+
+## Where AI Actually Helps Today
+
+AI shows up in this picture in two distinct places, and it is worth being precise about which is which.
+
+The place where it already pays off is on the **building side**. Bitbybit exposes [AI agent prompt contexts](./2026-01-15-ai-prompt-contexts.mdx) that let coding agents work against its API directly - so developers building configurators can let an AI assistant write, refactor, and extend Bitbybit code with real awareness of how the platform actually works. This meaningfully shortens the path from "we want a configurator that does X" to a working prototype.
+
+The other place AI will matter is on the **design side** - actually shaping the parametric product itself. That is still finding its footing, and an expert needs to stay close to the loop while it does. What is already clear, though, is the second-order effect: as agents make it easier to build configurators and generate parametric models, the volume of geometry that needs to be computed, assembled, and served goes up sharply. That is exactly where **Bitbybit CAD Cloud** comes in - and where we see our own future. The configurators still have to be meant for humans at the end of the line, but the compute behind them is going to need a lot more room to run.
+
+## Why This Matters for Manufacturing
+
+For the Hannover Messe audience, and for the wider CAE-Forum readership, the practical takeaway is this. The companies that figure out how to **expose their parametric expertise through the browser, safely and at scale**, are going to have a structural advantage in how they sell and support configurable products.
+
+That advantage shows up in several places at once: shorter sales cycles, because customers can self-configure with confidence; fewer errors, because the configurator enforces the same rules as the engineers; better data, because every configuration is captured as structured input; stronger customer relationships, because the buying experience itself becomes a tool customers actually want to use; and more leverage from engineering, because the parametric work done once gets reused across web, sales, and production. The pipeline behind all of this has to stay **deterministic**, though - hallucinated products cannot be manufactured.
+
+None of this requires abandoning the desktop tools that already work. It requires building a thin, well-designed layer on top of them - and putting that layer where the customer already is, which is the browser.
+
+The shift worth paying attention to is not that engineering becomes easier. It is that the value of engineering becomes visible and usable in places it has never quite reached before. Configurators are unforgiving about gaps in logic, and that turns out to be a useful side effect: they push teams to enforce standards and structure their workflows whether they planned to or not. **The browser is not replacing CAD. It is extending its reach - and, where it makes sense, quietly taking on parts of the job itself.**
+
+---
+
+My thanks to [**CAE-Forum**](https://cae-forum.com/) for featuring this talk in their newsletter, and to everyone who stopped by at [Hannover Messe 2026](https://www.hannovermesse.de/event/the-browser-is-the-new-cad-from-code-to-configurable-products/tal/97742) to continue the conversation. For questions or to discuss a configurator project, [get in touch](mailto:info@bitbybit.dev).

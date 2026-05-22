@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/threejs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bit By Bit Developers THREEJS CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {
@@ -41,10 +41,11 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.bitbybit.json",
-    "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
+    "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage && npm run delete-mocks",
     "copy-package": "shx cp -R ./package.json ./dist",
     "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
     "delete-coverage": "shx rm -rf ./dist/coverage || true",
+    "delete-mocks": "shx rm -rf ./dist/__mocks__ || true",
     "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
     "test-c": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=false",
     "test-c-l": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=true"
@@ -58,23 +59,23 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "@bitbybit-dev/core": "1.0.0",
+    "@bitbybit-dev/core": "1.0.1",
     "three": "0.184.0"
   },
   "devDependencies": {
-    "@babel/core": "7.28.6",
-    "@babel/preset-env": "7.28.6",
+    "@babel/core": "7.29.0",
+    "@babel/preset-env": "7.29.5",
     "@babel/preset-typescript": "7.28.5",
     "@testing-library/jest-dom": "6.9.1",
     "@types/jest": "30.0.0",
     "@types/three": "0.184.0",
-    "babel-jest": "30.2.0",
-    "jest": "30.2.0",
-    "jest-environment-jsdom": "30.2.0",
+    "babel-jest": "30.4.1",
+    "jest": "30.4.2",
+    "jest-environment-jsdom": "30.4.1",
     "jest-html-reporters": "3.1.7",
     "mvdir": "1.0.22",
     "shx": "0.4.0",
-    "ts-jest": "29.4.6",
+    "ts-jest": "29.4.10",
     "ts-node": "10.9.2",
     "typescript": "5.9.3"
   },

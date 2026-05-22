@@ -243,26 +243,37 @@ export class OCCTIO {
         try {
             const stepData = inputs.stepData;
             let result: Uint8Array;
-            
+
+            const meshPrecision = inputs.meshPrecision ?? 0.005;
+            const meshAngle = inputs.meshAngle ?? 0.5;
+            const meshRelative = inputs.meshRelative ?? true;
+
             // Check if input is binary (Uint8Array or ArrayBuffer) - use for STEP-Z compressed files
             if (stepData instanceof Uint8Array) {
                 result = this.occ.ConvertStepToGltfFromBinary(
                     stepData,
-                    inputs.meshPrecision ?? 0.1,
-                    50000
+                    meshPrecision,
+                    meshAngle,
+                    meshRelative,
+                    -1
                 );
             } else if (stepData instanceof ArrayBuffer) {
                 // ArrayBuffer needs to be wrapped as Uint8Array
                 result = this.occ.ConvertStepToGltfFromBinary(
                     new Uint8Array(stepData),
-                    inputs.meshPrecision ?? 0.1,
-                    50000
+                    meshPrecision,
+                    meshAngle,
+                    meshRelative,
+                    -1
                 );
             } else if (typeof stepData === "string") {
                 // String input - plain text STEP files
                 result = this.occ.ConvertStepToGltfFromMemory(
                     stepData,
-                    inputs.meshPrecision ?? 0.1
+                    meshPrecision,
+                    meshAngle,
+                    meshRelative,
+                    -1
                 );
             } else {
                 // File or Blob - should have been converted by worker layer
@@ -312,13 +323,13 @@ export class OCCTIO {
                     inputs.readMaterials ?? true,
                     inputs.readLayers ?? false,
                     inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.1,
+                    inputs.meshDeflection ?? 0.005,
                     inputs.meshAngle ?? 0.5,
                     inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? false,
+                    inputs.meshRelative ?? true,
                     inputs.internalVerticesMode ?? false,
                     inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? 50000,
+                    inputs.faceCountThreshold ?? -1,
                     inputs.mergeFaces ?? true,
                     inputs.splitIndices16 ?? true,
                     inputs.parallelWrite ?? true,
@@ -339,13 +350,13 @@ export class OCCTIO {
                     inputs.readMaterials ?? true,
                     inputs.readLayers ?? false,
                     inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.1,
+                    inputs.meshDeflection ?? 0.005,
                     inputs.meshAngle ?? 0.5,
                     inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? false,
+                    inputs.meshRelative ?? true,
                     inputs.internalVerticesMode ?? false,
                     inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? 50000,
+                    inputs.faceCountThreshold ?? -1,
                     inputs.mergeFaces ?? true,
                     inputs.splitIndices16 ?? true,
                     inputs.parallelWrite ?? true,
@@ -368,13 +379,13 @@ export class OCCTIO {
                     inputs.readMaterials ?? true,
                     inputs.readLayers ?? false,
                     inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.1,
+                    inputs.meshDeflection ?? 0.005,
                     inputs.meshAngle ?? 0.5,
                     inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? false,
+                    inputs.meshRelative ?? true,
                     inputs.internalVerticesMode ?? false,
                     inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? 50000,
+                    inputs.faceCountThreshold ?? -1,
                     inputs.mergeFaces ?? true,
                     inputs.splitIndices16 ?? true,
                     inputs.parallelWrite ?? true,

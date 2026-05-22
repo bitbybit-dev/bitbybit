@@ -6085,11 +6085,20 @@
     "uint8Array": "uint8 एरे",
     "preview assembly hierarchy": "occt असेंबली हायरार्की पूर्वावलोकन करें",
     "bitbybit.previewAssemblyHierarchy": "OCCT असेंबली हायरार्की पूर्वावलोकन करें",
-    "meshRelative": "सापेक्ष जाल",
+    "meshRelative": "मेश सापेक्ष",
     "internalVerticesMode": "आंतरिक शीर्ष मोड",
     "controlSurfaceDeflection": "नियंत्रण सतह विक्षेपण",
     "bitbybit.math.evalArithmetic": "अंकगणित मूल्यांकन",
     "evalArithmetic": "अंकगणित मूल्यांकन",
-    "bitbybit.math.evalArithmetic_description": "केवल संख्याओं, +, -, *, /, कोष्ठकों और रिक्त स्थानों वाले एक साधारण अंकगणितीय व्यंजक का सुरक्षित रूप से मूल्यांकन करता है। शंटिंग-यार्ड एल्गोरिथम का उपयोग करता है — कोई eval फ़ंक्शन नहीं। उदाहरण: '(3+2)*4' → 20, '10/3' → 3.3333...",
-    "expression": "व्यंजक"
+    "bitbybit.math.evalArithmetic_description": "केवल संख्याओं, +, -, *, /, कोष्ठकों और रिक्त स्थानों वाले एक सरल अंकगणितीय व्यंजक का सुरक्षित मूल्यांकन करता है। shunting-yard एल्गोरिदम का उपयोग करता है — कोई evalFunction नहीं। उदाहरण: '(3+2)*4' → 20, '10/3' → 3.3333...",
+    "expression": "व्यंजक",
+    "bitbybit.occt.assembly.manager.createImportedPart": "आयातित भाग बनाएं",
+    "createImportedPart": "आयातित भाग बनाएं",
+    "bitbybit.occt.assembly.manager.createImportedPart_description": "(आमतौर पर एक STEP-लोडेड दस्तावেज़) नई असेंबली में। उप-असेंबली पदानुक्रम, नाम और रंगों को संरक्षित करता है। परिणाम को किसी भी से `partId` द्वारा संदर्भित किया जा सकता है",
+    "sourceDocumentIndex": "स्रोत दस्तावেज़ अनुक्रमणिका",
+    "sourceLabel": "स्रोत लेबल",
+    "loadedParts": "लोड किए गए भाग",
+    "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
+    "sourceDocuments": "स्रोत दस्तावেज़",
+    "D[]": "D[]"
 }

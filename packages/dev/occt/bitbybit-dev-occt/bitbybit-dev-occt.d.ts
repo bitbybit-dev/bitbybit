@@ -211,14 +211,18 @@ export interface BitbybitOcctModule {
    * Convert STEP file to glTF format.
    * Runs entirely in C++ for maximum performance.
    * Preserves assembly hierarchy, colors, materials, and transformations.
-   * 
+   *
    * @param stepFilePath - Path to input STEP file (in virtual filesystem)
    * @param gltfFilePath - Path to output glTF/GLB file (in virtual filesystem)
-   * @param meshPrecision - Mesh deflection for triangulation (smaller = more triangles)
+   * @param meshPrecision - Mesh linear deflection. With meshRelative=true this is a
+   *        fraction of each edge's length (e.g. 0.005 = 0.5%); otherwise absolute (mm).
+   * @param meshAngle - Mesh angular deflection in radians (typical 0.5)
+   * @param meshRelative - When true, use size-aware relative deflection per face (faster
+   *        for mixed-scale assemblies, slight visual approximation on tiny features).
    * @param isBinary - true for GLB (binary), false for glTF+bin (JSON)
    * @returns true on success
    */
-  ConvertStepToGltf(stepFilePath: string, gltfFilePath: string, meshPrecision: number, isBinary: boolean): boolean;
+  ConvertStepToGltf(stepFilePath: string, gltfFilePath: string, meshPrecision: number, meshAngle: number, meshRelative: boolean, isBinary: boolean): boolean;
 
   /**
    * Advanced STEP to glTF conversion with full control over reading and export options.
@@ -309,12 +313,13 @@ export interface BitbybitOcctModule {
    * 
    * @param stepContent - STEP file content as string (supports gzip-compressed STEP-Z)
    * @param meshPrecision - Mesh deflection for triangulation
-   * @param faceCountThreshold - Compounds with more faces than this are meshed per-solid
-   *        to avoid WASM stack overflow. Set to -1 to always mesh as single unit.
-   *        Default is 50000. Recommended range: 10000-50000.
+   * @param faceCountThreshold - Legacy per-sub-shape meshing fallback threshold.
+   *        Default -1 = single-pass meshing of the whole assembly (fastest, recommended).
+   *        Set to a positive value (e.g. 100000) to fall back to per-solid meshing
+   *        when the total face count exceeds it (memory-constrained environments).
    * @returns GLB binary data as Uint8Array (empty on failure)
    */
-  ConvertStepToGltfFromMemory(stepContent: string, meshPrecision: number, faceCountThreshold?: number): Uint8Array;
+  ConvertStepToGltfFromMemory(stepContent: string, meshPrecision: number, meshAngle?: number, meshRelative?: boolean, faceCountThreshold?: number): Uint8Array;
   
   /**
    * Parse STEP assembly from memory to JSON.
@@ -332,11 +337,13 @@ export interface BitbybitOcctModule {
    * 
    * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
    * @param meshPrecision - Mesh deflection for triangulation
-   * @param faceCountThreshold - Compounds with more faces than this are meshed per-solid.
-   *        Default is 50000. Set to -1 to always mesh as single unit.
+   * @param faceCountThreshold - Legacy per-sub-shape meshing fallback threshold.
+   *        Default -1 = single-pass meshing of the whole assembly (fastest, recommended).
+   *        Set to a positive value to fall back to per-solid meshing for very large
+   *        assemblies in memory-constrained environments.
    * @returns GLB binary data as Uint8Array (empty on failure)
    */
-  ConvertStepToGltfFromBinary(stepData: Uint8Array, meshPrecision: number, faceCountThreshold?: number): Uint8Array;
+  ConvertStepToGltfFromBinary(stepData: Uint8Array, meshPrecision: number, meshAngle?: number, meshRelative?: boolean, faceCountThreshold?: number): Uint8Array;
 
   /**
    * Advanced STEP to GLB conversion with full control over reading and export options.
@@ -463,12 +470,28 @@ export interface BitbybitOcctModule {
    * 2. Part updates are applied second  
    * 3. New parts and nodes are added last
    * 
-   * @param structureJson - JSON string with assembly structure (parts, nodes, optional removals/partUpdates)
+   * Imported parts (cross-document reuse):
+   * The structure may also contain a `loadedParts` array. Each entry copies a label
+   * (or the full free-shapes root) from a source document into the new document,
+   * preserving sub-assembly hierarchy, names and colors. The copied root becomes a
+   * part referenceable by `partId` from any instance node, allowing a STEP-loaded
+   * assembly to be placed multiple times in a new assembly.
+   *
+   *   loadedParts: [
+   *     { id, sourceDocumentIndex, sourceLabel?, name?, colorRgba? }
+   *   ]
+   *
+   * `sourceDocumentIndex` is the index into the `sourceDocuments` parameter.
+   * If `sourceLabel` is omitted, all free shapes of the source document are imported
+   * (wrapped in a new assembly compound when there are multiple).
+   *
+   * @param structureJson - JSON string with assembly structure (parts, nodes, optional removals/partUpdates/loadedParts)
    * @param shapesArray - Array of TopoDS_Shape objects, referenced by shapeIndex in parts and partUpdates
    * @param existingDoc - Optional existing document handle to update (for removals/partUpdates/additions)
+   * @param sourceDocuments - Optional array of source document handles referenced by loadedParts entries
    * @returns Handle to the created/updated document. Call IsNull() to check for errors.
    */
-  BuildAssemblyDocument(structureJson: string, shapesArray: TopoDS_Shape[], existingDoc?: Handle_TDocStd_Document): Handle_TDocStd_Document;
+  BuildAssemblyDocument(structureJson: string, shapesArray: TopoDS_Shape[], existingDoc: Handle_TDocStd_Document | undefined, sourceDocuments: Handle_TDocStd_Document[]): Handle_TDocStd_Document;
 
   /**
    * Export a document to STEP format (takes document handle directly).
