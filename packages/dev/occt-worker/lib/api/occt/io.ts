@@ -215,6 +215,53 @@ export class OCCTIO {
     }
 
     /**
+     * Convert a STEP file to glTF format (binary GLB) with explicit Draco geometry
+     * compression settings.
+     * Same fast path as `convertStepToGltf` but exposes the Draco knobs of the
+     * underlying native function.
+     * @param inputs - STEP file content, mesh precision settings and Draco knobs.
+     *                 Accepts File, Blob, string, ArrayBuffer, or Uint8Array.
+     * @returns GLB binary data as Uint8Array
+     * @group assembly
+     * @shortname step to gltf with draco
+     * @drawable false
+     */
+    async convertStepToGltfWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfWithDracoDto): Promise<Uint8Array> {
+        // Convert File/Blob to ArrayBuffer before sending to worker
+        const stepData = await this.occWorkerManager.prepareStepData(inputs.stepData);
+        const preparedInputs = {
+            ...inputs,
+            stepData
+        };
+        return this.occWorkerManager.genericCallToWorkerPromise("io.convertStepToGltfWithDraco", preparedInputs);
+    }
+
+    /**
+     * Convert a STEP file to glTF format with full control over all reading,
+     * meshing and writer options, plus explicit Draco geometry compression
+     * settings.
+     *
+     * Same fast path as `convertStepToGltfAdvanced` but exposes the 8 Draco
+     * knobs.
+     *
+     * @param inputs - Advanced options including STEP data, mesh settings, glTF
+     *                 export settings and Draco knobs.
+     * @returns GLB binary data as Uint8Array
+     * @group assembly
+     * @shortname step to gltf advanced with draco
+     * @drawable false
+     */
+    async convertStepToGltfAdvancedWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto): Promise<Uint8Array> {
+        // Convert File/Blob to ArrayBuffer before sending to worker
+        const stepData = await this.occWorkerManager.prepareStepData(inputs.stepData);
+        const preparedInputs = {
+            ...inputs,
+            stepData
+        };
+        return this.occWorkerManager.genericCallToWorkerPromise("io.convertStepToGltfAdvancedWithDraco", preparedInputs);
+    }
+
+    /**
      * Parse a STEP file and return the assembly structure as JSON.
      * 
      * Uses OCCT's native XCAFPrs_DocumentExplorer for efficient traversal.

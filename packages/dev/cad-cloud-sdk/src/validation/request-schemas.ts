@@ -218,6 +218,48 @@ export const schemaBundle = {
       ],
       "additionalProperties": false
     },
+    "DracoCompressionOptions": {
+      "type": "object",
+      "properties": {
+        "useDraco": {
+          "type": "boolean"
+        },
+        "dracoCompressionLevel": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "dracoQuantizePositionBits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 31
+        },
+        "dracoQuantizeNormalBits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 31
+        },
+        "dracoQuantizeTexcoordBits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 31
+        },
+        "dracoQuantizeColorBits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 31
+        },
+        "dracoQuantizeGenericBits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 31
+        },
+        "dracoUnifiedQuantization": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
     "DragonCupBody": {
       "type": "object",
       "properties": {
@@ -745,6 +787,25 @@ export const schemaBundle = {
       ],
       "additionalProperties": false
     },
+    "StepToGltfAdvancedWithDracoBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "$ref": "#/$defs/ConvertAdvancedOptions"
+        },
+        "draco": {
+          "$ref": "#/$defs/DracoCompressionOptions"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
     "StepToGltfBody": {
       "type": "object",
       "properties": {
@@ -760,6 +821,43 @@ export const schemaBundle = {
         },
         "meshRelative": {
           "type": "boolean"
+        },
+        "internalVerticesMode": {
+          "type": "boolean"
+        },
+        "controlSurfaceDeflection": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "StepToGltfWithDracoBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "meshPrecision": {
+          "$ref": "#/$defs/MeshPrecision"
+        },
+        "meshAngle": {
+          "$ref": "#/$defs/MeshAngle"
+        },
+        "meshRelative": {
+          "type": "boolean"
+        },
+        "internalVerticesMode": {
+          "type": "boolean"
+        },
+        "controlSurfaceDeflection": {
+          "type": "boolean"
+        },
+        "draco": {
+          "$ref": "#/$defs/DracoCompressionOptions"
         }
       },
       "required": [

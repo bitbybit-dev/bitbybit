@@ -379,6 +379,47 @@ export class OCCTAssemblyManager {
         });
     }
 
+    /**
+     * Export an assembly document to glTF binary (GLB) format with explicit
+     * Draco geometry compression settings.
+     *
+     * @param inputs - Export options including document, mesh settings and Draco knobs
+     * @returns GLB content as Uint8Array
+     * @group export
+     * @shortname export document glTF with draco
+     * @drawable false
+     *
+     * @example
+     * ```typescript
+     * const document = await occt.assembly.manager.buildAssemblyDocument({ structure });
+     * const glbData = await occt.assembly.manager.exportDocumentToGltfWithDraco({
+     *     document,
+     *     meshDeflection: 0.1,
+     *     useDraco: true,
+     *     dracoCompressionLevel: 7,
+     *     tryDownload: true
+     * });
+     * ```
+     */
+    async exportDocumentToGltfWithDraco(inputs: Inputs.OCCT.ExportDocumentToGltfWithDracoDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Uint8Array> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.exportDocumentToGltfWithDraco", inputs).then((s: Uint8Array) => {
+            if (inputs.tryDownload && typeof document !== "undefined") {
+                const blob = new Blob([s.buffer as ArrayBuffer], { type: "model/gltf-binary" });
+                const blobUrl = URL.createObjectURL(blob);
+
+                const fileName = inputs.fileName || "assembly.glb";
+
+                const fileLink = document.createElement("a");
+                fileLink.href = blobUrl;
+                fileLink.target = "_self";
+                fileLink.download = fileName;
+                fileLink.click();
+                fileLink.remove();
+            }
+            return s;
+        });
+    }
+
     // =====================================================
     // Document Lifecycle
     // =====================================================
