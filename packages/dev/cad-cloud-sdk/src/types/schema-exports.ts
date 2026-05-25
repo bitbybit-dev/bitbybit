@@ -44,6 +44,8 @@ export type DefinitionsBody = components["schemas"]["DefinitionsBody"];
 export type DeleteFileResponse = components["schemas"]["DeleteFileResponse"];
 /** Confirmation that a resource was successfully deleted */
 export type DeleteResult = components["schemas"]["DeleteResult"];
+/** Draco geometry compression options applied during glTF export. */
+export type DracoCompressionOptions = components["schemas"]["DracoCompressionOptions"];
 /** Request body for the Dragon Cup model */
 export type DragonCupBody = components["schemas"]["DragonCupBody"];
 /** Dragon Cup model parameters — all optional, sane defaults apply */
@@ -126,8 +128,12 @@ export type PositiveScale = components["schemas"]["PositiveScale"];
 export type ResultPartMeta = components["schemas"]["ResultPartMeta"];
 /** Convert a STEP file to glTF with full control over tessellation, naming, coordinate systems, and output format. */
 export type StepToGltfAdvancedBody = components["schemas"]["StepToGltfAdvancedBody"];
+/** Convert a STEP file to Draco-compressed glTF with full control over tessellation, naming, coordinate systems, output format, and Draco quantization. */
+export type StepToGltfAdvancedWithDracoBody = components["schemas"]["StepToGltfAdvancedWithDracoBody"];
 /** Convert a STEP file to glTF format with default settings. Upload the STEP file first, then pass its ID here. */
 export type StepToGltfBody = components["schemas"]["StepToGltfBody"];
+/** Convert a STEP file to Draco-compressed glTF with default settings. Upload the STEP file first, then pass its ID here. */
+export type StepToGltfWithDracoBody = components["schemas"]["StepToGltfWithDracoBody"];
 /** Status summary for one sub-task within a compound (parallel) task */
 export type SubTaskSummary = components["schemas"]["SubTaskSummary"];
 /** HTTP 202 response when a task is accepted for async processing */

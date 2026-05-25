@@ -6100,5 +6100,22 @@
     "loadedParts": "завантажені деталі",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "вихідні документи",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "експортувати документ у glTF з Draco",
+    "exportDocumentToGltfWithDraco": "експортувати документ у glTF з Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Експортувати документ збірки у двійковий формат glTF (GLB) з явними налаштуваннями стиснення геометрії Draco.",
+    "useDraco": "використовувати Draco",
+    "dracoCompressionLevel": "рівень стиснення Draco",
+    "dracoQuantizePositionBits": "біти квантування позиції Draco",
+    "dracoQuantizeNormalBits": "біти квантування нормалей Draco",
+    "dracoQuantizeTexcoordBits": "біти квантування текстурних координат Draco",
+    "dracoQuantizeColorBits": "біти квантування кольору Draco",
+    "dracoQuantizeGenericBits": "біти загального квантування Draco",
+    "dracoUnifiedQuantization": "уніфіковане квантування Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "конвертувати STEP у glTF з Draco",
+    "convertStepToGltfWithDraco": "конвертувати STEP у glTF з Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Конвертувати файл STEP у формат glTF (двійковий GLB) з явними налаштуваннями стиснення геометрії Draco. Той самий швидкий шлях, що й `convertStepToGltf`, але відкриває параметри Draco базової нативної функції.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "конвертувати STEP у glTF розширений з Draco",
+    "convertStepToGltfAdvancedWithDraco": "конвертувати STEP у glTF розширений з Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Конвертувати файл STEP у формат glTF з повним контролем над усіма параметрами читання, побудови сітки та запису, а також явними налаштуваннями стиснення геометрії Draco. Той самий швидкий шлях, що й `convertStepToGltfAdvanced`, але відкриває 8 параметрів Draco."
 }

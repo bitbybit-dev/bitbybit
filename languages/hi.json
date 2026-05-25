@@ -6100,5 +6100,22 @@
     "loadedParts": "लोड किए गए भाग",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "स्रोत दस्तावেज़",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "Draco के साथ दस्तावेज़ को glTF में निर्यात करें",
+    "exportDocumentToGltfWithDraco": "Draco के साथ दस्तावेज़ को glTF में निर्यात करें",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "स्पष्ट Draco ज्यामिति संपीड़न सेटिंग्स के साथ एक असेंबली दस्तावेज़ को glTF बाइनरी (GLB) प्रारूप में निर्यात करें।",
+    "useDraco": "Draco का उपयोग करें",
+    "dracoCompressionLevel": "Draco संपीड़न स्तर",
+    "dracoQuantizePositionBits": "Draco स्थिति क्वांटाइज़ बिट्स",
+    "dracoQuantizeNormalBits": "Draco नॉर्मल क्वांटाइज़ बिट्स",
+    "dracoQuantizeTexcoordBits": "Draco टेक्सचर कोऑर्डिनेट क्वांटाइज़ बिट्स",
+    "dracoQuantizeColorBits": "Draco रंग क्वांटाइज़ बिट्स",
+    "dracoQuantizeGenericBits": "Draco सामान्य क्वांटाइज़ बिट्स",
+    "dracoUnifiedQuantization": "Draco एकीकृत क्वांटाइज़ेशन",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "Draco के साथ STEP को glTF में बदलें",
+    "convertStepToGltfWithDraco": "Draco के साथ STEP को glTF में बदलें",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "स्पष्ट Draco ज्यामिति संपीड़न सेटिंग्स के साथ एक STEP फ़ाइल को glTF प्रारूप (बाइनरी GLB) में बदलें। `convertStepToGltf` के समान तेज़ पथ लेकिन अंतर्निहित मूल फ़ंक्शन के Draco पैरामीटर उजागर करता है।",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "Draco के साथ STEP को उन्नत glTF में बदलें",
+    "convertStepToGltfAdvancedWithDraco": "Draco के साथ STEP को उन्नत glTF में बदलें",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "सभी पढ़ने, मेशिंग और लेखन विकल्पों पर पूर्ण नियंत्रण के साथ एक STEP फ़ाइल को glTF प्रारूप में बदलें, साथ ही स्पष्ट Draco ज्यामिति संपीड़न सेटिंग्स। `convertStepToGltfAdvanced` के समान तेज़ पथ लेकिन 8 Draco पैरामीटर उजागर करता है।"
 }

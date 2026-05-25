@@ -11,7 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@bitbybit-dev/babylonjs": "1.0.1",
+    "@bitbybit-dev/babylonjs": "1.0.2",
     "nuxt": "4.4.6",
     "vue": "latest",
     "vue-router": "latest"

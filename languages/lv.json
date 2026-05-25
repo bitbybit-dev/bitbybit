@@ -6100,5 +6100,22 @@
     "loadedParts": "ielādētās daļas",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "avota dokumenti",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "eksportēt dokumentu uz glTF ar Draco",
+    "exportDocumentToGltfWithDraco": "eksportēt dokumentu uz glTF ar Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Eksportēt montāžas dokumentu binārā glTF (GLB) formātā ar tiešiem Draco ģeometrijas saspiešanas iestatījumiem.",
+    "useDraco": "izmantot Draco",
+    "dracoCompressionLevel": "Draco saspiešanas līmenis",
+    "dracoQuantizePositionBits": "Draco pozīcijas kvantizācijas biti",
+    "dracoQuantizeNormalBits": "Draco normāļu kvantizācijas biti",
+    "dracoQuantizeTexcoordBits": "Draco tekstūras koordinātu kvantizācijas biti",
+    "dracoQuantizeColorBits": "Draco krāsas kvantizācijas biti",
+    "dracoQuantizeGenericBits": "Draco vispārīgās kvantizācijas biti",
+    "dracoUnifiedQuantization": "Draco vienotā kvantizācija",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "konvertēt STEP uz glTF ar Draco",
+    "convertStepToGltfWithDraco": "konvertēt STEP uz glTF ar Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Konvertēt STEP failu glTF formātā (binārais GLB) ar tiešiem Draco ģeometrijas saspiešanas iestatījumiem. Tas pats ātrais ceļš kā `convertStepToGltf`, bet atklāj pamatā esošās natīvās funkcijas Draco parametrus.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "konvertēt STEP uz glTF paplašinātu ar Draco",
+    "convertStepToGltfAdvancedWithDraco": "konvertēt STEP uz glTF paplašinātu ar Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Konvertēt STEP failu glTF formātā ar pilnu kontroli pār visām lasīšanas, tīklošanas un rakstīšanas opcijām, kā arī tiešiem Draco ģeometrijas saspiešanas iestatījumiem. Tas pats ātrais ceļš kā `convertStepToGltfAdvanced`, bet atklāj 8 Draco parametrus."
 }

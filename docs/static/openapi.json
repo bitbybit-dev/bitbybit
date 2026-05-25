@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Bitbybit CAD Cloud API",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "High-performance parametric CAD model generation API. Supports multi-format output (STEP, GLTF, decomposed mesh), pipeline execution, file-based conversion, and async job processing.",
     "contact": {
       "name": "Bitbybit",
@@ -697,6 +697,128 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/StepToGltfAdvancedBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/convert/step-to-gltf-with-draco": {
+      "post": {
+        "tags": [
+          "Convert"
+        ],
+        "summary": "Convert a STEP file to Draco-compressed GLTF (.glb)",
+        "description": "STEP → glTF conversion with Draco geometry compression using a previously uploaded file. Requires the 'convert' API key scope. Returns 202 with a task ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepToGltfWithDracoBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskAcceptedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/convert/step-to-gltf-advanced-with-draco": {
+      "post": {
+        "tags": [
+          "Convert"
+        ],
+        "summary": "Convert a STEP file to Draco-compressed GLTF (.glb) - advanced options",
+        "description": "Full-control STEP → glTF conversion with Draco geometry compression. Combines fine-grained mesh, export, and coordinate options with Draco quantization controls. Requires the 'convert' API key scope. Returns 202 with a task ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepToGltfAdvancedWithDracoBody"
               }
             }
           }
@@ -2081,6 +2203,14 @@
           "meshRelative": {
             "description": "Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units.",
             "type": "boolean"
+          },
+          "internalVerticesMode": {
+            "description": "Add interior vertices for better curved face fidelity (slower, set false for speed).",
+            "type": "boolean"
+          },
+          "controlSurfaceDeflection": {
+            "description": "Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed).",
+            "type": "boolean"
           }
         },
         "required": [
@@ -2154,11 +2284,11 @@
             "type": "boolean"
           },
           "internalVerticesMode": {
-            "description": "Enable internal vertices mode for more accurate mesh on complex faces",
+            "description": "Add interior vertices for better curved face fidelity (slower, set false for speed).",
             "type": "boolean"
           },
           "controlSurfaceDeflection": {
-            "description": "Enable control surface deflection for better quality on curved surfaces",
+            "description": "Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed).",
             "type": "boolean"
           },
           "faceCountThreshold": {
@@ -2232,6 +2362,119 @@
           "trs"
         ],
         "description": "Transform representation in glTF output"
+      },
+      "StepToGltfWithDracoBody": {
+        "type": "object",
+        "properties": {
+          "stepFileId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
+          },
+          "meshPrecision": {
+            "description": "Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%). When false, it is an absolute value in model units (mm for STEP).",
+            "$ref": "#/components/schemas/MeshPrecision"
+          },
+          "meshAngle": {
+            "description": "Angular deflection in radians for mesh tessellation — controls curvature approximation. Smaller values produce smoother curved surfaces.",
+            "$ref": "#/components/schemas/MeshAngle"
+          },
+          "meshRelative": {
+            "description": "Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units.",
+            "type": "boolean"
+          },
+          "internalVerticesMode": {
+            "description": "Add interior vertices for better curved face fidelity (slower, set false for speed).",
+            "type": "boolean"
+          },
+          "controlSurfaceDeflection": {
+            "description": "Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed).",
+            "type": "boolean"
+          },
+          "draco": {
+            "description": "Draco compression options. If omitted, sensible defaults are used (level 7, 14/10/12/8/12 bits).",
+            "$ref": "#/components/schemas/DracoCompressionOptions"
+          }
+        },
+        "required": [
+          "stepFileId"
+        ],
+        "additionalProperties": false,
+        "description": "Convert a STEP file to Draco-compressed glTF with default settings. Upload the STEP file first, then pass its ID here."
+      },
+      "DracoCompressionOptions": {
+        "type": "object",
+        "properties": {
+          "useDraco": {
+            "description": "Apply Draco geometry compression to the glTF output. Defaults to true for the *-with-draco endpoints.",
+            "type": "boolean"
+          },
+          "dracoCompressionLevel": {
+            "description": "Draco compression level (0 = fastest/largest, 10 = slowest/smallest). Typical good default is 7.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "dracoQuantizePositionBits": {
+            "description": "Quantization bits for vertex positions (higher = more precise, larger file). Typical: 14.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "dracoQuantizeNormalBits": {
+            "description": "Quantization bits for normal vectors. Typical: 10.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "dracoQuantizeTexcoordBits": {
+            "description": "Quantization bits for texture coordinates. Typical: 12.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "dracoQuantizeColorBits": {
+            "description": "Quantization bits for vertex colors. Typical: 8.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "dracoQuantizeGenericBits": {
+            "description": "Quantization bits for generic vertex attributes. Typical: 12.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "dracoUnifiedQuantization": {
+            "description": "Use unified quantization across all meshes (better when meshes share a coordinate frame).",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Draco geometry compression options applied during glTF export."
+      },
+      "StepToGltfAdvancedWithDracoBody": {
+        "type": "object",
+        "properties": {
+          "stepFileId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
+          },
+          "options": {
+            "description": "Advanced conversion settings. If omitted, sensible defaults are used.",
+            "$ref": "#/components/schemas/ConvertAdvancedOptions"
+          },
+          "draco": {
+            "description": "Draco compression options. If omitted, sensible defaults are used (level 7, 14/10/12/8/12 bits).",
+            "$ref": "#/components/schemas/DracoCompressionOptions"
+          }
+        },
+        "required": [
+          "stepFileId"
+        ],
+        "additionalProperties": false,
+        "description": "Convert a STEP file to Draco-compressed glTF with full control over tessellation, naming, coordinate systems, output format, and Draco quantization."
       },
       "FileUploadBody": {
         "type": "object",

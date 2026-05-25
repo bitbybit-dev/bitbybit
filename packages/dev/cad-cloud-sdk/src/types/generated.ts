@@ -848,6 +848,146 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/convert/step-to-gltf-with-draco": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Convert a STEP file to Draco-compressed GLTF (.glb)
+         * @description STEP → glTF conversion with Draco geometry compression using a previously uploaded file. Requires the 'convert' API key scope. Returns 202 with a task ID.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StepToGltfWithDracoBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/convert/step-to-gltf-advanced-with-draco": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Convert a STEP file to Draco-compressed GLTF (.glb) - advanced options
+         * @description Full-control STEP → glTF conversion with Draco geometry compression. Combines fine-grained mesh, export, and coordinate options with Draco quantization controls. Requires the 'convert' API key scope. Returns 202 with a task ID.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StepToGltfAdvancedWithDracoBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/files/upload": {
         parameters: {
             query?: never;
@@ -1730,6 +1870,10 @@ export interface components {
             meshAngle?: components["schemas"]["MeshAngle"];
             /** @description Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units. */
             meshRelative?: boolean;
+            /** @description Add interior vertices for better curved face fidelity (slower, set false for speed). */
+            internalVerticesMode?: boolean;
+            /** @description Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed). */
+            controlSurfaceDeflection?: boolean;
         };
         /** @description Mesh angular deflection in radians. Range: [0.01, π] */
         MeshAngle: number;
@@ -1760,9 +1904,9 @@ export interface components {
             meshParallel?: boolean;
             /** @description Use size-aware relative deflection per face. When true, meshDeflection is a fraction of each edge's length. Set to false for absolute deflection in model units. */
             meshRelative?: boolean;
-            /** @description Enable internal vertices mode for more accurate mesh on complex faces */
+            /** @description Add interior vertices for better curved face fidelity (slower, set false for speed). */
             internalVerticesMode?: boolean;
-            /** @description Enable control surface deflection for better quality on curved surfaces */
+            /** @description Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed). */
             controlSurfaceDeflection?: boolean;
             /** @description Face count threshold for per-sub-shape meshing fallback. Default -1 means single-pass meshing of the whole compound (fastest). Set to a positive value (e.g. 100000) to fall back to per-solid meshing for very large assemblies in memory-constrained environments. */
             faceCountThreshold?: number;
@@ -1797,6 +1941,51 @@ export interface components {
          * @enum {string}
          */
         GltfTransformFormat: "compact" | "mat4" | "trs";
+        /** @description Convert a STEP file to Draco-compressed glTF with default settings. Upload the STEP file first, then pass its ID here. */
+        StepToGltfWithDracoBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
+            stepFileId: string;
+            /** @description Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%). When false, it is an absolute value in model units (mm for STEP). */
+            meshPrecision?: components["schemas"]["MeshPrecision"];
+            /** @description Angular deflection in radians for mesh tessellation — controls curvature approximation. Smaller values produce smoother curved surfaces. */
+            meshAngle?: components["schemas"]["MeshAngle"];
+            /** @description Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units. */
+            meshRelative?: boolean;
+            /** @description Add interior vertices for better curved face fidelity (slower, set false for speed). */
+            internalVerticesMode?: boolean;
+            /** @description Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed). */
+            controlSurfaceDeflection?: boolean;
+            /** @description Draco compression options. If omitted, sensible defaults are used (level 7, 14/10/12/8/12 bits). */
+            draco?: components["schemas"]["DracoCompressionOptions"];
+        };
+        /** @description Draco geometry compression options applied during glTF export. */
+        DracoCompressionOptions: {
+            /** @description Apply Draco geometry compression to the glTF output. Defaults to true for the *-with-draco endpoints. */
+            useDraco?: boolean;
+            /** @description Draco compression level (0 = fastest/largest, 10 = slowest/smallest). Typical good default is 7. */
+            dracoCompressionLevel?: number;
+            /** @description Quantization bits for vertex positions (higher = more precise, larger file). Typical: 14. */
+            dracoQuantizePositionBits?: number;
+            /** @description Quantization bits for normal vectors. Typical: 10. */
+            dracoQuantizeNormalBits?: number;
+            /** @description Quantization bits for texture coordinates. Typical: 12. */
+            dracoQuantizeTexcoordBits?: number;
+            /** @description Quantization bits for vertex colors. Typical: 8. */
+            dracoQuantizeColorBits?: number;
+            /** @description Quantization bits for generic vertex attributes. Typical: 12. */
+            dracoQuantizeGenericBits?: number;
+            /** @description Use unified quantization across all meshes (better when meshes share a coordinate frame). */
+            dracoUnifiedQuantization?: boolean;
+        };
+        /** @description Convert a STEP file to Draco-compressed glTF with full control over tessellation, naming, coordinate systems, output format, and Draco quantization. */
+        StepToGltfAdvancedWithDracoBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
+            stepFileId: string;
+            /** @description Advanced conversion settings. If omitted, sensible defaults are used. */
+            options?: components["schemas"]["ConvertAdvancedOptions"];
+            /** @description Draco compression options. If omitted, sensible defaults are used (level 7, 14/10/12/8/12 bits). */
+            draco?: components["schemas"]["DracoCompressionOptions"];
+        };
         /** @description Request a pre-signed upload URL. After receiving the URL, PUT the raw file bytes to it within the expiration window. */
         FileUploadBody: {
             /** @description Original filename including extension (e.g. 'part.step', 'model.obj'). Used for display and format detection. */

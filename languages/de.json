@@ -6100,5 +6100,22 @@
     "loadedParts": "geladene Teile",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "Quelldokumente",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "Dokument als glTF mit Draco exportieren",
+    "exportDocumentToGltfWithDraco": "Dokument als glTF mit Draco exportieren",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Ein Baugruppendokument in das binäre glTF-Format (GLB) mit expliziten Draco-Geometriekomprimierungseinstellungen exportieren.",
+    "useDraco": "Draco verwenden",
+    "dracoCompressionLevel": "Draco-Komprimierungsstufe",
+    "dracoQuantizePositionBits": "Draco-Quantisierung Positionsbits",
+    "dracoQuantizeNormalBits": "Draco-Quantisierung Normalenbits",
+    "dracoQuantizeTexcoordBits": "Draco-Quantisierung Texturkoordinatenbits",
+    "dracoQuantizeColorBits": "Draco-Quantisierung Farbbits",
+    "dracoQuantizeGenericBits": "Draco-Quantisierung generische Bits",
+    "dracoUnifiedQuantization": "Draco einheitliche Quantisierung",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "STEP in glTF mit Draco konvertieren",
+    "convertStepToGltfWithDraco": "STEP in glTF mit Draco konvertieren",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Eine STEP-Datei in das glTF-Format (binäres GLB) mit expliziten Draco-Geometriekomprimierungseinstellungen konvertieren. Gleicher schneller Pfad wie `convertStepToGltf`, stellt jedoch die Draco-Parameter der zugrunde liegenden nativen Funktion bereit.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "STEP in glTF erweitert mit Draco konvertieren",
+    "convertStepToGltfAdvancedWithDraco": "STEP in glTF erweitert mit Draco konvertieren",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Eine STEP-Datei in das glTF-Format mit voller Kontrolle über alle Lese-, Vernetzungs- und Schreiboptionen sowie expliziten Draco-Geometriekomprimierungseinstellungen konvertieren. Gleicher schneller Pfad wie `convertStepToGltfAdvanced`, stellt jedoch die 8 Draco-Parameter bereit."
 }

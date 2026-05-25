@@ -6100,5 +6100,22 @@
     "loadedParts": "laddade delar",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "källdokument",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "exportera dokument till glTF med Draco",
+    "exportDocumentToGltfWithDraco": "exportera dokument till glTF med Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Exportera ett monteringsdokument till binärt glTF-format (GLB) med explicita Draco-geometrikomprimeringsinstältningar.",
+    "useDraco": "använd Draco",
+    "dracoCompressionLevel": "Draco-komprimeringsnivå",
+    "dracoQuantizePositionBits": "Draco kvantisering positionsbitar",
+    "dracoQuantizeNormalBits": "Draco kvantisering normalbitar",
+    "dracoQuantizeTexcoordBits": "Draco kvantisering texturkoordinatbitar",
+    "dracoQuantizeColorBits": "Draco kvantisering färgbitar",
+    "dracoQuantizeGenericBits": "Draco kvantisering generiska bitar",
+    "dracoUnifiedQuantization": "Draco enhetlig kvantisering",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "konvertera STEP till glTF med Draco",
+    "convertStepToGltfWithDraco": "konvertera STEP till glTF med Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Konvertera en STEP-fil till glTF-format (binär GLB) med explicita Draco-geometrikomprimeringsinstältningar. Samma snabba väg som `convertStepToGltf` men exponerar Draco-parametrarna för den underliggande nativa funktionen.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "konvertera STEP till glTF avancerad med Draco",
+    "convertStepToGltfAdvancedWithDraco": "konvertera STEP till glTF avancerad med Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Konvertera en STEP-fil till glTF-format med full kontroll över alla läs-, nätgenererings- och skrivalternativ, plus explicita Draco-geometrikomprimeringsinstältningar. Samma snabba väg som `convertStepToGltfAdvanced` men exponerar de 8 Draco-parametrarna."
 }

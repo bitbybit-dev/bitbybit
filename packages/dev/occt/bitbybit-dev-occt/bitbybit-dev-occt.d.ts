@@ -219,10 +219,12 @@ export interface BitbybitOcctModule {
    * @param meshAngle - Mesh angular deflection in radians (typical 0.5)
    * @param meshRelative - When true, use size-aware relative deflection per face (faster
    *        for mixed-scale assemblies, slight visual approximation on tiny features).
+   * @param internalVerticesMode - Add interior vertices for better curved face fidelity (slower, set false for speed)
+   * @param controlSurfaceDeflection - Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed)
    * @param isBinary - true for GLB (binary), false for glTF+bin (JSON)
    * @returns true on success
    */
-  ConvertStepToGltf(stepFilePath: string, gltfFilePath: string, meshPrecision: number, meshAngle: number, meshRelative: boolean, isBinary: boolean): boolean;
+  ConvertStepToGltf(stepFilePath: string, gltfFilePath: string, meshPrecision: number, meshAngle: number, meshRelative: boolean, internalVerticesMode: boolean, controlSurfaceDeflection: boolean, isBinary: boolean, faceCountThreshold?: number): boolean;
 
   /**
    * Advanced STEP to glTF conversion with full control over reading and export options.
@@ -319,7 +321,7 @@ export interface BitbybitOcctModule {
    *        when the total face count exceeds it (memory-constrained environments).
    * @returns GLB binary data as Uint8Array (empty on failure)
    */
-  ConvertStepToGltfFromMemory(stepContent: string, meshPrecision: number, meshAngle?: number, meshRelative?: boolean, faceCountThreshold?: number): Uint8Array;
+  ConvertStepToGltfFromMemory(stepContent: string, meshPrecision: number, meshAngle?: number, meshRelative?: boolean, internalVerticesMode?: boolean, controlSurfaceDeflection?: boolean, faceCountThreshold?: number): Uint8Array;
   
   /**
    * Parse STEP assembly from memory to JSON.
@@ -343,7 +345,7 @@ export interface BitbybitOcctModule {
    *        assemblies in memory-constrained environments.
    * @returns GLB binary data as Uint8Array (empty on failure)
    */
-  ConvertStepToGltfFromBinary(stepData: Uint8Array, meshPrecision: number, meshAngle?: number, meshRelative?: boolean, faceCountThreshold?: number): Uint8Array;
+  ConvertStepToGltfFromBinary(stepData: Uint8Array, meshPrecision: number, meshAngle?: number, meshRelative?: boolean, internalVerticesMode?: boolean, controlSurfaceDeflection?: boolean, faceCountThreshold?: number): Uint8Array;
 
   /**
    * Advanced STEP to GLB conversion with full control over reading and export options.
@@ -411,6 +413,143 @@ export interface BitbybitOcctModule {
     // Coordinate system options
     adjustZtoY: boolean,
     scale: number
+  ): Uint8Array;
+
+  /**
+   * Convert STEP file to glTF/GLB with explicit Draco geometry compression settings.
+   * Same shape as `ConvertStepToGltf` plus 8 trailing Draco parameters.
+   * Draco compression is only applied when OCCT was built with USE_DRACO=ON; otherwise
+   * the Draco parameters are accepted but silently ignored (no error).
+   *
+   * @param useDraco - Enable Draco geometry compression on output
+   * @param dracoCompressionLevel - 0 (fastest, largest) ... 10 (slowest, smallest). 7 is a good default.
+   * @param dracoQuantizePositionBits - Quantization bits for vertex positions (default 14)
+   * @param dracoQuantizeNormalBits - Quantization bits for normals (default 10)
+   * @param dracoQuantizeTexcoordBits - Quantization bits for UVs (default 12)
+   * @param dracoQuantizeColorBits - Quantization bits for colors (default 8)
+   * @param dracoQuantizeGenericBits - Quantization bits for generic attributes (default 12)
+   * @param dracoUnifiedQuantization - Apply a single quantization grid across all attributes
+   */
+  ConvertStepToGltfWithDraco(
+    stepFilePath: string,
+    gltfFilePath: string,
+    meshPrecision: number,
+    meshAngle: number,
+    meshRelative: boolean,
+    internalVerticesMode: boolean,
+    controlSurfaceDeflection: boolean,
+    isBinary: boolean,
+    faceCountThreshold: number,
+    useDraco: boolean,
+    dracoCompressionLevel: number,
+    dracoQuantizePositionBits: number,
+    dracoQuantizeNormalBits: number,
+    dracoQuantizeTexcoordBits: number,
+    dracoQuantizeColorBits: number,
+    dracoQuantizeGenericBits: number,
+    dracoUnifiedQuantization: boolean
+  ): boolean;
+
+  /**
+   * Advanced STEP -> glTF conversion with full reading/mesh/writer/coord options AND
+   * explicit Draco geometry compression settings (8 trailing parameters).
+   * See `ConvertStepToGltfAdvanced` for the meaning of the first 25 parameters and
+   * `ConvertStepToGltfWithDraco` for the Draco knobs.
+   */
+  ConvertStepToGltfAdvancedWithDraco(
+    stepFilePath: string,
+    gltfFilePath: string,
+    readColors: boolean,
+    readNames: boolean,
+    readMaterials: boolean,
+    readLayers: boolean,
+    readProps: boolean,
+    meshDeflection: number,
+    meshAngle: number,
+    meshParallel: boolean,
+    meshRelative: boolean,
+    internalVerticesMode: boolean,
+    controlSurfaceDeflection: boolean,
+    faceCountThreshold: number,
+    isBinary: boolean,
+    mergeFaces: boolean,
+    splitIndices16: boolean,
+    parallelWrite: boolean,
+    embedTextures: boolean,
+    forceUVExport: boolean,
+    nodeNameFormat: number,
+    meshNameFormat: number,
+    trsfFormat: number,
+    adjustZtoY: boolean,
+    scale: number,
+    useDraco: boolean,
+    dracoCompressionLevel: number,
+    dracoQuantizePositionBits: number,
+    dracoQuantizeNormalBits: number,
+    dracoQuantizeTexcoordBits: number,
+    dracoQuantizeColorBits: number,
+    dracoQuantizeGenericBits: number,
+    dracoUnifiedQuantization: boolean
+  ): boolean;
+
+  /**
+   * Convert binary STEP (Uint8Array, optionally gzipped .stpz) to GLB with explicit
+   * Draco compression settings. Returns the GLB as a Uint8Array.
+   */
+  ConvertStepToGltfFromBinaryWithDraco(
+    stepData: Uint8Array,
+    meshPrecision: number,
+    meshAngle: number,
+    meshRelative: boolean,
+    internalVerticesMode: boolean,
+    controlSurfaceDeflection: boolean,
+    faceCountThreshold: number,
+    useDraco: boolean,
+    dracoCompressionLevel: number,
+    dracoQuantizePositionBits: number,
+    dracoQuantizeNormalBits: number,
+    dracoQuantizeTexcoordBits: number,
+    dracoQuantizeColorBits: number,
+    dracoQuantizeGenericBits: number,
+    dracoUnifiedQuantization: boolean
+  ): Uint8Array;
+
+  /**
+   * Advanced binary STEP -> GLB conversion with full reading/mesh/writer/coord options
+   * AND explicit Draco compression settings.
+   */
+  ConvertStepToGltfFromBinaryAdvancedWithDraco(
+    stepData: Uint8Array,
+    readColors: boolean,
+    readNames: boolean,
+    readMaterials: boolean,
+    readLayers: boolean,
+    readProps: boolean,
+    meshDeflection: number,
+    meshAngle: number,
+    meshParallel: boolean,
+    meshRelative: boolean,
+    internalVerticesMode: boolean,
+    controlSurfaceDeflection: boolean,
+    faceCountThreshold: number,
+    mergeFaces: boolean,
+    splitIndices16: boolean,
+    parallelWrite: boolean,
+    embedTextures: boolean,
+    forceUVExport: boolean,
+    nodeNameFormat: number,
+    meshNameFormat: number,
+    trsfFormat: number,
+    adjustZtoY: boolean,
+    scale: number,
+    useDraco: boolean,
+    dracoCompressionLevel: number,
+    dracoQuantizePositionBits: number,
+    dracoQuantizeNormalBits: number,
+    dracoQuantizeTexcoordBits: number,
+    dracoQuantizeColorBits: number,
+    dracoQuantizeGenericBits: number,
+    dracoUnifiedQuantization: boolean
   ): Uint8Array;
 
   /**
@@ -524,11 +663,47 @@ export interface BitbybitOcctModule {
    * @param document - Document handle from BuildAssemblyDocument
    * @param meshDeflection - Mesh precision for triangulation (default 0.1)
    * @param meshAngle - Angular deflection for meshing in radians (default 0.5)
+   * @param internalVerticesMode - Add interior vertices for better curved face fidelity (slower, set false for speed)
+   * @param controlSurfaceDeflection - Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed)
    * @param mergeFaces - Whether to merge faces with same material (default false)
    * @param forceUVExport - Whether to export texture coordinates (default false)
    * @returns GLB content as Uint8Array, or undefined on failure
    */
-  ExportDocumentToGltf(document: Handle_TDocStd_Document, meshDeflection: number, meshAngle: number, mergeFaces: boolean, forceUVExport: boolean): Uint8Array | undefined;
+  ExportDocumentToGltf(document: Handle_TDocStd_Document, meshDeflection: number, meshAngle: number, internalVerticesMode: boolean, controlSurfaceDeflection: boolean, mergeFaces: boolean, forceUVExport: boolean): Uint8Array | undefined;
+
+  /**
+   * Export a document to glTF binary (GLB) format with explicit Draco geometry
+   * compression settings (8 trailing parameters). Mirrors `ExportDocumentToGltf` but
+   * exposes the Draco knobs that are otherwise defaulted internally.
+   * Draco compression is only applied when OCCT was built with USE_DRACO=ON; otherwise
+   * the Draco parameters are accepted but silently ignored (no error).
+   *
+   * @param useDraco - Enable Draco geometry compression on output
+   * @param dracoCompressionLevel - 0 (fastest, largest) ... 10 (slowest, smallest). 7 is a good default.
+   * @param dracoQuantizePositionBits - Quantization bits for positions (default 14)
+   * @param dracoQuantizeNormalBits - Quantization bits for normals (default 10)
+   * @param dracoQuantizeTexcoordBits - Quantization bits for UVs (default 12)
+   * @param dracoQuantizeColorBits - Quantization bits for colors (default 8)
+   * @param dracoQuantizeGenericBits - Quantization bits for generic attributes (default 12)
+   * @param dracoUnifiedQuantization - Apply a single quantization grid across all attributes
+   */
+  ExportDocumentToGltfWithDraco(
+    document: Handle_TDocStd_Document,
+    meshDeflection: number,
+    meshAngle: number,
+    internalVerticesMode: boolean,
+    controlSurfaceDeflection: boolean,
+    mergeFaces: boolean,
+    forceUVExport: boolean,
+    useDraco: boolean,
+    dracoCompressionLevel: number,
+    dracoQuantizePositionBits: number,
+    dracoQuantizeNormalBits: number,
+    dracoQuantizeTexcoordBits: number,
+    dracoQuantizeColorBits: number,
+    dracoQuantizeGenericBits: number,
+    dracoUnifiedQuantization: boolean
+  ): Uint8Array | undefined;
 
   // =====================================================================================
   // DOCUMENT-BASED QUERY FUNCTIONS

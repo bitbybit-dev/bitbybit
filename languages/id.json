@@ -6100,5 +6100,22 @@
     "loadedParts": "bagian yang dimuat",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "dokumen sumber",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "ekspor dokumen ke glTF dengan Draco",
+    "exportDocumentToGltfWithDraco": "ekspor dokumen ke glTF dengan Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Ekspor dokumen perakitan ke format biner glTF (GLB) dengan pengaturan kompresi geometri Draco yang eksplisit.",
+    "useDraco": "gunakan Draco",
+    "dracoCompressionLevel": "tingkat kompresi Draco",
+    "dracoQuantizePositionBits": "bit kuantisasi posisi Draco",
+    "dracoQuantizeNormalBits": "bit kuantisasi normal Draco",
+    "dracoQuantizeTexcoordBits": "bit kuantisasi koordinat tekstur Draco",
+    "dracoQuantizeColorBits": "bit kuantisasi warna Draco",
+    "dracoQuantizeGenericBits": "bit kuantisasi generik Draco",
+    "dracoUnifiedQuantization": "kuantisasi terpadu Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "konversi STEP ke glTF dengan Draco",
+    "convertStepToGltfWithDraco": "konversi STEP ke glTF dengan Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Konversi file STEP ke format glTF (GLB biner) dengan pengaturan kompresi geometri Draco yang eksplisit. Jalur cepat yang sama seperti `convertStepToGltf` tetapi mengekspos parameter Draco dari fungsi native yang mendasarinya.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "konversi STEP ke glTF lanjutan dengan Draco",
+    "convertStepToGltfAdvancedWithDraco": "konversi STEP ke glTF lanjutan dengan Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Konversi file STEP ke format glTF dengan kontrol penuh atas semua opsi pembacaan, meshing, dan penulisan, ditambah pengaturan kompresi geometri Draco yang eksplisit. Jalur cepat yang sama seperti `convertStepToGltfAdvanced` tetapi mengekspos 8 parameter Draco."
 }

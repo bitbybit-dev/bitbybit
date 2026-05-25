@@ -6100,5 +6100,22 @@
     "loadedParts": "załadowane części",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "dokumenty źródłowe",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "eksportuj dokument do glTF z Draco",
+    "exportDocumentToGltfWithDraco": "eksportuj dokument do glTF z Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Eksportuj dokument złożenia do formatu binarnego glTF (GLB) z jawnymi ustawieniami kompresji geometrii Draco.",
+    "useDraco": "użyj Draco",
+    "dracoCompressionLevel": "poziom kompresji Draco",
+    "dracoQuantizePositionBits": "bity kwantyzacji pozycji Draco",
+    "dracoQuantizeNormalBits": "bity kwantyzacji normalnych Draco",
+    "dracoQuantizeTexcoordBits": "bity kwantyzacji współrzędnych tekstury Draco",
+    "dracoQuantizeColorBits": "bity kwantyzacji koloru Draco",
+    "dracoQuantizeGenericBits": "bity kwantyzacji ogólnej Draco",
+    "dracoUnifiedQuantization": "zunifikowana kwantyzacja Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "konwertuj STEP na glTF z Draco",
+    "convertStepToGltfWithDraco": "konwertuj STEP na glTF z Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Konwertuj plik STEP do formatu glTF (binarny GLB) z jawnymi ustawieniami kompresji geometrii Draco. Ta sama szybka ścieżka jak `convertStepToGltf`, ale udostępnia parametry Draco bazowej funkcji natywnej.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "konwertuj STEP na glTF zaawansowany z Draco",
+    "convertStepToGltfAdvancedWithDraco": "konwertuj STEP na glTF zaawansowany z Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Konwertuj plik STEP do formatu glTF z pełną kontrolą nad wszystkimi opcjami odczytu, tworzenia siatki i zapisu, plus jawne ustawienia kompresji geometrii Draco. Ta sama szybka ścieżka jak `convertStepToGltfAdvanced`, ale udostępnia 8 parametrów Draco."
 }
