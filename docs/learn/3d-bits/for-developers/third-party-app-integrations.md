@@ -56,7 +56,7 @@ Add this logic to your app's change handler (e.g., inside your React `useEffect`
 // 1. Construct the payload
 const payload = {
   app: 'YourAppName',      // Your unique app identifier
-  version: '1.0.1',        // Schema version
+  version: '1.0.2',        // Schema version
   
   // IMPORTANT: Use a flat structure - do NOT nest related options
   options: {
@@ -146,7 +146,7 @@ The `detail` property of the event should follow this interface:
 interface ProductOptionsEventDetail {
   // Identifying information
   app: string;              // Your app's unique identifier
-  version: string;          // Use '1.0.1'
+  version: string;          // Use '1.0.2'
   
   // Option data
   // Key: Human Readable Name (displayed to user)

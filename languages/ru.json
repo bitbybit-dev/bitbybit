@@ -6100,5 +6100,22 @@
     "loadedParts": "загруженные детали",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "исходные документы",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "экспортировать документ в glTF с Draco",
+    "exportDocumentToGltfWithDraco": "экспортировать документ в glTF с Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Экспортировать документ сборки в двоичный формат glTF (GLB) с явными настройками сжатия геометрии Draco.",
+    "useDraco": "использовать Draco",
+    "dracoCompressionLevel": "уровень сжатия Draco",
+    "dracoQuantizePositionBits": "биты квантования позиции Draco",
+    "dracoQuantizeNormalBits": "биты квантования нормалей Draco",
+    "dracoQuantizeTexcoordBits": "биты квантования текстурных координат Draco",
+    "dracoQuantizeColorBits": "биты квантования цвета Draco",
+    "dracoQuantizeGenericBits": "биты общего квантования Draco",
+    "dracoUnifiedQuantization": "унифицированное квантование Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "конвертировать STEP в glTF с Draco",
+    "convertStepToGltfWithDraco": "конвертировать STEP в glTF с Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Конвертировать файл STEP в формат glTF (двоичный GLB) с явными настройками сжатия геометрии Draco. Тот же быстрый путь, что и `convertStepToGltf`, но с доступом к параметрам Draco базовой нативной функции.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "конвертировать STEP в glTF расширенный с Draco",
+    "convertStepToGltfAdvancedWithDraco": "конвертировать STEP в glTF расширенный с Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Конвертировать файл STEP в формат glTF с полным контролем над всеми параметрами чтения, построения сетки и записи, а также явными настройками сжатия геометрии Draco. Тот же быстрый путь, что и `convertStepToGltfAdvanced`, но с доступом к 8 параметрам Draco."
 }

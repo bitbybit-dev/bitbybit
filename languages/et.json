@@ -6100,5 +6100,22 @@
     "loadedParts": "laaditud osad",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "lähtedokumendid",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "ekspordi dokument glTF-i koos Dracoga",
+    "exportDocumentToGltfWithDraco": "ekspordi dokument glTF-i koos Dracoga",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Ekspordi koostudokument binaarsesse glTF (GLB) formaati koos selgesõnaliste Draco geomeetria tihendusseadetega.",
+    "useDraco": "kasuta Draco't",
+    "dracoCompressionLevel": "Draco tihenduse tase",
+    "dracoQuantizePositionBits": "Draco positsiooni kvantimise bitid",
+    "dracoQuantizeNormalBits": "Draco normaalide kvantimise bitid",
+    "dracoQuantizeTexcoordBits": "Draco tekstuurikoordinaatide kvantimise bitid",
+    "dracoQuantizeColorBits": "Draco värvi kvantimise bitid",
+    "dracoQuantizeGenericBits": "Draco üldise kvantimise bitid",
+    "dracoUnifiedQuantization": "Draco ühtne kvantimine",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "teisenda STEP glTF-iks koos Dracoga",
+    "convertStepToGltfWithDraco": "teisenda STEP glTF-iks koos Dracoga",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Teisenda STEP-fail glTF-formaati (binaarne GLB) koos selgesõnaliste Draco geomeetria tihendusseadetega. Sama kiire tee nagu `convertStepToGltf`, kuid paljastab aluseks oleva natiivfunktsiooni Draco parameetrid.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "teisenda STEP glTF-iks täiustatud koos Dracoga",
+    "convertStepToGltfAdvancedWithDraco": "teisenda STEP glTF-iks täiustatud koos Dracoga",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Teisenda STEP-fail glTF-formaati täieliku kontrolliga kõigi lugemis-, võrgustamis- ja kirjutamisvalikute üle, lisaks selgesõnalised Draco geomeetria tihendusseaded. Sama kiire tee nagu `convertStepToGltfAdvanced`, kuid paljastab 8 Draco parameetrit."
 }

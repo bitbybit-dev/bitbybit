@@ -6100,5 +6100,22 @@
     "loadedParts": "الأجزاء المحمّلة",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "المستندات المصدر",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "تصدير المستند إلى glTF مع Draco",
+    "exportDocumentToGltfWithDraco": "تصدير المستند إلى glTF مع Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "تصدير مستند تجميع إلى تنسيق glTF الثنائي (GLB) مع إعدادات ضغط هندسي Draco صريحة.",
+    "useDraco": "استخدام Draco",
+    "dracoCompressionLevel": "مستوى ضغط Draco",
+    "dracoQuantizePositionBits": "بتات تكميم الموضع Draco",
+    "dracoQuantizeNormalBits": "بتات تكميم المتجه العمودي Draco",
+    "dracoQuantizeTexcoordBits": "بتات تكميم إحداثيات النسيج Draco",
+    "dracoQuantizeColorBits": "بتات تكميم اللون Draco",
+    "dracoQuantizeGenericBits": "بتات تكميم عامة Draco",
+    "dracoUnifiedQuantization": "تكميم موحد Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "تحويل STEP إلى glTF مع Draco",
+    "convertStepToGltfWithDraco": "تحويل STEP إلى glTF مع Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "تحويل ملف STEP إلى تنسيق glTF (GLB ثنائي) مع إعدادات ضغط هندسي Draco صريحة. نفس المسار السريع مثل `convertStepToGltf` ولكنه يكشف معاملات Draco للوظيفة الأصلية الأساسية.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "تحويل STEP إلى glTF متقدم مع Draco",
+    "convertStepToGltfAdvancedWithDraco": "تحويل STEP إلى glTF متقدم مع Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "تحويل ملف STEP إلى تنسيق glTF مع التحكم الكامل في جميع خيارات القراءة والتشبيك والكتابة، بالإضافة إلى إعدادات ضغط هندسي Draco صريحة. نفس المسار السريع مثل `convertStepToGltfAdvanced` ولكنه يكشف معاملات Draco الثمانية."
 }

@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/babylonjs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Bit By Bit Developers BABYLONJS CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {
@@ -64,7 +64,7 @@
     "@babylonjs/loaders": "9.8.0",
     "@babylonjs/materials": "9.8.0",
     "@babylonjs/serializers": "9.8.0",
-    "@bitbybit-dev/core": "1.0.1",
+    "@bitbybit-dev/core": "1.0.2",
     "earcut": "3.0.2"
   },
   "devDependencies": {

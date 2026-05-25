@@ -332,10 +332,43 @@ export class OCCTAssemblyManager {
             inputs.document,
             inputs.meshDeflection,
             inputs.meshAngle,
+            inputs.internalVerticesMode ?? false,
+            inputs.controlSurfaceDeflection ?? false,
             inputs.mergeFaces,
             inputs.forceUVExport
         );
         
+        if (!result) {
+            throw new Error("Failed to export document to glTF");
+        }
+        return result;
+    }
+
+    /**
+     * Export an assembly document to glTF binary (GLB) format with explicit Draco
+     * geometry compression settings.
+     * @param inputs - Export options including document, mesh settings and Draco knobs
+     * @returns GLB content as Uint8Array
+     */
+    exportDocumentToGltfWithDraco(inputs: Inputs.OCCT.ExportDocumentToGltfWithDracoDto<Handle_TDocStd_Document>): Uint8Array {
+        const result = this.occ.ExportDocumentToGltfWithDraco(
+            inputs.document,
+            inputs.meshDeflection ?? 0.1,
+            inputs.meshAngle ?? 0.5,
+            inputs.internalVerticesMode ?? false,
+            inputs.controlSurfaceDeflection ?? false,
+            inputs.mergeFaces ?? false,
+            inputs.forceUVExport ?? false,
+            inputs.useDraco ?? true,
+            inputs.dracoCompressionLevel ?? 7,
+            inputs.dracoQuantizePositionBits ?? 14,
+            inputs.dracoQuantizeNormalBits ?? 10,
+            inputs.dracoQuantizeTexcoordBits ?? 12,
+            inputs.dracoQuantizeColorBits ?? 8,
+            inputs.dracoQuantizeGenericBits ?? 12,
+            inputs.dracoUnifiedQuantization ?? false
+        );
+
         if (!result) {
             throw new Error("Failed to export document to glTF");
         }

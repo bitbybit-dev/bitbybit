@@ -6370,6 +6370,86 @@ export namespace OCCT {
          * @default true
          */
         meshRelative = true;
+        /**
+         * Add interior vertices for better curved face fidelity (slower, set false for speed).
+         * @default false
+         */
+        internalVerticesMode = false;
+        /**
+         * Extra post-pass refining triangles that bulge beyond the deflection (slower, set
+         * false for speed).
+         * @default false
+         */
+        controlSurfaceDeflection = false;
+    }
+
+    /**
+     * Options for converting STEP to glTF format with explicit Draco geometry
+     * compression settings. Mirrors `ConvertStepToGltfDto` and exposes the Draco knobs
+     * (8 trailing parameters of the underlying native function).
+     */
+    export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
+        constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
+            super(stepData);
+        }
+        /**
+         * Enable Draco geometry compression on output.
+         * @default true
+         */
+        useDraco = true;
+        /**
+         * Draco compression level - 0 (fastest, largest) ... 10 (slowest, smallest).
+         * @default 7
+         * @minimum 0
+         * @maximum 10
+         * @step 1
+         */
+        dracoCompressionLevel = 7;
+        /**
+         * Quantization bits for vertex positions.
+         * @default 14
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizePositionBits = 14;
+        /**
+         * Quantization bits for normals.
+         * @default 10
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeNormalBits = 10;
+        /**
+         * Quantization bits for texture coordinates (UVs).
+         * @default 12
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeTexcoordBits = 12;
+        /**
+         * Quantization bits for vertex colors.
+         * @default 8
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeColorBits = 8;
+        /**
+         * Quantization bits for generic attributes.
+         * @default 12
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeGenericBits = 12;
+        /**
+         * Apply a single quantization grid across all attributes.
+         * @default false
+         */
+        dracoUnifiedQuantization = false;
     }
 
     /**
@@ -6596,6 +6676,75 @@ export namespace OCCT {
          * @step 0.001
          */
         scale = 1.0;
+    }
+
+    /**
+     * Advanced options for converting STEP to glTF format with explicit Draco
+     * geometry compression settings. Mirrors `ConvertStepToGltfAdvancedDto` and
+     * adds the 8 Draco knobs supported by the underlying native function.
+     */
+    export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdvancedDto {
+        constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
+            super(stepData);
+        }
+        /**
+         * Enable Draco geometry compression on output.
+         * @default true
+         */
+        useDraco = true;
+        /**
+         * Draco compression level - 0 (fastest, largest) ... 10 (slowest, smallest).
+         * @default 7
+         * @minimum 0
+         * @maximum 10
+         * @step 1
+         */
+        dracoCompressionLevel = 7;
+        /**
+         * Quantization bits for vertex positions.
+         * @default 14
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizePositionBits = 14;
+        /**
+         * Quantization bits for normals.
+         * @default 10
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeNormalBits = 10;
+        /**
+         * Quantization bits for texture coordinates (UVs).
+         * @default 12
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeTexcoordBits = 12;
+        /**
+         * Quantization bits for vertex colors.
+         * @default 8
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeColorBits = 8;
+        /**
+         * Quantization bits for generic attributes.
+         * @default 12
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeGenericBits = 12;
+        /**
+         * Apply a single quantization grid across all attributes.
+         * @default false
+         */
+        dracoUnifiedQuantization = false;
     }
 
     // =====================================================
@@ -7179,6 +7328,17 @@ export namespace OCCT {
          */
         meshAngle = 0.5;
         /**
+         * Add interior vertices for better curved face fidelity (slower, set false for speed).
+         * @default false
+         */
+        internalVerticesMode = false;
+        /**
+         * Extra post-pass refining triangles that bulge beyond the deflection (slower,
+         * set false for speed).
+         * @default false
+         */
+        controlSurfaceDeflection = false;
+        /**
          * Whether to merge faces with same material for optimization.
          * Set to false to preserve face boundaries.
          * @default false
@@ -7199,6 +7359,83 @@ export namespace OCCT {
          * @default false
          */
         tryDownload = false;
+    }
+
+    /**
+     * DTO for exporting an assembly document directly to glTF (GLB) format with
+     * explicit Draco geometry compression settings. Mirrors `ExportDocumentToGltfDto`
+     * and exposes the 8 Draco knobs of the underlying native function.
+     */
+    export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto<T> {
+        constructor(
+            document?: T,
+            meshDeflection?: number,
+            meshAngle?: number,
+            mergeFaces?: boolean,
+            forceUVExport?: boolean,
+            fileName?: string,
+            tryDownload?: boolean
+        ) {
+            super(document, meshDeflection, meshAngle, mergeFaces, forceUVExport, fileName, tryDownload);
+        }
+        /**
+         * Enable Draco geometry compression on output.
+         * @default true
+         */
+        useDraco = true;
+        /**
+         * Draco compression level - 0 (fastest, largest) ... 10 (slowest, smallest).
+         * @default 7
+         * @minimum 0
+         * @maximum 10
+         * @step 1
+         */
+        dracoCompressionLevel = 7;
+        /**
+         * Quantization bits for vertex positions.
+         * @default 14
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizePositionBits = 14;
+        /**
+         * Quantization bits for normals.
+         * @default 10
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeNormalBits = 10;
+        /**
+         * Quantization bits for texture coordinates (UVs).
+         * @default 12
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeTexcoordBits = 12;
+        /**
+         * Quantization bits for vertex colors.
+         * @default 8
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeColorBits = 8;
+        /**
+         * Quantization bits for generic attributes.
+         * @default 12
+         * @minimum 0
+         * @maximum 31
+         * @step 1
+         */
+        dracoQuantizeGenericBits = 12;
+        /**
+         * Apply a single quantization grid across all attributes.
+         * @default false
+         */
+        dracoUnifiedQuantization = false;
     }
 
     export class CompoundShapesDto<T> {

@@ -6100,5 +6100,22 @@
     "loadedParts": "ladatut osat",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "lähdeasiakirjat",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "vie dokumentti glTF-muotoon Dracolla",
+    "exportDocumentToGltfWithDraco": "vie dokumentti glTF-muotoon Dracolla",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Vie kokoonpanodokumentti binääriseen glTF (GLB) -muotoon käyttäen eksplisiittisiä Draco-geometriapakkausasetuksia.",
+    "useDraco": "käytä Dracoa",
+    "dracoCompressionLevel": "Draco-pakkaustaso",
+    "dracoQuantizePositionBits": "Draco-paikan kvantisointibitit",
+    "dracoQuantizeNormalBits": "Draco-normaalien kvantisointibitit",
+    "dracoQuantizeTexcoordBits": "Draco-tekstuurikoordinaattien kvantisointibitit",
+    "dracoQuantizeColorBits": "Draco-värin kvantisointibitit",
+    "dracoQuantizeGenericBits": "Draco-yleiset kvantisointibitit",
+    "dracoUnifiedQuantization": "Draco yhtenäinen kvantisointi",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "muunna STEP glTF-muotoon Dracolla",
+    "convertStepToGltfWithDraco": "muunna STEP glTF-muotoon Dracolla",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Muunna STEP-tiedosto glTF-muotoon (binäärinen GLB) käyttäen eksplisiittisiä Draco-geometriapakkausasetuksia. Sama nopea polku kuin `convertStepToGltf`, mutta paljastaa taustalla olevan natiivifunktion Draco-parametrit.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "muunna STEP glTF-muotoon edistynyt Dracolla",
+    "convertStepToGltfAdvancedWithDraco": "muunna STEP glTF-muotoon edistynyt Dracolla",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Muunna STEP-tiedosto glTF-muotoon täydellä hallinnalla kaikista luku-, verkotus- ja kirjoitusasetuksista sekä eksplisiittisillä Draco-geometriapakkausasetuksilla. Sama nopea polku kuin `convertStepToGltfAdvanced`, mutta paljastaa 8 Draco-parametria."
 }

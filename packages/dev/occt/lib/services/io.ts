@@ -247,6 +247,8 @@ export class OCCTIO {
             const meshPrecision = inputs.meshPrecision ?? 0.005;
             const meshAngle = inputs.meshAngle ?? 0.5;
             const meshRelative = inputs.meshRelative ?? true;
+            const internalVerticesMode = inputs.internalVerticesMode ?? false;
+            const controlSurfaceDeflection = inputs.controlSurfaceDeflection ?? false;
 
             // Check if input is binary (Uint8Array or ArrayBuffer) - use for STEP-Z compressed files
             if (stepData instanceof Uint8Array) {
@@ -255,6 +257,8 @@ export class OCCTIO {
                     meshPrecision,
                     meshAngle,
                     meshRelative,
+                    internalVerticesMode,
+                    controlSurfaceDeflection,
                     -1
                 );
             } else if (stepData instanceof ArrayBuffer) {
@@ -264,6 +268,8 @@ export class OCCTIO {
                     meshPrecision,
                     meshAngle,
                     meshRelative,
+                    internalVerticesMode,
+                    controlSurfaceDeflection,
                     -1
                 );
             } else if (typeof stepData === "string") {
@@ -273,6 +279,8 @@ export class OCCTIO {
                     meshPrecision,
                     meshAngle,
                     meshRelative,
+                    internalVerticesMode,
+                    controlSurfaceDeflection,
                     -1
                 );
             } else {
@@ -410,6 +418,135 @@ export class OCCTIO {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             throw new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`);
+        }
+    }
+
+    /**
+     * Convert a STEP file to glTF format (binary GLB) with explicit Draco
+     * geometry compression settings.
+     *
+     * Same conversion path as `convertStepToGltf` but exposes the Draco knobs
+     * supported by the underlying native function.
+     *
+     * @param inputs - STEP file content, mesh precision settings, and Draco knobs.
+     * @returns GLB binary data as Uint8Array
+     */
+    convertStepToGltfWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfWithDracoDto): Uint8Array {
+        try {
+            const stepData = inputs.stepData;
+            let binaryData: Uint8Array;
+
+            if (stepData instanceof Uint8Array) {
+                binaryData = stepData;
+            } else if (stepData instanceof ArrayBuffer) {
+                binaryData = new Uint8Array(stepData);
+            } else if (typeof stepData === "string") {
+                binaryData = new TextEncoder().encode(stepData);
+            } else {
+                throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
+            }
+
+            const result = this.occ.ConvertStepToGltfFromBinaryWithDraco(
+                binaryData,
+                inputs.meshPrecision ?? 0.005,
+                inputs.meshAngle ?? 0.5,
+                inputs.meshRelative ?? true,
+                inputs.internalVerticesMode ?? false,
+                inputs.controlSurfaceDeflection ?? false,
+                -1,
+                inputs.useDraco ?? true,
+                inputs.dracoCompressionLevel ?? 7,
+                inputs.dracoQuantizePositionBits ?? 14,
+                inputs.dracoQuantizeNormalBits ?? 10,
+                inputs.dracoQuantizeTexcoordBits ?? 12,
+                inputs.dracoQuantizeColorBits ?? 8,
+                inputs.dracoQuantizeGenericBits ?? 12,
+                inputs.dracoUnifiedQuantization ?? false
+            );
+
+            if (result.length === 0) {
+                throw new Error("Failed to convert STEP to glTF");
+            }
+
+            return result;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`);
+        }
+    }
+
+    /**
+     * Convert a STEP file to glTF format with full control over all reading, meshing
+     * and writer options, plus explicit Draco geometry compression settings.
+     *
+     * Same conversion path as `convertStepToGltfAdvanced` but exposes the 8 Draco
+     * knobs.
+     *
+     * @param inputs - Advanced options including STEP data, mesh settings, glTF
+     *                 export settings and Draco knobs.
+     * @returns GLB binary data as Uint8Array
+     */
+    convertStepToGltfAdvancedWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto): Uint8Array {
+        try {
+            const stepData = inputs.stepData;
+            let binaryData: Uint8Array;
+
+            if (stepData instanceof Uint8Array) {
+                binaryData = stepData;
+            } else if (stepData instanceof ArrayBuffer) {
+                binaryData = new Uint8Array(stepData);
+            } else if (typeof stepData === "string") {
+                binaryData = new TextEncoder().encode(stepData);
+            } else {
+                throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
+            }
+
+            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.nodeNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
+            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.meshNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
+            const transformFormatNum = this.gltfTransformFormatEnumToOcct(inputs.transformFormat ?? Inputs.OCCT.gltfTransformFormatEnum.compact);
+
+            const result = this.occ.ConvertStepToGltfFromBinaryAdvancedWithDraco(
+                binaryData,
+                inputs.readColors ?? true,
+                inputs.readNames ?? true,
+                inputs.readMaterials ?? true,
+                inputs.readLayers ?? false,
+                inputs.readProps ?? false,
+                inputs.meshDeflection ?? 0.005,
+                inputs.meshAngle ?? 0.5,
+                inputs.meshParallel ?? true,
+                inputs.meshRelative ?? true,
+                inputs.internalVerticesMode ?? false,
+                inputs.controlSurfaceDeflection ?? false,
+                inputs.faceCountThreshold ?? -1,
+                inputs.mergeFaces ?? true,
+                inputs.splitIndices16 ?? true,
+                inputs.parallelWrite ?? true,
+                inputs.embedTextures ?? true,
+                inputs.forceUVExport ?? false,
+                nodeNameFormatNum,
+                meshNameFormatNum,
+                transformFormatNum,
+                inputs.adjustZtoY ?? true,
+                inputs.scale ?? 1.0,
+                inputs.useDraco ?? true,
+                inputs.dracoCompressionLevel ?? 7,
+                inputs.dracoQuantizePositionBits ?? 14,
+                inputs.dracoQuantizeNormalBits ?? 10,
+                inputs.dracoQuantizeTexcoordBits ?? 12,
+                inputs.dracoQuantizeColorBits ?? 8,
+                inputs.dracoQuantizeGenericBits ?? 12,
+                inputs.dracoUnifiedQuantization ?? false
+            );
+
+            if (result.length === 0) {
+                throw new Error("Failed to convert STEP to glTF");
+            }
+
+            return result;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`);
         }
     }
 

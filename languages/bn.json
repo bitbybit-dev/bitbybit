@@ -6100,5 +6100,22 @@
     "loadedParts": "লোড করা অংশগুলি",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "উৎস নথি",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "Draco সহ glTF-এ ডকুমেন্ট রপ্তানি করুন",
+    "exportDocumentToGltfWithDraco": "Draco সহ glTF-এ ডকুমেন্ট রপ্তানি করুন",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "স্পষ্ট Draco জ্যামিতি সংকোচন সেটিংস সহ একটি অ্যাসেম্বলি ডকুমেন্ট glTF বাইনারি (GLB) ফরম্যাটে রপ্তানি করুন।",
+    "useDraco": "Draco ব্যবহার করুন",
+    "dracoCompressionLevel": "Draco সংকোচন স্তর",
+    "dracoQuantizePositionBits": "Draco অবস্থান কোয়ান্টাইজ বিট",
+    "dracoQuantizeNormalBits": "Draco নর্মাল কোয়ান্টাইজ বিট",
+    "dracoQuantizeTexcoordBits": "Draco টেক্সচার স্থানাঙ্ক কোয়ান্টাইজ বিট",
+    "dracoQuantizeColorBits": "Draco রঙ কোয়ান্টাইজ বিট",
+    "dracoQuantizeGenericBits": "Draco জেনেরিক কোয়ান্টাইজ বিট",
+    "dracoUnifiedQuantization": "Draco ইউনিফাইড কোয়ান্টাইজেশন",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "Draco সহ STEP কে glTF-এ রূপান্তর করুন",
+    "convertStepToGltfWithDraco": "Draco সহ STEP কে glTF-এ রূপান্তর করুন",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "স্পষ্ট Draco জ্যামিতি সংকোচন সেটিংস সহ একটি STEP ফাইলকে glTF ফরম্যাটে (বাইনারি GLB) রূপান্তর করুন। `convertStepToGltf`-এর মতো একই দ্রুত পথ কিন্তু অন্তর্নিহিত নেটিভ ফাংশনের Draco প্যারামিটারগুলি প্রকাশ করে।",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "Draco সহ STEP কে উন্নত glTF-এ রূপান্তর করুন",
+    "convertStepToGltfAdvancedWithDraco": "Draco সহ STEP কে উন্নত glTF-এ রূপান্তর করুন",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "সমস্ত পড়া, মেশিং এবং লেখার বিকল্পগুলির উপর সম্পূর্ণ নিয়ন্ত্রণ সহ একটি STEP ফাইলকে glTF ফরম্যাটে রূপান্তর করুন, পাশাপাশি স্পষ্ট Draco জ্যামিতি সংকোচন সেটিংস। `convertStepToGltfAdvanced`-এর মতো একই দ্রুত পথ কিন্তু ৮টি Draco প্যারামিটার প্রকাশ করে।"
 }
