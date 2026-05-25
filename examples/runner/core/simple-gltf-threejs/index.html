@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Bitbybit — Core Runner: Build Geometry & Display as GLTF in Three.js</title>
+    <base href="/">
+    <link rel="icon" type="image/x-icon" href="https://bitbybit.dev/favicon.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Build OCCT geometry with the Bitbybit Core Runner (no game engine), export it to GLTF, and display the result in a Three.js scene.">
+    <script defer src="https://git-cdn.bitbybit.dev/v1.0.2/runner/bitbybit-runner-core.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module">
+        import { Scene, PerspectiveCamera, WebGLRenderer, Color, Box3, Vector3,
+                 DirectionalLight, HemisphereLight, ACESFilmicToneMapping, SRGBColorSpace } from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+        // ── Initialise OCCT kernel via Core Runner ──────────────────
+        const runner = window.bitbybitRunner.getRunnerInstance();
+        const { bitbybit, Bit } = await runner.run({
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableManifold: false,
+        });
+
+        document.getElementById('loading').textContent = 'Building geometry…';
+
+        // ── Build geometry with OCCT ────────────────────────────────
+        // Create a lofted surface from interpolated wires, then thicken it
+        const curvePts = [
+            [[-10, 0, -10], [0, 3, -10], [10, -1, -10], [20, 2, -10]],
+            [[-10, -5, 0], [0, -3, 0], [10, 1, 0], [20, -2, 0]],
+            [[-10, 0, 10], [0, 3, 10], [10, -1, 10], [20, 2, 10]],
+        ];
+
+        const wires = await Promise.all(curvePts.map((pts) => {
+            const dto = new Bit.Inputs.OCCT.InterpolationDto();
+            dto.points = pts;
+            dto.periodic = false;
+            dto.tolerance = 1e-7;
+            return bitbybit.occt.shapes.wire.interpolatePoints(dto);
+        }));
+
+        const loftDto = new Bit.Inputs.OCCT.LoftDto();
+        loftDto.shapes = wires;
+        loftDto.makeSolid = false;
+        const loft = await bitbybit.occt.operations.loft(loftDto);
+
+        const thickDto = new Bit.Inputs.OCCT.ThisckSolidSimpleDto();
+        thickDto.shape = loft;
+        thickDto.offset = 0.5;
+        const solid = await bitbybit.occt.operations.makeThickSolidSimple(thickDto);
+
+        document.getElementById('loading').textContent = 'Exporting to GLTF…';
+
+        // ── Save shape as STEP, then convert STEP to GLTF ───────────
+        const saveDto = new Bit.Inputs.OCCT.SaveStepDto();
+        saveDto.shape = solid;
+        saveDto.fileName = 'shape';
+        saveDto.adjustYtoZ = false;
+        saveDto.tryDownload = false;
+        const stepString = await bitbybit.occt.io.saveShapeSTEPAndReturn(saveDto);
+
+        const convertDto = new Bit.Inputs.OCCT.ConvertStepToGltfDto();
+        convertDto.stepData = stepString;
+        convertDto.meshPrecision = 0.0001;
+        convertDto.meshAngle = 0.1;
+        convertDto.meshRelative = false;
+        const glbData = await bitbybit.occt.io.convertStepToGltf(convertDto);
+
+        document.getElementById('loading').textContent = 'Rendering…';
+
+        // ── Set up Three.js scene ───────────────────────────────────
+        const canvas = document.getElementById('canvas');
+        const scene = new Scene();
+        scene.background = new Color('#1a1c1f');
+
+        const camera = new PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 10000);
+        const renderer = new WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        renderer.toneMapping = ACESFilmicToneMapping;
+        renderer.outputColorSpace = SRGBColorSpace;
+
+        scene.add(new HemisphereLight(0xfff5eb, 0x1a1c1f, 1));
+        const dirLight = new DirectionalLight(0xffffff, 2);
+        dirLight.position.set(30, 40, 20);
+        scene.add(dirLight);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+
+        // ── Load the exported GLB into the scene ────────────────────
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/libs/draco/');
+
+        const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
+        const blob = new Blob([glbData], { type: 'model/gltf-binary' });
+        const arrayBuf = await blob.arrayBuffer();
+
+        loader.parse(arrayBuf, '', (gltf) => {
+            const model = gltf.scene;
+            scene.add(model);
+
+            // Auto-fit camera
+            const box = new Box3().setFromObject(model);
+            const center = box.getCenter(new Vector3());
+            const size = box.getSize(new Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const dist = maxDim * 2;
+
+            camera.position.set(center.x + dist * 0.6, center.y + dist * 0.5, center.z + dist * 0.7);
+            camera.lookAt(center);
+            controls.target.copy(center);
+            controls.update();
+
+            // Hide loading text
+            document.getElementById('loading').remove();
+        }, (err) => {
+            document.getElementById('loading').textContent = 'Error: ' + err.message;
+            console.error(err);
+        });
+
+        // ── Render loop ─────────────────────────────────────────────
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            const w = canvas.clientWidth;
+            const h = canvas.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        });
+    </script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1c1f;
+            color: white;
+            font-family: 'IBM Plex Sans', sans-serif;
+            width: 100%;
+            height: 100%;
+        }
+
+        .example {
+            margin: 50px 300px;
+        }
+
+        @media (max-width: 1400px) {
+            .example { margin: 50px 100px; }
+        }
+
+        @media (max-width: 769px) {
+            .example { margin: 20px; }
+        }
+
+        .logo { margin-bottom: 20px; }
+        .logo img { width: 50px; height: 50px; }
+
+        a { color: white; vertical-align: middle; }
+
+        .canvas-wrap { margin-top: 20px; margin-bottom: 10px; }
+
+        #canvas {
+            display: block;
+            outline: none;
+            border: 1px solid white;
+            border-radius: 5px;
+            width: 100%;
+            height: 500px;
+        }
+
+        #loading {
+            margin-top: 12px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="example">
+        <a class="logo" href="https://bitbybit.dev" target="_blank" rel="noopener noreferrer">
+            <img alt="Logo of Bit by bit developers company" src="https://bitbybit.dev/logo-gold-small.png" />
+            <div>bitbybit.dev</div>
+        </a>
+        <h1>Core Runner — Build Geometry & Display as GLTF in Three.js</h1>
+        <p>
+            This example uses the Bitbybit Core Runner (no game engine) to build OCCT geometry,
+            export it to GLTF (GLB), and then render the result in a standalone Three.js scene.
+        </p>
+        <div class="canvas-wrap">
+            <canvas id="canvas"></canvas>
+        </div>
+        <p id="loading">Initializing OCCT kernel…</p>
+    </div>
+</body>
+
+</html>

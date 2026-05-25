@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Bitbybit CAD Cloud API",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "High-performance parametric CAD model generation API. Supports multi-format output (STEP, GLTF, decomposed mesh), pipeline execution, file-based conversion, and async job processing.",
     "contact": {
       "name": "Bitbybit",

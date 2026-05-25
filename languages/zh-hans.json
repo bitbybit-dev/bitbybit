@@ -6100,5 +6100,22 @@
     "loadedParts": "已加载的零件",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "源文档",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "使用 Draco 导出文档为 glTF",
+    "exportDocumentToGltfWithDraco": "使用 Draco 导出文档为 glTF",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "将装配文档导出为 glTF 二进制 (GLB) 格式，并使用显式的 Draco 几何压缩设置。",
+    "useDraco": "使用 Draco",
+    "dracoCompressionLevel": "Draco 压缩级别",
+    "dracoQuantizePositionBits": "Draco 位置量化位数",
+    "dracoQuantizeNormalBits": "Draco 法线量化位数",
+    "dracoQuantizeTexcoordBits": "Draco 纹理坐标量化位数",
+    "dracoQuantizeColorBits": "Draco 颜色量化位数",
+    "dracoQuantizeGenericBits": "Draco 通用量化位数",
+    "dracoUnifiedQuantization": "Draco 统一量化",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "使用 Draco 将 STEP 转换为 glTF",
+    "convertStepToGltfWithDraco": "使用 Draco 将 STEP 转换为 glTF",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "将 STEP 文件转换为 glTF 格式（二进制 GLB），并使用显式的 Draco 几何压缩设置。与 `convertStepToGltf` 相同的快速路径，但公开了底层原生函数的 Draco 参数。",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "使用 Draco 将 STEP 高级转换为 glTF",
+    "convertStepToGltfAdvancedWithDraco": "使用 Draco 将 STEP 高级转换为 glTF",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "将 STEP 文件转换为 glTF 格式，完全控制所有读取、网格化和写入选项，外加显式的 Draco 几何压缩设置。与 `convertStepToGltfAdvanced` 相同的快速路径，但公开了 8 个 Draco 参数。"
 }

@@ -6100,5 +6100,22 @@
     "bitbybit.math.evalArithmetic": "eval arithmetic",
     "evalArithmetic": "eval arithmetic",
     "bitbybit.math.evalArithmetic_description": "Safely evaluates a simple arithmetic expression containing only numbers, +, -, , , parentheses, and whitespace. Uses the shunting-yard algorithm — no evalFunction. Example: '(3+2)4' → 20, '103' → 3.3333...",
-    "expression": "expression"
+    "expression": "expression",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "export document to gltf with draco",
+    "exportDocumentToGltfWithDraco": "export document to gltf with draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Export an assembly document to glTF binary (GLB) format with explicit Draco geometry compression settings.",
+    "useDraco": "use draco",
+    "dracoCompressionLevel": "draco compression level",
+    "dracoQuantizePositionBits": "draco quantize position bits",
+    "dracoQuantizeNormalBits": "draco quantize normal bits",
+    "dracoQuantizeTexcoordBits": "draco quantize texcoord bits",
+    "dracoQuantizeColorBits": "draco quantize color bits",
+    "dracoQuantizeGenericBits": "draco quantize generic bits",
+    "dracoUnifiedQuantization": "draco unified quantization",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "convert step to gltf with draco",
+    "convertStepToGltfWithDraco": "convert step to gltf with draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Convert a STEP file to glTF format (binary GLB) with explicit Draco geometry compression settings. Same fast path as `convertStepToGltf` but exposes the Draco knobs of the underlying native function.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "convert step to gltf advanced with draco",
+    "convertStepToGltfAdvancedWithDraco": "convert step to gltf advanced with draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Convert a STEP file to glTF format with full control over all reading, meshing and writer options, plus explicit Draco geometry compression settings. Same fast path as `convertStepToGltfAdvanced` but exposes the 8 Draco knobs."
 }

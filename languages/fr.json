@@ -6100,5 +6100,22 @@
     "loadedParts": "pièces chargées",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "documents source",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "exporter le document en glTF avec Draco",
+    "exportDocumentToGltfWithDraco": "exporter le document en glTF avec Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Exporter un document d'assemblage au format binaire glTF (GLB) avec des paramètres explicites de compression de géométrie Draco.",
+    "useDraco": "utiliser Draco",
+    "dracoCompressionLevel": "niveau de compression Draco",
+    "dracoQuantizePositionBits": "bits de quantification de position Draco",
+    "dracoQuantizeNormalBits": "bits de quantification des normales Draco",
+    "dracoQuantizeTexcoordBits": "bits de quantification des coordonnées de texture Draco",
+    "dracoQuantizeColorBits": "bits de quantification de couleur Draco",
+    "dracoQuantizeGenericBits": "bits de quantification générique Draco",
+    "dracoUnifiedQuantization": "quantification unifiée Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "convertir STEP en glTF avec Draco",
+    "convertStepToGltfWithDraco": "convertir STEP en glTF avec Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Convertir un fichier STEP au format glTF (GLB binaire) avec des paramètres explicites de compression de géométrie Draco. Même chemin rapide que `convertStepToGltf` mais expose les paramètres Draco de la fonction native sous-jacente.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "convertir STEP en glTF avancé avec Draco",
+    "convertStepToGltfAdvancedWithDraco": "convertir STEP en glTF avancé avec Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Convertir un fichier STEP au format glTF avec un contrôle total sur toutes les options de lecture, de maillage et d'écriture, plus des paramètres explicites de compression de géométrie Draco. Même chemin rapide que `convertStepToGltfAdvanced` mais expose les 8 paramètres Draco."
 }

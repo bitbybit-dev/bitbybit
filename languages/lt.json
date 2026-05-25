@@ -6100,5 +6100,22 @@
     "loadedParts": "įkeltos dalys",
     "Models.OCCT.AssemblyLoadedPartDef[]": "Models.OCCT.AssemblyLoadedPartDef[]",
     "sourceDocuments": "šaltinio dokumentai",
-    "D[]": "D[]"
+    "D[]": "D[]",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco": "eksportuoti dokumentą į glTF su Draco",
+    "exportDocumentToGltfWithDraco": "eksportuoti dokumentą į glTF su Draco",
+    "bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco_description": "Eksportuoti surinkimo dokumentą į dvejetainį glTF (GLB) formatą su aiškiomis Draco geometrijos glaudinimo nuostatomis.",
+    "useDraco": "naudoti Draco",
+    "dracoCompressionLevel": "Draco glaudinimo lygis",
+    "dracoQuantizePositionBits": "Draco pozicijos kvantavimo bitai",
+    "dracoQuantizeNormalBits": "Draco normalių kvantavimo bitai",
+    "dracoQuantizeTexcoordBits": "Draco tekstūros koordinačių kvantavimo bitai",
+    "dracoQuantizeColorBits": "Draco spalvos kvantavimo bitai",
+    "dracoQuantizeGenericBits": "Draco bendrojo kvantavimo bitai",
+    "dracoUnifiedQuantization": "Draco vieningas kvantavimas",
+    "bitbybit.occt.io.convertStepToGltfWithDraco": "konvertuoti STEP į glTF su Draco",
+    "convertStepToGltfWithDraco": "konvertuoti STEP į glTF su Draco",
+    "bitbybit.occt.io.convertStepToGltfWithDraco_description": "Konvertuoti STEP failą į glTF formatą (dvejetainis GLB) su aiškiomis Draco geometrijos glaudinimo nuostatomis. Tas pats greitas kelias kaip `convertStepToGltf`, bet atskleidžia pagrindinės natyvios funkcijos Draco parametrus.",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco": "konvertuoti STEP į glTF išplėstinį su Draco",
+    "convertStepToGltfAdvancedWithDraco": "konvertuoti STEP į glTF išplėstinį su Draco",
+    "bitbybit.occt.io.convertStepToGltfAdvancedWithDraco_description": "Konvertuoti STEP failą į glTF formatą su pilna visų skaitymo, tinklelio kūrimo ir rašymo parinkčių kontrole, taip pat aiškiomis Draco geometrijos glaudinimo nuostatomis. Tas pats greitas kelias kaip `convertStepToGltfAdvanced`, bet atskleidžia 8 Draco parametrus."
 }
