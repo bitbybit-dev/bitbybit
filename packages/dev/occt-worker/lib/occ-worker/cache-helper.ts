@@ -186,9 +186,19 @@ export class CacheHelper {
      * It returns a copy of the cached object if it exists, but will
      * call the `cacheMiss()` callback otherwise. The result will be
      * added to the cache if `GUIState["Cache?"]` is true.
+     *
+     * If `args.inputs` contains a large/binary payload (e.g. STEP file data
+     * as a string > LARGE_STRING_THRESHOLD, ArrayBuffer, TypedArray, Blob or
+     * File), the cache is bypassed: `cacheMiss()` is invoked and its result
+     * returned without being stored. This avoids JSON.stringify crashes /
+     * memory blowups on huge binary inputs and prevents stale results being
+     * returned for two different binary payloads that hash equal.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cacheOp(args: any, cacheMiss: () => any): any {
+        if (this.hasLargeOrBinaryInput(args)) {
+            return cacheMiss();
+        }
         let toReturn = null;
         const curHash = this.computeHash(args);
         this.usedHashes[curHash] = curHash;
@@ -301,6 +311,10 @@ export class CacheHelper {
 
     /** This function computes a 32-bit integer hash given a set of `arguments`.
      * If `raw` is true, the raw set of sanitized arguments will be returned instead.
+     *
+     * Note: binary / oversized inputs (e.g. STEP file data) must be filtered
+     * out by `hasLargeOrBinaryInput` before reaching this method - otherwise
+     * JSON.stringify can crash or take a very long time on huge values.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     computeHash(args: any, raw?: boolean): number | string {
@@ -311,6 +325,38 @@ export class CacheHelper {
         const hashString = Math.random.toString() + argsString;
         if (raw) { return hashString; }
         return this.stringToHash(hashString);
+    }
+
+    /** Threshold above which a string value is considered "large" and triggers
+     * cache bypass. 64 KB is comfortably above any realistic DTO field but well
+     * below a typical STEP/IGES payload. */
+    static readonly LARGE_STRING_THRESHOLD = 64 * 1024;
+
+    /** Returns true when `args.inputs` (or `args` itself, if no `inputs`
+     * wrapper is present) contains a value that is binary or an oversized
+     * string. Only the immediate properties of `inputs` are inspected -
+     * STEP/IGES payloads always sit at the top level of the DTO
+     * (`stepData`, `filetext`, etc.), so a shallow O(N) check is enough.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    hasLargeOrBinaryInput(args: any): boolean {
+        const inputs = (args && typeof args === "object" && args.inputs && typeof args.inputs === "object")
+            ? args.inputs
+            : args;
+        if (!inputs || typeof inputs !== "object") return false;
+        for (const key of Object.keys(inputs)) {
+            const v = inputs[key];
+            if (v === null || v === undefined) continue;
+            if (typeof v === "string") {
+                if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) return true;
+                continue;
+            }
+            if (typeof v !== "object") continue;
+            if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) return true;
+            if (ArrayBuffer.isView && ArrayBuffer.isView(v as ArrayBufferView)) return true;
+            if (typeof Blob !== "undefined" && v instanceof Blob) return true;
+        }
+        return false;
     }
 
     /** This function converts a string to a 32bit integer. */
