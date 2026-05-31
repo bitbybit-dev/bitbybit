@@ -70,7 +70,7 @@ To support the development and hosting of the Bitbybit platform, certain compone
 
 2.  **Code Execution "Runners":**
     *   While you can freely embed and use our "Runners" (the components that execute Bitbybit scripts) in your own websites, their internal source code is not public.
-    *   We provide built versions of these Runners under an MIT license via the [bitbybit-assets repository](https://github.com/bitbybit-dev/bitbybit-assets).
+    *   We provide built versions of these Runners via the [bitbybit-assets repository](https://github.com/bitbybit-dev/bitbybit-assets). The Runner bundle as a whole is governed by the proprietary [Bitbybit Runner License](./runners/licensing) - free to use, embed, and self-host (including commercially), but you cannot reverse-engineer, modify, or redistribute it as a standalone product. The open-source components bundled within (OCCT, BabylonJS, Three.js, PlayCanvas, JSCAD, Manifold, etc.) retain their own licenses.
     *   These Runners enable the execution of some of our proprietary advanced algorithms (like certain 3D text/font features) free of charge within the context of the Runner, but the source code for those specific advanced algorithms will remain closed together with implementation details of Runners themselves.
 
 3.  **Visual Editor to JavaScript Conversion Logic:**
