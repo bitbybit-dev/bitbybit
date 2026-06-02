@@ -62,7 +62,8 @@ export class OCCTAssemblyManager {
             type: "assembly",
             name: inputs.name,
             parentId: inputs.parentId,
-            colorRgba: inputs.colorRgba 
+            colorRgba: inputs.colorRgba,
+            matrix: inputs.matrix
         };
     }
 
@@ -83,6 +84,7 @@ export class OCCTAssemblyManager {
             translation: inputs.translation,
             rotation: inputs.rotation,
             scale: inputs.scale,
+            matrix: inputs.matrix,
             colorRgba: inputs.colorRgba
         };
     }
@@ -242,9 +244,20 @@ export class OCCTAssemblyManager {
             }))
             : undefined;
 
+        // Native placement expects `matrix` as a flat row-major 3x4 (12 values). The
+        // public API uses column-major matrices (Base.TransformMatrix) and also accepts
+        // an ordered list, so fold + transpose here at the boundary.
+        const nodesJson = structure.nodes.map(node => {
+            if (node.matrix === undefined || node.matrix === null) {
+                return node;
+            }
+            const { matrix, ...rest } = node;
+            return { ...rest, matrix: this.och.transformsService.foldToRowMajor12(matrix) };
+        });
+
         const structureJson = JSON.stringify({
             parts: partsJson,
-            nodes: structure.nodes,
+            nodes: nodesJson,
             removals: structure.removals,
             partUpdates: partUpdatesJson.length > 0 ? partUpdatesJson : undefined,
             clearDocument: structure.clearDocument,

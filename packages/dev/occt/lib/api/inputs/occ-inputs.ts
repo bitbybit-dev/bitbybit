@@ -5908,6 +5908,262 @@ export namespace OCCT {
          */
         centers: Base.Point3[] = [[0, 0, 0]];
     }
+    // Matrices are flat 16-number arrays in COLUMN-MAJOR order (Base.TransformMatrix),
+    // matching glTF/WebGL, Babylon/Three and the matrix returned by getLabelTransform.
+    // A point transforms as p' = M * p; a list (Base.TransformMatrixes) is applied in
+    // order (first matrix first).
+    export class TransformByMatrixDto<T> {
+        constructor(shape?: T, transformation?: Base.TransformMatrix | Base.TransformMatrixes) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * Shape to transform
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Transformation matrix (column-major, 16 numbers) or an ordered list of matrices applied first-to-last
+         * @default undefined
+         */
+        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+    }
+    export class TransformShapesByMatrixDto<T> {
+        constructor(shapes?: T[], transformation?: Base.TransformMatrix | Base.TransformMatrixes) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * Shapes to transform (the same transformation is applied to each)
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * Transformation matrix (column-major) or an ordered list of matrices applied first-to-last
+         * @default undefined
+         */
+        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+    }
+    export class ShapeTransformQueryDto<T> {
+        constructor(shape?: T) {
+            if (shape !== undefined) { this.shape = shape; }
+        }
+        /**
+         * Shape whose current placement (location) transform will be read
+         * @default undefined
+         */
+        shape: T;
+    }
+    export class ScaleFromCenterDto<T> {
+        constructor(shape?: T, factor?: number, center?: Base.Point3) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (factor !== undefined) { this.factor = factor; }
+            if (center !== undefined) { this.center = center; }
+        }
+        /**
+         * Shape to scale
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Uniform scale factor
+         * @default 1
+         * @step 0.1
+         */
+        factor = 1;
+        /**
+         * Center point to scale about
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+    }
+    export class MirrorAboutPointDto<T> {
+        constructor(shape?: T, point?: Base.Point3) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (point !== undefined) { this.point = point; }
+        }
+        /**
+         * Shape to mirror
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Point to mirror (point-invert) about
+         * @default [0, 0, 0]
+         */
+        point: Base.Point3 = [0, 0, 0];
+    }
+    export class RotateByQuaternionDto<T> {
+        constructor(shape?: T, quaternion?: [number, number, number, number]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (quaternion !== undefined) { this.quaternion = quaternion; }
+        }
+        /**
+         * Shape to rotate
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Rotation quaternion [x, y, z, w]
+         * @default [0, 0, 0, 1]
+         */
+        quaternion: [number, number, number, number] = [0, 0, 0, 1];
+    }
+    export class ComposeTransformDto {
+        constructor(translation?: Base.Vector3, rotation?: Base.Vector3, scale?: number) {
+            if (translation !== undefined) { this.translation = translation; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (scale !== undefined) { this.scale = scale; }
+        }
+        /**
+         * Translation as [x, y, z]
+         * @default [0, 0, 0]
+         */
+        translation: Base.Vector3 = [0, 0, 0];
+        /**
+         * Rotation as Euler angles [rx, ry, rz] in degrees (applied Rx * Ry * Rz)
+         * @default [0, 0, 0]
+         */
+        rotation: Base.Vector3 = [0, 0, 0];
+        /**
+         * Uniform scale factor
+         * @default 1
+         * @step 0.1
+         */
+        scale = 1;
+    }
+    export class MultiplyTransformsDto {
+        constructor(transformation?: Base.TransformMatrix | Base.TransformMatrixes) {
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * Ordered list of matrices (applied first-to-last) folded into a single matrix
+         * @default undefined
+         */
+        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+    }
+    export class InvertTransformDto {
+        constructor(transformation?: Base.TransformMatrix) {
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * Transformation matrix (column-major, 16 numbers) to invert
+         * @default undefined
+         */
+        transformation: Base.TransformMatrix;
+    }
+    export class TranslationToMatrixDto {
+        constructor(translation?: Base.Vector3) {
+            if (translation !== undefined) { this.translation = translation; }
+        }
+        /**
+         * Translation as [x, y, z]
+         * @default [0, 0, 0]
+         */
+        translation: Base.Vector3 = [0, 0, 0];
+    }
+    export class RotationAxisAngleToMatrixDto {
+        constructor(axis?: Base.Vector3, angle?: number, center?: Base.Point3) {
+            if (axis !== undefined) { this.axis = axis; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (center !== undefined) { this.center = center; }
+        }
+        /**
+         * Rotation axis direction
+         * @default [0, 0, 1]
+         */
+        axis: Base.Vector3 = [0, 0, 1];
+        /**
+         * Rotation angle in degrees
+         * @default 0
+         * @step 1
+         */
+        angle = 0;
+        /**
+         * Point the axis passes through
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+    }
+    export class ScaleUniformToMatrixDto {
+        constructor(factor?: number, center?: Base.Point3) {
+            if (factor !== undefined) { this.factor = factor; }
+            if (center !== undefined) { this.center = center; }
+        }
+        /**
+         * Uniform scale factor
+         * @default 1
+         * @step 0.1
+         */
+        factor = 1;
+        /**
+         * Center point to scale about
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+    }
+    export class MirrorPointToMatrixDto {
+        constructor(point?: Base.Point3) {
+            if (point !== undefined) { this.point = point; }
+        }
+        /**
+         * Point to mirror (point-invert) about
+         * @default [0, 0, 0]
+         */
+        point: Base.Point3 = [0, 0, 0];
+    }
+    export class MirrorAxisToMatrixDto {
+        constructor(origin?: Base.Point3, direction?: Base.Vector3) {
+            if (origin !== undefined) { this.origin = origin; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * Axis origin
+         * @default [0, 0, 0]
+         */
+        origin: Base.Point3 = [0, 0, 0];
+        /**
+         * Axis direction to mirror about
+         * @default [1, 0, 0]
+         */
+        direction: Base.Vector3 = [1, 0, 0];
+    }
+    export class MirrorPlaneToMatrixDto {
+        constructor(origin?: Base.Point3, normal?: Base.Vector3) {
+            if (origin !== undefined) { this.origin = origin; }
+            if (normal !== undefined) { this.normal = normal; }
+        }
+        /**
+         * Plane origin
+         * @default [0, 0, 0]
+         */
+        origin: Base.Point3 = [0, 0, 0];
+        /**
+         * Plane normal to mirror about
+         * @default [0, 0, 1]
+         */
+        normal: Base.Vector3 = [0, 0, 1];
+    }
+    export class QuaternionToMatrixDto {
+        constructor(quaternion?: [number, number, number, number]) {
+            if (quaternion !== undefined) { this.quaternion = quaternion; }
+        }
+        /**
+         * Rotation quaternion [x, y, z, w]
+         * @default [0, 0, 0, 1]
+         */
+        quaternion: [number, number, number, number] = [0, 0, 0, 1];
+    }
+    /**
+     * Decomposed placement transform of a shape or label.
+     * `matrix` is a flat 16-number 4x4 in column-major order.
+     */
+    export interface ShapeTransformInfo {
+        matrix: Base.TransformMatrix;
+        translation: Base.Point3;
+        quaternion: [number, number, number, number];
+        scale: number;
+    }
     export class ShapeToMeshDto<T> {
         constructor(shape?: T, precision?: number, adjustYtoZ?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
@@ -6838,12 +7094,14 @@ export namespace OCCT {
             id?: string,
             name?: string,
             parentId?: string,
-            colorRgba?: Base.ColorRGBA
+            colorRgba?: Base.ColorRGBA,
+            matrix?: Base.TransformMatrix | Base.TransformMatrixes
         ) {
             if (id !== undefined) { this.id = id; }
             if (name !== undefined) { this.name = name; }
             if (parentId !== undefined) { this.parentId = parentId; }
             if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+            if (matrix !== undefined) { this.matrix = matrix; }
         }
         /**
          * Unique identifier for this assembly node
@@ -6867,6 +7125,13 @@ export namespace OCCT {
          * @max 1
          */
         colorRgba?: Base.ColorRGBA = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
+        /**
+         * Optional placement matrix (column-major, 16 numbers) or an ordered list of
+         * matrices applied first-to-last. When provided it fully defines the node's
+         * placement and takes precedence over any translation/rotation/scale.
+         * @default undefined
+         */
+        matrix?: Base.TransformMatrix | Base.TransformMatrixes;
     }
 
     /**
@@ -6882,7 +7147,8 @@ export namespace OCCT {
             translation?: Base.Point3,
             rotation?: Base.Vector3,
             scale?: number,
-            colorRgba?: Base.ColorRGBA
+            colorRgba?: Base.ColorRGBA,
+            matrix?: Base.TransformMatrix | Base.TransformMatrixes
         ) {
             if (id !== undefined) { this.id = id; }
             if (partId !== undefined) { this.partId = partId; }
@@ -6892,6 +7158,7 @@ export namespace OCCT {
             if (rotation !== undefined) { this.rotation = rotation; }
             if (scale !== undefined) { this.scale = scale; }
             if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+            if (matrix !== undefined) { this.matrix = matrix; }
         }
         /**
          * Unique identifier for this instance node
@@ -6919,7 +7186,7 @@ export namespace OCCT {
          */
         translation?: Base.Point3 = [0, 0, 0];
         /**
-         * Rotation as [rx, ry, rz] in degrees (Euler ZYX order)
+         * Rotation as [rx, ry, rz] Euler angles in degrees (applied Rx * Ry * Rz)
          * @default [0, 0, 0]
          */
         rotation?: Base.Vector3 = [0, 0, 0];
@@ -6933,6 +7200,13 @@ export namespace OCCT {
          * @default undefined
          */
         colorRgba?: Base.ColorRGBA;
+        /**
+         * Optional placement matrix (column-major, 16 numbers) or an ordered list of
+         * matrices applied first-to-last. When provided it fully defines the instance's
+         * placement and takes precedence over translation/rotation/scale.
+         * @default undefined
+         */
+        matrix?: Base.TransformMatrix | Base.TransformMatrixes;
     }
 
     /**

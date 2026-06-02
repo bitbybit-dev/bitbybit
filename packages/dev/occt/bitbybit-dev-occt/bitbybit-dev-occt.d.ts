@@ -595,11 +595,39 @@ export interface BitbybitOcctModule {
    *   ],
    *   "nodes": [
    *     { "id": "asm-1", "type": "assembly", "name": "Root" },
-   *     { "id": "inst-1", "type": "instance", "parentId": "asm-1", "partId": "part-1", 
+   *     { "id": "inst-1", "type": "instance", "parentId": "asm-1", "partId": "part-1",
    *       "name": "Box 1", "translation": [10, 0, 0], "rotation": [0, 0, 45], "scale": 1.0 }
    *   ]
    * }
-   * 
+   *
+   * Placement transforms (instance and assembly nodes):
+   * Each node may be positioned with any combination a component location (gp_Trsf)
+   * supports:
+   *   - "translation": [tx, ty, tz]
+   *   - "rotation": [rx, ry, rz]  (Euler angles in degrees, applied X*Y*Z)
+   *   - "scale": s                (uniform scale factor)
+   *   - "matrix": number[]        (a row-major OCCT transformation matrix, either
+   *                                3x4 = 12 values or 4x4 = 16 values, ordered
+   *                                a11,a12,a13,a14, a21,a22,... This is the
+   *                                "full spectrum" escape hatch: it expresses any
+   *                                rotation, uniform scale and mirror in one field.
+   *                                When a valid `matrix` is present it defines the
+   *                                entire transform and translation/rotation/scale
+   *                                are ignored. Note: gp_Trsf cannot represent
+   *                                non-uniform scale or shear, so such matrices are
+   *                                rejected and the node falls back to its
+   *                                translation/rotation/scale fields.)
+   *
+   * Composing loaded assemblies (parentId resolution):
+   * A node's `parentId` may reference either an assembly node OR a part — including
+   * an assembly imported through `loadedParts`. This enables:
+   *   - adding extra parts/instances into a loaded assembly before instancing it
+   *     (point an instance's `parentId` at the loaded assembly's id), and
+   *   - nesting a loaded assembly inside another assembly, then instancing the
+   *     result.
+   * Direct self-cycles (an instance whose `parentId` equals its own `partId`) are
+   * detected and skipped.
+   *
    * When updating an existing document, you can also include:
    * - "removals": ["0:1:1:2", "0:1:1:3:1"] - Labels to remove (parts, instances, or assemblies)
    * - "partUpdates": [{ "label": "0:1:1:1", "shapeIndex": 0, "name": "New Name", "color": {...} }] - Updates to apply
