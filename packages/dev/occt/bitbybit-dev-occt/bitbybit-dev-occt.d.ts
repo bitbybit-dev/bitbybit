@@ -784,6 +784,20 @@ export interface BitbybitOcctModule {
    */
   GetDocAssemblyHierarchy(document: Handle_TDocStd_Document): string;
 
+  BRepGraphAnalyze(theShape: TopoDS_Shape): string;
+  BRepGraphFaceAdjacency(theShape: TopoDS_Shape): string;
+  BRepGraphEdgeFaceMap(theShape: TopoDS_Shape): string;
+  BRepGraphVertexEdgeMap(theShape: TopoDS_Shape): string;
+  BRepGraphFaceInfo(theShape: TopoDS_Shape): string;
+  BRepGraphEdgeInfo(theShape: TopoDS_Shape): string;
+  BRepGraphContainment(theShape: TopoDS_Shape): string;
+  BRepGraphWireInfo(theShape: TopoDS_Shape): string;
+  BRepGraphAssembly(theShape: TopoDS_Shape): string;
+  BRepGraphValidate(theShape: TopoDS_Shape): string;
+  BRepGraphDump(theShape: TopoDS_Shape): string;
+  BRepGraphReconstruct(theShape: TopoDS_Shape, theKind: string, theIndex: number): TopoDS_Shape;
+  BRepGraphNodeOfShape(theShape: TopoDS_Shape, theSubShape: TopoDS_Shape): string;
+
   /**
    * Set color on a label in a document.
    * @param document - Document handle
@@ -2000,6 +2014,153 @@ export interface BitbybitOcctModule {
    * @returns Entry string
    */
   GetLabelEntry(L: TDF_Label): string;
+
+  // ===========================================================================
+  // BRepGraph query helpers (OCCT 8 graph-based BRep representation)
+  //
+  // Each helper builds a throwaway in-memory BRepGraph from the input shape,
+  // runs a read-only query, and returns a JSON string. The graph is NOT exposed
+  // as a live object - these are stateless analysis functions.
+  //
+  // INDEX CONTRACT: within a single call, each topology kind has a dense 0-based
+  // index space [0, count). All returned indices refer to these, and they are
+  // CONSISTENT across every BRepGraph* helper for the same input shape, so you
+  // can cross-reference (e.g. face #3 from BRepGraphFaceAdjacency is the same
+  // face #3 in BRepGraphFaceInfo and equals BRepGraphReconstruct(shape,"face",3)).
+  // An index of -1 in a scalar field means "none/invalid" (e.g. no outer wire).
+  // `uid` values are stable identity counters (survive compaction/removal) and
+  // are the intended anchor for any persistent graph file format.
+  //
+  // On error every helper returns {"ok":false,"error":"..."} (or, for
+  // BRepGraphNodeOfShape, {"valid":false}).
+  // ===========================================================================
+
+  /**
+   * Topology + assembly element counts and graph metadata.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"solids":N,"shells":N,"faces":N,"wires":N,
+   *   "edges":N,"coedges":N,"vertices":N,"compounds":N,"compSolids":N,
+   *   "surfaces":N,"curves3d":N,"curves2d":N,"nodes":N,"products":N,
+   *   "occurrences":N,"rootProducts":N,"generation":N}
+   */
+  BRepGraphAnalyze(theShape: TopoDS_Shape): string;
+
+  /**
+   * Face adjacency graph: for each face, the faces sharing at least one edge,
+   * the face's edge indices, wire count and outer-wire index.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"faces":[{"index":N,"adjacent":[N..],
+   *   "edges":[N..],"nbWires":N,"outerWire":N}, ...]}
+   */
+  BRepGraphFaceAdjacency(theShape: TopoDS_Shape): string;
+
+  /**
+   * Edge -> face incidence with topology flags and end vertices.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"edges":[{"index":N,"faces":[N..],"nbFaces":N,
+   *   "boundary":bool,"manifold":bool,"degenerated":bool,"startVertex":N,
+   *   "endVertex":N,"tolerance":F}, ...]}
+   */
+  BRepGraphEdgeFaceMap(theShape: TopoDS_Shape): string;
+
+  /**
+   * Vertex report: 3D point, tolerance and incident edges.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"vertices":[{"index":N,"point":[x,y,z],
+   *   "tolerance":F,"edges":[N..]}, ...]}
+   */
+  BRepGraphVertexEdgeMap(theShape: TopoDS_Shape): string;
+
+  /**
+   * Per-face geometry: surface type, tolerance, triangulation flag, UV bounds,
+   * wire count and stable UID.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"faces":[{"index":N,"surfaceType":"Plane|Cylinder|
+   *   Cone|Sphere|Torus|BezierSurface|BSplineSurface|SurfaceOfRevolution|
+   *   SurfaceOfExtrusion|OffsetSurface|OtherSurface|None","tolerance":F,
+   *   "hasTriangulation":bool,"naturalRestriction":bool,
+   *   "uvBounds":[uMin,uMax,vMin,vMax],"nbWires":N,"uid":N}, ...]}
+   */
+  BRepGraphFaceInfo(theShape: TopoDS_Shape): string;
+
+  /**
+   * Per-edge geometry: curve type, parameter range, flags, max continuity, UID.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"edges":[{"index":N,"curveType":"Line|Circle|
+   *   Ellipse|Hyperbola|Parabola|BezierCurve|BSplineCurve|OffsetCurve|
+   *   OtherCurve|None","hasCurve":bool,"degenerated":bool,"sameParameter":bool,
+   *   "maxContinuity":"C0|G1|C1|G2|C2|C3|CN","range":[first,last]|null,
+   *   "uid":N}, ...]}
+   */
+  BRepGraphEdgeInfo(theShape: TopoDS_Shape): string;
+
+  /**
+   * Upward containment navigation (parent indices per child).
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"shellsOfFace":[[N..]..],
+   *   "solidsOfShell":[[N..]..],"solidsOfFace":[[N..]..]}
+   *   (solidsOfFace is occurrence-aware, computed via ParentExplorer).
+   */
+  BRepGraphContainment(theShape: TopoDS_Shape): string;
+
+  /**
+   * Per-wire report: closure, outer flag, coedge/edge counts and owning face.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"wires":[{"index":N,"closed":bool,"outer":bool,
+   *   "nbCoEdges":N,"nbDistinctEdges":N,"face":N}, ...]} (face = -1 if free wire)
+   */
+  BRepGraphWireInfo(theShape: TopoDS_Shape): string;
+
+  /**
+   * Graph-native assembly structure (Product/Occurrence model).
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"rootProducts":[N..],"products":[{"index":N,
+   *   "isAssembly":bool,"isPart":bool,"shapeRoot":{"kind":K,"index":N}|null,
+   *   "components":[occIndex..]}, ...],"occurrences":[{"index":N,"product":N,
+   *   "parentProduct":N,"matrix":[12 row-major values]}, ...]}
+   */
+  BRepGraphAssembly(theShape: TopoDS_Shape): string;
+
+  /**
+   * Structural graph validation (Audit mode). Checks graph integrity, NOT
+   * geometric validity.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"valid":bool,"errors":N,"warnings":N,
+   *   "issues":[{"severity":"error|warning","node":{"kind":K,"index":N},
+   *   "description":"..."}, ...]}
+   */
+  BRepGraphValidate(theShape: TopoDS_Shape): string;
+
+  /**
+   * Full structural dump: every active node with its UID and direct downward
+   * references. This is the snapshot a persistent graph file format would
+   * serialize (topology + UID anchors + incidence); geometry is summarized.
+   * @param theShape shape to analyze
+   * @returns JSON: {"ok":true,"solids":[...],"shells":[...],"faces":[...],
+   *   "edges":[...],"vertices":[...]} with per-node index/uid and references.
+   */
+  BRepGraphDump(theShape: TopoDS_Shape): string;
+
+  /**
+   * Reconstruct a real sub-shape from a graph node (kind, index). Bridges the
+   * indices reported by every BRepGraph* helper back to TopoDS sub-shapes.
+   * @param theShape source shape (the graph is rebuilt from it)
+   * @param theKind one of: "solid","shell","face","wire","edge","vertex",
+   *   "compound","compsolid"
+   * @param theIndex 0-based index within that kind
+   * @returns the reconstructed sub-shape, or a null shape on any error.
+   *   Check with .IsNull().
+   */
+  BRepGraphReconstruct(theShape: TopoDS_Shape, theKind: string, theIndex: number): TopoDS_Shape;
+
+  /**
+   * Reverse lookup: find the graph node for a construction-time sub-shape
+   * (TShape pointer identity, same semantics as IsSame()).
+   * @param theShape source shape (the graph is rebuilt from it)
+   * @param theSubShape a sub-shape of theShape to locate
+   * @returns JSON: {"valid":true,"kind":K,"index":N,"uid":N} or {"valid":false}
+   */
+  BRepGraphNodeOfShape(theShape: TopoDS_Shape, theSubShape: TopoDS_Shape): string;
 }
 
 // =============================================================================

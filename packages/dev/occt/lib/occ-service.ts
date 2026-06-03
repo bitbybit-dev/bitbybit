@@ -9,6 +9,7 @@ import { OCCTTransforms } from "./services/transforms";
 import { OCCTFillets } from "./services/fillets";
 import { OCCTDimensions } from "./services/dimensions";
 import { OCCTAssembly } from "./services/assembly/assembly";
+import { OCCTBrepGraph } from "./services/brep-graph/brep-graph";
 import { OccHelper } from "./occ-helper";
 import { OCCTShapeFix } from "./services/shape-fix";
 
@@ -21,6 +22,7 @@ export class OCCTService {
     public readonly fillets: OCCTFillets;
     public readonly dimensions: OCCTDimensions;
     public readonly assembly: OCCTAssembly;
+    public readonly brepGraph: OCCTBrepGraph;
     public readonly shapeFix: OCCTShapeFix;
     public readonly io: OCCTIO;
     public plugins?;
@@ -38,6 +40,7 @@ export class OCCTService {
         this.shapeFix = new OCCTShapeFix(occ, och);
         this.dimensions = new OCCTDimensions(occ, och);
         this.assembly = new OCCTAssembly(occ, och);
+        this.brepGraph = new OCCTBrepGraph(occ, och);
         this.io = new OCCTIO(occ, och);
     }
 

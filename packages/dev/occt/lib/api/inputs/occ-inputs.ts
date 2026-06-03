@@ -6164,6 +6164,55 @@ export namespace OCCT {
         quaternion: [number, number, number, number];
         scale: number;
     }
+    export enum brepGraphNodeKindEnum {
+        solid = "solid",
+        shell = "shell",
+        face = "face",
+        wire = "wire",
+        edge = "edge",
+        vertex = "vertex",
+        compound = "compound",
+        compsolid = "compsolid",
+    }
+    export class BRepGraphReconstructDto<T> {
+        constructor(shape?: T, kind?: brepGraphNodeKindEnum, index?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (kind !== undefined) { this.kind = kind; }
+            if (index !== undefined) { this.index = index; }
+        }
+        /**
+         * Shape the graph is rebuilt from
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Kind of graph node to reconstruct into a sub-shape
+         * @default solid
+         */
+        kind: brepGraphNodeKindEnum = brepGraphNodeKindEnum.solid;
+        /**
+         * 0-based index of the node within its kind
+         * @default 0
+         * @step 1
+         */
+        index = 0;
+    }
+    export class BRepGraphNodeOfShapeDto<T> {
+        constructor(shape?: T, subShape?: T) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (subShape !== undefined) { this.subShape = subShape; }
+        }
+        /**
+         * Shape the graph is rebuilt from
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Sub-shape of the shape to locate in the graph
+         * @default undefined
+         */
+        subShape: T;
+    }
     export class ShapeToMeshDto<T> {
         constructor(shape?: T, precision?: number, adjustYtoZ?: boolean) {
             if (shape !== undefined) { this.shape = shape; }

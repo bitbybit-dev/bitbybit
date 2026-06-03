@@ -6,6 +6,7 @@ import { OCCTBooleans } from "./booleans";
 import { OCCTIO } from "./io";
 import { OCCTGeom } from "./geom/geom";
 import { OCCTAssembly } from "./assembly/assembly";
+import { OCCTBrepGraph } from "./brep-graph";
 import { OCCTFillets } from "./fillets";
 import { Inputs } from "@bitbybit-dev/occt";
 import { OCCTShapeFix } from "./shape-fix";
@@ -24,6 +25,7 @@ export class OCCT {
     public readonly dimensions: OCCTDimensions;
     public readonly shapeFix: OCCTShapeFix;
     public readonly assembly: OCCTAssembly;
+    public readonly brepGraph: OCCTBrepGraph;
     public io: OCCTIO;
 
     constructor(
@@ -38,6 +40,7 @@ export class OCCT {
         this.shapeFix = new OCCTShapeFix(occWorkerManager);
         this.dimensions = new OCCTDimensions(occWorkerManager);
         this.assembly = new OCCTAssembly(occWorkerManager);
+        this.brepGraph = new OCCTBrepGraph(occWorkerManager);
         this.io = new OCCTIO(occWorkerManager);
     }
 
