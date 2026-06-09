@@ -162,6 +162,44 @@ export type TaskResultsDownload = components["schemas"]["TaskResultsDownload"];
 export type TaskResultsResponse = components["schemas"]["TaskResultsResponse"];
 /** Task lifecycle state: waiting (pending dependencies), queued (in queue), processing (actively computing), completed (result available), failed (error occurred), cancelled (user-cancelled), expired (result TTL exceeded) */
 export type TaskStatus = components["schemas"]["TaskStatus"];
+/** One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
+export type UnfoldBend = components["schemas"]["UnfoldBend"];
+/** One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
+export type UnfoldBendOutput = components["schemas"]["UnfoldBendOutput"];
+/** A classified source face: stable key (index + BRepGraph uid), role, and label anchors. */
+export type UnfoldFaceEntry = components["schemas"]["UnfoldFaceEntry"];
+/** A classified source face: stable key (index + BRepGraph uid), role, and label anchors. */
+export type UnfoldFaceEntryOutput = components["schemas"]["UnfoldFaceEntryOutput"];
+/** Sheet-metal unfold metrics for a single face (surface type, developability, area before/after). */
+export type UnfoldFaceReport = components["schemas"]["UnfoldFaceReport"];
+/** Compute the sheet-metal unfold metrics report for a single face of an uploaded STEP shape. */
+export type UnfoldFaceReportBody = components["schemas"]["UnfoldFaceReportBody"];
+/** Unfold a single developable face of an uploaded STEP shape to a flat face. */
+export type UnfoldFaceToFlatBody = components["schemas"]["UnfoldFaceToFlatBody"];
+/** A sub-shape laid into the flat compound, mapped back to its source face (compound order). */
+export type UnfoldPlaced = components["schemas"]["UnfoldPlaced"];
+/** A sub-shape laid into the flat compound, mapped back to its source face (compound order). */
+export type UnfoldPlacedOutput = components["schemas"]["UnfoldPlacedOutput"];
+/** Returned when a shape/face cannot be processed by the unfold. */
+export type UnfoldReportError = components["schemas"]["UnfoldReportError"];
+/** Returned when a shape/face cannot be processed by the unfold. */
+export type UnfoldReportErrorOutput = components["schemas"]["UnfoldReportErrorOutput"];
+/** Flatten every constant-thickness sheet-metal solid in an uploaded STEP file AND return the per-solid metrics report — both in one call. */
+export type UnfoldSolidBody = components["schemas"]["UnfoldSolidBody"];
+/** Per-solid sheet-metal unfold metrics — one entry per solid in the STEP file (each carries its solidIndex). */
+export type UnfoldSolidReport = components["schemas"]["UnfoldSolidReport"];
+/** Compute per-solid sheet-metal unfold metrics for every solid in an uploaded STEP file. */
+export type UnfoldSolidReportBody = components["schemas"]["UnfoldSolidReportBody"];
+/** Returned when a solid cannot be fully unfolded; carries the partial diagnostics gathered before the failure (classified faces with roles, detected thickness, warnings) so the reason can be inspected. */
+export type UnfoldSolidReportError = components["schemas"]["UnfoldSolidReportError"];
+/** Returned when a solid cannot be fully unfolded; carries the partial diagnostics gathered before the failure (classified faces with roles, detected thickness, warnings) so the reason can be inspected. */
+export type UnfoldSolidReportErrorOutput = components["schemas"]["UnfoldSolidReportErrorOutput"];
+/** Sheet-metal unfold metrics for ONE solid (bend table + face roles + original->flat map). On failure, the ok:false branch still carries the partial diagnostics gathered before the failure. */
+export type UnfoldSolidReportItem = components["schemas"]["UnfoldSolidReportItem"];
+/** Sheet-metal unfold metrics for ONE solid (bend table + face roles + original->flat map). On failure, the ok:false branch still carries the partial diagnostics gathered before the failure. */
+export type UnfoldSolidReportItemOutput = components["schemas"]["UnfoldSolidReportItemOutput"];
+/** Flatten every constant-thickness sheet-metal solid in an uploaded STEP file to flat patterns. */
+export type UnfoldSolidToFlatBody = components["schemas"]["UnfoldSolidToFlatBody"];
 /** Success envelope containing the pre-signed upload URL and file metadata */
 export type UploadResponse = components["schemas"]["UploadResponse"];
 /** Response after requesting a file upload. Contains the pre-signed URL to PUT your file to. */

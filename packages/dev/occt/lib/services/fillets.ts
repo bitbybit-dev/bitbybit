@@ -117,4 +117,8 @@ export class OCCTFillets {
         }));
     }
 
+    chamfer2dVertices(inputs: Inputs.OCCT.Chamfer2dVertexDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face | TopoDS_Wire {
+        return this.och.filletsService.chamfer2dVertices(inputs);
+    }
+
 }

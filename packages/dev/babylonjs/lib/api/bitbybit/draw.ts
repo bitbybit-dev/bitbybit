@@ -81,11 +81,49 @@ export class Draw extends DrawCore {
             return this.handleManifoldShape(inputs);
         } else if (this.detectManifoldShapes(entity)) {
             return this.handleManifoldShapes(inputs);
+        } else if (this.detectDecomposedMeshes(entity)) {
+            return this.handleDecomposedMeshes(inputs);
+        } else if (this.detectDecomposedMesh(entity)) {
+            return this.handleDecomposedMeshShape(inputs);
         } else {
             // here we have all sync drawer functions
             return Promise.resolve(this.drawAny(inputs));
         }
     }
+
+    private mergedOcctShapeOptions(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawOcctShapeOptions {
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
+        if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
+            options = inputs.babylonMesh.metadata.options;
+        }
+        return { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+    }
+
+    private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny) {
+        const options = this.mergedOcctShapeOptions(inputs);
+        return this.drawHelper.handleDecomposedMesh(
+            options as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>,
+            inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
+            options
+        ).then(r => {
+            this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
+            return r;
+        });
+    }
+
+    private async handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny) {
+        const options = this.mergedOcctShapeOptions(inputs);
+        const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
+        const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
+            options as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, dm, options)));
+        const container = new BABYLON.Mesh(`decomposedMeshesContainer-${++this.decomposedMeshesContainerCounter}`, this.context.scene);
+        container.isVisible = false;
+        drawn.forEach(mesh => { if (mesh) { mesh.parent = container; } });
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, container);
+        return container;
+    }
+
+    private decomposedMeshesContainerCounter = 0;
 
     private updateAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
         let result;

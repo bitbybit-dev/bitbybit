@@ -116,6 +116,17 @@ export class DrawCore {
         return Array.isArray(entity) && !entity.some(el => !this.detectManifoldShape(el));
     }
 
+    detectDecomposedMesh(entity: unknown): boolean {
+        if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
+        const obj = entity as Record<string, unknown>;
+        if (obj.type === "occ-shape" || obj.type === "manifold-shape") return false;
+        return Array.isArray(obj.faceList) || Array.isArray(obj.edgeList) || Array.isArray(obj.pointsList);
+    }
+
+    detectDecomposedMeshes(entity: unknown): boolean {
+        return Array.isArray(entity) && entity.length > 0 && !entity.some(el => !this.detectDecomposedMesh(el));
+    }
+
     detectTag(entity: unknown): boolean {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;

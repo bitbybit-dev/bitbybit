@@ -988,6 +988,356 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cad/pro/unfold/face-to-flat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unfold a developable face to a flat face
+         * @description Proprietary sheet-metal unfold: flattens a single developable face (by index) of an uploaded STEP shape. Requires the 'cad' API key scope. Returns 202 with a task ID; the flattened geometry is delivered as the task's output files.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldFaceToFlatBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/face-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report sheet-metal unfold metrics for a face
+         * @description Proprietary sheet-metal analysis: computes the unfold metrics report (developability, area, ...) for a single face of an uploaded STEP shape. Requires the 'cad' API key scope. Returns 202 with a task ID; the JSON report is delivered in the task metadata.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldFaceReportBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/solid-to-flat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Flatten every sheet-metal solid to flat patterns
+         * @description Proprietary sheet-metal unfold: loads every solid in an uploaded STEP file and flattens each to a flat pattern. Requires the 'cad' API key scope. Returns 202 with a task ID; all flats are combined into one compound output per format.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldSolidToFlatBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/solid-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report sheet-metal unfold metrics per solid
+         * @description Proprietary sheet-metal analysis: computes per-solid unfold metrics for every solid in an uploaded STEP file. Requires the 'cad' API key scope. Returns 202 with a task ID; the JSON report array is delivered in the task metadata.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldSolidReportBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/solid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Flatten every solid and report metrics (combined)
+         * @description Proprietary sheet-metal unfold, full workflow: flattens every solid in an uploaded STEP file AND returns per-solid metrics in one call. Requires the 'cad' API key scope. Returns 202 with a task ID; flats are combined into one compound output per format and the per-solid report array is delivered in the task metadata.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldSolidBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/files/upload": {
         parameters: {
             query?: never;
@@ -1986,6 +2336,77 @@ export interface components {
             /** @description Draco compression options. If omitted, sensible defaults are used (level 7, 14/10/12/8/12 bits). */
             draco?: components["schemas"]["DracoCompressionOptions"];
         };
+        /** @description Unfold a single developable face of an uploaded STEP shape to a flat face. */
+        UnfoldFaceToFlatBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
+            stepFileId: string;
+            /**
+             * @description 0-based index of the developable face (in the shape's BRepGraph face array) to unfold.
+             * @default 0
+             */
+            faceIndex: number;
+            /** @description Output formats for the flattened face geometry. Defaults to glTF. */
+            outputs?: components["schemas"]["OutputOptions"];
+        };
+        /** @description Compute the sheet-metal unfold metrics report for a single face of an uploaded STEP shape. */
+        UnfoldFaceReportBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
+            stepFileId: string;
+            /**
+             * @description 0-based index of the face to analyze.
+             * @default 0
+             */
+            faceIndex: number;
+        };
+        /** @description Flatten every constant-thickness sheet-metal solid in an uploaded STEP file to flat patterns. */
+        UnfoldSolidToFlatBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
+            stepFileId: string;
+            /**
+             * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
+             * @default 0.5
+             */
+            kFactor: number;
+            /**
+             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @default 0
+             */
+            thicknessOverride: number;
+            /** @description Output formats for the flattened patterns. Every solid's flat is combined into one compound output per format. Defaults to glTF. */
+            outputs?: components["schemas"]["OutputOptions"];
+        };
+        /** @description Compute per-solid sheet-metal unfold metrics for every solid in an uploaded STEP file. */
+        UnfoldSolidReportBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
+            stepFileId: string;
+            /**
+             * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
+             * @default 0.5
+             */
+            kFactor: number;
+            /**
+             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @default 0
+             */
+            thicknessOverride: number;
+        };
+        /** @description Flatten every constant-thickness sheet-metal solid in an uploaded STEP file AND return the per-solid metrics report — both in one call. */
+        UnfoldSolidBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint) */
+            stepFileId: string;
+            /**
+             * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
+             * @default 0.5
+             */
+            kFactor: number;
+            /**
+             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @default 0
+             */
+            thicknessOverride: number;
+            /** @description Output formats for the flattened patterns. Every solid's flat is combined into one compound output per format. Defaults to glTF. */
+            outputs?: components["schemas"]["OutputOptions"];
+        };
         /** @description Request a pre-signed upload URL. After receiving the URL, PUT the raw file bytes to it within the expiration window. */
         FileUploadBody: {
             /** @description Original filename including extension (e.g. 'part.step', 'model.obj'). Used for display and format detection. */
@@ -1996,6 +2417,136 @@ export interface components {
             bytes: number;
             /** @description SHA-256 hex digest of the file content. When provided, enables server-side deduplication — if an identical file was previously uploaded under this API key, the existing file is reused and no upload is needed. */
             sha256?: string;
+        };
+        /** @description Returned when a shape/face cannot be processed by the unfold. */
+        UnfoldReportError: {
+            /** @constant */
+            ok: false;
+            error: string;
+        };
+        /** @description Sheet-metal unfold metrics for ONE solid (bend table + face roles + original->flat map). On failure, the ok:false branch still carries the partial diagnostics gathered before the failure. */
+        UnfoldSolidReportItem: {
+            /** @constant */
+            ok: true;
+            thickness: number;
+            kFactor: number;
+            warning: string;
+            bends: components["schemas"]["UnfoldBend"][];
+            flatBBox: [
+                number,
+                number,
+                number,
+                number
+            ];
+            flatArea: number;
+            referenceArea: number;
+            totalArea: number;
+            faces: components["schemas"]["UnfoldFaceEntry"][];
+            placed: components["schemas"]["UnfoldPlaced"][];
+        } | components["schemas"]["UnfoldSolidReportError"];
+        /** @description One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
+        UnfoldBend: {
+            faceIndex: number;
+            flatA: number;
+            flatB: number;
+            lineStart: [
+                number,
+                number,
+                number
+            ];
+            lineEnd: [
+                number,
+                number,
+                number
+            ];
+            lineMid: [
+                number,
+                number,
+                number
+            ];
+            bendLineLength: number;
+            angleDeg: number;
+            innerRadius: number;
+            outerRadius: number;
+            neutralRadius: number;
+            innerRadiusStart: number;
+            innerRadiusEnd: number;
+            outerRadiusStart: number;
+            outerRadiusEnd: number;
+            T: number;
+            K: number;
+            allowance: number;
+            bendDeduction: number;
+            outsideSetback: number;
+            innerArcLength: number;
+            outerArcLength: number;
+            /** @enum {string} */
+            direction: "up" | "down";
+            /** @enum {string} */
+            kind: "cyl" | "cone";
+            layoutApprox: boolean;
+        };
+        /** @description A classified source face: stable key (index + BRepGraph uid), role, and label anchors. */
+        UnfoldFaceEntry: {
+            index: number;
+            uid: number;
+            /** @enum {string} */
+            surfaceType: "Plane" | "Cylinder" | "Cone" | "Sphere" | "Torus" | "Other";
+            /** @enum {string} */
+            role: "referenceFlat" | "otherSideFlat" | "rim" | "flat" | "bend" | "coneBend" | "cutout" | "ignored";
+            reference: boolean;
+            opposite: number;
+            area: number;
+            centroid: [
+                number,
+                number,
+                number
+            ];
+            labelPoint: [
+                number,
+                number,
+                number
+            ];
+            /** @description Bend candidates (cylinder/cone) only: best |flange normal · cylinder radial| over the flanges. ~1 = tangent fold, ~0 = cutout/hole wall. */
+            tangentDot?: number;
+            /**
+             * @description How the fold filter classified a bend candidate: 'fold' (kept), 'cutout' (rejected — not tangent / <2 flanges), 'duplicate' (dropped — one fold per flat pair), or '' (a bend face not on the reference side, never evaluated by the filter).
+             * @enum {string}
+             */
+            bendOutcome?: "fold" | "cutout" | "duplicate" | "";
+        };
+        /** @description A sub-shape laid into the flat compound, mapped back to its source face (compound order). */
+        UnfoldPlaced: {
+            /** @enum {string} */
+            kind: "flat" | "bendStrip";
+            sourceFaceIndex: number;
+            role: ("referenceFlat" | "otherSideFlat" | "rim" | "flat" | "bend" | "coneBend" | "cutout" | "ignored") | "unknown";
+            flatCentroid: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description Returned when a solid cannot be fully unfolded; carries the partial diagnostics gathered before the failure (classified faces with roles, detected thickness, warnings) so the reason can be inspected. */
+        UnfoldSolidReportError: {
+            /** @constant */
+            ok: false;
+            error: string;
+            thickness?: number;
+            kFactor?: number;
+            warning?: string;
+            bends?: components["schemas"]["UnfoldBend"][];
+            flatBBox?: [
+                number,
+                number,
+                number,
+                number
+            ];
+            flatArea?: number;
+            referenceArea?: number;
+            totalArea?: number;
+            faces?: components["schemas"]["UnfoldFaceEntry"][];
+            placed?: components["schemas"]["UnfoldPlaced"][];
         };
         /** @description Success envelope for health check */
         HealthResponse: {
@@ -2414,6 +2965,153 @@ export interface components {
                 filename: string;
             }[];
         };
+        /** @description Returned when a shape/face cannot be processed by the unfold. */
+        UnfoldReportErrorOutput: {
+            /** @constant */
+            ok: false;
+            error: string;
+        };
+        /** @description Sheet-metal unfold metrics for ONE solid (bend table + face roles + original->flat map). On failure, the ok:false branch still carries the partial diagnostics gathered before the failure. */
+        UnfoldSolidReportItemOutput: {
+            /** @constant */
+            ok: true;
+            thickness: number;
+            kFactor: number;
+            warning: string;
+            bends: components["schemas"]["UnfoldBendOutput"][];
+            flatBBox: [
+                number,
+                number,
+                number,
+                number
+            ];
+            flatArea: number;
+            referenceArea: number;
+            totalArea: number;
+            faces: components["schemas"]["UnfoldFaceEntryOutput"][];
+            placed: components["schemas"]["UnfoldPlacedOutput"][];
+        } | components["schemas"]["UnfoldSolidReportErrorOutput"];
+        /** @description One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
+        UnfoldBendOutput: {
+            faceIndex: number;
+            flatA: number;
+            flatB: number;
+            lineStart: [
+                number,
+                number,
+                number
+            ];
+            lineEnd: [
+                number,
+                number,
+                number
+            ];
+            lineMid: [
+                number,
+                number,
+                number
+            ];
+            bendLineLength: number;
+            angleDeg: number;
+            innerRadius: number;
+            outerRadius: number;
+            neutralRadius: number;
+            innerRadiusStart: number;
+            innerRadiusEnd: number;
+            outerRadiusStart: number;
+            outerRadiusEnd: number;
+            T: number;
+            K: number;
+            allowance: number;
+            bendDeduction: number;
+            outsideSetback: number;
+            innerArcLength: number;
+            outerArcLength: number;
+            /** @enum {string} */
+            direction: "up" | "down";
+            /** @enum {string} */
+            kind: "cyl" | "cone";
+            layoutApprox: boolean;
+        };
+        /** @description A classified source face: stable key (index + BRepGraph uid), role, and label anchors. */
+        UnfoldFaceEntryOutput: {
+            index: number;
+            uid: number;
+            /** @enum {string} */
+            surfaceType: "Plane" | "Cylinder" | "Cone" | "Sphere" | "Torus" | "Other";
+            /** @enum {string} */
+            role: "referenceFlat" | "otherSideFlat" | "rim" | "flat" | "bend" | "coneBend" | "cutout" | "ignored";
+            reference: boolean;
+            opposite: number;
+            area: number;
+            centroid: [
+                number,
+                number,
+                number
+            ];
+            labelPoint: [
+                number,
+                number,
+                number
+            ];
+            /** @description Bend candidates (cylinder/cone) only: best |flange normal · cylinder radial| over the flanges. ~1 = tangent fold, ~0 = cutout/hole wall. */
+            tangentDot?: number;
+            /**
+             * @description How the fold filter classified a bend candidate: 'fold' (kept), 'cutout' (rejected — not tangent / <2 flanges), 'duplicate' (dropped — one fold per flat pair), or '' (a bend face not on the reference side, never evaluated by the filter).
+             * @enum {string}
+             */
+            bendOutcome?: "fold" | "cutout" | "duplicate" | "";
+        };
+        /** @description A sub-shape laid into the flat compound, mapped back to its source face (compound order). */
+        UnfoldPlacedOutput: {
+            /** @enum {string} */
+            kind: "flat" | "bendStrip";
+            sourceFaceIndex: number;
+            role: ("referenceFlat" | "otherSideFlat" | "rim" | "flat" | "bend" | "coneBend" | "cutout" | "ignored") | "unknown";
+            flatCentroid: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description Returned when a solid cannot be fully unfolded; carries the partial diagnostics gathered before the failure (classified faces with roles, detected thickness, warnings) so the reason can be inspected. */
+        UnfoldSolidReportErrorOutput: {
+            /** @constant */
+            ok: false;
+            error: string;
+            thickness?: number;
+            kFactor?: number;
+            warning?: string;
+            bends?: components["schemas"]["UnfoldBendOutput"][];
+            flatBBox?: [
+                number,
+                number,
+                number,
+                number
+            ];
+            flatArea?: number;
+            referenceArea?: number;
+            totalArea?: number;
+            faces?: components["schemas"]["UnfoldFaceEntryOutput"][];
+            placed?: components["schemas"]["UnfoldPlacedOutput"][];
+        };
+        /** @description Sheet-metal unfold metrics for a single face (surface type, developability, area before/after). */
+        UnfoldFaceReport: {
+            /** @constant */
+            ok: true;
+            faceIndex: number;
+            /** @enum {string} */
+            surfaceType: "Plane" | "Cylinder" | "Cone" | "Sphere" | "Torus" | "Other";
+            developable: boolean;
+            unfolded: boolean;
+            area: number;
+            flatArea: number;
+            areaError: number;
+        } | components["schemas"]["UnfoldReportErrorOutput"];
+        /** @description Per-solid sheet-metal unfold metrics — one entry per solid in the STEP file (each carries its solidIndex). */
+        UnfoldSolidReport: (components["schemas"]["UnfoldSolidReportItemOutput"] & {
+            solidIndex: number;
+        })[];
     };
     responses: never;
     parameters: never;

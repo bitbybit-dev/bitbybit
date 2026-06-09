@@ -1,3493 +1,867 @@
-/**
- * BitbybitOcct - OCCT WebAssembly Bindings
- * TypeScript definitions for Open CASCADE Technology WASM module
- * 
- * @packageDocumentation
- */
-
-// =============================================================================
-// Emscripten File System Types
-// =============================================================================
-
-export interface EmscriptenFS {
-  readFile(path: string, opts?: { encoding?: string; flags?: string }): string | Uint8Array;
-  writeFile(path: string, data: string | ArrayBufferView, opts?: { encoding?: string; flags?: string }): void;
-  unlink(path: string): void;
-  mkdir(path: string, mode?: number): void;
-  rmdir(path: string): void;
-  readdir(path: string): string[];
-  stat(path: string): { size: number; mtime: Date; isDirectory(): boolean; isFile(): boolean };
-  createDataFile(parent: string, name: string, data: string | ArrayBufferView, canRead: boolean, canWrite: boolean, canOwn?: boolean): void;
+// ==============================================================================
+// GENERATED FILE - DO NOT EDIT BY HAND.
+// Produced from the embind registrations by emscripten --emit-tsd, then post-processed by
+// src/BitbybitOcct/scripts/bitbybit_dts_compose.sh. The module type is MainModule; module.FS.* is
+// the emscripten filesystem API.
+// Post-processed: (1) embind enum values de-branded (<Enum>Value<N> -> <Enum>Value<number>) so a
+// runtime-chosen enum value is usable where the enum type is expected - cross-enum safety is kept
+// because the interface names stay distinct; (2) FS.readFile widened to string|Uint8Array (its real
+// return when an encoding is passed).
+// ==============================================================================
+// TypeScript bindings for emscripten-generated code.  Automatically generated at compile time.
+declare namespace RuntimeExports {
+    namespace FS {
+        export const root: any;
+        export const mounts: any[];
+        export const devices: {};
+        export const streams: any[];
+        export const nextInode: number;
+        export const nameTable: any;
+        export const currentPath: string;
+        export const initialized: boolean;
+        export const ignorePermissions: boolean;
+        export const filesystems: any;
+        export const syncFSRequests: number;
+        export const readFiles: {};
+        export { ErrnoError };
+        export { FSStream };
+        export { FSNode };
+        export function lookupPath(path: any, opts?: {}): {
+            path: string;
+            node?: undefined;
+        } | {
+            path: string;
+            node: any;
+        };
+        export function lookupPath(path: any, opts?: {}): {
+            path: string;
+            node?: undefined;
+        } | {
+            path: string;
+            node: any;
+        };
+        export function getPath(node: any): any;
+        export function getPath(node: any): any;
+        export function hashName(parentid: any, name: any): number;
+        export function hashName(parentid: any, name: any): number;
+        export function hashAddNode(node: any): void;
+        export function hashAddNode(node: any): void;
+        export function hashRemoveNode(node: any): void;
+        export function hashRemoveNode(node: any): void;
+        export function lookupNode(parent: any, name: any): any;
+        export function lookupNode(parent: any, name: any): any;
+        export function createNode(parent: any, name: any, mode: any, rdev: any): any;
+        export function createNode(parent: any, name: any, mode: any, rdev: any): any;
+        export function destroyNode(node: any): void;
+        export function destroyNode(node: any): void;
+        export function isRoot(node: any): boolean;
+        export function isRoot(node: any): boolean;
+        export function isMountpoint(node: any): boolean;
+        export function isMountpoint(node: any): boolean;
+        export function isFile(mode: any): boolean;
+        export function isFile(mode: any): boolean;
+        export function isDir(mode: any): boolean;
+        export function isDir(mode: any): boolean;
+        export function isLink(mode: any): boolean;
+        export function isLink(mode: any): boolean;
+        export function isChrdev(mode: any): boolean;
+        export function isChrdev(mode: any): boolean;
+        export function isBlkdev(mode: any): boolean;
+        export function isBlkdev(mode: any): boolean;
+        export function isFIFO(mode: any): boolean;
+        export function isFIFO(mode: any): boolean;
+        export function isSocket(mode: any): boolean;
+        export function isSocket(mode: any): boolean;
+        export function flagsToPermissionString(flag: any): string;
+        export function flagsToPermissionString(flag: any): string;
+        export function nodePermissions(node: any, perms: any): 0 | 2;
+        export function nodePermissions(node: any, perms: any): 0 | 2;
+        export function mayLookup(dir: any): any;
+        export function mayLookup(dir: any): any;
+        export function mayCreate(dir: any, name: any): any;
+        export function mayCreate(dir: any, name: any): any;
+        export function mayDelete(dir: any, name: any, isdir: any): any;
+        export function mayDelete(dir: any, name: any, isdir: any): any;
+        export function mayOpen(node: any, flags: any): any;
+        export function mayOpen(node: any, flags: any): any;
+        export function checkOpExists(op: any, err: any): any;
+        export function checkOpExists(op: any, err: any): any;
+        export const MAX_OPEN_FDS: number;
+        export function nextfd(): number;
+        export function nextfd(): number;
+        export function getStreamChecked(fd: any): any;
+        export function getStreamChecked(fd: any): any;
+        export function getStream(fd: any): any;
+        export function createStream(stream: any, fd?: number): any;
+        export function createStream(stream: any, fd?: number): any;
+        export function closeStream(fd: any): void;
+        export function closeStream(fd: any): void;
+        export function dupStream(origStream: any, fd?: number): any;
+        export function dupStream(origStream: any, fd?: number): any;
+        export function doSetAttr(stream: any, node: any, attr: any): void;
+        export function doSetAttr(stream: any, node: any, attr: any): void;
+        export namespace chrdev_stream_ops {
+            function open(stream: any): void;
+            function open(stream: any): void;
+            function llseek(): never;
+            function llseek(): never;
+        }
+        export function major(dev: any): number;
+        export function minor(dev: any): number;
+        export function makedev(ma: any, mi: any): number;
+        export function registerDevice(dev: any, ops: any): void;
+        export function registerDevice(dev: any, ops: any): void;
+        export function getDevice(dev: any): any;
+        export function getMounts(mount: any): any[];
+        export function getMounts(mount: any): any[];
+        export function syncfs(populate: any, callback: any): void;
+        export function syncfs(populate: any, callback: any): void;
+        export function mount(type: any, opts: any, mountpoint: any): any;
+        export function mount(type: any, opts: any, mountpoint: any): any;
+        export function unmount(mountpoint: any): void;
+        export function unmount(mountpoint: any): void;
+        export function lookup(parent: any, name: any): any;
+        export function lookup(parent: any, name: any): any;
+        export function mknod(path: any, mode: any, dev: any): any;
+        export function mknod(path: any, mode: any, dev: any): any;
+        export function statfs(path: any): any;
+        export function statfs(path: any): any;
+        export function statfsStream(stream: any): any;
+        export function statfsStream(stream: any): any;
+        export function statfsNode(node: any): {
+            bsize: number;
+            frsize: number;
+            blocks: number;
+            bfree: number;
+            bavail: number;
+            files: any;
+            ffree: number;
+            fsid: number;
+            flags: number;
+            namelen: number;
+        };
+        export function statfsNode(node: any): {
+            bsize: number;
+            frsize: number;
+            blocks: number;
+            bfree: number;
+            bavail: number;
+            files: any;
+            ffree: number;
+            fsid: number;
+            flags: number;
+            namelen: number;
+        };
+        export function create(path: any, mode?: number): any;
+        export function create(path: any, mode?: number): any;
+        export function mkdir(path: any, mode?: number): any;
+        export function mkdir(path: any, mode?: number): any;
+        export function mkdirTree(path: any, mode: any): void;
+        export function mkdirTree(path: any, mode: any): void;
+        export function mkdev(path: any, mode: any, dev: any): any;
+        export function mkdev(path: any, mode: any, dev: any): any;
+        export function symlink(oldpath: any, newpath: any): any;
+        export function symlink(oldpath: any, newpath: any): any;
+        export function rename(old_path: any, new_path: any): void;
+        export function rename(old_path: any, new_path: any): void;
+        export function rmdir(path: any): void;
+        export function rmdir(path: any): void;
+        export function readdir(path: any): any;
+        export function readdir(path: any): any;
+        export function unlink(path: any): void;
+        export function unlink(path: any): void;
+        export function readlink(path: any): any;
+        export function readlink(path: any): any;
+        export function stat(path: any, dontFollow: any): any;
+        export function stat(path: any, dontFollow: any): any;
+        export function fstat(fd: any): any;
+        export function fstat(fd: any): any;
+        export function lstat(path: any): any;
+        export function lstat(path: any): any;
+        export function doChmod(stream: any, node: any, mode: any, dontFollow: any): void;
+        export function doChmod(stream: any, node: any, mode: any, dontFollow: any): void;
+        export function chmod(path: any, mode: any, dontFollow: any): void;
+        export function chmod(path: any, mode: any, dontFollow: any): void;
+        export function lchmod(path: any, mode: any): void;
+        export function lchmod(path: any, mode: any): void;
+        export function fchmod(fd: any, mode: any): void;
+        export function fchmod(fd: any, mode: any): void;
+        export function doChown(stream: any, node: any, dontFollow: any): void;
+        export function doChown(stream: any, node: any, dontFollow: any): void;
+        export function chown(path: any, uid: any, gid: any, dontFollow: any): void;
+        export function chown(path: any, uid: any, gid: any, dontFollow: any): void;
+        export function lchown(path: any, uid: any, gid: any): void;
+        export function lchown(path: any, uid: any, gid: any): void;
+        export function fchown(fd: any, uid: any, gid: any): void;
+        export function fchown(fd: any, uid: any, gid: any): void;
+        export function doTruncate(stream: any, node: any, len: any): void;
+        export function doTruncate(stream: any, node: any, len: any): void;
+        export function truncate(path: any, len: any): void;
+        export function truncate(path: any, len: any): void;
+        export function ftruncate(fd: any, len: any): void;
+        export function ftruncate(fd: any, len: any): void;
+        export function utime(path: any, atime: any, mtime: any): void;
+        export function utime(path: any, atime: any, mtime: any): void;
+        export function open(path: any, flags: any, mode?: number): any;
+        export function open(path: any, flags: any, mode?: number): any;
+        export function close(stream: any): void;
+        export function close(stream: any): void;
+        export function isClosed(stream: any): boolean;
+        export function isClosed(stream: any): boolean;
+        export function llseek(stream: any, offset: any, whence: any): any;
+        export function llseek(stream: any, offset: any, whence: any): any;
+        export function read(stream: any, buffer: any, offset: any, length: any, position: any): any;
+        export function read(stream: any, buffer: any, offset: any, length: any, position: any): any;
+        export function write(stream: any, buffer: any, offset: any, length: any, position: any, canOwn: any): any;
+        export function write(stream: any, buffer: any, offset: any, length: any, position: any, canOwn: any): any;
+        export function mmap(stream: any, length: any, position: any, prot: any, flags: any): any;
+        export function mmap(stream: any, length: any, position: any, prot: any, flags: any): any;
+        export function msync(stream: any, buffer: any, offset: any, length: any, mmapFlags: any): any;
+        export function msync(stream: any, buffer: any, offset: any, length: any, mmapFlags: any): any;
+        export function ioctl(stream: any, cmd: any, arg: any): any;
+        export function ioctl(stream: any, cmd: any, arg: any): any;
+        export function readFile(path: any, opts?: {}): string | Uint8Array;
+        export function readFile(path: any, opts?: {}): string | Uint8Array;
+        export function writeFile(path: any, data: any, opts?: {}): void;
+        export function writeFile(path: any, data: any, opts?: {}): void;
+        export function cwd(): any;
+        export function chdir(path: any): void;
+        export function chdir(path: any): void;
+        export function createDefaultDirectories(): void;
+        export function createDefaultDirectories(): void;
+        export function createDefaultDevices(): void;
+        export function createDefaultDevices(): void;
+        export function createSpecialDirectories(): void;
+        export function createSpecialDirectories(): void;
+        export function createStandardStreams(input: any, output: any, error: any): void;
+        export function createStandardStreams(input: any, output: any, error: any): void;
+        export function staticInit(): void;
+        export function staticInit(): void;
+        export function init(input: any, output: any, error: any): void;
+        export function init(input: any, output: any, error: any): void;
+        export function quit(): void;
+        export function quit(): void;
+        export function findObject(path: any, dontResolveLastLink: any): any;
+        export function findObject(path: any, dontResolveLastLink: any): any;
+        export function analyzePath(path: any, dontResolveLastLink: any): {
+            isRoot: boolean;
+            exists: boolean;
+            error: number;
+            name: any;
+            path: any;
+            object: any;
+            parentExists: boolean;
+            parentPath: any;
+            parentObject: any;
+        };
+        export function analyzePath(path: any, dontResolveLastLink: any): {
+            isRoot: boolean;
+            exists: boolean;
+            error: number;
+            name: any;
+            path: any;
+            object: any;
+            parentExists: boolean;
+            parentPath: any;
+            parentObject: any;
+        };
+        export function createPath(parent: any, path: any, canRead: any, canWrite: any): any;
+        export function createPath(parent: any, path: any, canRead: any, canWrite: any): any;
+        export function createFile(parent: any, name: any, properties: any, canRead: any, canWrite: any): any;
+        export function createFile(parent: any, name: any, properties: any, canRead: any, canWrite: any): any;
+        export function createDataFile(parent: any, name: any, data: any, canRead: any, canWrite: any, canOwn: any): void;
+        export function createDataFile(parent: any, name: any, data: any, canRead: any, canWrite: any, canOwn: any): void;
+        export function createDevice(parent: any, name: any, input: any, output: any): any;
+        export function createDevice(parent: any, name: any, input: any, output: any): any;
+        export function forceLoadFile(obj: any): boolean;
+        export function forceLoadFile(obj: any): boolean;
+        export function createLazyFile(parent: any, name: any, url: any, canRead: any, canWrite: any): any;
+        export function createLazyFile(parent: any, name: any, url: any, canRead: any, canWrite: any): any;
+    }
+    function FS_createPath(...args: any[]): any;
+    function FS_createDataFile(...args: any[]): any;
+    function FS_preloadFile(parent: any, name: any, url: any, canRead: any, canWrite: any, dontCreateFile: any, canOwn: any, preFinish: any): Promise<void>;
+    function FS_unlink(...args: any[]): any;
+    function FS_createLazyFile(...args: any[]): any;
+    function FS_createDevice(...args: any[]): any;
+    function addRunDependency(id: any): void;
+    function removeRunDependency(id: any): void;
+}
+declare class ErrnoError {
+    constructor(errno: any);
+    name: string;
+    errno: any;
+}
+declare class FSStream {
+    shared: {};
+    set object(arg: any);
+    get object(): any;
+    node: any;
+    get isRead(): boolean;
+    get isWrite(): boolean;
+    get isAppend(): number;
+    set flags(arg: any);
+    get flags(): any;
+    set position(arg: any);
+    get position(): any;
+}
+declare class FSNode {
+    constructor(parent: any, name: any, mode: any, rdev: any);
+    node_ops: {};
+    stream_ops: {};
+    readMode: number;
+    writeMode: number;
+    mounted: any;
+    parent: any;
+    mount: any;
+    id: number;
+    name: any;
+    mode: any;
+    rdev: any;
+    atime: number;
+    mtime: number;
+    ctime: number;
+    set read(arg: boolean);
+    get read(): boolean;
+    set write(arg: boolean);
+    get write(): boolean;
+    get isFolder(): any;
+    get isDevice(): any;
+}
+interface WasmModule {
+  _BitbybitOcct_Init(): number;
 }
 
-// =============================================================================
-// Module Declaration
-// =============================================================================
-
-export interface BitbybitOcctModule {
-  // Emscripten File System
-  FS: EmscriptenFS;
-
-  // Geometry Primitives - 3D
-  gp_XYZ: gp_XYZ_Constructor;
-  gp_Pnt: gp_Pnt_Constructor;
-  gp_Vec: gp_Vec_Constructor;
-  gp_Dir: gp_Dir_Constructor;
-  gp_Ax1: gp_Ax1_Constructor;
-  gp_Ax2: gp_Ax2_Constructor;
-  gp_Ax3: gp_Ax3_Constructor;
-  gp_Mat: gp_Mat_Constructor;
-  gp_Trsf: gp_Trsf_Constructor;
-  gp_Pln: gp_Pln_Constructor;
-  gp_Lin: gp_Lin_Constructor;
-  gp_Circ: gp_Circ_Constructor;
-  gp_Elips: gp_Elips_Constructor;
-  gp_GTrsf: gp_GTrsf_Constructor;
-
-  // Geometry Primitives - 2D
-  gp_XY: gp_XY_Constructor;
-  gp_Pnt2d: gp_Pnt2d_Constructor;
-  gp_Vec2d: gp_Vec2d_Constructor;
-  gp_Dir2d: gp_Dir2d_Constructor;
-  gp_Ax2d: gp_Ax2d_Constructor;
-  gp_Ax22d: gp_Ax22d_Constructor;
-  gp_Lin2d: gp_Lin2d_Constructor;
-  gp_Circ2d: gp_Circ2d_Constructor;
-  gp_Elips2d: gp_Elips2d_Constructor;
-  gp_Trsf2d: gp_Trsf2d_Constructor;
-
-  // Topological Shapes
-  TopoDS_Shape: TopoDS_Shape_Constructor;
-  TopoDS_Vertex: TopoDS_Vertex_Constructor;
-  TopoDS_Edge: TopoDS_Edge_Constructor;
-  TopoDS_Wire: TopoDS_Wire_Constructor;
-  TopoDS_Face: TopoDS_Face_Constructor;
-  TopoDS_Shell: TopoDS_Shell_Constructor;
-  TopoDS_Solid: TopoDS_Solid_Constructor;
-  TopoDS_CompSolid: TopoDS_CompSolid_Constructor;
-  TopoDS_Compound: TopoDS_Compound_Constructor;
-
-  // Shape Explorer
-  TopExp_Explorer: TopExp_Explorer_Constructor;
-
-  // Primitive Creation
-  BRepPrimAPI_MakeBox: BRepPrimAPI_MakeBox_Constructor;
-  BRepPrimAPI_MakeCylinder: BRepPrimAPI_MakeCylinder_Constructor;
-  BRepPrimAPI_MakeSphere: BRepPrimAPI_MakeSphere_Constructor;
-  BRepPrimAPI_MakeCone: BRepPrimAPI_MakeCone_Constructor;
-  BRepPrimAPI_MakeTorus: BRepPrimAPI_MakeTorus_Constructor;
-  BRepPrimAPI_MakePrism: BRepPrimAPI_MakePrism_Constructor;
-  BRepPrimAPI_MakeRevol: BRepPrimAPI_MakeRevol_Constructor;
-  BRepPrimAPI_MakeWedge: BRepPrimAPI_MakeWedge_Constructor;
-
-  // Boolean Operations
-  BRepAlgoAPI_Fuse: BRepAlgoAPI_Fuse_Constructor;
-  BRepAlgoAPI_Cut: BRepAlgoAPI_Cut_Constructor;
-  BRepAlgoAPI_Common: BRepAlgoAPI_Common_Constructor;
-  BRepAlgoAPI_Section: BRepAlgoAPI_Section_Constructor;
-  BRepAlgoAPI_Splitter: BRepAlgoAPI_Splitter_Constructor;
-
-  // Shape Building
-  BRepBuilderAPI_MakeVertex: BRepBuilderAPI_MakeVertex_Constructor;
-  BRepBuilderAPI_MakeEdge: BRepBuilderAPI_MakeEdge_Constructor;
-  BRepBuilderAPI_MakeWire: BRepBuilderAPI_MakeWire_Constructor;
-  BRepBuilderAPI_MakeFace: BRepBuilderAPI_MakeFace_Constructor;
-  BRepBuilderAPI_MakePolygon: BRepBuilderAPI_MakePolygon_Constructor;
-  BRepBuilderAPI_Transform: BRepBuilderAPI_Transform_Constructor;
-  BRepBuilderAPI_MakeShell: BRepBuilderAPI_MakeShell_Constructor;
-  BRepBuilderAPI_MakeSolid: BRepBuilderAPI_MakeSolid_Constructor;
-  BRepBuilderAPI_Sewing: BRepBuilderAPI_Sewing_Constructor;
-  BRepBuilderAPI_Copy: BRepBuilderAPI_Copy_Constructor;
-  BRepBuilderAPI_GTransform: BRepBuilderAPI_GTransform_Constructor;
-
-  // Offset/Pipe/Loft Operations
-  BRepOffsetAPI_MakeOffset: BRepOffsetAPI_MakeOffset_Constructor;
-  BRepOffsetAPI_MakeOffsetShape: BRepOffsetAPI_MakeOffsetShape_Constructor;
-  BRepOffsetAPI_MakeThickSolid: BRepOffsetAPI_MakeThickSolid_Constructor;
-  BRepOffsetAPI_ThruSections: BRepOffsetAPI_ThruSections_Constructor;
-  BRepOffsetAPI_MakePipe: BRepOffsetAPI_MakePipe_Constructor;
-  BRepOffsetAPI_MakePipeShell: BRepOffsetAPI_MakePipeShell_Constructor;
-
-  // Projection
-  BRepProj_Projection: BRepProj_Projection_Constructor;
-
-  // Boolean Operations Builder
-  BOPAlgo_Builder: BOPAlgo_Builder_Constructor;
-
-  // Fillets and Chamfers
-  BRepFilletAPI_MakeFillet: BRepFilletAPI_MakeFillet_Constructor;
-  BRepFilletAPI_MakeChamfer: BRepFilletAPI_MakeChamfer_Constructor;
-
-  // BRepFill
-  BRepFill_Filling: BRepFill_Filling_Constructor;
-
-  // BRepClass
-  BRepClass_FaceClassifier: BRepClass_FaceClassifier_Constructor;
-
-  // Geometry Properties
-  GProp_GProps: GProp_GProps_Constructor;
-
-  // Bounding Box
-  Bnd_Box: Bnd_Box_Constructor;
-
-  // Meshing
-  BRepMesh_IncrementalMesh: BRepMesh_IncrementalMesh_Constructor;
-  Poly_Triangle: Poly_Triangle_Constructor;
-  Poly_Triangulation: Poly_Triangulation_Constructor;
-  Poly_Connect: Poly_Connect_Constructor;
-  TopLoc_Location: TopLoc_Location_Constructor;
-  
-  // Geometry Collections
-  TColgp_Array1OfPnt2d: TColgp_Array1OfPnt2d_Constructor;
-  TColgp_Array1OfDir: TColgp_Array1OfDir_Constructor;
-
-  // Geometry Surfaces
-  Geom_CylindricalSurface: Geom_CylindricalSurface_Constructor;
-  
-  // Presentation/Visualization helpers
-  StdPrs_ToolTriangulatedShape: StdPrs_ToolTriangulatedShape_Static;
-
-  // Data Exchange
-  STEPControl_Reader: STEPControl_Reader_Constructor;
-  STEPControl_Writer: STEPControl_Writer_Constructor;
-  IGESControl_Reader: IGESControl_Reader_Constructor;
-  IGESControl_Writer: IGESControl_Writer_Constructor;
-  StlAPI_Writer: StlAPI_Writer_Constructor;
-
-  // XCAF (Extended CAD Framework) for Assembly Support
-  TDF_Label: TDF_Label_Constructor;
-  TDF_LabelSequence: TDF_LabelSequence_Constructor;
-  Standard_GUID: Standard_GUID_Constructor;
-  Quantity_Color: Quantity_Color_Constructor;
-  Quantity_ColorRGBA: Quantity_ColorRGBA_Constructor;
-  Quantity_TypeOfColor: Quantity_TypeOfColor;
-  XCAFDoc_ColorType: XCAFDoc_ColorType;
-  TCollection_AsciiString: TCollection_AsciiString_Constructor;
-  Handle_TDF_Attribute: Handle_TDF_Attribute_Constructor;
-  Handle_XCAFDoc_ShapeTool: Handle_XCAFDoc_ShapeTool_Constructor;
-  Handle_XCAFDoc_ColorTool: Handle_XCAFDoc_ColorTool_Constructor;
-  Handle_XCAFDoc_MaterialTool: Handle_XCAFDoc_MaterialTool_Constructor;
-  Handle_TDocStd_Document: Handle_TDocStd_Document_Constructor;
-  XCAFDoc_ShapeTool: XCAFDoc_ShapeTool_Interface;
-  XCAFDoc_ColorTool: XCAFDoc_ColorTool_Interface;
-  TDataStd_Name: TDataStd_Name_Constructor;
-  TDataStd_Real: TDataStd_Real_Constructor;
-  TDataStd_Integer: TDataStd_Integer_Constructor;
-
-  // XCAF Static Functions
-  XCAFDoc_DocumentTool_ShapeTool(label: TDF_Label): Handle_XCAFDoc_ShapeTool;
-  XCAFDoc_DocumentTool_ColorTool(label: TDF_Label): Handle_XCAFDoc_ColorTool;
-  XCAFDoc_DocumentTool_MaterialTool(label: TDF_Label): Handle_XCAFDoc_MaterialTool;
-  
-  // XCAFDoc_ShapeTool static methods
-  XCAFDoc_ShapeTool_IsAssembly(label: TDF_Label): boolean;
-  XCAFDoc_ShapeTool_IsReference(label: TDF_Label): boolean;
-  XCAFDoc_ShapeTool_IsSimpleShape(label: TDF_Label): boolean;
-  XCAFDoc_ShapeTool_IsComponent(label: TDF_Label): boolean;
-  XCAFDoc_ShapeTool_IsShape(label: TDF_Label): boolean;
-  XCAFDoc_ShapeTool_GetLocation(label: TDF_Label): TopLoc_Location;
-  XCAFDoc_ShapeTool_GetShape_1(label: TDF_Label, shape: TopoDS_Shape): boolean;
-  XCAFDoc_ShapeTool_GetShape_2(label: TDF_Label): TopoDS_Shape;
-  XCAFDoc_ShapeTool_GetReferredShape(label: TDF_Label, referredLabel: TDF_Label): boolean;
-  XCAFDoc_ShapeTool_GetComponents(label: TDF_Label, components: TDF_LabelSequence, getSubChilds: boolean): boolean;
-  XCAFDoc_ShapeTool_NbComponents(label: TDF_Label, getSubChilds: boolean): number;
-  
-  // XCAFDoc_ColorTool helpers
-  XCAFDoc_ColorTool_GetColor_1(tool: XCAFDoc_ColorTool, label: TDF_Label, color: Quantity_Color): boolean;
-  XCAFDoc_ColorTool_GetColor_7(tool: XCAFDoc_ColorTool, shape: TopoDS_Shape, type: EmbindEnumValue, color: Quantity_Color): boolean;
-  XCAFDoc_ColorTool_GetColors(tool: XCAFDoc_ColorTool, labels: TDF_LabelSequence): void;
-  
-  // TDataStd_Name helper
-  TDataStd_Name_GetID(): Standard_GUID;
-  
-  // STEPCAF Reader (reads STEP with assembly structure)
-  STEPCAFControl_Reader_ReadFile(filePath: string, appName: string): Handle_TDocStd_Document;
-
-  // =====================================================================================
-  // HIGH-LEVEL ASSEMBLY CONVERSION FUNCTIONS (run entirely in C++ for performance)
-  // =====================================================================================
-  
-  /**
-   * Convert STEP file to glTF format.
-   * Runs entirely in C++ for maximum performance.
-   * Preserves assembly hierarchy, colors, materials, and transformations.
-   *
-   * @param stepFilePath - Path to input STEP file (in virtual filesystem)
-   * @param gltfFilePath - Path to output glTF/GLB file (in virtual filesystem)
-   * @param meshPrecision - Mesh linear deflection. With meshRelative=true this is a
-   *        fraction of each edge's length (e.g. 0.005 = 0.5%); otherwise absolute (mm).
-   * @param meshAngle - Mesh angular deflection in radians (typical 0.5)
-   * @param meshRelative - When true, use size-aware relative deflection per face (faster
-   *        for mixed-scale assemblies, slight visual approximation on tiny features).
-   * @param internalVerticesMode - Add interior vertices for better curved face fidelity (slower, set false for speed)
-   * @param controlSurfaceDeflection - Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed)
-   * @param isBinary - true for GLB (binary), false for glTF+bin (JSON)
-   * @returns true on success
-   */
-  ConvertStepToGltf(stepFilePath: string, gltfFilePath: string, meshPrecision: number, meshAngle: number, meshRelative: boolean, internalVerticesMode: boolean, controlSurfaceDeflection: boolean, isBinary: boolean, faceCountThreshold?: number): boolean;
-
-  /**
-   * Advanced STEP to glTF conversion with full control over reading and export options.
-   * Use this for file system based conversion (e.g., in Node.js or with virtual filesystem).
-   * 
-   * STEP Reading Options (affect parsing speed - disable what you don't need):
-   * @param stepFilePath - Path to input STEP file (in virtual filesystem)
-   * @param gltfFilePath - Path for output glTF/GLB file
-   * @param readColors - Read color attributes (needed for colored glTF)
-   * @param readNames - Read name attributes (for glTF node names)
-   * @param readMaterials - Read material attributes (for glTF materials)
-   * @param readLayers - Read layer attributes (usually not needed for glTF, set false)
-   * @param readProps - Read validation properties (usually not needed for glTF, set false)
-   * 
-   * Mesh Options:
-   * @param meshDeflection - Mesh deflection (precision) - smaller = more detailed mesh
-   * @param meshAngle - Mesh angular deflection in radians (default 0.5)
-   * @param meshParallel - Enable parallel meshing (for multi-threaded builds)
-   * @param meshRelative - Use relative deflection per-face bounding box (slower, set false for speed)
-   * @param internalVerticesMode - Add internal vertices for better mesh quality (slower, set false for speed)
-   * @param controlSurfaceDeflection - Perform extra surface deviation checks (slower, set false for speed)
-   * @param faceCountThreshold - Face count threshold for adaptive meshing (-1 to disable)
-   * 
-   * glTF Writer Options:
-   * @param isBinary - true for GLB (binary), false for glTF (JSON)
-   * @param mergeFaces - Merge faces within a single part (smaller file size)
-   * @param splitIndices16 - Prefer 16-bit indices when merging (smaller binary)
-   * @param parallelWrite - Enable parallel glTF writing
-   * @param embedTextures - Embed textures in GLB (only for binary mode)
-   * @param forceUVExport - Export UV coordinates even without textures
-   * @param nodeNameFormat - Node naming format:
-   *        0=Empty, 1=Product, 2=Instance, 3=InstanceOrProduct, 4=ProductOrInstance, 5=ProductAndInstance, 6=ProductAndInstanceAndOcaf
-   * @param meshNameFormat - Mesh naming format (same values as nodeNameFormat)
-   * @param trsfFormat - Transformation format: 0=Compact (TRS), 1=Mat4, 2=TRS
-   * 
-   * Coordinate System Options:
-   * @param adjustZtoY - Convert Z-up (OCCT) to Y-up (glTF standard), default true
-   * @param scale - Scale factor for the model (e.g., 0.001 to convert mm to m), default 1.0
-   * 
-   * @returns true on success, false on failure
-   */
-  ConvertStepToGltfAdvanced(
-    stepFilePath: string,
-    gltfFilePath: string,
-    // STEP reading options
-    readColors: boolean,
-    readNames: boolean,
-    readMaterials: boolean,
-    readLayers: boolean,
-    readProps: boolean,
-    // Mesh options
-    meshDeflection: number,
-    meshAngle: number,
-    meshParallel: boolean,
-    meshRelative: boolean,
-    internalVerticesMode: boolean,
-    controlSurfaceDeflection: boolean,
-    faceCountThreshold: number,
-    // glTF writer options
-    isBinary: boolean,
-    mergeFaces: boolean,
-    splitIndices16: boolean,
-    parallelWrite: boolean,
-    embedTextures: boolean,
-    forceUVExport: boolean,
-    nodeNameFormat: number,
-    meshNameFormat: number,
-    trsfFormat: number,
-    // Coordinate system options
-    adjustZtoY: boolean,
-    scale: number
-  ): boolean;
-  
-  /**
-   * Parse STEP file and return assembly structure as JSON.
-   * Runs entirely in C++ for maximum performance.
-   * Returns JSON with nodes containing: id, name, isAssembly, visible, color, transform.
-   * 
-   * @param stepFilePath - Path to input STEP file (in virtual filesystem)
-   * @returns JSON string with assembly structure
-   */
-  ParseStepAssemblyToJson(stepFilePath: string): string;
-  
-  /**
-   * Convert STEP content to GLB format from memory.
-   * For browser use - reads STEP from string, returns GLB as byte array.
-   * Automatically detects and decompresses STEP-Z (.stpz) gzip-compressed files.
-   * 
-   * @param stepContent - STEP file content as string (supports gzip-compressed STEP-Z)
-   * @param meshPrecision - Mesh deflection for triangulation
-   * @param faceCountThreshold - Legacy per-sub-shape meshing fallback threshold.
-   *        Default -1 = single-pass meshing of the whole assembly (fastest, recommended).
-   *        Set to a positive value (e.g. 100000) to fall back to per-solid meshing
-   *        when the total face count exceeds it (memory-constrained environments).
-   * @returns GLB binary data as Uint8Array (empty on failure)
-   */
-  ConvertStepToGltfFromMemory(stepContent: string, meshPrecision: number, meshAngle?: number, meshRelative?: boolean, internalVerticesMode?: boolean, controlSurfaceDeflection?: boolean, faceCountThreshold?: number): Uint8Array;
-  
-  /**
-   * Parse STEP assembly from memory to JSON.
-   * For browser use - reads STEP from string, returns JSON string.
-   * Automatically detects and decompresses STEP-Z (.stpz) gzip-compressed files.
-   * 
-   * @param stepContent - STEP file content as string (supports gzip-compressed STEP-Z)
-   * @returns JSON string with assembly structure
-   */
-  ParseStepAssemblyToJsonFromMemory(stepContent: string): string;
-
-  /**
-   * Convert STEP to GLB format from binary data.
-   * Use this for compressed STEP-Z files - read with FileReader.readAsArrayBuffer.
-   * 
-   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
-   * @param meshPrecision - Mesh deflection for triangulation
-   * @param faceCountThreshold - Legacy per-sub-shape meshing fallback threshold.
-   *        Default -1 = single-pass meshing of the whole assembly (fastest, recommended).
-   *        Set to a positive value to fall back to per-solid meshing for very large
-   *        assemblies in memory-constrained environments.
-   * @returns GLB binary data as Uint8Array (empty on failure)
-   */
-  ConvertStepToGltfFromBinary(stepData: Uint8Array, meshPrecision: number, meshAngle?: number, meshRelative?: boolean, internalVerticesMode?: boolean, controlSurfaceDeflection?: boolean, faceCountThreshold?: number): Uint8Array;
-
-  /**
-   * Advanced STEP to GLB conversion with full control over reading and export options.
-   * Use this for maximum control over conversion behavior and performance tuning.
-   * 
-   * STEP Reading Options (affect parsing speed - disable what you don't need):
-   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
-   * @param readColors - Read color attributes (needed for colored glTF)
-   * @param readNames - Read name attributes (for glTF node names)
-   * @param readMaterials - Read material attributes (for glTF materials)
-   * @param readLayers - Read layer attributes (usually not needed for glTF, set false)
-   * @param readProps - Read validation properties (usually not needed for glTF, set false)
-   * 
-   * Mesh Options:
-   * @param meshDeflection - Mesh deflection (precision) - smaller = more detailed mesh
-   * @param meshAngle - Mesh angular deflection in radians (default 0.5)
-   * @param meshParallel - Enable parallel meshing (for multi-threaded builds)
-   * @param meshRelative - Use relative deflection per-face bounding box (slower, set false for speed)
-   * @param internalVerticesMode - Add internal vertices for better mesh quality (slower, set false for speed)
-   * @param controlSurfaceDeflection - Perform extra surface deviation checks (slower, set false for speed)
-   * @param faceCountThreshold - Face count threshold for adaptive meshing (-1 to disable)
-   * 
-   * glTF Writer Options:
-   * @param mergeFaces - Merge faces within a single part (smaller JSON size)
-   * @param splitIndices16 - Prefer 16-bit indices when merging (smaller binary)
-   * @param parallelWrite - Enable parallel glTF writing
-   * @param embedTextures - Embed textures in GLB (only for binary mode)
-   * @param forceUVExport - Export UV coordinates even without textures
-   * @param nodeNameFormat - Node naming format:
-   *        0=Empty, 1=Product, 2=Instance, 3=InstanceOrProduct, 4=ProductOrInstance, 5=ProductAndInstance, 6=ProductAndInstanceAndOcaf
-   * @param meshNameFormat - Mesh naming format (same values as nodeNameFormat)
-   * @param trsfFormat - Transformation format: 0=Compact (TRS), 1=Mat4, 2=TRS
-   * 
-   * Coordinate System Options:
-   * @param adjustZtoY - Convert Z-up (OCCT) to Y-up (glTF standard), default true
-   * @param scale - Scale factor for the model (e.g., 0.001 to convert mm to m), default 1.0
-   * 
-   * @returns GLB binary data as Uint8Array (empty on failure)
-   */
-  ConvertStepToGltfFromBinaryAdvanced(
-    stepData: Uint8Array,
-    // STEP reading options
-    readColors: boolean,
-    readNames: boolean,
-    readMaterials: boolean,
-    readLayers: boolean,
-    readProps: boolean,
-    // Mesh options
-    meshDeflection: number,
-    meshAngle: number,
-    meshParallel: boolean,
-    meshRelative: boolean,
-    internalVerticesMode: boolean,
-    controlSurfaceDeflection: boolean,
-    faceCountThreshold: number,
-    // glTF writer options
-    mergeFaces: boolean,
-    splitIndices16: boolean,
-    parallelWrite: boolean,
-    embedTextures: boolean,
-    forceUVExport: boolean,
-    nodeNameFormat: number,
-    meshNameFormat: number,
-    trsfFormat: number,
-    // Coordinate system options
-    adjustZtoY: boolean,
-    scale: number
-  ): Uint8Array;
-
-  /**
-   * Convert STEP file to glTF/GLB with explicit Draco geometry compression settings.
-   * Same shape as `ConvertStepToGltf` plus 8 trailing Draco parameters.
-   * Draco compression is only applied when OCCT was built with USE_DRACO=ON; otherwise
-   * the Draco parameters are accepted but silently ignored (no error).
-   *
-   * @param useDraco - Enable Draco geometry compression on output
-   * @param dracoCompressionLevel - 0 (fastest, largest) ... 10 (slowest, smallest). 7 is a good default.
-   * @param dracoQuantizePositionBits - Quantization bits for vertex positions (default 14)
-   * @param dracoQuantizeNormalBits - Quantization bits for normals (default 10)
-   * @param dracoQuantizeTexcoordBits - Quantization bits for UVs (default 12)
-   * @param dracoQuantizeColorBits - Quantization bits for colors (default 8)
-   * @param dracoQuantizeGenericBits - Quantization bits for generic attributes (default 12)
-   * @param dracoUnifiedQuantization - Apply a single quantization grid across all attributes
-   */
-  ConvertStepToGltfWithDraco(
-    stepFilePath: string,
-    gltfFilePath: string,
-    meshPrecision: number,
-    meshAngle: number,
-    meshRelative: boolean,
-    internalVerticesMode: boolean,
-    controlSurfaceDeflection: boolean,
-    isBinary: boolean,
-    faceCountThreshold: number,
-    useDraco: boolean,
-    dracoCompressionLevel: number,
-    dracoQuantizePositionBits: number,
-    dracoQuantizeNormalBits: number,
-    dracoQuantizeTexcoordBits: number,
-    dracoQuantizeColorBits: number,
-    dracoQuantizeGenericBits: number,
-    dracoUnifiedQuantization: boolean
-  ): boolean;
-
-  /**
-   * Advanced STEP -> glTF conversion with full reading/mesh/writer/coord options AND
-   * explicit Draco geometry compression settings (8 trailing parameters).
-   * See `ConvertStepToGltfAdvanced` for the meaning of the first 25 parameters and
-   * `ConvertStepToGltfWithDraco` for the Draco knobs.
-   */
-  ConvertStepToGltfAdvancedWithDraco(
-    stepFilePath: string,
-    gltfFilePath: string,
-    readColors: boolean,
-    readNames: boolean,
-    readMaterials: boolean,
-    readLayers: boolean,
-    readProps: boolean,
-    meshDeflection: number,
-    meshAngle: number,
-    meshParallel: boolean,
-    meshRelative: boolean,
-    internalVerticesMode: boolean,
-    controlSurfaceDeflection: boolean,
-    faceCountThreshold: number,
-    isBinary: boolean,
-    mergeFaces: boolean,
-    splitIndices16: boolean,
-    parallelWrite: boolean,
-    embedTextures: boolean,
-    forceUVExport: boolean,
-    nodeNameFormat: number,
-    meshNameFormat: number,
-    trsfFormat: number,
-    adjustZtoY: boolean,
-    scale: number,
-    useDraco: boolean,
-    dracoCompressionLevel: number,
-    dracoQuantizePositionBits: number,
-    dracoQuantizeNormalBits: number,
-    dracoQuantizeTexcoordBits: number,
-    dracoQuantizeColorBits: number,
-    dracoQuantizeGenericBits: number,
-    dracoUnifiedQuantization: boolean
-  ): boolean;
-
-  /**
-   * Convert binary STEP (Uint8Array, optionally gzipped .stpz) to GLB with explicit
-   * Draco compression settings. Returns the GLB as a Uint8Array.
-   */
-  ConvertStepToGltfFromBinaryWithDraco(
-    stepData: Uint8Array,
-    meshPrecision: number,
-    meshAngle: number,
-    meshRelative: boolean,
-    internalVerticesMode: boolean,
-    controlSurfaceDeflection: boolean,
-    faceCountThreshold: number,
-    useDraco: boolean,
-    dracoCompressionLevel: number,
-    dracoQuantizePositionBits: number,
-    dracoQuantizeNormalBits: number,
-    dracoQuantizeTexcoordBits: number,
-    dracoQuantizeColorBits: number,
-    dracoQuantizeGenericBits: number,
-    dracoUnifiedQuantization: boolean
-  ): Uint8Array;
-
-  /**
-   * Advanced binary STEP -> GLB conversion with full reading/mesh/writer/coord options
-   * AND explicit Draco compression settings.
-   */
-  ConvertStepToGltfFromBinaryAdvancedWithDraco(
-    stepData: Uint8Array,
-    readColors: boolean,
-    readNames: boolean,
-    readMaterials: boolean,
-    readLayers: boolean,
-    readProps: boolean,
-    meshDeflection: number,
-    meshAngle: number,
-    meshParallel: boolean,
-    meshRelative: boolean,
-    internalVerticesMode: boolean,
-    controlSurfaceDeflection: boolean,
-    faceCountThreshold: number,
-    mergeFaces: boolean,
-    splitIndices16: boolean,
-    parallelWrite: boolean,
-    embedTextures: boolean,
-    forceUVExport: boolean,
-    nodeNameFormat: number,
-    meshNameFormat: number,
-    trsfFormat: number,
-    adjustZtoY: boolean,
-    scale: number,
-    useDraco: boolean,
-    dracoCompressionLevel: number,
-    dracoQuantizePositionBits: number,
-    dracoQuantizeNormalBits: number,
-    dracoQuantizeTexcoordBits: number,
-    dracoQuantizeColorBits: number,
-    dracoQuantizeGenericBits: number,
-    dracoUnifiedQuantization: boolean
-  ): Uint8Array;
-
-  /**
-   * Parse STEP assembly from binary data to JSON.
-   * Use this for compressed STEP-Z files - read with FileReader.readAsArrayBuffer.
-   * 
-   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
-   * @returns JSON string with assembly structure
-   */
-  ParseStepAssemblyToJsonFromBinary(stepData: Uint8Array): string;
-
-  /**
-   * Read STEP from binary data.
-   * Use this for compressed STEP-Z files - read with FileReader.readAsArrayBuffer.
-   * 
-   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
-   * @returns The shape read from STEP, or null shape on failure
-   */
-  ReadSTEPFromBinary(stepData: Uint8Array): TopoDS_Shape;
-
-  /**
-   * Read IGES from binary data.
-   * Use this for compressed IGES files - read with FileReader.readAsArrayBuffer.
-   * 
-   * @param igesData - IGES file content as Uint8Array (supports gzip-compressed)
-   * @returns The shape read from IGES, or null shape on failure
-   */
-  ReadIGESFromBinary(igesData: Uint8Array): TopoDS_Shape;
-
-  // =====================================================================================
-  // ASSEMBLY CREATION FUNCTIONS (Document-based API for visual programming)
-  // These functions return document handles directly - caller manages lifetime.
-  // =====================================================================================
-
-  /**
-   * Build an assembly document from a structure definition and return the document handle directly.
-   * The caller is responsible for managing the document lifetime.
-   * 
-   * Structure JSON format (for creating new assembly):
-   * {
-   *   "parts": [
-   *     { "id": "part-1", "shapeIndex": 0, "name": "Box", "color": { "r": 1, "g": 0, "b": 0, "a": 1 } }
-   *   ],
-   *   "nodes": [
-   *     { "id": "asm-1", "type": "assembly", "name": "Root" },
-   *     { "id": "inst-1", "type": "instance", "parentId": "asm-1", "partId": "part-1",
-   *       "name": "Box 1", "translation": [10, 0, 0], "rotation": [0, 0, 45], "scale": 1.0 }
-   *   ]
-   * }
-   *
-   * Placement transforms (instance and assembly nodes):
-   * Each node may be positioned with any combination a component location (gp_Trsf)
-   * supports:
-   *   - "translation": [tx, ty, tz]
-   *   - "rotation": [rx, ry, rz]  (Euler angles in degrees, applied X*Y*Z)
-   *   - "scale": s                (uniform scale factor)
-   *   - "matrix": number[]        (a row-major OCCT transformation matrix, either
-   *                                3x4 = 12 values or 4x4 = 16 values, ordered
-   *                                a11,a12,a13,a14, a21,a22,... This is the
-   *                                "full spectrum" escape hatch: it expresses any
-   *                                rotation, uniform scale and mirror in one field.
-   *                                When a valid `matrix` is present it defines the
-   *                                entire transform and translation/rotation/scale
-   *                                are ignored. Note: gp_Trsf cannot represent
-   *                                non-uniform scale or shear, so such matrices are
-   *                                rejected and the node falls back to its
-   *                                translation/rotation/scale fields.)
-   *
-   * Composing loaded assemblies (parentId resolution):
-   * A node's `parentId` may reference either an assembly node OR a part — including
-   * an assembly imported through `loadedParts`. This enables:
-   *   - adding extra parts/instances into a loaded assembly before instancing it
-   *     (point an instance's `parentId` at the loaded assembly's id), and
-   *   - nesting a loaded assembly inside another assembly, then instancing the
-   *     result.
-   * Direct self-cycles (an instance whose `parentId` equals its own `partId`) are
-   * detected and skipped.
-   *
-   * When updating an existing document, you can also include:
-   * - "removals": ["0:1:1:2", "0:1:1:3:1"] - Labels to remove (parts, instances, or assemblies)
-   * - "partUpdates": [{ "label": "0:1:1:1", "shapeIndex": 0, "name": "New Name", "color": {...} }] - Updates to apply
-   * 
-   * Processing order for updates:
-   * 1. Removals are applied first
-   * 2. Part updates are applied second  
-   * 3. New parts and nodes are added last
-   * 
-   * Imported parts (cross-document reuse):
-   * The structure may also contain a `loadedParts` array. Each entry copies a label
-   * (or the full free-shapes root) from a source document into the new document,
-   * preserving sub-assembly hierarchy, names and colors. The copied root becomes a
-   * part referenceable by `partId` from any instance node, allowing a STEP-loaded
-   * assembly to be placed multiple times in a new assembly.
-   *
-   *   loadedParts: [
-   *     { id, sourceDocumentIndex, sourceLabel?, name?, colorRgba? }
-   *   ]
-   *
-   * `sourceDocumentIndex` is the index into the `sourceDocuments` parameter.
-   * If `sourceLabel` is omitted, all free shapes of the source document are imported
-   * (wrapped in a new assembly compound when there are multiple).
-   *
-   * @param structureJson - JSON string with assembly structure (parts, nodes, optional removals/partUpdates/loadedParts)
-   * @param shapesArray - Array of TopoDS_Shape objects, referenced by shapeIndex in parts and partUpdates
-   * @param existingDoc - Optional existing document handle to update (for removals/partUpdates/additions)
-   * @param sourceDocuments - Optional array of source document handles referenced by loadedParts entries
-   * @returns Handle to the created/updated document. Call IsNull() to check for errors.
-   */
-  BuildAssemblyDocument(structureJson: string, shapesArray: TopoDS_Shape[], existingDoc: Handle_TDocStd_Document | undefined, sourceDocuments: Handle_TDocStd_Document[]): Handle_TDocStd_Document;
-
-  /**
-   * Export a document to STEP format (takes document handle directly).
-   * Unlike ExportAssemblyToStepBinary, this does not use global document storage.
-   * 
-   * @param document - Document handle from BuildAssemblyDocument
-   * @param fileName - File name for the STEP header
-   * @param author - Author name for the STEP header
-   * @param organization - Organization name for the STEP header
-   * @returns STEP file content as Uint8Array, or undefined on failure
-   */
-  ExportDocumentToStep(document: Handle_TDocStd_Document, fileName: string, author: string, organization: string): Uint8Array | undefined;
-
-  /**
-   * Export a document to compressed STEP-Z format (takes document handle directly).
-   * Unlike ExportAssemblyToStepZ, this does not use global document storage.
-   * 
-   * @param document - Document handle from BuildAssemblyDocument
-   * @param fileName - File name for the STEP header
-   * @param author - Author name for the STEP header
-   * @param organization - Organization name for the STEP header
-   * @returns Compressed STEP-Z content as Uint8Array, or undefined on failure
-   */
-  ExportDocumentToStepZ(document: Handle_TDocStd_Document, fileName: string, author: string, organization: string): Uint8Array | undefined;
-
-  /**
-   * Export a document to glTF binary (GLB) format (takes document handle directly).
-   * Uses optimized mesh parameters (no internal vertices, no surface deflection control).
-   * 
-   * @param document - Document handle from BuildAssemblyDocument
-   * @param meshDeflection - Mesh precision for triangulation (default 0.1)
-   * @param meshAngle - Angular deflection for meshing in radians (default 0.5)
-   * @param internalVerticesMode - Add interior vertices for better curved face fidelity (slower, set false for speed)
-   * @param controlSurfaceDeflection - Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed)
-   * @param mergeFaces - Whether to merge faces with same material (default false)
-   * @param forceUVExport - Whether to export texture coordinates (default false)
-   * @returns GLB content as Uint8Array, or undefined on failure
-   */
-  ExportDocumentToGltf(document: Handle_TDocStd_Document, meshDeflection: number, meshAngle: number, internalVerticesMode: boolean, controlSurfaceDeflection: boolean, mergeFaces: boolean, forceUVExport: boolean): Uint8Array | undefined;
-
-  /**
-   * Export a document to glTF binary (GLB) format with explicit Draco geometry
-   * compression settings (8 trailing parameters). Mirrors `ExportDocumentToGltf` but
-   * exposes the Draco knobs that are otherwise defaulted internally.
-   * Draco compression is only applied when OCCT was built with USE_DRACO=ON; otherwise
-   * the Draco parameters are accepted but silently ignored (no error).
-   *
-   * @param useDraco - Enable Draco geometry compression on output
-   * @param dracoCompressionLevel - 0 (fastest, largest) ... 10 (slowest, smallest). 7 is a good default.
-   * @param dracoQuantizePositionBits - Quantization bits for positions (default 14)
-   * @param dracoQuantizeNormalBits - Quantization bits for normals (default 10)
-   * @param dracoQuantizeTexcoordBits - Quantization bits for UVs (default 12)
-   * @param dracoQuantizeColorBits - Quantization bits for colors (default 8)
-   * @param dracoQuantizeGenericBits - Quantization bits for generic attributes (default 12)
-   * @param dracoUnifiedQuantization - Apply a single quantization grid across all attributes
-   */
-  ExportDocumentToGltfWithDraco(
-    document: Handle_TDocStd_Document,
-    meshDeflection: number,
-    meshAngle: number,
-    internalVerticesMode: boolean,
-    controlSurfaceDeflection: boolean,
-    mergeFaces: boolean,
-    forceUVExport: boolean,
-    useDraco: boolean,
-    dracoCompressionLevel: number,
-    dracoQuantizePositionBits: number,
-    dracoQuantizeNormalBits: number,
-    dracoQuantizeTexcoordBits: number,
-    dracoQuantizeColorBits: number,
-    dracoQuantizeGenericBits: number,
-    dracoUnifiedQuantization: boolean
-  ): Uint8Array | undefined;
-
-  // =====================================================================================
-  // DOCUMENT-BASED QUERY FUNCTIONS
-  // These functions take a document handle directly and do not use global storage.
-  // =====================================================================================
-
-  /**
-   * Get all parts and assemblies in a document.
-   * @param document - Document handle from BuildAssemblyDocument or LoadStepToDoc
-   * @returns JSON string with array of part info objects
-   */
-  GetDocumentPartsFromDoc(document: Handle_TDocStd_Document): string;
-
-  /**
-   * Get a shape from a label in a document.
-   * @param document - Document handle
-   * @param label - Label string (e.g., "0:1:1:1")
-   * @returns Shape at the label
-   */
-  GetShapeFromDocLabel(document: Handle_TDocStd_Document, label: string): TopoDS_Shape;
-
-  /**
-   * Get the color of a label in a document.
-   * @param document - Document handle
-   * @param label - Label string
-   * @returns JSON string with color info: { hasColor, r, g, b, a }
-   */
-  GetDocLabelColor(document: Handle_TDocStd_Document, label: string): string;
-
-  /**
-   * Get the transform of a label in a document.
-   * @param document - Document handle
-   * @param label - Label string
-   * @returns JSON string with transform info: { matrix, translation, quaternion, scale }
-   */
-  GetDocLabelTransform(document: Handle_TDocStd_Document, label: string): string;
-
-  /**
-   * Get detailed info about a label in a document.
-   * @param document - Document handle
-   * @param label - Label string
-   * @returns JSON string with label info: { label, name, type, isAssembly, children, etc. }
-   */
-  GetDocLabelInfo(document: Handle_TDocStd_Document, label: string): string;
-
-  /**
-   * Get full assembly hierarchy from a document.
-   * @param document - Document handle
-   * @returns JSON string with hierarchy: { nodes: [...] }
-   */
-  GetDocAssemblyHierarchy(document: Handle_TDocStd_Document): string;
-
-  BRepGraphAnalyze(theShape: TopoDS_Shape): string;
-  BRepGraphFaceAdjacency(theShape: TopoDS_Shape): string;
-  BRepGraphEdgeFaceMap(theShape: TopoDS_Shape): string;
-  BRepGraphVertexEdgeMap(theShape: TopoDS_Shape): string;
-  BRepGraphFaceInfo(theShape: TopoDS_Shape): string;
-  BRepGraphEdgeInfo(theShape: TopoDS_Shape): string;
-  BRepGraphContainment(theShape: TopoDS_Shape): string;
-  BRepGraphWireInfo(theShape: TopoDS_Shape): string;
-  BRepGraphAssembly(theShape: TopoDS_Shape): string;
-  BRepGraphValidate(theShape: TopoDS_Shape): string;
-  BRepGraphDump(theShape: TopoDS_Shape): string;
-  BRepGraphReconstruct(theShape: TopoDS_Shape, theKind: string, theIndex: number): TopoDS_Shape;
-  BRepGraphNodeOfShape(theShape: TopoDS_Shape, theSubShape: TopoDS_Shape): string;
-
-  /**
-   * Set color on a label in a document.
-   * @param document - Document handle
-   * @param label - Label string
-   * @param r - Red component (0-1)
-   * @param g - Green component (0-1)
-   * @param b - Blue component (0-1)
-   * @param a - Alpha component (0-1)
-   * @returns true on success
-   */
-  SetDocLabelColor(document: Handle_TDocStd_Document, label: string, r: number, g: number, b: number, a: number): boolean;
-
-  /**
-   * Set name on a label in a document.
-   * @param document - Document handle
-   * @param label - Label string
-   * @param name - New name
-   * @returns true on success
-   */
-  SetDocLabelName(document: Handle_TDocStd_Document, label: string, name: string): boolean;
-
-  /**
-   * Load STEP data and return document handle directly.
-   * Supports both regular STEP and gzip-compressed STEP-Z.
-   * @param stepData - STEP file content as Uint8Array (supports gzip-compressed STEP-Z)
-   * @returns Document handle. Call IsNull() to check for errors. Caller manages lifetime.
-   */
-  LoadStepToDoc(stepData: Uint8Array): Handle_TDocStd_Document;
-
-  // BRep Builder
-  BRep_Builder: BRep_Builder_Constructor;
-
-  // Static utility classes (namespace-style access)
-  BRepBndLib: BRepBndLib_Static;
-  BRepTools: BRepTools_Static;
-  BRep_Tool: BRep_Tool_Static;
-
-  // Shape Iterators
-  BRepTools_WireExplorer: BRepTools_WireExplorer_Constructor;
-  TopoDS_Iterator: TopoDS_Iterator_Constructor;
-  TopTools_ListOfShape: TopTools_ListOfShape_Constructor;
-
-  // Curve Adaptors
-  BRepAdaptor_Curve: BRepAdaptor_Curve_Constructor;
-  BRepAdaptor_CompCurve: BRepAdaptor_CompCurve_Constructor;
-  GCPnts_TangentialDeflection: GCPnts_TangentialDeflection_Constructor;
-  GCPnts_AbscissaPoint: GCPnts_AbscissaPoint_Constructor;
-
-  // Shape Fix / Repair
-  ShapeFix_Shape: ShapeFix_Shape_Constructor;
-  ShapeFix_Wire: ShapeFix_Wire_Constructor;
-
-  // 2D Fillets
-  BRepFilletAPI_MakeFillet2d: BRepFilletAPI_MakeFillet2d_Constructor;
-  ChFi2d_FilletAlgo: ChFi2d_FilletAlgo_Constructor;
-
-  // 2D Geometry Construction (GccEnt, GccAna)
-  GccEnt_QualifiedCirc: GccEnt_QualifiedCirc_Constructor;
-  GccEnt_QualifiedLin: GccEnt_QualifiedLin_Constructor;
-  GccAna_Lin2d2Tan: GccAna_Lin2d2Tan_Constructor;
-  GccAna_Circ2d2TanRad: GccAna_Circ2d2TanRad_Constructor;
-
-  // Enumerations (embind exports as objects with value properties)
-  TopAbs_ShapeEnum: TopAbs_ShapeEnum;
-  TopAbs_Orientation: TopAbs_Orientation;
-  TopAbs_State: TopAbs_State;
-  IFSelect_ReturnStatus: IFSelect_ReturnStatus;
-  STEPControl_StepModelType: STEPControl_StepModelType;
-  GccEnt_Position: GccEnt_Position;
-  GeomFill_Trihedron: GeomFill_Trihedron;
-  GeomAbs_Shape: GeomAbs_Shape;
-  GeomAbs_JoinType: GeomAbs_JoinType;
-  BRepFill_TypeOfContact: BRepFill_TypeOfContact;
-  GeomAbs_CurveType: GeomAbs_CurveType;
-  BRepBuilderAPI_WireError: BRepBuilderAPI_WireError;
-  ChFi3d_FilletShape: ChFi3d_FilletShape;
-  BRepOffset_Mode: BRepOffset_Mode;
-  Approx_ParametrizationType: Approx_ParametrizationType;
-
-  // TopoDS Downcasting Functions (convert TopoDS_Shape to specific sub-type)
-  CastToVertex(shape: TopoDS_Shape): TopoDS_Vertex;
-  CastToEdge(shape: TopoDS_Shape): TopoDS_Edge;
-  CastToWire(shape: TopoDS_Shape): TopoDS_Wire;
-  CastToFace(shape: TopoDS_Shape): TopoDS_Face;
-  CastToShell(shape: TopoDS_Shape): TopoDS_Shell;
-  CastToSolid(shape: TopoDS_Shape): TopoDS_Solid;
-  CastToCompSolid(shape: TopoDS_Shape): TopoDS_CompSolid;
-  CastToCompound(shape: TopoDS_Shape): TopoDS_Compound;
-  
-  // TopoDS_Shape utility functions
-  TopoDS_Shape_HashCode(shape: TopoDS_Shape, upperBound?: number): number;
-  
-  // BRep_Tool functions
-  BRep_Tool_Pnt(vertex: TopoDS_Vertex): gp_Pnt;
-  BRep_Tool_Tolerance_Vertex(vertex: TopoDS_Vertex): number;
-  BRep_Tool_Tolerance_Edge(edge: TopoDS_Edge): number;
-  BRep_Tool_Tolerance_Face(face: TopoDS_Face): number;
-  BRep_Tool_IsGeometric(edge: TopoDS_Edge): boolean;
-  BRep_Tool_Degenerated(edge: TopoDS_Edge): boolean;
-
-  // BRepBuilderAPI_MakeFace factory functions (for surface-based face creation)
-  MakeFaceFromFaceSurfaceAndWire(face: TopoDS_Face, wire: TopoDS_Wire, inside: boolean): TopoDS_Face;
-  MakeFaceFromFaceSurface(face: TopoDS_Face, tolDegen: number): TopoDS_Face;
-  MakeFaceFromWireOnlyPlane(wire: TopoDS_Wire, onlyPlane: boolean): TopoDS_Face;
-
-  // BRepGProp functions
-  BRepGProp_LinearProperties(shape: TopoDS_Shape, props: GProp_GProps): void;
-  BRepGProp_SurfaceProperties(shape: TopoDS_Shape, props: GProp_GProps): void;
-  BRepGProp_VolumeProperties(shape: TopoDS_Shape, props: GProp_GProps): void;
-
-  // Triangulation helpers
-  /** Gets the triangulation of a face. Nodes are in local coordinates. */
-  GetFaceTriangulation(face: TopoDS_Face): Poly_Triangulation;
-  /** Gets the location (transformation) of a face. Use with GetFaceTriangulation to transform nodes to global coordinates. */
-  GetFaceLocation(face: TopoDS_Face): TopLoc_Location;
-
-  // Factory functions for alternate constructors (embind can't distinguish by type)
-  gp_Dir_fromVec(vec: gp_Vec): gp_Dir;
-  gp_Pnt_fromXYZ(xyz: gp_XYZ): gp_Pnt;
-  gp_Vec_fromXYZ(xyz: gp_XYZ): gp_Vec;
-  gp_Vec_fromPoints(p1: gp_Pnt, p2: gp_Pnt): gp_Vec;
-
-  // GccAna_Lin2d2Tan factory functions (embind can't distinguish 3-param constructors by type)
-  /** Line tangent to a circle and passing through a point */
-  GccAna_Lin2d2Tan_fromQualifiedCircAndPoint(qualCirc: GccEnt_QualifiedCirc, point: gp_Pnt2d, tolerance: number): GccAna_Lin2d2Tan;
-  /** Line tangent to two circles */
-  GccAna_Lin2d2Tan_fromTwoQualifiedCirc(qualCirc1: GccEnt_QualifiedCirc, qualCirc2: GccEnt_QualifiedCirc, tolerance: number): GccAna_Lin2d2Tan;
-
-  // GccAna_Circ2d2TanRad factory functions (embind can't distinguish 4-param constructors by type)
-  /** Circle tangent to two circles */
-  GccAna_Circ2d2TanRad_fromTwoQualifiedCirc(qualCirc1: GccEnt_QualifiedCirc, qualCirc2: GccEnt_QualifiedCirc, radius: number, tolerance: number): GccAna_Circ2d2TanRad;
-  /** Circle tangent to a circle and a line */
-  GccAna_Circ2d2TanRad_fromQualifiedCircAndLin(qualCirc: GccEnt_QualifiedCirc, qualLin: GccEnt_QualifiedLin, radius: number, tolerance: number): GccAna_Circ2d2TanRad;
-  /** Circle tangent to a circle and passing through a point */
-  GccAna_Circ2d2TanRad_fromQualifiedCircAndPoint(qualCirc: GccEnt_QualifiedCirc, point: gp_Pnt2d, radius: number, tolerance: number): GccAna_Circ2d2TanRad;
-  /** Circle tangent to a line and passing through a point */
-  GccAna_Circ2d2TanRad_fromQualifiedLinAndPoint(qualLin: GccEnt_QualifiedLin, point: gp_Pnt2d, radius: number, tolerance: number): GccAna_Circ2d2TanRad;
-  /** Circle tangent to two lines */
-  GccAna_Circ2d2TanRad_fromTwoQualifiedLin(qualLin1: GccEnt_QualifiedLin, qualLin2: GccEnt_QualifiedLin, radius: number, tolerance: number): GccAna_Circ2d2TanRad;
-
-  // ==========================================================================
-  // Output Parameter Wrapper Functions
-  // ==========================================================================
-  // These functions return typed result structs instead of using reference
-  // output parameters (which embind doesn't support).
-
-  // Coordinate extraction (returns CoordResult instead of modifying references)
-  gp_Pnt_GetCoord(pnt: gp_Pnt): CoordResult;
-  gp_Vec_GetCoord(vec: gp_Vec): CoordResult;
-  gp_Dir_GetCoord(dir: gp_Dir): CoordResult;
-  gp_XYZ_GetCoord(xyz: gp_XYZ): CoordResult;
-
-  // Edge/curve parameters
-  BRep_Tool_GetEdgeParameters(edge: TopoDS_Edge): EdgeCurveResult;
-  GetEdgeCurve(edge: TopoDS_Edge): Handle_Geom_Curve;
-  EvaluateEdgeCurve(edge: TopoDS_Edge, param: number): CurvePointResult;
-  GetEdgeLength(edge: TopoDS_Edge): number;
-  
-  // Wire/CompCurve helpers
-  GetWireLength(wire: TopoDS_Wire): number;
-  EvaluateWireAtParam(wire: TopoDS_Wire, param: number): CurvePointResult;
-  EvaluateWireAtActualParam(wire: TopoDS_Wire, param: number): CurvePointResult;
-  GetPointAtLengthOnWire(wire: TopoDS_Wire, length: number): gp_Pnt;
-  GetPointAtLengthOnEdge(edge: TopoDS_Edge, length: number): gp_Pnt;
-  GetWireParameterBounds(wire: TopoDS_Wire): UVBoundsResult;
-  
-  // gp_Trsf helpers
-  GetTransformationValue(trsf: gp_Trsf, row: number, col: number): number;
-  
-  // Bnd_Box helpers
-  GetBndBoxCornerMin(box: Bnd_Box): gp_Pnt;
-  GetBndBoxCornerMax(box: Bnd_Box): gp_Pnt;
-  BRepBndLib_AddToBox(shape: TopoDS_Shape, box: Bnd_Box): void;
-  ComputeShapeBoundingBox(shape: TopoDS_Shape): BoundingBoxResult;
-  
-  // BRepTools helpers
-  BRepTools_Clean(shape: TopoDS_Shape): void;
-  BRepTools_Clean_Force(shape: TopoDS_Shape, force: boolean): void;
-  BRepTools_CleanGeometry(shape: TopoDS_Shape): void;
-  
-  // BRepLib static functions
-  BRepLib_BuildCurves3d(shape: TopoDS_Shape): boolean;
-  BRepLib_BuildCurves3d_WithTolerance(shape: TopoDS_Shape, tolerance: number): boolean;
-  BRepLib_BuildCurves3d_Full(shape: TopoDS_Shape, tolerance: number, continuity: EmbindEnumValue, maxDegree: number, maxSegment: number): boolean;
-
-  // GCPnts_AbscissaPoint static functions
-  GCPnts_AbscissaPoint_Length_Curve(curve: BRepAdaptor_Curve): number;
-  GCPnts_AbscissaPoint_Length_CompCurve(curve: BRepAdaptor_CompCurve): number;
-  
-  // BRep_Tool additional helpers
-  BRep_Tool_IsClosed(shape: TopoDS_Shape): boolean;
-  BRep_Tool_Triangulation(face: TopoDS_Face, loc: TopLoc_Location): Poly_Triangulation;
-  
-  // Wire/Curve derivative helpers
-  GetDerivativesOnWireAtLength(wire: TopoDS_Wire, length: number): DerivativesResult;
-  GetDerivativesOnWireAtParam(wire: TopoDS_Wire, param: number): DerivativesResult;
-  GetDerivativesOnEdgeAtParam(edge: TopoDS_Edge, param: number): DerivativesResult;
-  
-  // Edge creation helpers
-  MakeEdgeFromCurve(curve: Handle_Geom_Curve): TopoDS_Edge;
-  MakeEdgeFromCurveWithBounds(curve: Handle_Geom_Curve, u1: number, u2: number): TopoDS_Edge;
-  MakeEdgeFromTrimmedCurve(curve: Handle_Geom_Curve): TopoDS_Edge;
-  
-  /**
-   * Trim an edge to given parameter bounds
-   * Creates a new edge that is a subset of the original edge
-   * @param edge The edge to trim
-   * @param u1 Start parameter (must be within edge's parameter range)
-   * @param u2 End parameter (must be within edge's parameter range)
-   * @returns New trimmed edge, or null edge if operation fails
-   */
-  TrimEdgeToParams(edge: TopoDS_Edge, u1: number, u2: number): TopoDS_Edge;
-
-  // UV parameters on face
-  BRep_Tool_GetUVAtVertex(vertex: TopoDS_Vertex, face: TopoDS_Face): UVResult;
-
-  // Properties computation (returns struct instead of using reference params)
-  ComputeVolumeProperties(shape: TopoDS_Shape): PropertiesResult;
-  ComputeSurfaceProperties(shape: TopoDS_Shape): PropertiesResult;
-  ComputeLinearProperties(shape: TopoDS_Shape): PropertiesResult;
-
-  // BRep_Builder wrappers (return shape instead of reference param)
-  BRep_Builder_MakeCompound(builder: BRep_Builder): TopoDS_Compound;
-  BRep_Builder_MakeWire(builder: BRep_Builder): TopoDS_Wire;
-  BRep_Builder_MakeShell(builder: BRep_Builder): TopoDS_Shell;
-  BRep_Builder_MakeSolid(builder: BRep_Builder): TopoDS_Solid;
-  BRep_Builder_MakeCompSolid(builder: BRep_Builder): TopoDS_CompSolid;
-
-  // ==========================================================================
-  // Bounding Box and Shape Utilities
-  // ==========================================================================
-  
-  /** Get axis-aligned bounding box of shape */
-  GetBoundingBox(shape: TopoDS_Shape): BoundingBoxResult;
-
-  /** Create a box from corner point and dimensions */
-  MakeBoxFromPntAndDims(corner: gp_Pnt, dx: number, dy: number, dz: number): TopoDS_Shape;
-  
-  /** Create a sphere from gp_Ax2 (axes) and radius. 
-   * Factory function because embind can't distinguish (gp_Ax2, double) from (gp_Pnt, double) */
-  MakeSphereFromAx2(axes: gp_Ax2, radius: number): BRepPrimAPI_MakeSphere;
-  
-  /** Create a cone from gp_Ax2 (axes), R1, R2, and height (without angle).
-   * Factory function because embind can't distinguish (gp_Ax2, R1, R2, H) from (R1, R2, H, angle) */
-  MakeConeFromAx2(axes: gp_Ax2, r1: number, r2: number, height: number): BRepPrimAPI_MakeCone;
-  
-  /** Fix shape problems (gaps, degeneracies, etc.) */
-  ShapeFix_Shape_Perform(shape: TopoDS_Shape): TopoDS_Shape;
-  
-  /** Unify same-domain faces and edges */
-  ShapeUpgrade_UnifySameDomain_Perform(
-    shape: TopoDS_Shape, 
-    unifyEdges: boolean, 
-    unifyFaces: boolean, 
-    concatBSplines: boolean
-  ): TopoDS_Shape;
-  
-  /** Sew faces together into shell/solid */
-  BRepBuilderAPI_Sewing_Perform(shape: TopoDS_Shape, tolerance: number): TopoDS_Shape;
-  
-  /** Copy a shape */
-  BRepBuilderAPI_Copy_Shape(shape: TopoDS_Shape, copyGeom: boolean): TopoDS_Shape;
-
-  // ==========================================================================
-  // Additional Helper Functions
-  // ==========================================================================
-  
-  /** Check if bounding box is thin (flat) in any direction */
-  Bnd_Box_IsThin(box: Bnd_Box, tolerance: number): boolean;
-  
-  /** 
-   * Classify a point relative to a solid
-   * @param shape The shape (must be a solid)
-   * @param point The point to classify
-   * @param tolerance Classification tolerance
-   * @returns 0=IN, 1=OUT, 2=ON, 3=UNKNOWN
-   */
-  ClassifyPointInSolid(shape: TopoDS_Shape, point: gp_Pnt, tolerance: number): number;
-  
-  /** Compute length of a BRepAdaptor_Curve */
-  GCPnts_AbscissaPoint_CurveLength(curve: BRepAdaptor_Curve): number;
-  
-  /** Compute length of a BRepAdaptor_Curve between two parameters */
-  GCPnts_AbscissaPoint_CurveLengthBetween(curve: BRepAdaptor_Curve, u1: number, u2: number): number;
-  
-  /** Compute length of a BRepAdaptor_CompCurve */
-  GCPnts_AbscissaPoint_CompCurveLength(curve: BRepAdaptor_CompCurve): number;
-  
-  /** Compute length of a BRepAdaptor_CompCurve between two parameters */
-  GCPnts_AbscissaPoint_CompCurveLengthBetween(curve: BRepAdaptor_CompCurve, u1: number, u2: number): number;
-  
-  /** Create GCPnts_AbscissaPoint from a CompCurve (alternative constructor) */
-  GCPnts_AbscissaPoint_FromCompCurve(curve: BRepAdaptor_CompCurve, abscissa: number, u0: number): GCPnts_AbscissaPoint;
-  
-  /** Create a gp_Mat from 9 values (row-major) */
-  CreateGpMat(a11: number, a12: number, a13: number,
-              a21: number, a22: number, a23: number,
-              a31: number, a32: number, a33: number): gp_Mat;
-  
-  /** Get the vectorial part (3x3 matrix) of a transformation */
-  gp_Trsf_VectorialPart(trsf: gp_Trsf): gp_Mat;
-  
-  /** Get the homogeneous vectorial part of a transformation */
-  gp_Trsf_HVectorialPart(trsf: gp_Trsf): gp_Mat;
-  
-  /** Project a wire onto a shape and return the result as a compound */
-  ProjectWireOnShape(wire: TopoDS_Wire, shape: TopoDS_Shape, direction: gp_Dir): TopoDS_Compound;
-  
-  /** Set mode with contact for pipe shell */
-  BRepOffsetAPI_MakePipeShell_SetModeWithContact(maker: BRepOffsetAPI_MakePipeShell, isWithContact: boolean, isByCorrectedFrenet: boolean): void;
-  
-  /** Get the Nth derivative of a BRepAdaptor_Curve at parameter U */
-  BRepAdaptor_Curve_DN(curve: BRepAdaptor_Curve, u: number, n: number): gp_Vec;
-  
-  /** Get the Nth derivative of a BRepAdaptor_CompCurve at parameter U */
-  BRepAdaptor_CompCurve_DN(curve: BRepAdaptor_CompCurve, u: number, n: number): gp_Vec;
-  
-  /** Create a 2D ellipse from axis and radii */
-  CreateGeom2d_Ellipse(axis: gp_Ax22d, majorRadius: number, minorRadius: number): Geom2d_Ellipse;
-  
-  /** Create a 2D circle from axis and radius */
-  CreateGeom2d_Circle(axis: gp_Ax22d, radius: number): Geom2d_Circle;
-  
-  /** Create a 2D line segment */
-  CreateGeom2d_Segment(p1: gp_Pnt2d, p2: gp_Pnt2d): Geom2d_TrimmedCurve;
-  
-  /** Create a trimmed 2D curve from parameters */
-  CreateGeom2d_TrimmedCurve(curve: Handle_Geom2d_Curve, u1: number, u2: number): Handle_Geom2d_Curve;
-  
-  /** Project a point onto a curve and return the closest point and parameter */
-  ProjectPointOnCurve(point: gp_Pnt, edge: TopoDS_Edge): CurvePointResult;
-  
-  /** Project a 3D curve onto a plane to get a 2D curve */
-  GeomAPI_To2d(curve: Handle_Geom_Curve, plane: gp_Pln): Geom2d_Curve;
-  
-  /** Create a 2D fillet between two edges on a face */
-  CreateFillet2d(edge1: TopoDS_Edge, edge2: TopoDS_Edge, radius: number): TopoDS_Edge;
-  
-  /** Convert a TopTools_ListOfShape to a compound shape */
-  BitListOfShapesToCompound(shapes: TopTools_ListOfShape): TopoDS_Compound;
-
-  // ==========================================================================
-  // Browser-based STEP/IGES/BREP I/O
-  // ==========================================================================
-  // These functions work with strings for in-browser file operations
-  // Compressed files (STEP-Z, gzip IGES) are automatically detected and decompressed
-  
-  /**
-   * Read STEP file content from string (in-memory operation for browser).
-   * Automatically detects and decompresses STEP-Z (.stpz) gzip-compressed files.
-   * @param stepContent STEP file content as string (supports gzip-compressed STEP-Z)
-   * @returns The shape read from STEP, or null shape on failure
-   */
-  ReadSTEPFromString(stepContent: string): TopoDS_Shape;
-  
-  /** Write shape to STEP format string (returns STEP file content) */
-  WriteSTEPToString(shape: TopoDS_Shape): string;
-  
-  /**
-   * Read IGES file content from string (in-memory operation for browser).
-   * Automatically detects and decompresses gzip-compressed IGES files (.igz, .igs.gz).
-   * @param igesContent IGES file content as string (supports gzip-compressed)
-   * @returns The shape read from IGES, or null shape on failure
-   */
-  ReadIGESFromString(igesContent: string): TopoDS_Shape;
-  
-  /** Write shape to IGES format string */
-  WriteIGESToString(shape: TopoDS_Shape): string;
-  
-  /** Read BREP file content from string */
-  ReadBREPFromString(brepContent: string): TopoDS_Shape;
-  
-  /** Write shape to BREP format string */
-  WriteBREPToString(shape: TopoDS_Shape): string;
-
-  // ==========================================================================
-  // Geometry Construction Helpers - BSpline Curves
-  // ==========================================================================
-  
-  /**
-   * Create interpolated BSpline edge through points (non-periodic)
-   * The curve passes exactly through all given points
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
-   * @returns Edge containing the interpolated BSpline curve
-   */
-  MakeBSplineEdge(coords: VectorDouble): TopoDS_Edge;
-  
-  /**
-   * Create periodic (closed) interpolated BSpline edge through points
-   * The curve passes exactly through all points and smoothly closes back to the first point
-   * Creates a C2-continuous periodic curve
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
-   * @returns Edge containing the periodic interpolated BSpline curve
-   */
-  MakePeriodicBSplineEdge(coords: VectorDouble): TopoDS_Edge;
-  
-  /**
-   * Create interpolated BSpline edge with specified tangent directions at endpoints
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
-   * @param startTangent Start tangent vector [dx, dy, dz] - use VectorDouble
-   * @param endTangent End tangent vector [dx, dy, dz] - use VectorDouble
-   * @returns Edge containing the interpolated BSpline curve with tangent constraints
-   */
-  MakeBSplineEdgeWithTangents(coords: VectorDouble, startTangent: VectorDouble, endTangent: VectorDouble): TopoDS_Edge;
-  
-  /**
-   * Create approximated (smoothed) BSpline edge through points
-   * Unlike interpolation, the curve doesn't pass exactly through all points
-   * but creates a smoother curve within the specified tolerance
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
-   * @param degMin Minimum degree of the BSpline (typically 3)
-   * @param degMax Maximum degree of the BSpline (typically 8)
-   * @param tolerance Maximum distance from points to curve
-   * @returns Edge containing the approximated BSpline curve
-   */
-  MakeApproxBSplineEdge(coords: VectorDouble, degMin: number, degMax: number, tolerance: number): TopoDS_Edge;
-  
-  /**
-   * Create periodic (closed) BSpline wire through points
-   * The wire contains a single periodic edge that smoothly closes
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
-   * @returns Wire containing the periodic BSpline edge
-   */
-  MakePeriodicBSplineWire(coords: VectorDouble): TopoDS_Wire;
-  
-  /**
-   * Create symmetric periodic (closed) BSpline edge through points
-   * Uses chord-based tangent constraints to ensure the curve is symmetrical
-   * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
-   * @returns Edge containing the symmetric periodic BSpline curve
-   */
-  MakeSymmetricPeriodicBSplineEdge(coords: VectorDouble): TopoDS_Edge;
-  
-  /**
-   * Create symmetric periodic (closed) BSpline wire through points
-   * Uses chord-based tangent constraints to ensure the curve is symmetrical
-   * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
-   * @returns Wire containing the symmetric periodic BSpline edge
-   */
-  MakeSymmetricPeriodicBSplineWire(coords: VectorDouble): TopoDS_Wire;
-  
-  /**
-   * Create closed BSpline wire through points (alias for MakePeriodicBSplineWire)
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - use VectorDouble
-   * @returns Wire containing the periodic BSpline edge
-   */
-  MakeClosedBSplineWire(coords: VectorDouble): TopoDS_Wire;
-  
-  /**
-   * Create a Bezier curve edge through control points
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - control points
-   * @returns Edge containing the Bezier curve
-   */
-  MakeBezierEdge(coords: VectorDouble): TopoDS_Edge;
-  
-  /**
-   * Create a Bezier curve wire through control points
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - control points
-   * @returns Wire containing the Bezier curve edge
-   */
-  MakeBezierWire(coords: VectorDouble): TopoDS_Wire;
-  
-  /**
-   * Create a weighted (rational) Bezier curve wire through control points with weights
-   * @param coords Flat coordinate array [x1,y1,z1,x2,y2,z2,...] - control points
-   * @param weights Flat array of weights [w1, w2, ...] - must have same count as points
-   * @returns Wire containing the weighted Bezier curve edge
-   */
-  MakeWeightedBezierWire(coords: VectorDouble, weights: VectorDouble): TopoDS_Wire;
-  
-  /** Create 2D fillet on wire corners */
-  MakeFillet2d(wire: TopoDS_Wire, radius: number): TopoDS_Wire;
-
-  // ==========================================================================
-  // Constraint-Driven Edge Construction
-  // ==========================================================================
-  // These functions create edges (arcs, circles, lines) that satisfy
-  // geometric constraints like passing through points or being tangent
-  
-  /**
-   * Create arc of circle edge through three 3D points
-   * @param p1 First point (arc start)
-   * @param p2 Second point (arc passes through)
-   * @param p3 Third point (arc end)
-   * @returns Edge containing the arc, or null if construction fails
-   */
-  MakeArcThrough3Points(p1: gp_Pnt, p2: gp_Pnt, p3: gp_Pnt): TopoDS_Edge;
-  
-  /**
-   * Create arc of circle edge from start point with tangent direction to end point
-   * The arc starts at P1, has initial tangent direction V, and ends at P2
-   * This is useful for creating smooth transitions with specified initial direction
-   * @param p1 Start point of the arc
-   * @param tangent Initial tangent direction at start point
-   * @param p2 End point of the arc
-   * @returns Edge containing the arc, or null if construction fails
-   */
-  MakeArcWithTangent(p1: gp_Pnt, tangent: gp_Vec, p2: gp_Pnt): TopoDS_Edge;
-  
-  /**
-   * Create arc of circle edge on a given circle between two points
-   * The points are projected onto the circle to determine the arc
-   * @param circle The circle on which the arc lies
-   * @param p1 First point (arc start) - projected onto circle
-   * @param p2 Second point (arc end) - projected onto circle
-   * @param sense True for counterclockwise, false for clockwise
-   * @returns Edge containing the arc, or null if construction fails
-   */
-  MakeArcOnCircle(circle: gp_Circ, p1: gp_Pnt, p2: gp_Pnt, sense: boolean): TopoDS_Edge;
-  
-  /**
-   * Create arc of circle edge on a given circle from point to angle
-   * @param circle The circle on which the arc lies
-   * @param p Start point (projected onto circle)
-   * @param angle Angular extent in radians
-   * @param sense True for counterclockwise, false for clockwise
-   * @returns Edge containing the arc, or null if construction fails
-   */
-  MakeArcOnCircleByAngle(circle: gp_Circ, p: gp_Pnt, angle: number, sense: boolean): TopoDS_Edge;
-  
-  /**
-   * Create arc of circle edge on a given circle between two angles
-   * @param circle The circle on which the arc lies
-   * @param alpha1 Start angle in radians
-   * @param alpha2 End angle in radians
-   * @param sense True for counterclockwise, false for clockwise
-   * @returns Edge containing the arc, or null if construction fails
-   */
-  MakeArcOnCircleByAngles(circle: gp_Circ, alpha1: number, alpha2: number, sense: boolean): TopoDS_Edge;
-  
-  /**
-   * Create full circle edge through three points
-   * The circle is uniquely determined by three non-collinear points
-   * @param p1 First point
-   * @param p2 Second point  
-   * @param p3 Third point
-   * @returns Edge containing the full circle, or null if points are collinear
-   */
-  MakeCircleThrough3Points(p1: gp_Pnt, p2: gp_Pnt, p3: gp_Pnt): TopoDS_Edge;
-  
-  /**
-   * Create full circle edge from axis and radius
-   * @param axis The coordinate system defining center and normal
-   * @param radius The circle radius
-   * @returns Edge containing the full circle
-   */
-  MakeCircleEdge(axis: gp_Ax2, radius: number): TopoDS_Edge;
-  
-  /**
-   * Create full circle wire from axis and radius
-   * @param axis The coordinate system defining center and normal
-   * @param radius The circle radius
-   * @returns Wire containing the full circle
-   */
-  MakeCircleWire(axis: gp_Ax2, radius: number): TopoDS_Wire;
-  
-  /**
-   * Create full ellipse edge from axis and radii
-   * @param axis The coordinate system defining center and plane
-   * @param majorRadius The major radius (along X direction of axis)
-   * @param minorRadius The minor radius (along Y direction of axis)
-   * @returns Edge containing the full ellipse
-   */
-  MakeEllipseEdge(axis: gp_Ax2, majorRadius: number, minorRadius: number): TopoDS_Edge;
-  
-  /**
-   * Create full ellipse wire from axis and radii
-   * @param axis The coordinate system defining center and plane
-   * @param majorRadius The major radius (along X direction of axis)
-   * @param minorRadius The minor radius (along Y direction of axis)
-   * @returns Wire containing the full ellipse
-   */
-  MakeEllipseWire(axis: gp_Ax2, majorRadius: number, minorRadius: number): TopoDS_Wire;
-  
-  /**
-   * Create line edge from point in a direction with specified length
-   * @param point Starting point
-   * @param direction Direction of the line
-   * @param length Length of the edge
-   * @returns Edge containing the line segment
-   */
-  MakeLineEdge(point: gp_Pnt, direction: gp_Dir, length: number): TopoDS_Edge;
-  
-  /**
-   * Create line edge between two points
-   * @param p1 Start point
-   * @param p2 End point
-   * @returns Edge containing the line segment
-   */
-  MakeLineEdgeBetweenPoints(p1: gp_Pnt, p2: gp_Pnt): TopoDS_Edge;
-  
-  /**
-   * Create edge tangent to circle at specified parameter
-   * The tangent line extends in both directions from the tangent point
-   * @param circle The circle to be tangent to
-   * @param parameter Parameter on circle (0 to 2*PI)
-   * @param halfLength Half-length of the tangent edge (total length = 2 * halfLength)
-   * @returns Edge representing tangent line to circle at given point
-   */
-  MakeTangentToCircle(circle: gp_Circ, parameter: number, halfLength: number): TopoDS_Edge;
-  
-  /**
-   * Create edge connecting two edges with G1 (tangent) continuity using BSpline
-   * Creates a smooth transition curve that starts tangent to edge1 and ends tangent to edge2
-   * This is useful for creating smooth blends or fillets between edges
-   * @param edge1 First edge (curve will start tangent to this edge)
-   * @param edge2 Second edge (curve will end tangent to this edge)
-   * @param useStartOfEdge1 If true, connect from start of edge1; if false, from end
-   * @param useStartOfEdge2 If true, connect to start of edge2; if false, to end
-   * @returns Edge containing G1-continuous BSpline connecting the edges
-   */
-  MakeG1ContinuousEdge(edge1: TopoDS_Edge, edge2: TopoDS_Edge, useStartOfEdge1: boolean, useStartOfEdge2: boolean): TopoDS_Edge;
-  
-  /**
-   * Create smooth blend edge between two edges (simplified G1 connection)
-   * The blend curve connects the end of edge1 to the start of edge2 with tangent continuity
-   * @param edge1 First edge (connects from end)
-   * @param edge2 Second edge (connects to start)
-   * @param numPoints Number of control points (ignored in current implementation)
-   * @returns Edge containing smooth blend curve
-   */
-  MakeBlendEdge(edge1: TopoDS_Edge, edge2: TopoDS_Edge, numPoints: number): TopoDS_Edge;
-  
-  /**
-   * Create 2D arc of circle through three 2D points (as edge on XY plane)
-   * @param x1, y1 First point
-   * @param x2, y2 Second point (arc passes through)  
-   * @param x3, y3 Third point
-   * @returns Edge containing the arc on XY plane at Z=0
-   */
-  MakeArc2dThrough3Points(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): TopoDS_Edge;
-  
-  /**
-   * Create 2D arc with tangent constraint (as edge on XY plane)
-   * Arc starts at (x1, y1), with initial tangent (vx, vy), ends at (x2, y2)
-   * @returns Edge containing the arc on XY plane
-   */
-  MakeArc2dWithTangent(x1: number, y1: number, vx: number, vy: number, x2: number, y2: number): TopoDS_Edge;
-  
-  // ==========================================================================
-  // Distance and Extrema
-  // ==========================================================================
-  
-  /**
-   * Compute the closest points between two shapes
-   * @param shape1 First shape
-   * @param shape2 Second shape
-   * @returns VectorDouble of 6 doubles [x1, y1, z1, x2, y2, z2] representing closest points on each shape.
-   *          Empty vector if computation fails. Use .size() and .get(i) to access.
-   */
-  ClosestPointsBetweenShapes(shape1: TopoDS_Shape, shape2: TopoDS_Shape): VectorDouble;
-  
-  // ==========================================================================
-  // Helix and Spiral Wire Creation
-  // ==========================================================================
-  
-  /**
-   * Create a helical wire (3D helix)
-   * @param axis Axis position and direction for helix (Z direction is up)
-   * @param radius Radius of the helix
-   * @param pitch Height per complete turn (vertical distance per 360°)
-   * @param height Total height of the helix
-   * @param clockwise If true, helix winds clockwise when viewed from above
-   * @param tolerance Approximation tolerance (default 1e-4)
-   * @returns Wire containing the helix, or null wire if construction fails
-   */
-  MakeHelixWire(axis: gp_Ax3, radius: number, pitch: number, height: number, clockwise: boolean, tolerance: number): TopoDS_Wire;
-  
-  /**
-   * Create a helical wire using number of turns
-   * @param axis Axis position and direction for helix
-   * @param radius Radius of the helix
-   * @param pitch Height per complete turn
-   * @param numTurns Number of complete turns
-   * @param clockwise If true, helix winds clockwise when viewed from above
-   * @param tolerance Approximation tolerance (default 1e-4)
-   * @returns Wire containing the helix, or null wire if construction fails
-   */
-  MakeHelixWireByTurns(axis: gp_Ax3, radius: number, pitch: number, numTurns: number, clockwise: boolean, tolerance: number): TopoDS_Wire;
-  
-  /**
-   * Create a conical (tapered) helix wire
-   * @param axis Axis position and direction for helix
-   * @param startRadius Starting radius
-   * @param endRadius Ending radius (can be larger or smaller than start)
-   * @param pitch Height per complete turn
-   * @param height Total height
-   * @param clockwise If true, helix winds clockwise when viewed from above
-   * @param tolerance Approximation tolerance (default 1e-4)
-   * @returns Wire containing the tapered helix, or null wire if construction fails
-   */
-  MakeTaperedHelixWire(axis: gp_Ax3, startRadius: number, endRadius: number, pitch: number, height: number, clockwise: boolean, tolerance: number): TopoDS_Wire;
-  
-  /**
-   * Create a flat (Archimedean) spiral wire
-   * Spiral lies in a plane perpendicular to axis direction
-   * @param axis Axis - location is center, Z is normal to spiral plane, X is start direction
-   * @param startRadius Starting radius from center
-   * @param endRadius Ending radius from center
-   * @param numTurns Number of complete turns
-   * @param clockwise If true, spiral winds clockwise when viewed from above
-   * @param tolerance Approximation tolerance (default 1e-4)
-   * @returns Wire containing the flat spiral, or null wire if construction fails
-   */
-  MakeFlatSpiralWire(axis: gp_Ax3, startRadius: number, endRadius: number, numTurns: number, clockwise: boolean, tolerance: number): TopoDS_Wire;
-  
-  /**
-   * Create helix wire with simple parameters (positioned at origin along Z)
-   * @param radius Radius of the helix
-   * @param pitch Height per complete turn
-   * @param height Total height
-   * @param clockwise If true, helix winds clockwise when viewed from above
-   * @returns Wire containing the helix, or null wire if construction fails
-   */
-  MakeSimpleHelixWire(radius: number, pitch: number, height: number, clockwise: boolean): TopoDS_Wire;
-  
-  /**
-   * Create flat spiral wire with simple parameters (positioned at origin in XY plane)
-   * @param startRadius Starting radius
-   * @param endRadius Ending radius
-   * @param numTurns Number of complete turns
-   * @param clockwise If true, spiral winds clockwise when viewed from above
-   * @returns Wire containing the spiral, or null wire if construction fails
-   */
-  MakeSimpleSpiralWire(startRadius: number, endRadius: number, numTurns: number, clockwise: boolean): TopoDS_Wire;
-  
-  // ==========================================================================
-  // Edge/Wire/Face Subdivision to Points
-  // ==========================================================================
-  
-  /**
-   * Subdivide edge into evenly spaced points by count
-   * Points are distributed at equal arc-length intervals along the edge
-   * @param edge Edge to subdivide
-   * @param numPoints Number of points to generate (minimum 2)
-   * @returns Flat array [x1,y1,z1, x2,y2,z2, ...] of point coordinates
-   */
-  SubdivideEdgeToPoints(edge: TopoDS_Edge, numPoints: number): number[];
-  
-  /**
-   * Subdivide edge by maximum segment length
-   * Creates points such that no two consecutive points are farther than maxLength apart
-   * @param edge Edge to subdivide
-   * @param maxLength Maximum distance between consecutive points
-   * @returns Flat array [x1,y1,z1, x2,y2,z2, ...] of point coordinates
-   */
-  SubdivideEdgeByLength(edge: TopoDS_Edge, maxLength: number): number[];
-  
-  /**
-   * Subdivide edge by deflection (chord height tolerance)
-   * Creates more points in curved regions, fewer in straight regions
-   * @param edge Edge to subdivide
-   * @param deflection Maximum allowed distance between curve and chord
-   * @returns Flat array [x1,y1,z1, x2,y2,z2, ...] of point coordinates
-   */
-  SubdivideEdgeByDeflection(edge: TopoDS_Edge, deflection: number): number[];
-  
-  /**
-   * Subdivide edge using tangential deflection (angular + distance criteria)
-   * Best for rendering - creates adaptive sampling based on curvature
-   * @param edge Edge to subdivide
-   * @param angularDeflection Maximum angle between consecutive tangents (radians)
-   * @param curvatureDeflection Maximum distance from curve to chord
-   * @returns Flat array [x1,y1,z1, x2,y2,z2, ...] of point coordinates
-   */
-  SubdivideEdgeTangential(edge: TopoDS_Edge, angularDeflection: number, curvatureDeflection: number): number[];
-  
-  /**
-   * Subdivide wire into evenly spaced points
-   * Points are distributed evenly along the entire wire length
-   * @param wire Wire to subdivide
-   * @param numPoints Total number of points along entire wire
-   * @returns Flat array [x1,y1,z1, x2,y2,z2, ...] of point coordinates
-   */
-  SubdivideWireToPoints(wire: TopoDS_Wire, numPoints: number): number[];
-  
-  /**
-   * Subdivide face surface into a UV grid of points
-   * Creates a regular grid in parameter space
-   * @param face Face to subdivide
-   * @param uDivisions Number of divisions in U direction
-   * @param vDivisions Number of divisions in V direction
-   * @returns Flat array [x1,y1,z1, x2,y2,z2, ...] row-major order (U varies fastest)
-   */
-  SubdivideFaceToPointsUV(face: TopoDS_Face, uDivisions: number, vDivisions: number): number[];
-  
-  /**
-   * Get UV coordinates and 3D points for face grid
-   * @param face Face to subdivide
-   * @param uDivisions Number of divisions in U direction
-   * @param vDivisions Number of divisions in V direction
-   * @returns Flat array [u1,v1,x1,y1,z1, u2,v2,x2,y2,z2, ...] with UV params and 3D coords
-   */
-  SubdivideFaceToPointsWithUV(face: TopoDS_Face, uDivisions: number, vDivisions: number): number[];
-  
-  /**
-   * Get points along edge with parameter values
-   * @param edge Edge to evaluate
-   * @param numPoints Number of points
-   * @returns Flat array [t1,x1,y1,z1, t2,x2,y2,z2, ...] with param and 3D coords
-   */
-  SubdivideEdgeToPointsWithParams(edge: TopoDS_Edge, numPoints: number): number[];
-  
-  // ==========================================================================
-  // Face UV Operations
-  // ==========================================================================
-  
-  /**
-   * Get UV parameter bounds of a face
-   * @param face Face to query
-   * @returns UVBoundsResult with UMin, UMax, VMin, VMax
-   */
-  GetFaceUVBounds(face: TopoDS_Face): UVBoundsResult;
-  
-  /**
-   * Evaluate face surface at UV parameters
-   * @param face Face to evaluate
-   * @param u U parameter (in face's native parameter space)
-   * @param v V parameter (in face's native parameter space)
-   * @returns 3D point on face at (U, V)
-   */
-  EvaluateFaceAtUV(face: TopoDS_Face, u: number, v: number): gp_Pnt;
-  
-  /**
-   * Evaluate face with normalized UV parameters
-   * Maps input (u,v) in [0,1]x[0,1] to actual face UV domain
-   * @param face Face to evaluate
-   * @param u Normalized U parameter (0 to 1)
-   * @param v Normalized V parameter (0 to 1)
-   * @returns 3D point on face at remapped (U, V)
-   */
-  EvaluateFaceAtNormalizedUV(face: TopoDS_Face, u: number, v: number): gp_Pnt;
-  
-  /**
-   * Evaluate face with swapped V,U parameters (flip UV to VU)
-   * @param face Face to evaluate
-   * @param v V parameter (will be used as U internally)
-   * @param u U parameter (will be used as V internally)
-   * @returns 3D point on face at swapped parameters
-   */
-  EvaluateFaceAtVU(face: TopoDS_Face, v: number, u: number): gp_Pnt;
-  
-  /**
-   * Subdivide face with remapped UV range
-   * Useful for texture mapping or parametric sampling with custom ranges
-   * @param face Face to subdivide
-   * @param uMin Minimum U value for output grid
-   * @param uMax Maximum U value for output grid
-   * @param vMin Minimum V value for output grid
-   * @param vMax Maximum V value for output grid
-   * @param uDivisions Number of U divisions
-   * @param vDivisions Number of V divisions
-   * @returns Flat array [u1,v1,x1,y1,z1, ...] with remapped UV and 3D coords
-   */
-  SubdivideFaceRemappedUV(
-    face: TopoDS_Face,
-    uMin: number, uMax: number,
-    vMin: number, vMax: number,
-    uDivisions: number, vDivisions: number
-  ): number[];
-  
-  /**
-   * Subdivide face with swapped UV (VU order)
-   * V varies fastest in output array (transposed from normal UV order)
-   * @param face Face to subdivide
-   * @param vDivisions Number of divisions in V direction (output X)
-   * @param uDivisions Number of divisions in U direction (output Y)
-   * @returns Flat array [v1,u1,x1,y1,z1, ...] V varies fastest
-   */
-  SubdivideFaceFlippedVU(face: TopoDS_Face, vDivisions: number, uDivisions: number): number[];
-  
-  // ==========================================================================
-  // Periodic Curve Seam Adjustment
-  // ==========================================================================
-  
-  /**
-   * Get curve/edge properties including periodicity info
-   * @param edge Edge to analyze
-   * @returns CurvePropertiesResult with parameters, period, closed, etc.
-   */
-  GetEdgeCurveProperties(edge: TopoDS_Edge): CurvePropertiesResult;
-  
-  /**
-   * Get the geometric type of an edge's underlying curve
-   * @param edge Edge to analyze
-   * @returns GeomAbs_CurveType enum value
-   */
-  GetEdgeCurveType(edge: TopoDS_Edge): EmbindEnumValue;
-  
-  /**
-   * Check if an edge is based on a circular curve
-   * @param edge Edge to check
-   * @returns true if the edge is a circle or arc of circle
-   */
-  IsEdgeCircular(edge: TopoDS_Edge): boolean;
-  
-  /**
-   * Check if an edge is based on a linear curve
-   * @param edge Edge to check
-   * @returns true if the edge is a line segment
-   */
-  IsEdgeLinear(edge: TopoDS_Edge): boolean;
-  
-  /**
-   * Rotate the seam of a periodic BSpline curve
-   * Changes where the curve's start/end point is located
-   * @param curve Periodic BSpline curve to modify
-   * @param newSeamParam New parameter value for the seam (start/end)
-   * @returns New BSpline curve with rotated seam, or null if failed
-   */
-  RotatePeriodicBSplineSeam(curve: Handle_Geom_BSplineCurve, newSeamParam: number): Handle_Geom_BSplineCurve;
-  
-  /**
-   * Create a new edge from periodic edge with rotated seam
-   * @param edge Periodic edge to modify
-   * @param newSeamParam New parameter value for the seam (normalized 0-1 along curve)
-   * @returns New edge with rotated seam, or null edge if failed
-   */
-  RotatePeriodicEdgeSeam(edge: TopoDS_Edge, newSeamParam: number): TopoDS_Edge;
-  
-  /**
-   * Shift the seam of a periodic edge by a parameter offset
-   * @param edge Periodic edge to modify
-   * @param paramOffset Amount to shift the seam parameter
-   * @returns New edge with shifted seam
-   */
-  ShiftPeriodicEdgeSeam(edge: TopoDS_Edge, paramOffset: number): TopoDS_Edge;
-  
-  /**
-   * Rotate seam to a point on the curve closest to given point
-   * Useful for aligning the seam to a specific feature or location
-   * @param edge Periodic edge to modify
-   * @param point Point to find nearest location for new seam
-   * @returns New edge with seam at closest point to the given point
-   */
-  RotatePeriodicEdgeSeamToPoint(edge: TopoDS_Edge, point: gp_Pnt): TopoDS_Edge;
-  
-  // ==========================================================================
-  // Geometry Handle Helper Functions
-  // ==========================================================================
-  
-  /**
-   * Get surface geometry from a face
-   * @param face The face to extract surface from
-   * @returns Handle to the surface geometry
-   */
-  BRep_Tool_Surface(face: TopoDS_Face): Handle_Geom_Surface;
-  
-  /**
-   * Create a face from a surface with tolerance
-   * @param surface The surface geometry (raw pointer)
-   * @param tolDegen Tolerance for detecting degenerate edges
-   * @returns The created face
-   */
-  MakeFaceFromSurface(surface: Geom_Surface, tolDegen: number): TopoDS_Face;
-  
-  /**
-   * Create a face from a surface and wire boundary
-   * @param surface The surface geometry (raw pointer)
-   * @param wire The wire defining the face boundary
-   * @param inside If true, the wire is inside the surface bounds
-   * @returns The created face
-   */
-  MakeFaceFromSurfaceAndWire(surface: Geom_Surface, wire: TopoDS_Wire, inside: boolean): TopoDS_Face;
-  
-  /**
-   * Estimate normal at a point on a surface
-   * @param surface The surface (raw pointer)
-   * @param uv The UV parameter point
-   * @param precision Precision for estimation
-   * @returns The estimated normal direction
-   */
-  GeomLib_NormEstim(surface: Geom_Surface, uv: gp_Pnt2d, precision: number): gp_Dir;
-  
-  /**
-   * Create an edge from a 2D curve on a surface with parameter bounds
-   * @param curve The 2D curve handle wrapper
-   * @param surface The surface (raw pointer)
-   * @param first First parameter
-   * @param last Last parameter
-   * @returns The created edge
-   */
-  MakeEdgeFromGeom2dCurveAndSurfaceBounded(curve: Handle_Geom2d_Curve, surface: Geom_Surface, first: number, last: number): TopoDS_Edge;
-  
-  /**
-   * Create an edge from a 2D curve on a surface
-   * @param curve The 2D curve handle wrapper
-   * @param surface The surface (raw pointer)
-   * @returns The created edge
-   */
-  MakeEdgeFromGeom2dCurveAndSurface(curve: Handle_Geom2d_Curve, surface: Geom_Surface): TopoDS_Edge;
-  
-  // Note: GeomAPI_To2d is declared in the OcctOutputWrappers section
-  
-  /**
-   * Evaluate surface point at UV parameters
-   * @param surface The surface (raw pointer)
-   * @param u U parameter
-   * @param v V parameter
-   * @returns Point on surface
-   */
-  Geom_Surface_Value(surface: Geom_Surface, u: number, v: number): gp_Pnt;
-  
-  // ==========================================================================
-  // BRepFill_Filling Helper Functions
-  // ==========================================================================
-  
-  /**
-   * Add an edge constraint to BRepFill_Filling
-   * @param filling The filling object
-   * @param edge The edge to add
-   * @param order Continuity order: 0=C0, 1=G1, 2=G2
-   * @param isBound Whether this edge is a boundary constraint
-   * @returns Constraint index
-   */
-  BRepFill_Filling_AddEdge(filling: BRepFill_Filling, edge: TopoDS_Edge, order: number, isBound: boolean): number;
-  
-  /**
-   * Add a point constraint to BRepFill_Filling
-   * @param filling The filling object
-   * @param point The point to add
-   * @returns Constraint index
-   */
-  BRepFill_Filling_AddPoint(filling: BRepFill_Filling, point: gp_Pnt): number;
-  
-  /**
-   * Build the filling surface
-   * @param filling The filling object
-   */
-  BRepFill_Filling_Build(filling: BRepFill_Filling): void;
-  
-  /**
-   * Check if the filling was built successfully
-   * @param filling The filling object
-   * @returns True if successful
-   */
-  BRepFill_Filling_IsDone(filling: BRepFill_Filling): boolean;
-  
-  /**
-   * Get the resulting face from the filling
-   * @param filling The filling object
-   * @returns The created face
-   */
-  BRepFill_Filling_Face(filling: BRepFill_Filling): TopoDS_Face;
-  
-  // ==========================================================================
-  // Vector Types (for passing arrays to C++)
-  // ==========================================================================
-  
-  /** std::vector<double> for C++ interop */
-  VectorDouble: VectorDouble_Constructor;
-  
-  /** std::vector<int> for C++ interop */
-  VectorInt: VectorInt_Constructor;
-
-  // ==========================================================================
-  // Assembly Parsing Helper Types (Extended XCAF Support)
-  // ==========================================================================
-  
-  /** FaceTriangulationInfo value object for face->triangle mapping */
-  FaceTriangulationInfo: FaceTriangulationInfo;
-  
-  /** SubShapeInfo value object for labeled sub-shapes */
-  SubShapeInfo: SubShapeInfo;
-  
-  /** PartDefinitionInfo value object for part definition data */
-  PartDefinitionInfo: PartDefinitionInfo;
-  
-  /** std::vector<FaceTriangulationInfo> for C++ interop */
-  VectorFaceTriangulationInfo: VectorFaceTriangulationInfo_Constructor;
-  
-  /** std::vector<SubShapeInfo> for C++ interop */
-  VectorSubShapeInfo: VectorSubShapeInfo_Constructor;
-
-  // ==========================================================================
-  // XCAFDoc_ShapeTool Extended Static Methods
-  // ==========================================================================
-  
-  /**
-   * Get sub-shapes labels for a shape label
-   * @param L The shape label
-   * @param Labels Output sequence of sub-shape labels
-   * @returns True if sub-shapes were found
-   */
-  XCAFDoc_ShapeTool_GetSubShapes(L: TDF_Label, Labels: TDF_LabelSequence): boolean;
-  
-  /**
-   * Check if label represents a sub-shape
-   * @param L The label to check
-   * @returns True if label is a sub-shape
-   */
-  XCAFDoc_ShapeTool_IsSubShape(L: TDF_Label): boolean;
-  
-  /**
-   * Check if label represents a compound shape
-   * @param L The label to check
-   * @returns True if label is a compound
-   */
-  XCAFDoc_ShapeTool_IsCompound(L: TDF_Label): boolean;
-  
-  /**
-   * Check if label is free (not used by any assembly)
-   * @param L The label to check
-   * @returns True if label is free
-   */
-  XCAFDoc_ShapeTool_IsFree(L: TDF_Label): boolean;
-  
-  /**
-   * Get users (assemblies) that reference a shape
-   * @param L The shape label
-   * @param Labels Output sequence of user labels
-   * @param getSubChilds Whether to include sub-children
-   * @returns Number of users found
-   */
-  XCAFDoc_ShapeTool_GetUsers(L: TDF_Label, Labels: TDF_LabelSequence, getSubChilds: boolean): number;
-  
-  /**
-   * Find sub-shape label within a parent shape
-   * @param theTool The shape tool instance
-   * @param shapeL The parent shape label
-   * @param sub The sub-shape to find
-   * @param L Output label for the found sub-shape
-   * @returns True if sub-shape was found
-   */
-  XCAFDoc_ShapeTool_FindSubShape(theTool: XCAFDoc_ShapeTool, shapeL: TDF_Label, sub: TopoDS_Shape, L: TDF_Label): boolean;
-  
-  /**
-   * Add sub-shape label to a parent shape
-   * @param theTool The shape tool instance
-   * @param shapeL The parent shape label
-   * @param sub The sub-shape to add
-   * @returns The created label for the sub-shape
-   */
-  XCAFDoc_ShapeTool_AddSubShape(theTool: XCAFDoc_ShapeTool, shapeL: TDF_Label, sub: TopoDS_Shape): TDF_Label;
-  
-  /**
-   * Find main (parent) shape that contains a sub-shape
-   * @param theTool The shape tool instance
-   * @param sub The sub-shape
-   * @returns The label of the main shape
-   */
-  XCAFDoc_ShapeTool_FindMainShape(theTool: XCAFDoc_ShapeTool, sub: TopoDS_Shape): TDF_Label;
-
-  // ==========================================================================
-  // Assembly Parsing Helper Functions
-  // ==========================================================================
-  
-  /**
-   * Get part definition info for a label
-   * @param L The label to get info for
-   * @returns PartDefinitionInfo with label metadata
-   */
-  GetPartDefinitionInfo(L: TDF_Label): PartDefinitionInfo;
-  
-  /**
-   * Get face triangulation mapping for a shape.
-   * Returns a vector of FaceTriangulationInfo with face->triangle index mapping.
-   * This is useful for face selection - mapping picked triangles back to faces.
-   * @param theShape The shape to get face triangulation mapping for
-   * @returns Vector of FaceTriangulationInfo
-   */
-  GetFaceTriangulationMapping(theShape: TopoDS_Shape): VectorFaceTriangulationInfo;
-  
-  /**
-   * Get labeled sub-shapes with their colors
-   * @param shapeL The parent shape label
-   * @param shapeTool The shape tool instance
-   * @param colorTool The color tool instance
-   * @returns Vector of SubShapeInfo
-   */
-  GetLabeledSubShapes(shapeL: TDF_Label, shapeTool: XCAFDoc_ShapeTool, colorTool: XCAFDoc_ColorTool): VectorSubShapeInfo;
-  
-  /**
-   * Get surface type name for a face (plane, cylinder, cone, sphere, torus, bspline, etc.)
-   * @param theFace The face to get surface type for
-   * @returns Surface type string: "plane", "cylinder", "cone", "sphere", "torus", 
-   *          "bspline", "bezier", "revolution", "extrusion", "offset", "trimmed", "other", or "unknown"
-   */
-  GetFaceSurfaceType(theFace: TopoDS_Face): string;
-  
-  /**
-   * Count faces in a shape
-   * @param theShape The shape to count faces in
-   * @returns Number of faces
-   */
-  CountFaces(theShape: TopoDS_Shape): number;
-  
-  /**
-   * Count edges in a shape
-   * @param theShape The shape to count edges in
-   * @returns Number of edges
-   */
-  CountEdges(theShape: TopoDS_Shape): number;
-  
-  /**
-   * Count vertices in a shape
-   * @param theShape The shape to count vertices in
-   * @returns Number of vertices
-   */
-  CountVertices(theShape: TopoDS_Shape): number;
-  
-  /**
-   * Count solids in a shape
-   * @param theShape The shape to count solids in
-   * @returns Number of solids
-   */
-  CountSolids(theShape: TopoDS_Shape): number;
-  
-  /**
-   * Get entry string for a label (hierarchical address like "0:1:1:2")
-   * @param L The label to get entry for
-   * @returns Entry string
-   */
-  GetLabelEntry(L: TDF_Label): string;
-
-  // ===========================================================================
-  // BRepGraph query helpers (OCCT 8 graph-based BRep representation)
-  //
-  // Each helper builds a throwaway in-memory BRepGraph from the input shape,
-  // runs a read-only query, and returns a JSON string. The graph is NOT exposed
-  // as a live object - these are stateless analysis functions.
-  //
-  // INDEX CONTRACT: within a single call, each topology kind has a dense 0-based
-  // index space [0, count). All returned indices refer to these, and they are
-  // CONSISTENT across every BRepGraph* helper for the same input shape, so you
-  // can cross-reference (e.g. face #3 from BRepGraphFaceAdjacency is the same
-  // face #3 in BRepGraphFaceInfo and equals BRepGraphReconstruct(shape,"face",3)).
-  // An index of -1 in a scalar field means "none/invalid" (e.g. no outer wire).
-  // `uid` values are stable identity counters (survive compaction/removal) and
-  // are the intended anchor for any persistent graph file format.
-  //
-  // On error every helper returns {"ok":false,"error":"..."} (or, for
-  // BRepGraphNodeOfShape, {"valid":false}).
-  // ===========================================================================
-
-  /**
-   * Topology + assembly element counts and graph metadata.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"solids":N,"shells":N,"faces":N,"wires":N,
-   *   "edges":N,"coedges":N,"vertices":N,"compounds":N,"compSolids":N,
-   *   "surfaces":N,"curves3d":N,"curves2d":N,"nodes":N,"products":N,
-   *   "occurrences":N,"rootProducts":N,"generation":N}
-   */
-  BRepGraphAnalyze(theShape: TopoDS_Shape): string;
-
-  /**
-   * Face adjacency graph: for each face, the faces sharing at least one edge,
-   * the face's edge indices, wire count and outer-wire index.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"faces":[{"index":N,"adjacent":[N..],
-   *   "edges":[N..],"nbWires":N,"outerWire":N}, ...]}
-   */
-  BRepGraphFaceAdjacency(theShape: TopoDS_Shape): string;
-
-  /**
-   * Edge -> face incidence with topology flags and end vertices.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"edges":[{"index":N,"faces":[N..],"nbFaces":N,
-   *   "boundary":bool,"manifold":bool,"degenerated":bool,"startVertex":N,
-   *   "endVertex":N,"tolerance":F}, ...]}
-   */
-  BRepGraphEdgeFaceMap(theShape: TopoDS_Shape): string;
-
-  /**
-   * Vertex report: 3D point, tolerance and incident edges.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"vertices":[{"index":N,"point":[x,y,z],
-   *   "tolerance":F,"edges":[N..]}, ...]}
-   */
-  BRepGraphVertexEdgeMap(theShape: TopoDS_Shape): string;
-
-  /**
-   * Per-face geometry: surface type, tolerance, triangulation flag, UV bounds,
-   * wire count and stable UID.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"faces":[{"index":N,"surfaceType":"Plane|Cylinder|
-   *   Cone|Sphere|Torus|BezierSurface|BSplineSurface|SurfaceOfRevolution|
-   *   SurfaceOfExtrusion|OffsetSurface|OtherSurface|None","tolerance":F,
-   *   "hasTriangulation":bool,"naturalRestriction":bool,
-   *   "uvBounds":[uMin,uMax,vMin,vMax],"nbWires":N,"uid":N}, ...]}
-   */
-  BRepGraphFaceInfo(theShape: TopoDS_Shape): string;
-
-  /**
-   * Per-edge geometry: curve type, parameter range, flags, max continuity, UID.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"edges":[{"index":N,"curveType":"Line|Circle|
-   *   Ellipse|Hyperbola|Parabola|BezierCurve|BSplineCurve|OffsetCurve|
-   *   OtherCurve|None","hasCurve":bool,"degenerated":bool,"sameParameter":bool,
-   *   "maxContinuity":"C0|G1|C1|G2|C2|C3|CN","range":[first,last]|null,
-   *   "uid":N}, ...]}
-   */
-  BRepGraphEdgeInfo(theShape: TopoDS_Shape): string;
-
-  /**
-   * Upward containment navigation (parent indices per child).
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"shellsOfFace":[[N..]..],
-   *   "solidsOfShell":[[N..]..],"solidsOfFace":[[N..]..]}
-   *   (solidsOfFace is occurrence-aware, computed via ParentExplorer).
-   */
-  BRepGraphContainment(theShape: TopoDS_Shape): string;
-
-  /**
-   * Per-wire report: closure, outer flag, coedge/edge counts and owning face.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"wires":[{"index":N,"closed":bool,"outer":bool,
-   *   "nbCoEdges":N,"nbDistinctEdges":N,"face":N}, ...]} (face = -1 if free wire)
-   */
-  BRepGraphWireInfo(theShape: TopoDS_Shape): string;
-
-  /**
-   * Graph-native assembly structure (Product/Occurrence model).
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"rootProducts":[N..],"products":[{"index":N,
-   *   "isAssembly":bool,"isPart":bool,"shapeRoot":{"kind":K,"index":N}|null,
-   *   "components":[occIndex..]}, ...],"occurrences":[{"index":N,"product":N,
-   *   "parentProduct":N,"matrix":[12 row-major values]}, ...]}
-   */
-  BRepGraphAssembly(theShape: TopoDS_Shape): string;
-
-  /**
-   * Structural graph validation (Audit mode). Checks graph integrity, NOT
-   * geometric validity.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"valid":bool,"errors":N,"warnings":N,
-   *   "issues":[{"severity":"error|warning","node":{"kind":K,"index":N},
-   *   "description":"..."}, ...]}
-   */
-  BRepGraphValidate(theShape: TopoDS_Shape): string;
-
-  /**
-   * Full structural dump: every active node with its UID and direct downward
-   * references. This is the snapshot a persistent graph file format would
-   * serialize (topology + UID anchors + incidence); geometry is summarized.
-   * @param theShape shape to analyze
-   * @returns JSON: {"ok":true,"solids":[...],"shells":[...],"faces":[...],
-   *   "edges":[...],"vertices":[...]} with per-node index/uid and references.
-   */
-  BRepGraphDump(theShape: TopoDS_Shape): string;
-
-  /**
-   * Reconstruct a real sub-shape from a graph node (kind, index). Bridges the
-   * indices reported by every BRepGraph* helper back to TopoDS sub-shapes.
-   * @param theShape source shape (the graph is rebuilt from it)
-   * @param theKind one of: "solid","shell","face","wire","edge","vertex",
-   *   "compound","compsolid"
-   * @param theIndex 0-based index within that kind
-   * @returns the reconstructed sub-shape, or a null shape on any error.
-   *   Check with .IsNull().
-   */
-  BRepGraphReconstruct(theShape: TopoDS_Shape, theKind: string, theIndex: number): TopoDS_Shape;
-
-  /**
-   * Reverse lookup: find the graph node for a construction-time sub-shape
-   * (TShape pointer identity, same semantics as IsSame()).
-   * @param theShape source shape (the graph is rebuilt from it)
-   * @param theSubShape a sub-shape of theShape to locate
-   * @returns JSON: {"valid":true,"kind":K,"index":N,"uid":N} or {"valid":false}
-   */
-  BRepGraphNodeOfShape(theShape: TopoDS_Shape, theSubShape: TopoDS_Shape): string;
-}
-
-// =============================================================================
-// STL Vector Types
-// =============================================================================
-
-/**
- * std::vector<double> wrapper for passing coordinate arrays to OCCT
- * Use push_back() to add values, get()/set() to access, size() for length
- */
-export interface VectorDouble {
-  push_back(value: number): void;
-  resize(n: number, value?: number): void;
-  size(): number;
-  get(index: number): number;
-  set(index: number, value: number): boolean;
+type EmbindString = ArrayBuffer|Uint8Array|Uint8ClampedArray|Int8Array|string;
+export interface ClassHandle {
+  isAliasOf(other: ClassHandle): boolean;
   delete(): void;
+  deleteLater(): this;
+  isDeleted(): boolean;
+  // @ts-ignore - If targeting lower than ESNext, this symbol might not exist.
+  [Symbol.dispose](): void;
+  clone(): this;
 }
-
-export interface VectorDouble_Constructor {
-  new(): VectorDouble;
-}
-
-/**
- * std::vector<int> wrapper for passing integer arrays to OCCT
- */
-export interface VectorInt {
-  push_back(value: number): void;
-  resize(n: number, value?: number): void;
-  size(): number;
-  get(index: number): number;
-  set(index: number, value: number): boolean;
-  delete(): void;
-}
-
-export interface VectorInt_Constructor {
-  new(): VectorInt;
-}
-
-// =============================================================================
-// Assembly Parsing Value Objects (Extended XCAF Support)
-// =============================================================================
-
-/**
- * Face triangulation mapping info - maps faces to their triangles in mesh data.
- * This is essential for face selection: when a user picks a triangle,
- * this mapping allows finding which face it belongs to.
- */
-export interface FaceTriangulationInfo {
-  /** Zero-based index of the face in TopExp_Explorer order */
-  readonly faceIndex: number;
-  /** Start index of triangles for this face in the mesh triangle array */
-  readonly triangleStartIndex: number;
-  /** Number of triangles belonging to this face */
-  readonly triangleCount: number;
-  /** Start index of nodes for this face in the mesh vertex array */
-  readonly nodeStartIndex: number;
-  /** Number of nodes belonging to this face */
-  readonly nodeCount: number;
-}
-
-/**
- * Labeled sub-shape information with color data.
- * Used for sub-shapes that have explicit labels in XCAF (faces/edges with colors, etc.)
- */
-export interface SubShapeInfo {
-  /** Zero-based index of the sub-shape */
-  readonly index: number;
-  /** Tag of the TDF_Label for this sub-shape */
-  readonly labelTag: number;
-  /** Shape type: "vertex", "edge", "wire", "face", "shell", "solid", "compound", or "unknown" */
-  readonly shapeType: string;
-  /** Whether this sub-shape has an explicit color assigned */
-  readonly hasColor: boolean;
-  /** Red component of the color (0-1) */
-  readonly colorR: number;
-  /** Green component of the color (0-1) */
-  readonly colorG: number;
-  /** Blue component of the color (0-1) */
-  readonly colorB: number;
-  /** Alpha component of the color (0-1) */
-  readonly colorA: number;
-}
-
-/**
- * Part definition info - metadata about a shape label in XCAF.
- * Used to determine the type of node during assembly tree traversal.
- */
-export interface PartDefinitionInfo {
-  /** Tag of the TDF_Label */
-  readonly labelTag: number;
-  /** Name attribute of the label (if present) */
-  readonly name: string;
-  /** True if this label represents an assembly (has components) */
-  readonly isAssembly: boolean;
-  /** True if this label is a reference to another shape */
-  readonly isReference: boolean;
-  /** True if this label represents a simple shape (not assembly, not reference) */
-  readonly isSimpleShape: boolean;
-  /** True if the shape is a compound */
-  readonly isCompound: boolean;
-  /** Number of components (children) for assemblies */
-  readonly nbComponents: number;
-}
-
-/**
- * std::vector<FaceTriangulationInfo> wrapper for face triangulation mapping results
- */
-export interface VectorFaceTriangulationInfo {
-  size(): number;
-  get(index: number): FaceTriangulationInfo;
-  push_back(value: FaceTriangulationInfo): void;
-  delete(): void;
-}
-
-export interface VectorFaceTriangulationInfo_Constructor {
-  new(): VectorFaceTriangulationInfo;
-}
-
-/**
- * std::vector<SubShapeInfo> wrapper for labeled sub-shapes results
- */
-export interface VectorSubShapeInfo {
-  size(): number;
-  get(index: number): SubShapeInfo;
-  push_back(value: SubShapeInfo): void;
-  delete(): void;
-}
-
-export interface VectorSubShapeInfo_Constructor {
-  new(): VectorSubShapeInfo;
-}
-
-// =============================================================================
-// Result Structs for Output Parameters
-// =============================================================================
-// These structs are used as return types for wrapper functions that need to
-// return multiple values (since embind doesn't support reference output params)
-
-/**
- * Result struct for 3D coordinate values (X, Y, Z)
- * Used for extracting coordinates from gp_Pnt, gp_Vec, gp_Dir, gp_XYZ
- */
-export interface CoordResult {
-  readonly X: number;
-  readonly Y: number;
-  readonly Z: number;
-  readonly IsValid: boolean;
-}
-
-/**
- * Result struct for 2D parameter values (U, V)
- * Used for surface parameters and 2D points
- */
-export interface UVResult {
-  readonly U: number;
-  readonly V: number;
-  readonly IsValid: boolean;
-}
-
-/**
- * Result struct for edge curve parameter range
- * First and Last are the parametric bounds of the curve
- */
-export interface EdgeCurveResult {
-  readonly First: number;
-  readonly Last: number;
-  readonly IsValid: boolean;
-}
-
-/**
- * Result struct for point + tangent evaluation on a curve
- * Point is the position, Tangent is the first derivative (direction)
- */
-export interface CurvePointResult {
-  readonly Point: gp_Pnt;
-  readonly Tangent: gp_Vec;
-  readonly param: number;
-  readonly IsValid: boolean;
-  delete(): void;
-}
-
-/**
- * Result struct for point + derivatives evaluation on a surface
- * Point is the position, DU and DV are partial derivatives
- */
-export interface SurfacePointResult {
-  readonly Point: gp_Pnt;
-  readonly DU: gp_Vec;
-  readonly DV: gp_Vec;
-  readonly IsValid: boolean;
-  delete(): void;
-}
-
-/**
- * Result struct for bounding box coordinates
- */
-export interface BoundingBoxResult {
-  readonly XMin: number;
-  readonly YMin: number;
-  readonly ZMin: number;
-  readonly XMax: number;
-  readonly YMax: number;
-  readonly ZMax: number;
-  readonly IsValid: boolean;
-}
-
-/**
- * Result struct for mass properties computation
- * Mass is length/area/volume depending on the property type computed
- */
-export interface PropertiesResult {
-  readonly Mass: number;
-  readonly CentreOfMass: gp_Pnt;
-  readonly IsValid: boolean;
-  delete(): void;
-}
-
-/**
- * Result struct for face UV parameter bounds
- */
-export interface UVBoundsResult {
-  readonly UMin: number;
-  readonly UMax: number;
-  readonly VMin: number;
-  readonly VMax: number;
-  readonly IsValid: boolean;
-}
-
-/**
- * Result struct for curve/edge properties
- * Includes information about periodicity and closure
- */
-export interface CurvePropertiesResult {
-  readonly FirstParam: number;
-  readonly LastParam: number;
-  readonly IsClosed: boolean;
-  readonly IsPeriodic: boolean;
-  readonly Period: number;  // Only valid if IsPeriodic is true
-  readonly IsValid: boolean;
-}
-
-/**
- * Result struct for derivative evaluation on curves/edges
- * Contains D1 (tangent), D2 (curvature), D3 (torsion) vectors as components
- */
-export interface DerivativesResult {
-  readonly d1x: number;
-  readonly d1y: number;
-  readonly d1z: number;
-  readonly d2x: number;
-  readonly d2y: number;
-  readonly d2z: number;
-  readonly d3x: number;
-  readonly d3y: number;
-  readonly d3z: number;
-  readonly isValid: boolean;
-}
-
-// =============================================================================
-// Geometry Curve Types (Handle types)
-// =============================================================================
-
-/**
- * Handle to a BSpline curve (reference-counted smart pointer)
- * Used for manipulating parametric curves directly
- */
-export interface Handle_Geom_BSplineCurve {
-  /** Check if handle is null/empty */
-  IsNull(): boolean;
-  /** Delete the handle (releases reference) */
-  delete(): void;
-}
-
-/**
- * Geom_Surface - Abstract base class for 3D parametric surfaces
- * Exposed as raw pointer from Handle wrapper
- */
-export interface Geom_Surface {
-  /** Evaluate surface point at UV parameters */
-  Value(U: number, V: number): gp_Pnt;
-  /** Check if surface is closed in U direction */
-  IsUClosed(): boolean;
-  /** Check if surface is closed in V direction */
-  IsVClosed(): boolean;
-  /** Check if surface is periodic in U direction */
-  IsUPeriodic(): boolean;
-  /** Check if surface is periodic in V direction */
-  IsVPeriodic(): boolean;
-  /** Period in U direction (if periodic) */
-  UPeriod(): number;
-  /** Period in V direction (if periodic) */
-  VPeriod(): number;
-  /** Get the dynamic type of the surface */
-  DynamicType(): unknown;
-  /** Delete this object */
-  delete(): void;
-}
-
-/**
- * Geom_CylindricalSurface - Cylindrical surface
- */
-export interface Geom_CylindricalSurface extends Geom_Surface {
-  /** Get the radius of the cylinder */
-  Radius(): number;
-  /** Set the radius of the cylinder */
-  SetRadius(R: number): void;
-}
-
-export interface Geom_CylindricalSurface_Constructor {
-  new(ax3: gp_Ax3, radius: number): Geom_CylindricalSurface;
-}
-
-/**
- * Handle to a Geom_Surface (reference-counted smart pointer)
- */
-export interface Handle_Geom_Surface {
-  /** Check if handle is null/empty */
-  IsNull(): boolean;
-  /** Get raw pointer to the surface */
-  get(): Geom_Surface;
-  /** Delete the handle (releases reference) */
-  delete(): void;
-}
-
-/**
- * Geom_Curve - Abstract base class for 3D parametric curves
- * Exposed as raw pointer from Handle wrapper
- */
-export interface Geom_Curve {
-  /** Evaluate curve point at parameter */
-  Value(U: number): gp_Pnt;
-  /** Check if curve is closed */
-  IsClosed(): boolean;
-  /** Check if curve is periodic */
-  IsPeriodic(): boolean;
-  /** Period (if periodic) */
-  Period(): number;
-  /** First parameter of the curve */
-  FirstParameter(): number;
-  /** Last parameter of the curve */
-  LastParameter(): number;
-  /** Evaluate curve at parameter - fills gp_Pnt */
-  D0(U: number, P: gp_Pnt): void;
-  /** Evaluate nth derivative at parameter */
-  DN(U: number, N: number): gp_Vec;
-  /** Delete this object */
-  delete(): void;
-}
-
-/**
- * Handle to a Geom_Curve (reference-counted smart pointer)
- */
-export interface Handle_Geom_Curve {
-  /** Check if handle is null/empty */
-  IsNull(): boolean;
-  /** Get raw pointer to the curve */
-  get(): Geom_Curve;
-  /** First parameter of the curve */
-  FirstParameter(): number;
-  /** Last parameter of the curve */
-  LastParameter(): number;
-  /** Evaluate point at parameter */
-  Value(U: number): gp_Pnt;
-  /** Evaluate curve at parameter - fills gp_Pnt */
-  D0(U: number, P: gp_Pnt): void;
-  /** Evaluate nth derivative at parameter */
-  DN(U: number, N: number): gp_Vec;
-  /** Check if curve is closed */
-  IsClosed(): boolean;
-  /** Check if curve is periodic */
-  IsPeriodic(): boolean;
-  /** Delete the handle (releases reference) */
-  delete(): void;
-}
-
-/**
- * Geom2d_Curve - Abstract base class for 2D parametric curves
- * Exposed as raw pointer from Handle wrapper
- */
-export interface Geom2d_Curve {
-  /** Evaluate curve point at parameter */
-  Value(U: number): gp_Pnt2d;
-  /** First parameter */
-  FirstParameter(): number;
-  /** Last parameter */
-  LastParameter(): number;
-  /** Check if curve is closed */
-  IsClosed(): boolean;
-  /** Check if curve is periodic */
-  IsPeriodic(): boolean;
-  /** Period (if periodic) */
-  Period(): number;
-  /** Delete this object */
-  delete(): void;
-}
-
-/**
- * Handle to a Geom2d_Curve (reference-counted smart pointer)
- */
-export interface Handle_Geom2d_Curve {
-  /** Check if handle is null/empty */
-  IsNull(): boolean;
-  /** Get raw pointer to the curve */
-  get(): Geom2d_Curve;
-  /** Delete the handle (releases reference) */
-  delete(): void;
-  /** Compute point at parameter u */
-  Value(u: number): gp_Pnt2d;
-  /** First valid parameter value */
-  FirstParameter(): number;
-  /** Last valid parameter value */
-  LastParameter(): number;
-  /** Check if the curve is closed */
-  IsClosed(): boolean;
-  /** Check if the curve is periodic */
-  IsPeriodic(): boolean;
-  /** Period for periodic curves */
-  Period(): number;
-}
-
-/**
- * Geom2d_Ellipse - 2D parametric ellipse curve
- */
-export interface Geom2d_Ellipse extends Geom2d_Curve {
-  /** Major radius of the ellipse */
-  MajorRadius(): number;
-  /** Minor radius of the ellipse */
-  MinorRadius(): number;
-  /** Set major radius of the ellipse */
-  SetMajorRadius(r: number): void;
-  /** Set minor radius of the ellipse */
-  SetMinorRadius(r: number): void;
-}
-
-/**
- * Geom2d_Circle - 2D parametric circle curve
- */
-export interface Geom2d_Circle extends Geom2d_Curve {
-  /** Radius of the circle */
-  Radius(): number;
-  /** Set radius of the circle */
-  SetRadius(r: number): void;
-}
-
-/**
- * Geom2d_TrimmedCurve - 2D trimmed curve (portion of another curve)
- */
-export interface Geom2d_TrimmedCurve extends Geom2d_Curve {
-}
-
-// =============================================================================
-// Enumerations (embind exports enums as objects, not TypeScript enums)
-// =============================================================================
-
-/** embind enum value type */
-export interface EmbindEnumValue {
-  readonly value: number;
-}
-
-/** TopAbs_ShapeEnum enum object as exported by embind */
-export interface TopAbs_ShapeEnum {
-  readonly COMPOUND: EmbindEnumValue;
-  readonly COMPSOLID: EmbindEnumValue;
-  readonly SOLID: EmbindEnumValue;
-  readonly SHELL: EmbindEnumValue;
-  readonly FACE: EmbindEnumValue;
-  readonly WIRE: EmbindEnumValue;
-  readonly EDGE: EmbindEnumValue;
-  readonly VERTEX: EmbindEnumValue;
-  readonly SHAPE: EmbindEnumValue;
-}
-
-/** TopAbs_Orientation enum object as exported by embind */
-export interface TopAbs_Orientation {
-  readonly FORWARD: EmbindEnumValue;
-  readonly REVERSED: EmbindEnumValue;
-  readonly INTERNAL: EmbindEnumValue;
-  readonly EXTERNAL: EmbindEnumValue;
-}
-
-/** IFSelect_ReturnStatus enum object as exported by embind */
-export interface IFSelect_ReturnStatus {
-  readonly RetVoid: EmbindEnumValue;
-  readonly RetDone: EmbindEnumValue;
-  readonly RetError: EmbindEnumValue;
-  readonly RetFail: EmbindEnumValue;
-  readonly RetStop: EmbindEnumValue;
-}
-
-/** STEPControl_StepModelType enum object as exported by embind */
-export interface STEPControl_StepModelType {
-  readonly AsIs: EmbindEnumValue;
-  readonly ManifoldSolidBrep: EmbindEnumValue;
-  readonly BrepWithVoids: EmbindEnumValue;
-  readonly FacetedBrep: EmbindEnumValue;
-  readonly FacetedBrepAndBrepWithVoids: EmbindEnumValue;
-  readonly ShellBasedSurfaceModel: EmbindEnumValue;
-  readonly GeometricCurveSet: EmbindEnumValue;
-  readonly Hybrid: EmbindEnumValue;
-}
-
-/** GccEnt_Position enum object as exported by embind */
-export interface GccEnt_Position {
-  readonly unqualified: EmbindEnumValue;
-  readonly enclosing: EmbindEnumValue;
-  readonly enclosed: EmbindEnumValue;
-  readonly outside: EmbindEnumValue;
-  readonly noqualifier: EmbindEnumValue;
-}
-
-/** GccEnt_QualifiedCirc - A qualified 2D circle */
-export interface GccEnt_QualifiedCirc {
-  Qualified(): gp_Circ2d;
-  Qualifier(): EmbindEnumValue;
-  IsUnqualified(): boolean;
-  IsEnclosing(): boolean;
-  IsEnclosed(): boolean;
-  IsOutside(): boolean;
-  delete(): void;
-}
-export interface GccEnt_QualifiedCirc_Constructor {
-  new(circle: gp_Circ2d, qualifier: EmbindEnumValue): GccEnt_QualifiedCirc;
-}
-
-/** GccEnt_QualifiedLin - A qualified 2D line */
-export interface GccEnt_QualifiedLin {
-  Qualified(): gp_Lin2d;
-  Qualifier(): EmbindEnumValue;
-  IsUnqualified(): boolean;
-  IsEnclosed(): boolean;
-  IsOutside(): boolean;
-  delete(): void;
-}
-export interface GccEnt_QualifiedLin_Constructor {
-  new(line: gp_Lin2d, qualifier: EmbindEnumValue): GccEnt_QualifiedLin;
-}
-
-/** GccAna_Lin2d2Tan - 2D lines tangent to circles and/or passing through points */
-export interface GccAna_Lin2d2Tan {
-  IsDone(): boolean;
-  NbSolutions(): number;
-  ThisSolution(index: number): gp_Lin2d;
-  delete(): void;
-}
-export interface GccAna_Lin2d2Tan_Constructor {
-  // Line through two points (most common use case)
-  new(point1: gp_Pnt2d, point2: gp_Pnt2d, tolerance: number): GccAna_Lin2d2Tan;
-}
-
-/** GccAna_Circ2d2TanRad - 2D circles tangent to elements with given radius */
-export interface GccAna_Circ2d2TanRad {
-  IsDone(): boolean;
-  NbSolutions(): number;
-  ThisSolution(index: number): gp_Circ2d;
-  delete(): void;
-}
-export interface GccAna_Circ2d2TanRad_Constructor {
-  // Circle passing through two points (most common use case)
-  new(point1: gp_Pnt2d, point2: gp_Pnt2d, radius: number, tolerance: number): GccAna_Circ2d2TanRad;
-}
-
-/** GeomFill_Trihedron enum object as exported by embind */
-export interface GeomFill_Trihedron {
-  readonly IsCorrectedFrenet: EmbindEnumValue;
-  readonly IsFixed: EmbindEnumValue;
-  readonly IsFrenet: EmbindEnumValue;
-  readonly IsConstantNormal: EmbindEnumValue;
-  readonly IsDarboux: EmbindEnumValue;
-  readonly IsGuideAC: EmbindEnumValue;
-  readonly IsGuidePlan: EmbindEnumValue;
-  readonly IsGuideACWithContact: EmbindEnumValue;
-  readonly IsGuidePlanWithContact: EmbindEnumValue;
-  readonly IsDiscreteTrihedron: EmbindEnumValue;
-}
-
-/** TopAbs_State enum object as exported by embind */
-export interface TopAbs_State {
-  readonly IN: EmbindEnumValue;
-  readonly OUT: EmbindEnumValue;
-  readonly ON: EmbindEnumValue;
-  readonly UNKNOWN: EmbindEnumValue;
-}
-
-/** GeomAbs_Shape enum object as exported by embind */
-export interface GeomAbs_Shape {
-  readonly C0: EmbindEnumValue;
-  readonly G1: EmbindEnumValue;
-  readonly C1: EmbindEnumValue;
-  readonly G2: EmbindEnumValue;
-  readonly C2: EmbindEnumValue;
-  readonly C3: EmbindEnumValue;
-  readonly CN: EmbindEnumValue;
-}
-
-/** GeomAbs_JoinType enum object as exported by embind */
-export interface GeomAbs_JoinType {
-  readonly Arc: EmbindEnumValue;
-  readonly Tangent: EmbindEnumValue;
-  readonly Intersection: EmbindEnumValue;
-}
-
-/** BRepFill_TypeOfContact enum object as exported by embind */
-export interface BRepFill_TypeOfContact {
-  readonly NoContact: EmbindEnumValue;
-  readonly Contact: EmbindEnumValue;
-  readonly ContactOnBorder: EmbindEnumValue;
-}
-
-/** GeomAbs_CurveType enum object as exported by embind */
-export interface GeomAbs_CurveType {
-  readonly Line: EmbindEnumValue;
-  readonly Circle: EmbindEnumValue;
-  readonly Ellipse: EmbindEnumValue;
-  readonly Hyperbola: EmbindEnumValue;
-  readonly Parabola: EmbindEnumValue;
-  readonly BezierCurve: EmbindEnumValue;
-  readonly BSplineCurve: EmbindEnumValue;
-  readonly OffsetCurve: EmbindEnumValue;
-  readonly OtherCurve: EmbindEnumValue;
-}
-
-/** BRepBuilderAPI_WireError enum object as exported by embind */
-export interface BRepBuilderAPI_WireError {
-  readonly WireDone: EmbindEnumValue;
-  readonly EmptyWire: EmbindEnumValue;
-  readonly DisconnectedWire: EmbindEnumValue;
-  readonly NonManifoldWire: EmbindEnumValue;
-}
-
-/** ChFi3d_FilletShape enum object as exported by embind */
-export interface ChFi3d_FilletShape {
-  readonly Rational: EmbindEnumValue;
-  readonly QuasiAngular: EmbindEnumValue;
-  readonly Polynomial: EmbindEnumValue;
-}
-
-/** BRepOffset_Mode enum object as exported by embind */
-export interface BRepOffset_Mode {
-  readonly Skin: EmbindEnumValue;
-  readonly Pipe: EmbindEnumValue;
-  readonly RectoVerso: EmbindEnumValue;
-}
-
-/** Approx_ParametrizationType enum object as exported by embind */
-export interface Approx_ParametrizationType {
-  readonly ChordLength: EmbindEnumValue;
-  readonly Centripetal: EmbindEnumValue;
-  readonly IsoParametric: EmbindEnumValue;
-}
-
-// =============================================================================
-// gp_XYZ - 3D Coordinates
-// =============================================================================
-
-export interface gp_XYZ {
+export interface gp_XYZ extends ClassHandle {
+  Added(_0: gp_XYZ): gp_XYZ;
+  Subtracted(_0: gp_XYZ): gp_XYZ;
+  Crossed(_0: gp_XYZ): gp_XYZ;
+  Add(_0: gp_XYZ): void;
+  Subtract(_0: gp_XYZ): void;
+  Cross(_0: gp_XYZ): void;
   X(): number;
   Y(): number;
   Z(): number;
-  SetX(x: number): void;
-  SetY(y: number): void;
-  SetZ(z: number): void;
-  SetCoord(x: number, y: number, z: number): void;
-  Add(other: gp_XYZ): void;
-  Added(other: gp_XYZ): gp_XYZ;
-  Subtract(other: gp_XYZ): void;
-  Subtracted(other: gp_XYZ): gp_XYZ;
-  Multiply(scalar: number): void;
-  Multiplied(scalar: number): gp_XYZ;
-  Divide(scalar: number): void;
-  Divided(scalar: number): gp_XYZ;
-  Dot(other: gp_XYZ): number;
-  Cross(other: gp_XYZ): void;
-  Crossed(other: gp_XYZ): gp_XYZ;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetZ(_0: number): void;
+  SetCoord(_0: number, _1: number, _2: number): void;
+  Multiply(_0: number): void;
+  Multiplied(_0: number): gp_XYZ;
+  Divide(_0: number): void;
+  Divided(_0: number): gp_XYZ;
+  Dot(_0: gp_XYZ): number;
   Modulus(): number;
   SquareModulus(): number;
-  delete(): void;
 }
 
-export interface gp_XYZ_Constructor {
-  new(): gp_XYZ;
-  new(x: number, y: number, z: number): gp_XYZ;
-}
-
-// =============================================================================
-// gp_Pnt - 3D Point
-// =============================================================================
-
-export interface gp_Pnt {
+export interface gp_Pnt extends ClassHandle {
+  Translated(_0: gp_Vec): gp_Pnt;
+  Transformed(_0: gp_Trsf): gp_Pnt;
+  Translate(_0: gp_Vec): void;
+  Transform(_0: gp_Trsf): void;
   X(): number;
   Y(): number;
   Z(): number;
-  SetX(x: number): void;
-  SetY(y: number): void;
-  SetZ(z: number): void;
-  SetCoord(x: number, y: number, z: number): void;
-  Distance(other: gp_Pnt): number;
-  SquareDistance(other: gp_Pnt): number;
-  IsEqual(other: gp_Pnt, tolerance: number): boolean;
-  Translate(vec: gp_Vec): void;
-  Translated(vec: gp_Vec): gp_Pnt;
-  Transform(trsf: gp_Trsf): void;
-  Transformed(trsf: gp_Trsf): gp_Pnt;
-  delete(): void;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetZ(_0: number): void;
+  SetCoord(_0: number, _1: number, _2: number): void;
+  Distance(_0: gp_Pnt): number;
+  SquareDistance(_0: gp_Pnt): number;
+  IsEqual(_0: gp_Pnt, _1: number): boolean;
 }
 
-export interface gp_Pnt_Constructor {
-  new(): gp_Pnt;
-  new(x: number, y: number, z: number): gp_Pnt;
-  new(xyz: gp_XYZ): gp_Pnt;
-}
-
-// =============================================================================
-// gp_Vec - 3D Vector
-// =============================================================================
-
-export interface gp_Vec {
+export interface gp_Vec extends ClassHandle {
+  Added(_0: gp_Vec): gp_Vec;
+  Subtracted(_0: gp_Vec): gp_Vec;
+  Crossed(_0: gp_Vec): gp_Vec;
+  Normalized(): gp_Vec;
+  Reversed(): gp_Vec;
+  Add(_0: gp_Vec): void;
+  Subtract(_0: gp_Vec): void;
+  Cross(_0: gp_Vec): void;
+  Normalize(): void;
+  Reverse(): void;
   X(): number;
   Y(): number;
   Z(): number;
-  SetX(x: number): void;
-  SetY(y: number): void;
-  SetZ(z: number): void;
-  SetCoord(x: number, y: number, z: number): void;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetZ(_0: number): void;
+  SetCoord(_0: number, _1: number, _2: number): void;
   Magnitude(): number;
   SquareMagnitude(): number;
-  IsEqual(other: gp_Vec, linearTol: number, angularTol: number): boolean;
-  IsNormal(other: gp_Vec, angularTol: number): boolean;
-  IsParallel(other: gp_Vec, angularTol: number): boolean;
-  Angle(other: gp_Vec): number;
-  Add(other: gp_Vec): void;
-  Added(other: gp_Vec): gp_Vec;
-  Subtract(other: gp_Vec): void;
-  Subtracted(other: gp_Vec): gp_Vec;
-  Multiply(scalar: number): void;
-  Multiplied(scalar: number): gp_Vec;
-  Divide(scalar: number): void;
-  Divided(scalar: number): gp_Vec;
-  Cross(other: gp_Vec): void;
-  Crossed(other: gp_Vec): gp_Vec;
-  Dot(other: gp_Vec): number;
-  Normalize(): void;
-  Normalized(): gp_Vec;
+  IsEqual(_0: gp_Vec, _1: number, _2: number): boolean;
+  IsNormal(_0: gp_Vec, _1: number): boolean;
+  IsParallel(_0: gp_Vec, _1: number): boolean;
+  Angle(_0: gp_Vec): number;
+  Multiply(_0: number): void;
+  Multiplied(_0: number): gp_Vec;
+  Divide(_0: number): void;
+  Divided(_0: number): gp_Vec;
+  Dot(_0: gp_Vec): number;
+}
+
+export interface gp_Dir extends ClassHandle {
+  Crossed(_0: gp_Dir): gp_Dir;
+  Reversed(): gp_Dir;
+  Cross(_0: gp_Dir): void;
   Reverse(): void;
-  Reversed(): gp_Vec;
-  delete(): void;
-}
-
-export interface gp_Vec_Constructor {
-  new(): gp_Vec;
-  new(x: number, y: number, z: number): gp_Vec;
-  new(xyz: gp_XYZ): gp_Vec;
-  new(p1: gp_Pnt, p2: gp_Pnt): gp_Vec;
-}
-
-// =============================================================================
-// gp_Dir - 3D Direction (unit vector)
-// =============================================================================
-
-export interface gp_Dir {
   X(): number;
   Y(): number;
   Z(): number;
-  SetX(x: number): void;
-  SetY(y: number): void;
-  SetZ(z: number): void;
-  SetCoord(x: number, y: number, z: number): void;
-  IsEqual(other: gp_Dir, angularTol: number): boolean;
-  IsNormal(other: gp_Dir, angularTol: number): boolean;
-  IsParallel(other: gp_Dir, angularTol: number): boolean;
-  Angle(other: gp_Dir): number;
-  Cross(other: gp_Dir): void;
-  Crossed(other: gp_Dir): gp_Dir;
-  Dot(other: gp_Dir): number;
-  Reverse(): void;
-  Reversed(): gp_Dir;
-  delete(): void;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetZ(_0: number): void;
+  SetCoord(_0: number, _1: number, _2: number): void;
+  IsEqual(_0: gp_Dir, _1: number): boolean;
+  IsNormal(_0: gp_Dir, _1: number): boolean;
+  IsParallel(_0: gp_Dir, _1: number): boolean;
+  Angle(_0: gp_Dir): number;
+  Dot(_0: gp_Dir): number;
 }
 
-export interface gp_Dir_Constructor {
-  new(): gp_Dir;
-  new(x: number, y: number, z: number): gp_Dir;
-  new(xyz: gp_XYZ): gp_Dir;
-  new(vec: gp_Vec): gp_Dir;
-}
-
-// =============================================================================
-// gp_Ax1 - Axis (point + direction)
-// =============================================================================
-
-export interface gp_Ax1 {
+export interface gp_Ax1 extends ClassHandle {
   Location(): gp_Pnt;
   Direction(): gp_Dir;
-  SetLocation(p: gp_Pnt): void;
-  SetDirection(d: gp_Dir): void;
-  IsCoaxial(other: gp_Ax1, angularTol: number, linearTol: number): boolean;
-  IsNormal(other: gp_Ax1, angularTol: number): boolean;
-  IsParallel(other: gp_Ax1, angularTol: number): boolean;
-  Angle(other: gp_Ax1): number;
-  Reverse(): void;
   Reversed(): gp_Ax1;
-  delete(): void;
+  SetLocation(_0: gp_Pnt): void;
+  SetDirection(_0: gp_Dir): void;
+  Reverse(): void;
+  IsCoaxial(_0: gp_Ax1, _1: number, _2: number): boolean;
+  IsNormal(_0: gp_Ax1, _1: number): boolean;
+  IsParallel(_0: gp_Ax1, _1: number): boolean;
+  Angle(_0: gp_Ax1): number;
 }
 
-export interface gp_Ax1_Constructor {
-  new(): gp_Ax1;
-  new(p: gp_Pnt, d: gp_Dir): gp_Ax1;
-}
-
-// =============================================================================
-// gp_Ax2 - Coordinate System (point + Z direction + X direction)
-// =============================================================================
-
-export interface gp_Ax2 {
+export interface gp_Ax2 extends ClassHandle {
   Location(): gp_Pnt;
   Direction(): gp_Dir;
   XDirection(): gp_Dir;
   YDirection(): gp_Dir;
   Axis(): gp_Ax1;
-  SetLocation(p: gp_Pnt): void;
-  SetDirection(d: gp_Dir): void;
-  SetXDirection(d: gp_Dir): void;
-  SetYDirection(d: gp_Dir): void;
-  SetAxis(ax: gp_Ax1): void;
-  IsCoplanar(other: gp_Ax2, linearTol: number, angularTol: number): boolean;
-  delete(): void;
+  SetLocation(_0: gp_Pnt): void;
+  SetDirection(_0: gp_Dir): void;
+  SetXDirection(_0: gp_Dir): void;
+  SetYDirection(_0: gp_Dir): void;
+  SetAxis(_0: gp_Ax1): void;
+  IsCoplanar(_0: gp_Ax2, _1: number, _2: number): boolean;
 }
 
-export interface gp_Ax2_Constructor {
-  new(): gp_Ax2;
-  new(p: gp_Pnt, n: gp_Dir): gp_Ax2;
-  new(p: gp_Pnt, n: gp_Dir, vx: gp_Dir): gp_Ax2;
-}
-
-// =============================================================================
-// gp_Ax3 - Coordinate System (right or left-handed)
-// =============================================================================
-
-export interface gp_Ax3 {
+export interface gp_Ax3 extends ClassHandle {
   Location(): gp_Pnt;
   Direction(): gp_Dir;
   XDirection(): gp_Dir;
   YDirection(): gp_Dir;
   Axis(): gp_Ax1;
   Ax2(): gp_Ax2;
-  SetLocation(p: gp_Pnt): void;
-  SetDirection(d: gp_Dir): void;
-  SetXDirection(d: gp_Dir): void;
-  SetYDirection(d: gp_Dir): void;
-  SetAxis(ax: gp_Ax1): void;
+  SetLocation(_0: gp_Pnt): void;
+  SetDirection(_0: gp_Dir): void;
+  SetXDirection(_0: gp_Dir): void;
+  SetYDirection(_0: gp_Dir): void;
+  SetAxis(_0: gp_Ax1): void;
   Direct(): boolean;
-  delete(): void;
 }
 
-export interface gp_Ax3_Constructor {
-  new(): gp_Ax3;
-  new(ax2: gp_Ax2): gp_Ax3;
-  new(p: gp_Pnt, n: gp_Dir): gp_Ax3;
-  new(p: gp_Pnt, n: gp_Dir, vx: gp_Dir): gp_Ax3;
-}
-
-// =============================================================================
-// =============================================================================
-// gp_Mat - 3x3 Matrix
-// =============================================================================
-
-export interface gp_Mat {
-  Value(row: number, col: number): number;
-  SetValue(row: number, col: number, value: number): void;
-  SetRow(row: number, value: gp_XYZ): void;
-  SetCol(col: number, value: gp_XYZ): void;
-  Row(row: number): gp_XYZ;
-  Column(col: number): gp_XYZ;
-  Determinant(): number;
-  Invert(): void;
-  Inverted(): gp_Mat;
-  Multiply(other: gp_Mat): void;
-  Multiplied(other: gp_Mat): gp_Mat;
-  Transpose(): void;
-  Transposed(): gp_Mat;
-  delete(): void;
-}
-
-export interface gp_Mat_Constructor {
-  new(): gp_Mat;
-  new(a11: number, a12: number, a13: number,
-      a21: number, a22: number, a23: number,
-      a31: number, a32: number, a33: number): gp_Mat;
-}
-
-// =============================================================================
-// gp_Trsf - Transformation (rotation, translation, scale, mirror)
-// =============================================================================
-
-export interface gp_Trsf {
-  SetMirror(p: gp_Pnt): void;
-  SetMirrorAx1(ax: gp_Ax1): void;
-  SetMirrorAx2(ax: gp_Ax2): void;
-  SetMirrorOnPlane(ax: gp_Ax2): void;
-  SetRotation(ax: gp_Ax1, angle: number): void;
-  SetScale(p: gp_Pnt, scale: number): void;
-  SetTranslation(vec: gp_Vec): void;
-  SetTranslationPart(vec: gp_Vec): void;
-  SetDisplacement(fromAx: gp_Ax3, toAx: gp_Ax3): void;
-  SetValues(a11: number, a12: number, a13: number, a14: number,
-            a21: number, a22: number, a23: number, a24: number,
-            a31: number, a32: number, a33: number, a34: number): void;
-  Value(row: number, col: number): number;
-  IsNegative(): boolean;
-  ScaleFactor(): number;
+export interface gp_Trsf extends ClassHandle {
   TranslationPart(): gp_XYZ;
-  Invert(): void;
   Inverted(): gp_Trsf;
-  Multiply(other: gp_Trsf): void;
-  Multiplied(other: gp_Trsf): gp_Trsf;
-  PreMultiply(other: gp_Trsf): void;
-  Transforms(xyz: gp_XYZ): void;
-  delete(): void;
+  Multiplied(_0: gp_Trsf): gp_Trsf;
+  SetMirror(_0: gp_Pnt): void;
+  SetMirrorAx1(_0: gp_Ax1): void;
+  SetMirrorAx2(_0: gp_Ax2): void;
+  SetMirrorOnPlane(_0: gp_Ax2): void;
+  SetTranslation(_0: gp_Vec): void;
+  SetTranslationPart(_0: gp_Vec): void;
+  SetDisplacement(_0: gp_Ax3, _1: gp_Ax3): void;
+  Invert(): void;
+  Multiply(_0: gp_Trsf): void;
+  PreMultiply(_0: gp_Trsf): void;
+  Transforms(_0: gp_XYZ): void;
+  IsNegative(): boolean;
+  SetRotation(_0: gp_Ax1, _1: number): void;
+  SetScale(_0: gp_Pnt, _1: number): void;
+  SetValues(_0: number, _1: number, _2: number, _3: number, _4: number, _5: number, _6: number, _7: number, _8: number, _9: number, _10: number, _11: number): void;
+  ScaleFactor(): number;
+  Value(_0: number, _1: number): number;
 }
 
-export interface gp_Trsf_Constructor {
-  new(): gp_Trsf;
-}
-
-// =============================================================================
-// gp_Pln - Infinite Plane
-// =============================================================================
-
-export interface gp_Pln {
+export interface gp_Pln extends ClassHandle {
   Location(): gp_Pnt;
   Position(): gp_Ax3;
   Axis(): gp_Ax1;
   XAxis(): gp_Ax1;
   YAxis(): gp_Ax1;
-  SetLocation(p: gp_Pnt): void;
-  SetPosition(pos: gp_Ax3): void;
-  SetAxis(ax: gp_Ax1): void;
-  Distance(p: gp_Pnt): number;
-  Contains(p: gp_Pnt, linearTol: number): boolean;
-  delete(): void;
+  SetLocation(_0: gp_Pnt): void;
+  SetPosition(_0: gp_Ax3): void;
+  SetAxis(_0: gp_Ax1): void;
+  Distance(_0: gp_Pnt): number;
+  Contains(_0: gp_Pnt, _1: number): boolean;
 }
 
-export interface gp_Pln_Constructor {
-  new(): gp_Pln;
-  new(pos: gp_Ax3): gp_Pln;
-  new(p: gp_Pnt, n: gp_Dir): gp_Pln;
-  new(a: number, b: number, c: number, d: number): gp_Pln;
-}
-
-// =============================================================================
-// gp_Lin - Infinite Line
-// =============================================================================
-
-export interface gp_Lin {
+export interface gp_Lin extends ClassHandle {
   Location(): gp_Pnt;
   Direction(): gp_Dir;
   Position(): gp_Ax1;
-  SetLocation(p: gp_Pnt): void;
-  SetDirection(d: gp_Dir): void;
-  SetPosition(ax: gp_Ax1): void;
-  Angle(other: gp_Lin): number;
-  Distance(p: gp_Pnt): number;
-  SquareDistance(p: gp_Pnt): number;
-  Contains(p: gp_Pnt, linearTol: number): boolean;
-  delete(): void;
+  SetLocation(_0: gp_Pnt): void;
+  SetDirection(_0: gp_Dir): void;
+  SetPosition(_0: gp_Ax1): void;
+  Angle(_0: gp_Lin): number;
+  Distance(_0: gp_Pnt): number;
+  SquareDistance(_0: gp_Pnt): number;
+  Contains(_0: gp_Pnt, _1: number): boolean;
 }
 
-export interface gp_Lin_Constructor {
-  new(): gp_Lin;
-  new(ax: gp_Ax1): gp_Lin;
-  new(p: gp_Pnt, d: gp_Dir): gp_Lin;
-}
-
-// =============================================================================
-// gp_Circ - Circle in 3D Space
-// =============================================================================
-
-export interface gp_Circ {
+export interface gp_Circ extends ClassHandle {
   Location(): gp_Pnt;
   Position(): gp_Ax2;
   Axis(): gp_Ax1;
   XAxis(): gp_Ax1;
   YAxis(): gp_Ax1;
+  SetLocation(_0: gp_Pnt): void;
+  SetPosition(_0: gp_Ax2): void;
+  SetAxis(_0: gp_Ax1): void;
   Radius(): number;
   Area(): number;
   Length(): number;
-  SetLocation(p: gp_Pnt): void;
-  SetPosition(pos: gp_Ax2): void;
-  SetAxis(ax: gp_Ax1): void;
-  SetRadius(r: number): void;
-  Distance(p: gp_Pnt): number;
-  SquareDistance(p: gp_Pnt): number;
-  Contains(p: gp_Pnt, linearTol: number): boolean;
-  delete(): void;
+  SetRadius(_0: number): void;
+  Distance(_0: gp_Pnt): number;
+  SquareDistance(_0: gp_Pnt): number;
+  Contains(_0: gp_Pnt, _1: number): boolean;
 }
 
-export interface gp_Circ_Constructor {
-  new(): gp_Circ;
-  new(pos: gp_Ax2, radius: number): gp_Circ;
-}
-
-// =============================================================================
-// 2D Geometry Primitives
-// =============================================================================
-
-export interface gp_XY {
+export interface gp_XY extends ClassHandle {
+  Added(_0: gp_XY): gp_XY;
+  Subtracted(_0: gp_XY): gp_XY;
+  Add(_0: gp_XY): void;
+  Subtract(_0: gp_XY): void;
   X(): number;
   Y(): number;
-  SetX(x: number): void;
-  SetY(y: number): void;
-  SetCoord(x: number, y: number): void;
-  Add(other: gp_XY): void;
-  Added(other: gp_XY): gp_XY;
-  Subtract(other: gp_XY): void;
-  Subtracted(other: gp_XY): gp_XY;
-  Multiply(scalar: number): void;
-  Multiplied(scalar: number): gp_XY;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Multiply(_0: number): void;
+  Multiplied(_0: number): gp_XY;
   Modulus(): number;
   SquareModulus(): number;
-  Dot(other: gp_XY): number;
-  Crossed(other: gp_XY): number;
-  delete(): void;
+  Dot(_0: gp_XY): number;
+  Crossed(_0: gp_XY): number;
 }
 
-export interface gp_XY_Constructor {
-  new(): gp_XY;
-  new(x: number, y: number): gp_XY;
-}
-
-export interface gp_Pnt2d {
+export interface gp_Pnt2d extends ClassHandle {
+  Translated(_0: gp_Vec2d): gp_Pnt2d;
+  Translate(_0: gp_Vec2d): void;
   X(): number;
   Y(): number;
-  SetX(x: number): void;
-  SetY(y: number): void;
-  SetCoord(x: number, y: number): void;
-  Distance(other: gp_Pnt2d): number;
-  SquareDistance(other: gp_Pnt2d): number;
-  IsEqual(other: gp_Pnt2d, linearTol: number): boolean;
-  Translate(vec: gp_Vec2d): void;
-  Translated(vec: gp_Vec2d): gp_Pnt2d;
-  delete(): void;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Distance(_0: gp_Pnt2d): number;
+  SquareDistance(_0: gp_Pnt2d): number;
+  IsEqual(_0: gp_Pnt2d, _1: number): boolean;
 }
 
-export interface gp_Pnt2d_Constructor {
-  new(): gp_Pnt2d;
-  new(x: number, y: number): gp_Pnt2d;
-  new(xy: gp_XY): gp_Pnt2d;
-}
-
-export interface gp_Vec2d {
+export interface gp_Vec2d extends ClassHandle {
+  Added(_0: gp_Vec2d): gp_Vec2d;
+  Subtracted(_0: gp_Vec2d): gp_Vec2d;
+  Normalized(): gp_Vec2d;
+  Reversed(): gp_Vec2d;
+  Add(_0: gp_Vec2d): void;
+  Subtract(_0: gp_Vec2d): void;
+  Normalize(): void;
+  Reverse(): void;
   X(): number;
   Y(): number;
-  SetX(x: number): void;
-  SetY(y: number): void;
-  SetCoord(x: number, y: number): void;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
   Magnitude(): number;
   SquareMagnitude(): number;
-  Angle(other: gp_Vec2d): number;
-  Add(other: gp_Vec2d): void;
-  Added(other: gp_Vec2d): gp_Vec2d;
-  Subtract(other: gp_Vec2d): void;
-  Subtracted(other: gp_Vec2d): gp_Vec2d;
-  Multiply(scalar: number): void;
-  Multiplied(scalar: number): gp_Vec2d;
-  Dot(other: gp_Vec2d): number;
-  Crossed(other: gp_Vec2d): number;
-  Normalize(): void;
-  Normalized(): gp_Vec2d;
+  Angle(_0: gp_Vec2d): number;
+  Multiply(_0: number): void;
+  Multiplied(_0: number): gp_Vec2d;
+  Dot(_0: gp_Vec2d): number;
+  Crossed(_0: gp_Vec2d): number;
+}
+
+export interface gp_Dir2d extends ClassHandle {
+  Reversed(): gp_Dir2d;
   Reverse(): void;
-  Reversed(): gp_Vec2d;
-  delete(): void;
-}
-
-export interface gp_Vec2d_Constructor {
-  new(): gp_Vec2d;
-  new(x: number, y: number): gp_Vec2d;
-  new(xy: gp_XY): gp_Vec2d;
-}
-
-export interface gp_Dir2d {
   X(): number;
   Y(): number;
-  SetX(x: number): void;
-  SetY(y: number): void;
-  SetCoord(x: number, y: number): void;
-  Angle(other: gp_Dir2d): number;
-  Dot(other: gp_Dir2d): number;
-  Crossed(other: gp_Dir2d): number;
-  Reverse(): void;
-  Reversed(): gp_Dir2d;
-  delete(): void;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Angle(_0: gp_Dir2d): number;
+  Dot(_0: gp_Dir2d): number;
+  Crossed(_0: gp_Dir2d): number;
 }
 
-export interface gp_Dir2d_Constructor {
-  new(): gp_Dir2d;
-  new(x: number, y: number): gp_Dir2d;
-  new(vec: gp_Vec2d): gp_Dir2d;
-}
-
-export interface gp_Ax2d {
+export interface gp_Ax2d extends ClassHandle {
   Location(): gp_Pnt2d;
   Direction(): gp_Dir2d;
-  SetLocation(p: gp_Pnt2d): void;
-  SetDirection(d: gp_Dir2d): void;
-  Angle(other: gp_Ax2d): number;
-  Reverse(): void;
   Reversed(): gp_Ax2d;
-  delete(): void;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetDirection(_0: gp_Dir2d): void;
+  Reverse(): void;
+  Angle(_0: gp_Ax2d): number;
 }
 
-export interface gp_Ax2d_Constructor {
-  new(): gp_Ax2d;
-  new(p: gp_Pnt2d, v: gp_Dir2d): gp_Ax2d;
-}
-
-export interface gp_Ax22d {
+export interface gp_Ax22d extends ClassHandle {
   Location(): gp_Pnt2d;
   XDirection(): gp_Dir2d;
   YDirection(): gp_Dir2d;
   XAxis(): gp_Ax2d;
   YAxis(): gp_Ax2d;
-  SetLocation(p: gp_Pnt2d): void;
-  SetXDirection(d: gp_Dir2d): void;
-  SetYDirection(d: gp_Dir2d): void;
-  delete(): void;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetXDirection(_0: gp_Dir2d): void;
+  SetYDirection(_0: gp_Dir2d): void;
 }
 
-export interface gp_Ax22d_Constructor {
-  new(): gp_Ax22d;
-  new(p: gp_Pnt2d, vx: gp_Dir2d, vy: gp_Dir2d): gp_Ax22d;
-}
-
-export interface gp_Lin2d {
+export interface gp_Lin2d extends ClassHandle {
   Location(): gp_Pnt2d;
   Direction(): gp_Dir2d;
   Position(): gp_Ax2d;
-  SetLocation(p: gp_Pnt2d): void;
-  SetDirection(d: gp_Dir2d): void;
-  Angle(other: gp_Lin2d): number;
-  Distance(p: gp_Pnt2d): number;
-  Contains(p: gp_Pnt2d, linearTol: number): boolean;
-  delete(): void;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetDirection(_0: gp_Dir2d): void;
+  Angle(_0: gp_Lin2d): number;
+  Distance(_0: gp_Pnt2d): number;
+  Contains(_0: gp_Pnt2d, _1: number): boolean;
 }
 
-export interface gp_Lin2d_Constructor {
-  new(): gp_Lin2d;
-  new(ax: gp_Ax2d): gp_Lin2d;
-  new(p: gp_Pnt2d, v: gp_Dir2d): gp_Lin2d;
-}
-
-export interface gp_Circ2d {
+export interface gp_Circ2d extends ClassHandle {
   Location(): gp_Pnt2d;
+  SetLocation(_0: gp_Pnt2d): void;
   Radius(): number;
   Area(): number;
-  SetLocation(p: gp_Pnt2d): void;
-  SetRadius(r: number): void;
-  Contains(p: gp_Pnt2d, linearTol: number): boolean;
-  Distance(p: gp_Pnt2d): number;
-  delete(): void;
+  SetRadius(_0: number): void;
+  Contains(_0: gp_Pnt2d, _1: number): boolean;
+  Distance(_0: gp_Pnt2d): number;
 }
 
-export interface gp_Circ2d_Constructor {
-  new(): gp_Circ2d;
-  new(ax: gp_Ax2d, radius: number): gp_Circ2d;
-}
-
-export interface gp_Elips2d {
-  MajorRadius(): number;
-  MinorRadius(): number;
+export interface gp_Elips2d extends ClassHandle {
   Location(): gp_Pnt2d;
-  Area(): number;
-  SetMajorRadius(r: number): void;
-  SetMinorRadius(r: number): void;
-  delete(): void;
-}
-
-export interface gp_Elips2d_Constructor {
-  new(): gp_Elips2d;
-  new(ax: gp_Ax2d, majorRadius: number, minorRadius: number): gp_Elips2d;
-}
-
-export interface gp_Trsf2d {
-  SetMirror(p: gp_Pnt2d): void;
-  SetMirrorAx2d(ax: gp_Ax2d): void;
-  SetRotation(p: gp_Pnt2d, angle: number): void;
-  SetScale(p: gp_Pnt2d, scale: number): void;
-  SetTranslation(vec: gp_Vec2d): void;
-  SetTranslationPart(vec: gp_Vec2d): void;
-  IsNegative(): boolean;
-  ScaleFactor(): number;
-  TranslationPart(): gp_XY;
-  Invert(): void;
-  Inverted(): gp_Trsf2d;
-  Multiply(other: gp_Trsf2d): void;
-  Multiplied(other: gp_Trsf2d): gp_Trsf2d;
-  delete(): void;
-}
-
-export interface gp_Trsf2d_Constructor {
-  new(): gp_Trsf2d;
-}
-
-// =============================================================================
-// Additional 3D Geometry Types
-// =============================================================================
-
-export interface gp_Elips {
   MajorRadius(): number;
   MinorRadius(): number;
+  Area(): number;
+  SetMajorRadius(_0: number): void;
+  SetMinorRadius(_0: number): void;
+}
+
+export interface gp_Trsf2d extends ClassHandle {
+  TranslationPart(): gp_XY;
+  Inverted(): gp_Trsf2d;
+  Multiplied(_0: gp_Trsf2d): gp_Trsf2d;
+  SetMirror(_0: gp_Pnt2d): void;
+  SetMirrorAx2d(_0: gp_Ax2d): void;
+  SetTranslation(_0: gp_Vec2d): void;
+  SetTranslationPart(_0: gp_Vec2d): void;
+  Invert(): void;
+  Multiply(_0: gp_Trsf2d): void;
+  IsNegative(): boolean;
+  SetRotation(_0: gp_Pnt2d, _1: number): void;
+  SetScale(_0: gp_Pnt2d, _1: number): void;
+  ScaleFactor(): number;
+}
+
+export interface gp_Elips extends ClassHandle {
   Location(): gp_Pnt;
   Position(): gp_Ax2;
+  SetLocation(_0: gp_Pnt): void;
+  SetPosition(_0: gp_Ax2): void;
+  MajorRadius(): number;
+  MinorRadius(): number;
   Area(): number;
-  SetMajorRadius(r: number): void;
-  SetMinorRadius(r: number): void;
-  SetLocation(p: gp_Pnt): void;
-  SetPosition(pos: gp_Ax2): void;
-  delete(): void;
+  SetMajorRadius(_0: number): void;
+  SetMinorRadius(_0: number): void;
 }
 
-export interface gp_Elips_Constructor {
-  new(): gp_Elips;
-  new(pos: gp_Ax2, majorRadius: number, minorRadius: number): gp_Elips;
+export interface gp_Hypr extends ClassHandle {
+  Location(): gp_Pnt;
+  Position(): gp_Ax2;
+  MajorRadius(): number;
+  MinorRadius(): number;
+  Focal(): number;
+  Eccentricity(): number;
 }
 
-export interface gp_GTrsf {
-  SetAffinity(ax: gp_Ax1, ratio: number): void;
-  SetValue(row: number, col: number, value: number): void;
-  SetVectorialPart(matrix: any): void;
-  SetTranslationPart(coord: gp_XYZ): void;
-  Value(row: number, col: number): number;
-  Invert(): void;
+export interface gp_Parab extends ClassHandle {
+  Location(): gp_Pnt;
+  Position(): gp_Ax2;
+  Focal(): number;
+  Parameter(): number;
+}
+
+export interface gp_GTrsf extends ClassHandle {
   Inverted(): gp_GTrsf;
-  Multiply(other: gp_GTrsf): void;
-  Multiplied(other: gp_GTrsf): gp_GTrsf;
+  Multiplied(_0: gp_GTrsf): gp_GTrsf;
   Trsf(): gp_Trsf;
+  SetTranslationPart(_0: gp_XYZ): void;
+  Invert(): void;
+  Multiply(_0: gp_GTrsf): void;
+  SetAffinity(_0: gp_Ax1, _1: number): void;
+  SetValue(_0: number, _1: number, _2: number): void;
+  Value(_0: number, _1: number): number;
+  SetVectorialPart(_0: gp_Mat): void;
+}
+
+export interface Geom_Surface extends ClassHandle {
+  Value(_0: number, _1: number): gp_Pnt;
+  IsUClosed(): boolean;
+  IsVClosed(): boolean;
+  IsUPeriodic(): boolean;
+  IsVPeriodic(): boolean;
+  UPeriod(): number;
+  VPeriod(): number;
+}
+
+export interface Geom_CylindricalSurface extends Geom_Surface {
+  Radius(): number;
+  SetRadius(_0: number): void;
+}
+
+export interface Geom_Curve extends ClassHandle {
+  Value(_0: number): gp_Pnt;
+  FirstParameter(): number;
+  LastParameter(): number;
+  D0(_0: number, _1: gp_Pnt): void;
+  IsClosed(): boolean;
+  IsPeriodic(): boolean;
+  Period(): number;
+}
+
+export interface Geom2d_Curve extends ClassHandle {
+  Value(_0: number): gp_Pnt2d;
+  FirstParameter(): number;
+  LastParameter(): number;
+  IsClosed(): boolean;
+  IsPeriodic(): boolean;
+  Period(): number;
+}
+
+export interface Geom2d_Circle extends Geom2d_Curve {
+  Radius(): number;
+  SetRadius(_0: number): void;
+}
+
+export interface Geom2d_Ellipse extends Geom2d_Curve {
+  MajorRadius(): number;
+  MinorRadius(): number;
+  SetMajorRadius(_0: number): void;
+  SetMinorRadius(_0: number): void;
+}
+
+export interface Geom2d_TrimmedCurve extends Geom2d_Curve {
+}
+
+export interface Handle_Geom_Surface extends ClassHandle {
+  IsNull(): boolean;
+  get(): Geom_Surface | null;
   delete(): void;
 }
 
-export interface gp_GTrsf_Constructor {
-  new(): gp_GTrsf;
-  new(t: gp_Trsf): gp_GTrsf;
+export interface Handle_Geom_Curve extends ClassHandle {
+  IsNull(): boolean;
+  get(): Geom_Curve | null;
+  delete(): void;
+  FirstParameter(): number;
+  LastParameter(): number;
+  Value(_0: number): gp_Pnt;
+  D0(_0: number, _1: gp_Pnt): void;
+  DN(_0: number, _1: number): gp_Vec;
+  IsClosed(): boolean;
+  IsPeriodic(): boolean;
 }
 
-// =============================================================================
-// TopoDS_Shape - Base Topological Shape
-// =============================================================================
+export interface Handle_Geom2d_Curve extends ClassHandle {
+  IsNull(): boolean;
+  get(): Geom2d_Curve | null;
+  delete(): void;
+  Value(_0: number): gp_Pnt2d;
+  FirstParameter(): number;
+  LastParameter(): number;
+  IsClosed(): boolean;
+  IsPeriodic(): boolean;
+  Period(): number;
+}
 
-export interface TopoDS_Shape {
+export interface TopoDS_Shape extends ClassHandle {
   IsNull(): boolean;
   Nullify(): void;
-  ShapeType(): EmbindEnumValue;
   Free(): boolean;
-  SetFree(isFree: boolean): void;
+  SetFree(_0: boolean): void;
   Locked(): boolean;
-  SetLocked(isLocked: boolean): void;
+  SetLocked(_0: boolean): void;
   Modified(): boolean;
-  SetModified(isModified: boolean): void;
+  SetModified(_0: boolean): void;
   Checked(): boolean;
-  SetChecked(isChecked: boolean): void;
+  SetChecked(_0: boolean): void;
   Orientable(): boolean;
-  SetOrientable(isOrientable: boolean): void;
+  SetOrientable(_0: boolean): void;
   Closed(): boolean;
-  SetClosed(isClosed: boolean): void;
+  SetClosed(_0: boolean): void;
   Infinite(): boolean;
-  SetInfinite(isInfinite: boolean): void;
+  SetInfinite(_0: boolean): void;
   Convex(): boolean;
-  SetConvex(isConvex: boolean): void;
-  Orientation(): EmbindEnumValue;
-  SetOrientation(orient: EmbindEnumValue): void;
-  Oriented(orient: EmbindEnumValue): TopoDS_Shape;
+  SetConvex(_0: boolean): void;
   Reverse(): void;
   Reversed(): TopoDS_Shape;
   Complement(): void;
   Complemented(): TopoDS_Shape;
-  Compose(orient: EmbindEnumValue): void;
-  Composed(orient: EmbindEnumValue): TopoDS_Shape;
   NbChildren(): number;
-  IsEqual(other: TopoDS_Shape): boolean;
-  IsSame(other: TopoDS_Shape): boolean;
-  IsPartner(other: TopoDS_Shape): boolean;
-  IsNotEqual(other: TopoDS_Shape): boolean;
+  IsEqual(_0: TopoDS_Shape): boolean;
+  IsSame(_0: TopoDS_Shape): boolean;
+  IsPartner(_0: TopoDS_Shape): boolean;
+  IsNotEqual(_0: TopoDS_Shape): boolean;
   Location(): TopLoc_Location;
-  SetLocation(loc: TopLoc_Location, raiseExc?: boolean): void;
-  Located(loc: TopLoc_Location, raiseExc?: boolean): TopoDS_Shape;
-  Moved(loc: TopLoc_Location): TopoDS_Shape;
-  Move(loc: TopLoc_Location): void;
-  delete(): void;
+  SetLocation(_0: TopLoc_Location, _1: boolean): void;
+  Located(_0: TopLoc_Location): TopoDS_Shape;
+  Moved(_0: TopLoc_Location): TopoDS_Shape;
+  Move(_0: TopLoc_Location): void;
+  ShapeType(): TopAbs_ShapeEnum;
+  Orientation(): TopAbs_Orientation;
+  SetOrientation(_0: TopAbs_Orientation): void;
+  Oriented(_0: TopAbs_Orientation): TopoDS_Shape;
+  Compose(_0: TopAbs_Orientation): void;
+  Composed(_0: TopAbs_Orientation): TopoDS_Shape;
 }
 
-export interface TopoDS_Shape_Constructor {
-  new(): TopoDS_Shape;
+export interface TopoDS_Vertex extends TopoDS_Shape {
 }
 
-// =============================================================================
-// TopoDS Sub-shape Types
-// =============================================================================
+export interface TopoDS_Edge extends TopoDS_Shape {
+}
 
-export interface TopoDS_Vertex extends TopoDS_Shape {}
-export interface TopoDS_Vertex_Constructor { new(): TopoDS_Vertex; }
+export interface TopoDS_Wire extends TopoDS_Shape {
+}
 
-export interface TopoDS_Edge extends TopoDS_Shape {}
-export interface TopoDS_Edge_Constructor { new(): TopoDS_Edge; }
+export interface TopoDS_Face extends TopoDS_Shape {
+}
 
-export interface TopoDS_Wire extends TopoDS_Shape {}
-export interface TopoDS_Wire_Constructor { new(): TopoDS_Wire; }
+export interface TopoDS_Shell extends TopoDS_Shape {
+}
 
-export interface TopoDS_Face extends TopoDS_Shape {}
-export interface TopoDS_Face_Constructor { new(): TopoDS_Face; }
+export interface TopoDS_Solid extends TopoDS_Shape {
+}
 
-export interface TopoDS_Shell extends TopoDS_Shape {}
-export interface TopoDS_Shell_Constructor { new(): TopoDS_Shell; }
+export interface TopoDS_Compound extends TopoDS_Shape {
+}
 
-export interface TopoDS_Solid extends TopoDS_Shape {}
-export interface TopoDS_Solid_Constructor { new(): TopoDS_Solid; }
+export interface TopoDS_CompSolid extends TopoDS_Shape {
+}
 
-export interface TopoDS_CompSolid extends TopoDS_Shape {}
-export interface TopoDS_CompSolid_Constructor { new(): TopoDS_CompSolid; }
-
-export interface TopoDS_Compound extends TopoDS_Shape {}
-export interface TopoDS_Compound_Constructor { new(): TopoDS_Compound; }
-
-// =============================================================================
-// TopExp_Explorer - Shape Iterator
-// =============================================================================
-
-export interface TopExp_Explorer {
-  Init(shape: TopoDS_Shape, toFind: EmbindEnumValue, toAvoid?: EmbindEnumValue): void;
+export interface TopExp_Explorer extends ClassHandle {
   More(): boolean;
   Next(): void;
   Current(): TopoDS_Shape;
@@ -3495,251 +869,31 @@ export interface TopExp_Explorer {
   ExploredShape(): TopoDS_Shape;
   Depth(): number;
   Clear(): void;
-  delete(): void;
+  Init(_0: TopoDS_Shape, _1: TopAbs_ShapeEnum, _2: TopAbs_ShapeEnum): void;
 }
 
-export interface TopExp_Explorer_Constructor {
-  new(): TopExp_Explorer;
-  new(shape: TopoDS_Shape, toFind: EmbindEnumValue): TopExp_Explorer;
-  new(shape: TopoDS_Shape, toFind: EmbindEnumValue, toAvoid: EmbindEnumValue): TopExp_Explorer;
-}
-
-// =============================================================================
-// BRepTools_WireExplorer - Wire Edge Iterator (edges in order)
-// =============================================================================
-
-export interface BRepTools_WireExplorer {
-  Init(wire: TopoDS_Wire): void;
-  InitWithFace(wire: TopoDS_Wire, face: TopoDS_Face): void;
-  More(): boolean;
-  Next(): void;
-  Current(): TopoDS_Edge;
-  Orientation(): EmbindEnumValue;
-  CurrentVertex(): TopoDS_Vertex;
+export interface TopLoc_Location extends ClassHandle {
+  IsIdentity(): boolean;
+  Identity(): void;
+  Transformation(): gp_Trsf;
+  Inverted(): TopLoc_Location;
+  Multiplied(_0: TopLoc_Location): TopLoc_Location;
+  Divided(_0: TopLoc_Location): TopLoc_Location;
+  Predivided(_0: TopLoc_Location): TopLoc_Location;
+  Powered(_0: number): TopLoc_Location;
+  IsEqual(_0: TopLoc_Location): boolean;
+  IsDifferent(_0: TopLoc_Location): boolean;
   Clear(): void;
-  delete(): void;
 }
 
-export interface BRepTools_WireExplorer_Constructor {
-  new(): BRepTools_WireExplorer;
-  new(wire: TopoDS_Wire): BRepTools_WireExplorer;
-  new(wire: TopoDS_Wire, face: TopoDS_Face): BRepTools_WireExplorer;
-}
-
-// =============================================================================
-// TopoDS_Iterator - Sub-shape Iterator
-// =============================================================================
-
-export interface TopoDS_Iterator {
-  Initialize(shape: TopoDS_Shape): void;
-  InitializeWithFlags(shape: TopoDS_Shape, cumOri: boolean, cumLoc: boolean): void;
+export interface TopoDS_Iterator extends ClassHandle {
+  Initialize(_0: TopoDS_Shape, _1: boolean, _2: boolean): void;
   More(): boolean;
   Next(): void;
   Value(): TopoDS_Shape;
-  delete(): void;
 }
 
-export interface TopoDS_Iterator_Constructor {
-  new(): TopoDS_Iterator;
-  new(shape: TopoDS_Shape): TopoDS_Iterator;
-  new(shape: TopoDS_Shape, cumOri: boolean): TopoDS_Iterator;
-  new(shape: TopoDS_Shape, cumOri: boolean, cumLoc: boolean): TopoDS_Iterator;
-}
-
-// =============================================================================
-// TopTools_ListOfShape - List of shapes
-// =============================================================================
-
-export interface TopTools_ListOfShape {
-  Size(): number;
-  IsEmpty(): boolean;
-  Clear(): void;
-  Append(shape: TopoDS_Shape): void;
-  First(): TopoDS_Shape;
-  delete(): void;
-}
-
-export interface TopTools_ListOfShape_Constructor {
-  new(): TopTools_ListOfShape;
-}
-
-// =============================================================================
-// BRepAdaptor - Curve Adaptors
-// =============================================================================
-
-/**
- * Adaptor for extracting curve from edge
- */
-export interface BRepAdaptor_Curve {
-  Initialize(edge: TopoDS_Edge): void;
-  FirstParameter(): number;
-  LastParameter(): number;
-  Value(u: number): gp_Pnt;
-  D0(u: number, p: gp_Pnt): void;
-  D1(u: number, p: gp_Pnt, v1: gp_Vec): void;
-  D2(u: number, p: gp_Pnt, v1: gp_Vec, v2: gp_Vec): void;
-  D3(u: number, p: gp_Pnt, v1: gp_Vec, v2: gp_Vec, v3: gp_Vec): void;
-  GetType(): EmbindEnumValue;
-  Line(): gp_Lin;
-  Circle(): gp_Circ;
-  Ellipse(): gp_Elips;
-  IsClosed(): boolean;
-  IsPeriodic(): boolean;
-  Period(): number;
-  Degree(): number;
-  delete(): void;
-}
-
-export interface BRepAdaptor_Curve_Constructor {
-  new(): BRepAdaptor_Curve;
-  new(edge: TopoDS_Edge): BRepAdaptor_Curve;
-}
-
-/**
- * Composite curve adaptor for wire (treats wire as single continuous curve)
- */
-export interface BRepAdaptor_CompCurve {
-  Initialize(wire: TopoDS_Wire, knotsByBlocks: boolean): void;
-  FirstParameter(): number;
-  LastParameter(): number;
-  Value(u: number): gp_Pnt;
-  D0(u: number, p: gp_Pnt): void;
-  D1(u: number, p: gp_Pnt, v1: gp_Vec): void;
-  D2(u: number, p: gp_Pnt, v1: gp_Vec, v2: gp_Vec): void;
-  D3(u: number, p: gp_Pnt, v1: gp_Vec, v2: gp_Vec, v3: gp_Vec): void;
-  GetType(): EmbindEnumValue;
-  IsClosed(): boolean;
-  IsPeriodic(): boolean;
-  Period(): number;
-  NbIntervals(s: EmbindEnumValue): number;
-  delete(): void;
-}
-
-export interface BRepAdaptor_CompCurve_Constructor {
-  new(): BRepAdaptor_CompCurve;
-  new(wire: TopoDS_Wire): BRepAdaptor_CompCurve;
-  new(wire: TopoDS_Wire, knotsByBlocks: boolean): BRepAdaptor_CompCurve;
-}
-
-/**
- * Tangential deflection point distribution on curve
- */
-export interface GCPnts_TangentialDeflection {
-  NbPoints(): number;
-  Parameter(index: number): number;
-  Value(index: number): gp_Pnt;
-  delete(): void;
-}
-
-export interface GCPnts_TangentialDeflection_Constructor {
-  new(curve: BRepAdaptor_Curve, angularDeflection: number, curvatureDeflection: number, 
-      minimumOfPoints: number, uTolerance: number, minimumLength: number): GCPnts_TangentialDeflection;
-}
-
-/**
- * Point at arc length on curve
- */
-export interface GCPnts_AbscissaPoint {
-  IsDone(): boolean;
-  Parameter(): number;
-  delete(): void;
-}
-
-export interface GCPnts_AbscissaPoint_Constructor {
-  new(curve: BRepAdaptor_Curve, abscissa: number, u0: number): GCPnts_AbscissaPoint;
-}
-
-/**
- * Shape healing/repair
- */
-export interface ShapeFix_Shape {
-  Init(shape: TopoDS_Shape): void;
-  Perform(): boolean;
-  Shape(): TopoDS_Shape;
-  SetPrecision(preci: number): void;
-  SetMinTolerance(mintol: number): void;
-  SetMaxTolerance(maxtol: number): void;
-  FixSolidMode(): number;
-  FixFreeShellMode(): number;
-  FixFreeFaceMode(): number;
-  FixFreeWireMode(): number;
-  FixSameParameterMode(): number;
-  delete(): void;
-}
-
-export interface ShapeFix_Shape_Constructor {
-  new(): ShapeFix_Shape;
-  new(shape: TopoDS_Shape): ShapeFix_Shape;
-}
-
-/**
- * Wire repair
- */
-export interface ShapeFix_Wire {
-  Init(wire: TopoDS_Wire, face: TopoDS_Face, precision: number): void;
-  Load(wire: TopoDS_Wire): void;
-  Perform(): boolean;
-  Wire(): TopoDS_Wire;
-  WireAPIMake(): TopoDS_Wire;
-  FixReorder(modeBoth?: boolean): boolean;
-  FixConnected(prec?: number): boolean;
-  FixClosed(): boolean;
-  FixDegenerated(): boolean;
-  FixSmall(lockvtx: boolean, precsmall: number): number;
-  delete(): void;
-}
-
-export interface ShapeFix_Wire_Constructor {
-  new(): ShapeFix_Wire;
-  new(wire: TopoDS_Wire, face: TopoDS_Face, precision: number): ShapeFix_Wire;
-}
-
-/**
- * 2D fillets on planar faces
- */
-export interface BRepFilletAPI_MakeFillet2d {
-  Init(face: TopoDS_Face): void;
-  AddFillet(vertex: TopoDS_Vertex, radius: number): TopoDS_Edge;
-  AddChamfer(edge1: TopoDS_Edge, edge2: TopoDS_Edge, d1: number, d2: number): TopoDS_Edge;
-  Build(): void;
-  IsDone(): boolean;
-  Shape(): TopoDS_Shape;
-  NbFillet(): number;
-  NbChamfer(): number;
-  delete(): void;
-}
-
-export interface BRepFilletAPI_MakeFillet2d_Constructor {
-  new(): BRepFilletAPI_MakeFillet2d;
-  new(face: TopoDS_Face): BRepFilletAPI_MakeFillet2d;
-}
-
-// =============================================================================
-// ChFi2d_FilletAlgo - 2D Fillet Algorithm
-// =============================================================================
-
-/**
- * 2D fillet algorithm for creating fillets between edges in a plane
- */
-export interface ChFi2d_FilletAlgo {
-  Init(wire: TopoDS_Wire, plane: gp_Pln): void;
-  Perform(radius: number): boolean;
-  NbResults(point: gp_Pnt): number;
-  Result(point: gp_Pnt, edge1: TopoDS_Edge, edge2: TopoDS_Edge, index: number): TopoDS_Edge;
-  delete(): void;
-}
-
-export interface ChFi2d_FilletAlgo_Constructor {
-  new(): ChFi2d_FilletAlgo;
-  new(wire: TopoDS_Wire, plane: gp_Pln): ChFi2d_FilletAlgo;
-  new(edge1: TopoDS_Edge, edge2: TopoDS_Edge, plane: gp_Pln): ChFi2d_FilletAlgo;
-}
-
-// =============================================================================
-// BRepPrimAPI - Primitive Creation
-// =============================================================================
-
-export interface BRepPrimAPI_MakeBox {
+export interface BRepPrimAPI_MakeBox extends ClassHandle {
   Shape(): TopoDS_Shape;
   Solid(): TopoDS_Solid;
   Shell(): TopoDS_Shell;
@@ -3750,446 +904,533 @@ export interface BRepPrimAPI_MakeBox {
   BackFace(): TopoDS_Face;
   LeftFace(): TopoDS_Face;
   RightFace(): TopoDS_Face;
-  delete(): void;
 }
 
-export interface BRepPrimAPI_MakeBox_Constructor {
-  new(dx: number, dy: number, dz: number): BRepPrimAPI_MakeBox;
-  new(p: gp_Pnt, dx: number, dy: number, dz: number): BRepPrimAPI_MakeBox;
-  new(p1: gp_Pnt, p2: gp_Pnt): BRepPrimAPI_MakeBox;
-  new(axes: gp_Ax2, dx: number, dy: number, dz: number): BRepPrimAPI_MakeBox;
-}
-
-export interface BRepPrimAPI_MakeCylinder {
+export interface BRepPrimAPI_MakeCylinder extends ClassHandle {
   Shape(): TopoDS_Shape;
   Solid(): TopoDS_Solid;
   Shell(): TopoDS_Shell;
   IsDone(): boolean;
-  delete(): void;
 }
 
-export interface BRepPrimAPI_MakeCylinder_Constructor {
-  new(r: number, h: number): BRepPrimAPI_MakeCylinder;
-  new(r: number, h: number, angle: number): BRepPrimAPI_MakeCylinder;
-  new(axes: gp_Ax2, r: number, h: number): BRepPrimAPI_MakeCylinder;
-  new(axes: gp_Ax2, r: number, h: number, angle: number): BRepPrimAPI_MakeCylinder;
-}
-
-export interface BRepPrimAPI_MakeSphere {
+export interface BRepPrimAPI_MakeSphere extends ClassHandle {
   Shape(): TopoDS_Shape;
   Solid(): TopoDS_Solid;
   Shell(): TopoDS_Shell;
   IsDone(): boolean;
-  delete(): void;
 }
 
-export interface BRepPrimAPI_MakeSphere_Constructor {
-  new(r: number): BRepPrimAPI_MakeSphere;
-  new(r: number, angle: number): BRepPrimAPI_MakeSphere;
-  new(r: number, angle1: number, angle2: number): BRepPrimAPI_MakeSphere;
-  new(r: number, angle1: number, angle2: number, angle3: number): BRepPrimAPI_MakeSphere;
-  new(center: gp_Pnt, r: number): BRepPrimAPI_MakeSphere;
-  new(axes: gp_Ax2, r: number): BRepPrimAPI_MakeSphere;
-}
-
-export interface BRepPrimAPI_MakeCone {
+export interface BRepPrimAPI_MakeCone extends ClassHandle {
   Shape(): TopoDS_Shape;
   Solid(): TopoDS_Solid;
   Shell(): TopoDS_Shell;
   IsDone(): boolean;
-  delete(): void;
 }
 
-export interface BRepPrimAPI_MakeCone_Constructor {
-  new(r1: number, r2: number, h: number): BRepPrimAPI_MakeCone;
-  new(r1: number, r2: number, h: number, angle: number): BRepPrimAPI_MakeCone;
-  new(axes: gp_Ax2, r1: number, r2: number, h: number): BRepPrimAPI_MakeCone;
-  new(axes: gp_Ax2, r1: number, r2: number, h: number, angle: number): BRepPrimAPI_MakeCone;
-}
-
-export interface BRepPrimAPI_MakeTorus {
+export interface BRepPrimAPI_MakeTorus extends ClassHandle {
   Shape(): TopoDS_Shape;
   Solid(): TopoDS_Solid;
   Shell(): TopoDS_Shell;
   IsDone(): boolean;
-  delete(): void;
 }
 
-export interface BRepPrimAPI_MakeTorus_Constructor {
-  /** Make a complete torus with major radius R1 and minor (pipe) radius R2. */
-  new(r1: number, r2: number): BRepPrimAPI_MakeTorus;
-  /** Make a torus with axes, major radius R1, and minor (pipe) radius R2. */
-  new(axes: gp_Ax2, r1: number, r2: number): BRepPrimAPI_MakeTorus;
-  /** Make a torus ring segment with angles on the minor circle (angle1 to angle2). */
-  new(r1: number, r2: number, angle1: number, angle2: number): BRepPrimAPI_MakeTorus;
-  /** Make a partial torus: ring segment (angle1, angle2) and pipe segment (angle). */
-  new(r1: number, r2: number, angle1: number, angle2: number, angle: number): BRepPrimAPI_MakeTorus;
-  /** Make a partial torus with axes: ring segment (angle1, angle2) and pipe segment (angle). */
-  new(axes: gp_Ax2, r1: number, r2: number, angle1: number, angle2: number, angle: number): BRepPrimAPI_MakeTorus;
+export interface BRepPrimAPI_MakeWedge extends ClassHandle {
+  Shape(): TopoDS_Shape;
+  Solid(): TopoDS_Solid;
+  Shell(): TopoDS_Shell;
+  IsDone(): boolean;
 }
 
-export interface BRepPrimAPI_MakePrism {
+export interface BRepPrimAPI_MakePrism extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   FirstShape(): TopoDS_Shape;
   LastShape(): TopoDS_Shape;
-  delete(): void;
 }
 
-export interface BRepPrimAPI_MakePrism_Constructor {
-  new(shape: TopoDS_Shape, vec: gp_Vec): BRepPrimAPI_MakePrism;
-  new(shape: TopoDS_Shape, vec: gp_Vec, copy: boolean): BRepPrimAPI_MakePrism;
-  new(shape: TopoDS_Shape, vec: gp_Vec, copy: boolean, canonize: boolean): BRepPrimAPI_MakePrism;
-}
-
-// =============================================================================
-// BRepPrimAPI_MakeRevol - Revolution of profile around axis
-// =============================================================================
-
-export interface BRepPrimAPI_MakeRevol {
+export interface BRepPrimAPI_MakeRevol extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   FirstShape(): TopoDS_Shape;
   LastShape(): TopoDS_Shape;
-  delete(): void;
 }
 
-export interface BRepPrimAPI_MakeRevol_Constructor {
-  new(shape: TopoDS_Shape, axis: gp_Ax1): BRepPrimAPI_MakeRevol;
-  new(shape: TopoDS_Shape, axis: gp_Ax1, angle: number): BRepPrimAPI_MakeRevol;
-  new(shape: TopoDS_Shape, axis: gp_Ax1, angle: number, copy: boolean): BRepPrimAPI_MakeRevol;
-}
-
-// =============================================================================
-// BRepPrimAPI_MakeWedge - Wedge/Ramp Primitive
-// =============================================================================
-
-/**
- * Creates a wedge (tapered box) primitive.
- * 
- * A wedge is a box where the top face is smaller than the bottom face,
- * creating a ramp or pyramid-like shape. The wedge is defined by:
- * - A box with dimensions dx × dy × dz
- * - The top face is offset/scaled relative to the bottom
- * 
- * Two construction modes:
- * 1. Simple wedge: dx, dy, dz, ltx - where ltx is the length of the top edge in X
- * 2. Full control: dx, dy, dz, xmin, zmin, xmax, zmax - specifying exact top face bounds
- * 
- * Example:
- * ```typescript
- * // Simple ramp (top edge is 20 units long, bottom is 100 units)
- * const wedge1 = new oc.BRepPrimAPI_MakeWedge(100, 50, 80, 20);
- * 
- * // Pyramid (top edge = 0)
- * const pyramid = new oc.BRepPrimAPI_MakeWedge(100, 100, 100, 0);
- * 
- * // Wedge with custom top face bounds
- * const wedge2 = new oc.BRepPrimAPI_MakeWedge(100, 50, 80, 20, 20, 80, 60);
- * 
- * // Wedge at custom position/orientation
- * const axes = new oc.gp_Ax2(new oc.gp_Pnt(10, 20, 30), new oc.gp_Dir(0, 0, 1));
- * const wedge3 = new oc.BRepPrimAPI_MakeWedge(axes, 100, 50, 80, 20);
- * ```
- */
-export interface BRepPrimAPI_MakeWedge {
-  /** Get the resulting shape */
+export interface BRepAlgoAPI_Fuse extends ClassHandle {
   Shape(): TopoDS_Shape;
-  /** Get the resulting solid */
-  Solid(): TopoDS_Solid;
-  /** Get the shell (outer boundary) */
+  IsDone(): boolean;
+  HasErrors(): boolean;
+  HasWarnings(): boolean;
+  HasGenerated(): boolean;
+  Build(): void;
+}
+
+export interface BRepAlgoAPI_Cut extends ClassHandle {
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  HasErrors(): boolean;
+  HasWarnings(): boolean;
+  HasGenerated(): boolean;
+  Build(): void;
+}
+
+export interface BRepAlgoAPI_Common extends ClassHandle {
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  HasErrors(): boolean;
+  HasWarnings(): boolean;
+  HasGenerated(): boolean;
+  Build(): void;
+}
+
+export interface BRepAlgoAPI_Section extends ClassHandle {
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  HasErrors(): boolean;
+  HasWarnings(): boolean;
+  Build(): void;
+}
+
+export interface BRepAlgoAPI_Splitter extends ClassHandle {
+  Build(): void;
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  HasErrors(): boolean;
+  HasWarnings(): boolean;
+  SetArguments(_0: TopTools_ListOfShape): void;
+  SetTools(_0: TopTools_ListOfShape): void;
+}
+
+export interface BRepBuilderAPI_MakeVertex extends ClassHandle {
+  Vertex(): TopoDS_Vertex;
+  IsDone(): boolean;
+}
+
+export interface BRepBuilderAPI_MakeEdge extends ClassHandle {
+  Edge(): TopoDS_Edge;
+  IsDone(): boolean;
+  Vertex1(): TopoDS_Vertex;
+  Vertex2(): TopoDS_Vertex;
+}
+
+export interface BRepBuilderAPI_MakeWire extends ClassHandle {
+  AddEdge(_0: TopoDS_Edge): void;
+  AddWire(_0: TopoDS_Wire): void;
+  Wire(): TopoDS_Wire;
+  IsDone(): boolean;
+  Error(): BRepBuilderAPI_WireError;
+}
+
+export interface BRepBuilderAPI_MakeFace extends ClassHandle {
+  AddWire(_0: TopoDS_Wire): void;
+  Face(): TopoDS_Face;
+  IsDone(): boolean;
+}
+
+export interface BRepBuilderAPI_MakePolygon extends ClassHandle {
+  Add(_0: gp_Pnt): void;
+  Close(): void;
+  Wire(): TopoDS_Wire;
+  Edge(): TopoDS_Edge;
+  IsDone(): boolean;
+}
+
+export interface BRepBuilderAPI_Transform extends ClassHandle {
+  Perform(_0: TopoDS_Shape, _1: boolean, _2: boolean): void;
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  ModifiedShape(_0: TopoDS_Shape): TopoDS_Shape;
+}
+
+export interface BRep_Builder extends ClassHandle {
+  MakeCompound(): TopoDS_Compound;
+  MakeCompSolid(): TopoDS_CompSolid;
+  MakeSolid(): TopoDS_Solid;
+  MakeShell(): TopoDS_Shell;
+  MakeWire(): TopoDS_Wire;
+  Add(_0: TopoDS_Shape, _1: TopoDS_Shape): void;
+  Remove(_0: TopoDS_Shape, _1: TopoDS_Shape): void;
+}
+
+export interface BRepBuilderAPI_MakeShell extends ClassHandle {
   Shell(): TopoDS_Shell;
-  /** Check if construction was successful */
   IsDone(): boolean;
-  delete(): void;
 }
 
-export interface BRepPrimAPI_MakeWedge_Constructor {
-  /**
-   * Create a wedge with base dx×dz, height dy, and top edge length ltx.
-   * The top edge runs along X direction with length ltx, centered on the base.
-   * @param dx Base length in X direction
-   * @param dy Height in Y direction  
-   * @param dz Base length in Z direction
-   * @param ltx Length of top edge in X direction (0 creates a pyramid point)
-   */
-  new(dx: number, dy: number, dz: number, ltx: number): BRepPrimAPI_MakeWedge;
-  
-  /**
-   * Create a wedge at specified position/orientation.
-   * @param axes Coordinate system (origin and directions)
-   * @param dx Base length in X direction
-   * @param dy Height in Y direction
-   * @param dz Base length in Z direction
-   * @param ltx Length of top edge in X direction
-   */
-  new(axes: gp_Ax2, dx: number, dy: number, dz: number, ltx: number): BRepPrimAPI_MakeWedge;
-  
-  /**
-   * Create a wedge with full control over the top face bounds.
-   * The top face is defined by (xmin, zmin) to (xmax, zmax) on the top plane.
-   * @param dx Base length in X direction
-   * @param dy Height in Y direction
-   * @param dz Base length in Z direction
-   * @param xmin X coordinate of top face minimum corner
-   * @param zmin Z coordinate of top face minimum corner  
-   * @param xmax X coordinate of top face maximum corner
-   * @param zmax Z coordinate of top face maximum corner
-   */
-  new(dx: number, dy: number, dz: number, xmin: number, zmin: number, xmax: number, zmax: number): BRepPrimAPI_MakeWedge;
-  
-  /**
-   * Create a wedge at specified position with full control over top face bounds.
-   * @param axes Coordinate system (origin and directions)
-   * @param dx Base length in X direction
-   * @param dy Height in Y direction
-   * @param dz Base length in Z direction
-   * @param xmin X coordinate of top face minimum corner
-   * @param zmin Z coordinate of top face minimum corner
-   * @param xmax X coordinate of top face maximum corner
-   * @param zmax Z coordinate of top face maximum corner
-   */
-  new(axes: gp_Ax2, dx: number, dy: number, dz: number, xmin: number, zmin: number, xmax: number, zmax: number): BRepPrimAPI_MakeWedge;
+export interface BRepBuilderAPI_MakeSolid extends ClassHandle {
+  Add(_0: TopoDS_Shell): void;
+  Solid(): TopoDS_Solid;
+  IsDone(): boolean;
 }
 
-// =============================================================================
-// BRepOffsetAPI - Offset, Pipe, and Loft Operations
-// =============================================================================
+export interface BRepBuilderAPI_Sewing extends ClassHandle {
+  Init(_0: number, _1: boolean, _2: boolean, _3: boolean, _4: boolean): void;
+  Add(_0: TopoDS_Shape): void;
+  Perform(): void;
+  SewedShape(): TopoDS_Shape;
+  NbFreeEdges(): number;
+  NbMultipleEdges(): number;
+  NbDegeneratedShapes(): number;
+}
 
-export interface BRepOffsetAPI_MakeOffset {
-  AddWire(wire: TopoDS_Wire): void;
-  Perform(offset: number, alt: number): void;
+export interface BRepBuilderAPI_Copy extends ClassHandle {
+  Perform(_0: TopoDS_Shape, _1: boolean, _2: boolean): void;
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+}
+
+export interface BRepBuilderAPI_GTransform extends ClassHandle {
+  Perform(_0: TopoDS_Shape, _1: boolean): void;
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+}
+
+export interface BRepFilletAPI_MakeFillet extends ClassHandle {
+  Add(_0: number, _1: TopoDS_Edge): void;
+  AddVariable(_0: number, _1: number, _2: TopoDS_Edge): void;
+  SetRadius(_0: number, _1: number, _2: number): void;
+  NbEdges(_0: number): number;
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   Build(): void;
-  Init(face: TopoDS_Face, join: EmbindEnumValue, isOpenResult: boolean): void;
-  InitJoin(join: EmbindEnumValue, isOpenResult: boolean): void;
-  delete(): void;
+  AddWithLaw(_0: TColgp_Array1OfPnt2d, _1: TopoDS_Edge): void;
 }
 
-export interface BRepOffsetAPI_MakeOffset_Constructor {
-  new(): BRepOffsetAPI_MakeOffset;
-  new(face: TopoDS_Face): BRepOffsetAPI_MakeOffset;
-}
-
-export interface BRepOffsetAPI_ThruSections {
-  AddWire(wire: TopoDS_Wire): void;
-  AddVertex(vertex: TopoDS_Vertex): void;
-  SetSmoothing(smoothing: boolean): void;
-  SetMaxDegree(degree: number): void;
-  SetParType(parType: Approx_ParametrizationType): void;
-  CheckCompatibility(check: boolean): void;
+export interface BRepFilletAPI_MakeChamfer extends ClassHandle {
+  Add(_0: number, _1: TopoDS_Edge): void;
+  AddTwoDistances(_0: number, _1: number, _2: TopoDS_Edge, _3: TopoDS_Face): void;
+  AddDA(_0: number, _1: number, _2: TopoDS_Edge, _3: TopoDS_Face): void;
+  NbEdges(_0: number): number;
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   Build(): void;
-  delete(): void;
 }
 
-export interface BRepOffsetAPI_ThruSections_Constructor {
-  new(isSolid: boolean): BRepOffsetAPI_ThruSections;
-  new(isSolid: boolean, ruled: boolean, prec: number): BRepOffsetAPI_ThruSections;
+export interface BRepFilletAPI_MakeFillet2d extends ClassHandle {
+  Init(_0: TopoDS_Face): void;
+  AddFillet(_0: TopoDS_Vertex, _1: number): TopoDS_Edge;
+  AddChamfer(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: number, _3: number): TopoDS_Edge;
+  AddChamferVertex(_0: TopoDS_Edge, _1: TopoDS_Vertex, _2: number, _3: number): TopoDS_Edge;
+  Build(): void;
+  IsDone(): boolean;
+  Shape(): TopoDS_Shape;
+  NbFillet(): number;
+  NbChamfer(): number;
 }
 
-export interface BRepOffsetAPI_MakePipe {
+export interface ChFi2d_FilletAlgo extends ClassHandle {
+  Init(_0: TopoDS_Wire, _1: gp_Pln): void;
+  Perform(_0: number): boolean;
+  NbResults(_0: gp_Pnt): number;
+  Result(_0: gp_Pnt, _1: TopoDS_Edge, _2: TopoDS_Edge, _3: number): TopoDS_Edge;
+}
+
+export interface BRepOffsetAPI_MakeOffset extends ClassHandle {
+  AddWire(_0: TopoDS_Wire): void;
+  Perform(_0: number, _1: number): void;
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  Build(): void;
+  Init(_0: TopoDS_Face, _1: GeomAbs_JoinType, _2: boolean): void;
+  InitJoin(_0: GeomAbs_JoinType, _1: boolean): void;
+}
+
+export interface BRepOffsetAPI_ThruSections extends ClassHandle {
+  AddWire(_0: TopoDS_Wire): void;
+  AddVertex(_0: TopoDS_Vertex): void;
+  SetSmoothing(_0: boolean): void;
+  SetMaxDegree(_0: number): void;
+  CheckCompatibility(_0: boolean): void;
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  Build(): void;
+  SetParType(_0: Approx_ParametrizationType): void;
+}
+
+export interface BRepOffsetAPI_MakePipe extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   Build(): void;
   FirstShape(): TopoDS_Shape;
   LastShape(): TopoDS_Shape;
-  delete(): void;
 }
 
-export interface BRepOffsetAPI_MakePipe_Constructor {
-  new(spine: TopoDS_Wire, profile: TopoDS_Shape): BRepOffsetAPI_MakePipe;
-  new(spine: TopoDS_Wire, profile: TopoDS_Shape, mode: EmbindEnumValue, forceApproxC1: boolean): BRepOffsetAPI_MakePipe;
-}
-
-export interface BRepOffsetAPI_MakePipeShell {
-  SetMode(isFrenet: boolean): void;
-  SetModeDir(direction: gp_Dir): void;
-  SetModeWithAuxSpine(auxSpine: TopoDS_Wire, curvilinearEquivalence: boolean, keepContact: EmbindEnumValue): void;
-  Add(profile: TopoDS_Shape, withContact?: boolean, withCorrection?: boolean): void;
+export interface BRepOffsetAPI_MakePipeShell extends ClassHandle {
+  SetMode(_0: boolean): void;
+  SetModeDir(_0: gp_Dir): void;
+  Add(_0: TopoDS_Shape, _1: boolean, _2: boolean): void;
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   Build(): void;
   MakeSolid(): boolean;
   FirstShape(): TopoDS_Shape;
   LastShape(): TopoDS_Shape;
-  delete(): void;
+  SetModeWithAuxSpine(_0: TopoDS_Wire, _1: boolean, _2: BRepFill_TypeOfContact): void;
 }
 
-export interface BRepOffsetAPI_MakePipeShell_Constructor {
-  new(spine: TopoDS_Wire): BRepOffsetAPI_MakePipeShell;
+export interface BRepOffsetAPI_MakeOffsetShape extends ClassHandle {
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  Build(): void;
+  PerformByJoin(_0: TopoDS_Shape, _1: number, _2: number, _3: BRepOffset_Mode, _4: boolean, _5: boolean, _6: GeomAbs_JoinType, _7: boolean): void;
 }
 
-// =============================================================================
-// BRepProj_Projection - Project Wire onto Shape
-// =============================================================================
+export interface BRepOffsetAPI_MakeThickSolid extends ClassHandle {
+  MakeThickSolidBySimple(_0: TopoDS_Shape, _1: number): void;
+  Shape(): TopoDS_Shape;
+  IsDone(): boolean;
+  Build(): void;
+  MakeThickSolidByJoin(_0: TopoDS_Shape, _1: TopTools_ListOfShape, _2: number, _3: number, _4: BRepOffset_Mode, _5: boolean, _6: boolean, _7: GeomAbs_JoinType, _8: boolean): void;
+}
 
-export interface BRepProj_Projection {
+export interface BRepProj_Projection extends ClassHandle {
   IsDone(): boolean;
   Shape(): TopoDS_Compound;
   Current(): TopoDS_Wire;
   More(): boolean;
   Next(): void;
-  delete(): void;
 }
 
-export interface BRepProj_Projection_Constructor {
-  new(wire: TopoDS_Wire, shape: TopoDS_Shape, direction: gp_Dir): BRepProj_Projection;
-}
-
-// =============================================================================
-// BRepOffsetAPI_MakeOffsetShape - 3D Offset Operations
-// =============================================================================
-
-export interface BRepOffsetAPI_MakeOffsetShape {
-  PerformByJoin(
-    shape: TopoDS_Shape,
-    offsetValue: number,
-    tolerance: number,
-    mode: EmbindEnumValue,
-    intersection: boolean,
-    selfIntersection: boolean,
-    joinType: EmbindEnumValue,
-    removeIntEdges: boolean
-  ): void;
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  Build(): void;
-  delete(): void;
-}
-
-export interface BRepOffsetAPI_MakeOffsetShape_Constructor {
-  new(): BRepOffsetAPI_MakeOffsetShape;
-}
-
-// =============================================================================
-// BRepOffsetAPI_MakeThickSolid - Shell/Thicken Operations
-// =============================================================================
-
-export interface BRepOffsetAPI_MakeThickSolid {
-  MakeThickSolidBySimple(shape: TopoDS_Shape, offset: number): void;
-  MakeThickSolidByJoin(
-    shape: TopoDS_Shape,
-    closingFaces: TopTools_ListOfShape,
-    offsetValue: number,
-    tolerance: number,
-    mode: EmbindEnumValue,
-    intersection: boolean,
-    selfIntersection: boolean,
-    joinType: EmbindEnumValue,
-    removeIntEdges: boolean
-  ): void;
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  Build(): void;
-  delete(): void;
-}
-
-export interface BRepOffsetAPI_MakeThickSolid_Constructor {
-  new(): BRepOffsetAPI_MakeThickSolid;
-}
-
-// =============================================================================
-// BOPAlgo_Builder - Boolean Operations Builder
-// =============================================================================
-
-export interface BOPAlgo_Builder {
-  AddArgument(shape: TopoDS_Shape): void;
-  SetNonDestructive(flag: boolean): void;
-  SetFuzzyValue(value: number): void;
+export interface BOPAlgo_Builder extends ClassHandle {
+  AddArgument(_0: TopoDS_Shape): void;
+  SetNonDestructive(_0: boolean): void;
+  SetFuzzyValue(_0: number): void;
   Perform(): void;
   HasErrors(): boolean;
   Shape(): TopoDS_Shape;
-  Modified(shape: TopoDS_Shape): TopTools_ListOfShape;
-  delete(): void;
+  Modified(_0: TopoDS_Shape): TopTools_ListOfShape;
 }
 
-export interface BOPAlgo_Builder_Constructor {
-  new(): BOPAlgo_Builder;
+export interface BRepOffsetAPI_DraftAngle extends ClassHandle {
+  Init(_0: TopoDS_Shape): void;
+  Add(_0: TopoDS_Face, _1: gp_Dir, _2: number, _3: gp_Pln, _4: boolean): void;
+  AddDone(): boolean;
+  Build(): void;
+  IsDone(): boolean;
+  Shape(): TopoDS_Shape;
 }
 
-// =============================================================================
-// Additional BRepBuilderAPI Classes
-// =============================================================================
-
-export interface BRepBuilderAPI_MakeShell {
+export interface BRepOffsetAPI_MakeDraft extends ClassHandle {
+  SetDraft(_0: boolean): void;
+  Perform(_0: number): void;
+  PerformToShape(_0: TopoDS_Shape, _1: boolean): void;
   Shell(): TopoDS_Shell;
+  Shape(): TopoDS_Shape;
   IsDone(): boolean;
-  delete(): void;
 }
 
-export interface BRepBuilderAPI_MakeShell_Constructor {
-  new(): BRepBuilderAPI_MakeShell;
+export interface GProp_GProps extends ClassHandle {
+  Mass(): number;
+  CentreOfMass(): gp_Pnt;
 }
 
-export interface BRepBuilderAPI_MakeSolid {
-  Add(shell: TopoDS_Shell): void;
-  Solid(): TopoDS_Solid;
-  IsDone(): boolean;
-  delete(): void;
+export interface BRepBndLib extends ClassHandle {
 }
 
-export interface BRepBuilderAPI_MakeSolid_Constructor {
-  new(): BRepBuilderAPI_MakeSolid;
-  new(shell: TopoDS_Shell): BRepBuilderAPI_MakeSolid;
+export interface BRepTools extends ClassHandle {
 }
 
-export interface BRepBuilderAPI_Sewing {
-  Init(tolerance?: number, option1?: boolean, option2?: boolean, option3?: boolean): void;
-  Add(shape: TopoDS_Shape): void;
+export interface BRep_Tool extends ClassHandle {
+}
+
+export interface Poly_Triangle extends ClassHandle {
+  Set(_0: number, _1: number, _2: number): void;
+  Value(_0: number): number;
+  ChangeValue(_0: number): number;
+}
+
+export interface Poly_Triangulation extends ClassHandle {
+  IsNull(): boolean;
+  NbNodes(): number;
+  NbTriangles(): number;
+  HasNormals(): boolean;
+  HasUVNodes(): boolean;
+  Node(_0: number): gp_Pnt;
+  Triangle(_0: number): Poly_Triangle;
+  Normal(_0: number): gp_Dir;
+  UVNode(_0: number): gp_Pnt2d;
+}
+
+export interface Poly_Connect extends ClassHandle {
+  Triangle(_0: number): number;
+  Initialize(_0: number): void;
+  More(): boolean;
+  Next(): void;
+  Value(): number;
+}
+
+export interface StdPrs_ToolTriangulatedShape extends ClassHandle {
+}
+
+export interface BRepMesh_IncrementalMesh extends ClassHandle {
   Perform(): void;
-  SewedShape(): TopoDS_Shape;
-  NbFreeEdges(): number;
-  NbMultipleEdges(): number;
-  NbDegeneratedShapes(): number;
-  delete(): void;
-}
-
-export interface BRepBuilderAPI_Sewing_Constructor {
-  new(): BRepBuilderAPI_Sewing;
-  new(tolerance: number): BRepBuilderAPI_Sewing;
-}
-
-export interface BRepBuilderAPI_Copy {
-  Perform(shape: TopoDS_Shape, copyGeom?: boolean): void;
-  Shape(): TopoDS_Shape;
   IsDone(): boolean;
-  delete(): void;
 }
 
-export interface BRepBuilderAPI_Copy_Constructor {
-  new(): BRepBuilderAPI_Copy;
-  new(shape: TopoDS_Shape): BRepBuilderAPI_Copy;
+export interface STEPControl_Reader extends ClassHandle {
+  NbRootsForTransfer(): number;
+  TransferRoot(_0: number): boolean;
+  TransferRoots(): number;
+  NbShapes(): number;
+  Shape(_0: number): TopoDS_Shape;
+  OneShape(): TopoDS_Shape;
+  ClearShapes(): void;
+  ReadFile(_0: EmbindString): IFSelect_ReturnStatus;
 }
 
-export interface BRepBuilderAPI_GTransform {
-  Perform(shape: TopoDS_Shape, makeCopy?: boolean): void;
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  delete(): void;
+export interface STEPControl_Writer extends ClassHandle {
+  Transfer(_0: TopoDS_Shape, _1: STEPControl_StepModelType): IFSelect_ReturnStatus;
+  Write(_0: EmbindString): IFSelect_ReturnStatus;
 }
 
-export interface BRepBuilderAPI_GTransform_Constructor {
-  new(gtrsf: gp_GTrsf): BRepBuilderAPI_GTransform;
-  new(shape: TopoDS_Shape, gtrsf: gp_GTrsf): BRepBuilderAPI_GTransform;
+export interface STEPControl_StepModelTypeValue<T extends number> {
+  value: T;
+}
+export type STEPControl_StepModelType = STEPControl_StepModelTypeValue<number>|STEPControl_StepModelTypeValue<number>|STEPControl_StepModelTypeValue<number>|STEPControl_StepModelTypeValue<number>|STEPControl_StepModelTypeValue<number>|STEPControl_StepModelTypeValue<number>|STEPControl_StepModelTypeValue<number>|STEPControl_StepModelTypeValue<number>;
+
+export interface IGESControl_Reader extends ClassHandle {
+  NbRootsForTransfer(): number;
+  TransferRoots(): number;
+  NbShapes(): number;
+  Shape(_0: number): TopoDS_Shape;
+  OneShape(): TopoDS_Shape;
+  ClearShapes(): void;
+  ReadFile(_0: EmbindString): IFSelect_ReturnStatus;
 }
 
-// =============================================================================
-// Bnd_Box - Axis-Aligned Bounding Box
-// =============================================================================
+export interface IGESControl_Writer extends ClassHandle {
+  AddShape(_0: TopoDS_Shape): boolean;
+  ComputeModel(): void;
+  Write(_0: EmbindString): boolean;
+}
 
-export interface Bnd_Box {
+export interface StlAPI_Writer extends ClassHandle {
+  SetASCIIMode(_0: boolean): void;
+  GetASCIIMode(): boolean;
+  Write(_0: TopoDS_Shape, _1: EmbindString): boolean;
+}
+
+export interface TopTools_ListOfShape extends ClassHandle {
+  Size(): number;
+  IsEmpty(): boolean;
+  Clear(): void;
+  Append(_0: TopoDS_Shape): void;
+  First(): TopoDS_Shape;
+}
+
+export interface TColgp_Array1OfPnt2d extends ClassHandle {
+  Lower(): number;
+  Upper(): number;
+  Length(): number;
+  Value(_0: number): gp_Pnt2d;
+  SetValue(_0: number, _1: gp_Pnt2d): void;
+}
+
+export interface TColgp_Array1OfDir extends ClassHandle {
+  Lower(): number;
+  Upper(): number;
+  Length(): number;
+  Value(_0: number): gp_Dir;
+  SetValue(_0: number, _1: gp_Dir): void;
+}
+
+export interface VectorDouble extends ClassHandle {
+  push_back(_0: number): void;
+  resize(_0: number, _1: number): void;
+  size(): number;
+  get(_0: number): number | undefined;
+  set(_0: number, _1: number): boolean;
+}
+
+export interface VectorInt extends ClassHandle {
+  push_back(_0: number): void;
+  resize(_0: number, _1: number): void;
+  size(): number;
+  get(_0: number): number | undefined;
+  set(_0: number, _1: number): boolean;
+}
+
+export type CoordResult = {
+  X: number,
+  Y: number,
+  Z: number,
+  IsValid: boolean
+};
+
+export type UVResult = {
+  U: number,
+  V: number,
+  IsValid: boolean
+};
+
+export type EdgeCurveResult = {
+  First: number,
+  Last: number,
+  IsValid: boolean
+};
+
+export interface CurvePointResult extends ClassHandle {
+  Point: gp_Pnt;
+  Tangent: gp_Vec;
+  param: number;
+  IsValid: boolean;
+}
+
+export type BoundingBoxResult = {
+  XMin: number,
+  YMin: number,
+  ZMin: number,
+  XMax: number,
+  YMax: number,
+  ZMax: number,
+  IsValid: boolean
+};
+
+export interface PropertiesResult extends ClassHandle {
+  Mass: number;
+  CentreOfMass: gp_Pnt;
+  IsValid: boolean;
+}
+
+export type UVBoundsResult = {
+  UMin: number,
+  UMax: number,
+  VMin: number,
+  VMax: number,
+  IsValid: boolean
+};
+
+export type CurvePropertiesResult = {
+  FirstParam: number,
+  LastParam: number,
+  IsClosed: boolean,
+  IsPeriodic: boolean,
+  Period: number,
+  IsValid: boolean
+};
+
+export type DerivativesResult = {
+  d1x: number,
+  d1y: number,
+  d1z: number,
+  d2x: number,
+  d2y: number,
+  d2z: number,
+  d3x: number,
+  d3y: number,
+  d3z: number,
+  isValid: boolean
+};
+
+export interface Bnd_Box extends ClassHandle {
   SetVoid(): void;
   IsVoid(): boolean;
-  Add(p: gp_Pnt): void;
-  AddBox(box: Bnd_Box): void;
-  IsOut(p: gp_Pnt): boolean;
-  IsOutBox(box: Bnd_Box): boolean;
-  Enlarge(tol: number): void;
+  Add(_0: gp_Pnt): void;
+  AddBox(_0: Bnd_Box): void;
+  IsOut(_0: gp_Pnt): boolean;
+  IsOutBox(_0: Bnd_Box): boolean;
+  Enlarge(_0: number): void;
   GetGap(): number;
-  SetGap(tol: number): void;
+  SetGap(_0: number): void;
   OpenXmin(): void;
   OpenXmax(): void;
   OpenYmin(): void;
@@ -4199,928 +1440,1232 @@ export interface Bnd_Box {
   SquareExtent(): number;
   CornerMin(): gp_Pnt;
   CornerMax(): gp_Pnt;
-  delete(): void;
 }
 
-export interface Bnd_Box_Constructor {
-  new(): Bnd_Box;
-}
-
-// =============================================================================
-// BRepAlgoAPI - Boolean Operations
-// =============================================================================
-
-export interface BRepAlgoAPI_Fuse {
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  HasErrors(): boolean;
-  HasWarnings(): boolean;
-  HasGenerated(): boolean;
-  Build(): void;
-  delete(): void;
-}
-
-export interface BRepAlgoAPI_Fuse_Constructor {
-  new(): BRepAlgoAPI_Fuse;
-  new(s1: TopoDS_Shape, s2: TopoDS_Shape): BRepAlgoAPI_Fuse;
-}
-
-export interface BRepAlgoAPI_Cut {
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  HasErrors(): boolean;
-  HasWarnings(): boolean;
-  HasGenerated(): boolean;
-  Build(): void;
-  delete(): void;
-}
-
-export interface BRepAlgoAPI_Cut_Constructor {
-  new(): BRepAlgoAPI_Cut;
-  new(s1: TopoDS_Shape, s2: TopoDS_Shape): BRepAlgoAPI_Cut;
-}
-
-export interface BRepAlgoAPI_Common {
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  HasErrors(): boolean;
-  HasWarnings(): boolean;
-  HasGenerated(): boolean;
-  Build(): void;
-  delete(): void;
-}
-
-export interface BRepAlgoAPI_Common_Constructor {
-  new(): BRepAlgoAPI_Common;
-  new(s1: TopoDS_Shape, s2: TopoDS_Shape): BRepAlgoAPI_Common;
-}
-
-export interface BRepAlgoAPI_Section {
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  HasErrors(): boolean;
-  HasWarnings(): boolean;
-  Build(): void;
-  delete(): void;
-}
-
-export interface BRepAlgoAPI_Section_Constructor {
-  new(): BRepAlgoAPI_Section;
-  new(s1: TopoDS_Shape, s2: TopoDS_Shape): BRepAlgoAPI_Section;
-  new(shape: TopoDS_Shape, plane: gp_Pln): BRepAlgoAPI_Section;
-}
-
-/**
- * Split shapes by other shapes (cutting tools).
- * Unlike Cut, Splitter preserves all pieces from both arguments and tools.
- * 
- * Example:
- * ```typescript
- * const splitter = new oc.BRepAlgoAPI_Splitter();
- * const argsToSplit = new oc.TopTools_ListOfShape();
- * argsToSplit.Append(box);
- * const tools = new oc.TopTools_ListOfShape();
- * tools.Append(cuttingPlane);
- * splitter.SetArguments(argsToSplit);
- * splitter.SetTools(tools);
- * splitter.Build();
- * if (splitter.IsDone()) {
- *   const result = splitter.Shape(); // compound of split pieces
- * }
- * ```
- */
-export interface BRepAlgoAPI_Splitter {
-  /** Set shapes to be split */
-  SetArguments(shapes: TopTools_ListOfShape): void;
-  /** Set shapes used as splitting tools */
-  SetTools(tools: TopTools_ListOfShape): void;
-  /** Perform the split operation */
-  Build(): void;
-  /** Get the result (compound of all split pieces) */
-  Shape(): TopoDS_Shape;
-  /** Check if operation completed successfully */
-  IsDone(): boolean;
-  /** Check if there were errors */
-  HasErrors(): boolean;
-  /** Check if there were warnings */
-  HasWarnings(): boolean;
-  delete(): void;
-}
-
-export interface BRepAlgoAPI_Splitter_Constructor {
-  new(): BRepAlgoAPI_Splitter;
-}
-
-// =============================================================================
-// BRepBuilderAPI - Shape Building
-// =============================================================================
-
-export interface BRepBuilderAPI_MakeVertex {
-  Vertex(): TopoDS_Vertex;
-  IsDone(): boolean;
-  delete(): void;
-}
-
-export interface BRepBuilderAPI_MakeVertex_Constructor {
-  new(p: gp_Pnt): BRepBuilderAPI_MakeVertex;
-}
-
-export interface BRepBuilderAPI_MakeEdge {
-  Edge(): TopoDS_Edge;
-  IsDone(): boolean;
-  Vertex1(): TopoDS_Vertex;
-  Vertex2(): TopoDS_Vertex;
-  delete(): void;
-}
-
-export interface BRepBuilderAPI_MakeEdge_Constructor {
-  new(): BRepBuilderAPI_MakeEdge;
-  new(p1: gp_Pnt, p2: gp_Pnt): BRepBuilderAPI_MakeEdge;
-  new(line: gp_Lin): BRepBuilderAPI_MakeEdge;
-  new(line: gp_Lin, u1: number, u2: number): BRepBuilderAPI_MakeEdge;
-  new(line: gp_Lin, p1: gp_Pnt, p2: gp_Pnt): BRepBuilderAPI_MakeEdge;
-  new(circ: gp_Circ): BRepBuilderAPI_MakeEdge;
-  new(circ: gp_Circ, u1: number, u2: number): BRepBuilderAPI_MakeEdge;
-  new(circ: gp_Circ, p1: gp_Pnt, p2: gp_Pnt): BRepBuilderAPI_MakeEdge;
-}
-
-export interface BRepBuilderAPI_MakeWire {
-  AddEdge(edge: TopoDS_Edge): void;
-  AddWire(wire: TopoDS_Wire): void;
-  Wire(): TopoDS_Wire;
-  IsDone(): boolean;
-  delete(): void;
-}
-
-export interface BRepBuilderAPI_MakeWire_Constructor {
-  new(): BRepBuilderAPI_MakeWire;
-  new(e: TopoDS_Edge): BRepBuilderAPI_MakeWire;
-  new(e1: TopoDS_Edge, e2: TopoDS_Edge): BRepBuilderAPI_MakeWire;
-  new(e1: TopoDS_Edge, e2: TopoDS_Edge, e3: TopoDS_Edge): BRepBuilderAPI_MakeWire;
-  new(wire: TopoDS_Wire): BRepBuilderAPI_MakeWire;
-}
-
-export interface BRepBuilderAPI_MakeFace {
-  AddWire(wire: TopoDS_Wire): void;
-  Face(): TopoDS_Face;
-  IsDone(): boolean;
-  delete(): void;
-}
-
-export interface BRepBuilderAPI_MakeFace_Constructor {
-  new(): BRepBuilderAPI_MakeFace;
-  new(wire: TopoDS_Wire): BRepBuilderAPI_MakeFace;
-  new(face: TopoDS_Face, wire: TopoDS_Wire): BRepBuilderAPI_MakeFace;
-}
-
-export interface BRepBuilderAPI_MakePolygon {
-  Add(p: gp_Pnt): void;
-  Close(): void;
-  Wire(): TopoDS_Wire;
-  Edge(): TopoDS_Edge;
-  IsDone(): boolean;
-  delete(): void;
-}
-
-export interface BRepBuilderAPI_MakePolygon_Constructor {
-  new(): BRepBuilderAPI_MakePolygon;
-  new(p1: gp_Pnt, p2: gp_Pnt): BRepBuilderAPI_MakePolygon;
-  new(p1: gp_Pnt, p2: gp_Pnt, p3: gp_Pnt): BRepBuilderAPI_MakePolygon;
-  new(p1: gp_Pnt, p2: gp_Pnt, p3: gp_Pnt, p4: gp_Pnt): BRepBuilderAPI_MakePolygon;
-  new(p1: gp_Pnt, p2: gp_Pnt, p3: gp_Pnt, close: boolean): BRepBuilderAPI_MakePolygon;
-  new(p1: gp_Pnt, p2: gp_Pnt, p3: gp_Pnt, p4: gp_Pnt, close: boolean): BRepBuilderAPI_MakePolygon;
-}
-
-export interface BRepBuilderAPI_Transform {
-  Perform(shape: TopoDS_Shape, copy?: boolean): void;
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  ModifiedShape(shape: TopoDS_Shape): TopoDS_Shape;
-  delete(): void;
-}
-
-export interface BRepBuilderAPI_Transform_Constructor {
-  new(trsf: gp_Trsf): BRepBuilderAPI_Transform;
-  new(shape: TopoDS_Shape, trsf: gp_Trsf): BRepBuilderAPI_Transform;
-  new(shape: TopoDS_Shape, trsf: gp_Trsf, copy: boolean): BRepBuilderAPI_Transform;
-}
-
-// =============================================================================
-// BRepFilletAPI - Fillets and Chamfers
-// =============================================================================
-
-export interface BRepFilletAPI_MakeFillet {
-  Add(radius: number, edge: TopoDS_Edge): void;
-  AddVariable(r1: number, r2: number, edge: TopoDS_Edge): void;
-  AddWithLaw(uandR: TColgp_Array1OfPnt2d, edge: TopoDS_Edge): void;
-  SetRadius(radius: number, ic: number, iinC: number): void;
-  NbEdges(): number;
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  Build(): void;
-  delete(): void;
-}
-
-export interface BRepFilletAPI_MakeFillet_Constructor {
-  new(shape: TopoDS_Shape): BRepFilletAPI_MakeFillet;
-  new(shape: TopoDS_Shape, filletShape: EmbindEnumValue): BRepFilletAPI_MakeFillet;
-}
-
-export interface BRepFilletAPI_MakeChamfer {
-  Add(dist: number, edge: TopoDS_Edge): void;
-  AddTwoDistances(dist1: number, dist2: number, edge: TopoDS_Edge, face: TopoDS_Face): void;
-  AddDA(dist: number, angle: number, edge: TopoDS_Edge, face: TopoDS_Face): void;
-  NbEdges(): number;
-  Shape(): TopoDS_Shape;
-  IsDone(): boolean;
-  Build(): void;
-  delete(): void;
-}
-
-export interface BRepFilletAPI_MakeChamfer_Constructor {
-  new(shape: TopoDS_Shape): BRepFilletAPI_MakeChamfer;
-}
-
-// =============================================================================
-// BRepFill_Filling - N-Sided Surface Filling
-// =============================================================================
-
-export interface BRepFill_Filling {
-  delete(): void;
-}
-
-export interface BRepFill_Filling_Constructor {
-  /** Default constructor with standard parameters */
-  new(): BRepFill_Filling;
-  /** Full constructor with all parameters */
-  new(
-    degree: number,
-    nbPtsOnCur: number,
-    nbIter: number,
-    anisotropie: boolean,
-    tol2d: number,
-    tol3d: number,
-    tolAng: number,
-    tolCurv: number,
-    maxDeg: number,
-    maxSegments: number
-  ): BRepFill_Filling;
-}
-
-// =============================================================================
-// BRepClass_FaceClassifier - Point Classification on Face
-// =============================================================================
-
-export interface BRepClass_FaceClassifier {
-  State(): EmbindEnumValue;
-  delete(): void;
-}
-
-export interface BRepClass_FaceClassifier_Constructor {
-  /** Default constructor */
-  new(): BRepClass_FaceClassifier;
-  /** Classify 2D point on face */
-  new(face: TopoDS_Face, point: gp_Pnt2d, tolerance: number): BRepClass_FaceClassifier;
-  /** Classify 3D point on face */
-  new(face: TopoDS_Face, point: gp_Pnt, tolerance: number): BRepClass_FaceClassifier;
-}
-
-// =============================================================================
-// GProp_GProps - Geometry Properties
-// =============================================================================
-
-export interface GProp_GProps {
-  Mass(): number;
-  CentreOfMass(): gp_Pnt;
-  delete(): void;
-}
-
-export interface GProp_GProps_Constructor {
-  new(): GProp_GProps;
-  new(systemLocation: gp_Pnt): GProp_GProps;
-}
-
-// =============================================================================
-// TopLoc_Location - Transformation Location
-// =============================================================================
-
-export interface TopLoc_Location {
-  IsIdentity(): boolean;
-  Transformation(): gp_Trsf;
-  Inverted(): TopLoc_Location;
-  Multiplied(other: TopLoc_Location): TopLoc_Location;
-  Divided(other: TopLoc_Location): TopLoc_Location;
-  Predivided(other: TopLoc_Location): TopLoc_Location;
-  Powered(exponent: number): TopLoc_Location;
-  Clear(): void;
-  delete(): void;
-}
-
-export interface TopLoc_Location_Constructor {
-  new(): TopLoc_Location;
-  new(trsf: gp_Trsf): TopLoc_Location;
-}
-
-// =============================================================================
-// Poly_Triangle - Triangle Indices
-// =============================================================================
-
-export interface Poly_Triangle {
-  Set(n1: number, n2: number, n3: number): void;
-  Value(index: number): number;
-  ChangeValue(index: number): number;
-  delete(): void;
-}
-
-export interface Poly_Triangle_Constructor {
-  new(): Poly_Triangle;
-  new(n1: number, n2: number, n3: number): Poly_Triangle;
-}
-
-// =============================================================================
-// Poly_Triangulation - Mesh Triangulation
-// =============================================================================
-
-export interface Poly_Triangulation {
-  IsNull(): boolean;
-  NbNodes(): number;
-  NbTriangles(): number;
-  HasNormals(): boolean;
-  HasUVNodes(): boolean;
-  Node(index: number): gp_Pnt;
-  Triangle(index: number): Poly_Triangle;
-  Normal(index: number): gp_Dir;
-  UVNode(index: number): gp_Pnt2d;
-  delete(): void;
-}
-
-export interface Poly_Triangulation_Constructor {
-  new(): Poly_Triangulation;
-}
-
-export interface Handle_Poly_Triangulation {
-  IsNull(): boolean;
-  get(): Poly_Triangulation;
-  delete(): void;
-}
-
-// =============================================================================
-// Poly_Connect - Triangulation Connectivity Analysis
-// =============================================================================
-
-export interface Poly_Connect {
-  Triangle(nodeIndex: number): number;
-  Initialize(nodeIndex: number): void;
+export interface BRepTools_WireExplorer extends ClassHandle {
+  Init(_0: TopoDS_Wire): void;
+  InitWithFace(_0: TopoDS_Wire, _1: TopoDS_Face): void;
   More(): boolean;
   Next(): void;
-  Value(): number;
-  delete(): void;
+  Current(): TopoDS_Edge;
+  CurrentVertex(): TopoDS_Vertex;
+  Clear(): void;
+  Orientation(): TopAbs_Orientation;
 }
 
-export interface Poly_Connect_Constructor {
-  new(): Poly_Connect;
-  new(triangulation: Poly_Triangulation): Poly_Connect;
+export interface BRepAdaptor_Curve extends ClassHandle {
+  Initialize(_0: TopoDS_Edge): void;
+  FirstParameter(): number;
+  LastParameter(): number;
+  Value(_0: number): gp_Pnt;
+  D0(_0: number, _1: gp_Pnt): void;
+  D1(_0: number, _1: gp_Pnt, _2: gp_Vec): void;
+  D2(_0: number, _1: gp_Pnt, _2: gp_Vec, _3: gp_Vec): void;
+  D3(_0: number, _1: gp_Pnt, _2: gp_Vec, _3: gp_Vec, _4: gp_Vec): void;
+  Line(): gp_Lin;
+  Circle(): gp_Circ;
+  Ellipse(): gp_Elips;
+  Hyperbola(): gp_Hypr;
+  Parabola(): gp_Parab;
+  Degree(): number;
+  IsClosed(): boolean;
+  IsPeriodic(): boolean;
+  Period(): number;
+  GetType(): GeomAbs_CurveType;
 }
 
-// =============================================================================
-// TColgp Array Types - Geometry Collections
-// =============================================================================
-
-export interface TColgp_Array1OfPnt2d {
-  Lower(): number;
-  Upper(): number;
-  Length(): number;
-  Value(index: number): gp_Pnt2d;
-  SetValue(index: number, value: gp_Pnt2d): void;
-  delete(): void;
+export interface BRepAdaptor_CompCurve extends ClassHandle {
+  Initialize(_0: TopoDS_Wire, _1: boolean): void;
+  FirstParameter(): number;
+  LastParameter(): number;
+  Value(_0: number): gp_Pnt;
+  D0(_0: number, _1: gp_Pnt): void;
+  D1(_0: number, _1: gp_Pnt, _2: gp_Vec): void;
+  D2(_0: number, _1: gp_Pnt, _2: gp_Vec, _3: gp_Vec): void;
+  D3(_0: number, _1: gp_Pnt, _2: gp_Vec, _3: gp_Vec, _4: gp_Vec): void;
+  IsClosed(): boolean;
+  IsPeriodic(): boolean;
+  Period(): number;
+  NbIntervals(_0: GeomAbs_Shape): number;
+  GetType(): GeomAbs_CurveType;
 }
 
-export interface TColgp_Array1OfPnt2d_Constructor {
-  new(lower: number, upper: number): TColgp_Array1OfPnt2d;
+export interface GCPnts_TangentialDeflection extends ClassHandle {
+  NbPoints(): number;
+  Parameter(_0: number): number;
+  Value(_0: number): gp_Pnt;
 }
 
-export interface TColgp_Array1OfDir {
-  Lower(): number;
-  Upper(): number;
-  Length(): number;
-  Value(index: number): gp_Dir;
-  SetValue(index: number, value: gp_Dir): void;
-  delete(): void;
-}
-
-export interface TColgp_Array1OfDir_Constructor {
-  new(lower: number, upper: number): TColgp_Array1OfDir;
-}
-
-// =============================================================================
-// StdPrs_ToolTriangulatedShape - Normal Computation
-// =============================================================================
-
-export interface StdPrs_ToolTriangulatedShape_Static {
-  Normal(face: TopoDS_Face, polyConnect: Poly_Connect, normals: TColgp_Array1OfDir): void;
-}
-
-// =============================================================================
-// BRepMesh_IncrementalMesh - Mesh Generation
-// =============================================================================
-
-export interface BRepMesh_IncrementalMesh {
-  Perform(): void;
+export interface GCPnts_AbscissaPoint extends ClassHandle {
   IsDone(): boolean;
-  delete(): void;
+  Parameter(): number;
 }
 
-export interface BRepMesh_IncrementalMesh_Constructor {
-  new(): BRepMesh_IncrementalMesh;
-  new(shape: TopoDS_Shape, deflection: number): BRepMesh_IncrementalMesh;
-  new(shape: TopoDS_Shape, deflection: number, isRelative: boolean): BRepMesh_IncrementalMesh;
-  new(shape: TopoDS_Shape, deflection: number, isRelative: boolean, angularDeflection: number): BRepMesh_IncrementalMesh;
-  new(shape: TopoDS_Shape, deflection: number, isRelative: boolean, angularDeflection: number, inParallel: boolean): BRepMesh_IncrementalMesh;
+export interface ShapeFix_Shape extends ClassHandle {
+  Init(_0: TopoDS_Shape): void;
+  Perform(): boolean;
+  Shape(): TopoDS_Shape;
+  SetPrecision(_0: number): void;
+  SetMinTolerance(_0: number): void;
+  SetMaxTolerance(_0: number): void;
+  FixSolidMode(): number;
+  FixFreeShellMode(): number;
+  FixFreeFaceMode(): number;
+  FixFreeWireMode(): number;
+  FixSameParameterMode(): number;
 }
 
-// =============================================================================
-// Data Exchange - STEP
-// =============================================================================
-
-export interface STEPControl_Reader {
-  ReadFile(filename: string): EmbindEnumValue;
-  NbRootsForTransfer(): number;
-  TransferRoot(num: number): boolean;
-  TransferRoots(): number;
-  NbShapes(): number;
-  Shape(num: number): TopoDS_Shape;
-  OneShape(): TopoDS_Shape;
-  ClearShapes(): void;
-  delete(): void;
+export interface ShapeFix_Wire extends ClassHandle {
+  Init(_0: TopoDS_Wire, _1: TopoDS_Face, _2: number): void;
+  Load(_0: TopoDS_Wire): void;
+  Perform(): boolean;
+  Wire(): TopoDS_Wire;
+  WireAPIMake(): TopoDS_Wire;
+  FixReorder(_0: boolean): boolean;
+  FixConnected(_0: number): boolean;
+  FixClosed(_0: number): boolean;
+  FixDegenerated(): boolean;
+  FixSmall(_0: boolean, _1: number): number;
 }
 
-export interface STEPControl_Reader_Constructor {
-  new(): STEPControl_Reader;
+export interface GccEnt_QualifiedCirc extends ClassHandle {
+  Qualified(): gp_Circ2d;
+  IsUnqualified(): boolean;
+  IsEnclosing(): boolean;
+  IsEnclosed(): boolean;
+  IsOutside(): boolean;
+  Qualifier(): GccEnt_Position;
 }
 
-export interface STEPControl_Writer {
-  Transfer(shape: TopoDS_Shape, mode: EmbindEnumValue): EmbindEnumValue;
-  Write(filename: string): EmbindEnumValue;
-  delete(): void;
+export interface GccEnt_QualifiedLin extends ClassHandle {
+  Qualified(): gp_Lin2d;
+  IsUnqualified(): boolean;
+  IsEnclosed(): boolean;
+  IsOutside(): boolean;
+  Qualifier(): GccEnt_Position;
 }
 
-export interface STEPControl_Writer_Constructor {
-  new(): STEPControl_Writer;
+export interface GccAna_Lin2d2Tan extends ClassHandle {
+  IsDone(): boolean;
+  NbSolutions(): number;
+  ThisSolution(_0: number): gp_Lin2d;
 }
 
-// =============================================================================
-// Data Exchange - IGES
-// =============================================================================
-
-export interface IGESControl_Reader {
-  ReadFile(filename: string): EmbindEnumValue;
-  NbRootsForTransfer(): number;
-  TransferRoots(): number;
-  NbShapes(): number;
-  Shape(num: number): TopoDS_Shape;
-  OneShape(): TopoDS_Shape;
-  ClearShapes(): void;
-  delete(): void;
+export interface GccAna_Circ2d2TanRad extends ClassHandle {
+  IsDone(): boolean;
+  NbSolutions(): number;
+  ThisSolution(_0: number): gp_Circ2d;
 }
 
-export interface IGESControl_Reader_Constructor {
-  new(): IGESControl_Reader;
+export interface BRepFill_Filling extends ClassHandle {
 }
 
-export interface IGESControl_Writer {
-  AddShape(shape: TopoDS_Shape): boolean;
-  ComputeModel(): void;
-  Write(filename: string): boolean;
-  delete(): void;
+export interface BRepClass_FaceClassifier extends ClassHandle {
+  State(): TopAbs_State;
 }
 
-export interface IGESControl_Writer_Constructor {
-  new(): IGESControl_Writer;
+export interface gp_Mat extends ClassHandle {
+  Value(_0: number, _1: number): number;
+  SetValue(_0: number, _1: number, _2: number): void;
+  SetRow(_0: number, _1: gp_XYZ): void;
+  SetCol(_0: number, _1: gp_XYZ): void;
+  Row(_0: number): gp_XYZ;
+  Column(_0: number): gp_XYZ;
+  Determinant(): number;
+  Invert(): void;
+  Inverted(): gp_Mat;
+  Multiply(_0: gp_Mat): void;
+  Multiplied(_0: gp_Mat): gp_Mat;
+  Transpose(): void;
+  Transposed(): gp_Mat;
 }
 
-// =============================================================================
-// Data Exchange - STL
-// =============================================================================
-
-export interface StlAPI_Writer {
-  SetASCIIMode(isAscii: boolean): void;
-  GetASCIIMode(): boolean;
-  Write(shape: TopoDS_Shape, filename: string): boolean;
-  delete(): void;
+export interface IFSelect_ReturnStatusValue<T extends number> {
+  value: T;
 }
+export type IFSelect_ReturnStatus = IFSelect_ReturnStatusValue<number>|IFSelect_ReturnStatusValue<number>|IFSelect_ReturnStatusValue<number>|IFSelect_ReturnStatusValue<number>|IFSelect_ReturnStatusValue<number>;
 
-export interface StlAPI_Writer_Constructor {
-  new(): StlAPI_Writer;
+export interface BRepBuilderAPI_WireErrorValue<T extends number> {
+  value: T;
 }
+export type BRepBuilderAPI_WireError = BRepBuilderAPI_WireErrorValue<number>|BRepBuilderAPI_WireErrorValue<number>|BRepBuilderAPI_WireErrorValue<number>|BRepBuilderAPI_WireErrorValue<number>;
 
-// =============================================================================
-// BRep_Builder - Low-level Shape Building
-// =============================================================================
-
-export interface BRep_Builder {
-  // Make* methods now return the created shape (wrapper functions)
-  MakeCompound(): TopoDS_Compound;
-  MakeCompSolid(): TopoDS_CompSolid;
-  MakeSolid(): TopoDS_Solid;
-  MakeShell(): TopoDS_Shell;
-  MakeWire(): TopoDS_Wire;
-  Add(shape: TopoDS_Shape, component: TopoDS_Shape): void;
-  Remove(shape: TopoDS_Shape, component: TopoDS_Shape): void;
-  delete(): void;
+export interface BRepBuilderAPI_FaceErrorValue<T extends number> {
+  value: T;
 }
+export type BRepBuilderAPI_FaceError = BRepBuilderAPI_FaceErrorValue<number>|BRepBuilderAPI_FaceErrorValue<number>|BRepBuilderAPI_FaceErrorValue<number>|BRepBuilderAPI_FaceErrorValue<number>|BRepBuilderAPI_FaceErrorValue<number>;
 
-export interface BRep_Builder_Constructor {
-  new(): BRep_Builder;
+export interface BRepBuilderAPI_EdgeErrorValue<T extends number> {
+  value: T;
 }
+export type BRepBuilderAPI_EdgeError = BRepBuilderAPI_EdgeErrorValue<number>|BRepBuilderAPI_EdgeErrorValue<number>|BRepBuilderAPI_EdgeErrorValue<number>|BRepBuilderAPI_EdgeErrorValue<number>|BRepBuilderAPI_EdgeErrorValue<number>|BRepBuilderAPI_EdgeErrorValue<number>|BRepBuilderAPI_EdgeErrorValue<number>;
 
-// =============================================================================
-// XCAF (Extended CAD Framework) - Assembly Support
-// =============================================================================
+export interface TopAbs_StateValue<T extends number> {
+  value: T;
+}
+export type TopAbs_State = TopAbs_StateValue<number>|TopAbs_StateValue<number>|TopAbs_StateValue<number>|TopAbs_StateValue<number>;
 
-/**
- * TDF_Label - A label in the data framework
- * Used to access attributes and navigate the document hierarchy
- */
-export interface TDF_Label {
-  /** Returns true if the label is null */
+export interface GeomAbs_ShapeValue<T extends number> {
+  value: T;
+}
+export type GeomAbs_Shape = GeomAbs_ShapeValue<number>|GeomAbs_ShapeValue<number>|GeomAbs_ShapeValue<number>|GeomAbs_ShapeValue<number>|GeomAbs_ShapeValue<number>|GeomAbs_ShapeValue<number>|GeomAbs_ShapeValue<number>;
+
+export interface GeomAbs_JoinTypeValue<T extends number> {
+  value: T;
+}
+export type GeomAbs_JoinType = GeomAbs_JoinTypeValue<number>|GeomAbs_JoinTypeValue<number>|GeomAbs_JoinTypeValue<number>;
+
+export interface BRepFill_TypeOfContactValue<T extends number> {
+  value: T;
+}
+export type BRepFill_TypeOfContact = BRepFill_TypeOfContactValue<number>|BRepFill_TypeOfContactValue<number>|BRepFill_TypeOfContactValue<number>;
+
+export interface GeomAbs_CurveTypeValue<T extends number> {
+  value: T;
+}
+export type GeomAbs_CurveType = GeomAbs_CurveTypeValue<number>|GeomAbs_CurveTypeValue<number>|GeomAbs_CurveTypeValue<number>|GeomAbs_CurveTypeValue<number>|GeomAbs_CurveTypeValue<number>|GeomAbs_CurveTypeValue<number>|GeomAbs_CurveTypeValue<number>|GeomAbs_CurveTypeValue<number>|GeomAbs_CurveTypeValue<number>;
+
+export interface GeomAbs_SurfaceTypeValue<T extends number> {
+  value: T;
+}
+export type GeomAbs_SurfaceType = GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>|GeomAbs_SurfaceTypeValue<number>;
+
+export interface GeomFill_TrihedronValue<T extends number> {
+  value: T;
+}
+export type GeomFill_Trihedron = GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>|GeomFill_TrihedronValue<number>;
+
+export interface GccEnt_PositionValue<T extends number> {
+  value: T;
+}
+export type GccEnt_Position = GccEnt_PositionValue<number>|GccEnt_PositionValue<number>|GccEnt_PositionValue<number>|GccEnt_PositionValue<number>|GccEnt_PositionValue<number>;
+
+export interface ChFi3d_FilletShapeValue<T extends number> {
+  value: T;
+}
+export type ChFi3d_FilletShape = ChFi3d_FilletShapeValue<number>|ChFi3d_FilletShapeValue<number>|ChFi3d_FilletShapeValue<number>;
+
+export interface BRepOffset_ModeValue<T extends number> {
+  value: T;
+}
+export type BRepOffset_Mode = BRepOffset_ModeValue<number>|BRepOffset_ModeValue<number>|BRepOffset_ModeValue<number>;
+
+export interface Approx_ParametrizationTypeValue<T extends number> {
+  value: T;
+}
+export type Approx_ParametrizationType = Approx_ParametrizationTypeValue<number>|Approx_ParametrizationTypeValue<number>|Approx_ParametrizationTypeValue<number>;
+
+export interface Quantity_TypeOfColorValue<T extends number> {
+  value: T;
+}
+export type Quantity_TypeOfColor = Quantity_TypeOfColorValue<number>|Quantity_TypeOfColorValue<number>|Quantity_TypeOfColorValue<number>|Quantity_TypeOfColorValue<number>|Quantity_TypeOfColorValue<number>;
+
+export interface XCAFDoc_ColorTypeValue<T extends number> {
+  value: T;
+}
+export type XCAFDoc_ColorType = XCAFDoc_ColorTypeValue<number>|XCAFDoc_ColorTypeValue<number>|XCAFDoc_ColorTypeValue<number>;
+
+export interface TopAbs_ShapeEnumValue<T extends number> {
+  value: T;
+}
+export type TopAbs_ShapeEnum = TopAbs_ShapeEnumValue<number>|TopAbs_ShapeEnumValue<number>|TopAbs_ShapeEnumValue<number>|TopAbs_ShapeEnumValue<number>|TopAbs_ShapeEnumValue<number>|TopAbs_ShapeEnumValue<number>|TopAbs_ShapeEnumValue<number>|TopAbs_ShapeEnumValue<number>|TopAbs_ShapeEnumValue<number>;
+
+export interface TopAbs_OrientationValue<T extends number> {
+  value: T;
+}
+export type TopAbs_Orientation = TopAbs_OrientationValue<number>|TopAbs_OrientationValue<number>|TopAbs_OrientationValue<number>|TopAbs_OrientationValue<number>;
+
+export interface TDF_Label extends ClassHandle {
   IsNull(): boolean;
-  /** Returns true if this is the root label */
   IsRoot(): boolean;
-  /** Returns the tag (integer identifier) of this label */
   Tag(): number;
-  /** Returns the parent label */
   Father(): TDF_Label;
-  /** Find an attribute by GUID */
-  FindAttribute_1(guid: Standard_GUID, attribute: Handle_TDF_Attribute): boolean;
-  delete(): void;
 }
 
-export interface TDF_Label_Constructor {
-  new(): TDF_Label;
-}
-
-/**
- * TDF_LabelSequence - A sequence of TDF_Label objects
- */
-export interface TDF_LabelSequence {
-  /** Number of labels in the sequence */
+export interface TDF_LabelSequence extends ClassHandle {
   Length(): number;
-  /** Get label at 1-based index */
-  Value(index: number): TDF_Label;
-  /** Append a label to the sequence */
-  Append(label: TDF_Label): void;
-  delete(): void;
+  Value(_0: number): TDF_Label;
 }
 
-export interface TDF_LabelSequence_Constructor {
-  new(): TDF_LabelSequence;
+export interface Standard_GUID extends ClassHandle {
 }
 
-/**
- * Standard_GUID - Globally Unique Identifier
- */
-export interface Standard_GUID {
-  delete(): void;
-}
-
-export interface Standard_GUID_Constructor {
-  new(): Standard_GUID;
-}
-
-/**
- * TopLoc_Location - Represents a location (transformation) in 3D space
- */
-export interface TopLoc_Location {
-  /** Returns true if the location is identity (no transformation) */
-  IsIdentity(): boolean;
-  /** Returns the transformation matrix */
-  Transformation(): gp_Trsf;
-  delete(): void;
-}
-
-export interface TopLoc_Location_Constructor {
-  new(): TopLoc_Location;
-  new(trsf: gp_Trsf): TopLoc_Location;
-}
-
-/**
- * Quantity_Color - RGB color representation
- */
-export interface Quantity_Color {
-  /** Red component (0.0-1.0) */
+export interface Quantity_Color extends ClassHandle {
   Red(): number;
-  /** Green component (0.0-1.0) */
   Green(): number;
-  /** Blue component (0.0-1.0) */
   Blue(): number;
-  /** Hue angle in degrees (0-360) */
   Hue(): number;
-  /** Light/Lightness component (0.0-1.0) */
   Light(): number;
-  /** Saturation component (0.0-1.0) */
   Saturation(): number;
-  delete(): void;
 }
 
-export interface Quantity_Color_Constructor {
-  new(): Quantity_Color;
-  new(c1: number, c2: number, c3: number, type: EmbindEnumValue): Quantity_Color;
-}
-
-/**
- * Quantity_ColorRGBA - RGBA color with alpha channel
- */
-export interface Quantity_ColorRGBA {
-  /** Get the RGB component */
+export interface Quantity_ColorRGBA extends ClassHandle {
   GetRGB(): Quantity_Color;
-  /** Get alpha value (0.0-1.0) */
   Alpha(): number;
-  /** Set alpha value */
-  SetAlpha(alpha: number): void;
-  delete(): void;
+  SetAlpha(_0: number): void;
 }
 
-export interface Quantity_ColorRGBA_Constructor {
-  new(): Quantity_ColorRGBA;
-  new(color: Quantity_Color): Quantity_ColorRGBA;
-  new(color: Quantity_Color, alpha: number): Quantity_ColorRGBA;
-}
-
-/**
- * Quantity_TypeOfColor enum - Color space types
- */
-export interface Quantity_TypeOfColor {
-  readonly Quantity_TOC_RGB: EmbindEnumValue;
-  readonly Quantity_TOC_sRGB: EmbindEnumValue;
-  readonly Quantity_TOC_HLS: EmbindEnumValue;
-  readonly Quantity_TOC_CIELab: EmbindEnumValue;
-  readonly Quantity_TOC_CIELch: EmbindEnumValue;
-}
-
-/**
- * XCAFDoc_ColorType enum - Types of color assignments
- */
-export interface XCAFDoc_ColorType {
-  /** General color */
-  readonly XCAFDoc_ColorGen: EmbindEnumValue;
-  /** Surface color */
-  readonly XCAFDoc_ColorSurf: EmbindEnumValue;
-  /** Curve color */
-  readonly XCAFDoc_ColorCurv: EmbindEnumValue;
-}
-
-/**
- * TCollection_ExtendedString - Extended (Unicode) string class
- */
-export interface TCollection_ExtendedString {
-  /** String length */
+export interface TCollection_ExtendedString extends ClassHandle {
   Length(): number;
-  delete(): void;
-}
-
-/**
- * TCollection_AsciiString - ASCII string class
- */
-export interface TCollection_AsciiString {
-  /** Get C string pointer */
-  ToCString(): string;
-  /** String length */
-  Length(): number;
-  /** Check if empty */
   IsEmpty(): boolean;
+  IsAscii(): boolean;
+}
+
+export interface TCollection_AsciiString extends ClassHandle {
+  ToCString(): string;
+  Length(): number;
+  IsEmpty(): boolean;
+}
+
+export interface TDF_Attribute extends ClassHandle {
+}
+
+export interface Handle_TDF_Attribute extends ClassHandle {
+  IsNull(): boolean;
+  get(): TDF_Attribute | null;
   delete(): void;
 }
 
-export interface TCollection_AsciiString_Constructor {
-  new(): TCollection_AsciiString;
-  new(str: string): TCollection_AsciiString;
-  new(extStr: TCollection_ExtendedString, replaceNonAscii: number): TCollection_AsciiString;
-}
-
-/**
- * Handle_TDF_Attribute - Handle to a TDF attribute
- */
-export interface Handle_TDF_Attribute {
+export interface Handle_TDocStd_Document extends ClassHandle {
   IsNull(): boolean;
-  get(): TDF_Attribute;
   delete(): void;
-}
-
-export interface Handle_TDF_Attribute_Constructor {
-  new(): Handle_TDF_Attribute;
-}
-
-/**
- * TDF_Attribute - Base class for document attributes
- */
-export interface TDF_Attribute {
-  // Base attribute interface - specific attributes derive from this
-}
-
-/**
- * Handle_XCAFDoc_ShapeTool - Handle to shape tool
- */
-export interface Handle_XCAFDoc_ShapeTool {
-  IsNull(): boolean;
-  get(): XCAFDoc_ShapeTool;
-  delete(): void;
-}
-
-export interface Handle_XCAFDoc_ShapeTool_Constructor {
-  new(): Handle_XCAFDoc_ShapeTool;
-}
-
-/**
- * Handle_XCAFDoc_ColorTool - Handle to color tool
- */
-export interface Handle_XCAFDoc_ColorTool {
-  IsNull(): boolean;
-  get(): XCAFDoc_ColorTool;
-  delete(): void;
-}
-
-export interface Handle_XCAFDoc_ColorTool_Constructor {
-  new(): Handle_XCAFDoc_ColorTool;
-}
-
-/**
- * Handle_XCAFDoc_MaterialTool - Handle to material tool
- */
-export interface Handle_XCAFDoc_MaterialTool {
-  IsNull(): boolean;
-  get(): XCAFDoc_MaterialTool;
-  delete(): void;
-}
-
-export interface Handle_XCAFDoc_MaterialTool_Constructor {
-  new(): Handle_XCAFDoc_MaterialTool;
-}
-
-/**
- * Handle_TDocStd_Document - Handle to a document
- */
-export interface Handle_TDocStd_Document {
-  IsNull(): boolean;
-  get(): TDocStd_Document;
-  /** Get the main (root) label of the document */
   Main(): TDF_Label;
-  delete(): void;
+  get(): TDocStd_Document | null;
 }
 
-export interface Handle_TDocStd_Document_Constructor {
-  new(): Handle_TDocStd_Document;
-}
-
-/**
- * TDocStd_Document - An XCAF document
- */
-export interface TDocStd_Document {
-  /** Get the main (root) label */
+export interface TDocStd_Document extends ClassHandle {
   Main(): TDF_Label;
 }
 
-/**
- * XCAFDoc_ShapeTool - Tool for working with shapes in XCAF documents
- */
-export interface XCAFDoc_ShapeTool {
-  /** Get all free (top-level) shapes */
-  GetFreeShapes(labels: TDF_LabelSequence): void;
-  /** Get all shapes */
-  GetShapes(labels: TDF_LabelSequence): void;
-  /** Check if label is top-level */
-  IsTopLevel(label: TDF_Label): boolean;
-  /** Find a shape in the document */
-  FindShape(shape: TopoDS_Shape, findInstance: boolean): TDF_Label;
+export interface TDataStd_Name extends ClassHandle {
 }
 
-/**
- * XCAFDoc_ShapeTool interface for static access
- */
-export interface XCAFDoc_ShapeTool_Interface {
-  // Static methods are accessed via module functions
-}
-
-/**
- * XCAFDoc_ColorTool - Tool for working with colors in XCAF documents
- */
-export interface XCAFDoc_ColorTool {
-  /** Check if label is a color definition */
-  IsColor(label: TDF_Label): boolean;
-  /** Get all color labels */
-  GetColors(labels: TDF_LabelSequence): void;
-  /** Get color from label (surface color by default) */
-  GetColor_1(label: TDF_Label, color: Quantity_Color): boolean;
-  /** Get RGBA color from label (surface color by default) */
-  GetColor_2(label: TDF_Label, color: Quantity_ColorRGBA): boolean;
-  /** Get color from shape for specific color type */
-  GetColor_7(shape: TopoDS_Shape, type: EmbindEnumValue, color: Quantity_Color): boolean;
-  /** Get RGBA color from shape for specific color type */
-  GetColor_8(shape: TopoDS_Shape, type: EmbindEnumValue, color: Quantity_ColorRGBA): boolean;
-}
-
-/**
- * XCAFDoc_ColorTool interface for static access
- */
-export interface XCAFDoc_ColorTool_Interface {
-  // Static methods are accessed via module functions
-}
-
-/**
- * XCAFDoc_MaterialTool - Tool for working with materials in XCAF documents
- */
-export interface XCAFDoc_MaterialTool {
-  // Material tool methods
-}
-
-/**
- * TDataStd_Name - Name attribute for labels
- */
-export interface TDataStd_Name {
-  // Name methods accessed via downcasting
-}
-
-export interface TDataStd_Name_Constructor {
-  new(): TDataStd_Name;
-  /** Get the GUID for name attributes */
-  GetID(): Standard_GUID;
-}
-
-/**
- * TDataStd_Real - Real number attribute
- */
-export interface TDataStd_Real {
-  /** Get the stored value */
+export interface TDataStd_Real extends ClassHandle {
   Get(): number;
-  /** Get the attribute ID */
   ID(): Standard_GUID;
 }
 
-export interface TDataStd_Real_Constructor {
-  new(): TDataStd_Real;
-}
-
-/**
- * TDataStd_Integer - Integer attribute
- */
-export interface TDataStd_Integer {
-  /** Get the stored value */
+export interface TDataStd_Integer extends ClassHandle {
   Get(): number;
-  /** Get the attribute ID */
   ID(): Standard_GUID;
 }
 
-export interface TDataStd_Integer_Constructor {
-  new(): TDataStd_Integer;
+export interface Handle_XCAFDoc_ShapeTool extends ClassHandle {
+  IsNull(): boolean;
+  delete(): void;
+  get(): XCAFDoc_ShapeTool | null;
 }
 
-// =============================================================================
-// Static Utility Classes (Namespace-style access)
-// =============================================================================
-
-/**
- * BRepBndLib - Static methods for bounding box computation
- */
-export interface BRepBndLib_Static {
-  /** Add a shape to a bounding box */
-  Add(shape: TopoDS_Shape, box: Bnd_Box, useTriangulation: boolean): void;
+export interface Handle_XCAFDoc_ColorTool extends ClassHandle {
+  IsNull(): boolean;
+  delete(): void;
+  get(): XCAFDoc_ColorTool | null;
 }
 
-/**
- * BRepTools - Static methods for shape manipulation
- */
-export interface BRepTools_Static {
-  /** Clean shape of triangulation data */
-  Clean(shape: TopoDS_Shape): void;
-  /** Write shape to a file */
-  Write(shape: TopoDS_Shape, fileName: string): boolean;
-  /** Read shape from a file */
-  Read(shape: TopoDS_Shape, fileName: string, builder: BRep_Builder): boolean;
+export interface Handle_XCAFDoc_MaterialTool extends ClassHandle {
+  IsNull(): boolean;
+  delete(): void;
+  get(): XCAFDoc_MaterialTool | null;
 }
 
-/**
- * BRep_Tool - Static methods for accessing BRep data
- */
-export interface BRep_Tool_Static {
-  /** Get the 3D point of a vertex */
-  Pnt(vertex: TopoDS_Vertex): gp_Pnt;
-  /** Get the tolerance of a vertex */
-  Tolerance_Vertex(vertex: TopoDS_Vertex): number;
-  /** Get the tolerance of an edge */
-  Tolerance_Edge(edge: TopoDS_Edge): number;
-  /** Get the tolerance of a face */
-  Tolerance_Face(face: TopoDS_Face): number;
-  /** Check if an edge is degenerated */
-  Degenerated(edge: TopoDS_Edge): boolean;
-  /** Check if an edge is closed */
-  IsClosed(edge: TopoDS_Edge): boolean;
-  /** Get triangulation from a face */
-  Triangulation(face: TopoDS_Face, location: TopLoc_Location, polygonOnTriangIndex: number): Handle_Poly_Triangulation;
+export interface XCAFDoc_ShapeTool extends ClassHandle {
+  GetFreeShapes(_0: TDF_LabelSequence): void;
+  GetShapes(_0: TDF_LabelSequence): void;
+  IsTopLevel(_0: TDF_Label): boolean;
+  FindShape(_0: TopoDS_Shape, _1: boolean): TDF_Label;
 }
 
-// =============================================================================
-// Module Factory Function
-// =============================================================================
+export interface XCAFDoc_ColorTool extends ClassHandle {
+  IsColor(_0: TDF_Label): boolean;
+  GetColors(_0: TDF_LabelSequence): void;
+  GetColor_1(_0: TDF_Label, _1: Quantity_Color): boolean;
+  GetColor_2(_0: TDF_Label, _1: Quantity_ColorRGBA): boolean;
+  GetColor_7(_0: TopoDS_Shape, _1: XCAFDoc_ColorType, _2: Quantity_Color): boolean;
+  GetColor_8(_0: TopoDS_Shape, _1: XCAFDoc_ColorType, _2: Quantity_ColorRGBA): boolean;
+}
 
-declare function createBitbybitOcct(): Promise<BitbybitOcctModule>;
-export default createBitbybitOcct;
+export interface XCAFDoc_MaterialTool extends ClassHandle {
+}
 
+export type FaceTriangulationInfo = {
+  faceIndex: number,
+  triangleStartIndex: number,
+  triangleCount: number,
+  nodeStartIndex: number,
+  nodeCount: number
+};
+
+export interface VectorFaceTriangulationInfo extends ClassHandle {
+  push_back(_0: FaceTriangulationInfo): void;
+  resize(_0: number, _1: FaceTriangulationInfo): void;
+  size(): number;
+  get(_0: number): FaceTriangulationInfo | undefined;
+  set(_0: number, _1: FaceTriangulationInfo): boolean;
+}
+
+export type SubShapeInfo = {
+  index: number,
+  labelTag: number,
+  shapeType: EmbindString,
+  hasColor: boolean,
+  colorR: number,
+  colorG: number,
+  colorB: number,
+  colorA: number
+};
+
+export interface VectorSubShapeInfo extends ClassHandle {
+  push_back(_0: SubShapeInfo): void;
+  resize(_0: number, _1: SubShapeInfo): void;
+  size(): number;
+  get(_0: number): SubShapeInfo | undefined;
+  set(_0: number, _1: SubShapeInfo): boolean;
+}
+
+export type PartDefinitionInfo = {
+  labelTag: number,
+  name: EmbindString,
+  isAssembly: boolean,
+  isReference: boolean,
+  isSimpleShape: boolean,
+  isCompound: boolean,
+  nbComponents: number
+};
+
+interface EmbindModule {
+  gp_XYZ: {
+    new(): gp_XYZ;
+    new(_0: number, _1: number, _2: number): gp_XYZ;
+  };
+  gp_Pnt: {
+    new(): gp_Pnt;
+    new(_0: gp_XYZ): gp_Pnt;
+    new(_0: number, _1: number, _2: number): gp_Pnt;
+  };
+  gp_Pnt_fromXYZ(_0: gp_XYZ): gp_Pnt;
+  gp_Vec: {
+    new(): gp_Vec;
+    new(_0: gp_XYZ): gp_Vec;
+    new(_0: gp_Pnt, _1: gp_Pnt): gp_Vec;
+    new(_0: number, _1: number, _2: number): gp_Vec;
+  };
+  gp_Vec_fromXYZ(_0: gp_XYZ): gp_Vec;
+  gp_Vec_fromPoints(_0: gp_Pnt, _1: gp_Pnt): gp_Vec;
+  gp_Dir: {
+    new(): gp_Dir;
+    new(_0: gp_XYZ): gp_Dir;
+    new(_0: number, _1: number, _2: number): gp_Dir;
+  };
+  gp_Dir_fromVec(_0: gp_Vec): gp_Dir;
+  gp_Ax1: {
+    new(): gp_Ax1;
+    new(_0: gp_Pnt, _1: gp_Dir): gp_Ax1;
+  };
+  gp_Ax2: {
+    new(): gp_Ax2;
+    new(_0: gp_Pnt, _1: gp_Dir): gp_Ax2;
+    new(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir): gp_Ax2;
+  };
+  gp_Ax3: {
+    new(): gp_Ax3;
+    new(_0: gp_Ax2): gp_Ax3;
+    new(_0: gp_Pnt, _1: gp_Dir): gp_Ax3;
+    new(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir): gp_Ax3;
+  };
+  gp_Trsf: {
+    new(): gp_Trsf;
+  };
+  gp_Pln: {
+    new(): gp_Pln;
+    new(_0: gp_Ax3): gp_Pln;
+    new(_0: gp_Pnt, _1: gp_Dir): gp_Pln;
+    new(_0: number, _1: number, _2: number, _3: number): gp_Pln;
+  };
+  gp_Lin: {
+    new(): gp_Lin;
+    new(_0: gp_Ax1): gp_Lin;
+    new(_0: gp_Pnt, _1: gp_Dir): gp_Lin;
+  };
+  gp_Circ: {
+    new(): gp_Circ;
+    new(_0: gp_Ax2, _1: number): gp_Circ;
+  };
+  gp_XY: {
+    new(): gp_XY;
+    new(_0: number, _1: number): gp_XY;
+  };
+  gp_Pnt2d: {
+    new(): gp_Pnt2d;
+    new(_0: gp_XY): gp_Pnt2d;
+    new(_0: number, _1: number): gp_Pnt2d;
+  };
+  gp_Vec2d: {
+    new(): gp_Vec2d;
+    new(_0: gp_XY): gp_Vec2d;
+    new(_0: number, _1: number): gp_Vec2d;
+  };
+  gp_Dir2d: {
+    new(): gp_Dir2d;
+    new(_0: gp_Vec2d): gp_Dir2d;
+    new(_0: number, _1: number): gp_Dir2d;
+  };
+  gp_Ax2d: {
+    new(): gp_Ax2d;
+    new(_0: gp_Pnt2d, _1: gp_Dir2d): gp_Ax2d;
+  };
+  gp_Ax22d: {
+    new(): gp_Ax22d;
+    new(_0: gp_Pnt2d, _1: gp_Dir2d, _2: gp_Dir2d): gp_Ax22d;
+  };
+  gp_Lin2d: {
+    new(): gp_Lin2d;
+    new(_0: gp_Ax2d): gp_Lin2d;
+    new(_0: gp_Pnt2d, _1: gp_Dir2d): gp_Lin2d;
+  };
+  gp_Circ2d: {
+    new(): gp_Circ2d;
+    new(_0: gp_Ax2d, _1: number): gp_Circ2d;
+  };
+  gp_Elips2d: {
+    new(): gp_Elips2d;
+    new(_0: gp_Ax2d, _1: number, _2: number): gp_Elips2d;
+  };
+  gp_Trsf2d: {
+    new(): gp_Trsf2d;
+  };
+  gp_Elips: {
+    new(): gp_Elips;
+    new(_0: gp_Ax2, _1: number, _2: number): gp_Elips;
+  };
+  gp_Hypr: {
+    new(): gp_Hypr;
+    new(_0: gp_Ax2, _1: number, _2: number): gp_Hypr;
+  };
+  gp_Parab: {
+    new(): gp_Parab;
+    new(_0: gp_Ax2, _1: number): gp_Parab;
+  };
+  gp_GTrsf: {
+    new(): gp_GTrsf;
+    new(_0: gp_Trsf): gp_GTrsf;
+  };
+  Geom_Surface: {};
+  GeomLib_NormEstim(_0: Geom_Surface | null, _1: gp_Pnt2d, _2: number): gp_Dir;
+  Geom_Surface_Value(_0: Geom_Surface | null, _1: number, _2: number): gp_Pnt;
+  Geom_CylindricalSurface: {
+    new(_0: gp_Ax3, _1: number): Geom_CylindricalSurface;
+  };
+  Geom_Curve: {};
+  Geom2d_Curve: {};
+  Geom2d_Circle: {};
+  Geom2d_Ellipse: {};
+  Geom2d_TrimmedCurve: {};
+  Handle_Geom_Surface: {
+    new(): Handle_Geom_Surface;
+  };
+  Handle_Geom_Curve: {
+    new(): Handle_Geom_Curve;
+  };
+  Handle_Geom2d_Curve: {
+    new(): Handle_Geom2d_Curve;
+  };
+  GeomAPI_To2d(_0: Handle_Geom_Curve, _1: gp_Pln): Handle_Geom2d_Curve;
+  TopoDS_Shape: {
+    new(): TopoDS_Shape;
+  };
+  TopoDS_Vertex: {
+    new(): TopoDS_Vertex;
+  };
+  TopoDS_Edge: {
+    new(): TopoDS_Edge;
+  };
+  IsEdgeCircular(_0: TopoDS_Edge): boolean;
+  IsEdgeLinear(_0: TopoDS_Edge): boolean;
+  MakeEdgeFromGeom2dCurveAndSurfaceBounded(_0: Handle_Geom2d_Curve, _1: Geom_Surface | null, _2: number, _3: number): TopoDS_Edge;
+  MakeEdgeFromGeom2dCurveAndSurface(_0: Handle_Geom2d_Curve, _1: Geom_Surface | null): TopoDS_Edge;
+  GetEdgeCurve(_0: TopoDS_Edge): Handle_Geom_Curve;
+  GetEdgeLength(_0: TopoDS_Edge): number;
+  TopoDS_Wire: {
+    new(): TopoDS_Wire;
+  };
+  TopoDS_Face: {
+    new(): TopoDS_Face;
+  };
+  BRep_Tool_Surface(_0: TopoDS_Face): Handle_Geom_Surface;
+  MakeFaceFromSurface(_0: Geom_Surface | null, _1: number): TopoDS_Face;
+  MakeFaceFromSurfaceAndWire(_0: Geom_Surface | null, _1: TopoDS_Wire, _2: boolean): TopoDS_Face;
+  TopoDS_Shell: {
+    new(): TopoDS_Shell;
+  };
+  TopoDS_Solid: {
+    new(): TopoDS_Solid;
+  };
+  TopoDS_Compound: {
+    new(): TopoDS_Compound;
+  };
+  TopoDS_CompSolid: {
+    new(): TopoDS_CompSolid;
+  };
+  CastToVertex(_0: TopoDS_Shape): TopoDS_Vertex;
+  CastToEdge(_0: TopoDS_Shape): TopoDS_Edge;
+  CastToWire(_0: TopoDS_Shape): TopoDS_Wire;
+  CastToFace(_0: TopoDS_Shape): TopoDS_Face;
+  CastToShell(_0: TopoDS_Shape): TopoDS_Shell;
+  CastToSolid(_0: TopoDS_Shape): TopoDS_Solid;
+  CastToCompSolid(_0: TopoDS_Shape): TopoDS_CompSolid;
+  CastToCompound(_0: TopoDS_Shape): TopoDS_Compound;
+  TopExp_Explorer: {
+    new(): TopExp_Explorer;
+    new(_0: TopoDS_Shape, _1: TopAbs_ShapeEnum): TopExp_Explorer;
+    new(_0: TopoDS_Shape, _1: TopAbs_ShapeEnum, _2: TopAbs_ShapeEnum): TopExp_Explorer;
+  };
+  TopLoc_Location: {
+    new(): TopLoc_Location;
+    new(_0: gp_Trsf): TopLoc_Location;
+  };
+  TopoDS_Iterator: {
+    new(): TopoDS_Iterator;
+    new(_0: TopoDS_Shape): TopoDS_Iterator;
+    new(_0: TopoDS_Shape, _1: boolean): TopoDS_Iterator;
+    new(_0: TopoDS_Shape, _1: boolean, _2: boolean): TopoDS_Iterator;
+  };
+  BRepPrimAPI_MakeBox: {
+    new(_0: number, _1: number, _2: number): BRepPrimAPI_MakeBox;
+    new(_0: gp_Pnt, _1: gp_Pnt): BRepPrimAPI_MakeBox;
+    new(_0: gp_Ax2, _1: number, _2: number, _3: number): BRepPrimAPI_MakeBox;
+  };
+  BRepPrimAPI_MakeCylinder: {
+    new(_0: number, _1: number): BRepPrimAPI_MakeCylinder;
+    new(_0: gp_Ax2, _1: number, _2: number): BRepPrimAPI_MakeCylinder;
+    new(_0: gp_Ax2, _1: number, _2: number, _3: number): BRepPrimAPI_MakeCylinder;
+  };
+  BRepPrimAPI_MakeSphere: {
+    new(_0: number): BRepPrimAPI_MakeSphere;
+    new(_0: gp_Pnt, _1: number): BRepPrimAPI_MakeSphere;
+  };
+  BRepPrimAPI_MakeCone: {
+    new(_0: number, _1: number, _2: number): BRepPrimAPI_MakeCone;
+    new(_0: number, _1: number, _2: number, _3: number): BRepPrimAPI_MakeCone;
+    new(_0: gp_Ax2, _1: number, _2: number, _3: number, _4: number): BRepPrimAPI_MakeCone;
+  };
+  BRepPrimAPI_MakeTorus: {
+    new(_0: number, _1: number): BRepPrimAPI_MakeTorus;
+    new(_0: gp_Ax2, _1: number, _2: number): BRepPrimAPI_MakeTorus;
+    new(_0: number, _1: number, _2: number, _3: number): BRepPrimAPI_MakeTorus;
+    new(_0: number, _1: number, _2: number, _3: number, _4: number): BRepPrimAPI_MakeTorus;
+    new(_0: gp_Ax2, _1: number, _2: number, _3: number, _4: number, _5: number): BRepPrimAPI_MakeTorus;
+  };
+  BRepPrimAPI_MakeWedge: {
+    new(_0: number, _1: number, _2: number, _3: number): BRepPrimAPI_MakeWedge;
+    new(_0: gp_Ax2, _1: number, _2: number, _3: number, _4: number): BRepPrimAPI_MakeWedge;
+    new(_0: number, _1: number, _2: number, _3: number, _4: number, _5: number, _6: number): BRepPrimAPI_MakeWedge;
+    new(_0: gp_Ax2, _1: number, _2: number, _3: number, _4: number, _5: number, _6: number, _7: number): BRepPrimAPI_MakeWedge;
+  };
+  BRepPrimAPI_MakePrism: {
+    new(_0: TopoDS_Shape, _1: gp_Vec): BRepPrimAPI_MakePrism;
+    new(_0: TopoDS_Shape, _1: gp_Vec, _2: boolean): BRepPrimAPI_MakePrism;
+    new(_0: TopoDS_Shape, _1: gp_Vec, _2: boolean, _3: boolean): BRepPrimAPI_MakePrism;
+  };
+  BRepPrimAPI_MakeRevol: {
+    new(_0: TopoDS_Shape, _1: gp_Ax1): BRepPrimAPI_MakeRevol;
+    new(_0: TopoDS_Shape, _1: gp_Ax1, _2: number): BRepPrimAPI_MakeRevol;
+    new(_0: TopoDS_Shape, _1: gp_Ax1, _2: number, _3: boolean): BRepPrimAPI_MakeRevol;
+  };
+  MakeBoxFromPntAndDims(_0: gp_Pnt, _1: number, _2: number, _3: number): TopoDS_Shape;
+  MakeSphereFromAx2(_0: gp_Ax2, _1: number): BRepPrimAPI_MakeSphere | null;
+  MakeConeFromAx2(_0: gp_Ax2, _1: number, _2: number, _3: number): BRepPrimAPI_MakeCone | null;
+  BRepAlgoAPI_Fuse: {
+    new(): BRepAlgoAPI_Fuse;
+    new(_0: TopoDS_Shape, _1: TopoDS_Shape): BRepAlgoAPI_Fuse;
+  };
+  BRepAlgoAPI_Cut: {
+    new(): BRepAlgoAPI_Cut;
+    new(_0: TopoDS_Shape, _1: TopoDS_Shape): BRepAlgoAPI_Cut;
+  };
+  BRepAlgoAPI_Common: {
+    new(): BRepAlgoAPI_Common;
+    new(_0: TopoDS_Shape, _1: TopoDS_Shape): BRepAlgoAPI_Common;
+  };
+  BRepAlgoAPI_Section: {
+    new(): BRepAlgoAPI_Section;
+    new(_0: TopoDS_Shape, _1: TopoDS_Shape): BRepAlgoAPI_Section;
+  };
+  BRepAlgoAPI_Splitter: {
+    new(): BRepAlgoAPI_Splitter;
+  };
+  BRepBuilderAPI_MakeVertex: {
+    new(_0: gp_Pnt): BRepBuilderAPI_MakeVertex;
+  };
+  BRepBuilderAPI_MakeEdge: {
+    new(): BRepBuilderAPI_MakeEdge;
+    new(_0: gp_Pnt, _1: gp_Pnt): BRepBuilderAPI_MakeEdge;
+  };
+  BRepBuilderAPI_MakeWire: {
+    new(): BRepBuilderAPI_MakeWire;
+    new(_0: TopoDS_Edge): BRepBuilderAPI_MakeWire;
+    new(_0: TopoDS_Edge, _1: TopoDS_Edge): BRepBuilderAPI_MakeWire;
+    new(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: TopoDS_Edge): BRepBuilderAPI_MakeWire;
+  };
+  BRepBuilderAPI_MakeFace: {
+    new(): BRepBuilderAPI_MakeFace;
+    new(_0: TopoDS_Wire): BRepBuilderAPI_MakeFace;
+    new(_0: TopoDS_Face, _1: TopoDS_Wire): BRepBuilderAPI_MakeFace;
+  };
+  MakeFaceFromFaceSurfaceAndWire(_0: TopoDS_Face, _1: TopoDS_Wire, _2: boolean): TopoDS_Face;
+  MakeFaceFromFaceSurface(_0: TopoDS_Face, _1: number): TopoDS_Face;
+  MakeFaceFromWireOnlyPlane(_0: TopoDS_Wire, _1: boolean): TopoDS_Face;
+  BRepBuilderAPI_MakePolygon: {
+    new(): BRepBuilderAPI_MakePolygon;
+    new(_0: gp_Pnt, _1: gp_Pnt): BRepBuilderAPI_MakePolygon;
+    new(_0: gp_Pnt, _1: gp_Pnt, _2: gp_Pnt): BRepBuilderAPI_MakePolygon;
+    new(_0: gp_Pnt, _1: gp_Pnt, _2: gp_Pnt, _3: gp_Pnt): BRepBuilderAPI_MakePolygon;
+  };
+  BRepBuilderAPI_Transform: {
+    new(_0: gp_Trsf): BRepBuilderAPI_Transform;
+    new(_0: TopoDS_Shape, _1: gp_Trsf): BRepBuilderAPI_Transform;
+    new(_0: TopoDS_Shape, _1: gp_Trsf, _2: boolean): BRepBuilderAPI_Transform;
+  };
+  BRep_Builder: {
+    new(): BRep_Builder;
+  };
+  BRepBuilderAPI_MakeShell: {
+    new(): BRepBuilderAPI_MakeShell;
+  };
+  BRepBuilderAPI_MakeSolid: {
+    new(): BRepBuilderAPI_MakeSolid;
+    new(_0: TopoDS_Shell): BRepBuilderAPI_MakeSolid;
+  };
+  BRepBuilderAPI_Sewing: {
+    new(): BRepBuilderAPI_Sewing;
+    new(_0: number): BRepBuilderAPI_Sewing;
+  };
+  BRepBuilderAPI_Copy: {
+    new(): BRepBuilderAPI_Copy;
+    new(_0: TopoDS_Shape): BRepBuilderAPI_Copy;
+  };
+  BRepBuilderAPI_GTransform: {
+    new(_0: gp_GTrsf): BRepBuilderAPI_GTransform;
+    new(_0: TopoDS_Shape, _1: gp_GTrsf): BRepBuilderAPI_GTransform;
+  };
+  BRep_Builder_MakeCompound(_0: BRep_Builder): TopoDS_Compound;
+  BRep_Builder_MakeWire(_0: BRep_Builder): TopoDS_Wire;
+  BRep_Builder_MakeShell(_0: BRep_Builder): TopoDS_Shell;
+  BRep_Builder_MakeSolid(_0: BRep_Builder): TopoDS_Solid;
+  BRep_Builder_MakeCompSolid(_0: BRep_Builder): TopoDS_CompSolid;
+  BRepFilletAPI_MakeFillet: {
+    new(_0: TopoDS_Shape): BRepFilletAPI_MakeFillet;
+    new(_0: TopoDS_Shape, _1: ChFi3d_FilletShape): BRepFilletAPI_MakeFillet;
+  };
+  BRepFilletAPI_MakeChamfer: {
+    new(_0: TopoDS_Shape): BRepFilletAPI_MakeChamfer;
+  };
+  BRepFilletAPI_MakeFillet2d: {
+    new(): BRepFilletAPI_MakeFillet2d;
+    new(_0: TopoDS_Face): BRepFilletAPI_MakeFillet2d;
+  };
+  ChFi2d_FilletAlgo: {
+    new(): ChFi2d_FilletAlgo;
+    new(_0: TopoDS_Wire, _1: gp_Pln): ChFi2d_FilletAlgo;
+    new(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: gp_Pln): ChFi2d_FilletAlgo;
+  };
+  BRepOffsetAPI_MakeOffset: {
+    new(): BRepOffsetAPI_MakeOffset;
+    new(_0: TopoDS_Face): BRepOffsetAPI_MakeOffset;
+  };
+  BRepOffsetAPI_ThruSections: {
+    new(_0: boolean): BRepOffsetAPI_ThruSections;
+    new(_0: boolean, _1: boolean, _2: number): BRepOffsetAPI_ThruSections;
+  };
+  BRepOffsetAPI_MakePipe: {
+    new(_0: TopoDS_Wire, _1: TopoDS_Shape): BRepOffsetAPI_MakePipe;
+    new(_0: TopoDS_Wire, _1: TopoDS_Shape, _2: GeomFill_Trihedron, _3: boolean): BRepOffsetAPI_MakePipe;
+  };
+  BRepOffsetAPI_MakePipeShell: {
+    new(_0: TopoDS_Wire): BRepOffsetAPI_MakePipeShell;
+  };
+  BRepOffsetAPI_MakeOffsetShape: {
+    new(): BRepOffsetAPI_MakeOffsetShape;
+  };
+  BRepOffsetAPI_MakeThickSolid: {
+    new(): BRepOffsetAPI_MakeThickSolid;
+  };
+  BRepProj_Projection: {
+    new(_0: TopoDS_Wire, _1: TopoDS_Shape, _2: gp_Dir): BRepProj_Projection;
+  };
+  BOPAlgo_Builder: {
+    new(): BOPAlgo_Builder;
+  };
+  BRepOffsetAPI_DraftAngle: {
+    new(): BRepOffsetAPI_DraftAngle;
+    new(_0: TopoDS_Shape): BRepOffsetAPI_DraftAngle;
+  };
+  BRepOffsetAPI_MakeDraft: {
+    new(_0: TopoDS_Shape, _1: gp_Dir, _2: number): BRepOffsetAPI_MakeDraft;
+  };
+  GProp_GProps: {
+    new(): GProp_GProps;
+    new(_0: gp_Pnt): GProp_GProps;
+  };
+  BRep_Tool_Pnt(_0: TopoDS_Vertex): gp_Pnt;
+  BRep_Tool_Tolerance_Vertex(_0: TopoDS_Vertex): number;
+  BRep_Tool_Tolerance_Edge(_0: TopoDS_Edge): number;
+  BRep_Tool_Tolerance_Face(_0: TopoDS_Face): number;
+  BRep_Tool_IsGeometric(_0: TopoDS_Edge): boolean;
+  BRep_Tool_Degenerated(_0: TopoDS_Edge): boolean;
+  BRepGProp_LinearProperties(_0: TopoDS_Shape, _1: GProp_GProps): void;
+  BRepGProp_SurfaceProperties(_0: TopoDS_Shape, _1: GProp_GProps): void;
+  BRepGProp_VolumeProperties(_0: TopoDS_Shape, _1: GProp_GProps): void;
+  BRepBndLib: {
+    Add(_0: TopoDS_Shape, _1: Bnd_Box, _2: boolean): void;
+  };
+  BRepTools: {
+    Clean(_0: TopoDS_Shape): void;
+    Write(_0: TopoDS_Shape, _1: EmbindString): boolean;
+    Read(_0: TopoDS_Shape, _1: EmbindString, _2: BRep_Builder): boolean;
+  };
+  BRep_Tool: {
+    Pnt(_0: TopoDS_Vertex): gp_Pnt;
+    Tolerance_Vertex(_0: TopoDS_Vertex): number;
+    Tolerance_Edge(_0: TopoDS_Edge): number;
+    Tolerance_Face(_0: TopoDS_Face): number;
+    Degenerated(_0: TopoDS_Edge): boolean;
+    IsClosed(_0: TopoDS_Edge): boolean;
+  };
+  Poly_Triangle: {
+    new(): Poly_Triangle;
+    new(_0: number, _1: number, _2: number): Poly_Triangle;
+  };
+  Poly_Triangulation: {
+    new(): Poly_Triangulation;
+  };
+  Poly_Connect: {
+    new(): Poly_Connect;
+    new(_0: Poly_Triangulation): Poly_Connect;
+  };
+  StdPrs_ToolTriangulatedShape: {
+    Normal(_0: TopoDS_Face, _1: Poly_Connect, _2: TColgp_Array1OfDir): void;
+  };
+  BRepMesh_IncrementalMesh: {
+    new(): BRepMesh_IncrementalMesh;
+    new(_0: TopoDS_Shape, _1: number): BRepMesh_IncrementalMesh;
+    new(_0: TopoDS_Shape, _1: number, _2: boolean): BRepMesh_IncrementalMesh;
+    new(_0: TopoDS_Shape, _1: number, _2: boolean, _3: number): BRepMesh_IncrementalMesh;
+    new(_0: TopoDS_Shape, _1: number, _2: boolean, _3: number, _4: boolean): BRepMesh_IncrementalMesh;
+  };
+  GetFaceTriangulation(_0: TopoDS_Face): Poly_Triangulation;
+  GetFaceLocation(_0: TopoDS_Face): TopLoc_Location;
+  ShapeToMeshJson(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
+  STEPControl_Reader: {
+    new(): STEPControl_Reader;
+  };
+  STEPControl_Writer: {
+    new(): STEPControl_Writer;
+  };
+  STEPControl_StepModelType: {AsIs: STEPControl_StepModelTypeValue<number>, ManifoldSolidBrep: STEPControl_StepModelTypeValue<number>, BrepWithVoids: STEPControl_StepModelTypeValue<number>, FacetedBrep: STEPControl_StepModelTypeValue<number>, FacetedBrepAndBrepWithVoids: STEPControl_StepModelTypeValue<number>, ShellBasedSurfaceModel: STEPControl_StepModelTypeValue<number>, GeometricCurveSet: STEPControl_StepModelTypeValue<number>, Hybrid: STEPControl_StepModelTypeValue<number>};
+  IGESControl_Reader: {
+    new(): IGESControl_Reader;
+  };
+  IGESControl_Writer: {
+    new(): IGESControl_Writer;
+  };
+  StlAPI_Writer: {
+    new(): StlAPI_Writer;
+  };
+  MakeEdge_fromLine(_0: gp_Lin): TopoDS_Edge;
+  MakeEdge_fromLineParams(_0: gp_Lin, _1: number, _2: number): TopoDS_Edge;
+  MakeEdge_fromCircle(_0: gp_Circ): TopoDS_Edge;
+  MakeEdge_fromCircleParams(_0: gp_Circ, _1: number, _2: number): TopoDS_Edge;
+  TopTools_ListOfShape: {
+    new(): TopTools_ListOfShape;
+  };
+  TColgp_Array1OfPnt2d: {
+    new(_0: number, _1: number): TColgp_Array1OfPnt2d;
+  };
+  TColgp_Array1OfDir: {
+    new(_0: number, _1: number): TColgp_Array1OfDir;
+  };
+  VectorDouble: {
+    new(): VectorDouble;
+  };
+  VectorInt: {
+    new(): VectorInt;
+  };
+  gp_Pnt_GetCoord(_0: gp_Pnt): CoordResult;
+  gp_Vec_GetCoord(_0: gp_Vec): CoordResult;
+  gp_Dir_GetCoord(_0: gp_Dir): CoordResult;
+  gp_XYZ_GetCoord(_0: gp_XYZ): CoordResult;
+  BRep_Tool_GetEdgeParameters(_0: TopoDS_Edge): EdgeCurveResult;
+  CurvePointResult: {
+    new(): CurvePointResult;
+  };
+  EvaluateEdgeCurve(_0: TopoDS_Edge, _1: number): CurvePointResult;
+  GetBoundingBox(_0: TopoDS_Shape): BoundingBoxResult;
+  PropertiesResult: {
+    new(): PropertiesResult;
+  };
+  ComputeVolumeProperties(_0: TopoDS_Shape): PropertiesResult;
+  ComputeSurfaceProperties(_0: TopoDS_Shape): PropertiesResult;
+  ComputeLinearProperties(_0: TopoDS_Shape): PropertiesResult;
+  GetEdgeCurveProperties(_0: TopoDS_Edge): CurvePropertiesResult;
+  GetWireLength(_0: TopoDS_Wire): number;
+  EvaluateWireAtParam(_0: TopoDS_Wire, _1: number): CurvePointResult;
+  EvaluateWireAtActualParam(_0: TopoDS_Wire, _1: number): CurvePointResult;
+  GetPointAtLengthOnWire(_0: TopoDS_Wire, _1: number): gp_Pnt;
+  GetPointAtLengthOnEdge(_0: TopoDS_Edge, _1: number): gp_Pnt;
+  GetWireParameterBounds(_0: TopoDS_Wire): UVBoundsResult;
+  GetTransformationValue(_0: gp_Trsf, _1: number, _2: number): number;
+  ComputeShapeBoundingBox(_0: TopoDS_Shape): BoundingBoxResult;
+  BRepTools_Clean(_0: TopoDS_Shape): void;
+  BRepTools_Clean_Force(_0: TopoDS_Shape, _1: boolean): void;
+  BRepTools_CleanGeometry(_0: TopoDS_Shape): void;
+  BRep_Tool_IsClosed(_0: TopoDS_Shape): boolean;
+  GetDerivativesOnWireAtLength(_0: TopoDS_Wire, _1: number): DerivativesResult;
+  GetDerivativesOnWireAtParam(_0: TopoDS_Wire, _1: number): DerivativesResult;
+  GetDerivativesOnEdgeAtParam(_0: TopoDS_Edge, _1: number): DerivativesResult;
+  MakeEdgeFromCurve(_0: Handle_Geom_Curve): TopoDS_Edge;
+  MakeEdgeFromCurveWithBounds(_0: Handle_Geom_Curve, _1: number, _2: number): TopoDS_Edge;
+  MakeEdgeFromTrimmedCurve(_0: Handle_Geom_Curve): TopoDS_Edge;
+  TrimEdgeToParams(_0: TopoDS_Edge, _1: number, _2: number): TopoDS_Edge;
+  BRep_Tool_GetUVAtVertex(_0: TopoDS_Vertex, _1: TopoDS_Face): UVResult;
+  ShapeFix_Shape_Perform(_0: TopoDS_Shape): TopoDS_Shape;
+  ShapeUpgrade_UnifySameDomain_Perform(_0: TopoDS_Shape, _1: boolean, _2: boolean, _3: boolean): TopoDS_Shape;
+  BRepBuilderAPI_Sewing_Perform(_0: TopoDS_Shape, _1: number): TopoDS_Shape;
+  BRepBuilderAPI_Copy_Shape(_0: TopoDS_Shape, _1: boolean): TopoDS_Shape;
+  ReadSTEPFromString(_0: EmbindString): TopoDS_Shape;
+  WriteSTEPToString(_0: TopoDS_Shape): string;
+  ReadIGESFromString(_0: EmbindString): TopoDS_Shape;
+  WriteIGESToString(_0: TopoDS_Shape): string;
+  ReadBREPFromString(_0: EmbindString): TopoDS_Shape;
+  WriteBREPToString(_0: TopoDS_Shape): string;
+  MakeBSplineEdge(_0: VectorDouble): TopoDS_Edge;
+  MakePeriodicBSplineEdge(_0: VectorDouble): TopoDS_Edge;
+  MakeSymmetricPeriodicBSplineEdge(_0: VectorDouble): TopoDS_Edge;
+  MakeBSplineEdgeWithTangents(_0: VectorDouble, _1: VectorDouble, _2: VectorDouble): TopoDS_Edge;
+  MakeApproxBSplineEdge(_0: VectorDouble, _1: number, _2: number, _3: number): TopoDS_Edge;
+  MakePeriodicBSplineWire(_0: VectorDouble): TopoDS_Wire;
+  MakeSymmetricPeriodicBSplineWire(_0: VectorDouble): TopoDS_Wire;
+  MakeClosedBSplineWire(_0: VectorDouble): TopoDS_Wire;
+  MakeBezierEdge(_0: VectorDouble): TopoDS_Edge;
+  MakeBezierWire(_0: VectorDouble): TopoDS_Wire;
+  MakeWeightedBezierWire(_0: VectorDouble, _1: VectorDouble): TopoDS_Wire;
+  MakeFillet2d(_0: TopoDS_Wire, _1: number): TopoDS_Wire;
+  MakeArcThrough3Points(_0: gp_Pnt, _1: gp_Pnt, _2: gp_Pnt): TopoDS_Edge;
+  MakeArcWithTangent(_0: gp_Pnt, _1: gp_Vec, _2: gp_Pnt): TopoDS_Edge;
+  MakeArcOnCircle(_0: gp_Circ, _1: gp_Pnt, _2: gp_Pnt, _3: boolean): TopoDS_Edge;
+  MakeArcOnCircleByAngle(_0: gp_Circ, _1: gp_Pnt, _2: number, _3: boolean): TopoDS_Edge;
+  MakeArcOnCircleByAngles(_0: gp_Circ, _1: number, _2: number, _3: boolean): TopoDS_Edge;
+  MakeCircleThrough3Points(_0: gp_Pnt, _1: gp_Pnt, _2: gp_Pnt): TopoDS_Edge;
+  MakeCircleEdge(_0: gp_Ax2, _1: number): TopoDS_Edge;
+  MakeCircleWire(_0: gp_Ax2, _1: number): TopoDS_Wire;
+  MakeEllipseEdge(_0: gp_Ax2, _1: number, _2: number): TopoDS_Edge;
+  MakeEllipseWire(_0: gp_Ax2, _1: number, _2: number): TopoDS_Wire;
+  MakeLineEdge(_0: gp_Pnt, _1: gp_Dir, _2: number): TopoDS_Edge;
+  MakeLineEdgeBetweenPoints(_0: gp_Pnt, _1: gp_Pnt): TopoDS_Edge;
+  MakeTangentToCircle(_0: gp_Circ, _1: number, _2: number): TopoDS_Edge;
+  MakeG1ContinuousEdge(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: boolean, _3: boolean): TopoDS_Edge;
+  MakeBlendEdge(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: number): TopoDS_Edge;
+  MakeArc2dThrough3Points(_0: number, _1: number, _2: number, _3: number, _4: number, _5: number): TopoDS_Edge;
+  MakeArc2dWithTangent(_0: number, _1: number, _2: number, _3: number, _4: number, _5: number): TopoDS_Edge;
+  ClosestPointsBetweenShapes(_0: TopoDS_Shape, _1: TopoDS_Shape): VectorDouble;
+  MakeHelixWire(_0: gp_Ax3, _1: number, _2: number, _3: number, _4: boolean, _5: number): TopoDS_Wire;
+  MakeHelixWireByTurns(_0: gp_Ax3, _1: number, _2: number, _3: number, _4: boolean, _5: number): TopoDS_Wire;
+  MakeTaperedHelixWire(_0: gp_Ax3, _1: number, _2: number, _3: number, _4: number, _5: boolean, _6: number): TopoDS_Wire;
+  MakeFlatSpiralWire(_0: gp_Ax3, _1: number, _2: number, _3: number, _4: boolean, _5: number): TopoDS_Wire;
+  MakeSimpleHelixWire(_0: number, _1: number, _2: number, _3: boolean): TopoDS_Wire;
+  MakeSimpleSpiralWire(_0: number, _1: number, _2: number, _3: boolean): TopoDS_Wire;
+  SubdivideEdgeToPoints(_0: TopoDS_Edge, _1: number): any;
+  SubdivideEdgeByLength(_0: TopoDS_Edge, _1: number): any;
+  SubdivideEdgeByDeflection(_0: TopoDS_Edge, _1: number): any;
+  SubdivideEdgeTangential(_0: TopoDS_Edge, _1: number, _2: number): any;
+  SubdivideWireToPoints(_0: TopoDS_Wire, _1: number): any;
+  SubdivideFaceToPointsUV(_0: TopoDS_Face, _1: number, _2: number): any;
+  SubdivideFaceToPointsWithUV(_0: TopoDS_Face, _1: number, _2: number): any;
+  SubdivideEdgeToPointsWithParams(_0: TopoDS_Edge, _1: number): any;
+  GetFaceUVBounds(_0: TopoDS_Face): UVBoundsResult;
+  EvaluateFaceAtUV(_0: TopoDS_Face, _1: number, _2: number): gp_Pnt;
+  EvaluateFaceAtNormalizedUV(_0: TopoDS_Face, _1: number, _2: number): gp_Pnt;
+  EvaluateFaceAtVU(_0: TopoDS_Face, _1: number, _2: number): gp_Pnt;
+  SubdivideFaceRemappedUV(_0: TopoDS_Face, _1: number, _2: number, _3: number, _4: number, _5: number, _6: number): any;
+  SubdivideFaceFlippedVU(_0: TopoDS_Face, _1: number, _2: number): any;
+  RotatePeriodicEdgeSeam(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
+  ShiftPeriodicEdgeSeam(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
+  RotatePeriodicEdgeSeamToPoint(_0: TopoDS_Edge, _1: gp_Pnt): TopoDS_Edge;
+  Bnd_Box: {
+    new(): Bnd_Box;
+  };
+  GetBndBoxCornerMin(_0: Bnd_Box): gp_Pnt;
+  GetBndBoxCornerMax(_0: Bnd_Box): gp_Pnt;
+  BRepBndLib_AddToBox(_0: TopoDS_Shape, _1: Bnd_Box): void;
+  BRepTools_WireExplorer: {
+    new(): BRepTools_WireExplorer;
+    new(_0: TopoDS_Wire): BRepTools_WireExplorer;
+    new(_0: TopoDS_Wire, _1: TopoDS_Face): BRepTools_WireExplorer;
+  };
+  BRepAdaptor_Curve: {
+    new(): BRepAdaptor_Curve;
+    new(_0: TopoDS_Edge): BRepAdaptor_Curve;
+  };
+  MakeBRepAdaptorCurve(_0: TopoDS_Edge): BRepAdaptor_Curve;
+  BRepAdaptor_CompCurve: {
+    new(): BRepAdaptor_CompCurve;
+    new(_0: TopoDS_Wire): BRepAdaptor_CompCurve;
+    new(_0: TopoDS_Wire, _1: boolean): BRepAdaptor_CompCurve;
+  };
+  GCPnts_TangentialDeflection: {
+    new(_0: BRepAdaptor_Curve, _1: number, _2: number, _3: number, _4: number, _5: number): GCPnts_TangentialDeflection;
+  };
+  GCPnts_AbscissaPoint: {
+    new(_0: BRepAdaptor_Curve, _1: number, _2: number): GCPnts_AbscissaPoint;
+  };
+  GCPnts_AbscissaPoint_FromCompCurve(_0: BRepAdaptor_CompCurve, _1: number, _2: number): GCPnts_AbscissaPoint;
+  GCPnts_AbscissaPoint_Length_Curve(_0: BRepAdaptor_Curve): number;
+  GCPnts_AbscissaPoint_Length_CompCurve(_0: BRepAdaptor_CompCurve): number;
+  ShapeFix_Shape: {
+    new(): ShapeFix_Shape;
+    new(_0: TopoDS_Shape): ShapeFix_Shape;
+  };
+  ShapeFix_Wire: {
+    new(): ShapeFix_Wire;
+    new(_0: TopoDS_Wire, _1: TopoDS_Face, _2: number): ShapeFix_Wire;
+  };
+  BRepLib_BuildCurves3d(_0: TopoDS_Shape): boolean;
+  BRepLib_BuildCurves3d_WithTolerance(_0: TopoDS_Shape, _1: number): boolean;
+  GccEnt_QualifiedCirc: {
+    new(_0: gp_Circ2d, _1: GccEnt_Position): GccEnt_QualifiedCirc;
+  };
+  GccEnt_QualifiedLin: {
+    new(_0: gp_Lin2d, _1: GccEnt_Position): GccEnt_QualifiedLin;
+  };
+  GccAna_Lin2d2Tan: {
+    new(_0: gp_Pnt2d, _1: gp_Pnt2d, _2: number): GccAna_Lin2d2Tan;
+  };
+  GccAna_Lin2d2Tan_fromQualifiedCircAndPoint(_0: GccEnt_QualifiedCirc, _1: gp_Pnt2d, _2: number): GccAna_Lin2d2Tan;
+  GccAna_Lin2d2Tan_fromTwoQualifiedCirc(_0: GccEnt_QualifiedCirc, _1: GccEnt_QualifiedCirc, _2: number): GccAna_Lin2d2Tan;
+  GccAna_Circ2d2TanRad: {
+    new(_0: gp_Pnt2d, _1: gp_Pnt2d, _2: number, _3: number): GccAna_Circ2d2TanRad;
+  };
+  GccAna_Circ2d2TanRad_fromTwoQualifiedCirc(_0: GccEnt_QualifiedCirc, _1: GccEnt_QualifiedCirc, _2: number, _3: number): GccAna_Circ2d2TanRad;
+  GccAna_Circ2d2TanRad_fromQualifiedCircAndLin(_0: GccEnt_QualifiedCirc, _1: GccEnt_QualifiedLin, _2: number, _3: number): GccAna_Circ2d2TanRad;
+  GccAna_Circ2d2TanRad_fromQualifiedCircAndPoint(_0: GccEnt_QualifiedCirc, _1: gp_Pnt2d, _2: number, _3: number): GccAna_Circ2d2TanRad;
+  GccAna_Circ2d2TanRad_fromQualifiedLinAndPoint(_0: GccEnt_QualifiedLin, _1: gp_Pnt2d, _2: number, _3: number): GccAna_Circ2d2TanRad;
+  GccAna_Circ2d2TanRad_fromTwoQualifiedLin(_0: GccEnt_QualifiedLin, _1: GccEnt_QualifiedLin, _2: number, _3: number): GccAna_Circ2d2TanRad;
+  BRepLib_BuildCurves3d_Simple(_0: TopoDS_Shape): boolean;
+  GCPnts_AbscissaPoint_Length(_0: BRepAdaptor_Curve): number;
+  GCPnts_AbscissaPoint_LengthParams(_0: BRepAdaptor_Curve, _1: number, _2: number): number;
+  TopoDS_Shape_HashCode(_0: TopoDS_Shape, _1: number): number;
+  BRepFill_Filling: {
+    new(): BRepFill_Filling;
+    new(_0: number, _1: number, _2: number, _3: boolean, _4: number, _5: number, _6: number, _7: number, _8: number, _9: number): BRepFill_Filling;
+  };
+  BRepFill_Filling_AddEdge(_0: BRepFill_Filling, _1: TopoDS_Edge, _2: number, _3: boolean): number;
+  BRepFill_Filling_AddPoint(_0: BRepFill_Filling, _1: gp_Pnt): number;
+  BRepFill_Filling_Build(_0: BRepFill_Filling): void;
+  BRepFill_Filling_IsDone(_0: BRepFill_Filling): boolean;
+  BRepFill_Filling_Face(_0: BRepFill_Filling): TopoDS_Face;
+  BRepClass_FaceClassifier: {
+    new(): BRepClass_FaceClassifier;
+    new(_0: TopoDS_Face, _1: gp_Pnt, _2: number): BRepClass_FaceClassifier;
+  };
+  gp_Mat: {
+    new(): gp_Mat;
+    new(_0: number, _1: number, _2: number, _3: number, _4: number, _5: number, _6: number, _7: number, _8: number): gp_Mat;
+  };
+  Bnd_Box_IsThin(_0: Bnd_Box, _1: number): boolean;
+  ClassifyPointInSolid(_0: TopoDS_Shape, _1: gp_Pnt, _2: number): number;
+  GCPnts_AbscissaPoint_CurveLength(_0: BRepAdaptor_Curve): number;
+  GCPnts_AbscissaPoint_CurveLengthBetween(_0: BRepAdaptor_Curve, _1: number, _2: number): number;
+  GCPnts_AbscissaPoint_CompCurveLength(_0: BRepAdaptor_CompCurve): number;
+  GCPnts_AbscissaPoint_CompCurveLengthBetween(_0: BRepAdaptor_CompCurve, _1: number, _2: number): number;
+  CreateGpMat(_0: number, _1: number, _2: number, _3: number, _4: number, _5: number, _6: number, _7: number, _8: number): gp_Mat;
+  gp_Trsf_VectorialPart(_0: gp_Trsf): gp_Mat;
+  gp_Trsf_HVectorialPart(_0: gp_Trsf): gp_Mat;
+  ProjectWireOnShape(_0: TopoDS_Wire, _1: TopoDS_Shape, _2: gp_Dir): TopoDS_Compound;
+  BRepOffsetAPI_MakePipeShell_SetModeWithContact(_0: BRepOffsetAPI_MakePipeShell, _1: boolean, _2: boolean): void;
+  BRepAdaptor_Curve_DN(_0: BRepAdaptor_Curve, _1: number, _2: number): gp_Vec;
+  BRepAdaptor_CompCurve_DN(_0: BRepAdaptor_CompCurve, _1: number, _2: number): gp_Vec;
+  CreateGeom2d_Ellipse(_0: gp_Ax22d, _1: number, _2: number): Handle_Geom2d_Curve;
+  CreateGeom2d_Circle(_0: gp_Ax22d, _1: number): Handle_Geom2d_Curve;
+  CreateGeom2d_Segment(_0: gp_Pnt2d, _1: gp_Pnt2d): Handle_Geom2d_Curve;
+  CreateGeom2d_TrimmedCurve(_0: Handle_Geom2d_Curve, _1: number, _2: number): Handle_Geom2d_Curve;
+  ProjectPointOnCurve(_0: gp_Pnt, _1: TopoDS_Edge): CurvePointResult;
+  CreateFillet2d(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: number): TopoDS_Edge;
+  BitListOfShapesToCompound(_0: TopTools_ListOfShape): TopoDS_Compound;
+  IFSelect_ReturnStatus: {RetVoid: IFSelect_ReturnStatusValue<number>, RetDone: IFSelect_ReturnStatusValue<number>, RetError: IFSelect_ReturnStatusValue<number>, RetFail: IFSelect_ReturnStatusValue<number>, RetStop: IFSelect_ReturnStatusValue<number>};
+  BRepBuilderAPI_MakeWire_Error(_0: BRepBuilderAPI_MakeWire): BRepBuilderAPI_WireError;
+  BRepBuilderAPI_WireError: {WireDone: BRepBuilderAPI_WireErrorValue<number>, EmptyWire: BRepBuilderAPI_WireErrorValue<number>, DisconnectedWire: BRepBuilderAPI_WireErrorValue<number>, NonManifoldWire: BRepBuilderAPI_WireErrorValue<number>};
+  BRepBuilderAPI_FaceError: {FaceDone: BRepBuilderAPI_FaceErrorValue<number>, NoFace: BRepBuilderAPI_FaceErrorValue<number>, NotPlanar: BRepBuilderAPI_FaceErrorValue<number>, CurveProjectionFailed: BRepBuilderAPI_FaceErrorValue<number>, ParametersOutOfRange: BRepBuilderAPI_FaceErrorValue<number>};
+  BRepBuilderAPI_EdgeError: {EdgeDone: BRepBuilderAPI_EdgeErrorValue<number>, PointProjectionFailed: BRepBuilderAPI_EdgeErrorValue<number>, ParameterOutOfRange: BRepBuilderAPI_EdgeErrorValue<number>, DifferentPointsOnClosedCurve: BRepBuilderAPI_EdgeErrorValue<number>, PointWithInfiniteParameter: BRepBuilderAPI_EdgeErrorValue<number>, DifferentsPointAndParameter: BRepBuilderAPI_EdgeErrorValue<number>, LineThroughIdenticPoints: BRepBuilderAPI_EdgeErrorValue<number>};
+  ClassifyPointOnFace2d(_0: TopoDS_Face, _1: gp_Pnt2d, _2: number): TopAbs_State;
+  TopAbs_State: {IN: TopAbs_StateValue<number>, OUT: TopAbs_StateValue<number>, ON: TopAbs_StateValue<number>, UNKNOWN: TopAbs_StateValue<number>};
+  BRepLib_BuildCurves3d_Full(_0: TopoDS_Shape, _1: number, _2: GeomAbs_Shape, _3: number, _4: number): boolean;
+  GeomAbs_Shape: {C0: GeomAbs_ShapeValue<number>, G1: GeomAbs_ShapeValue<number>, C1: GeomAbs_ShapeValue<number>, G2: GeomAbs_ShapeValue<number>, C2: GeomAbs_ShapeValue<number>, C3: GeomAbs_ShapeValue<number>, CN: GeomAbs_ShapeValue<number>};
+  GeomAbs_JoinType: {Arc: GeomAbs_JoinTypeValue<number>, Tangent: GeomAbs_JoinTypeValue<number>, Intersection: GeomAbs_JoinTypeValue<number>};
+  BRepFill_TypeOfContact: {NoContact: BRepFill_TypeOfContactValue<number>, Contact: BRepFill_TypeOfContactValue<number>, ContactOnBorder: BRepFill_TypeOfContactValue<number>};
+  GetEdgeCurveType(_0: TopoDS_Edge): GeomAbs_CurveType;
+  GeomAbs_CurveType: {Line: GeomAbs_CurveTypeValue<number>, Circle: GeomAbs_CurveTypeValue<number>, Ellipse: GeomAbs_CurveTypeValue<number>, Hyperbola: GeomAbs_CurveTypeValue<number>, Parabola: GeomAbs_CurveTypeValue<number>, BezierCurve: GeomAbs_CurveTypeValue<number>, BSplineCurve: GeomAbs_CurveTypeValue<number>, OffsetCurve: GeomAbs_CurveTypeValue<number>, OtherCurve: GeomAbs_CurveTypeValue<number>};
+  GeomAbs_SurfaceType: {Plane: GeomAbs_SurfaceTypeValue<number>, Cylinder: GeomAbs_SurfaceTypeValue<number>, Cone: GeomAbs_SurfaceTypeValue<number>, Sphere: GeomAbs_SurfaceTypeValue<number>, Torus: GeomAbs_SurfaceTypeValue<number>, BezierSurface: GeomAbs_SurfaceTypeValue<number>, BSplineSurface: GeomAbs_SurfaceTypeValue<number>, SurfaceOfRevolution: GeomAbs_SurfaceTypeValue<number>, SurfaceOfExtrusion: GeomAbs_SurfaceTypeValue<number>, OffsetSurface: GeomAbs_SurfaceTypeValue<number>, OtherSurface: GeomAbs_SurfaceTypeValue<number>};
+  GeomFill_Trihedron: {IsCorrectedFrenet: GeomFill_TrihedronValue<number>, IsFixed: GeomFill_TrihedronValue<number>, IsFrenet: GeomFill_TrihedronValue<number>, IsConstantNormal: GeomFill_TrihedronValue<number>, IsDarboux: GeomFill_TrihedronValue<number>, IsGuideAC: GeomFill_TrihedronValue<number>, IsGuidePlan: GeomFill_TrihedronValue<number>, IsGuideACWithContact: GeomFill_TrihedronValue<number>, IsGuidePlanWithContact: GeomFill_TrihedronValue<number>, IsDiscreteTrihedron: GeomFill_TrihedronValue<number>};
+  GccEnt_Position: {unqualified: GccEnt_PositionValue<number>, enclosing: GccEnt_PositionValue<number>, enclosed: GccEnt_PositionValue<number>, outside: GccEnt_PositionValue<number>, noqualifier: GccEnt_PositionValue<number>};
+  ChFi3d_FilletShape: {Rational: ChFi3d_FilletShapeValue<number>, QuasiAngular: ChFi3d_FilletShapeValue<number>, Polynomial: ChFi3d_FilletShapeValue<number>};
+  BRepOffset_Mode: {Skin: BRepOffset_ModeValue<number>, Pipe: BRepOffset_ModeValue<number>, RectoVerso: BRepOffset_ModeValue<number>};
+  Approx_ParametrizationType: {ChordLength: Approx_ParametrizationTypeValue<number>, Centripetal: Approx_ParametrizationTypeValue<number>, IsoParametric: Approx_ParametrizationTypeValue<number>};
+  Quantity_TypeOfColor: {Quantity_TOC_RGB: Quantity_TypeOfColorValue<number>, Quantity_TOC_sRGB: Quantity_TypeOfColorValue<number>, Quantity_TOC_HLS: Quantity_TypeOfColorValue<number>, Quantity_TOC_CIELab: Quantity_TypeOfColorValue<number>, Quantity_TOC_CIELch: Quantity_TypeOfColorValue<number>};
+  XCAFDoc_ColorType: {XCAFDoc_ColorGen: XCAFDoc_ColorTypeValue<number>, XCAFDoc_ColorSurf: XCAFDoc_ColorTypeValue<number>, XCAFDoc_ColorCurv: XCAFDoc_ColorTypeValue<number>};
+  TopAbs_ShapeEnum: {COMPOUND: TopAbs_ShapeEnumValue<number>, COMPSOLID: TopAbs_ShapeEnumValue<number>, SOLID: TopAbs_ShapeEnumValue<number>, SHELL: TopAbs_ShapeEnumValue<number>, FACE: TopAbs_ShapeEnumValue<number>, WIRE: TopAbs_ShapeEnumValue<number>, EDGE: TopAbs_ShapeEnumValue<number>, VERTEX: TopAbs_ShapeEnumValue<number>, SHAPE: TopAbs_ShapeEnumValue<number>};
+  TopAbs_Orientation: {FORWARD: TopAbs_OrientationValue<number>, REVERSED: TopAbs_OrientationValue<number>, INTERNAL: TopAbs_OrientationValue<number>, EXTERNAL: TopAbs_OrientationValue<number>};
+  TDF_Label: {
+    new(): TDF_Label;
+  };
+  TDF_LabelSequence: {
+    new(): TDF_LabelSequence;
+  };
+  Standard_GUID: {
+    new(): Standard_GUID;
+  };
+  Quantity_Color: {
+    new(): Quantity_Color;
+    new(_0: number, _1: number, _2: number, _3: Quantity_TypeOfColor): Quantity_Color;
+  };
+  Quantity_ColorRGBA: {
+    new(): Quantity_ColorRGBA;
+    new(_0: Quantity_Color): Quantity_ColorRGBA;
+    new(_0: Quantity_Color, _1: number): Quantity_ColorRGBA;
+  };
+  TCollection_ExtendedString: {
+    new(): TCollection_ExtendedString;
+    new(_0: EmbindString): TCollection_ExtendedString;
+  };
+  TCollection_AsciiString: {
+    new(): TCollection_AsciiString;
+    new(_0: EmbindString): TCollection_AsciiString;
+    new(_0: TCollection_ExtendedString, _1: number): TCollection_AsciiString;
+  };
+  TDF_Attribute: {};
+  Handle_TDF_Attribute: {
+    new(): Handle_TDF_Attribute;
+  };
+  Handle_TDocStd_Document: {
+    new(): Handle_TDocStd_Document;
+  };
+  TDocStd_Document: {};
+  DocumentToMeshJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
+  DocumentToMeshesJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
+  TDataStd_Name: {
+    GetID(): Standard_GUID;
+  };
+  TDataStd_Name_GetID(): Standard_GUID;
+  TDataStd_Real: {
+    new(): TDataStd_Real;
+  };
+  TDataStd_Integer: {
+    new(): TDataStd_Integer;
+  };
+  Handle_XCAFDoc_ShapeTool: {
+    new(): Handle_XCAFDoc_ShapeTool;
+  };
+  XCAFDoc_DocumentTool_ShapeTool(_0: TDF_Label): Handle_XCAFDoc_ShapeTool;
+  Handle_XCAFDoc_ColorTool: {
+    new(): Handle_XCAFDoc_ColorTool;
+  };
+  XCAFDoc_DocumentTool_ColorTool(_0: TDF_Label): Handle_XCAFDoc_ColorTool;
+  Handle_XCAFDoc_MaterialTool: {
+    new(): Handle_XCAFDoc_MaterialTool;
+  };
+  XCAFDoc_DocumentTool_MaterialTool(_0: TDF_Label): Handle_XCAFDoc_MaterialTool;
+  XCAFDoc_ShapeTool: {};
+  XCAFDoc_ShapeTool_IsAssembly(_0: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_IsReference(_0: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_IsSimpleShape(_0: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_IsComponent(_0: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_IsShape(_0: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_GetLocation(_0: TDF_Label): TopLoc_Location;
+  XCAFDoc_ShapeTool_GetShape_1(_0: TDF_Label, _1: TopoDS_Shape): boolean;
+  XCAFDoc_ShapeTool_GetShape_2(_0: TDF_Label): TopoDS_Shape;
+  XCAFDoc_ShapeTool_GetReferredShape(_0: TDF_Label, _1: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_GetComponents(_0: TDF_Label, _1: TDF_LabelSequence, _2: boolean): boolean;
+  XCAFDoc_ShapeTool_NbComponents(_0: TDF_Label, _1: boolean): number;
+  XCAFDoc_ColorTool: {};
+  XCAFDoc_ColorTool_GetColor_1(_0: XCAFDoc_ColorTool | null, _1: TDF_Label, _2: Quantity_Color): boolean;
+  XCAFDoc_ColorTool_GetColor_7(_0: XCAFDoc_ColorTool | null, _1: TopoDS_Shape, _2: XCAFDoc_ColorType, _3: Quantity_Color): boolean;
+  XCAFDoc_ColorTool_GetColors(_0: XCAFDoc_ColorTool | null, _1: TDF_LabelSequence): void;
+  XCAFDoc_MaterialTool: {};
+  XCAFDoc_ShapeTool_GetSubShapes(_0: TDF_Label, _1: TDF_LabelSequence): boolean;
+  XCAFDoc_ShapeTool_IsSubShape(_0: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_IsCompound(_0: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_IsFree(_0: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_GetUsers(_0: TDF_Label, _1: TDF_LabelSequence, _2: boolean): number;
+  XCAFDoc_ShapeTool_FindSubShape(_0: XCAFDoc_ShapeTool | null, _1: TDF_Label, _2: TopoDS_Shape, _3: TDF_Label): boolean;
+  XCAFDoc_ShapeTool_AddSubShape(_0: XCAFDoc_ShapeTool | null, _1: TDF_Label, _2: TopoDS_Shape): TDF_Label;
+  XCAFDoc_ShapeTool_FindMainShape(_0: XCAFDoc_ShapeTool | null, _1: TopoDS_Shape): TDF_Label;
+  STEPCAFControl_Reader_ReadFile(_0: EmbindString, _1: EmbindString): Handle_TDocStd_Document;
+  ConvertStepToGltf(_0: EmbindString, _1: EmbindString, _2: number, _3: number, _4: boolean, _5: boolean, _6: boolean, _7: boolean, _8: number): boolean;
+  ConvertStepToGltfAdvanced(_0: EmbindString, _1: EmbindString, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: number, _8: number, _9: boolean, _10: boolean, _11: boolean, _12: boolean, _13: number, _14: boolean, _15: boolean, _16: boolean, _17: boolean, _18: boolean, _19: boolean, _20: number, _21: number, _22: number, _23: boolean, _24: number): boolean;
+  ParseStepAssemblyToJson(_0: EmbindString): string;
+  ConvertStepToGltfFromMemory(_0: EmbindString, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: number): any;
+  ParseStepAssemblyToJsonFromMemory(_0: EmbindString): string;
+  ConvertStepToGltfFromBinary(_0: any, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: number): any;
+  ConvertStepToGltfFromBinaryAdvanced(_0: any, _1: boolean, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: number, _7: number, _8: boolean, _9: boolean, _10: boolean, _11: boolean, _12: number, _13: boolean, _14: boolean, _15: boolean, _16: boolean, _17: boolean, _18: number, _19: number, _20: number, _21: boolean, _22: number): any;
+  ParseStepAssemblyToJsonFromBinary(_0: any): string;
+  ReadSTEPFromBinary(_0: any): TopoDS_Shape;
+  ReadIGESFromBinary(_0: any): TopoDS_Shape;
+  ConvertStepToGltfWithDraco(_0: EmbindString, _1: EmbindString, _2: number, _3: number, _4: boolean, _5: boolean, _6: boolean, _7: boolean, _8: number, _9: boolean, _10: number, _11: number, _12: number, _13: number, _14: number, _15: number, _16: boolean): boolean;
+  ConvertStepToGltfAdvancedWithDraco(_0: EmbindString, _1: EmbindString, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: number, _8: number, _9: boolean, _10: boolean, _11: boolean, _12: boolean, _13: number, _14: boolean, _15: boolean, _16: boolean, _17: boolean, _18: boolean, _19: boolean, _20: number, _21: number, _22: number, _23: boolean, _24: number, _25: boolean, _26: number, _27: number, _28: number, _29: number, _30: number, _31: number, _32: boolean): boolean;
+  ConvertStepToGltfFromBinaryWithDraco(_0: any, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: number, _7: boolean, _8: number, _9: number, _10: number, _11: number, _12: number, _13: number, _14: boolean): any;
+  ConvertStepToGltfFromBinaryAdvancedWithDraco(_0: any, _1: boolean, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: number, _7: number, _8: boolean, _9: boolean, _10: boolean, _11: boolean, _12: number, _13: boolean, _14: boolean, _15: boolean, _16: boolean, _17: boolean, _18: number, _19: number, _20: number, _21: boolean, _22: number, _23: boolean, _24: number, _25: number, _26: number, _27: number, _28: number, _29: number, _30: boolean): any;
+  BuildAssemblyDocument(_0: EmbindString, _1: any, _2: any, _3: any): Handle_TDocStd_Document;
+  ExportDocumentToStep(_0: Handle_TDocStd_Document, _1: EmbindString, _2: EmbindString, _3: EmbindString): any;
+  ExportDocumentToStepZ(_0: Handle_TDocStd_Document, _1: EmbindString, _2: EmbindString, _3: EmbindString): any;
+  ExportDocumentToGltf(_0: Handle_TDocStd_Document, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean): any;
+  ExportDocumentToGltfWithDraco(_0: Handle_TDocStd_Document, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean, _8: number, _9: number, _10: number, _11: number, _12: number, _13: number, _14: boolean): any;
+  GetDocumentPartsFromDoc(_0: Handle_TDocStd_Document): string;
+  GetShapeFromDocLabel(_0: Handle_TDocStd_Document, _1: EmbindString): TopoDS_Shape;
+  GetDocLabelColor(_0: Handle_TDocStd_Document, _1: EmbindString): string;
+  GetDocLabelTransform(_0: Handle_TDocStd_Document, _1: EmbindString): string;
+  GetDocLabelInfo(_0: Handle_TDocStd_Document, _1: EmbindString): string;
+  GetDocAssemblyHierarchy(_0: Handle_TDocStd_Document): string;
+  SetDocLabelColor(_0: Handle_TDocStd_Document, _1: EmbindString, _2: number, _3: number, _4: number, _5: number): boolean;
+  SetDocLabelName(_0: Handle_TDocStd_Document, _1: EmbindString, _2: EmbindString): boolean;
+  LoadStepToDoc(_0: any): Handle_TDocStd_Document;
+  VectorFaceTriangulationInfo: {
+    new(): VectorFaceTriangulationInfo;
+  };
+  VectorSubShapeInfo: {
+    new(): VectorSubShapeInfo;
+  };
+  GetPartDefinitionInfo(_0: TDF_Label): PartDefinitionInfo;
+  GetFaceTriangulationMapping(_0: TopoDS_Shape): VectorFaceTriangulationInfo;
+  GetLabeledSubShapes(_0: TDF_Label, _1: XCAFDoc_ShapeTool | null, _2: XCAFDoc_ColorTool | null): VectorSubShapeInfo;
+  GetFaceSurfaceType(_0: TopoDS_Face): string;
+  CountFaces(_0: TopoDS_Shape): number;
+  CountEdges(_0: TopoDS_Shape): number;
+  CountVertices(_0: TopoDS_Shape): number;
+  CountSolids(_0: TopoDS_Shape): number;
+  GetLabelEntry(_0: TDF_Label): string;
+  BRepGraphAnalyze(_0: TopoDS_Shape): string;
+  BRepGraphFaceAdjacency(_0: TopoDS_Shape): string;
+  BRepGraphEdgeFaceMap(_0: TopoDS_Shape): string;
+  BRepGraphVertexEdgeMap(_0: TopoDS_Shape): string;
+  BRepGraphFaceInfo(_0: TopoDS_Shape): string;
+  BRepGraphEdgeInfo(_0: TopoDS_Shape): string;
+  BRepGraphContainment(_0: TopoDS_Shape): string;
+  BRepGraphWireInfo(_0: TopoDS_Shape): string;
+  BRepGraphAssembly(_0: TopoDS_Shape): string;
+  BRepGraphValidate(_0: TopoDS_Shape): string;
+  BRepGraphDump(_0: TopoDS_Shape): string;
+  BRepGraphReconstruct(_0: TopoDS_Shape, _1: EmbindString, _2: number): TopoDS_Shape;
+  BRepGraphNodeOfShape(_0: TopoDS_Shape, _1: TopoDS_Shape): string;
+  FilletCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): TopoDS_Shape;
+  ChamferCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): TopoDS_Shape;
+  ClassifyCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number): string;
+  CornerByPointReport(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): string;
+}
+
+export type MainModule = WasmModule & typeof RuntimeExports & EmbindModule;
+export default function MainModuleFactory (options?: unknown): Promise<MainModule>;
+
+// ---- Backward-compatible aliases (kept stable for downstream consumers) ----
+export type BitbybitOcctModule = MainModule;
+export type EmscriptenFS = MainModule['FS'];
+// Generic embind enum-value shape; type enum-holding variables as EmbindEnumValue<number> to accept
+// any value of an enum.
+export interface EmbindEnumValue<T extends number = number> { value: T; }

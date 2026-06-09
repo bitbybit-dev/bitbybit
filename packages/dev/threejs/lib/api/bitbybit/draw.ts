@@ -39,10 +39,40 @@ export class Draw extends DrawCore {
             return this.handleManifoldShape(inputs);
         } else if (this.detectManifoldShapes(entity)) {
             return this.handleManifoldShapes(inputs);
+        } else if (this.detectDecomposedMeshes(entity)) {
+            return this.handleDecomposedMeshes(inputs);
+        } else if (this.detectDecomposedMesh(entity)) {
+            return this.handleDecomposedMeshShape(inputs);
         } else {
             // here we have all sync drawer functions
             return Promise.resolve(this.drawAny(inputs));
         }
+    }
+
+    private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
+            const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+            return this.drawHelper.handleDecomposedMesh(
+                merged as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>,
+                inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
+                merged
+            );
+        }, Inputs.Draw.drawingTypes.occt);
+    }
+
+    private handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), async (options) => {
+            const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+            const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
+            const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
+                merged as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, dm, merged)));
+            const container = new THREEJS.Group();
+            container.name = "decomposedMeshesContainer";
+            const scene = drawn.find(mesh => mesh)?.parent;
+            if (scene) { scene.add(container); }
+            drawn.forEach(mesh => { if (mesh) { container.add(mesh); } });
+            return container;
+        }, Inputs.Draw.drawingTypes.occtShapes);
     }
 
     /**

@@ -242,4 +242,16 @@ export class OCCTFillets {
         return this.occWorkerManager.genericCallToWorkerPromise("fillets.filletTwoEdgesInPlaneIntoAWire", inputs);
 
     }
+
+    /**
+     * Chamfers the corners of a 2d wire or planar face by a setback distance and angle
+     * @param inputs 2d shape, distance, angle and optional corner indexes
+     * @returns OpenCascade face or wire with chamfered corners
+     * @group 2d fillets
+     * @shortname chamfer 2d corners
+     * @drawable true
+     */
+    chamfer2dVertices(inputs: Inputs.OCCT.Chamfer2dVertexDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer | Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.chamfer2dVertices", inputs);
+    }
 }

@@ -60,7 +60,7 @@ export function createMockWorkerManagers() {
     const mockOccWorkerManager = {
         genericCallToWorkerPromise: jest.fn().mockResolvedValue({
             faceList: [
-                { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
             ],
             edgeList: [],
             pointsList: []

@@ -82,20 +82,20 @@ describe("OCCT solid unit tests", () => {
     });
 
     it("should create a cone solid", async () => {
-        const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: Math.PI, direction: [0, 1, 0], center: [0, 0, 0] });
+        const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 180, direction: [0, 1, 0], center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: cone })).toBeCloseTo(20.42035224833366);
         expect(solid.getSolidSurfaceArea({ shape: cone })).toBeCloseTo(50.36231006622692);
         cone.delete();
     });
 
     it("should create a cone of half angle solid", async () => {
-        const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: Math.PI / 2, direction: [0, 1, 0], center: [0, 0, 0] });
+        const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: cone })).toBeCloseTo(20.42035224833366 / 2);
         cone.delete();
     });
 
     it("should create a cone of half angle solid", async () => {
-        const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: Math.PI / 2, direction: [0, 1, 0], center: [0, 0, 0] });
+        const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: cone })).toBeCloseTo(20.42035224833366 / 2);
         cone.delete();
     });
@@ -136,9 +136,9 @@ describe("OCCT solid unit tests", () => {
 
 
     it("get solids of a compound", async () => {
-        const cone1 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: Math.PI / 2, direction: [0, 1, 0], center: [0, 0, 0] });
-        const cone2 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: Math.PI / 2, direction: [0, 1, 0], center: [0, 10, 0] });
-        const cone3 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: Math.PI / 2, direction: [0, 1, 0], center: [0, 0, 10] });
+        const cone1 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 0, 0] });
+        const cone2 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 10, 0] });
+        const cone3 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 0, 10] });
 
         const compundShape = compound.makeCompound({ shapes: [cone1, cone2, cone3] });
         const solidShapes = solid.getSolids({ shape: compundShape });

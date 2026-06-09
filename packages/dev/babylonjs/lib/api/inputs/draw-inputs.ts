@@ -331,7 +331,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -355,6 +355,9 @@ export namespace Draw {
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
             if (edgeArrowSize !== undefined) { this.edgeArrowSize = edgeArrowSize; }
             if (edgeArrowAngle !== undefined) { this.edgeArrowAngle = edgeArrowAngle; }
+            if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+            if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+            if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
         }
         /**
          * Face opacity value between 0 and 1
@@ -502,6 +505,22 @@ export namespace Draw {
          * @step 1
          */
         edgeArrowAngle = 15;
+        /**
+         * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
+         * is flushed so it does not accumulate in memory across draws.
+         * @default false
+         */
+        keepMeshData = false;
+        /**
+         * Allow re-meshing to a lower resolution triangulation than one already cached on the shape.
+         * @default true
+         */
+        allowQualityDecrease = true;
+        /**
+         * Force every face to be re-meshed to the requested precision regardless of cached triangulation.
+         * @default false
+         */
+        forceFaceDeflection = false;
     }
 
     export class DrawOcctShapeSimpleOptions {

@@ -158,6 +158,14 @@ export class OCCTWire {
         return this.och.wiresService.createZigZagBetweenTwoWires(inputs);
     }
 
+    createWiresBetweenStartEndPointsOfWiresAndEdges(inputs: Inputs.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
+        return this.och.wiresService.createWiresBetweenStartEndPointsOfWiresAndEdges(inputs);
+    }
+
+    createWiresBetweenSubdividedPointsOfWiresAndEdges(inputs: Inputs.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
+        return this.och.wiresService.createWiresBetweenSubdividedPointsOfWiresAndEdges(inputs);
+    }
+
     divideWireByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Wire>): Inputs.Base.Point3[] {
         return this.och.wiresService.divideWireByParamsToPoints(inputs);
     }

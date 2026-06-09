@@ -864,6 +864,125 @@ export const schemaBundle = {
         "stepFileId"
       ],
       "additionalProperties": false
+    },
+    "UnfoldFaceReportBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "faceIndex": {
+          "default": 0,
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "UnfoldFaceToFlatBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "faceIndex": {
+          "default": 0,
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "outputs": {
+          "$ref": "#/$defs/OutputOptions"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "UnfoldSolidBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kFactor": {
+          "default": 0.5,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thicknessOverride": {
+          "default": 0,
+          "type": "number",
+          "minimum": 0
+        },
+        "outputs": {
+          "$ref": "#/$defs/OutputOptions"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "UnfoldSolidReportBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kFactor": {
+          "default": 0.5,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thicknessOverride": {
+          "default": 0,
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
+    },
+    "UnfoldSolidToFlatBody": {
+      "type": "object",
+      "properties": {
+        "stepFileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kFactor": {
+          "default": 0.5,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thicknessOverride": {
+          "default": 0,
+          "type": "number",
+          "minimum": 0
+        },
+        "outputs": {
+          "$ref": "#/$defs/OutputOptions"
+        }
+      },
+      "required": [
+        "stepFileId"
+      ],
+      "additionalProperties": false
     }
   },
   "endpoints": {

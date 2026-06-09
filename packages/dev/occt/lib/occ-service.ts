@@ -1,4 +1,4 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "./api/inputs";
 import { OCCTBooleans } from "./services/booleans";
 import { OCCTGeom } from "./services/geom/geom";
@@ -10,6 +10,8 @@ import { OCCTFillets } from "./services/fillets";
 import { OCCTDimensions } from "./services/dimensions";
 import { OCCTAssembly } from "./services/assembly/assembly";
 import { OCCTBrepGraph } from "./services/brep-graph/brep-graph";
+import { OCCTCorners } from "./services/corners/corners";
+import { OCCTDraft } from "./services/draft/draft";
 import { OccHelper } from "./occ-helper";
 import { OCCTShapeFix } from "./services/shape-fix";
 
@@ -23,6 +25,8 @@ export class OCCTService {
     public readonly dimensions: OCCTDimensions;
     public readonly assembly: OCCTAssembly;
     public readonly brepGraph: OCCTBrepGraph;
+    public readonly corners: OCCTCorners;
+    public readonly draft: OCCTDraft;
     public readonly shapeFix: OCCTShapeFix;
     public readonly io: OCCTIO;
     public plugins?;
@@ -41,6 +45,8 @@ export class OCCTService {
         this.dimensions = new OCCTDimensions(occ, och);
         this.assembly = new OCCTAssembly(occ, och);
         this.brepGraph = new OCCTBrepGraph(occ, och);
+        this.corners = new OCCTCorners(occ, och);
+        this.draft = new OCCTDraft(occ, och);
         this.io = new OCCTIO(occ, och);
     }
 
@@ -49,11 +55,19 @@ export class OCCTService {
     }
 
     shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto[] {
-        return inputs.shapes.map(shape => this.shapeToMesh({ shape, precision: inputs.precision, adjustYtoZ: inputs.adjustYtoZ }));
+        return this.och.meshingService.shapesToMeshes(inputs);
     }
 
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {
         return this.och.meshingService.shapeToMesh(inputs);
+    }
+
+    docToMeshes(inputs: Inputs.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
+        return this.och.meshingService.docToMeshes(inputs);
+    }
+
+    docToMesh(inputs: Inputs.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
+        return this.och.meshingService.docToMesh(inputs);
     }
 
 

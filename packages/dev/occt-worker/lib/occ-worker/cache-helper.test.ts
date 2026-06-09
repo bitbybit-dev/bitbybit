@@ -124,6 +124,92 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
+    describe("large / binary input hashing (digest)", () => {
+        const LARGE = "x".repeat(CacheHelper.LARGE_STRING_THRESHOLD + 1);
+
+        it("digestIfLargeOrBinary returns undefined for small strings and non-large values", () => {
+            expect(cacheHelper.digestIfLargeOrBinary("short")).toBeUndefined();
+            expect(cacheHelper.digestIfLargeOrBinary(42)).toBeUndefined();
+            expect(cacheHelper.digestIfLargeOrBinary(null)).toBeUndefined();
+            expect(cacheHelper.digestIfLargeOrBinary({ a: 1 })).toBeUndefined();
+        });
+
+        it("digestIfLargeOrBinary returns a compact content digest for large strings", () => {
+            const digest = cacheHelper.digestIfLargeOrBinary(LARGE);
+            expect(digest).toBeDefined();
+            expect(digest.length).toBe(LARGE.length);
+            expect(typeof digest.__largeStringDigest__).toBe("number");
+            // Identical content -> identical digest, different content -> different digest
+            expect(cacheHelper.digestIfLargeOrBinary("x".repeat(LARGE.length))).toEqual(digest);
+            const other = cacheHelper.digestIfLargeOrBinary("y".repeat(LARGE.length));
+            expect(other.__largeStringDigest__).not.toBe(digest.__largeStringDigest__);
+        });
+
+        it("digestIfLargeOrBinary digests binary buffers by content", () => {
+            const a = new Uint8Array([1, 2, 3, 4]);
+            const b = new Uint8Array([1, 2, 3, 4]);
+            const c = new Uint8Array([1, 2, 3, 5]);
+            const da = cacheHelper.digestIfLargeOrBinary(a);
+            expect(da.byteLength).toBe(4);
+            expect(typeof da.__binaryDigest__).toBe("number");
+            expect(cacheHelper.digestIfLargeOrBinary(b)).toEqual(da);
+            expect(cacheHelper.digestIfLargeOrBinary(c).__binaryDigest__).not.toBe(da.__binaryDigest__);
+            // ArrayBuffer is digested the same way as its view
+            expect(cacheHelper.digestIfLargeOrBinary(a.buffer).__binaryDigest__).toBe(da.__binaryDigest__);
+        });
+
+        it("toHashableArgs leaves ordinary args unchanged (identity)", () => {
+            const args = { functionName: "test", inputs: { x: 1, name: "short" } };
+            expect(cacheHelper.toHashableArgs(args)).toBe(args);
+        });
+
+        it("toHashableArgs replaces large payloads inside inputs with a digest", () => {
+            const args = { functionName: "loadStep", inputs: { stepData: LARGE, scale: 2 } };
+            const hashable = cacheHelper.toHashableArgs(args);
+            expect(hashable).not.toBe(args);
+            expect(hashable.inputs.stepData.__largeStringDigest__).toBeDefined();
+            expect(hashable.inputs.scale).toBe(2);
+            // original args are not mutated
+            expect(args.inputs.stepData).toBe(LARGE);
+        });
+
+        it("computeHash does not crash on large input and stays content-sensitive", () => {
+            const a = { functionName: "loadStep", inputs: { stepData: LARGE } };
+            const b = { functionName: "loadStep", inputs: { stepData: "x".repeat(LARGE.length) } };
+            const c = { functionName: "loadStep", inputs: { stepData: "y".repeat(LARGE.length) } };
+            const ha = cacheHelper.computeHash(a);
+            expect(typeof ha).toBe("number");
+            expect(cacheHelper.computeHash(b)).toBe(ha); // same content -> same hash
+            expect(cacheHelper.computeHash(c)).not.toBe(ha); // different content -> different hash
+        });
+
+        it("cacheOp caches results of large-input ops and serves them on re-run", () => {
+            const point = new occt.gp_Pnt(0, 0, 0);
+            const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
+            const shape = vertex.Vertex();
+
+            const args = { functionName: "loadStep", inputs: { stepData: LARGE } };
+            let missCount = 0;
+            const result = cacheHelper.cacheOp(args, () => { missCount++; return shape; });
+            expect(missCount).toBe(1);
+            expect(result.hash).toBeDefined();
+
+            // Re-run with identical large input -> cache hit, cacheMiss not called
+            const result2 = cacheHelper.cacheOp(args, () => { missCount++; return shape; });
+            expect(missCount).toBe(1);
+            expect(result2.hash).toBe(result.hash);
+
+            // Different large content -> different hash -> cache miss
+            const argsOther = { functionName: "loadStep", inputs: { stepData: "z".repeat(LARGE.length) } };
+            cacheHelper.cacheOp(argsOther, () => { missCount++; return shape; });
+            expect(missCount).toBe(2);
+
+            shape.delete();
+            vertex.delete();
+            point.delete();
+        });
+    });
+
     describe("stringToHash", () => {
         it("should convert empty string to hash", () => {
             const hash = cacheHelper.stringToHash("");

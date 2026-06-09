@@ -64,7 +64,7 @@ export class BitByBitBase {
 
     async init() {
         // Initialize OCCT (OpenCascade) with locateFile for Node.js WASM loading
-        const wasmPath = require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt.fb4b5da69.wasm");
+        const wasmPath = require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt.3bc993bf.wasm");
         const occ = await (initOpenCascade as (options?: { locateFile?: (path: string) => string }) => Promise<BitbybitOcctModule>)({
             locateFile: (path: string) => {
                 if (path.endsWith(".wasm")) {

@@ -552,4 +552,85 @@ export class FilletsService {
             filletMaker.AddFillet(cvx, inputs.radius);
         }
     }
+
+    chamfer2dVertices(inputs: Inputs.OCCT.Chamfer2dVertexDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face | TopoDS_Wire {
+        let face: TopoDS_Face;
+        let isShapeFace = false;
+        if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.FACE) {
+            face = this.converterService.getActualTypeOfShape(inputs.shape) as TopoDS_Face;
+            isShapeFace = true;
+        } else if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
+            const faceShape = this.occ.MakeFaceFromWireOnlyPlane(inputs.shape as TopoDS_Wire, true);
+            face = this.converterService.getActualTypeOfShape(faceShape) as TopoDS_Face;
+            faceShape.delete();
+        } else {
+            throw new Error("You can only chamfer a 2d wire or a 2d face.");
+        }
+
+        const filletMaker = new this.occ.BRepFilletAPI_MakeFillet2d(face);
+        const angle = this.vecHelper.degToRad(inputs.angle);
+        const cornerVertices = this.collectCornerVertices(inputs.shape, isShapeFace);
+        const faceEdges = this.shapeGettersService.getEdges({ shape: face });
+
+        cornerVertices.forEach((cvx, index) => {
+            if (inputs.indexes && !inputs.indexes.includes(index + 1)) {
+                return;
+            }
+            const edge = this.findEdgeContainingVertex(faceEdges, cvx);
+            if (edge) {
+                filletMaker.AddChamferVertex(edge, cvx, inputs.distance, angle);
+            }
+        });
+        filletMaker.Build();
+
+        let result: TopoDS_Face | TopoDS_Wire;
+        if (isShapeFace) {
+            result = this.converterService.getActualTypeOfShape(filletMaker.Shape()) as TopoDS_Face;
+        } else {
+            const wires = this.shapeGettersService.getWires({ shape: filletMaker.Shape() });
+            result = wires[0];
+        }
+        filletMaker.delete();
+        face.delete();
+        cornerVertices.forEach(cvx => cvx.delete());
+        faceEdges.forEach(e => e.delete());
+        return result;
+    }
+
+    private collectCornerVertices(shape: TopoDS_Shape, isShapeFace: boolean): TopoDS_Vertex[] {
+        const explorer = new this.occ.TopExp_Explorer(shape, this.occ.TopAbs_ShapeEnum.VERTEX, this.occ.TopAbs_ShapeEnum.SHAPE);
+        const cornerVertices: TopoDS_Vertex[] = [];
+        let i = 1;
+        for (explorer; explorer.More(); explorer.Next()) {
+            const vertex = this.occ.CastToVertex(explorer.Current());
+            if (i % 2 === 0) {
+                cornerVertices.push(vertex);
+            } else {
+                vertex.delete();
+            }
+            i++;
+        }
+        explorer.delete();
+        if (!isShapeFace && !(shape as TopoDS_Wire).Closed()) {
+            const popped = cornerVertices.pop();
+            popped?.delete();
+        }
+        return cornerVertices;
+    }
+
+    private findEdgeContainingVertex(edges: TopoDS_Edge[], vertex: TopoDS_Vertex): TopoDS_Edge | undefined {
+        for (const edge of edges) {
+            const explorer = new this.occ.TopExp_Explorer(edge, this.occ.TopAbs_ShapeEnum.VERTEX, this.occ.TopAbs_ShapeEnum.SHAPE);
+            let found = false;
+            for (explorer; explorer.More(); explorer.Next()) {
+                const v = this.occ.CastToVertex(explorer.Current());
+                const same = v.IsSame(vertex);
+                v.delete();
+                if (same) { found = true; break; }
+            }
+            explorer.delete();
+            if (found) { return edge; }
+        }
+        return undefined;
+    }
 }
