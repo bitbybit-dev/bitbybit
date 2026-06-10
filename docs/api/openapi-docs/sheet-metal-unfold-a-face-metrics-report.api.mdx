@@ -1,0 +1,70 @@
+---
+id: sheet-metal-unfold-a-face-metrics-report
+title: "Sheet metal - unfold a face, metrics report"
+description: "Proprietary sheet-metal analysis: computes the unfold metrics report (developability, area, ...) for a single face of an uploaded STEP shape. Requires the 'cad' API key scope. Returns 202 with a task ID; the JSON report is delivered in the task metadata."
+sidebar_label: "Sheet metal - unfold a face, metrics report"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "post api-method"
+info_path: api/open/bitbybit-cad-cloud-api
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Sheet metal - unfold a face, metrics report"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/v1/cad/pro/unfold/face-report"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Proprietary sheet-metal analysis: computes the unfold metrics report (developability, area, ...) for a single face of an uploaded STEP shape. Requires the 'cad' API key scope. Returns 202 with a task ID; the JSON report is delivered in the task metadata.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./sheet-metal-unfold-a-face-metrics-report.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./sheet-metal-unfold-a-face-metrics-report.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

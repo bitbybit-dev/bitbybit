@@ -6,6 +6,9 @@ import { OCCTBooleans } from "./booleans";
 import { OCCTIO } from "./io";
 import { OCCTGeom } from "./geom/geom";
 import { OCCTAssembly } from "./assembly/assembly";
+import { OCCTBrepGraph } from "./brep-graph";
+import { OCCTCorners } from "./corners";
+import { OCCTDraft } from "./draft";
 import { OCCTFillets } from "./fillets";
 import { Inputs } from "@bitbybit-dev/occt";
 import { OCCTShapeFix } from "./shape-fix";
@@ -24,6 +27,9 @@ export class OCCT {
     public readonly dimensions: OCCTDimensions;
     public readonly shapeFix: OCCTShapeFix;
     public readonly assembly: OCCTAssembly;
+    public readonly brepGraph: OCCTBrepGraph;
+    public readonly corners: OCCTCorners;
+    public readonly draft: OCCTDraft;
     public io: OCCTIO;
 
     constructor(
@@ -38,6 +44,9 @@ export class OCCT {
         this.shapeFix = new OCCTShapeFix(occWorkerManager);
         this.dimensions = new OCCTDimensions(occWorkerManager);
         this.assembly = new OCCTAssembly(occWorkerManager);
+        this.brepGraph = new OCCTBrepGraph(occWorkerManager);
+        this.corners = new OCCTCorners(occWorkerManager);
+        this.draft = new OCCTDraft(occWorkerManager);
         this.io = new OCCTIO(occWorkerManager);
     }
 
@@ -72,6 +81,26 @@ export class OCCT {
      */
     async shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
         return await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
+    }
+
+    /**
+     * Meshes an XCAF document's free (top-level) shapes as one combined mesh, resolving per-face colours
+     * into the colorGroups map of the output.
+     * @param inputs document
+     * @ignore true
+     */
+    async docToMesh(inputs: Inputs.OCCT.DocToMeshDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.DecomposedMeshDto> {
+        return await this.occWorkerManager.genericCallToWorkerPromise("docToMesh", inputs);
+    }
+
+    /**
+     * Meshes an XCAF document's free (top-level) shapes into separate meshes (one per shape), resolving
+     * per-face colours into each output's colorGroups map.
+     * @param inputs document
+     * @ignore true
+     */
+    async docToMeshes(inputs: Inputs.OCCT.DocToMeshesDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+        return await this.occWorkerManager.genericCallToWorkerPromise("docToMeshes", inputs);
     }
 
     /**

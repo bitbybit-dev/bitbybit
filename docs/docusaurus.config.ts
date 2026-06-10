@@ -12,10 +12,45 @@ const config: Config = {
     },
     title: "Bitbybit",
     tagline: "Learn How To Use The Platform",
-    favicon: "img/logo-gold-small.png",
+    favicon: "img/favicon-96x96.png",
     markdown: { mermaid: true },
 
     headTags: [
+        // Favicons sized as multiples of 48px so Google can index them for search results.
+        {
+            tagName: "link",
+            attributes: {
+                rel: "icon",
+                type: "image/x-icon",
+                href: "/favicon.ico",
+                sizes: "48x48",
+            },
+        },
+        {
+            tagName: "link",
+            attributes: {
+                rel: "icon",
+                type: "image/png",
+                href: "/img/favicon-96x96.png",
+                sizes: "96x96",
+            },
+        },
+        {
+            tagName: "link",
+            attributes: {
+                rel: "icon",
+                type: "image/png",
+                href: "/img/favicon-192x192.png",
+                sizes: "192x192",
+            },
+        },
+        {
+            tagName: "link",
+            attributes: {
+                rel: "apple-touch-icon",
+                href: "/img/favicon-192x192.png",
+            },
+        },
         {
             tagName: "script",
             attributes: { type: "application/ld+json" },

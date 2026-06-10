@@ -6,6 +6,7 @@ import { OCCTAssemblyManager } from "./manager";
 import { OCCTAssemblyQuery } from "./query";
 import { OCCTSolid } from "../shapes";
 import * as Models from "../../api/models";
+import * as Inputs from "../../api/inputs";
 
 describe("OCCTAssemblyManager unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -1167,6 +1168,44 @@ describe("OCCTAssemblyManager unit tests", () => {
             const doc = manager.buildAssemblyDocument({ structure: emptyStructure });
             expect(doc.IsNull()).toBe(false);
             doc.delete();
+        });
+    });
+
+    describe("matrix placement", () => {
+        it("should place an instance using a column-major matrix and round-trip it", () => {
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+            const part = manager.createPart({ id: "p", shape: box, name: "P" });
+            // column-major translation [7, 8, 9]
+            const matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 7, 8, 9, 1] as Inputs.Base.TransformMatrix;
+            const inst = manager.createInstanceNode({ id: "i", partId: "p", name: "I", matrix });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const document = manager.buildAssemblyDocument({ structure });
+
+            const hierarchy = query.getAssemblyHierarchy({ document });
+            const instanceNode = hierarchy.nodes.find(n => n.name === "I");
+            expect(instanceNode?.transform).toEqual([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 7, 8, 9, 1]);
+
+            box.delete();
+            document.delete();
+        });
+
+        it("should fold an ordered list of matrices for an instance placement", () => {
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+            const part = manager.createPart({ id: "p", shape: box, name: "P" });
+            // column-major translations, applied first-to-last -> folded translation [10, 5, 0]
+            const t1 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 0, 0, 1] as Inputs.Base.TransformMatrix;
+            const t2 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 5, 0, 1] as Inputs.Base.TransformMatrix;
+            const inst = manager.createInstanceNode({ id: "i", partId: "p", name: "I", matrix: [t1, t2] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const document = manager.buildAssemblyDocument({ structure });
+
+            const hierarchy = query.getAssemblyHierarchy({ document });
+            const instanceNode = hierarchy.nodes.find(n => n.name === "I");
+            expect(instanceNode?.transform?.[12]).toBeCloseTo(10);
+            expect(instanceNode?.transform?.[13]).toBeCloseTo(5);
+
+            box.delete();
+            document.delete();
         });
     });
 });

@@ -144,6 +144,14 @@ export namespace OCCT {
         none = "none",
         arrow = "arrow",
     }
+    export enum wireFromPointsTypeEnum {
+        polyline = "polyline",
+        interpolated = "interpolated",
+    }
+    export enum cornerModeEnum {
+        auto = "auto",
+        planarOnly = "planarOnly",
+    }
     export class DecomposedMeshDto {
         constructor(faceList?: DecomposedFaceDto[], edgeList?: DecomposedEdgeDto[]) {
             if (faceList !== undefined) { this.faceList = faceList; }
@@ -161,23 +169,52 @@ export namespace OCCT {
          * The points list in a shape that includes vertex shapes
          */
         pointsList: Base.Point3[];
+        /**
+         * Map of "#rrggbbaa" colour to the face indices carrying it. Only present for the docToMesh /
+         * docToMeshes endpoints, which resolve per-face colours from the shape's XCAF document.
+         */
+        colorGroups?: { [color: string]: number[] };
     }
 
     export class DecomposedFaceDto {
-        face_index: number;
-        normal_coord: number[];
-        number_of_triangles: number;
-        tri_indexes: number[];
-        vertex_coord: number[];
-        vertex_coord_vec: Base.Vector3[];
-        center_point: Base.Point3;
-        center_normal: Base.Vector3;
+        faceIndex: number;
+        normalCoord: number[];
+        numberOfTriangles: number;
+        triIndexes: number[];
+        vertexCoord: number[];
+        vertexCoordVec: Base.Vector3[];
+        centerPoint: Base.Point3;
+        centerNormal: Base.Vector3;
         uvs: number[];
+        /** Surface area of the face. Only present when shapeToMesh is called with computeMetadata. */
+        area?: number;
+        /** True center of mass of the face. Only present when computeMetadata is enabled. */
+        centerOfMass?: Base.Point3;
+        /** Surface kind, e.g. "Plane", "Cylinder", "BSplineSurface". Only present with computeMetadata. */
+        surfaceType?: string;
+        /** OCCT tolerance of the face. Only present with computeMetadata. */
+        tolerance?: number;
+        /** Indices of faces sharing an edge with this face. Only present with computeMetadata. */
+        adjacentFaces?: number[];
+        /** Stable BRepGraph UID of the face (-1 if unavailable). Only present with computeMetadata. */
+        faceUid?: number;
     }
     export class DecomposedEdgeDto {
-        edge_index: number;
-        middle_point: Base.Point3;
-        vertex_coord: Base.Vector3[];
+        edgeIndex: number;
+        middlePoint: Base.Point3;
+        vertexCoord: Base.Vector3[];
+        /** Length of the edge. Only present when shapeToMesh is called with computeMetadata. */
+        length?: number;
+        /** True center of mass of the edge. Only present when computeMetadata is enabled. */
+        centerOfMass?: Base.Point3;
+        /** Curve kind, e.g. "Line", "Circle", "BSplineCurve". Only present with computeMetadata. */
+        curveType?: string;
+        /** Whether the edge is degenerated (no 3D curve). Only present with computeMetadata. */
+        degenerated?: boolean;
+        /** Indices of faces incident to this edge. Only present with computeMetadata. */
+        incidentFaces?: number[];
+        /** Stable BRepGraph UID of the edge (-1 if unavailable). Only present with computeMetadata. */
+        edgeUid?: number;
     }
     export class ShapesDto<T> {
         constructor(shapes?: T[]) {
@@ -653,7 +690,7 @@ export namespace OCCT {
         /**
          * Provide options without default values
          */
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
@@ -676,6 +713,9 @@ export namespace OCCT {
             if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
             if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+            if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+            if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+            if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
         }
         /**
          * Brep OpenCascade geometry
@@ -812,13 +852,29 @@ export namespace OCCT {
          * @step 0.1
          */
         backFaceOpacity = 1;
+        /**
+         * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
+         * is flushed so it does not accumulate in memory across draws.
+         * @default false
+         */
+        keepMeshData = false;
+        /**
+         * Allow re-meshing to a lower resolution triangulation than one already cached on the shape.
+         * @default true
+         */
+        allowQualityDecrease = true;
+        /**
+         * Force every face to be re-meshed to the requested precision regardless of cached triangulation.
+         * @default false
+         */
+        forceFaceDeflection = false;
     }
     export class DrawShapesDto<T> {
 
         /**
          * Provide options without default values
          */
-        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
+        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
@@ -841,6 +897,9 @@ export namespace OCCT {
             if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
             if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+            if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+            if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+            if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
         }
         /**
          * Brep OpenCascade geometry
@@ -977,6 +1036,22 @@ export namespace OCCT {
          * @step 0.1
          */
         backFaceOpacity = 1;
+        /**
+         * Keep the cached triangulation on each shape after meshing. When false (default) the mesh data
+         * is flushed so it does not accumulate in memory across draws.
+         * @default false
+         */
+        keepMeshData = false;
+        /**
+         * Allow re-meshing to a lower resolution triangulation than one already cached on a shape.
+         * @default true
+         */
+        allowQualityDecrease = true;
+        /**
+         * Force every face to be re-meshed to the requested precision regardless of cached triangulation.
+         * @default false
+         */
+        forceFaceDeflection = false;
     }
     export class FaceSubdivisionDto<T> {
         /**
@@ -3666,6 +3741,83 @@ export namespace OCCT {
          */
         zigZagsPerEdge = true;
     }
+    export class WiresBetweenStartEndPointsOfWiresAndEdgesDto<T> {
+        constructor(shapes?: T[], wireType?: wireFromPointsTypeEnum, closed?: boolean, tolerance?: number) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (wireType !== undefined) { this.wireType = wireType; }
+            if (closed !== undefined) { this.closed = closed; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Two or more wires or edges whose start and end points will be connected
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * Whether to connect the points with straight polyline segments or to interpolate a smooth BSpline through them
+         * @default polyline
+         */
+        wireType? = wireFromPointsTypeEnum.polyline;
+        /**
+         * Whether to close the resulting wires. For polyline wires this creates a polygon, for interpolated wires this creates a periodic (closed) BSpline.
+         * @default false
+         */
+        closed? = false;
+        /**
+         * Tolerance used when interpolating the BSpline (only used when wireType is interpolated)
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance? = 1e-7;
+    }
+    export class WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> {
+        constructor(shapes?: T[], nrOfDivisions?: number, divideByEqualDistance?: boolean, wireType?: wireFromPointsTypeEnum, closed?: boolean, tolerance?: number) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (nrOfDivisions !== undefined) { this.nrOfDivisions = nrOfDivisions; }
+            if (divideByEqualDistance !== undefined) { this.divideByEqualDistance = divideByEqualDistance; }
+            if (wireType !== undefined) { this.wireType = wireType; }
+            if (closed !== undefined) { this.closed = closed; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Two or more wires or edges that will be subdivided and connected through the points at matching subdivision indexes
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * Into how many segments each wire or edge should be subdivided. The number of resulting wires will be nrOfDivisions + 1.
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrOfDivisions? = 10;
+        /**
+         * If true, the subdivision points will be spaced by equal distance along each shape. By default the parametric subdivision is used, which is not always equal to distance based subdivisions.
+         * @default false
+         */
+        divideByEqualDistance? = false;
+        /**
+         * Whether to connect the points with straight polyline segments or to interpolate a smooth BSpline through them
+         * @default polyline
+         */
+        wireType? = wireFromPointsTypeEnum.polyline;
+        /**
+         * Whether to close the resulting wires. For polyline wires this creates a polygon, for interpolated wires this creates a periodic (closed) BSpline.
+         * @default false
+         */
+        closed? = false;
+        /**
+         * Tolerance used when interpolating the BSpline (only used when wireType is interpolated)
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance? = 1e-7;
+    }
     export class InterpolationDto {
         constructor(points?: Base.Point3[], periodic?: boolean, tolerance?: number) {
             if (points !== undefined) { this.points = points; }
@@ -5908,11 +6060,585 @@ export namespace OCCT {
          */
         centers: Base.Point3[] = [[0, 0, 0]];
     }
+    // Matrices are flat 16-number arrays in COLUMN-MAJOR order (Base.TransformMatrix),
+    // matching glTF/WebGL, Babylon/Three and the matrix returned by getLabelTransform.
+    // A point transforms as p' = M * p; a list (Base.TransformMatrixes) is applied in
+    // order (first matrix first).
+    export class TransformByMatrixDto<T> {
+        constructor(shape?: T, transformation?: Base.TransformMatrix | Base.TransformMatrixes) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * Shape to transform
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Transformation matrix (column-major, 16 numbers) or an ordered list of matrices applied first-to-last
+         * @default undefined
+         */
+        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+    }
+    export class TransformShapesByMatrixDto<T> {
+        constructor(shapes?: T[], transformation?: Base.TransformMatrix | Base.TransformMatrixes) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * Shapes to transform (the same transformation is applied to each)
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * Transformation matrix (column-major) or an ordered list of matrices applied first-to-last
+         * @default undefined
+         */
+        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+    }
+    export class ShapeTransformQueryDto<T> {
+        constructor(shape?: T) {
+            if (shape !== undefined) { this.shape = shape; }
+        }
+        /**
+         * Shape whose current placement (location) transform will be read
+         * @default undefined
+         */
+        shape: T;
+    }
+    export class ScaleFromCenterDto<T> {
+        constructor(shape?: T, factor?: number, center?: Base.Point3) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (factor !== undefined) { this.factor = factor; }
+            if (center !== undefined) { this.center = center; }
+        }
+        /**
+         * Shape to scale
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Uniform scale factor
+         * @default 1
+         * @step 0.1
+         */
+        factor = 1;
+        /**
+         * Center point to scale about
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+    }
+    export class MirrorAboutPointDto<T> {
+        constructor(shape?: T, point?: Base.Point3) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (point !== undefined) { this.point = point; }
+        }
+        /**
+         * Shape to mirror
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Point to mirror (point-invert) about
+         * @default [0, 0, 0]
+         */
+        point: Base.Point3 = [0, 0, 0];
+    }
+    export class RotateByQuaternionDto<T> {
+        constructor(shape?: T, quaternion?: [number, number, number, number]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (quaternion !== undefined) { this.quaternion = quaternion; }
+        }
+        /**
+         * Shape to rotate
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Rotation quaternion [x, y, z, w]
+         * @default [0, 0, 0, 1]
+         */
+        quaternion: [number, number, number, number] = [0, 0, 0, 1];
+    }
+    export class ComposeTransformDto {
+        constructor(translation?: Base.Vector3, rotation?: Base.Vector3, scale?: number) {
+            if (translation !== undefined) { this.translation = translation; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (scale !== undefined) { this.scale = scale; }
+        }
+        /**
+         * Translation as [x, y, z]
+         * @default [0, 0, 0]
+         */
+        translation: Base.Vector3 = [0, 0, 0];
+        /**
+         * Rotation as Euler angles [rx, ry, rz] in degrees (applied Rx * Ry * Rz)
+         * @default [0, 0, 0]
+         */
+        rotation: Base.Vector3 = [0, 0, 0];
+        /**
+         * Uniform scale factor
+         * @default 1
+         * @step 0.1
+         */
+        scale = 1;
+    }
+    export class MultiplyTransformsDto {
+        constructor(transformation?: Base.TransformMatrix | Base.TransformMatrixes) {
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * Ordered list of matrices (applied first-to-last) folded into a single matrix
+         * @default undefined
+         */
+        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+    }
+    export class InvertTransformDto {
+        constructor(transformation?: Base.TransformMatrix) {
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
+        /**
+         * Transformation matrix (column-major, 16 numbers) to invert
+         * @default undefined
+         */
+        transformation: Base.TransformMatrix;
+    }
+    export class TranslationToMatrixDto {
+        constructor(translation?: Base.Vector3) {
+            if (translation !== undefined) { this.translation = translation; }
+        }
+        /**
+         * Translation as [x, y, z]
+         * @default [0, 0, 0]
+         */
+        translation: Base.Vector3 = [0, 0, 0];
+    }
+    export class RotationAxisAngleToMatrixDto {
+        constructor(axis?: Base.Vector3, angle?: number, center?: Base.Point3) {
+            if (axis !== undefined) { this.axis = axis; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (center !== undefined) { this.center = center; }
+        }
+        /**
+         * Rotation axis direction
+         * @default [0, 0, 1]
+         */
+        axis: Base.Vector3 = [0, 0, 1];
+        /**
+         * Rotation angle in degrees
+         * @default 0
+         * @step 1
+         */
+        angle = 0;
+        /**
+         * Point the axis passes through
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+    }
+    export class ScaleUniformToMatrixDto {
+        constructor(factor?: number, center?: Base.Point3) {
+            if (factor !== undefined) { this.factor = factor; }
+            if (center !== undefined) { this.center = center; }
+        }
+        /**
+         * Uniform scale factor
+         * @default 1
+         * @step 0.1
+         */
+        factor = 1;
+        /**
+         * Center point to scale about
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+    }
+    export class MirrorPointToMatrixDto {
+        constructor(point?: Base.Point3) {
+            if (point !== undefined) { this.point = point; }
+        }
+        /**
+         * Point to mirror (point-invert) about
+         * @default [0, 0, 0]
+         */
+        point: Base.Point3 = [0, 0, 0];
+    }
+    export class MirrorAxisToMatrixDto {
+        constructor(origin?: Base.Point3, direction?: Base.Vector3) {
+            if (origin !== undefined) { this.origin = origin; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * Axis origin
+         * @default [0, 0, 0]
+         */
+        origin: Base.Point3 = [0, 0, 0];
+        /**
+         * Axis direction to mirror about
+         * @default [1, 0, 0]
+         */
+        direction: Base.Vector3 = [1, 0, 0];
+    }
+    export class MirrorPlaneToMatrixDto {
+        constructor(origin?: Base.Point3, normal?: Base.Vector3) {
+            if (origin !== undefined) { this.origin = origin; }
+            if (normal !== undefined) { this.normal = normal; }
+        }
+        /**
+         * Plane origin
+         * @default [0, 0, 0]
+         */
+        origin: Base.Point3 = [0, 0, 0];
+        /**
+         * Plane normal to mirror about
+         * @default [0, 0, 1]
+         */
+        normal: Base.Vector3 = [0, 0, 1];
+    }
+    export class QuaternionToMatrixDto {
+        constructor(quaternion?: [number, number, number, number]) {
+            if (quaternion !== undefined) { this.quaternion = quaternion; }
+        }
+        /**
+         * Rotation quaternion [x, y, z, w]
+         * @default [0, 0, 0, 1]
+         */
+        quaternion: [number, number, number, number] = [0, 0, 0, 1];
+    }
+    /**
+     * Decomposed placement transform of a shape or label.
+     * `matrix` is a flat 16-number 4x4 in column-major order.
+     */
+    export interface ShapeTransformInfo {
+        matrix: Base.TransformMatrix;
+        translation: Base.Point3;
+        quaternion: [number, number, number, number];
+        scale: number;
+    }
+    export enum brepGraphNodeKindEnum {
+        solid = "solid",
+        shell = "shell",
+        face = "face",
+        wire = "wire",
+        edge = "edge",
+        vertex = "vertex",
+        compound = "compound",
+        compsolid = "compsolid",
+    }
+    export class BRepGraphReconstructDto<T> {
+        constructor(shape?: T, kind?: brepGraphNodeKindEnum, index?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (kind !== undefined) { this.kind = kind; }
+            if (index !== undefined) { this.index = index; }
+        }
+        /**
+         * Shape the graph is rebuilt from
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Kind of graph node to reconstruct into a sub-shape
+         * @default solid
+         */
+        kind: brepGraphNodeKindEnum = brepGraphNodeKindEnum.solid;
+        /**
+         * 0-based index of the node within its kind
+         * @default 0
+         * @step 1
+         */
+        index = 0;
+    }
+    export class BRepGraphNodeOfShapeDto<T> {
+        constructor(shape?: T, subShape?: T) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (subShape !== undefined) { this.subShape = subShape; }
+        }
+        /**
+         * Shape the graph is rebuilt from
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Sub-shape of the shape to locate in the graph
+         * @default undefined
+         */
+        subShape: T;
+    }
+    export class FilletCornerByPointDto<T> {
+        constructor(shape?: T, points?: Base.Point3[], radius?: number, taperFactor?: number, snapTolerance?: number, mode?: cornerModeEnum) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (points !== undefined) { this.points = points; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (taperFactor !== undefined) { this.taperFactor = taperFactor; }
+            if (snapTolerance !== undefined) { this.snapTolerance = snapTolerance; }
+            if (mode !== undefined) { this.mode = mode; }
+        }
+        /**
+         * Shell or solid whose corner(s) will be rounded
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Points near the corners to round (the nearest vertex to each is used)
+         * @default []
+         */
+        points: Base.Point3[] = [];
+        /**
+         * Fillet radius
+         * @default 1
+         * @step 0.1
+         */
+        radius = 1;
+        /**
+         * 3D corners only: taper reach along the incident edges, 0 = tightest (near spherical corner), 1 = up to the edge neutral point
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        taperFactor = 1;
+        /**
+         * Maximum point-to-vertex distance to accept; 0 or less snaps to the nearest vertex unconditionally
+         * @default 0
+         * @step 0.1
+         */
+        snapTolerance = 0;
+        /**
+         * auto: planar corners are corner-only, 3D corners are taper-filleted; planarOnly: 3D corners are skipped
+         * @default auto
+         */
+        mode: cornerModeEnum = cornerModeEnum.auto;
+    }
+    export class ChamferCornerByPointDto<T> {
+        constructor(shape?: T, points?: Base.Point3[], distance?: number, angle?: number, snapTolerance?: number, mode?: cornerModeEnum) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (points !== undefined) { this.points = points; }
+            if (distance !== undefined) { this.distance = distance; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (snapTolerance !== undefined) { this.snapTolerance = snapTolerance; }
+            if (mode !== undefined) { this.mode = mode; }
+        }
+        /**
+         * Shell or solid whose corner(s) will be beveled
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Points near the corners to chamfer (the nearest vertex to each is used)
+         * @default []
+         */
+        points: Base.Point3[] = [];
+        /**
+         * Chamfer setback distance
+         * @default 1
+         * @step 0.1
+         */
+        distance = 1;
+        /**
+         * Chamfer angle in degrees (used by the planar 2D chamfer)
+         * @default 45
+         * @step 1
+         */
+        angle = 45;
+        /**
+         * Maximum point-to-vertex distance to accept; 0 or less snaps to the nearest vertex unconditionally
+         * @default 0
+         * @step 0.1
+         */
+        snapTolerance = 0;
+        /**
+         * auto: planar corners are corner-only, 3D corners use a local plane cut; planarOnly: 3D corners are skipped
+         * @default auto
+         */
+        mode: cornerModeEnum = cornerModeEnum.auto;
+    }
+    export class ClassifyCornerByPointDto<T> {
+        constructor(shape?: T, points?: Base.Point3[], snapTolerance?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (points !== undefined) { this.points = points; }
+            if (snapTolerance !== undefined) { this.snapTolerance = snapTolerance; }
+        }
+        /**
+         * Shell or solid whose corner(s) will be classified
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Points near the corners to classify (the nearest vertex to each is used)
+         * @default []
+         */
+        points: Base.Point3[] = [];
+        /**
+         * Maximum point-to-vertex distance to accept; 0 or less snaps to the nearest vertex unconditionally
+         * @default 0
+         * @step 0.1
+         */
+        snapTolerance = 0;
+    }
+    export class Chamfer2dVertexDto<T> {
+        constructor(shape?: T, distance?: number, angle?: number, indexes?: number[]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (distance !== undefined) { this.distance = distance; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (indexes !== undefined) { this.indexes = indexes; }
+        }
+        /**
+         * 2D wire or planar face whose corners will be chamfered
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Chamfer setback distance along the corner edge
+         * @default 1
+         * @step 0.1
+         */
+        distance = 1;
+        /**
+         * Chamfer angle in degrees
+         * @default 45
+         * @step 1
+         */
+        angle = 45;
+        /**
+         * Optional 1-based corner indexes to chamfer; chamfers all corners when omitted
+         * @default undefined
+         */
+        indexes?: number[];
+    }
+    export class DraftAngleDto<T, U> {
+        constructor(shape?: T, faces?: U[], direction?: Base.Vector3, angle?: number, neutralPlaneOrigin?: Base.Point3, neutralPlaneDirection?: Base.Vector3, flag?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (faces !== undefined) { this.faces = faces; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (neutralPlaneOrigin !== undefined) { this.neutralPlaneOrigin = neutralPlaneOrigin; }
+            if (neutralPlaneDirection !== undefined) { this.neutralPlaneDirection = neutralPlaneDirection; }
+            if (flag !== undefined) { this.flag = flag; }
+        }
+        /**
+         * Shape to draft
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Faces of the shape to taper
+         * @default undefined
+         */
+        faces: U[];
+        /**
+         * Pull direction the draft is applied along
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * Draft angle in degrees
+         * @default 5
+         * @step 1
+         */
+        angle = 5;
+        /**
+         * Origin of the neutral plane (kept fixed during drafting)
+         * @default [0, 0, 0]
+         */
+        neutralPlaneOrigin: Base.Point3 = [0, 0, 0];
+        /**
+         * Normal of the neutral plane
+         * @default [0, 0, 1]
+         */
+        neutralPlaneDirection: Base.Vector3 = [0, 0, 1];
+        /**
+         * Direction flag passed to OCCT (true keeps the standard draft side)
+         * @default true
+         */
+        flag = true;
+    }
+    export class MakeDraftDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, angle?: number, lengthMax?: number, internal?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (lengthMax !== undefined) { this.lengthMax = lengthMax; }
+            if (internal !== undefined) { this.internal = internal; }
+        }
+        /**
+         * Shape (or face/wire) to draft from
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Draft direction
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * Draft angle in degrees
+         * @default 5
+         * @step 1
+         */
+        angle = 5;
+        /**
+         * Maximum length of the corner edge between two draft faces
+         * @default 10
+         * @step 0.1
+         */
+        lengthMax = 10;
+        /**
+         * Whether the draft is internal
+         * @default false
+         */
+        internal = false;
+    }
+    export class MakeDraftToShapeDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, angle?: number, stopShape?: T, keepOut?: boolean, internal?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (stopShape !== undefined) { this.stopShape = stopShape; }
+            if (keepOut !== undefined) { this.keepOut = keepOut; }
+            if (internal !== undefined) { this.internal = internal; }
+        }
+        /**
+         * Shape (or face/wire) to draft from
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Draft direction
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * Draft angle in degrees
+         * @default 5
+         * @step 1
+         */
+        angle = 5;
+        /**
+         * Shape the draft is performed up to
+         * @default undefined
+         */
+        stopShape: T;
+        /**
+         * Keep the part of the stop shape outside the draft
+         * @default false
+         */
+        keepOut = false;
+        /**
+         * Whether the draft is internal
+         * @default false
+         */
+        internal = false;
+    }
     export class ShapeToMeshDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean) {
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
+            if (computeMetadata !== undefined) { this.computeMetadata = computeMetadata; }
+            if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+            if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+            if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
         }
         /**
          * Shape to save
@@ -5932,6 +6658,30 @@ export namespace OCCT {
          * @default false
          */
         adjustYtoZ = false;
+        /**
+         * Compute additional per-face and per-edge metadata (area, length, centers of mass,
+         * surface/curve type, tolerance and adjacency). Adds cost; base mesh is unchanged when false.
+         * @default false
+         */
+        computeMetadata?: boolean = false;
+        /**
+         * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
+         * is flushed off the shape so it does not accumulate in memory across calls.
+         * @default false
+         */
+        keepMeshData?: boolean = false;
+        /**
+         * Allow re-meshing to a lower resolution triangulation than one already cached on the shape
+         * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
+         * @default true
+         */
+        allowQualityDecrease?: boolean = true;
+        /**
+         * Force every face to be re-meshed to the requested precision regardless of any cached
+         * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
+         * @default false
+         */
+        forceFaceDeflection?: boolean = false;
     }
     export class ShapeFacesToPolygonPointsDto<T> {
         constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean) {
@@ -5965,10 +6715,14 @@ export namespace OCCT {
         reversedPoints = false;
     }
     export class ShapesToMeshesDto<T> {
-        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean) {
+        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
+            if (computeMetadata !== undefined) { this.computeMetadata = computeMetadata; }
+            if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+            if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+            if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
         }
         /**
          * Shapes to transform
@@ -5988,6 +6742,138 @@ export namespace OCCT {
          * @default false
          */
         adjustYtoZ = false;
+        /**
+         * Compute additional per-face and per-edge metadata (area, length, centers of mass,
+         * surface/curve type, tolerance and adjacency). Adds cost; base mesh is unchanged when false.
+         * @default false
+         */
+        computeMetadata?: boolean = false;
+        /**
+         * Keep the cached triangulation on each shape after meshing. When false (default) the mesh data
+         * is flushed so it does not accumulate in memory across calls.
+         * @default false
+         */
+        keepMeshData?: boolean = false;
+        /**
+         * Allow re-meshing to a lower resolution triangulation than one already cached on a shape
+         * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
+         * @default true
+         */
+        allowQualityDecrease?: boolean = true;
+        /**
+         * Force every face to be re-meshed to the requested precision regardless of any cached
+         * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
+         * @default false
+         */
+        forceFaceDeflection?: boolean = false;
+    }
+    export class DocToMeshDto<U> {
+        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+            if (document !== undefined) { this.document = document; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
+            if (computeMetadata !== undefined) { this.computeMetadata = computeMetadata; }
+            if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+            if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+            if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        }
+        /**
+         * The XCAF document to mesh. Its free (top-level) shapes are meshed as one combined mesh and
+         * per-face colours are resolved from the document into the colorGroups map of the output.
+         * @default undefined
+         */
+        document: U;
+        /**
+         * Precision of the mesh
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision = 0.01;
+        /**
+         * Adjust Y (up) coordinate system to Z (up) coordinate system
+         * @default false
+         */
+        adjustYtoZ = false;
+        /**
+         * Compute additional per-face and per-edge metadata (area, length, centers of mass,
+         * surface/curve type, tolerance, adjacency, UIDs). Adds cost; base mesh is unchanged when false.
+         * @default false
+         */
+        computeMetadata?: boolean = false;
+        /**
+         * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
+         * is flushed off the shape so it does not accumulate in memory across calls.
+         * @default false
+         */
+        keepMeshData?: boolean = false;
+        /**
+         * Allow re-meshing to a lower resolution triangulation than one already cached on the shape
+         * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
+         * @default true
+         */
+        allowQualityDecrease?: boolean = true;
+        /**
+         * Force every face to be re-meshed to the requested precision regardless of any cached
+         * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
+         * @default false
+         */
+        forceFaceDeflection?: boolean = false;
+    }
+    export class DocToMeshesDto<U> {
+        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+            if (document !== undefined) { this.document = document; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
+            if (computeMetadata !== undefined) { this.computeMetadata = computeMetadata; }
+            if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+            if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+            if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        }
+        /**
+         * The XCAF document to mesh. Each of its free (top-level) shapes is meshed into a separate mesh
+         * (one array entry), with per-face colours resolved from the document into each colorGroups map.
+         * @default undefined
+         */
+        document: U;
+        /**
+         * Precision of the mesh
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision = 0.01;
+        /**
+         * Adjust Y (up) coordinate system to Z (up) coordinate system
+         * @default false
+         */
+        adjustYtoZ = false;
+        /**
+         * Compute additional per-face and per-edge metadata (area, length, centers of mass,
+         * surface/curve type, tolerance, adjacency, UIDs). Adds cost; base mesh is unchanged when false.
+         * @default false
+         */
+        computeMetadata?: boolean = false;
+        /**
+         * Keep the cached triangulation on each shape after meshing. When false (default) the mesh data
+         * is flushed so it does not accumulate in memory across calls.
+         * @default false
+         */
+        keepMeshData?: boolean = false;
+        /**
+         * Allow re-meshing to a lower resolution triangulation than one already cached on a shape
+         * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
+         * @default true
+         */
+        allowQualityDecrease?: boolean = true;
+        /**
+         * Force every face to be re-meshed to the requested precision regardless of any cached
+         * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
+         * @default false
+         */
+        forceFaceDeflection?: boolean = false;
     }
     export class SaveStepDto<T> {
         constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean) {
@@ -6838,12 +7724,14 @@ export namespace OCCT {
             id?: string,
             name?: string,
             parentId?: string,
-            colorRgba?: Base.ColorRGBA
+            colorRgba?: Base.ColorRGBA,
+            matrix?: Base.TransformMatrix | Base.TransformMatrixes
         ) {
             if (id !== undefined) { this.id = id; }
             if (name !== undefined) { this.name = name; }
             if (parentId !== undefined) { this.parentId = parentId; }
             if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+            if (matrix !== undefined) { this.matrix = matrix; }
         }
         /**
          * Unique identifier for this assembly node
@@ -6867,6 +7755,13 @@ export namespace OCCT {
          * @max 1
          */
         colorRgba?: Base.ColorRGBA = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
+        /**
+         * Optional placement matrix (column-major, 16 numbers) or an ordered list of
+         * matrices applied first-to-last. When provided it fully defines the node's
+         * placement and takes precedence over any translation/rotation/scale.
+         * @default undefined
+         */
+        matrix?: Base.TransformMatrix | Base.TransformMatrixes;
     }
 
     /**
@@ -6882,7 +7777,8 @@ export namespace OCCT {
             translation?: Base.Point3,
             rotation?: Base.Vector3,
             scale?: number,
-            colorRgba?: Base.ColorRGBA
+            colorRgba?: Base.ColorRGBA,
+            matrix?: Base.TransformMatrix | Base.TransformMatrixes
         ) {
             if (id !== undefined) { this.id = id; }
             if (partId !== undefined) { this.partId = partId; }
@@ -6892,6 +7788,7 @@ export namespace OCCT {
             if (rotation !== undefined) { this.rotation = rotation; }
             if (scale !== undefined) { this.scale = scale; }
             if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
+            if (matrix !== undefined) { this.matrix = matrix; }
         }
         /**
          * Unique identifier for this instance node
@@ -6919,7 +7816,7 @@ export namespace OCCT {
          */
         translation?: Base.Point3 = [0, 0, 0];
         /**
-         * Rotation as [rx, ry, rz] in degrees (Euler ZYX order)
+         * Rotation as [rx, ry, rz] Euler angles in degrees (applied Rx * Ry * Rz)
          * @default [0, 0, 0]
          */
         rotation?: Base.Vector3 = [0, 0, 0];
@@ -6933,6 +7830,13 @@ export namespace OCCT {
          * @default undefined
          */
         colorRgba?: Base.ColorRGBA;
+        /**
+         * Optional placement matrix (column-major, 16 numbers) or an ordered list of
+         * matrices applied first-to-last. When provided it fully defines the instance's
+         * placement and takes precedence over translation/rotation/scale.
+         * @default undefined
+         */
+        matrix?: Base.TransformMatrix | Base.TransformMatrixes;
     }
 
     /**

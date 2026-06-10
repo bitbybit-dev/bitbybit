@@ -77,6 +77,74 @@ export class OCCTTransforms {
         return this.och.transformsService.mirrorAlongNormal(inputs);
     }
 
+    scaleFromCenter(inputs: Inputs.OCCT.ScaleFromCenterDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.transformsService.scaleFromCenter(inputs);
+    }
+
+    mirrorAboutPoint(inputs: Inputs.OCCT.MirrorAboutPointDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.transformsService.mirrorAboutPoint(inputs);
+    }
+
+    rotateByQuaternion(inputs: Inputs.OCCT.RotateByQuaternionDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.transformsService.rotateByQuaternion(inputs);
+    }
+
+    transformByMatrix(inputs: Inputs.OCCT.TransformByMatrixDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.transformsService.transformByMatrix(inputs);
+    }
+
+    transformShapesByMatrix(inputs: Inputs.OCCT.TransformShapesByMatrixDto<TopoDS_Shape>): TopoDS_Shape[] {
+        return this.och.transformsService.transformShapesByMatrix(inputs);
+    }
+
+    getShapeTransform(inputs: Inputs.OCCT.ShapeTransformQueryDto<TopoDS_Shape>): Inputs.OCCT.ShapeTransformInfo {
+        return this.och.transformsService.getShapeTransform(inputs);
+    }
+
+    identityTransform(): Base.TransformMatrix {
+        return this.och.transformsService.identityTransform();
+    }
+
+    composeTransform(inputs: Inputs.OCCT.ComposeTransformDto): Base.TransformMatrix {
+        return this.och.transformsService.composeTransform(inputs);
+    }
+
+    multiplyTransforms(inputs: Inputs.OCCT.MultiplyTransformsDto): Base.TransformMatrix {
+        return this.och.transformsService.multiplyTransforms(inputs);
+    }
+
+    invertTransform(inputs: Inputs.OCCT.InvertTransformDto): Base.TransformMatrix {
+        return this.och.transformsService.invertTransform(inputs);
+    }
+
+    translationToMatrix(inputs: Inputs.OCCT.TranslationToMatrixDto): Base.TransformMatrix {
+        return this.och.transformsService.translationToMatrix(inputs);
+    }
+
+    rotationAxisAngleToMatrix(inputs: Inputs.OCCT.RotationAxisAngleToMatrixDto): Base.TransformMatrix {
+        return this.och.transformsService.rotationAxisAngleToMatrix(inputs);
+    }
+
+    scaleUniformToMatrix(inputs: Inputs.OCCT.ScaleUniformToMatrixDto): Base.TransformMatrix {
+        return this.och.transformsService.scaleUniformToMatrix(inputs);
+    }
+
+    mirrorPointToMatrix(inputs: Inputs.OCCT.MirrorPointToMatrixDto): Base.TransformMatrix {
+        return this.och.transformsService.mirrorPointToMatrix(inputs);
+    }
+
+    mirrorAxisToMatrix(inputs: Inputs.OCCT.MirrorAxisToMatrixDto): Base.TransformMatrix {
+        return this.och.transformsService.mirrorAxisToMatrix(inputs);
+    }
+
+    mirrorPlaneToMatrix(inputs: Inputs.OCCT.MirrorPlaneToMatrixDto): Base.TransformMatrix {
+        return this.och.transformsService.mirrorPlaneToMatrix(inputs);
+    }
+
+    quaternionToMatrix(inputs: Inputs.OCCT.QuaternionToMatrixDto): Base.TransformMatrix {
+        return this.och.transformsService.quaternionToMatrix(inputs);
+    }
+
     transformShapes(inputs: Inputs.OCCT.TransformShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.translations, inputs.rotationAxes, inputs.rotationAngles, inputs.scaleFactors]);
         return inputs.shapes.map((s, index) => this.transform({

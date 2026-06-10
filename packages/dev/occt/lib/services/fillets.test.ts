@@ -4,7 +4,7 @@ import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import * as Inputs from "../api/inputs";
 import { OCCTFillets } from "./fillets";
-import { OCCTEdge, OCCTSolid, OCCTWire } from "./shapes";
+import { OCCTEdge, OCCTFace, OCCTSolid, OCCTWire } from "./shapes";
 
 describe("OCCT fillets unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -786,5 +786,15 @@ describe("OCCT fillets unit tests", () => {
         const filletRes = fillets.filletTwoEdgesInPlaneIntoAWire({ edge1, edge2, radius: 0.2, planeDirection: [0, 0, 1], planeOrigin: [1, 0, 0], solution: 0 });
         const wireLength = occHelper.wiresService.getWireLength({ shape: filletRes });
         expect(wireLength).toBeCloseTo(1.9141592620724523);
+    });
+
+    it("should chamfer the four corners of a square face into eight edges", () => {
+        const face = new OCCTFace(occt, occHelper);
+        const square = face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+        const chamfered = fillets.chamfer2dVertices({ shape: square, distance: 1, angle: 45 });
+        expect(chamfered.IsNull()).toBe(false);
+        expect(occHelper.shapeGettersService.getEdges({ shape: chamfered }).length).toBe(8);
+        square.delete();
+        chamfered.delete();
     });
 });

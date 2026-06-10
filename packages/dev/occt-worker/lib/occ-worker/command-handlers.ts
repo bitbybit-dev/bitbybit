@@ -70,6 +70,28 @@ export const CommandHandlers: Record<string, CommandHandler> = {
     },
 
     /**
+     * Handles document shape to mesh conversion (with per-face colours).
+     * Resolves the document and shape from cache and converts them to coloured mesh data.
+     */
+    [ReservedFunctions.DOC_TO_MESH]: (inputs, context): CommandResult => {
+        const resolvedInputs = context.shapeResolver.resolveShapeReferences(inputs);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = context.openCascade.docToMesh(resolvedInputs as any);
+        return { handled: true, result };
+    },
+
+    /**
+     * Handles a document to multiple meshes conversion (with per-face colours).
+     * Resolves the document from cache and converts each of its free shapes to coloured mesh data.
+     */
+    [ReservedFunctions.DOC_TO_MESHES]: (inputs, context): CommandResult => {
+        const resolvedInputs = context.shapeResolver.resolveShapeReferences(inputs);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = context.openCascade.docToMeshes(resolvedInputs as any);
+        return { handled: true, result };
+    },
+
+    /**
      * Handles single shape deletion from cache.
      */
     [ReservedFunctions.DELETE_SHAPE]: (inputs, context): CommandResult => {

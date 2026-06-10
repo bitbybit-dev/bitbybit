@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Health check */
+        /** Health - status check */
         get: {
             parameters: {
                 query?: never;
@@ -50,7 +50,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Execute a single CAD operation
+         * CAD - execute a single operation
          * @description Runs a single CAD operation by its fully-qualified identifier.
          */
         post: {
@@ -111,7 +111,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Execute a chained pipeline of CAD operations
+         * CAD - execute a chained pipeline
          * @description Runs multiple operations sequentially. Use '$ref:N' in params to reference step N's result.
          */
         post: {
@@ -172,7 +172,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Execute compound (parallel) CAD operations
+         * CAD - execute compound (parallel) operations
          * @description Runs multiple independent operations in parallel.
          */
         post: {
@@ -230,7 +230,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List available parametric models */
+        /** Models - list available models */
         get: {
             parameters: {
                 query?: never;
@@ -269,7 +269,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Batch-fetch model definitions
+         * Models - batch-fetch definitions
          * @description Returns parameter schemas and defaults for the requested model names.
          */
         post: {
@@ -321,8 +321,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Execute a parametric CAD model
-         * @description Generic endpoint — works for any registered model. See model-specific endpoints for fully typed parameters. Always returns 202 with a task ID for polling.
+         * Models - execute a parametric model
+         * @description Generic endpoint - works for any registered model. See model-specific endpoints for fully typed parameters. Always returns 202 with a task ID for polling.
          */
         post: {
             parameters: {
@@ -394,7 +394,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Generate a batch of parametric models
+         * Models - generate a batch
          * @description Creates a compound task with one sub-task per item. Each item can have different parameters but shares the same output config.
          */
         post: {
@@ -465,7 +465,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get model parameter definitions
+         * Models - get parameter definitions
          * @description Returns parameter schema, types, defaults, and limits for the specified model.
          */
         get: {
@@ -518,8 +518,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Build a Dragon Cup
-         * @description Parametric dragon-scale textured cup with twisted lofted body, voronoi-like skin cells, and configurable shell thickness. All parameters are optional — defaults produce a ready-to-print model.
+         * Models - build a Dragon Cup
+         * @description Parametric dragon-scale textured cup with twisted lofted body, voronoi-like skin cells, and configurable shell thickness. All parameters are optional - defaults produce a ready-to-print model.
          */
         post: {
             parameters: {
@@ -620,8 +620,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Build a Phone Nest
-         * @description Parametric 3D-printable desktop phone holder/stand with a lofted cradle surface, optional ornamental perforations, and a phone mock-up shape. All parameters are optional — defaults produce a ready-to-print model.
+         * Models - build a Phone Nest
+         * @description Parametric 3D-printable desktop phone holder/stand with a lofted cradle surface, optional ornamental perforations, and a phone mock-up shape. All parameters are optional - defaults produce a ready-to-print model.
          */
         post: {
             parameters: {
@@ -718,7 +718,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Convert a STEP file to GLTF (.glb)
+         * Convert - STEP to glTF (.glb)
          * @description Simple STEP → glTF conversion using a previously uploaded file. Requires the 'convert' API key scope. Returns 202 with a task ID.
          */
         post: {
@@ -788,7 +788,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Convert a STEP file to GLTF (.glb) - advanced options
+         * Convert - STEP to glTF (.glb), advanced options
          * @description Full-control STEP → glTF conversion with fine-grained mesh, export, and coordinate options. Requires the 'convert' API key scope. Returns 202 with a task ID.
          */
         post: {
@@ -858,7 +858,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Convert a STEP file to Draco-compressed GLTF (.glb)
+         * Convert - STEP to Draco-compressed glTF (.glb)
          * @description STEP → glTF conversion with Draco geometry compression using a previously uploaded file. Requires the 'convert' API key scope. Returns 202 with a task ID.
          */
         post: {
@@ -928,7 +928,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Convert a STEP file to Draco-compressed GLTF (.glb) - advanced options
+         * Convert - STEP to Draco-compressed glTF (.glb), advanced options
          * @description Full-control STEP → glTF conversion with Draco geometry compression. Combines fine-grained mesh, export, and coordinate options with Draco quantization controls. Requires the 'convert' API key scope. Returns 202 with a task ID.
          */
         post: {
@@ -988,6 +988,356 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cad/pro/unfold/face-to-flat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sheet metal - unfold a face to flat geometry
+         * @description Proprietary sheet-metal unfold: flattens a single developable face (by index) of an uploaded STEP shape. Requires the 'cad' API key scope. Returns 202 with a task ID; the flattened geometry is delivered as the task's output files.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldFaceToFlatBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/face-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sheet metal - unfold a face, metrics report
+         * @description Proprietary sheet-metal analysis: computes the unfold metrics report (developability, area, ...) for a single face of an uploaded STEP shape. Requires the 'cad' API key scope. Returns 202 with a task ID; the JSON report is delivered in the task metadata.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldFaceReportBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/solid-to-flat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sheet metal - unfold all solids to flat geometry
+         * @description Proprietary sheet-metal unfold: loads every solid in an uploaded STEP file and flattens each to a flat pattern. Requires the 'cad' API key scope. Returns 202 with a task ID; all flats are combined into one compound output per format.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldSolidToFlatBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/solid-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sheet metal - unfold all solids, metrics report
+         * @description Proprietary sheet-metal analysis: computes per-solid unfold metrics for every solid in an uploaded STEP file. Requires the 'cad' API key scope. Returns 202 with a task ID; the JSON report array is delivered in the task metadata.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldSolidReportBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cad/pro/unfold/solid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sheet metal - unfold all solids, geometry + report
+         * @description Proprietary sheet-metal unfold, full workflow: flattens every solid in an uploaded STEP file AND returns per-solid metrics in one call. Requires the 'cad' API key scope. Returns 202 with a task ID; flats are combined into one compound output per format and the per-solid report array is delivered in the task metadata.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnfoldSolidBody"];
+                };
+            };
+            responses: {
+                /** @description Task accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TaskAcceptedResponse"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Insufficient scope */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/files/upload": {
         parameters: {
             query?: never;
@@ -998,7 +1348,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Request a file upload URL
+         * Files - request an upload URL
          * @description Returns a pre-signed URL for uploading a file via PUT.
          */
         post: {
@@ -1057,7 +1407,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List uploaded files
+         * Files - list uploaded files
          * @description Returns paginated list of uploaded files.
          */
         get: {
@@ -1100,7 +1450,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get file details
+         * Files - get file details
          * @description Returns metadata and download URL for a single file.
          */
         get: {
@@ -1138,7 +1488,7 @@ export interface paths {
         put?: never;
         post?: never;
         /**
-         * Delete a file
+         * Files - delete a file
          * @description Permanently removes a file and its stored blob.
          */
         delete: {
@@ -1188,7 +1538,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Confirm file upload
+         * Files - confirm upload
          * @description Confirms that the file was successfully uploaded to the pre-signed URL.
          */
         post: {
@@ -1237,7 +1587,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List tasks
+         * Tasks - list tasks
          * @description Returns paginated list of tasks.
          */
         get: {
@@ -1281,7 +1631,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get task status
+         * Tasks - get task status
          * @description Returns the current status and metadata of a task.
          */
         get: {
@@ -1319,7 +1669,7 @@ export interface paths {
         put?: never;
         post?: never;
         /**
-         * Cancel a task
+         * Tasks - cancel a task
          * @description Cancels a waiting or queued task. Has no effect on completed/failed tasks.
          */
         delete: {
@@ -1367,7 +1717,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get task result (default format)
+         * Tasks - get result (default format)
          * @description Returns a download URL for the task's primary result. For compound tasks, returns a manifest with per-sub-task download links.
          */
         get: {
@@ -1427,7 +1777,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get task result in a specific format
+         * Tasks - get result in a specific format
          * @description Returns a download URL for the requested output format (e.g. glb, step, stpz).
          */
         get: {
@@ -1489,7 +1839,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get all task results
+         * Tasks - get all results
          * @description Returns download URLs for every available result format in a single call. Use this instead of making multiple requests to /result/{format}.
          */
         get: {
@@ -1551,7 +1901,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Retry a failed or cancelled task
+         * Tasks - retry a failed or cancelled task
          * @description Re-queues a failed or cancelled task with the same parameters.
          */
         post: {
@@ -1609,19 +1959,19 @@ export interface components {
         ExecuteBody: {
             /** @description Fully-qualified CAD operation identifier (e.g. 'occt.shapes.solid.createBox', 'manifold.primitives.cube', 'jscad.booleans.union'). Supports OCCT, Manifold, JSCAD, and vector/math operations. */
             operation: string;
-            /** @description Operation-specific parameters — varies by operation. See model definitions for available parameters. */
+            /** @description Operation-specific parameters - varies by operation. See model definitions for available parameters. */
             params?: unknown;
         };
         /** @description Execute a chain of Bitbybit CAD operations sequentially. Supports $ref:N step references, $file:N file inputs, map iteration, and choice conditionals. */
         PipelineBody: {
             /** @description Ordered list of CAD operations executed sequentially. Later steps can reference earlier results using '$ref:N' syntax. Supports map and choice control-flow steps. */
             steps: components["schemas"]["PipelineAnyStep"][];
-            /** @description References to previously uploaded files. Use '$file:N' in step params to inject file contents. */
+            /** @description References to previously uploaded files. Use '$file:N' in step params to inject file contents (optionally '$file:N:<format>:<codec>' to pick a read format and/or decompress - see PipelineStep.params). */
             inputFiles?: components["schemas"]["InputFileItem"][];
             /** @description Output format options applied to the final pipeline result. Supports json, csv, stl, 3mf in addition to standard formats. If omitted, raw result data is stored. */
             outputs?: components["schemas"]["PipelineOutputOptions"];
         };
-        /** @description A pipeline step — either a plain operation, a map (iteration), or a choice (conditional). */
+        /** @description A pipeline step - either a plain operation, a map (iteration), or a choice (conditional). */
         PipelineAnyStep: components["schemas"]["MapStep"] | components["schemas"]["ChoiceStep"] | components["schemas"]["PipelineStep"];
         /** @description Iterate over an array, executing sub-steps for each element. Produces an array of results (or a reduced value). */
         MapStep: {
@@ -1641,12 +1991,12 @@ export interface components {
         PipelineStep: {
             /** @description Fully-qualified CAD operation identifier (e.g. 'occt.shapes.solid.createSphere'). Supports OCCT, Manifold, JSCAD, and vector/math operations. */
             operation: string;
-            /** @description Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index. Use '$file:N' to reference an input file's contents. */
+            /** @description Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index. Use '$file:N[:<format>][:<codec>]' to reference an input file's contents - <format> is one of text|buffer|uint8|json|base64 (default text), and the optional <codec> is one of raw|gunzip|auto (default raw) to decompress the file first; 'auto' gunzips only when gzip magic bytes are present, so '$file:0:text:auto' reads both plain and gzip-compressed uploads (e.g. .step and .stpz). */
             params: unknown;
             /** @description When true, this step's result is included in a separate result.json output alongside any shape files. */
             output?: boolean;
         };
-        /** @description Conditional execution — evaluate a condition and run the matching branch. */
+        /** @description Conditional execution - evaluate a condition and run the matching branch. */
         ChoiceStep: {
             /**
              * @description Declares this step as a choice (conditional) step
@@ -1690,7 +2040,7 @@ export interface components {
             includePipelineInMetadata?: boolean;
         };
         /**
-         * @description Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh — Manifold/JSCAD only), '3mf' (3MF mesh package — Manifold/JSCAD only).
+         * @description Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only).
          * @enum {string}
          */
         PipelineOutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf" | "json" | "csv" | "stl" | "3mf";
@@ -1702,7 +2052,7 @@ export interface components {
         /** @description Execute multiple independent Bitbybit CAD operations in parallel. Each item runs as a separate sub-task and can be polled individually. */
         CompoundExecuteBody: {
             /**
-             * @description Must be true — signals that items should be processed concurrently
+             * @description Must be true - signals that items should be processed concurrently
              * @constant
              */
             parallel: true;
@@ -1735,7 +2085,7 @@ export interface components {
         };
         /** @description Controls which output formats are generated and their quality settings */
         OutputOptions: {
-            /** @description Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) — each produces a separate downloadable result. Do not include both 'step' and 'stpz' — only one STEP variant is supported per request. */
+            /** @description Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) - each produces a separate downloadable result. Do not include both 'step' and 'stpz' - only one STEP variant is supported per request. */
             formats: components["schemas"]["OutputFormat"][];
             /** @description Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes. Only ignored when output is limited to step/stpz formats. */
             meshPrecision?: components["schemas"]["MeshPrecision"];
@@ -1745,7 +2095,7 @@ export interface components {
             adjustYtoZ?: boolean;
         };
         /**
-         * @description Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive — choose one or the other, not both.
+         * @description Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive - choose one or the other, not both.
          * @enum {string}
          */
         OutputFormat: "step" | "stpz" | "decomposed-mesh" | "gltf";
@@ -1765,7 +2115,7 @@ export interface components {
             params?: components["schemas"]["DragonCupParams"];
             outputs: components["schemas"]["OutputOptions"];
         };
-        /** @description Dragon Cup model parameters — all optional, sane defaults apply */
+        /** @description Dragon Cup model parameters - all optional, sane defaults apply */
         DragonCupParams: {
             /** @description Total cup height (cm) */
             height?: number;
@@ -1823,7 +2173,7 @@ export interface components {
             params?: components["schemas"]["PhoneNestParams"];
             outputs: components["schemas"]["OutputOptions"];
         };
-        /** @description Phone Nest model parameters — all optional, sane defaults apply */
+        /** @description Phone Nest model parameters - all optional, sane defaults apply */
         PhoneNestParams: {
             /** @description Height of the bottom section (cm) */
             heightBottom?: number;
@@ -1866,7 +2216,7 @@ export interface components {
             stepFileId: string;
             /** @description Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%). When false, it is an absolute value in model units (mm for STEP). */
             meshPrecision?: components["schemas"]["MeshPrecision"];
-            /** @description Angular deflection in radians for mesh tessellation — controls curvature approximation. Smaller values produce smoother curved surfaces. */
+            /** @description Angular deflection in radians for mesh tessellation - controls curvature approximation. Smaller values produce smoother curved surfaces. */
             meshAngle?: components["schemas"]["MeshAngle"];
             /** @description Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units. */
             meshRelative?: boolean;
@@ -1898,7 +2248,7 @@ export interface components {
             readProps?: boolean;
             /** @description Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%) so deflection auto-scales with feature size. When false, it is absolute in model units (mm for STEP). */
             meshDeflection?: components["schemas"]["MeshPrecision"];
-            /** @description Angular deflection for mesh tessellation (radians) — controls curvature approximation */
+            /** @description Angular deflection for mesh tessellation (radians) - controls curvature approximation */
             meshAngle?: components["schemas"]["MeshAngle"];
             /** @description Enable parallel tessellation for faster processing */
             meshParallel?: boolean;
@@ -1947,7 +2297,7 @@ export interface components {
             stepFileId: string;
             /** @description Mesh linear deflection. When meshRelative is true (default), this is a fraction of each edge's length (e.g. 0.005 = 0.5%). When false, it is an absolute value in model units (mm for STEP). */
             meshPrecision?: components["schemas"]["MeshPrecision"];
-            /** @description Angular deflection in radians for mesh tessellation — controls curvature approximation. Smaller values produce smoother curved surfaces. */
+            /** @description Angular deflection in radians for mesh tessellation - controls curvature approximation. Smaller values produce smoother curved surfaces. */
             meshAngle?: components["schemas"]["MeshAngle"];
             /** @description Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units. */
             meshRelative?: boolean;
@@ -1986,6 +2336,77 @@ export interface components {
             /** @description Draco compression options. If omitted, sensible defaults are used (level 7, 14/10/12/8/12 bits). */
             draco?: components["schemas"]["DracoCompressionOptions"];
         };
+        /** @description Unfold a single developable face of an uploaded STEP shape to a flat face. */
+        UnfoldFaceToFlatBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
+            stepFileId: string;
+            /**
+             * @description 0-based index of the developable face (in the shape's BRepGraph face array) to unfold.
+             * @default 0
+             */
+            faceIndex: number;
+            /** @description Output formats for the flattened face geometry. Defaults to glTF. */
+            outputs?: components["schemas"]["OutputOptions"];
+        };
+        /** @description Compute the sheet-metal unfold metrics report for a single face of an uploaded STEP shape. */
+        UnfoldFaceReportBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
+            stepFileId: string;
+            /**
+             * @description 0-based index of the face to analyze.
+             * @default 0
+             */
+            faceIndex: number;
+        };
+        /** @description Flatten every constant-thickness sheet-metal solid in an uploaded STEP file to flat patterns. */
+        UnfoldSolidToFlatBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
+            stepFileId: string;
+            /**
+             * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
+             * @default 0.5
+             */
+            kFactor: number;
+            /**
+             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @default 0
+             */
+            thicknessOverride: number;
+            /** @description Output formats for the flattened patterns. Every solid's flat is combined into one compound output per format. Defaults to glTF. */
+            outputs?: components["schemas"]["OutputOptions"];
+        };
+        /** @description Compute per-solid sheet-metal unfold metrics for every solid in an uploaded STEP file. */
+        UnfoldSolidReportBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
+            stepFileId: string;
+            /**
+             * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
+             * @default 0.5
+             */
+            kFactor: number;
+            /**
+             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @default 0
+             */
+            thicknessOverride: number;
+        };
+        /** @description Flatten every constant-thickness sheet-metal solid in an uploaded STEP file AND return the per-solid metrics report - both in one call. */
+        UnfoldSolidBody: {
+            /** @description ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. */
+            stepFileId: string;
+            /**
+             * @description Sheet-metal K-factor (neutral-axis position), typically ~0.5.
+             * @default 0.5
+             */
+            kFactor: number;
+            /**
+             * @description Sheet thickness override in model units; 0 auto-detects thickness from face pairs.
+             * @default 0
+             */
+            thicknessOverride: number;
+            /** @description Output formats for the flattened patterns. For 'gltf'/'step'/'stpz', every solid's flat is combined into one compound output. The 'decomposed-mesh' format instead returns one mesh per solid (each tagged with its 'solidIndex'). Defaults to glTF. */
+            outputs?: components["schemas"]["OutputOptions"];
+        };
         /** @description Request a pre-signed upload URL. After receiving the URL, PUT the raw file bytes to it within the expiration window. */
         FileUploadBody: {
             /** @description Original filename including extension (e.g. 'part.step', 'model.obj'). Used for display and format detection. */
@@ -1994,8 +2415,138 @@ export interface components {
             contentType: string;
             /** @description Exact file size in bytes. Must match the Content-Length of the subsequent PUT to the upload URL. Maximum: 1 GB. */
             bytes: number;
-            /** @description SHA-256 hex digest of the file content. When provided, enables server-side deduplication — if an identical file was previously uploaded under this API key, the existing file is reused and no upload is needed. */
+            /** @description SHA-256 hex digest of the file content. When provided, enables server-side deduplication - if an identical file was previously uploaded under this API key, the existing file is reused and no upload is needed. */
             sha256?: string;
+        };
+        /** @description Returned when a shape/face cannot be processed by the unfold. */
+        UnfoldReportError: {
+            /** @constant */
+            ok: false;
+            error: string;
+        };
+        /** @description Sheet-metal unfold metrics for ONE solid (bend table + face roles + original->flat map). On failure, the ok:false branch still carries the partial diagnostics gathered before the failure. */
+        UnfoldSolidReportItem: {
+            /** @constant */
+            ok: true;
+            thickness: number;
+            kFactor: number;
+            warning: string;
+            bends: components["schemas"]["UnfoldBend"][];
+            flatBBox: [
+                number,
+                number,
+                number,
+                number
+            ];
+            flatArea: number;
+            referenceArea: number;
+            totalArea: number;
+            faces: components["schemas"]["UnfoldFaceEntry"][];
+            placed: components["schemas"]["UnfoldPlaced"][];
+        } | components["schemas"]["UnfoldSolidReportError"];
+        /** @description One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
+        UnfoldBend: {
+            faceIndex: number;
+            flatA: number;
+            flatB: number;
+            lineStart: [
+                number,
+                number,
+                number
+            ];
+            lineEnd: [
+                number,
+                number,
+                number
+            ];
+            lineMid: [
+                number,
+                number,
+                number
+            ];
+            bendLineLength: number;
+            angleDeg: number;
+            innerRadius: number;
+            outerRadius: number;
+            neutralRadius: number;
+            innerRadiusStart: number;
+            innerRadiusEnd: number;
+            outerRadiusStart: number;
+            outerRadiusEnd: number;
+            T: number;
+            K: number;
+            allowance: number;
+            bendDeduction: number;
+            outsideSetback: number;
+            innerArcLength: number;
+            outerArcLength: number;
+            /** @enum {string} */
+            direction: "up" | "down";
+            /** @enum {string} */
+            kind: "cyl" | "cone";
+            layoutApprox: boolean;
+        };
+        /** @description A classified source face: stable key (index + BRepGraph uid), role, and label anchors. */
+        UnfoldFaceEntry: {
+            index: number;
+            uid: number;
+            /** @enum {string} */
+            surfaceType: "Plane" | "Cylinder" | "Cone" | "Sphere" | "Torus" | "Other";
+            /** @enum {string} */
+            role: "referenceFlat" | "otherSideFlat" | "rim" | "flat" | "bend" | "coneBend" | "cutout" | "ignored";
+            reference: boolean;
+            opposite: number;
+            area: number;
+            centroid: [
+                number,
+                number,
+                number
+            ];
+            labelPoint: [
+                number,
+                number,
+                number
+            ];
+            /** @description Bend candidates (cylinder/cone) only: best |flange normal · cylinder radial| over the flanges. ~1 = tangent fold, ~0 = cutout/hole wall. */
+            tangentDot?: number;
+            /**
+             * @description How the fold filter classified a bend candidate: 'fold' (kept), 'cutout' (rejected - not tangent / <2 flanges), 'duplicate' (dropped - one fold per flat pair), or '' (a bend face not on the reference side, never evaluated by the filter).
+             * @enum {string}
+             */
+            bendOutcome?: "fold" | "cutout" | "duplicate" | "";
+        };
+        /** @description A sub-shape laid into the flat compound, mapped back to its source face (compound order). */
+        UnfoldPlaced: {
+            /** @enum {string} */
+            kind: "flat" | "bendStrip";
+            sourceFaceIndex: number;
+            role: ("referenceFlat" | "otherSideFlat" | "rim" | "flat" | "bend" | "coneBend" | "cutout" | "ignored") | "unknown";
+            flatCentroid: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description Returned when a solid cannot be fully unfolded; carries the partial diagnostics gathered before the failure (classified faces with roles, detected thickness, warnings) so the reason can be inspected. */
+        UnfoldSolidReportError: {
+            /** @constant */
+            ok: false;
+            error: string;
+            thickness?: number;
+            kFactor?: number;
+            warning?: string;
+            bends?: components["schemas"]["UnfoldBend"][];
+            flatBBox?: [
+                number,
+                number,
+                number,
+                number
+            ];
+            flatArea?: number;
+            referenceArea?: number;
+            totalArea?: number;
+            faces?: components["schemas"]["UnfoldFaceEntry"][];
+            placed?: components["schemas"]["UnfoldPlaced"][];
         };
         /** @description Success envelope for health check */
         HealthResponse: {
@@ -2023,7 +2574,7 @@ export interface components {
         TaskCreatedResult: {
             /**
              * Format: uuid
-             * @description Unique task identifier — use this to poll for status and retrieve results
+             * @description Unique task identifier - use this to poll for status and retrieve results
              */
             taskId: string;
             /**
@@ -2174,7 +2725,7 @@ export interface components {
         UploadResult: {
             /**
              * Format: uuid
-             * @description Assigned file identifier — use this to reference the file in subsequent API calls
+             * @description Assigned file identifier - use this to reference the file in subsequent API calls
              */
             fileId: string;
             /**
@@ -2414,6 +2965,153 @@ export interface components {
                 filename: string;
             }[];
         };
+        /** @description Returned when a shape/face cannot be processed by the unfold. */
+        UnfoldReportErrorOutput: {
+            /** @constant */
+            ok: false;
+            error: string;
+        };
+        /** @description Sheet-metal unfold metrics for ONE solid (bend table + face roles + original->flat map). On failure, the ok:false branch still carries the partial diagnostics gathered before the failure. */
+        UnfoldSolidReportItemOutput: {
+            /** @constant */
+            ok: true;
+            thickness: number;
+            kFactor: number;
+            warning: string;
+            bends: components["schemas"]["UnfoldBendOutput"][];
+            flatBBox: [
+                number,
+                number,
+                number,
+                number
+            ];
+            flatArea: number;
+            referenceArea: number;
+            totalArea: number;
+            faces: components["schemas"]["UnfoldFaceEntryOutput"][];
+            placed: components["schemas"]["UnfoldPlacedOutput"][];
+        } | components["schemas"]["UnfoldSolidReportErrorOutput"];
+        /** @description One bend: line, angle, radii (inner/outer/neutral and per-end for cones), and developed lengths. */
+        UnfoldBendOutput: {
+            faceIndex: number;
+            flatA: number;
+            flatB: number;
+            lineStart: [
+                number,
+                number,
+                number
+            ];
+            lineEnd: [
+                number,
+                number,
+                number
+            ];
+            lineMid: [
+                number,
+                number,
+                number
+            ];
+            bendLineLength: number;
+            angleDeg: number;
+            innerRadius: number;
+            outerRadius: number;
+            neutralRadius: number;
+            innerRadiusStart: number;
+            innerRadiusEnd: number;
+            outerRadiusStart: number;
+            outerRadiusEnd: number;
+            T: number;
+            K: number;
+            allowance: number;
+            bendDeduction: number;
+            outsideSetback: number;
+            innerArcLength: number;
+            outerArcLength: number;
+            /** @enum {string} */
+            direction: "up" | "down";
+            /** @enum {string} */
+            kind: "cyl" | "cone";
+            layoutApprox: boolean;
+        };
+        /** @description A classified source face: stable key (index + BRepGraph uid), role, and label anchors. */
+        UnfoldFaceEntryOutput: {
+            index: number;
+            uid: number;
+            /** @enum {string} */
+            surfaceType: "Plane" | "Cylinder" | "Cone" | "Sphere" | "Torus" | "Other";
+            /** @enum {string} */
+            role: "referenceFlat" | "otherSideFlat" | "rim" | "flat" | "bend" | "coneBend" | "cutout" | "ignored";
+            reference: boolean;
+            opposite: number;
+            area: number;
+            centroid: [
+                number,
+                number,
+                number
+            ];
+            labelPoint: [
+                number,
+                number,
+                number
+            ];
+            /** @description Bend candidates (cylinder/cone) only: best |flange normal · cylinder radial| over the flanges. ~1 = tangent fold, ~0 = cutout/hole wall. */
+            tangentDot?: number;
+            /**
+             * @description How the fold filter classified a bend candidate: 'fold' (kept), 'cutout' (rejected - not tangent / <2 flanges), 'duplicate' (dropped - one fold per flat pair), or '' (a bend face not on the reference side, never evaluated by the filter).
+             * @enum {string}
+             */
+            bendOutcome?: "fold" | "cutout" | "duplicate" | "";
+        };
+        /** @description A sub-shape laid into the flat compound, mapped back to its source face (compound order). */
+        UnfoldPlacedOutput: {
+            /** @enum {string} */
+            kind: "flat" | "bendStrip";
+            sourceFaceIndex: number;
+            role: ("referenceFlat" | "otherSideFlat" | "rim" | "flat" | "bend" | "coneBend" | "cutout" | "ignored") | "unknown";
+            flatCentroid: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** @description Returned when a solid cannot be fully unfolded; carries the partial diagnostics gathered before the failure (classified faces with roles, detected thickness, warnings) so the reason can be inspected. */
+        UnfoldSolidReportErrorOutput: {
+            /** @constant */
+            ok: false;
+            error: string;
+            thickness?: number;
+            kFactor?: number;
+            warning?: string;
+            bends?: components["schemas"]["UnfoldBendOutput"][];
+            flatBBox?: [
+                number,
+                number,
+                number,
+                number
+            ];
+            flatArea?: number;
+            referenceArea?: number;
+            totalArea?: number;
+            faces?: components["schemas"]["UnfoldFaceEntryOutput"][];
+            placed?: components["schemas"]["UnfoldPlacedOutput"][];
+        };
+        /** @description Sheet-metal unfold metrics for a single face (surface type, developability, area before/after). */
+        UnfoldFaceReport: {
+            /** @constant */
+            ok: true;
+            faceIndex: number;
+            /** @enum {string} */
+            surfaceType: "Plane" | "Cylinder" | "Cone" | "Sphere" | "Torus" | "Other";
+            developable: boolean;
+            unfolded: boolean;
+            area: number;
+            flatArea: number;
+            areaError: number;
+        } | components["schemas"]["UnfoldReportErrorOutput"];
+        /** @description Per-solid sheet-metal unfold metrics - one entry per solid in the STEP file (each carries its solidIndex). */
+        UnfoldSolidReport: (components["schemas"]["UnfoldSolidReportItemOutput"] & {
+            solidIndex: number;
+        })[];
     };
     responses: never;
     parameters: never;

@@ -4,6 +4,7 @@ import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTEdge, OCCTSolid } from "./shapes";
 import { OCCTTransforms } from "./transforms";
+import * as Inputs from "../api/inputs";
 
 describe("OCCT transforms unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -666,5 +667,157 @@ describe("OCCT transforms unit tests", () => {
 
     });
 
+    describe("matrix transforms", () => {
+
+        const IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+        it("should build an identity matrix", () => {
+            expect(transforms.identityTransform()).toEqual(IDENTITY);
+        });
+
+        it("should compose a pure translation matrix (column-major, translation at 12..14)", () => {
+            const m = transforms.composeTransform({ translation: [1, 2, 3], rotation: [0, 0, 0], scale: 1 });
+            expect(m[12]).toBeCloseTo(1);
+            expect(m[13]).toBeCloseTo(2);
+            expect(m[14]).toBeCloseTo(3);
+            expect(m[0]).toBeCloseTo(1);
+            expect(m[5]).toBeCloseTo(1);
+            expect(m[10]).toBeCloseTo(1);
+        });
+
+        it("should compose a uniform scale matrix", () => {
+            const m = transforms.composeTransform({ translation: [0, 0, 0], rotation: [0, 0, 0], scale: 2 });
+            expect(m[0]).toBeCloseTo(2);
+            expect(m[5]).toBeCloseTo(2);
+            expect(m[10]).toBeCloseTo(2);
+        });
+
+        it("should apply a translation matrix to a shape (transformByMatrix)", () => {
+            const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
+            const m = transforms.translationToMatrix({ translation: [1, 1, -1] });
+            const transformed = transforms.transformByMatrix({ shape: box, transformation: m });
+            const c = solid.getSolidCenterOfMass({ shape: transformed });
+            expect(c[0]).toBeCloseTo(1);
+            expect(c[1]).toBeCloseTo(1);
+            expect(c[2]).toBeCloseTo(-1);
+            box.delete();
+            transformed.delete();
+        });
+
+        it("should match rotate() when applying a composed rotation matrix", () => {
+            const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
+            const viaRotate = transforms.rotate({ shape: box, axis: [0, 0, 1], angle: 35 });
+            const m = transforms.rotationAxisAngleToMatrix({ axis: [0, 0, 1], angle: 35, center: [0, 0, 0] });
+            const viaMatrix = transforms.transformByMatrix({ shape: box, transformation: m });
+            const cr = edge.getCornerPointsOfEdgesForShape({ shape: viaRotate });
+            const cm = edge.getCornerPointsOfEdgesForShape({ shape: viaMatrix });
+            cr.forEach((p, i) => {
+                expect(cm[i][0]).toBeCloseTo(p[0]);
+                expect(cm[i][1]).toBeCloseTo(p[1]);
+                expect(cm[i][2]).toBeCloseTo(p[2]);
+            });
+            box.delete();
+            viaRotate.delete();
+            viaMatrix.delete();
+        });
+
+        it("should apply an ordered list of matrices first-to-last", () => {
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+            const t1 = transforms.translationToMatrix({ translation: [10, 0, 0] });
+            const t2 = transforms.translationToMatrix({ translation: [0, 5, 0] });
+            const transformed = transforms.transformByMatrix({ shape: box, transformation: [t1, t2] });
+            const c = solid.getSolidCenterOfMass({ shape: transformed });
+            expect(c[0]).toBeCloseTo(10);
+            expect(c[1]).toBeCloseTo(5);
+            expect(c[2]).toBeCloseTo(0);
+            box.delete();
+            transformed.delete();
+        });
+
+        it("should fold a list into one matrix via multiplyTransforms", () => {
+            const t1 = transforms.translationToMatrix({ translation: [10, 0, 0] });
+            const t2 = transforms.translationToMatrix({ translation: [0, 5, 0] });
+            const folded = transforms.multiplyTransforms({ transformation: [t1, t2] });
+            expect(folded[12]).toBeCloseTo(10);
+            expect(folded[13]).toBeCloseTo(5);
+            expect(folded[14]).toBeCloseTo(0);
+        });
+
+        it("should invert a transform so that M * inv(M) = identity", () => {
+            const m = transforms.composeTransform({ translation: [3, -2, 7], rotation: [10, 20, 30], scale: 1 });
+            const inv = transforms.invertTransform({ transformation: m });
+            const composed = transforms.multiplyTransforms({ transformation: [m, inv] });
+            composed.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]));
+        });
+
+        it("should scale a shape about an arbitrary center", () => {
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [10, 0, 0] });
+            const scaled = transforms.scaleFromCenter({ shape: box, factor: 2, center: [10, 0, 0] });
+            const c = solid.getSolidCenterOfMass({ shape: scaled });
+            expect(c[0]).toBeCloseTo(10);
+            expect(c[1]).toBeCloseTo(0);
+            expect(c[2]).toBeCloseTo(0);
+            box.delete();
+            scaled.delete();
+        });
+
+        it("should mirror a shape about a point", () => {
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [5, 0, 0] });
+            const mirrored = transforms.mirrorAboutPoint({ shape: box, point: [0, 0, 0] });
+            const c = solid.getSolidCenterOfMass({ shape: mirrored });
+            expect(c[0]).toBeCloseTo(-5);
+            box.delete();
+            mirrored.delete();
+        });
+
+        it("should rotate by a quaternion equivalent to a 90deg Z rotation", () => {
+            const box = solid.createBox({ width: 4, height: 4, length: 10, center: [0, 0, 0] });
+            const h = Math.SQRT1_2;
+            const viaQuat = transforms.rotateByQuaternion({ shape: box, quaternion: [0, 0, h, h] });
+            const viaRotate = transforms.rotate({ shape: box, axis: [0, 0, 1], angle: 90 });
+            const cq = edge.getCornerPointsOfEdgesForShape({ shape: viaQuat });
+            const cr = edge.getCornerPointsOfEdgesForShape({ shape: viaRotate });
+            cr.forEach((p, i) => {
+                expect(cq[i][0]).toBeCloseTo(p[0]);
+                expect(cq[i][1]).toBeCloseTo(p[1]);
+                expect(cq[i][2]).toBeCloseTo(p[2]);
+            });
+            box.delete();
+            viaQuat.delete();
+            viaRotate.delete();
+        });
+
+        it("should build an identity rotation matrix from the identity quaternion", () => {
+            const m = transforms.quaternionToMatrix({ quaternion: [0, 0, 0, 1] });
+            m.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]));
+        });
+
+        it("should read an identity placement transform from a fresh shape", () => {
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+            const info = transforms.getShapeTransform({ shape: box });
+            expect(info.scale).toBeCloseTo(1);
+            info.matrix.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]));
+            expect(info.quaternion[3]).toBeCloseTo(1);
+            box.delete();
+        });
+
+        it("should transpose a column-major translation to the native row-major 3x4 form", () => {
+            // column-major translation matrix: translation at indices 12,13,14
+            const cm = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 4, 5, 6, 1] as Inputs.Base.TransformMatrix;
+            const rm12 = occHelper.transformsService.foldToRowMajor12(cm);
+            // row-major 3x4: translation is the 4th value of each row (indices 3,7,11)
+            expect(rm12).toEqual([1, 0, 0, 4, 0, 1, 0, 5, 0, 0, 1, 6]);
+        });
+
+        it("should fold an ordered list before transposing to row-major 3x4", () => {
+            const t1 = transforms.translationToMatrix({ translation: [10, 0, 0] });
+            const t2 = transforms.translationToMatrix({ translation: [0, 5, 0] });
+            const rm12 = occHelper.transformsService.foldToRowMajor12([t1, t2]);
+            expect(rm12[3]).toBeCloseTo(10);
+            expect(rm12[7]).toBeCloseTo(5);
+            expect(rm12[11]).toBeCloseTo(0);
+        });
+
+    });
 
 });

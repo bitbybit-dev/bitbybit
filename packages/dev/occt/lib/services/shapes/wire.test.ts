@@ -1902,6 +1902,146 @@ describe("OCCT wire unit tests", () => {
         zigZagWire.delete();
     });
 
+    it("should create two wires between start and end points of two edges", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        const e2 = edge.line({ start: [3, 0, 0], end: [3, 0, 5] });
+
+        const wires = wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1, e2] });
+        expect(wires.length).toBe(2);
+        const startStart = wire.startPointOnWire({ shape: wires[0] });
+        const startEnd = wire.endPointOnWire({ shape: wires[0] });
+        const endStart = wire.startPointOnWire({ shape: wires[1] });
+        const endEnd = wire.endPointOnWire({ shape: wires[1] });
+        expect(startStart).toEqual([0, 0, 0]);
+        expect(startEnd).toEqual([3, 0, 0]);
+        expect(endStart).toEqual([0, 0, 5]);
+        expect(endEnd).toEqual([3, 0, 5]);
+        expect(wire.getWireLength({ shape: wires[0] })).toBeCloseTo(3);
+        expect(wire.getWireLength({ shape: wires[1] })).toBeCloseTo(3);
+        e1.delete();
+        e2.delete();
+        wires[0].delete();
+        wires[1].delete();
+    });
+
+    it("should create two polyline wires between start and end points of three wires or edges", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        const w2 = wire.createPolylineWire({ points: [[3, 0, 0], [3, 1, 2], [3, 0, 5]] });
+        const e3 = edge.line({ start: [6, 0, 0], end: [6, 0, 5] });
+
+        const wires = wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1, w2, e3] });
+        expect(wires.length).toBe(2);
+        const startCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[0] });
+        const endCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[1] });
+        expect(startCorners).toEqual([[0, 0, 0], [3, 0, 0], [6, 0, 0]]);
+        expect(endCorners).toEqual([[0, 0, 5], [3, 0, 5], [6, 0, 5]]);
+        e1.delete();
+        w2.delete();
+        e3.delete();
+        wires[0].delete();
+        wires[1].delete();
+    });
+
+    it("should throw when less than two shapes are provided to createWiresBetweenStartEndPointsOfWiresAndEdges", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        expect(() => wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1] }))
+            .toThrow("You must provide at least two wires or edges to connect their start and end points.");
+        e1.delete();
+    });
+
+    it("should create closed polygon wires between start and end points when closed is true", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        const e2 = edge.line({ start: [3, 0, 0], end: [3, 0, 5] });
+        const e3 = edge.line({ start: [6, 0, 0], end: [6, 0, 5] });
+
+        const wires = wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1, e2, e3], wireType: Inputs.OCCT.wireFromPointsTypeEnum.polyline, closed: true, tolerance: 1e-7 });
+        expect(wires.length).toBe(2);
+        expect(wire.isWireClosed({ shape: wires[0] })).toBe(true);
+        expect(wire.isWireClosed({ shape: wires[1] })).toBe(true);
+        e1.delete();
+        e2.delete();
+        e3.delete();
+        wires[0].delete();
+        wires[1].delete();
+    });
+
+    it("should create interpolated periodic wires between start and end points when interpolated and closed", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        const e2 = edge.line({ start: [3, 4, 0], end: [3, 4, 5] });
+        const e3 = edge.line({ start: [6, 0, 0], end: [6, 0, 5] });
+
+        const wires = wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1, e2, e3], wireType: Inputs.OCCT.wireFromPointsTypeEnum.interpolated, closed: true, tolerance: 1e-7 });
+        expect(wires.length).toBe(2);
+        expect(wire.isWireClosed({ shape: wires[0] })).toBe(true);
+        expect(wire.getWireLength({ shape: wires[0] })).toBeGreaterThan(0);
+        e1.delete();
+        e2.delete();
+        e3.delete();
+        wires[0].delete();
+        wires[1].delete();
+    });
+
+    it("should create polyline wires between subdivided points of wires and edges", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        const e2 = edge.line({ start: [3, 0, 0], end: [3, 0, 5] });
+        const e3 = edge.line({ start: [6, 0, 0], end: [6, 0, 5] });
+
+        const wires = wire.createWiresBetweenSubdividedPointsOfWiresAndEdges({ shapes: [e1, e2, e3], nrOfDivisions: 5, divideByEqualDistance: false, wireType: Inputs.OCCT.wireFromPointsTypeEnum.polyline, closed: false, tolerance: 1e-7 });
+        expect(wires.length).toBe(6);
+        wires.forEach((w) => {
+            expect(wire.getWireLength({ shape: w })).toBeCloseTo(6);
+            expect(wire.isWireClosed({ shape: w })).toBe(false);
+        });
+        const firstCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[0] });
+        expect(firstCorners).toEqual([[0, 0, 0], [3, 0, 0], [6, 0, 0]]);
+        const lastCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[5] });
+        expect(lastCorners).toEqual([[0, 0, 5], [3, 0, 5], [6, 0, 5]]);
+        e1.delete();
+        e2.delete();
+        e3.delete();
+        wires.forEach((w) => w.delete());
+    });
+
+    it("should create closed polygon wires between subdivided points when closed is true", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        const e2 = edge.line({ start: [3, 0, 0], end: [3, 0, 5] });
+        const e3 = edge.line({ start: [6, 0, 0], end: [6, 0, 5] });
+
+        const wires = wire.createWiresBetweenSubdividedPointsOfWiresAndEdges({ shapes: [e1, e2, e3], nrOfDivisions: 4, divideByEqualDistance: true, wireType: Inputs.OCCT.wireFromPointsTypeEnum.polyline, closed: true, tolerance: 1e-7 });
+        expect(wires.length).toBe(5);
+        wires.forEach((w) => {
+            expect(wire.isWireClosed({ shape: w })).toBe(true);
+            expect(wire.getWireLength({ shape: w })).toBeCloseTo(12);
+        });
+        e1.delete();
+        e2.delete();
+        e3.delete();
+        wires.forEach((w) => w.delete());
+    });
+
+    it("should create interpolated wires between subdivided points", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        const e2 = edge.line({ start: [3, 0, 0], end: [3, 0, 5] });
+        const e3 = edge.line({ start: [6, 0, 0], end: [6, 0, 5] });
+
+        const wires = wire.createWiresBetweenSubdividedPointsOfWiresAndEdges({ shapes: [e1, e2, e3], nrOfDivisions: 3, divideByEqualDistance: false, wireType: Inputs.OCCT.wireFromPointsTypeEnum.interpolated, closed: false, tolerance: 1e-7 });
+        expect(wires.length).toBe(4);
+        wires.forEach((w) => {
+            expect(wire.getWireLength({ shape: w })).toBeCloseTo(6);
+        });
+        e1.delete();
+        e2.delete();
+        e3.delete();
+        wires.forEach((w) => w.delete());
+    });
+
+    it("should throw when less than two shapes are provided to createWiresBetweenSubdividedPointsOfWiresAndEdges", () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [0, 0, 5] });
+        expect(() => wire.createWiresBetweenSubdividedPointsOfWiresAndEdges({ shapes: [e1], nrOfDivisions: 5, divideByEqualDistance: false, wireType: Inputs.OCCT.wireFromPointsTypeEnum.polyline, closed: false, tolerance: 1e-7 }))
+            .toThrow("You must provide at least two wires or edges to connect their subdivided points.");
+        e1.delete();
+    });
+
     it("should create inverse zig zag wire between two wires", () => {
         const w1 = wire.createCircleWire({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const w2 = wire.createCircleWire({ radius: 3, center: [0, 4, 0], direction: [0, 0, 1] });

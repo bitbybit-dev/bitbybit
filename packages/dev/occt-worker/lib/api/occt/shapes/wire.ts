@@ -215,6 +215,30 @@ export class OCCTWire {
     }
 
     /**
+     * Creates two wires by connecting the start points and the end points of two or more wires or edges
+     * @param inputs two or more wires or edges and options for the resulting wires
+     * @returns Two OpenCascade wire shapes - one through the start points and one through the end points
+     * @group via wires
+     * @shortname wires between start end points
+     * @drawable true
+     */
+    createWiresBetweenStartEndPointsOfWiresAndEdges(inputs: Inputs.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createWiresBetweenStartEndPointsOfWiresAndEdges", inputs);
+    }
+
+    /**
+     * Subdivides two or more wires or edges and creates wires connecting the points found at matching subdivision indexes
+     * @param inputs two or more wires or edges and subdivision options
+     * @returns OpenCascade wire shapes - one for each subdivision index, optionally closed as polygons or periodic interpolated wires
+     * @group via wires
+     * @shortname wires between subdivided points
+     * @drawable true
+     */
+    createWiresBetweenSubdividedPointsOfWiresAndEdges(inputs: Inputs.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createWiresBetweenSubdividedPointsOfWiresAndEdges", inputs);
+    }
+
+    /**
      * Creates a tangent wire enclosing two planar circles
      * @param inputs two circle wires and tolerance
      * @returns OpenCascade wire shape

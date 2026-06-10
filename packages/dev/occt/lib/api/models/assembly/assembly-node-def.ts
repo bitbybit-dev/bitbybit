@@ -16,10 +16,16 @@ export interface AssemblyNodeDef {
     partId?: string;
     /** Translation as [x, y, z] */
     translation?: Base.Point3;
-    /** Rotation as [rx, ry, rz] in degrees (Euler ZYX order) */
+    /** Rotation as [rx, ry, rz] Euler angles in degrees (applied Rx * Ry * Rz) */
     rotation?: Base.Vector3;
     /** Uniform scale factor (1.0 = no scale) */
     scale?: number;
+    /**
+     * Optional placement matrix (column-major, 16 numbers) or an ordered list of
+     * matrices applied first-to-last. When set, it fully defines the node's placement
+     * and takes precedence over translation/rotation/scale.
+     */
+    matrix?: Base.TransformMatrix | Base.TransformMatrixes;
     /** Optional color override for this instance */
     colorRgba?: Base.ColorRGBA;
 }
