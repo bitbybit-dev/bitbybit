@@ -14,7 +14,7 @@ export type BatchModelSubmissionBody = components["schemas"]["BatchModelSubmissi
 export type CancelResult = components["schemas"]["CancelResult"];
 /** Success response for task cancellation */
 export type CancelTaskResponse = components["schemas"]["CancelTaskResponse"];
-/** Conditional execution — evaluate a condition and run the matching branch. */
+/** Conditional execution - evaluate a condition and run the matching branch. */
 export type ChoiceStep = components["schemas"]["ChoiceStep"];
 /** Comparison operator: 'eq' (equal), 'neq' (not equal), 'gt' (greater than), 'gte' (greater or equal), 'lt' (less than), 'lte' (less or equal), 'exists' (value is not null/undefined). */
 export type ComparisonOperator = components["schemas"]["ComparisonOperator"];
@@ -48,7 +48,7 @@ export type DeleteResult = components["schemas"]["DeleteResult"];
 export type DracoCompressionOptions = components["schemas"]["DracoCompressionOptions"];
 /** Request body for the Dragon Cup model */
 export type DragonCupBody = components["schemas"]["DragonCupBody"];
-/** Dragon Cup model parameters — all optional, sane defaults apply */
+/** Dragon Cup model parameters - all optional, sane defaults apply */
 export type DragonCupParams = components["schemas"]["DragonCupParams"];
 /** Structured error information with machine-readable code and optional debugging context */
 export type ErrorDetail = components["schemas"]["ErrorDetail"];
@@ -102,19 +102,19 @@ export type ModelParamApiType = components["schemas"]["ModelParamApiType"];
 export type ModelParamDefinition = components["schemas"]["ModelParamDefinition"];
 /** Submit a parametric model for generation with specified parameters and output formats */
 export type ModelSubmissionBody = components["schemas"]["ModelSubmissionBody"];
-/** Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive — choose one or the other, not both. */
+/** Output file format: 'step' (raw STEP), 'stpz' (gzip-compressed STEP), 'decomposed-mesh' (triangulated JSON), 'gltf' (glTF 2.0 binary .glb). Note: 'step' and 'stpz' are mutually exclusive - choose one or the other, not both. */
 export type OutputFormat = components["schemas"]["OutputFormat"];
 /** Controls which output formats are generated and their quality settings */
 export type OutputOptions = components["schemas"]["OutputOptions"];
 /** Request body for the Phone Nest model */
 export type PhoneNestBody = components["schemas"]["PhoneNestBody"];
-/** Phone Nest model parameters — all optional, sane defaults apply */
+/** Phone Nest model parameters - all optional, sane defaults apply */
 export type PhoneNestParams = components["schemas"]["PhoneNestParams"];
-/** A pipeline step — either a plain operation, a map (iteration), or a choice (conditional). */
+/** A pipeline step - either a plain operation, a map (iteration), or a choice (conditional). */
 export type PipelineAnyStep = components["schemas"]["PipelineAnyStep"];
 /** Execute a chain of Bitbybit CAD operations sequentially. Supports $ref:N step references, $file:N file inputs, map iteration, and choice conditionals. */
 export type PipelineBody = components["schemas"]["PipelineBody"];
-/** Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh — Manifold/JSCAD only), '3mf' (3MF mesh package — Manifold/JSCAD only). */
+/** Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only). */
 export type PipelineOutputFormat = components["schemas"]["PipelineOutputFormat"];
 /** Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf) beyond standard model outputs. */
 export type PipelineOutputOptions = components["schemas"]["PipelineOutputOptions"];
@@ -184,9 +184,9 @@ export type UnfoldPlacedOutput = components["schemas"]["UnfoldPlacedOutput"];
 export type UnfoldReportError = components["schemas"]["UnfoldReportError"];
 /** Returned when a shape/face cannot be processed by the unfold. */
 export type UnfoldReportErrorOutput = components["schemas"]["UnfoldReportErrorOutput"];
-/** Flatten every constant-thickness sheet-metal solid in an uploaded STEP file AND return the per-solid metrics report — both in one call. */
+/** Flatten every constant-thickness sheet-metal solid in an uploaded STEP file AND return the per-solid metrics report - both in one call. */
 export type UnfoldSolidBody = components["schemas"]["UnfoldSolidBody"];
-/** Per-solid sheet-metal unfold metrics — one entry per solid in the STEP file (each carries its solidIndex). */
+/** Per-solid sheet-metal unfold metrics - one entry per solid in the STEP file (each carries its solidIndex). */
 export type UnfoldSolidReport = components["schemas"]["UnfoldSolidReport"];
 /** Compute per-solid sheet-metal unfold metrics for every solid in an uploaded STEP file. */
 export type UnfoldSolidReportBody = components["schemas"]["UnfoldSolidReportBody"];

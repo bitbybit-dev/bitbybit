@@ -1817,7 +1817,7 @@
             "description": "Ordered list of CAD operations executed sequentially. Later steps can reference earlier results using '$ref:N' syntax. Supports map and choice control-flow steps."
           },
           "inputFiles": {
-            "description": "References to previously uploaded files. Use '$file:N' in step params to inject file contents.",
+            "description": "References to previously uploaded files. Use '$file:N' in step params to inject file contents (optionally '$file:N:<format>:<codec>' to pick a read format and/or decompress - see PipelineStep.params).",
             "maxItems": 5,
             "type": "array",
             "items": {
@@ -1892,7 +1892,7 @@
             "description": "Fully-qualified CAD operation identifier (e.g. 'occt.shapes.solid.createSphere'). Supports OCCT, Manifold, JSCAD, and vector/math operations."
           },
           "params": {
-            "description": "Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index. Use '$file:N' to reference an input file's contents."
+            "description": "Operation parameters. Use '$ref:N' (e.g. '$ref:0') to reference the output of a previous step by its zero-based index. Use '$file:N[:<format>][:<codec>]' to reference an input file's contents - <format> is one of text|buffer|uint8|json|base64 (default text), and the optional <codec> is one of raw|gunzip|auto (default raw) to decompress the file first; 'auto' gunzips only when gzip magic bytes are present, so '$file:0:text:auto' reads both plain and gzip-compressed uploads (e.g. .step and .stpz)."
           },
           "output": {
             "description": "When true, this step's result is included in a separate result.json output alongside any shape files.",
@@ -2787,7 +2787,7 @@
           "stepFileId": {
             "type": "string",
             "minLength": 1,
-            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically."
           },
           "faceIndex": {
             "default": 0,
@@ -2813,7 +2813,7 @@
           "stepFileId": {
             "type": "string",
             "minLength": 1,
-            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically."
           },
           "faceIndex": {
             "default": 0,
@@ -2835,7 +2835,7 @@
           "stepFileId": {
             "type": "string",
             "minLength": 1,
-            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically."
           },
           "kFactor": {
             "default": 0.5,
@@ -2867,7 +2867,7 @@
           "stepFileId": {
             "type": "string",
             "minLength": 1,
-            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically."
           },
           "kFactor": {
             "default": 0.5,
@@ -2895,7 +2895,7 @@
           "stepFileId": {
             "type": "string",
             "minLength": 1,
-            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint)"
+            "description": "ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically."
           },
           "kFactor": {
             "default": 0.5,
@@ -2911,7 +2911,7 @@
             "minimum": 0
           },
           "outputs": {
-            "description": "Output formats for the flattened patterns. Every solid's flat is combined into one compound output per format. Defaults to glTF.",
+            "description": "Output formats for the flattened patterns. For 'gltf'/'step'/'stpz', every solid's flat is combined into one compound output. The 'decomposed-mesh' format instead returns one mesh per solid (each tagged with its 'solidIndex'). Defaults to glTF.",
             "$ref": "#/components/schemas/OutputOptions"
           }
         },
