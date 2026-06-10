@@ -1513,7 +1513,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with faces", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1539,7 +1539,7 @@ describe("DrawHelper unit tests", () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [],
                 edgeList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0], edge_index: 0 }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0], edgeIndex: 0 }
                 ],
                 pointsList: []
             });
@@ -1586,7 +1586,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with two-sided rendering enabled by default", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1612,7 +1612,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape without back face when drawTwoSided is false", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1638,7 +1638,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with custom back face colour", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1663,7 +1663,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with custom back face opacity", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1690,8 +1690,8 @@ describe("DrawHelper unit tests", () => {
     describe("drawShapes (OCCT)", () => {
         it("should draw multiple OCCT shapes", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
-                { faceList: [{ vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }], edgeList: [], pointsList: [] },
-                { faceList: [{ vertex_coord: [2, 0, 0, 3, 0, 0, 2, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }], edgeList: [], pointsList: [] }
+                { faceList: [{ vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }], edgeList: [], pointsList: [] },
+                { faceList: [{ vertexCoord: [2, 0, 0, 3, 0, 0, 2, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }], edgeList: [], pointsList: [] }
             ]);
 
             const inputs = new Inputs.OCCT.DrawShapesDto();
@@ -2005,10 +2005,10 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with faces and edges", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0], edge_index: 0 }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0], edgeIndex: 0 }
                 ],
                 pointsList: []
             });
@@ -2035,10 +2035,10 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with all options (faces, edges, vertices)", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0], edge_index: 0 }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0], edgeIndex: 0 }
                 ],
                 pointsList: [[0, 0, 0], [1, 0, 0], [0, 1, 0]]
             });
@@ -2172,9 +2172,9 @@ describe("DrawHelper unit tests", () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockClear();
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [{
-                    vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                    normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                    tri_indexes: [0, 1, 2]
+                    vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    triIndexes: [0, 1, 2]
                 }],
                 edgeList: [],
                 pointsList: []
@@ -2953,9 +2953,9 @@ describe("DrawHelper unit tests", () => {
                 faceList: [],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] // Edge vertices as array of Point3
+                        edgeIndex: 0,
+                        middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] // Edge vertices as array of Point3
                     }
                 ],
                 pointsList: []
@@ -2985,12 +2985,12 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [],
@@ -3021,19 +3021,19 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] // Edge vertices as array of Point3
+                        edgeIndex: 0,
+                        middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] // Edge vertices as array of Point3
                     }
                 ],
                 pointsList: []
@@ -3073,24 +3073,24 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 0,
+                        middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
                     },
                     {
-                        edge_index: 1,
-                        middle_point: [0.75, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 1,
+                        middlePoint: [0.75, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3125,18 +3125,18 @@ describe("DrawHelper unit tests", () => {
             const firstCall = (mockSolidText.createVectorText as jest.Mock).mock.calls[0][0];
             expect(firstCall.height).toBe(0.1);
             
-            // Verify the text content uses edge_index from the decomposed mesh (0-based from OCCT)
+            // Verify the text content uses edgeIndex from the decomposed mesh (0-based from OCCT)
             expect(firstCall.text).toBe("0");
         });
 
-        it("should compute edge middle position when middle_point is undefined", async () => {
+        it("should compute edge middle position when middlePoint is undefined", async () => {
             const mockShape = {
                 faceList: [],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        // middle_point is undefined - should trigger computeEdgeMiddlePos
-                        vertex_coord: [[0, 0, 0], [2, 0, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 0,
+                        // middlePoint is undefined - should trigger computeEdgeMiddlePos
+                        vertexCoord: [[0, 0, 0], [2, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3169,9 +3169,9 @@ describe("DrawHelper unit tests", () => {
                 faceList: [],
                 edgeList: [
                     {
-                        edge_index: 0,
+                        edgeIndex: 0,
                         // 3 vertices - middle one should be used
-                        vertex_coord: [[0, 0, 0], [1, 0, 0], [2, 0, 0]] as Inputs.Base.Point3[]
+                        vertexCoord: [[0, 0, 0], [1, 0, 0], [2, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3202,9 +3202,9 @@ describe("DrawHelper unit tests", () => {
                 faceList: [],
                 edgeList: [
                     {
-                        edge_index: 0,
+                        edgeIndex: 0,
                         // More than 3 vertices - should lerp between middle vertices
-                        vertex_coord: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 0]] as Inputs.Base.Point3[]
+                        vertexCoord: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3234,19 +3234,19 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 0,
+                        middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3280,12 +3280,12 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [],
@@ -3326,20 +3326,20 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     },
                     {
-                        face_index: 1,
-                        center_point: [1.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [1, 0, 0, 2, 0, 0, 1.5, 1, 0],
-                        vertex_coord_vec: [[1, 0, 0], [2, 0, 0], [1.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 1,
+                        centerPoint: [1.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [1, 0, 0, 2, 0, 0, 1.5, 1, 0],
+                        vertexCoordVec: [[1, 0, 0], [2, 0, 0], [1.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [],
@@ -3371,16 +3371,16 @@ describe("DrawHelper unit tests", () => {
             expect(secondCall.text).toBe("1");
         });
 
-        it("should compute face middle position when center_point is undefined", async () => {
+        it("should compute face middle position when centerPoint is undefined", async () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        // center_point is undefined - should trigger computeFaceMiddlePos
-                        vertex_coord: [0, 0, 0, 2, 0, 0, 1, 2, 0],
-                        vertex_coord_vec: [[0, 0, 0], [2, 0, 0], [1, 2, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        // centerPoint is undefined - should trigger computeFaceMiddlePos
+                        vertexCoord: [0, 0, 0, 2, 0, 0, 1, 2, 0],
+                        vertexCoordVec: [[0, 0, 0], [2, 0, 0], [1, 2, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [],
@@ -3413,19 +3413,19 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 0,
+                        middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3457,12 +3457,12 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [],
@@ -3495,29 +3495,29 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 0,
+                        middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
                     },
                     {
-                        edge_index: 1,
-                        middle_point: [0.25, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 1,
+                        middlePoint: [0.25, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
                     },
                     {
-                        edge_index: 2,
-                        middle_point: [0.75, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 2,
+                        middlePoint: [0.75, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3553,12 +3553,12 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [],
@@ -3592,9 +3592,9 @@ describe("DrawHelper unit tests", () => {
                 faceList: [],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 0,
+                        middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3626,9 +3626,9 @@ describe("DrawHelper unit tests", () => {
                 faceList: [],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
+                        edgeIndex: 0,
+                        middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
@@ -3658,12 +3658,12 @@ describe("DrawHelper unit tests", () => {
             const mockShape = {
                 faceList: [
                     {
-                        face_index: 0,
-                        center_point: [0.5, 0.5, 0] as Inputs.Base.Point3,
-                        vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                        vertex_coord_vec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
-                        normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                        tri_indexes: [0, 1, 2]
+                        faceIndex: 0,
+                        centerPoint: [0.5, 0.5, 0] as Inputs.Base.Point3,
+                        vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                        vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] as Inputs.Base.Point3[],
+                        normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                        triIndexes: [0, 1, 2]
                     }
                 ],
                 edgeList: [],
@@ -3695,9 +3695,9 @@ describe("DrawHelper unit tests", () => {
                 faceList: [],
                 edgeList: [
                     {
-                        edge_index: 0,
-                        middle_point: [1, 2, 3] as Inputs.Base.Point3,
-                        vertex_coord: [[0, 0, 0], [2, 4, 6]] as Inputs.Base.Point3[]
+                        edgeIndex: 0,
+                        middlePoint: [1, 2, 3] as Inputs.Base.Point3,
+                        vertexCoord: [[0, 0, 0], [2, 4, 6]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []

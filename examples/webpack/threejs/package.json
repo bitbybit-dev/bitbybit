@@ -1,6 +1,6 @@
 {
     "name": "threejs",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "",
     "private": true,
     "scripts": {
@@ -12,7 +12,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@bitbybit-dev/threejs": "1.0.2",
+        "@bitbybit-dev/threejs": "1.1.0",
         "lil-gui": "0.20.0"
     },
     "devDependencies": {

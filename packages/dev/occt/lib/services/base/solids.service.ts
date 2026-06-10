@@ -104,7 +104,8 @@ export class SolidsService {
 
     createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Shape {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
-        const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, inputs.angle);
+        const angle = inputs.angle === undefined ? Math.PI * 2 : this.vectorHelperService.degToRad(inputs.angle);
+        const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, angle);
         const coneShape = makeCone.Shape();
         makeCone.delete();
         ax.delete();
@@ -113,18 +114,16 @@ export class SolidsService {
 
     createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Shape {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
-        let angle = inputs.angle;
-        if (angle === undefined || angle === null) {
-            angle = 2 * Math.PI;
-        }
+        const angle = inputs.angle === undefined || inputs.angle === null
+            ? 2 * Math.PI
+            : this.vectorHelperService.degToRad(inputs.angle);
         let makeTorus;
-        // Angle is already in radians from higher level conversion
         // Use tolerance check for full torus (2*PI) to handle floating-point precision
         if (angle >= 2 * Math.PI - 1e-7) {
             // Full torus - use simple 3-param constructor
             makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius);
         } else {
-            // Partial torus - angle is already in radians
+            // Partial torus
             // 6-param: axes, R1, R2, angle1, angle2, angle
             // angle1 and angle2 control the ring segment (minor circle), angle controls the pipe segment (major circle)
             // For a simple pie-slice torus, we keep the full ring (0 to 2*PI) and control the pipe angle

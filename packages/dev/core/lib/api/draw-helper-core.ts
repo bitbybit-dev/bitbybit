@@ -26,21 +26,21 @@ export class DrawHelperCore {
      * @param edge - Edge with vertex coordinates
      * @returns Middle point of the edge
      */
-    computeEdgeMiddlePos(edge: { edge_index: number; vertex_coord: Base.Point3[]; }): Base.Point3 {
+    computeEdgeMiddlePos(edge: { edgeIndex: number; vertexCoord: Base.Point3[]; }): Base.Point3 {
         let pos;
-        if (edge.vertex_coord.length === 2) {
-            const midFloor = edge.vertex_coord[0];
-            const midCeil = edge.vertex_coord[1];
+        if (edge.vertexCoord.length === 2) {
+            const midFloor = edge.vertexCoord[0];
+            const midCeil = edge.vertexCoord[1];
             pos = this.vector.lerp({
                 first: midFloor,
                 second: midCeil,
                 fraction: 0.5,
             });
-        } else if (edge.vertex_coord.length === 3) {
-            pos = edge.vertex_coord[1];
+        } else if (edge.vertexCoord.length === 3) {
+            pos = edge.vertexCoord[1];
         } else {
-            const midFloor = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2)];
-            const midCeil = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2 + 1)];
+            const midFloor = edge.vertexCoord[Math.floor(edge.vertexCoord.length / 2)];
+            const midCeil = edge.vertexCoord[Math.floor(edge.vertexCoord.length / 2 + 1)];
             pos = this.vector.lerp({
                 first: midFloor,
                 second: midCeil,

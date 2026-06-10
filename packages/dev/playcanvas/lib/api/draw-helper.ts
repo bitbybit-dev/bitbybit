@@ -662,7 +662,7 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
+    async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
 
@@ -694,9 +694,9 @@ export class DrawHelper extends DrawHelperCore {
 
             const meshData = decomposedMesh.faceList.map(face => {
                 return {
-                    positions: face.vertex_coord,
-                    normals: face.normal_coord,
-                    indices: face.tri_indexes,
+                    positions: face.vertexCoord,
+                    normals: face.normalCoord,
+                    indices: face.triIndexes,
                     uvs: face.uvs,
                 };
             });
@@ -719,7 +719,7 @@ export class DrawHelper extends DrawHelperCore {
 
             const polylineEdgePoints = [];
             decomposedMesh.edgeList.forEach(edge => {
-                const ev = edge.vertex_coord.filter(s => s !== undefined);
+                const ev = edge.vertexCoord.filter(s => s !== undefined);
                 polylineEdgePoints.push(ev);
             });
             const line = this.drawPolylines(
@@ -749,12 +749,12 @@ export class DrawHelper extends DrawHelperCore {
 
         if (inputs.drawEdgeIndexes) {
             const promises = decomposedMesh.edgeList.map(async (edge) => {
-                let edgeMiddle = edge.middle_point;
+                let edgeMiddle = edge.middlePoint;
                 if (edgeMiddle === undefined) {
                     edgeMiddle = this.computeEdgeMiddlePos(edge);
                 }
                 const tdto = new Inputs.JSCAD.TextDto();
-                tdto.text = `${edge.edge_index}`;
+                tdto.text = `${edge.edgeIndex}`;
                 tdto.height = inputs.edgeIndexHeight;
                 tdto.lineSpacing = 1.5;
                 const t = await this.solidText.createVectorText(tdto);
@@ -778,12 +778,12 @@ export class DrawHelper extends DrawHelperCore {
         }
         if (inputs.drawFaceIndexes) {
             const promises = decomposedMesh.faceList.map(async (face) => {
-                let faceMiddle = face.center_point;
+                let faceMiddle = face.centerPoint;
                 if (faceMiddle === undefined) {
-                    faceMiddle = this.computeFaceMiddlePos(face.vertex_coord_vec) as Inputs.Base.Point3;
+                    faceMiddle = this.computeFaceMiddlePos(face.vertexCoordVec) as Inputs.Base.Point3;
                 }
                 const tdto = new Inputs.JSCAD.TextDto();
-                tdto.text = `${face.face_index}`;
+                tdto.text = `${face.faceIndex}`;
                 tdto.height = inputs.faceIndexHeight;
                 tdto.lineSpacing = 1.5;
                 const t = await this.solidText.createVectorText(tdto);
@@ -805,6 +805,94 @@ export class DrawHelper extends DrawHelperCore {
             const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.faceIndexColour);
             shapeGroup.addChild(faceMesh);
         }
+        return shapeGroup;
+    }
+
+    async handleDecomposedMeshIndividually(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
+        const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
+        this.context.scene.addChild(shapeGroup);
+
+        if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
+            const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
+            const alpha = inputs.faceOpacity;
+            const zOffset = inputs.drawEdges ? 2 : 0;
+            const slopeOffset = inputs.drawEdges ? 2 : 0;
+
+            let pbr: pc.StandardMaterial;
+            if (options.faceMaterial) {
+                pbr = options.faceMaterial;
+            } else {
+                pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
+                    const pbmat = new pc.StandardMaterial();
+                    pbmat.diffuse = this.hexToColor(hex);
+                    pbmat.metalness = 0.4;
+                    pbmat.gloss = 0.2;
+                    pbmat.opacity = alpha;
+                    pbmat.depthBias = zOffset;
+                    pbmat.slopeDepthBias = slopeOffset;
+                    pbmat.update();
+                    return pbmat;
+                });
+            }
+
+            decomposedMesh.faceList.forEach(face => {
+                const meshData = [{
+                    positions: [...face.vertexCoord],
+                    normals: [...face.normalCoord],
+                    indices: [...face.triIndexes],
+                    uvs: face.uvs ? [...face.uvs] : undefined,
+                }];
+
+                if (options.drawTwoSided !== false) {
+                    const backFaceMesh = this.createBackFaceMesh(
+                        meshData,
+                        options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                        options.backFaceOpacity ?? options.faceOpacity,
+                        zOffset
+                    );
+                    backFaceMesh.name = `face ${face.faceIndex} backFace`;
+                    shapeGroup.addChild(backFaceMesh);
+                }
+
+                const faceMesh = this.createOrUpdateSurfacesMesh(meshData, undefined, false, pbr, false, false);
+                faceMesh.name = `face ${face.faceIndex}`;
+                shapeGroup.addChild(faceMesh);
+            });
+        }
+
+        if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
+            decomposedMesh.edgeList.forEach(edge => {
+                const ev = edge.vertexCoord.filter(s => s !== undefined);
+                const line = this.drawPolylines(
+                    undefined,
+                    [ev],
+                    false,
+                    inputs.edgeWidth,
+                    inputs.edgeOpacity,
+                    inputs.edgeColour,
+                    Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+                    options.edgeArrowSize,
+                    options.edgeArrowAngle
+                );
+                if (line) {
+                    line.name = `edge ${edge.edgeIndex}`;
+                    shapeGroup.addChild(line);
+                }
+            });
+        }
+
+        if (inputs.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
+            const mesh = this.drawPoints({
+                points: decomposedMesh.pointsList,
+                opacity: 1,
+                size: inputs.vertexSize,
+                colours: inputs.vertexColour,
+                updatable: false,
+            });
+            mesh.name = "vertices";
+            shapeGroup.addChild(mesh);
+        }
+
         return shapeGroup;
     }
 

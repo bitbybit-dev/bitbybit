@@ -1509,7 +1509,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with faces", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1536,7 +1536,7 @@ describe("DrawHelper unit tests", () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [],
                 edgeList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0], edge_index: 0 }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0], edgeIndex: 0 }
                 ],
                 pointsList: []
             });
@@ -1583,7 +1583,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with two-sided rendering enabled by default", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1625,7 +1625,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape without back face when drawTwoSided is false", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1651,7 +1651,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with custom back face colour", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1684,7 +1684,7 @@ describe("DrawHelper unit tests", () => {
         it("should draw OCCT shape with custom back face opacity", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [
-                    { vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }
+                    { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
                 edgeList: [],
                 pointsList: []
@@ -1718,8 +1718,8 @@ describe("DrawHelper unit tests", () => {
     describe("drawShapes (OCCT)", () => {
         it("should draw multiple OCCT shapes", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
-                { faceList: [{ vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }], edgeList: [], pointsList: [] },
-                { faceList: [{ vertex_coord: [2, 0, 0, 3, 0, 0, 2, 1, 0], normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1], tri_indexes: [0, 1, 2] }], edgeList: [], pointsList: [] }
+                { faceList: [{ vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }], edgeList: [], pointsList: [] },
+                { faceList: [{ vertexCoord: [2, 0, 0, 3, 0, 0, 2, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }], edgeList: [], pointsList: [] }
             ]);
 
             const inputs = new Inputs.OCCT.DrawShapesDto();
@@ -2190,9 +2190,9 @@ describe("DrawHelper unit tests", () => {
         it("should call OCCT worker with correct parameters", async () => {
             (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
                 faceList: [{
-                    vertex_coord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
-                    normal_coord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
-                    tri_indexes: [0, 1, 2]
+                    vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    triIndexes: [0, 1, 2]
                 }],
                 edgeList: [],
                 pointsList: []

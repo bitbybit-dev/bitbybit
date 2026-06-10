@@ -37,6 +37,10 @@ export const ReservedFunctions = {
     SHAPE_TO_MESH: "shapeToMesh",
     /** Convert multiple shapes to mesh data for rendering */
     SHAPES_TO_MESHES: "shapesToMeshes",
+    /** Convert a single document shape to mesh data including per-face colours */
+    DOC_TO_MESH: "docToMesh",
+    /** Convert multiple document shapes to mesh data including per-face colours */
+    DOC_TO_MESHES: "docToMeshes",
     /** Delete a single shape from cache */
     DELETE_SHAPE: "deleteShape",
     /** Delete multiple shapes from cache */
@@ -58,6 +62,8 @@ export const ReservedFunctions = {
 export const NON_CACHEABLE_FUNCTIONS = new Set<string>([
     ReservedFunctions.SHAPE_TO_MESH,
     ReservedFunctions.SHAPES_TO_MESHES,
+    ReservedFunctions.DOC_TO_MESH,
+    ReservedFunctions.DOC_TO_MESHES,
     ReservedFunctions.DELETE_SHAPE,
     ReservedFunctions.DELETE_SHAPES,
     ReservedFunctions.STARTED_THE_RUN,

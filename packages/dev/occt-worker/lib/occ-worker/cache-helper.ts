@@ -186,11 +186,23 @@ export class CacheHelper {
      * It returns a copy of the cached object if it exists, but will
      * call the `cacheMiss()` callback otherwise. The result will be
      * added to the cache if `GUIState["Cache?"]` is true.
+     *
+     * If `args.inputs` contains a large/binary payload (e.g. STEP file data
+     * as a string > LARGE_STRING_THRESHOLD, ArrayBuffer, TypedArray, Blob or
+     * File), the payload itself is NOT fed into the hash. Instead a compact
+     * content digest (length/byteLength + a rolling hash of the content) is
+     * used so that the operation can still be cached normally. This avoids
+     * JSON.stringify crashes / memory blowups on huge inputs while keeping
+     * the hash content-sensitive - two different payloads produce different
+     * digests, identical payloads produce identical digests (a cache hit).
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cacheOp(args: any, cacheMiss: () => any): any {
         let toReturn = null;
-        const curHash = this.computeHash(args);
+        // Replace any large/binary payloads with a compact digest before hashing
+        // so huge STEP/IGES inputs can still participate in the cache.
+        const hashableArgs = this.toHashableArgs(args);
+        const curHash = this.computeHash(hashableArgs);
         this.usedHashes[curHash] = curHash;
         this.hashesFromPreviousRun[curHash] = curHash;
         const check = this.checkCache(curHash);
@@ -205,7 +217,7 @@ export class CacheHelper {
             toReturn = cacheMiss();
             if (Array.isArray(toReturn) && this.isOCCTObject(toReturn)) {
                 toReturn.forEach((r, index) => {
-                    const itemHash = this.computeHash({ ...args, index });
+                    const itemHash = this.computeHash({ ...hashableArgs, index });
                     r.hash = itemHash;
                     this.addToCache(itemHash, r);
                 });
@@ -217,18 +229,18 @@ export class CacheHelper {
                     // Handle ObjectDefinition structure
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
-                    const compoundHash = this.computeHash({ ...args, index: "compound" });
+                    const compoundHash = this.computeHash({ ...hashableArgs, index: "compound" });
                     objDef.compound.hash = compoundHash;
                     this.addToCache(compoundHash, objDef.compound);
                     objDef.shapes.forEach((s, index) => {
-                        const itemHash = this.computeHash({ ...args, index });
+                        const itemHash = this.computeHash({ ...hashableArgs, index });
                         s.shape.hash = itemHash;
                         this.addToCache(itemHash, s.shape);
                     });
                     this.addToCache(curHash, { value: objDef });
                 } else if (toReturn && typeof toReturn === "object" && "success" in toReturn && "document" in toReturn && this.isEntityHandle(toReturn.document)) {
                     // Handle AssemblyDocumentResult structure - cache the document separately
-                    const docHash = this.computeHash({ ...args, index: "document" });
+                    const docHash = this.computeHash({ ...hashableArgs, index: "document" });
                     toReturn.document.hash = docHash;
                     this.addToCache(docHash, toReturn.document);
                     this.addToCache(curHash, { value: toReturn });
@@ -301,16 +313,130 @@ export class CacheHelper {
 
     /** This function computes a 32-bit integer hash given a set of `arguments`.
      * If `raw` is true, the raw set of sanitized arguments will be returned instead.
+     *
+     * Large / binary inputs (e.g. STEP file data) are replaced by a compact
+     * content digest via `toHashableArgs` before stringifying, so this method
+     * is safe to call with huge payloads - it neither crashes nor stringifies
+     * megabytes of data, while keeping the hash content-sensitive.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     computeHash(args: any, raw?: boolean): number | string {
-        let argsString = JSON.stringify(args);
+        let argsString = JSON.stringify(this.toHashableArgs(args));
         argsString = argsString.replace(/("ptr":(-?[0-9]*?),)/g, "");
         argsString = argsString.replace(/("ptr":(-?[0-9]*))/g, "");
         if (argsString.includes("ptr")) { console.error("YOU DONE MESSED UP YOUR REGEX."); }
         const hashString = Math.random.toString() + argsString;
         if (raw) { return hashString; }
         return this.stringToHash(hashString);
+    }
+
+    /** Threshold above which a string value is considered "large" and triggers
+     * cache bypass. 64 KB is comfortably above any realistic DTO field but well
+     * below a typical STEP/IGES payload. */
+    static readonly LARGE_STRING_THRESHOLD = 64 * 1024;
+
+    /** Returns true when `args.inputs` (or `args` itself, if no `inputs`
+     * wrapper is present) contains a value that is binary or an oversized
+     * string. Only the immediate properties of `inputs` are inspected -
+     * STEP/IGES payloads always sit at the top level of the DTO
+     * (`stepData`, `filetext`, etc.), so a shallow O(N) check is enough.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    hasLargeOrBinaryInput(args: any): boolean {
+        const inputs = (args && typeof args === "object" && args.inputs && typeof args.inputs === "object")
+            ? args.inputs
+            : args;
+        if (!inputs || typeof inputs !== "object") return false;
+        for (const key of Object.keys(inputs)) {
+            const v = inputs[key];
+            if (v === null || v === undefined) continue;
+            if (typeof v === "string") {
+                if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) return true;
+                continue;
+            }
+            if (typeof v !== "object") continue;
+            if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) return true;
+            if (ArrayBuffer.isView && ArrayBuffer.isView(v as ArrayBufferView)) return true;
+            if (typeof Blob !== "undefined" && v instanceof Blob) return true;
+        }
+        return false;
+    }
+
+    /** Builds a representation of `args` that is cheap and safe to JSON.stringify
+     * for hashing, by replacing any large string / binary payload found in the
+     * immediate input properties with a compact content digest. Returns the
+     * original `args` unchanged when there is nothing large/binary to replace,
+     * so hashes for ordinary inputs are byte-for-byte identical to before.
+     * Idempotent - running it on already-digested args is a cheap no-op.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toHashableArgs(args: any): any {
+        if (!args || typeof args !== "object") return args;
+        const hasInputsWrapper = args.inputs && typeof args.inputs === "object";
+        const source = hasInputsWrapper ? args.inputs : args;
+        if (!source || typeof source !== "object") return args;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let sanitized: any = null;
+        for (const key of Object.keys(source)) {
+            const digest = this.digestIfLargeOrBinary(source[key]);
+            if (digest !== undefined) {
+                if (!sanitized) { sanitized = Array.isArray(source) ? [...source] : { ...source }; }
+                sanitized[key] = digest;
+            }
+        }
+        if (!sanitized) return args;
+        return hasInputsWrapper ? { ...args, inputs: sanitized } : sanitized;
+    }
+
+    /** Returns a compact, JSON-serializable content digest for a value that is a
+     * large string, ArrayBuffer, TypedArray, Blob or File - or `undefined` when
+     * the value is small/ordinary and should be hashed as-is. The digest is
+     * content-sensitive (different payloads produce different digests) but tiny,
+     * so it keeps the cache key stable without stringifying the whole payload.
+     * Blob/File content cannot be read synchronously, so those fall back to
+     * metadata (size/type, plus name/lastModified for File).
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    digestIfLargeOrBinary(v: any): any {
+        if (v === null || v === undefined) return undefined;
+        if (typeof v === "string") {
+            if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) {
+                return { __largeStringDigest__: this.stringToHash(v), length: v.length };
+            }
+            return undefined;
+        }
+        if (typeof v !== "object") return undefined;
+        if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) {
+            return { __binaryDigest__: this.bytesToHash(new Uint8Array(v)), byteLength: v.byteLength };
+        }
+        if (ArrayBuffer.isView && ArrayBuffer.isView(v as ArrayBufferView)) {
+            const view = v as ArrayBufferView;
+            const bytes = new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
+            return { __binaryDigest__: this.bytesToHash(bytes), byteLength: view.byteLength };
+        }
+        if (typeof Blob !== "undefined" && v instanceof Blob) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const meta: any = { __blobDigest__: true, size: v.size, type: v.type };
+            if (typeof File !== "undefined" && v instanceof File) {
+                meta.name = v.name;
+                meta.lastModified = v.lastModified;
+            }
+            return meta;
+        }
+        return undefined;
+    }
+
+    /** Computes a 32-bit rolling hash over raw bytes, mirroring `stringToHash`. */
+    bytesToHash(bytes: Uint8Array): number {
+        let hash = 0;
+        if (bytes.length === 0) { return hash; }
+        for (let i = 0; i < bytes.length; i++) {
+            // tslint:disable-next-line: no-bitwise
+            hash = ((hash << 5) - hash) + bytes[i];
+            // tslint:disable-next-line: no-bitwise
+            hash = hash & hash;
+        }
+        return hash;
     }
 
     /** This function converts a string to a 32bit integer. */

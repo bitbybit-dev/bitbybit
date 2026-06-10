@@ -808,6 +808,62 @@ export class WiresService {
         return this.converterService.combineEdgesAndWiresIntoAWire({ shapes: wires });
     }
 
+    createWiresBetweenStartEndPointsOfWiresAndEdges(inputs: Inputs.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
+        if (!inputs.shapes || inputs.shapes.length < 2) {
+            throw new Error("You must provide at least two wires or edges to connect their start and end points.");
+        }
+        const startPoints: Base.Point3[] = [];
+        const endPoints: Base.Point3[] = [];
+        inputs.shapes.forEach((shape) => {
+            if (this.enumService.getShapeTypeEnum(shape) === Inputs.OCCT.shapeTypeEnum.edge) {
+                startPoints.push(this.edgesService.startPointOnEdge({ shape: shape as TopoDS_Edge }));
+                endPoints.push(this.edgesService.endPointOnEdge({ shape: shape as TopoDS_Edge }));
+            } else {
+                startPoints.push(this.startPointOnWire({ shape: shape as TopoDS_Wire }));
+                endPoints.push(this.endPointOnWire({ shape: shape as TopoDS_Wire }));
+            }
+        });
+        const startWire = this.createWireFromPointsByType(startPoints, inputs.wireType, inputs.closed, inputs.tolerance);
+        const endWire = this.createWireFromPointsByType(endPoints, inputs.wireType, inputs.closed, inputs.tolerance);
+        return [startWire, endWire];
+    }
+
+    createWiresBetweenSubdividedPointsOfWiresAndEdges(inputs: Inputs.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
+        if (!inputs.shapes || inputs.shapes.length < 2) {
+            throw new Error("You must provide at least two wires or edges to connect their subdivided points.");
+        }
+        const nrOfDivisions = inputs.nrOfDivisions ?? 10;
+        const divideByEqualDistance = inputs.divideByEqualDistance ?? false;
+        const pointsPerShape = inputs.shapes.map((shape) => this.subdivideWireOrEdgeToPoints(shape, nrOfDivisions, divideByEqualDistance));
+        const nrOfPoints = pointsPerShape[0].length;
+        const wires: TopoDS_Wire[] = [];
+        for (let i = 0; i < nrOfPoints; i++) {
+            const pointsAtIndex = pointsPerShape.map((points) => points[i]);
+            wires.push(this.createWireFromPointsByType(pointsAtIndex, inputs.wireType, inputs.closed, inputs.tolerance));
+        }
+        return wires;
+    }
+
+    private subdivideWireOrEdgeToPoints(shape: TopoDS_Wire | TopoDS_Edge, nrOfDivisions: number, divideByEqualDistance: boolean): Base.Point3[] {
+        const isEdge = this.enumService.getShapeTypeEnum(shape) === Inputs.OCCT.shapeTypeEnum.edge;
+        if (isEdge) {
+            return divideByEqualDistance
+                ? this.edgesService.divideEdgeByEqualDistanceToPoints({ shape: shape as TopoDS_Edge, nrOfDivisions, removeStartPoint: false, removeEndPoint: false })
+                : this.edgesService.divideEdgeByParamsToPoints({ shape: shape as TopoDS_Edge, nrOfDivisions, removeStartPoint: false, removeEndPoint: false });
+        }
+        return divideByEqualDistance
+            ? this.divideWireByEqualDistanceToPoints({ shape: shape as TopoDS_Wire, nrOfDivisions, removeStartPoint: false, removeEndPoint: false })
+            : this.divideWireByParamsToPoints({ shape: shape as TopoDS_Wire, nrOfDivisions, removeStartPoint: false, removeEndPoint: false });
+    }
+
+    private createWireFromPointsByType(points: Base.Point3[], wireType?: Inputs.OCCT.wireFromPointsTypeEnum, closed?: boolean, tolerance?: number): TopoDS_Wire {
+        const isClosed = closed ?? false;
+        if (wireType === Inputs.OCCT.wireFromPointsTypeEnum.interpolated) {
+            return this.interpolatePoints({ points, periodic: isClosed, tolerance: tolerance ?? 1e-7 });
+        }
+        return isClosed ? this.createPolygonWire({ points }) : this.createPolylineWire({ points });
+    }
+
     getWireCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
         return this.geomService.getLinearCenterOfMass(inputs);
     }

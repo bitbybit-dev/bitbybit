@@ -101,7 +101,6 @@ export class OCCTSolid {
      * @drawable true
      */
     createCone(inputs: Inputs.OCCT.ConeDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
-        inputs.angle = inputs.angle * (Math.PI / 180);
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createCone", inputs);
     }
 
@@ -114,7 +113,6 @@ export class OCCTSolid {
      * @drawable true
      */
     createTorus(inputs: Inputs.OCCT.TorusDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
-        inputs.angle = inputs.angle * (Math.PI / 180);
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createTorus", inputs);
     }
     
