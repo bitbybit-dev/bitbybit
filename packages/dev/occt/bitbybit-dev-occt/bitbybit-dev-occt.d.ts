@@ -2287,9 +2287,12 @@ interface EmbindModule {
   VectorDouble: {
     new(): VectorDouble;
   };
+  MakeBSplineEdgeFromPoles(_0: VectorDouble, _1: number): TopoDS_Edge;
+  MakeSymmetricInterpolatedBSplineEdge(_0: VectorDouble, _1: number): TopoDS_Edge;
   VectorInt: {
     new(): VectorInt;
   };
+  MakeInterpolatedBSplineEdge(_0: VectorDouble, _1: boolean, _2: number, _3: number, _4: VectorDouble, _5: VectorInt): TopoDS_Edge;
   gp_Pnt_GetCoord(_0: gp_Pnt): CoordResult;
   gp_Vec_GetCoord(_0: gp_Vec): CoordResult;
   gp_Dir_GetCoord(_0: gp_Dir): CoordResult;
@@ -2658,6 +2661,7 @@ interface EmbindModule {
   ChamferCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): TopoDS_Shape;
   ClassifyCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number): string;
   CornerByPointReport(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): string;
+  BuildShapesFromSegments(_0: VectorInt, _1: VectorDouble, _2: VectorDouble, _3: VectorInt, _4: VectorInt, _5: VectorInt, _6: VectorInt, _7: number, _8: boolean, _9: number): TopoDS_Compound;
 }
 
 export type MainModule = WasmModule & typeof RuntimeExports & EmbindModule;

@@ -8,4 +8,6 @@ export * from "./occt";
 export * from "./operations";
 export * from "./transforms";
 export * from "./shape-fix";
+export * from "./path";
+export * from "./svg";
 

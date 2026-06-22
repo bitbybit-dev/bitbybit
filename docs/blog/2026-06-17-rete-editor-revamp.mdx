@@ -1,0 +1,153 @@
+---
+slug: rete-visual-editor-revamp-2026
+title: "A Big Visual Rete Editor Revamp: Typed Sockets, Modules, Split Screen and More"
+authors: [ubarevicius]
+tags: [bitbybit, cad, babylonjs]
+description: "We rebuilt large parts of the Bitbybit visual editor: a typed, colour-coded node graph, reusable modules, split-screen editing, groups and comments, smarter geometry focus, and friendly socket-compatibility coaching."
+---
+
+The Bitbybit **Rete node editor** is where you build 3D and parametric geometry by wiring nodes together instead of writing code. Over the past week we shipped one of the largest rounds of improvements it has ever had - most of this update is focused right here, on the node editor. The node graph is now **typed and colour-coded**, you can package work into **reusable modules**, edit the graph and the 3D scene **side by side**, the editor actively **coaches you** when sockets don't match instead of silently failing, and you can **search across the whole canvas** to jump straight to any node.
+
+This post walks through each new feature on its own, so you can dip into whatever interests you. We'll be following up with short videos for each one.
+
+<!-- truncate -->
+
+### A colour-coded, typed graph
+
+The single biggest change to the look and feel of the editor: **the whole graph is now colour-coded by category**. Every category has its own colour, and that colour runs all the way through - the category menu you pick components from, the components on the canvas, and the sockets on each node all share it. A glance at your script now tells you which parts are OCCT solids, which are meshes, which are points and curves, and so on.
+
+On top of that, **sockets now carry types**. A socket is tinted to match the kind of data it carries, so an OCCT shape, a number, a vector, and a Babylon mesh are instantly distinguishable. Hover any socket and a tooltip tells you exactly what type it expects or produces, using friendly, human-readable names rather than internal identifiers. Together this makes large graphs far easier to read - you can trace the flow of geometry through your script just by following the colours. (Prefer a calmer look? A monochrome mode is one click away in Settings.)
+
+{/* Video placeholder - colour-coded, typed graph
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - colour-coded typed graph" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Modules: reusable sub-graphs
+
+This is a big one. You can now package a piece of a graph into a **module** - a reusable sub-graph with its own inputs and outputs. Define a module once, then drop instances of it into your script wherever you need it, the same way you'd use a function in code.
+
+Modules have their own nested editor: double into a module instance and you're editing its internals, with a breadcrumb showing where you are. You can **save a module definition to a file** and import it into other projects, so a well-built mechanism - a gear generator, a parametric joint, a façade pattern - becomes a portable building block you can share and reuse. When you edit a definition, existing instances keep their wiring intact.
+
+{/* Video placeholder - modules
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - reusable modules" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Split-screen editing and a Settings panel
+
+You can now work with the **node editor and the 3D scene side by side**, with a draggable divider so you can give each side as much room as you like. Need to see your model full-bleed for a moment? There's a fullscreen toggle. On small screens the editor sensibly stays single-pane.
+
+Alongside this, a new **Settings** dialog gives you control over the editor and rendering:
+
+- A **monochrome** mode for a calmer, single-colour graph when the rainbow of category colours is more than you need.
+- **Language** selection.
+- A choice of **rendering engine** - WebGL or WebGPU.
+- An **OCCT** kernel option (32-bit / 64-bit precision).
+
+Settings persist locally, so the editor remembers how you like to work. Changes that don't require a reload apply immediately; the ones that do warn you first.
+
+{/* Video placeholder - split screen & settings
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - split screen and settings" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Socket-compatibility coaching
+
+Now that sockets are typed, the editor can help you wire things correctly - without getting in your way. Three things happen:
+
+- **Friendly messages on mismatch.** Try to connect two incompatible sockets and, instead of the wire just snapping back in silence, a short, clear message explains what that input actually needs *and how to create that kind of data* - "this input needs an OCCT Shape, which is produced by nodes in the OCCT category," for example. The help is organised by type family and fully translated.
+- **Imported scripts never lose wiring.** When you open an older script whose connections no longer pass the stricter type checks, we **keep those connections** and mark them as **red dashed wires** rather than dropping them. A summary tells you how many need a look, so nothing silently disappears and you can fix things at your own pace.
+- **On-node status indicators.** Components now show small status icons for behaviours that used to be invisible - like a list being fed into a single-value input, which makes the node run once per item. The indicator explains what's happening and points you to the **1:1** option if you'd rather pair lists by index. Other states like flatten and forced execution get their own clear icons too.
+
+{/* Video placeholder - socket compatibility coaching
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - socket compatibility coaching" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Find anything on the canvas
+
+Big scripts are easy to get lost in, so the component search box now does double duty. A simple toggle switches it between **Add components** (search the catalogue and drop a new node onto the canvas, exactly as before) and **Find on the canvas** (search the script you already have in front of you).
+
+In find mode it looks through *everything* - function names, node titles, input and output names, group titles and comment text - ranked in that order of importance, so the most meaningful matches come first. You get a live match count with up/down arrows (and keyboard shortcuts) to step through the hits one at a time. Each time you land on a match, the editor frames it with the same smooth animation as a double-click and the node gives a clear pulsing highlight, so your eye goes straight to it - while the matching text is highlighted in the results list. Matches even carry their category colour, so the results read at a glance just like the graph itself.
+
+{/* Video placeholder - find on the canvas
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - find on the canvas" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Smarter node selection and geometry focus
+
+Selecting a node now does something genuinely useful: it **highlights the geometry that node produced** in the 3D scene. We replaced the old "swap to a green material" trick with a proper highlight - a glow layer plus rendering the selected geometry on top of everything else, so you can find it even in a busy scene. If a node's geometry is hidden, selecting it temporarily draws it for you, then cleans up when you deselect.
+
+**Double-clicking** a node goes one step further: it smoothly animates the 3D camera to frame that node's geometry *and* re-centres the node editor canvas on the node itself - so both views jump to what you're looking at. There's also a dedicated **focus button** next to the visibility toggle, and a **"fit whole script"** button in the bottom-left actions bar that zooms the canvas to show everything at once.
+
+{/* Video placeholder - node selection, highlight & focus
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - node selection and geometry focus" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Groups, comments and auto-arrange
+
+Real scripts get big, so we added three tools for keeping them tidy:
+
+- **Groups** - a resizable, coloured backdrop you can drop behind a set of components to visually bundle them. Move the group and its contents move with it. You can recolour it, adjust its transparency, group a current selection, add nodes to an existing group, or ungroup.
+- **Comments** - sticky notes that support **Markdown**, with adjustable text colour, background colour and scale. Perfect for documenting what a section of the graph does, leaving instructions for collaborators, or annotating a tutorial.
+- **Auto-arrange** - a one-click layout that untangles your graph into a clean, readable structure. You can arrange the whole canvas or just the contents of a single group.
+
+{/* Video placeholder - groups, comments & auto-arrange
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - groups, comments and auto-arrange" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Inline Vector3 controls
+
+Vectors are everywhere in 3D work, so we added a compact, inline **Vector3 control** directly on the node. Instead of reaching for a separate "vector" node every time you need a position or direction, you can type X, Y and Z right where you need them.
+
+It behaves intelligently with connections too: when you wire something into a vector input, the inline control gets out of the way - there's no point editing a value that's being supplied by another node. (We were careful here: the inline control only appears on inputs that genuinely default to a vector, so it never silently overrides an API's "undefined" default and changes your geometry.)
+
+{/* Video placeholder - inline Vector3 controls
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - inline Vector3 controls" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Performance, overview tooltips and a redesigned Assets dialog
+
+A set of refinements that make the editor pleasant to live in:
+
+- **On-demand rendering** - the 3D scene renders only when there's actually something to draw, instead of running flat-out at 60fps. Lighter on your machine, kinder to your battery.
+- **Zoomed-out node overviews** - when you zoom far out, individual nodes simplify into placeholders so the canvas stays readable. Hover one and a rich, interactive tooltip tells you what the node is and what it's doing, without having to zoom back in.
+- **A redesigned Assets dialog** - a cleaner drop-zone-and-chips layout for managing the files your script uses.
+- **Friendlier file names** - saved scripts keep the human-readable `.bitbybit` extension with a tidy timestamp.
+
+{/* Video placeholder - performance, overviews & assets
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - performance and assets" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Under the hood: a faster, rebuilt editor
+
+Before any of the visual features, we did a deep rebuild under the hood. The whole editor - the node graph, the code editor, the block editor, the dialogs, and the shared 3D viewer - was modernised and tidied up, and a number of long-standing rough edges got fixed along the way.
+
+It isn't a flashy feature on its own, but it's the reason everything above feels faster and more responsive. The editor now only does work when something actually changes, so it stays light on your machine even while it's driving a full 3D CAD engine right in the browser.
+
+{/* Video placeholder - rebuilt editor & performance
+<div className="responsive-video-container">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="Bitbybit visual editor - faster rebuilt editor" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen></iframe>
+</div>
+*/}
+
+### Try it out
+
+All of this is live in the [Bitbybit Rete node editor](https://bitbybit.dev/app?editor=rete). Open a new script, start wiring nodes, and you'll see the colours, the focus animations, and the coaching straight away. Build something you're proud of? Package it as a module and share it.
+
+We'd love your feedback - and stay tuned for the short walkthrough videos on each of these features.

@@ -524,60 +524,86 @@ export class WiresService {
         return res;
     }
 
-    interpolatePoints(inputs: Inputs.OCCT.InterpolationDto) {
-        // Create flat array of coordinates for the new API
-        const coords = new this.occ.VectorDouble();
-        for (const pt of inputs.points) {
-            coords.push_back(pt[0]);
-            coords.push_back(pt[1]);
-            coords.push_back(pt[2]);
-        }
-        
-        let wire: TopoDS_Wire;
-        if (inputs.periodic) {
-            wire = this.occ.MakePeriodicBSplineWire(coords);
-        } else {
-            const edge = this.occ.MakeBSplineEdge(coords);
-            const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
-            wire = wireMaker.Wire();
-            edge.delete();
-            wireMaker.delete();
-        }
-        
-        coords.delete();
-        
-        if (wire && !wire.IsNull()) {
-            return wire;
-        } else {
-            return undefined;
+    private parametrizationToInt(p?: Inputs.OCCT.bSplineParametrizationEnum): number {
+        switch (p) {
+            case Inputs.OCCT.bSplineParametrizationEnum.uniform: return 0;
+            case Inputs.OCCT.bSplineParametrizationEnum.centripetal: return 2;
+            default: return 1; // chordLength (backward-compatible default)
         }
     }
 
     /**
-     * Interpolate points with symmetric periodic (closed) curve
-     * Uses chord-based tangent constraints to ensure the curve is symmetrical
-     * (e.g., 4 points of a square will produce a perfectly symmetric curve like Rhino)
+     * Build an interpolated BSpline wire with selectable parametrization, periodicity and optional
+     * tangent constraints. Returns undefined if the interpolation fails.
+     */
+    private buildInterpolatedWire(inputs: Inputs.OCCT.InterpolationDto, periodicOverride?: boolean, parametrizationOverride?: Inputs.OCCT.bSplineParametrizationEnum): TopoDS_Wire | undefined {
+        const periodic = periodicOverride ?? inputs.periodic;
+        const coords = new this.occ.VectorDouble();
+        for (const pt of inputs.points) { coords.push_back(pt[0]); coords.push_back(pt[1]); coords.push_back(pt[2]); }
+
+        const tangents = new this.occ.VectorDouble();
+        const flags = new this.occ.VectorInt();
+        if (inputs.tangents && inputs.tangents.length === inputs.points.length) {
+            for (const t of inputs.tangents) {
+                tangents.push_back(t ? t[0] : 0); tangents.push_back(t ? t[1] : 0); tangents.push_back(t ? t[2] : 0);
+                flags.push_back(t ? 1 : 0);
+            }
+        } else if (!periodic && inputs.startTangent && inputs.endTangent) {
+            const s = inputs.startTangent; const e = inputs.endTangent;
+            tangents.push_back(s[0]); tangents.push_back(s[1]); tangents.push_back(s[2]);
+            tangents.push_back(e[0]); tangents.push_back(e[1]); tangents.push_back(e[2]);
+        }
+
+        let edge: TopoDS_Edge | undefined;
+        try {
+            edge = this.occ.MakeInterpolatedBSplineEdge(
+                coords, periodic, this.parametrizationToInt(parametrizationOverride ?? inputs.parametrization),
+                inputs.tolerance ?? 1e-7, tangents, flags
+            );
+        } finally {
+            coords.delete(); tangents.delete(); flags.delete();
+        }
+
+        if (!edge || edge.IsNull()) { edge?.delete(); return undefined; }
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
+        const wire = wireMaker.Wire();
+        edge.delete();
+        wireMaker.delete();
+        return wire;
+    }
+
+    interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire | undefined {
+        return this.buildInterpolatedWire(inputs);
+    }
+
+    /**
+     * Interpolate points with an achiral, symmetric, periodic (closed) curve. Catmull-Rom tangents
+     * are loaded at their exact magnitude (no rescaling), so symmetric inputs (triangle, square, ...)
+     * produce a genuinely mirror-symmetric curve that is C2 at the seam - no irregular first/last point.
      * @param inputs Points to interpolate and tolerance
      * @returns Symmetric periodic BSpline wire
      */
-    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolationDto) {
-        // Create flat array of coordinates for the new API
+    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire | undefined {
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
             coords.push_back(pt[0]);
             coords.push_back(pt[1]);
             coords.push_back(pt[2]);
         }
-        
-        const wire = this.occ.MakeSymmetricPeriodicBSplineWire(coords);
-        
-        coords.delete();
-        
-        if (wire && !wire.IsNull()) {
-            return wire;
-        } else {
-            return undefined;
+
+        let edge: TopoDS_Edge | undefined;
+        try {
+            edge = this.occ.MakeSymmetricInterpolatedBSplineEdge(coords, inputs.tolerance ?? 1e-7);
+        } finally {
+            coords.delete();
         }
+
+        if (!edge || edge.IsNull()) { edge?.delete(); return undefined; }
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
+        const wire = wireMaker.Wire();
+        edge.delete();
+        wireMaker.delete();
+        return wire;
     }
 
     isWireClosed(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): boolean {
@@ -996,7 +1022,13 @@ export class WiresService {
     }
 
     createBezier(inputs: Inputs.OCCT.BezierDto) {
-        // Create flat array of coordinates for the new API
+        // A classic Bezier's degree is (control points - 1); OCCT caps Geom_BezierCurve at degree 25
+        // and a higher-degree single Bezier oscillates badly. When a degree is requested, or there are
+        // more control points than the Bezier cap allows, build a clamped bounded-degree BSpline from
+        // the same control polygon instead (scales to arbitrarily many control points).
+        const totalControlPoints = inputs.points.length + (inputs.closed ? 1 : 0);
+        const useBoundedDegree = inputs.degree !== undefined || totalControlPoints - 1 > 25;
+
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
             coords.push_back(pt[0]);
@@ -1010,9 +1042,22 @@ export class WiresService {
             coords.push_back(inputs.points[0][2]);
         }
 
-        const wire = this.occ.MakeBezierWire(coords);
+        let wire: TopoDS_Wire | undefined;
+        if (useBoundedDegree) {
+            const degree = inputs.degree ?? Math.min(25, totalControlPoints - 1);
+            const edge = this.occ.MakeBSplineEdgeFromPoles(coords, degree);
+            if (!edge.IsNull()) {
+                const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
+                wire = wireMaker.Wire();
+                wireMaker.delete();
+            }
+            edge.delete();
+        } else {
+            wire = this.occ.MakeBezierWire(coords);
+        }
+
         coords.delete();
-        return wire;
+        return (wire && !wire.IsNull()) ? wire : undefined;
     }
 
     createBezierWeights(inputs: Inputs.OCCT.BezierWeightsDto) {

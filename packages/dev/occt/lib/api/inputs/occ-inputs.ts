@@ -3818,11 +3818,24 @@ export namespace OCCT {
          */
         tolerance? = 1e-7;
     }
+
+    export enum bSplineParametrizationEnum {
+        /** Equal parameter spacing - symmetric for symmetric inputs, but can overshoot on uneven spacing. */
+        uniform = "uniform",
+        /** Spacing proportional to chord length (OCCT's historic default). */
+        chordLength = "chordLength",
+        /** Spacing proportional to sqrt(chord) - best general default; resists cusps and overshoot. */
+        centripetal = "centripetal",
+    }
     export class InterpolationDto {
-        constructor(points?: Base.Point3[], periodic?: boolean, tolerance?: number) {
+        constructor(points?: Base.Point3[], periodic?: boolean, tolerance?: number, parametrization?: bSplineParametrizationEnum, startTangent?: Base.Vector3, endTangent?: Base.Vector3, tangents?: (Base.Vector3 | undefined)[]) {
             if (points !== undefined) { this.points = points; }
             if (periodic !== undefined) { this.periodic = periodic; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (parametrization !== undefined) { this.parametrization = parametrization; }
+            if (startTangent !== undefined) { this.startTangent = startTangent; }
+            if (endTangent !== undefined) { this.endTangent = endTangent; }
+            if (tangents !== undefined) { this.tangents = tangents; }
         }
         /**
          * Points through which the BSpline will be created
@@ -3830,7 +3843,7 @@ export namespace OCCT {
          */
         points: Base.Point3[];
         /**
-         * Indicates wether BSpline will be periodic
+         * Indicates wether BSpline will be periodic (closed, tangent-continuous at the seam)
          * @default false
          */
         periodic = false;
@@ -3842,6 +3855,29 @@ export namespace OCCT {
          * @step 0.00001
          */
         tolerance = 1e-7;
+        /**
+         * Parametrization controlling point spacing along the curve. When omitted, chord-length is
+         * used (backward-compatible). Centripetal is recommended for uneven spacing as it resists
+         * cusps and overshoot.
+         * @default chordLength
+         */
+        parametrization?: bSplineParametrizationEnum;
+        /**
+         * Optional tangent direction enforced at the start (non-periodic only).
+         * @default undefined
+         */
+        startTangent?: Base.Vector3;
+        /**
+         * Optional tangent direction enforced at the end (non-periodic only).
+         * @default undefined
+         */
+        endTangent?: Base.Vector3;
+        /**
+         * Optional per-point tangent directions (one per point); entries that are undefined are
+         * left free. When provided, takes precedence over startTangent/endTangent.
+         * @default undefined
+         */
+        tangents?: (Base.Vector3 | undefined)[];
     }
     export class InterpolateWiresDto {
         constructor(interpolations?: InterpolationDto[], returnCompound?: boolean) {
@@ -3859,9 +3895,10 @@ export namespace OCCT {
         returnCompound = false;
     }
     export class BezierDto {
-        constructor(points?: Base.Point3[], closed?: boolean) {
+        constructor(points?: Base.Point3[], closed?: boolean, degree?: number) {
             if (points !== undefined) { this.points = points; }
             if (closed !== undefined) { this.closed = closed; }
+            if (degree !== undefined) { this.degree = degree; }
         }
         /**
          * Points through which the Bezier curve will be created
@@ -3873,6 +3910,14 @@ export namespace OCCT {
          * @default false
          */
         closed = false;
+        /**
+         * Optional maximum local degree. A classic Bezier has degree (controlPoints - 1), which
+         * oscillates and is hard-capped at 25; when a degree is given (or there are more than 26
+         * control points) a clamped bounded-degree curve is built instead, so it scales to many
+         * control points while still following the control polygon.
+         * @default undefined
+         */
+        degree?: number;
     }
     export class BezierWeightsDto {
         constructor(points?: Base.Point3[], weights?: number[], closed?: boolean) {
@@ -9938,5 +9983,321 @@ export namespace OCCT {
          * @step 0.1
          */
         extrusionLengthBack = 0;
+    }
+
+    /** Straight line to `to`. */
+    export class PathLineSegment {
+        constructor(to?: Base.Point2) {
+            if (to !== undefined) { this.to = to; }
+        }
+        /**
+         * Segment kind discriminator.
+         * @default line
+         */
+        type: "line" = "line";
+        /**
+         * End point of the line.
+         * @default undefined
+         */
+        to: Base.Point2;
+    }
+    /** Quadratic bezier with control point `c` to `to`. */
+    export class PathQuadraticSegment {
+        constructor(c?: Base.Point2, to?: Base.Point2) {
+            if (c !== undefined) { this.c = c; }
+            if (to !== undefined) { this.to = to; }
+        }
+        /**
+         * Segment kind discriminator.
+         * @default quadratic
+         */
+        type: "quadratic" = "quadratic";
+        /**
+         * Control point.
+         * @default undefined
+         */
+        c: Base.Point2;
+        /**
+         * End point.
+         * @default undefined
+         */
+        to: Base.Point2;
+    }
+    /** Cubic bezier with control points `c1`, `c2` to `to`. */
+    export class PathCubicSegment {
+        constructor(c1?: Base.Point2, c2?: Base.Point2, to?: Base.Point2) {
+            if (c1 !== undefined) { this.c1 = c1; }
+            if (c2 !== undefined) { this.c2 = c2; }
+            if (to !== undefined) { this.to = to; }
+        }
+        /**
+         * Segment kind discriminator.
+         * @default cubic
+         */
+        type: "cubic" = "cubic";
+        /**
+         * First control point.
+         * @default undefined
+         */
+        c1: Base.Point2;
+        /**
+         * Second control point.
+         * @default undefined
+         */
+        c2: Base.Point2;
+        /**
+         * End point.
+         * @default undefined
+         */
+        to: Base.Point2;
+    }
+    /** Elliptical arc in center parametrization (angles in radians). */
+    export class PathArcSegment {
+        constructor(to?: Base.Point2, center?: Base.Point2, rx?: number, ry?: number, xAxisRotation?: number, startAngle?: number, deltaAngle?: number) {
+            if (to !== undefined) { this.to = to; }
+            if (center !== undefined) { this.center = center; }
+            if (rx !== undefined) { this.rx = rx; }
+            if (ry !== undefined) { this.ry = ry; }
+            if (xAxisRotation !== undefined) { this.xAxisRotation = xAxisRotation; }
+            if (startAngle !== undefined) { this.startAngle = startAngle; }
+            if (deltaAngle !== undefined) { this.deltaAngle = deltaAngle; }
+        }
+        /**
+         * Segment kind discriminator.
+         * @default arc
+         */
+        type: "arc" = "arc";
+        /**
+         * End point of the arc.
+         * @default undefined
+         */
+        to: Base.Point2;
+        /**
+         * Ellipse center.
+         * @default undefined
+         */
+        center: Base.Point2;
+        /**
+         * Semi-axis along the (rotated) x direction.
+         * @default 0
+         */
+        rx = 0;
+        /**
+         * Semi-axis along the (rotated) y direction.
+         * @default 0
+         */
+        ry = 0;
+        /**
+         * Rotation of the ellipse x-axis in radians (CCW in path space).
+         * @default 0
+         */
+        xAxisRotation = 0;
+        /**
+         * Start angle on the ellipse in radians.
+         * @default 0
+         */
+        startAngle = 0;
+        /**
+         * Signed sweep angle in radians (negative = clockwise in path space).
+         * @default 0
+         */
+        deltaAngle = 0;
+    }
+    export type PathSegment = PathLineSegment | PathQuadraticSegment | PathCubicSegment | PathArcSegment;
+
+    /** A contiguous run of segments. The first segment starts at `start`. */
+    export class PathSubpath {
+        constructor(start?: Base.Point2, segments?: PathSegment[], closed?: boolean) {
+            if (start !== undefined) { this.start = start; }
+            if (segments !== undefined) { this.segments = segments; }
+            if (closed !== undefined) { this.closed = closed; }
+        }
+        /**
+         * Absolute start point of the subpath.
+         * @default undefined
+         */
+        start: Base.Point2;
+        /**
+         * Ordered segments; the first segment starts at `start`.
+         * @default undefined
+         */
+        segments: PathSegment[];
+        /**
+         * Whether the subpath is closed.
+         * @default false
+         */
+        closed = false;
+    }
+
+    /**
+     * Placement of a 2D path into 3D CAD space. Defaults map SVG user space
+     * (Y down, top-left origin) onto the XY plane upright (Y up).
+     */
+    export class PathPlacementDto {
+        constructor(scale?: number, flipY?: boolean, origin?: Base.Point3) {
+            if (scale !== undefined) { this.scale = scale; }
+            if (flipY !== undefined) { this.flipY = flipY; }
+            if (origin !== undefined) { this.origin = origin; }
+        }
+        /**
+         * Uniform scale applied to path coordinates.
+         * @default 1
+         */
+        scale = 1;
+        /**
+         * Negate Y so an SVG appears upright (Y up) in CAD.
+         * @default true
+         */
+        flipY = true;
+        /**
+         * Translation applied after scale/flip.
+         * @default [0, 0, 0]
+         */
+        origin: Base.Point3 = [0, 0, 0];
+    }
+
+    /**
+     * Generic builder input: turn one or more subpaths into wires and,
+     * optionally, faces. SVG-agnostic.
+     */
+    export class ShapeFromPathDto {
+        constructor(subpaths?: PathSubpath[], makeFaces?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, origin?: Base.Point3) {
+            if (subpaths !== undefined) { this.subpaths = subpaths; }
+            if (makeFaces !== undefined) { this.makeFaces = makeFaces; }
+            if (joinSegments !== undefined) { this.joinSegments = joinSegments; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (scale !== undefined) { this.scale = scale; }
+            if (flipY !== undefined) { this.flipY = flipY; }
+            if (origin !== undefined) { this.origin = origin; }
+        }
+        /**
+         * Subpaths describing the geometry.
+         * @default undefined
+         */
+        subpaths: PathSubpath[];
+        /**
+         * Build faces from the (closed) subpaths in addition to wires.
+         * @default false
+         */
+        makeFaces = false;
+        /**
+         * Join each subpath's segments into a single curve where possible.
+         * @default true
+         */
+        joinSegments = true;
+        /**
+         * Tolerance used when joining/sewing segments.
+         * @default 1e-7
+         */
+        tolerance = 1e-7;
+        /**
+         * Uniform scale applied to path coordinates.
+         * @default 1
+         */
+        scale = 1;
+        /**
+         * Negate Y so the path appears upright (Y up) in CAD.
+         * @default true
+         */
+        flipY = true;
+        /**
+         * Translation applied after scale/flip.
+         * @default [0, 0, 0]
+         */
+        origin: Base.Point3 = [0, 0, 0];
+    }
+
+    /** Options for the SVG importer. */
+    export class LoadSVGDto {
+        constructor(svg?: string, makeFaces?: boolean, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, origin?: Base.Point3) {
+            if (svg !== undefined) { this.svg = svg; }
+            if (makeFaces !== undefined) { this.makeFaces = makeFaces; }
+            if (makeRibbons !== undefined) { this.makeRibbons = makeRibbons; }
+            if (includeInvisible !== undefined) { this.includeInvisible = includeInvisible; }
+            if (joinSegments !== undefined) { this.joinSegments = joinSegments; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (scale !== undefined) { this.scale = scale; }
+            if (flipY !== undefined) { this.flipY = flipY; }
+            if (origin !== undefined) { this.origin = origin; }
+        }
+        /**
+         * SVG document text.
+         * @default undefined
+         */
+        svg: string;
+        /**
+         * Build faces for closed, filled shapes (best-effort; falls back to the wire on failure).
+         * @default false
+         */
+        makeFaces = false;
+        /**
+         * Build ribbon faces from stroked paths. Not supported yet; stroked paths are returned as wires.
+         * @default false
+         */
+        makeRibbons = false;
+        /**
+         * Include elements resolved as display:none / visibility:hidden.
+         * @default false
+         */
+        includeInvisible = false;
+        /**
+         * Join each subpath's segments into a single curve where possible.
+         * @default true
+         */
+        joinSegments = true;
+        /**
+         * Tolerance used when joining/sewing segments.
+         * @default 1e-7
+         */
+        tolerance = 1e-7;
+        /**
+         * Uniform scale applied to the SVG coordinates.
+         * @default 1
+         */
+        scale = 1;
+        /**
+         * Negate Y so the SVG appears upright (Y up) in CAD.
+         * @default true
+         */
+        flipY = true;
+        /**
+         * Translation applied after scale/flip.
+         * @default [0, 0, 0]
+         */
+        origin: Base.Point3 = [0, 0, 0];
+    }
+
+    /** One imported SVG element: its geometry shape plus resolved metadata (an output, not an input). */
+    export class SVGShape<T> {
+        /** The built shape: a wire, or a face when requested. */
+        shape: T;
+        /** True when `shape` is a face, false when it is a wire. */
+        isFace: boolean;
+        /** SVG tag the shape came from: "path" | "rect" | "circle" | ... */
+        elementType: string;
+        /** Whether the source subpaths were closed. */
+        closed: boolean;
+        /** Resolved fill colour, if any. */
+        fill?: string;
+        /** Resolved stroke colour, if any. */
+        stroke?: string;
+        /** Stroke width (the "strength" of the line), if any. */
+        strokeWidth?: number;
+        /** Combined opacity in [0, 1], if any. */
+        opacity?: number;
+        /** Element id, if any. */
+        id?: string;
+        /** Element class attribute, if any. */
+        className?: string;
+    }
+
+    /** Result of importing an SVG document (an output, not an input). */
+    export class SVGResult<T> {
+        /** One entry per drawable element, in document order. */
+        shapes: SVGShape<T>[];
+        /** viewBox as [minX, minY, width, height] if present. */
+        viewBox?: [number, number, number, number];
+        /** Non-fatal parsing/building issues. */
+        warnings: string[];
     }
 }
