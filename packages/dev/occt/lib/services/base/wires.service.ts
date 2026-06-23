@@ -583,7 +583,7 @@ export class WiresService {
      * @param inputs Points to interpolate and tolerance
      * @returns Symmetric periodic BSpline wire
      */
-    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire | undefined {
+    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolateSymmetricDto): TopoDS_Wire | undefined {
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
             coords.push_back(pt[0]);
@@ -1026,7 +1026,8 @@ export class WiresService {
         // and a higher-degree single Bezier oscillates badly. When a degree is requested, or there are
         // more control points than the Bezier cap allows, build a clamped bounded-degree BSpline from
         // the same control polygon instead (scales to arbitrarily many control points).
-        const totalControlPoints = inputs.points.length + (inputs.closed ? 1 : 0);
+        const periodic = inputs.periodic === true;
+        const totalControlPoints = inputs.points.length + (inputs.closed && !periodic ? 1 : 0);
         const useBoundedDegree = inputs.degree !== undefined || totalControlPoints - 1 > 25;
 
         const coords = new this.occ.VectorDouble();
@@ -1035,15 +1036,25 @@ export class WiresService {
             coords.push_back(pt[1]);
             coords.push_back(pt[2]);
         }
-        // If closed, add first point again
-        if (inputs.closed) {
+        // Non-periodic closed: repeat the first point so the wire is C0-closed. A periodic curve must
+        // NOT duplicate poles - its periodic knot vector wraps the control polygon for a smooth seam.
+        if (inputs.closed && !periodic) {
             coords.push_back(inputs.points[0][0]);
             coords.push_back(inputs.points[0][1]);
             coords.push_back(inputs.points[0][2]);
         }
 
         let wire: TopoDS_Wire | undefined;
-        if (useBoundedDegree) {
+        if (periodic) {
+            const degree = inputs.degree ?? Math.min(3, inputs.points.length - 1);
+            const edge = this.occ.MakeBSplineEdgeFromPolesPeriodic(coords, degree);
+            if (!edge.IsNull()) {
+                const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
+                wire = wireMaker.Wire();
+                wireMaker.delete();
+            }
+            edge.delete();
+        } else if (useBoundedDegree) {
             const degree = inputs.degree ?? Math.min(25, totalControlPoints - 1);
             const edge = this.occ.MakeBSplineEdgeFromPoles(coords, degree);
             if (!edge.IsNull()) {
@@ -1061,9 +1072,14 @@ export class WiresService {
     }
 
     createBezierWeights(inputs: Inputs.OCCT.BezierWeightsDto) {
-        if (!inputs.closed && inputs.points.length !== inputs.weights.length) {
+        const periodic = inputs.periodic === true;
+        if (periodic) {
+            if (inputs.points.length !== inputs.weights.length) {
+                throw new Error("Number of points and weights must be the same when bezier is periodic.");
+            }
+        } else if (!inputs.closed && inputs.points.length !== inputs.weights.length) {
             throw new Error("Number of points and weights must be the same when bezier is not closed.");
-        } else if (inputs.closed && inputs.points.length !== inputs.weights.length - 1) {
+        } else if (!periodic && inputs.closed && inputs.points.length !== inputs.weights.length - 1) {
             throw new Error("Number of points must be one less than number of weights when bezier is closed.");
         }
 
@@ -1074,8 +1090,9 @@ export class WiresService {
             coords.push_back(pt[1]);
             coords.push_back(pt[2]);
         }
-        // If closed, add first point again
-        if (inputs.closed) {
+        // Non-periodic closed: repeat the first point (C0 closure). A periodic curve must NOT duplicate
+        // poles - its periodic knot vector wraps the weighted control polygon for a smooth seam.
+        if (inputs.closed && !periodic) {
             coords.push_back(inputs.points[0][0]);
             coords.push_back(inputs.points[0][1]);
             coords.push_back(inputs.points[0][2]);
@@ -1087,10 +1104,22 @@ export class WiresService {
             weights.push_back(w);
         }
 
-        const wire = this.occ.MakeWeightedBezierWire(coords, weights);
+        let wire: TopoDS_Wire | undefined;
+        if (periodic) {
+            const degree = inputs.degree ?? Math.min(3, inputs.points.length - 1);
+            const edge = this.occ.MakeWeightedBSplineEdgeFromPolesPeriodic(coords, weights, degree);
+            if (!edge.IsNull()) {
+                const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
+                wire = wireMaker.Wire();
+                wireMaker.delete();
+            }
+            edge.delete();
+        } else {
+            wire = this.occ.MakeWeightedBezierWire(coords, weights);
+        }
         coords.delete();
         weights.delete();
-        return wire;
+        return (wire && !wire.IsNull()) ? wire : undefined;
     }
 
     addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire {

@@ -1,4 +1,4 @@
-import { Inputs } from "@bitbybit-dev/occt";
+import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 export class OCCTSolid {
@@ -6,6 +6,19 @@ export class OCCTSolid {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
     ) {
+    }
+
+    /**
+     * Returns debug info about the solid: face/edge counts, surface area, volume and per-face surface
+     * debug info (type, U/V degree, poles/knots, bounds, area, ...).
+     * @param inputs solid
+     * @returns Solid debug info
+     * @group debug
+     * @shortname solid debug info
+     * @drawable false
+     */
+    debugInfo(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<Models.OCCT.SolidDebugInfo> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.debugInfo", inputs);
     }
 
     /**

@@ -1,6 +1,7 @@
 import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
+import * as Models from "../../api/models";
 
 export class OCCTWire {
 
@@ -8,6 +9,35 @@ export class OCCTWire {
         private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
+    }
+
+    rebuildWireDegree(inputs: Inputs.OCCT.RebuildCurveDegreeDto<TopoDS_Wire>): TopoDS_Wire {
+        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
+        const rebuilt = edges.map((e) => this.occ.RebuildEdgeDegree(e, inputs.degree, inputs.tolerance));
+        return this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: rebuilt });
+    }
+
+    moveWireSeamByParameter(inputs: Inputs.OCCT.CurveSeamByParameterDto<TopoDS_Wire>): TopoDS_Wire {
+        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
+        const moved = edges.map((e) => this.occ.MoveSeamByParameter(e, inputs.parameter));
+        return this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: moved });
+    }
+
+    moveWireSeamByLength(inputs: Inputs.OCCT.CurveSeamByLengthDto<TopoDS_Wire>): TopoDS_Wire {
+        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
+        const moved = edges.map((e) => this.occ.MoveSeamByLength(e, inputs.length));
+        return this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: moved });
+    }
+
+    debugInfo(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Models.OCCT.WireDebugInfo {
+        if (!inputs.shape || inputs.shape.IsNull()) {
+            return { valid: false, nbEdges: 0, closed: false, totalLength: 0, edges: [] };
+        }
+        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
+        const edgeInfos = edges.map((e) => JSON.parse(this.occ.EdgeDebugInfoJson(e)) as Models.OCCT.EdgeDebugInfo);
+        const totalLength = edgeInfos.reduce((sum, e) => sum + (e.length ?? 0), 0);
+        const closed = this.och.wiresService.isWireClosed({ shape: inputs.shape });
+        return { valid: true, nbEdges: edges.length, closed, totalLength, edges: edgeInfos };
     }
 
     fromBaseLine(inputs: Inputs.OCCT.LineBaseDto) {
@@ -121,7 +151,7 @@ export class OCCTWire {
         return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
     }
 
-    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire {
+    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolateSymmetricDto): TopoDS_Wire {
         return this.och.wiresService.interpolatePointsSymmetric(inputs);
     }
 

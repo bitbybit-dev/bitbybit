@@ -1985,6 +1985,10 @@ interface EmbindModule {
   MakeEdgeFromGeom2dCurveAndSurface(_0: Handle_Geom2d_Curve, _1: Geom_Surface | null): TopoDS_Edge;
   GetEdgeCurve(_0: TopoDS_Edge): Handle_Geom_Curve;
   GetEdgeLength(_0: TopoDS_Edge): number;
+  RebuildEdgeDegree(_0: TopoDS_Edge, _1: number, _2: number): TopoDS_Edge;
+  MoveSeamByParameter(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
+  MoveSeamByLength(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
+  EdgeDebugInfoJson(_0: TopoDS_Edge): string;
   TopoDS_Wire: {
     new(): TopoDS_Wire;
   };
@@ -1994,6 +1998,10 @@ interface EmbindModule {
   BRep_Tool_Surface(_0: TopoDS_Face): Handle_Geom_Surface;
   MakeFaceFromSurface(_0: Geom_Surface | null, _1: number): TopoDS_Face;
   MakeFaceFromSurfaceAndWire(_0: Geom_Surface | null, _1: TopoDS_Wire, _2: boolean): TopoDS_Face;
+  RebuildFaceDegree(_0: TopoDS_Face, _1: number, _2: number, _3: number, _4: boolean): TopoDS_Face;
+  FlipFaceUV(_0: TopoDS_Face, _1: boolean, _2: boolean, _3: boolean): TopoDS_Face;
+  NormalizeFaceParametrization(_0: TopoDS_Face, _1: boolean, _2: boolean, _3: number, _4: number): TopoDS_Face;
+  FaceDebugInfoJson(_0: TopoDS_Face): string;
   TopoDS_Shell: {
     new(): TopoDS_Shell;
   };
@@ -2288,6 +2296,8 @@ interface EmbindModule {
     new(): VectorDouble;
   };
   MakeBSplineEdgeFromPoles(_0: VectorDouble, _1: number): TopoDS_Edge;
+  MakeBSplineEdgeFromPolesPeriodic(_0: VectorDouble, _1: number): TopoDS_Edge;
+  MakeWeightedBSplineEdgeFromPolesPeriodic(_0: VectorDouble, _1: VectorDouble, _2: number): TopoDS_Edge;
   MakeSymmetricInterpolatedBSplineEdge(_0: VectorDouble, _1: number): TopoDS_Edge;
   VectorInt: {
     new(): VectorInt;

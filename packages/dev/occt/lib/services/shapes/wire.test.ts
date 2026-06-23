@@ -2789,7 +2789,7 @@ describe("OCCT wire unit tests", () => {
         };
 
         it("symmetric interpolation of a diamond is symmetric", () => {
-            const w = wire.interpolatePointsSymmetric({ points: diamond, periodic: true, tolerance: 1e-7 })!;
+            const w = wire.interpolatePointsSymmetric({ points: diamond, tolerance: 1e-7 })!;
             expect(w.IsNull()).toBe(false);
             expect(bboxAsymmetry(w)).toBeLessThan(1e-5);
             w.delete();

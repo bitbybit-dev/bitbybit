@@ -3865,19 +3865,46 @@ export namespace OCCT {
         /**
          * Optional tangent direction enforced at the start (non-periodic only).
          * @default undefined
+         * @optional true
          */
         startTangent?: Base.Vector3;
         /**
          * Optional tangent direction enforced at the end (non-periodic only).
          * @default undefined
+         * @optional true
          */
         endTangent?: Base.Vector3;
         /**
          * Optional per-point tangent directions (one per point); entries that are undefined are
          * left free. When provided, takes precedence over startTangent/endTangent.
          * @default undefined
+         * @optional true
          */
         tangents?: (Base.Vector3 | undefined)[];
+    }
+    /**
+     * Options for the symmetric interpolation. This variant is always a closed (periodic) loop and
+     * derives its own tangents from the points, so it intentionally exposes only the points and
+     * tolerance - periodicity, parametrization and tangent constraints do not apply here.
+     */
+    export class InterpolateSymmetricDto {
+        constructor(points?: Base.Point3[], tolerance?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Points through which the symmetric closed BSpline will be created (at least 3)
+         * @default undefined
+         */
+        points: Base.Point3[];
+        /**
+         * tolerance
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance = 1e-7;
     }
     export class InterpolateWiresDto {
         constructor(interpolations?: InterpolationDto[], returnCompound?: boolean) {
@@ -3895,10 +3922,11 @@ export namespace OCCT {
         returnCompound = false;
     }
     export class BezierDto {
-        constructor(points?: Base.Point3[], closed?: boolean, degree?: number) {
+        constructor(points?: Base.Point3[], closed?: boolean, degree?: number, periodic?: boolean) {
             if (points !== undefined) { this.points = points; }
             if (closed !== undefined) { this.closed = closed; }
             if (degree !== undefined) { this.degree = degree; }
+            if (periodic !== undefined) { this.periodic = periodic; }
         }
         /**
          * Points through which the Bezier curve will be created
@@ -3914,16 +3942,31 @@ export namespace OCCT {
          * Optional maximum local degree. A classic Bezier has degree (controlPoints - 1), which
          * oscillates and is hard-capped at 25; when a degree is given (or there are more than 26
          * control points) a clamped bounded-degree curve is built instead, so it scales to many
-         * control points while still following the control polygon.
+         * control points while still following the control polygon. Left empty, a classic Bezier
+         * (or auto bounded-degree for many points) is used.
          * @default undefined
+         * @optional true
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
          */
         degree?: number;
+        /**
+         * Build a smooth CLOSED (periodic) curve that wraps the control polygon, continuous across the
+         * seam - unlike `closed`, which only meets C0 by repeating the first point. Uses degree (or a
+         * sensible default) and ignores `closed` when set.
+         * @default false
+         * @optional true
+         */
+        periodic? = false;
     }
     export class BezierWeightsDto {
-        constructor(points?: Base.Point3[], weights?: number[], closed?: boolean) {
+        constructor(points?: Base.Point3[], weights?: number[], closed?: boolean, periodic?: boolean, degree?: number) {
             if (points !== undefined) { this.points = points; }
             if (weights !== undefined) { this.weights = weights; }
             if (closed !== undefined) { this.closed = closed; }
+            if (periodic !== undefined) { this.periodic = periodic; }
+            if (degree !== undefined) { this.degree = degree; }
         }
         /**
          * Points through which the Bezier curve will be created
@@ -3940,6 +3983,205 @@ export namespace OCCT {
          * @default false
          */
         closed = false;
+        /**
+         * Build a smooth CLOSED (periodic) rational curve that wraps the weighted control polygon,
+         * continuous across the seam - unlike `closed`, which only meets C0 by repeating the first
+         * point. Requires one weight per point (the points are not duplicated). Ignores `closed` when set.
+         * @default false
+         * @optional true
+         */
+        periodic? = false;
+        /**
+         * Maximum local degree used when `periodic` is set (clamped to [1, points-1]); empty uses a
+         * sensible default. Ignored for the non-periodic rational Bezier.
+         * @default undefined
+         * @optional true
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        degree?: number;
+    }
+    /** Rebuild (relax/raise) the polynomial degree of a wire or edge curve. */
+    export class RebuildCurveDegreeDto<T> {
+        constructor(shape?: T, degree?: number, tolerance?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (degree !== undefined) { this.degree = degree; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Wire or edge whose curve degree is rebuilt.
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Target maximum degree. Lowering relaxes the curve to a smoother, lower-order approximation
+         * (within tolerance); raising is exact. The practical lower bound is 3 (cubic).
+         * @default 3
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        degree = 3;
+        /**
+         * Tolerance used when relaxing (approximating) to a lower degree.
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance = 1e-4;
+    }
+    /** Move the seam (origin) of a periodic wire/edge to a given parameter value. */
+    export class CurveSeamByParameterDto<T> {
+        constructor(shape?: T, parameter?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (parameter !== undefined) { this.parameter = parameter; }
+        }
+        /**
+         * Periodic wire or edge whose seam is moved (non-periodic is returned unchanged).
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Parameter value at which to place the new seam (origin).
+         * @default 0
+         * @step 0.1
+         */
+        parameter = 0;
+    }
+    /** Move the seam (origin) of a periodic wire/edge by an arc length from the current start. */
+    export class CurveSeamByLengthDto<T> {
+        constructor(shape?: T, length?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (length !== undefined) { this.length = length; }
+        }
+        /**
+         * Periodic wire or edge whose seam is moved (non-periodic is returned unchanged).
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Arc length, measured forward from the current start, at which to place the new seam.
+         * @default 0
+         * @step 0.1
+         */
+        length = 0;
+    }
+    /** Rebuild (relax/raise) the U and V degrees of a face surface. */
+    export class RebuildFaceDegreeDto<T> {
+        constructor(shape?: T, uDegree?: number, vDegree?: number, tolerance?: number, keepTrim?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (uDegree !== undefined) { this.uDegree = uDegree; }
+            if (vDegree !== undefined) { this.vDegree = vDegree; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (keepTrim !== undefined) { this.keepTrim = keepTrim; }
+        }
+        /**
+         * Face whose surface degree is rebuilt.
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Target maximum U degree (lowering relaxes within tolerance; raising is exact; floor 3).
+         * @default 3
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        uDegree = 3;
+        /**
+         * Target maximum V degree.
+         * @default 3
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        vDegree = 3;
+        /**
+         * Tolerance used when relaxing (approximating) to a lower degree.
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance = 1e-4;
+        /**
+         * Keep the face's boundary wires (reliable for a degree raise, which preserves the UV domain);
+         * otherwise the face is rebuilt from the surface's natural bounds.
+         * @default false
+         */
+        keepTrim = false;
+    }
+    /** Flip a face's UV parametrization: swap U/V and/or reverse the U or V direction. */
+    export class FlipFaceUVDto<T> {
+        constructor(shape?: T, swapUV?: boolean, reverseU?: boolean, reverseV?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (swapUV !== undefined) { this.swapUV = swapUV; }
+            if (reverseU !== undefined) { this.reverseU = reverseU; }
+            if (reverseV !== undefined) { this.reverseV = reverseV; }
+        }
+        /**
+         * Face whose UV parametrization is flipped.
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Swap the U and V directions.
+         * @default false
+         */
+        swapUV = false;
+        /**
+         * Reverse the U direction.
+         * @default false
+         */
+        reverseU = false;
+        /**
+         * Reverse the V direction.
+         * @default false
+         */
+        reverseV = false;
+    }
+    /** Reparametrize a face so its U and/or V parameter is ~uniform by arc length (even iso spacing). */
+    export class NormalizeFaceParametrizationDto<T> {
+        constructor(shape?: T, normalizeU?: boolean, normalizeV?: boolean, samples?: number, tolerance?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (normalizeU !== undefined) { this.normalizeU = normalizeU; }
+            if (normalizeV !== undefined) { this.normalizeV = normalizeV; }
+            if (samples !== undefined) { this.samples = samples; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Face to reparametrize.
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Make the U parameter ~uniform by arc length.
+         * @default true
+         */
+        normalizeU = true;
+        /**
+         * Make the V parameter ~uniform by arc length.
+         * @default true
+         */
+        normalizeV = true;
+        /**
+         * Resampling grid resolution per direction (higher = more faithful, slower).
+         * @default 24
+         * @minimum 4
+         * @maximum Infinity
+         * @step 1
+         */
+        samples = 24;
+        /**
+         * Refit tolerance.
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance = 1e-4;
     }
     export class BezierWiresDto {
         constructor(bezierWires?: BezierDto[], returnCompound?: boolean) {
@@ -10130,6 +10372,22 @@ export namespace OCCT {
     }
 
     /**
+     * How closed subpaths of a filled element are turned into faces.
+     * - `none`: no faces, only the outline wires.
+     * - `auto`: build faces honoring each element's own SVG fill-rule (nonzero/evenodd).
+     * - `nonzero`: force the non-zero winding rule.
+     * - `evenOdd`: force the even-odd rule.
+     * - `perSubpath`: every closed subpath becomes its own independent face (no holes).
+     */
+    export enum svgFaceStrategyEnum {
+        none = "none",
+        auto = "auto",
+        nonzero = "nonzero",
+        evenOdd = "evenOdd",
+        perSubpath = "perSubpath"
+    }
+
+    /**
      * Placement of a 2D path into 3D CAD space. Defaults map SVG user space
      * (Y down, top-left origin) onto the XY plane upright (Y up).
      */
@@ -10209,27 +10467,31 @@ export namespace OCCT {
 
     /** Options for the SVG importer. */
     export class LoadSVGDto {
-        constructor(svg?: string, makeFaces?: boolean, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, origin?: Base.Point3) {
+        constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base.basicAlignmentEnum, direction?: Base.Vector3, center?: Base.Point3) {
             if (svg !== undefined) { this.svg = svg; }
-            if (makeFaces !== undefined) { this.makeFaces = makeFaces; }
+            if (faceStrategy !== undefined) { this.faceStrategy = faceStrategy; }
             if (makeRibbons !== undefined) { this.makeRibbons = makeRibbons; }
             if (includeInvisible !== undefined) { this.includeInvisible = includeInvisible; }
             if (joinSegments !== undefined) { this.joinSegments = joinSegments; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
             if (scale !== undefined) { this.scale = scale; }
             if (flipY !== undefined) { this.flipY = flipY; }
-            if (origin !== undefined) { this.origin = origin; }
+            if (alignment !== undefined) { this.alignment = alignment; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (center !== undefined) { this.center = center; }
         }
         /**
          * SVG document text.
-         * @default undefined
+         * @default <svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>
          */
         svg: string;
         /**
-         * Build faces for closed, filled shapes (best-effort; falls back to the wire on failure).
-         * @default false
+         * How closed, filled shapes become faces. `none` keeps only the outline wires; `auto` honors
+         * each element's SVG fill-rule; `nonzero`/`evenOdd` force a rule; `perSubpath` makes one face
+         * per closed subpath (no holes). Falls back to the wire when a face cannot be built.
+         * @default none
          */
-        makeFaces = false;
+        faceStrategy: svgFaceStrategyEnum = svgFaceStrategyEnum.none;
         /**
          * Build ribbon faces from stroked paths. Not supported yet; stroked paths are returned as wires.
          * @default false
@@ -10256,15 +10518,25 @@ export namespace OCCT {
          */
         scale = 1;
         /**
-         * Negate Y so the SVG appears upright (Y up) in CAD.
+         * Negate Y so the SVG appears upright (Y up) before placement.
          * @default true
          */
         flipY = true;
         /**
-         * Translation applied after scale/flip.
+         * How the drawing's bounding box aligns to `center` (e.g. midMid centers it on the origin).
+         * @default midMid
+         */
+        alignment: Base.basicAlignmentEnum = Base.basicAlignmentEnum.midMid;
+        /**
+         * Plane normal the drawing is laid onto. The default [0, 1, 0] lays it flat on the ground.
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+        /**
+         * Point the aligned drawing is placed at.
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        center: Base.Point3 = [0, 0, 0];
     }
 
     /** One imported SVG element: its geometry shape plus resolved metadata (an output, not an input). */

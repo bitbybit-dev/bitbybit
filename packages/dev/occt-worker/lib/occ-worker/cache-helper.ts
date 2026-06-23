@@ -246,12 +246,50 @@ export class CacheHelper {
                     this.addToCache(curHash, { value: toReturn });
                 }
                 else {
+                    // Some other structure (e.g. the SVG importer returns
+                    // { shapes: [{ shape, ...metadata }], viewBox, warnings }). Recursively hash and
+                    // cache every shape nested at any depth so they get valid hashes - the result
+                    // serializer turns hashed shapes into references and the input resolver restores
+                    // them. Mirrors the per-shape handling of the ObjectDefinition branch above.
+                    this.hashNestedShapes(toReturn, hashableArgs, "result");
                     this.addToCache(curHash, { value: toReturn });
                 }
             }
         }
         return toReturn;
     }
+
+    /**
+     * Recursively assign a stable hash to every TopoDS_Shape nested anywhere in a result value and
+     * add it to the cache, so shapes returned inside arbitrary structures (e.g. the SVG importer's
+     * `{ shapes: [{ shape, ... }], ... }`) are cached exactly like shapes returned directly or inside
+     * an ObjectDefinition. The hash is derived from the operation hash plus the value's path, so it is
+     * stable across runs (enabling cache hits) and unique per shape. embind objects (shapes/entity
+     * handles) are never recursed into; only shapes are hashed here.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    hashNestedShapes(value: any, hashableArgs: any, path: string): void {
+        if (value === null || value === undefined || typeof value !== "object") {
+            return;
+        }
+        // An embind object (shape or entity handle): hash shapes, never recurse into its internals.
+        if (value.$$ !== undefined) {
+            if (this.isShape(value) && value.hash === undefined) {
+                const itemHash = this.computeHash({ ...hashableArgs, path });
+                value.hash = itemHash;
+                this.addToCache(itemHash, value);
+            }
+            return;
+        }
+        if (Array.isArray(value)) {
+            value.forEach((item, index) => this.hashNestedShapes(item, hashableArgs, `${path}[${index}]`));
+            return;
+        }
+        for (const key of Object.keys(value)) {
+            this.hashNestedShapes(value[key], hashableArgs, `${path}.${key}`);
+        }
+    }
+
     /** Returns the cached object if it exists and is valid, or null otherwise. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     checkCache(hash: string | number): any {
