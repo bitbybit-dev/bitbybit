@@ -210,6 +210,43 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
+    describe("nested shape hashing (e.g. SVG import results)", () => {
+        it("hashes + caches shapes nested inside a custom result structure", () => {
+            const point1 = new occt.gp_Pnt(0, 0, 0);
+            const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
+            const shapeA = vertex1.Vertex();
+            const point2 = new occt.gp_Pnt(1, 0, 0);
+            const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
+            const shapeB = vertex2.Vertex();
+
+            const args = { functionName: "svg.loadSVG", inputs: { svg: "<svg/>" } };
+            const result = cacheHelper.cacheOp(args, () => ({
+                shapes: [
+                    { shape: shapeA, isFace: false, elementType: "path" },
+                    { shape: shapeB, isFace: true, elementType: "rect" },
+                ],
+                viewBox: [0, 0, 10, 10],
+                warnings: [],
+            }));
+
+            // Every nested shape gets a unique hash...
+            expect(result.shapes[0].shape.hash).toBeDefined();
+            expect(result.shapes[1].shape.hash).toBeDefined();
+            expect(result.shapes[0].shape.hash).not.toBe(result.shapes[1].shape.hash);
+
+            // ...and is resolvable from the cache by that hash (what the input resolver relies on).
+            expect(cacheHelper.checkCache(result.shapes[0].shape.hash)).toBeTruthy();
+            expect(cacheHelper.checkCache(result.shapes[1].shape.hash)).toBeTruthy();
+
+            shapeA.delete();
+            shapeB.delete();
+            vertex1.delete();
+            vertex2.delete();
+            point1.delete();
+            point2.delete();
+        });
+    });
+
     describe("stringToHash", () => {
         it("should convert empty string to hash", () => {
             const hash = cacheHelper.stringToHash("");

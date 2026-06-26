@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/playcanvas",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Bit By Bit Developers PlayCanvas CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {
@@ -59,8 +59,8 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "@bitbybit-dev/core": "1.1.0",
-    "playcanvas": "2.18.1"
+    "@bitbybit-dev/core": "1.1.1",
+    "playcanvas": "2.20.0"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",

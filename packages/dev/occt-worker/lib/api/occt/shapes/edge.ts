@@ -1,5 +1,5 @@
 
-import { Inputs } from "@bitbybit-dev/occt";
+import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 export class OCCTEdge {
@@ -7,6 +7,55 @@ export class OCCTEdge {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
     ) {
+    }
+
+    /**
+     * Rebuilds an edge's curve to relax (lower) or raise its polynomial degree.
+     * @param inputs edge, target degree and tolerance
+     * @returns OpenCascade edge
+     * @group rebuild
+     * @shortname rebuild edge degree
+     * @drawable true
+     */
+    rebuildEdgeDegree(inputs: Inputs.OCCT.RebuildCurveDegreeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.rebuildEdgeDegree", inputs);
+    }
+
+    /**
+     * Moves the seam (origin) of a periodic edge to a parameter value.
+     * @param inputs periodic edge and parameter
+     * @returns OpenCascade edge
+     * @group seam
+     * @shortname move edge seam by param
+     * @drawable true
+     */
+    moveEdgeSeamByParameter(inputs: Inputs.OCCT.CurveSeamByParameterDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.moveEdgeSeamByParameter", inputs);
+    }
+
+    /**
+     * Moves the seam (origin) of a periodic edge by an arc length from the current start.
+     * @param inputs periodic edge and length
+     * @returns OpenCascade edge
+     * @group seam
+     * @shortname move edge seam by length
+     * @drawable true
+     */
+    moveEdgeSeamByLength(inputs: Inputs.OCCT.CurveSeamByLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.moveEdgeSeamByLength", inputs);
+    }
+
+    /**
+     * Returns debug info about the edge's curve: type, degree, poles/knots, rational/periodic/closed,
+     * parameter range, period, length and end points.
+     * @param inputs edge
+     * @returns Edge curve debug info
+     * @group debug
+     * @shortname edge debug info
+     * @drawable false
+     */
+    debugInfo(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.EdgeDebugInfo> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.debugInfo", inputs);
     }
 
    /**

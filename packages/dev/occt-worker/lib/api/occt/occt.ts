@@ -13,6 +13,8 @@ import { OCCTFillets } from "./fillets";
 import { Inputs } from "@bitbybit-dev/occt";
 import { OCCTShapeFix } from "./shape-fix";
 import { OCCTDimensions } from "./dimensions";
+import { OCCTPath } from "./path";
+import { OCCTSVG } from "./svg";
 
 /**
  * Contains various methods for OpenCascade implementation
@@ -31,6 +33,8 @@ export class OCCT {
     public readonly corners: OCCTCorners;
     public readonly draft: OCCTDraft;
     public io: OCCTIO;
+    public readonly path: OCCTPath;
+    public readonly svg: OCCTSVG;
 
     constructor(
         public readonly occWorkerManager: OCCTWorkerManager,
@@ -48,6 +52,8 @@ export class OCCT {
         this.corners = new OCCTCorners(occWorkerManager);
         this.draft = new OCCTDraft(occWorkerManager);
         this.io = new OCCTIO(occWorkerManager);
+        this.path = new OCCTPath(occWorkerManager);
+        this.svg = new OCCTSVG(occWorkerManager);
     }
 
     /**
