@@ -3,6 +3,8 @@ export * from "./material";
 export * from "./web-xr";
 export * from "./babylon";
 export * from "./io";
+export * from "./gltf";
+export * from "./decal";
 export * from "./mesh";
 export * from "./node";
 export * from "./pick";

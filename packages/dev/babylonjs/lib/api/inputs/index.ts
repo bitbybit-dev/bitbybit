@@ -1,5 +1,7 @@
 export * from "./babylon-camera-inputs";
 export * from "./babylon-io-inputs";
+export * from "./babylon-gltf-inputs";
+export * from "./babylon-decal-inputs";
 export * from "./babylon-material-inputs";
 export * from "./babylon-light-inputs";
 export * from "./babylon-gui-inputs";

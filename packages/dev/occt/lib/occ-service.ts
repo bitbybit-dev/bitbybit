@@ -14,6 +14,8 @@ import { OCCTCorners } from "./services/corners/corners";
 import { OCCTDraft } from "./services/draft/draft";
 import { OccHelper } from "./occ-helper";
 import { OCCTShapeFix } from "./services/shape-fix";
+import { OCCTPath } from "./services/path";
+import { OCCTSVG } from "./services/svg";
 
 export class OCCTService {
     public readonly shapes: OCCTShapes;
@@ -29,6 +31,8 @@ export class OCCTService {
     public readonly draft: OCCTDraft;
     public readonly shapeFix: OCCTShapeFix;
     public readonly io: OCCTIO;
+    public readonly path: OCCTPath;
+    public readonly svg: OCCTSVG;
     public plugins?;
 
     constructor(
@@ -48,6 +52,8 @@ export class OCCTService {
         this.corners = new OCCTCorners(occ, och);
         this.draft = new OCCTDraft(occ, och);
         this.io = new OCCTIO(occ, och);
+        this.path = new OCCTPath(occ, och);
+        this.svg = new OCCTSVG(occ, och);
     }
 
     shapeFacesToPolygonPoints(inputs: Inputs.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {

@@ -1,6 +1,7 @@
 import { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
+import * as Models from "../../api/models";
 
 export class OCCTEdge {
 
@@ -8,6 +9,22 @@ export class OCCTEdge {
         private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
+    }
+
+    rebuildEdgeDegree(inputs: Inputs.OCCT.RebuildCurveDegreeDto<TopoDS_Edge>): TopoDS_Edge {
+        return this.occ.RebuildEdgeDegree(inputs.shape, inputs.degree, inputs.tolerance);
+    }
+
+    moveEdgeSeamByParameter(inputs: Inputs.OCCT.CurveSeamByParameterDto<TopoDS_Edge>): TopoDS_Edge {
+        return this.occ.MoveSeamByParameter(inputs.shape, inputs.parameter);
+    }
+
+    moveEdgeSeamByLength(inputs: Inputs.OCCT.CurveSeamByLengthDto<TopoDS_Edge>): TopoDS_Edge {
+        return this.occ.MoveSeamByLength(inputs.shape, inputs.length);
+    }
+
+    debugInfo(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Models.OCCT.EdgeDebugInfo {
+        return JSON.parse(this.occ.EdgeDebugInfoJson(inputs.shape)) as Models.OCCT.EdgeDebugInfo;
     }
 
     fromBaseLine(inputs: Inputs.OCCT.LineBaseDto) {

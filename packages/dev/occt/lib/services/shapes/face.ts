@@ -2,6 +2,7 @@ import { Geom_Surface, BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wir
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
+import * as Models from "../../api/models";
 
 export class OCCTFace {
 
@@ -9,6 +10,22 @@ export class OCCTFace {
         private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
+    }
+
+    rebuildFaceDegree(inputs: Inputs.OCCT.RebuildFaceDegreeDto<TopoDS_Face>): TopoDS_Face {
+        return this.occ.RebuildFaceDegree(inputs.shape, inputs.uDegree, inputs.vDegree, inputs.tolerance, inputs.keepTrim);
+    }
+
+    flipFaceUV(inputs: Inputs.OCCT.FlipFaceUVDto<TopoDS_Face>): TopoDS_Face {
+        return this.occ.FlipFaceUV(inputs.shape, inputs.swapUV, inputs.reverseU, inputs.reverseV);
+    }
+
+    normalizeFaceParametrization(inputs: Inputs.OCCT.NormalizeFaceParametrizationDto<TopoDS_Face>): TopoDS_Face {
+        return this.occ.NormalizeFaceParametrization(inputs.shape, inputs.normalizeU, inputs.normalizeV, inputs.samples, inputs.tolerance);
+    }
+
+    debugInfo(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Models.OCCT.FaceDebugInfo {
+        return JSON.parse(this.occ.FaceDebugInfoJson(inputs.shape)) as Models.OCCT.FaceDebugInfo;
     }
 
     fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto) {

@@ -73,4 +73,39 @@ export namespace BabylonTexture {
         samplingMode = BabylonTexture.samplingModeEnum.nearest;
     }
 
+    export class TextureImageDto {
+        constructor(name?: string, url?: string, hasAlpha?: boolean, invertY?: boolean, samplingMode?: samplingModeEnum) {
+            if (name !== undefined) { this.name = name; }
+            if (url !== undefined) { this.url = url; }
+            if (hasAlpha !== undefined) { this.hasAlpha = hasAlpha; }
+            if (invertY !== undefined) { this.invertY = invertY; }
+            if (samplingMode !== undefined) { this.samplingMode = samplingMode; }
+        }
+        /**
+         * Name of the texture
+         * @default Image Texture
+         */
+        name = "Image Texture";
+        /**
+         * Url of the image. Use a publicly accessible url, a data url, or an object url created from an uploaded asset file.
+         * @default undefined
+         */
+        url: string;
+        /**
+         * Treat the image alpha channel as transparency. Recommended true for decal and projection images.
+         * @default true
+         */
+        hasAlpha = true;
+        /**
+         * Invert texture on Y direction
+         * @default false
+         */
+        invertY = false;
+        /**
+         * The sampling mode of the texture
+         * @default trilinear
+         */
+        samplingMode = BabylonTexture.samplingModeEnum.trilinear;
+    }
+
 }

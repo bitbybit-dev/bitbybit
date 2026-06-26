@@ -27,4 +27,22 @@ export class BabylonTexture {
         return texture;
     }
 
+    /**
+     * Creates an image texture intended for decals and projections. Wrap modes are clamped so the image is not tiled,
+     * and the alpha channel is respected by default. Feed the result into decal creation or decal map projection.
+     * @param inputs required to set up the image texture
+     * @returns Babylon texture that can be projected onto meshes
+     * @group create
+     * @shortname image texture
+     * @disposableOutput true
+     */
+    createImage(inputs: Inputs.BabylonTexture.TextureImageDto): BABYLON.Texture {
+        const texture = new BABYLON.Texture(inputs.url, this.context.scene, undefined, inputs.invertY, this.context.getSamplingMode(inputs.samplingMode));
+        texture.name = inputs.name;
+        texture.hasAlpha = inputs.hasAlpha;
+        texture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        texture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        return texture;
+    }
+
 }

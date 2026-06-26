@@ -9,6 +9,55 @@ export class OCCTWire {
     }
 
     /**
+     * Rebuilds a wire's curves to relax (lower) or raise their polynomial degree.
+     * @param inputs wire, target degree and tolerance
+     * @returns OpenCascade wire
+     * @group rebuild
+     * @shortname rebuild wire degree
+     * @drawable true
+     */
+    rebuildWireDegree(inputs: Inputs.OCCT.RebuildCurveDegreeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.rebuildWireDegree", inputs);
+    }
+
+    /**
+     * Moves the seam (origin) of a periodic wire to a parameter value.
+     * @param inputs periodic wire and parameter
+     * @returns OpenCascade wire
+     * @group seam
+     * @shortname move wire seam by param
+     * @drawable true
+     */
+    moveWireSeamByParameter(inputs: Inputs.OCCT.CurveSeamByParameterDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.moveWireSeamByParameter", inputs);
+    }
+
+    /**
+     * Moves the seam (origin) of a periodic wire by an arc length from the current start.
+     * @param inputs periodic wire and length
+     * @returns OpenCascade wire
+     * @group seam
+     * @shortname move wire seam by length
+     * @drawable true
+     */
+    moveWireSeamByLength(inputs: Inputs.OCCT.CurveSeamByLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.moveWireSeamByLength", inputs);
+    }
+
+    /**
+     * Returns debug info about the wire: edge count, closed flag, total length and per-edge curve
+     * debug info (type, degree, poles/knots, rational/periodic, range, length).
+     * @param inputs wire
+     * @returns Wire debug info
+     * @group debug
+     * @shortname wire debug info
+     * @drawable false
+     */
+    debugInfo(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Models.OCCT.WireDebugInfo> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.debugInfo", inputs);
+    }
+
+    /**
       * Creates linear wire from base line format {start: Point3, end: Point3}
       * @param inputs base line
       * @returns OpenCascade wire
@@ -308,6 +357,20 @@ export class OCCTWire {
      */
     interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.interpolatePoints", inputs);
+    }
+
+    /**
+     * Creates a closed, achiral BSpline wire through the points whose shape is genuinely symmetric for
+     * symmetric inputs (square, triangle, ...) - mirror-symmetric, not merely rotationally symmetric -
+     * with no irregular start/end point. Use this when a plain interpolation looks skewed at the seam.
+     * @param inputs Points through which to make the curve and tolerance
+     * @returns OpenCascade BSpline wire
+     * @group via points
+     * @shortname interpolate symmetric
+     * @drawable true
+     */
+    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolateSymmetricDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.interpolatePointsSymmetric", inputs);
     }
 
     /**

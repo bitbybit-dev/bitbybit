@@ -2,6 +2,7 @@ import { OccHelper } from "../../occ-helper";
 import { BitbybitOcctModule, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
+import * as Models from "../../api/models";
 
 export class OCCTSolid {
 
@@ -9,6 +10,18 @@ export class OCCTSolid {
         private readonly occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
+    }
+
+    debugInfo(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): Models.OCCT.SolidDebugInfo {
+        if (!inputs.shape || inputs.shape.IsNull()) {
+            return { valid: false, nbFaces: 0, nbEdges: 0, area: 0, volume: 0, faces: [] };
+        }
+        const faces = this.och.shapeGettersService.getFaces({ shape: inputs.shape });
+        const faceInfos = faces.map((f) => JSON.parse(this.occ.FaceDebugInfoJson(f)) as Models.OCCT.FaceDebugInfo);
+        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
+        const area = faceInfos.reduce((sum, f) => sum + (f.area ?? 0), 0);
+        const volume = this.och.solidsService.getSolidVolume({ shape: inputs.shape });
+        return { valid: true, nbFaces: faces.length, nbEdges: edges.length, area, volume, faces: faceInfos };
     }
 
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): TopoDS_Solid {

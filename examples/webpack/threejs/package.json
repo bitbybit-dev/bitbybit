@@ -1,6 +1,6 @@
 {
     "name": "threejs",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "",
     "private": true,
     "scripts": {
@@ -12,11 +12,11 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@bitbybit-dev/threejs": "1.1.0",
+        "@bitbybit-dev/threejs": "1.1.1",
         "lil-gui": "0.20.0"
     },
     "devDependencies": {
-        "@types/three": "0.184.0",
+        "@types/three": "0.185.0",
         "copy-webpack-plugin": "12.0.2",
         "file-loader": "6.2.0",
         "html-webpack-plugin": "5.6.3",

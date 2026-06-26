@@ -4,6 +4,8 @@ import { DrawHelper } from "../../draw-helper";
 import { BabylonCamera } from "./camera/camera";
 import { BabylonEngine } from "./engine";
 import { BabylonGaussianSplatting } from "./gaussian-splatting";
+import { BabylonGltf } from "./gltf/gltf";
+import { BabylonDecal } from "./decal/decal";
 import { BabylonIO } from "./io";
 import { BabylonLights } from "./lights/lights";
 import { BabylonGui } from "./gui/gui";
@@ -31,6 +33,8 @@ export class Babylon {
     public node: BabylonNode;
     public engine: BabylonEngine;
     public scene: BabylonScene;
+    public gltf: BabylonGltf;
+    public decal: BabylonDecal;
     public transforms: BabylonTransforms;
     public io: BabylonIO;
     public ray: BabylonRay;
@@ -57,6 +61,8 @@ export class Babylon {
         this.gui = new BabylonGui(context);
         this.transforms = new BabylonTransforms();
         this.io = new BabylonIO(context);
+        this.gltf = new BabylonGltf(context);
+        this.decal = new BabylonDecal(context);
         this.ray = new BabylonRay(context);
         this.pick = new BabylonPick(context);
         this.material = new BabylonMaterial(context, color);

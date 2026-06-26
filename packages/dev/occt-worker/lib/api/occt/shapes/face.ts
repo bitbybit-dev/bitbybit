@@ -1,4 +1,4 @@
-import { Inputs } from "@bitbybit-dev/occt";
+import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 export class OCCTFace {
@@ -6,6 +6,55 @@ export class OCCTFace {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
     ) {
+    }
+
+    /**
+     * Rebuilds a face's surface to relax (lower) or raise its U and V degree.
+     * @param inputs face, target U/V degree, tolerance and keepTrim
+     * @returns OpenCascade face
+     * @group rebuild
+     * @shortname rebuild face degree
+     * @drawable true
+     */
+    rebuildFaceDegree(inputs: Inputs.OCCT.RebuildFaceDegreeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.rebuildFaceDegree", inputs);
+    }
+
+    /**
+     * Flips a face's UV parametrization: swap U/V and/or reverse the U or V direction.
+     * @param inputs face and flip options
+     * @returns OpenCascade face
+     * @group rebuild
+     * @shortname flip face uv
+     * @drawable true
+     */
+    flipFaceUV(inputs: Inputs.OCCT.FlipFaceUVDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.flipFaceUV", inputs);
+    }
+
+    /**
+     * Reparametrizes a face so its U and/or V parameter is ~uniform by arc length (even iso spacing).
+     * @param inputs face, directions, samples and tolerance
+     * @returns OpenCascade face
+     * @group rebuild
+     * @shortname normalize face uv
+     * @drawable true
+     */
+    normalizeFaceParametrization(inputs: Inputs.OCCT.NormalizeFaceParametrizationDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.normalizeFaceParametrization", inputs);
+    }
+
+    /**
+     * Returns debug info about the face's surface: type, U/V degree, poles/knots, U/V
+     * rational/periodic/closed, UV bounds, area, planarity, orientation and wire/edge counts.
+     * @param inputs face
+     * @returns Face surface debug info
+     * @group debug
+     * @shortname face debug info
+     * @drawable false
+     */
+    debugInfo(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Models.OCCT.FaceDebugInfo> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.debugInfo", inputs);
     }
 
     /**
