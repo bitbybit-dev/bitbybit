@@ -912,3 +912,38 @@ api:
  label: API
  permalink: /api
  description: Application Programming Interfaces for interacting with Bitbybit services.
+
+checkout:
+  label: Checkout
+  permalink: /checkout
+  description: Shopify checkout behaviour for configured products.
+
+cart:
+  label: Cart
+  permalink: /cart
+  description: How configured products appear and behave in the cart.
+
+markets:
+  label: Markets
+  permalink: /markets
+  description: Selling in more than one country or currency with Shopify Markets.
+
+currency:
+  label: Currency
+  permalink: /currency
+  description: Currencies, conversion and how amounts are shown.
+
+fees:
+  label: Fees
+  permalink: /fees
+  description: Helper products used to charge configured option amounts.
+
+charging-modes:
+  label: Charging Methods
+  permalink: /charging-modes
+  description: The ways a configured price can be turned into a real Shopify charge.
+
+orders:
+  label: Orders
+  permalink: /orders
+  description: Reviewing and fulfilling orders for configured products.

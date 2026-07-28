@@ -148,6 +148,14 @@ Script runners enable executing Bitbybit scripts in external web applications. S
 
 ## 3D Bits (Shopify App)
 
+- [Pricing overview](https://learn.bitbybit.dev/learn/3d-bits/pricing/overview): Build a price from the options a shopper picks and charge it through Shopify.
+- [Set up pricing](https://learn.bitbybit.dev/learn/3d-bits/pricing/setting-up-pricing): Turn on configurator pricing and price your first option.
+- [Charging methods](https://learn.bitbybit.dev/learn/3d-bits/pricing/charging-methods): Product lines, Variant matrix and Single line compared.
+- [Helper products](https://learn.bitbybit.dev/learn/3d-bits/pricing/helper-products): The hidden 3D Bits Fee products and the rules for living with them.
+- [Linked products](https://learn.bitbybit.dev/learn/3d-bits/pricing/linked-products): Charge through products you already sell, and keep the links healthy.
+- [Going live](https://learn.bitbybit.dev/learn/3d-bits/pricing/going-live): Testing checklist, multi-currency advice, and reviewing configured orders.
+- [Troubleshooting](https://learn.bitbybit.dev/learn/3d-bits/pricing/troubleshooting): What each shopper-facing message means and what to do.
+
 Add 3D product configurators to Shopify stores with both Low-Code and Pro-Code options.
 
 - 3D Bits Introduction: https://learn.bitbybit.dev/learn/3d-bits/intro

@@ -449,19 +449,23 @@ BITBYBIT APPS is designed **exclusively for frontend SPA development**. The bloc
 
 ### Handling Pricing Correctly
 
-Any logic that determines or modifies product prices **must** be handled securely:
+Any pricing logic **you write inside your SPA** must be handled securely:
 
-**Option 1: Third-Party Apps**
-- Use specialized Shopify apps for pricing rules
+**Option 1: 3D Bits configurator pricing**
+- Build the price from the options a shopper picks, in the Composer rather than in code
+- 3D Bits charges it through Shopify at checkout
+- Recommended whenever it covers what you need - see [Pricing](/learn/3d-bits/pricing)
+
+**Option 2: Third-Party Apps**
+- Use a specialized Shopify pricing app for rules configurator pricing does not cover
 - Your frontend reflects their calculations
-- Recommended for most use cases
 
-**Option 2: Custom Backend**
+**Option 3: Custom Backend**
 - Build separate backend infrastructure
 - Validate pricing server-side
 - Your APPS frontend communicates with it
 - Required for complex custom logic
 
 :::danger Never Trust Client-Side Pricing
-Price calculations in your frontend SPA can be manipulated by users. Always validate pricing server-side or via trusted third-party apps before checkout.
+A price your own SPA calculates in the browser can be manipulated by the shopper. Validate it server-side, use a trusted third-party app, or use 3D Bits configurator pricing - which is authored in the Composer and charged through Shopify, not computed by your SPA code.
 :::

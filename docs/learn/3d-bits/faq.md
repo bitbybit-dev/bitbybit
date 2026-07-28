@@ -118,18 +118,13 @@ Our Pro plan is built specifically for development teams building advanced 3D ex
 
 ### Can I use 3D Bits for complex pricing (e.g., a slider value changes the product price)?
 
-**Not directly for the pricing calculation itself.**
+**Yes.** Configurator pricing can build a price from what the shopper picks - a base price, an amount per option, a formula over a slider or number field, and extra products included with certain choices - and charge it through Shopify at checkout.
 
-3D Bits is focused on handling the **3D visualization**. It can:
-*   Read a value from a slider (or any other UI element on your page).
-*   Update the 3D model based on that value (e.g., change dimensions, swap parts).
+A slider that changes both the model and the price is exactly the case it was built for: the 3D updates, the price updates with it, and the amount your customer pays is charged by Shopify.
 
-However, **3D Bits does not calculate or update the product price in Shopify.** Pricing logic, especially for complex, dynamically calculated prices, needs to be handled by:
-*   Shopify's built-in variant pricing.
-*   A dedicated third-party Shopify pricing app.
-*   Custom backend development with secure validation.
+Start with [Pricing](/learn/3d-bits/pricing) for how to set it up and which charging method to choose.
 
-Shopify offers three variant types with many options out of the box, which covers most standard pricing scenarios. For anything fancier, you’ll need to combine 3D Bits for the visuals with other tools or custom solutions for the pricing logic.
+**And it stays compatible with what you already run.** If a product is better priced by Shopify variants or by a product-options app you already pay for, switch configurator pricing off for that product and keep using it. Both work, and you can mix them across your catalogue.
 
 ---
 

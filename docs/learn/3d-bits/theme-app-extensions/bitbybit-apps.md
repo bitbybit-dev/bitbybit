@@ -154,8 +154,9 @@ The BITBYBIT APPS block and its associated workflow are designed **exclusively f
 - **No Built-in Backend**: We do not provide backend solutions, databases, or server-side rendering capabilities as part of this specific feature.
 
 ### Handling Pricing and Sensitive Operations
-- **Secure Price Calculations**: Any logic that determines or modifies product prices **must** be handled securely. This typically requires backend validation to prevent manipulation.
-- **Third-Party Apps**: For complex pricing rules or options that affect pricing, we recommend integrating with specialized third-party Shopify apps designed for this purpose. Your frontend application can then interact with these apps or reflect the pricing changes they manage.
+- **Secure Price Calculations**: Any logic that determines or modifies product prices **must** be handled securely. This typically requires backend validation to prevent manipulation. This applies to price logic **you** write inside your SPA - a number calculated in the browser is not a price until something trustworthy has checked it.
+- **Use configurator pricing instead, where it fits**: if what you need is a price built from the options a shopper picks, 3D Bits' own [configurator pricing](/learn/3d-bits/pricing) already does this and charges it through Shopify, so you do not have to build or secure it yourself. It is authored in the Composer rather than in your SPA code.
+- **Third-Party Apps**: For pricing rules that configurator pricing does not cover, you can integrate a specialized third-party Shopify pricing app. Your frontend application can then interact with it or reflect the pricing it manages.
 - **Custom Backend**: If your project requires custom backend logic (e.g., for saving user configurations, complex calculations, or API integrations), you will need to develop and host this backend infrastructure separately.
 
 ## Understanding the Scope: What's Included (and What's Not)

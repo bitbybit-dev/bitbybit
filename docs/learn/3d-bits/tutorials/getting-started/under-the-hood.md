@@ -23,19 +23,22 @@ Managing pricing and checkout flows is a responsible, complex task that must be 
 **3D Bits PROVIDES:**
 - ✅ Professional 3D visualization and interactive configurator capabilities
 - ✅ CAD operations and parametric design tools for dynamic product customization
-- ✅ Integration with your existing e-commerce tools and pricing solutions
+- ✅ Configurator pricing - a price built from the options a shopper picks, charged through Shopify at checkout ([see Pricing](/learn/3d-bits/pricing))
+- ✅ Integration with your existing e-commerce tools, or with a third-party options and pricing app if you prefer
 - ✅ Standards-based architecture compatible with many third-party apps
 - ✅ Flexibility to work with custom-built forms and development workflows
 - ✅ Features designed for professional teams building sophisticated 3D experiences
 
 **3D Bits DOES NOT PROVIDE:**
-- ❌ All-in-one solutions that handle everything from 3D to checkout
-- ❌ Pricing engines or checkout flow management
+- ❌ A replacement for Shopify's own checkout - the amount your customer pays is always charged by Shopify
 - ❌ Form builders or variant selector replacements
+- ❌ Tax, shipping or discount engines
 - ❌ Plug-and-play solutions requiring zero configuration
 
 :::info Clear Expectations
-If you're looking for an app that handles 3D visualization, pricing, variants, checkout, and everything else in a single package, **3D Bits will not be a good fit for you**. We're deliberately focused on excelling at 3D, CAD, and parametric visualization.
+3D Bits excels at 3D, CAD and parametric visualization, **and it prices and charges what a shopper configures** - a price built from the options they pick, collected through Shopify at checkout. For most stores that is everything the configurator needs.
+
+It is not an all-in-one storefront suite: variants, taxes, shipping and discounts stay with Shopify. And it stays **compatible with the tools you already use** - keep a product-options or pricing app where it earns its place, switch configurator pricing off for those products, and mix the two across your catalogue.
 :::
 
 ### Simple Use Cases Are Welcome Too
@@ -92,7 +95,7 @@ Our approach works with **almost any page that uses standard HTML input elements
 As long as they follow HTML standards, 3D Bits can read and respond to user selections.
 
 **2. No Vendor Lock-In**
-You're not tied to specific apps or theme structures. Choose the pricing, variant, and option tools that work best for your business, and 3D Bits will integrate with them.
+Price with 3D Bits' own configurator pricing - the shortest path for most stores - or keep the pricing, variant and option tools you already run. 3D Bits works with both, and you are never locked into either.
 
 **3. Future-Proof Architecture**
 We're building a solution based on web standards that will work across platforms. In the future, we plan to make 3D Bits available on other e-commerce platforms, and in principle, **you'll be able to use the same configurators there**.
@@ -320,7 +323,7 @@ After reading this, you should have a clear understanding of what 3D Bits offers
 
 **3D Bits is ideal if you:**
 - ✅ Value specialized 3D visualization, CAD, and parametric design capabilities
-- ✅ Want flexibility to choose your own pricing/variant apps
+- ✅ Want flexibility to price with 3D Bits or to keep your own pricing and variant apps
 - ✅ Have (or want to build) forms using HTML standards
 - ✅ Understand the importance of testing and monitoring
 - ✅ Are willing to invest time in proper setup and maintenance
@@ -328,7 +331,7 @@ After reading this, you should have a clear understanding of what 3D Bits offers
 
 **3D Bits may not be right if you:**
 - ❌ Want a completely automated, zero-maintenance solution
-- ❌ Need an app that handles pricing, variants, and 3D all together
+- ❌ Need one app to own variants, taxes, shipping and discounts as well as 3D
 - ❌ Can't commit to monitoring and testing after updates
 - ❌ Require apps that don't follow HTML standards
 - ❌ Expect everything to work perfectly with zero configuration
