@@ -1,1 +1,4 @@
 node_modules
+
+# Agent tooling - never publish local session logs or settings
+.claude/
