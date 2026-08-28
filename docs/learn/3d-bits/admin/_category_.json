@@ -1,0 +1,10 @@
+{
+    "label": "The App",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "The 3D Bits App",
+        "description": "Your way around the app in your Shopify admin: projects, scripts, assets, publishing, storefront settings and reviewing what your customers configured.",
+        "slug": "/3d-bits/admin"
+    }
+}

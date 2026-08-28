@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 6
 title: "Change Materials, Colours and Textures of 3D Shopify Products"
 sidebar_label: Changing Materials
 description: Change materials, colors, and textures of your 3D products on Shopify with 3D Bits app - in 41 minutes you’ll learn everything you need to know!
@@ -33,7 +33,7 @@ With guidance from Matas Ubarevicius, you’ll also learn how to:
 - Set up your Shopify product & template using the BITBYBIT VIEWER theme app extension block.
 - Dynamically connect 3D Bits metafields with extension block settings inside your Shopify template.
 
-And that’s just the start! The most exciting part is using the 3D Bits Viewer Editor to fully customize your 3D product experience. You’ll learn how to:
+And that’s just the start! The most exciting part is using the 3D Bits Composer to fully customize your 3D product experience. You’ll learn how to:
 
 - Adjust GLTF asset scale for perfect display.
 - Assign material variants to Shopify variant values.
@@ -43,6 +43,6 @@ And that’s just the start! The most exciting part is using the 3D Bits Viewer 
 - Save and copy your scene configuration directly to the Shopify product “3D Bits Scene Config” metafield.
 - Even add constant rotation to make your products stand out.
 
-By the end of this tutorial, you’ll have everything you need to create engaging, interactive 3D product pages that help your customers explore, customize, and fall in love with your products before they buy.
+By the end of this tutorial, you’ll have everything you need to create engaging, interactive 3D product pages that help your shoppers explore, customize, and fall in love with your products before they buy.
 
 Car 3D Model Credits: (c) 2015, Khronos Group, Khronos logo. (c) 2017, Khronos Group, 3D Commerce logo. Asset is CCBY 4.0, created by Eric Chadwick of Darmstadt Graphics Group GmbH, 2024. Original asset is public domain "FREE Concept Car 004" by [Unity Fan](https://sketchfab.com/3d-models/free-concept-car-004-public-domain-cc0-4cba124633eb494eadc3bb0c4660ad7e). Download and details here on [GitHub](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept)

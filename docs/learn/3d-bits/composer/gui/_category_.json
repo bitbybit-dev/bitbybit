@@ -1,0 +1,10 @@
+{
+    "label": "GUI: The Option Panel",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "The Option Panel",
+        "description": "The controls your customers use, how they are arranged, how they are styled, and how they are translated.",
+        "slug": "/3d-bits/composer/gui"
+    }
+}

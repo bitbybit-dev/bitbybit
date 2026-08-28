@@ -1,0 +1,10 @@
+{
+    "label": "Quick Start",
+    "position": 1,
+    "link": {
+        "type": "generated-index",
+        "title": "Quick Start with 3D Bits",
+        "description": "Install the app, switch 3D on for your store, and get your first product configurator live.",
+        "slug": "/3d-bits/quick-start"
+    }
+}

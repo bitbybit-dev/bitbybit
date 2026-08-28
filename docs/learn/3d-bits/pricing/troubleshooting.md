@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 10
 title: "Troubleshooting Configurator Pricing: What Each Message Means"
 sidebar_label: Troubleshooting
 description: Learn what to do when a shopper cannot check out a configured product, or a publish is refused.
@@ -8,7 +8,7 @@ tags: [shopify, 3d-bits, pricing, checkout, validation]
 
 # Troubleshooting
 
-3D Bits would rather stop a sale than let a customer be charged the wrong amount. That is the right trade, but it means a shopper occasionally sees a message. This page turns each one into an action.
+3D Bits would rather stop a sale than let a shopper be charged the wrong amount. That is the right trade, but it means a shopper occasionally sees a message. This page turns each one into an action.
 
 ## Messages a shopper might see
 
@@ -31,7 +31,7 @@ tags: [shopify, 3d-bits, pricing, checkout, validation]
 
 **What to do.**
 
-1. Open the project and check the **Pricing catalogue** card for a **Price changed** badge. If there is one, click **Update prices and republish** - see [Linked products](./linked-products).
+1. Open the project and check the **Pricing catalog** card for a **Price changed** badge. If there is one, click **Update prices and publish** - see [Linked products](./linked-products).
 2. If everything looks healthy, the cart is simply older than your last publish. Ask the shopper to reconfigure.
 
 ### "The extras for … no longer match its quantity"
@@ -44,7 +44,7 @@ tags: [shopify, 3d-bits, pricing, checkout, validation]
 
 **What happened.** Something the configuration needs cannot be bought right now - most often a linked product that has been deleted, archived, or taken out of the Online Store channel.
 
-**What to do.** Open the project. The **Pricing catalogue** card will show **Link broken** or **Not purchasable** against the culprit. Treat this as urgent: while it lasts, that configurator sells nothing.
+**What to do.** Open the project. The **Pricing catalog** card will show **Link broken** or **Not purchasable** against the culprit. Treat this as urgent: while it lasts, that configurator sells nothing.
 
 ### "We couldn't confirm the price for …"
 
@@ -58,17 +58,19 @@ tags: [shopify, 3d-bits, pricing, checkout, validation]
 
 **What to do.** Ask the shopper to configure it again on the product page. If it recurs, check your required fields and validation rules are reachable in the layout - a required control hidden inside a collapsed section is easy to miss.
 
-### "Your cart already has 4 customized products"
+### "We could not work out the price for this configuration right now"
 
-**What happened.** There is a limit on how many configured products one order can carry, and the product page stopped the add before it happened.
+**What happened.** The configuration costs less than the cart would have to collect for it, so the add was refused rather than charged at the wrong amount. With **Product lines** charging, the price of the product itself is posted on every configured order, and no configuration can come to less than that.
 
-**What to do.** Ask the shopper to check out with what they have and place a second order for the rest.
+**What to do.** This should never reach a shopper - publishing checks the whole range of configurations and refuses to go live when one of them breaches the floor. Seeing it means the product's own price in Shopify has been raised since you last published. Publish the project again: it will either succeed, or stop and name the price the product should carry. See [Linked products](./linked-products#which-changes-need-a-publish).
 
-### "This order has too many customized products to verify at checkout"
+**If it only happens in one market**, the cause is different: that market cannot be priced exactly, so the configuration was refused rather than charged at an amount that would not match what was shown. Giving the market a price list is the fix - see [Other currencies](./other-currencies#two-kinds-of-market).
 
-**What happened.** The same limit, but reached *after* the items were already in the cart - so it surfaces at checkout rather than on the product page. Most often a logged-out cart merging with the shopper's saved cart on sign-in.
+### "Your cart already has N customized products"
 
-**What to do.** Ask them to remove items until four or fewer configured products remain, check out, then order the rest separately.
+**What happened.** There is a limit on how many configured products one cart can carry, and this cart has reached it. The message names the number, and that number is this configurator's own: publishing works it out from how much checking the project asks for, and it can be anywhere from one to four - see [Managing complexity](./complexity). The limit is checked again at checkout, so the same refusal can be reported there instead, in checkout's own wording.
+
+**What to do.** Ask the shopper to remove configured items until the number the message names remain, check out, then place a second order for the rest.
 
 ## When a publish is refused
 
@@ -76,10 +78,11 @@ Publishing stops rather than going live with a setup that would charge incorrect
 
 | Message mentions | What to do |
 |---|---|
-| A linked price is missing | Re-link that option in the Composer, or give it a plain amount |
+| A linked price is missing | Re-link that option in Composer, or give it a plain amount |
 | A linked product costs more than the option charges | Raise the option's amount, or unlink it |
 | A product is draft, archived, or not in the Online Store channel | Fix it in Shopify admin, then publish again |
-| A product is out of stock and set to stop selling | Restock it, allow overselling on that variant, or unlink it |
+| A product is out of stock and set to stop selling | Restock it, or unlink it |
+| A configuration cannot be charged, naming selections and a shortfall | Raise your base price, or set the product's price to the figure the message names |
 | The store's currency could not be read | Try again - this is usually transient |
 | The pricing rules are too large | Reduce priced options or conditions, or switch to Variant matrix or Single line ([charging methods](./charging-methods)) |
 | Two projects target one product | One product can only be driven by one published project. Unlink it from the other |
@@ -90,7 +93,7 @@ Publishing stops rather than going live with a setup that would charge incorrect
 
 **The configurator is replaced by a short message.** The project is paused - see [Linked products](./linked-products#changing-prices-safely). Resume it on the project page.
 
-**Prices look right in the Composer but not on the storefront.** You have unpublished changes. Publish.
+**Prices look right in Composer but not on the storefront.** You have unpublished changes. Publish.
 
 ## Still stuck?
 

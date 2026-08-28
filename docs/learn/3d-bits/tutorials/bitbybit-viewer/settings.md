@@ -21,6 +21,7 @@ You'll find the BITBYBIT VIEWER settings in your theme editor after adding the b
 ### Product-Specific Settings
 - [Model URL](#model-url)
 - [Scene JSON Configuration](#scene-json-configuration)
+- [Theme buy buttons](#theme-buy-buttons)
 
 ### Common Settings (Viewer & Runner)
 - [Camera Position](#camera-position) - [See full documentation](../getting-started/common-settings#camera-position)
@@ -66,9 +67,9 @@ Many settings described here can be overridden by [Scene JSON Configuration](#sc
 - Dimension annotations and points of interest
 - Advanced camera controls
 
-Use the **[Viewer Editor](/learn/getting-started/viewer-editor/intro)** to create scene configurations visually without writing JSON manually.
+Use the **[Composer](/learn/3d-bits/composer/intro)** to create scene configurations visually without writing JSON manually.
 
-**Note:** Available features depend on your subscription plan. See [subscription plans](/learn/3d-bits/plans/subscription-plans#bitbybit-viewer-no-code) for details.
+**Note:** Available features depend on your subscription plan. See [subscription plans](/learn/3d-bits/plans/subscription-plans#composer-features-by-plan) for details.
 :::
 
 ---
@@ -115,9 +116,9 @@ If you need to load multiple models or have more complex scene requirements, use
 Alternatively, you can combine multiple models into a single file before uploading.
 
 :::info Advanced Model Control
-For products with variants that require showing/hiding different 3D models or parts, the Scene JSON Configuration with variant matching is essential. Configure this using the [Viewer Editor](/learn/getting-started/viewer-editor/intro).
+For products with variants that require showing/hiding different 3D models or parts, the Scene JSON Configuration with variant matching is essential. Configure this using the [Composer](/learn/3d-bits/composer/intro).
 
-Note: Variant matching and advanced features availability depends on your [subscription plan](/learn/3d-bits/plans/subscription-plans#bitbybit-viewer-no-code).
+Note: Variant matching and advanced features availability depends on your [subscription plan](/learn/3d-bits/plans/subscription-plans#composer-features-by-plan).
 :::
 
 ---
@@ -126,10 +127,10 @@ Note: Variant matching and advanced features availability depends on your [subsc
 
 Scene JSON Configuration provides advanced control over your 3D scene. You can either provide a JSON configuration directly or a URL to a JSON file.
 
-:::info Viewer Editor
-The easiest way to create scene configurations is using the **[Viewer Editor](/learn/getting-started/viewer-editor/intro)** - a visual tool that helps you build complex scenes without writing JSON manually. The editor provides a user-friendly interface for all the capabilities described below.
+:::info Composer
+The easiest way to create scene configurations is using the **[Composer](/learn/3d-bits/composer/intro)** - a visual tool that helps you build complex scenes without writing JSON manually. The editor provides a user-friendly interface for all the capabilities described below.
 
-**Note:** Available features depend on your subscription plan. See [subscription plans](/learn/3d-bits/plans/subscription-plans#bitbybit-viewer-no-code) for details on which features are included in each tier.
+**Note:** Available features depend on your subscription plan. See [subscription plans](/learn/3d-bits/plans/subscription-plans#composer-features-by-plan) for details on which features are included in each tier.
 :::
 
 ### What You Can Configure
@@ -178,8 +179,8 @@ You can provide the configuration in two ways:
 https://example.com/scene-config.json
 ```
 
-:::tip Using Viewer Editor
-Instead of writing JSON manually, use the **Viewer Editor** to:
+:::tip Using Composer
+Instead of writing JSON manually, use the **Composer** to:
 1. Import your 3D models
 2. Configure settings visually
 3. Export the scene configuration by:
@@ -187,7 +188,7 @@ Instead of writing JSON manually, use the **Viewer Editor** to:
    - Clicking the **Download button** in the bottom toolbar to save as a file
 4. Host the downloaded JSON publicly or paste it inline
 
-Features available depend on your [subscription plan](/learn/3d-bits/plans/subscription-plans#bitbybit-viewer-no-code).
+Features available depend on your [subscription plan](/learn/3d-bits/plans/subscription-plans#composer-features-by-plan).
 :::
 
 :::warning
@@ -203,10 +204,29 @@ The system automatically detects if you're providing a URL (starting with `http:
 
 :::tip Best Practices
 - For complex configurations, use a URL to an external JSON file - it keeps your theme settings cleaner and makes updates easier
-- Use the Viewer Editor to generate valid configurations
+- Use Composer to generate valid configurations
 - Test your scene configuration thoroughly before going live
 - The scene configuration follows a [JSON schema](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v<Version />.json) that defines all available options
 :::
+
+---
+
+## Theme buy buttons
+
+**Default:** `auto`
+
+Controls what happens to your theme's own add-to-cart and accelerated checkout buttons when the block renders.
+
+| Option | Behaviour |
+|---|---|
+| **Auto (recommended)** | Hides the theme's add-to-cart and accelerated checkout buttons when your configuration renders its own add-to-cart. When the configuration only saves data onto the order, it hides just the accelerated checkout buttons |
+| **Always hide** | Always hides the theme's buy buttons |
+| **Hide all product option controls** | Hides the theme's buy buttons and its product option controls |
+| **Never hide** | Leaves the theme untouched |
+
+The reason accelerated checkout is treated separately is that Shop Pay and Apple Pay skip line item properties, so a shopper using them would check out without the configuration attached. In every case the underlying cart form stays functional, so nothing in your theme breaks.
+
+Leave this on **Auto** unless your theme places its buttons somewhere the automatic handling cannot reach.
 
 ---
 
@@ -241,7 +261,7 @@ This is a common setting shared with the RUNNER block. See the [Common Settings:
 This is a common setting shared across multiple blocks. See the [Common Settings: Show Spinner](../getting-started/common-settings#show-spinner) documentation for detailed information.
 
 :::warning Scene Configuration Override
-If you're using [Scene JSON Configuration](#scene-json-configuration), spinner settings defined in the scene config will take precedence over this setting. You can create and manage scene configurations using the [Viewer Editor](/learn/getting-started/viewer-editor/intro).
+If you're using [Scene JSON Configuration](#scene-json-configuration), spinner settings defined in the scene config will take precedence over this setting. You can create and manage scene configurations using the [Composer](/learn/3d-bits/composer/intro).
 :::
 
 ---
@@ -254,7 +274,7 @@ This is a common setting shared across multiple blocks. See the [Common Settings
 - Theme and app update workflow
 
 :::tip VIEWER-Specific
-This setting is crucial when using [Scene JSON Configuration](#scene-json-configuration) with variant-based model visibility or node visibility rules. The Viewer Editor helps you configure these mappings visually.
+This setting is crucial when using [Scene JSON Configuration](#scene-json-configuration) with variant-based model visibility or node visibility rules. Composer helps you configure these mappings visually.
 :::
 
 ---
@@ -274,7 +294,7 @@ For most VIEWER scenarios, **Standard Inputs** mode is sufficient. Use **All Inp
 This is a common setting shared across multiple blocks. See the [Common Settings: Enable Debug Mode](../getting-started/common-settings#enable-debug-mode) documentation for detailed information including when to use, example output, and usage workflow.
 
 :::tip VIEWER-Specific
-Debug mode is especially useful when setting up variant-based visibility rules in [Scene JSON Configuration](#scene-json-configuration). It shows you exactly which input names to use in the Viewer Editor.
+Debug mode is especially useful when setting up variant-based visibility rules in [Scene JSON Configuration](#scene-json-configuration). It shows you exactly which input names to use in Composer.
 :::
 
 ---

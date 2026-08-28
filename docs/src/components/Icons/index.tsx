@@ -456,6 +456,53 @@ export const AIRobotIcon: React.FC<IconProps> = ({ size = defaultSize, color = d
   </svg>
 );
 
+/*
+ * Plan matrix glyphs. They share one hexagon silhouette so a column of them reads as a
+ * single vertical rhythm, and differ only in fill and stroke treatment:
+ *   included    - solid rim, inner facet, bold tick
+ *   excluded    - dashed rim, hollow, muted
+ *   conditional - solid rim, half facet, bold tick (available, but with a caveat in the cell)
+ * They default to the theme accent so they recolour with light/dark mode automatically.
+ */
+const planIconColor = "var(--ifm-color-primary)";
+const planIconSize = 22;
+
+const HEX_RIM = "M32 10L52 22V42L32 54L12 42V22L32 10Z";
+const HEX_FACET = "M32 16L46 25V39L32 48L18 39V25L32 16Z";
+const HEX_FACET_LOWER = "M18 32H46V39L32 48L18 39Z";
+const HEX_TICK = "M23 33L29 40L42 24";
+
+export const PlanIncludedIcon: React.FC<IconProps> = ({ size = planIconSize, color = planIconColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}
+       role="img" aria-label="Included" focusable="false">
+    <title>Included</title>
+    <path d={HEX_FACET} fill={color} fillOpacity="0.16"/>
+    <path d={HEX_RIM} stroke={color} strokeWidth="3" strokeLinejoin="round"/>
+    <path d={HEX_TICK} stroke={color} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const PlanExcludedIcon: React.FC<IconProps> = ({ size = planIconSize, color = planIconColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}
+       role="img" aria-label="Not included" focusable="false">
+    <title>Not included</title>
+    <g opacity="0.4">
+      <path d={HEX_RIM} stroke={color} strokeWidth="3" strokeLinejoin="round" strokeDasharray="6 5"/>
+      <path d="M24 32H40" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    </g>
+  </svg>
+);
+
+export const PlanConditionalIcon: React.FC<IconProps> = ({ size = planIconSize, color = planIconColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}
+       role="img" aria-label="Included, with conditions" focusable="false">
+    <title>Included, with conditions</title>
+    <path d={HEX_FACET_LOWER} fill={color} fillOpacity="0.16"/>
+    <path d={HEX_RIM} stroke={color} strokeWidth="3" strokeLinejoin="round"/>
+    <path d={HEX_TICK} stroke={color} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 export const Context7Icon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor, className }) => (
   <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
     {/* Circle with 7 */}

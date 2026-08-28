@@ -219,6 +219,27 @@ const config: Config = {
     themeConfig: {
         // Replace with your project's social card
         image: "img/learn-bitbybit-social-card.jpeg",
+        mermaid: {
+            theme: { light: "base", dark: "base" },
+            options: {
+                themeVariables: {
+                    primaryColor: "#f0cebb",
+                    primaryTextColor: "#1a1c1f",
+                    primaryBorderColor: "#dc966e",
+                    secondaryColor: "#f7e2d4",
+                    secondaryTextColor: "#1a1c1f",
+                    secondaryBorderColor: "#dc966e",
+                    tertiaryColor: "#fdf3ec",
+                    tertiaryTextColor: "#1a1c1f",
+                    tertiaryBorderColor: "#dc966e",
+                    lineColor: "#dc966e",
+                    clusterBkg: "transparent",
+                    clusterBorder: "#dc966e",
+                    edgeLabelBackground: "#f0cebb",
+                    fontFamily: "var(--ifm-font-family-base)",
+                },
+            },
+        },
         colorMode: {
             defaultMode: "dark",
             disableSwitch: false,

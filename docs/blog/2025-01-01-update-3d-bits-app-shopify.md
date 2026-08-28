@@ -45,7 +45,7 @@ The **BITBYBIT VIEWER** block sets up the 3D scene and loads the 3D models you p
 
 For the best results with assets you own, we recommend uploading them to Shopify’s "Content" section (under Settings), then copying their CDN URLs and using those with the Viewer block. You can also customize settings such as the background color and other scene details directly within the Shopify theme editor to match your preferences.
 
-➡️ **[Learn more about the BITBYBIT VIEWER block](/learn/3d-bits/theme-app-extensions/bitbybit-viewer)**
+➡️ **[Learn more about the BITBYBIT VIEWER block](/learn/3d-bits/theme-blocks/bitbybit-viewer)**
 
 ![Shopify theme editor showing the configuration options for the BITBYBIT VIEWER theme app extension block, including dynamic links for 3D model URLs.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/3d-bits-bitbybit-viewer-theme-app-extension-configuration-dynamic-links.jpeg "This is how VIEWER theme app extension block looks like on admin panel of Shopify product template")
 
@@ -61,7 +61,7 @@ The **BITBYBIT PREVIEW** block works with a single metafield where you can paste
 
 **Important Note:** Scenes embedded with the PREVIEW block are self-contained and **cannot** be dynamically changed by Shopify product variant inputs or other UI elements on the Shopify product page. It's a direct window to your Bitbybit.dev project.
 
-➡️ **[Learn more about the BITBYBIT PREVIEW block](/learn/3d-bits/theme-app-extensions/bitbybit-preview)**
+➡️ **[Learn more about the BITBYBIT PREVIEW block](/learn/3d-bits/theme-blocks/bitbybit-preview)**
 
 ![Shopify theme editor showing the configuration options for the BITBYBIT PREVIEW theme app extension block, typically requiring a single URL to a public Bitbybit.dev project.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-preview-block.jpeg "This is how PREVIEW theme app extension block looks like on admin panel of Shopify product template")
 

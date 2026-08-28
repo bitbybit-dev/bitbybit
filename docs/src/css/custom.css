@@ -113,3 +113,23 @@
 .badge--primary {
     color: #000 !important;
 }
+
+/* Inline glyphs inside prose tables (plan matrices) sit on the text baseline by
+   default, which drops them below the row's optical centre. */
+.markdown table svg {
+    vertical-align: middle;
+}
+/* Mermaid: the subgraph titles sit on the page background, so they follow the
+   per-mode primary rather than the shared themeVariables palette. */
+.docusaurus-mermaid-container .cluster-label,
+.docusaurus-mermaid-container .cluster-label p,
+.docusaurus-mermaid-container .cluster-label foreignObject div {
+    color: var(--ifm-color-primary);
+    fill: var(--ifm-color-primary);
+    font-weight: 600;
+}
+
+.docusaurus-mermaid-container {
+    display: flex;
+    justify-content: center;
+}

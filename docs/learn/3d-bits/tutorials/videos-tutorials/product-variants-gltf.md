@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3.5
+sidebar_position: 7
 title: "Pack Multiple Product Variants into a Single glTF File for 3D Bits on Shopify"
 sidebar_label: Product Variants in glTF
 description: Learn how to pack multiple product variants into a single glTF file and use it with the 3D Bits app for Shopify. Discover features for parsing 3D nodes from Blender and auto-setting up the GUI from your product page.

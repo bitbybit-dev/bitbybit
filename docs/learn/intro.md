@@ -94,7 +94,7 @@ Our browser-based editors let you create 3D logic without writing traditional co
 
 ### 3D Bits for Shopify
 
-An end-to-end Shopify app that adds interactive 3D product viewers and parametric configurators to your storefront. Includes the **[Viewer Editor](./getting-started/viewer-editor/intro)** - a no-code tool for building 3D configurators visually from your GLTF and 3DGS assets. No coding required. [Learn more](./3d-bits/intro)
+An end-to-end Shopify app that adds interactive 3D product viewers and parametric configurators to your storefront. Includes the **[Composer](/learn/3d-bits/composer/intro)** - a no-code tool for building 3D configurators visually from your GLTF and 3DGS assets. No coding required. [Learn more](./3d-bits/intro)
 
 ---
 

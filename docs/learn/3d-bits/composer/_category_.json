@@ -1,0 +1,10 @@
+{
+    "label": "Composer",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Composer",
+        "description": "Composer is where you build your configurator. Load your 3D models, design the options your customers see, set your prices, and preview the whole thing before it goes live.",
+        "slug": "/3d-bits/composer"
+    }
+}

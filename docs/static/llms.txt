@@ -148,23 +148,121 @@ Script runners enable executing Bitbybit scripts in external web applications. S
 
 ## 3D Bits (Shopify App)
 
+3D Bits adds interactive 3D product configurators to Shopify storefronts. A merchant builds the 3D
+scene, the panel of options a shopper uses, the logic between them and the pricing in **Composer**,
+then publishes it to their product pages. Most stores need no code at all; Rete, Blockly and
+TypeScript scripts are available for products whose geometry has to be calculated. Composer was
+previously called the Viewer Editor - older videos and tutorials still use that name.
+
+- [3D Bits introduction](https://learn.bitbybit.dev/learn/3d-bits/intro): What the app is, who it is for, and what a configurator looks like on a product page.
+- [How it works](https://learn.bitbybit.dev/learn/3d-bits/how-it-works): What runs on the product page, the two ways to drive a configurator, and how it survives a theme change.
+- [FAQ](https://learn.bitbybit.dev/learn/3d-bits/faq): Common questions about building without code, pricing, the app embed and existing theme apps.
+- [Getting help](https://learn.bitbybit.dev/learn/3d-bits/reaching-out): What support each plan includes and where to reach us.
+- Shopify App Store listing: https://apps.shopify.com/3d-bits-1
+
+### Quick Start
+
+- [Install the app](https://learn.bitbybit.dev/learn/3d-bits/quick-start/install): Install from the App Store and choose a plan.
+- [Enable the app embed](https://learn.bitbybit.dev/learn/3d-bits/quick-start/enable-app-embed): Switch 3D on for the whole store in one step, with no theme edits.
+- [Your first configurator](https://learn.bitbybit.dev/learn/3d-bits/quick-start/first-configurator): Model to published product page, start to finish.
+- [What to expect](https://learn.bitbybit.dev/learn/3d-bits/quick-start/what-to-expect): What is realistic on a first build, and how long each part takes.
+
+### Composer - the authoring tool
+
+Composer is where a configurator is built: the 3D scene, the option panel, the logic and the prices.
+
+- [Composer overview](https://learn.bitbybit.dev/learn/3d-bits/composer): Section index.
+- [Getting started in Composer](https://learn.bitbybit.dev/learn/3d-bits/composer/intro): Opening it from a project, and the first model.
+- [The interface](https://learn.bitbybit.dev/learn/3d-bits/composer/interface): Sections, sub-tabs, the bottom bar and the status messages.
+- [Edit mode and Play](https://learn.bitbybit.dev/learn/3d-bits/composer/preview-vs-play): Which behaviours apply while authoring, which only in Play, and how to preview each.
+- [Adding models](https://learn.bitbybit.dev/learn/3d-bits/composer/models/adding-models): Uploading and linking 3D files.
+- [Supported formats](https://learn.bitbybit.dev/learn/3d-bits/composer/models/supported-formats): glTF, GLB, splats and the rest, with the trade-offs.
+- [Model properties](https://learn.bitbybit.dev/learn/3d-bits/composer/models/model-properties): Transforms, transform variants, material variants, animations and node structure.
+- [Variants](https://learn.bitbybit.dev/learn/3d-bits/composer/variants): Connecting model parts and materials to the options a shopper picks.
+- [Scene](https://learn.bitbybit.dev/learn/3d-bits/composer/scene): Camera, lighting, background, skybox and shadows.
+- [Navigation](https://learn.bitbybit.dev/learn/3d-bits/composer/navigation): Points of interest and focals.
+- [Dimensions](https://learn.bitbybit.dev/learn/3d-bits/composer/dimensions): Printing measurements onto the product in the 3D view.
+- [Personalisation](https://learn.bitbybit.dev/learn/3d-bits/composer/personalization): Putting a customer's own text or image onto the product itself.
+- [Logic](https://learn.bitbybit.dev/learn/3d-bits/composer/logic): Rules that show, hide, enable and disable options and scene objects.
+- [Scripting](https://learn.bitbybit.dev/learn/3d-bits/composer/scripting): Linking a parametric Rete, Blockly or TypeScript script into a configurator.
+- [Saving and publishing](https://learn.bitbybit.dev/learn/3d-bits/composer/saving-and-publishing): Draft versus published, and what a publish actually sends.
+- [Publish blockers](https://learn.bitbybit.dev/learn/3d-bits/composer/publish-blockers): Every reason a publish is refused, and the fix for each.
+- [Troubleshooting Composer](https://learn.bitbybit.dev/learn/3d-bits/composer/troubleshooting): What to check when the preview stalls or a change does not appear.
+
+### The Option Panel (GUI)
+
+- [Controls](https://learn.bitbybit.dev/learn/3d-bits/composer/gui/controls): Every control type a shopper can be offered.
+- [Layout](https://learn.bitbybit.dev/learn/3d-bits/composer/gui/layout): Arranging elements, and the areas they can be placed in.
+- [Style and translations](https://learn.bitbybit.dev/learn/3d-bits/composer/gui/style-and-translations): Matching the store's look, in light and dark, in every language sold in.
+- [Pricing fields](https://learn.bitbybit.dev/learn/3d-bits/composer/gui/pricing): Where prices, formulas and quantities are authored.
+- [Parts](https://learn.bitbybit.dev/learn/3d-bits/composer/gui/parts): The bill of materials behind a configured product - charged parts, recorded parts and assemblies.
+- [PDF documents](https://learn.bitbybit.dev/learn/3d-bits/composer/gui/pdf-reports): Documents generated from a configuration, for the customer and for the workshop.
+- [Cart overview](https://learn.bitbybit.dev/learn/3d-bits/composer/gui/cart-overview): The summary card that shows what has been configured.
+- [Settings](https://learn.bitbybit.dev/learn/3d-bits/composer/gui/settings): Panel-wide behaviour, and what is recorded on the order.
+
+### The App in Shopify Admin
+
+- [App overview](https://learn.bitbybit.dev/learn/3d-bits/admin/overview): The way around the app, and what a project and a script each are.
+- [Projects](https://learn.bitbybit.dev/learn/3d-bits/admin/projects): Creating, versioning, restoring and publishing configurators.
+- [Scripts](https://learn.bitbybit.dev/learn/3d-bits/admin/scripts): Parametric programs, linked into projects. Standard and Pro plans.
+- [Assets](https://learn.bitbybit.dev/learn/3d-bits/admin/assets): Hosting 3D files on the Shopify CDN.
+- [Storefront display](https://learn.bitbybit.dev/learn/3d-bits/admin/storefront-display): Choosing between the app embed and theme blocks.
+- [Canvas sizing](https://learn.bitbybit.dev/learn/3d-bits/admin/canvas-sizing): Canvas height, maximum width, and where the option panel sits.
+- [Order review](https://learn.bitbybit.dev/learn/3d-bits/admin/order-review): Reading back what a customer configured.
+- [Subscription](https://learn.bitbybit.dev/learn/3d-bits/admin/subscription): Which plan is active and what it unlocks.
+- [Metafields](https://learn.bitbybit.dev/learn/3d-bits/admin/metafields): The legacy per-product metafield route, kept for existing stores.
+
+### Pricing
+
 - [Pricing overview](https://learn.bitbybit.dev/learn/3d-bits/pricing/overview): Build a price from the options a shopper picks and charge it through Shopify.
 - [Set up pricing](https://learn.bitbybit.dev/learn/3d-bits/pricing/setting-up-pricing): Turn on configurator pricing and price your first option.
 - [Charging methods](https://learn.bitbybit.dev/learn/3d-bits/pricing/charging-methods): Product lines, Variant matrix and Single line compared.
 - [Helper products](https://learn.bitbybit.dev/learn/3d-bits/pricing/helper-products): The hidden 3D Bits Fee products and the rules for living with them.
-- [Linked products](https://learn.bitbybit.dev/learn/3d-bits/pricing/linked-products): Charge through products you already sell, and keep the links healthy.
+- [Linked products](https://learn.bitbybit.dev/learn/3d-bits/pricing/linked-products): Charge through products you already sell, link several to one option, and keep the links healthy.
+- [Complexity](https://learn.bitbybit.dev/learn/3d-bits/pricing/complexity): How large a configurator can get, and which choices are the expensive ones.
+- [Test mode](https://learn.bitbybit.dev/learn/3d-bits/pricing/test-mode): Checking prices end to end before going on sale.
+- [Other currencies](https://learn.bitbybit.dev/learn/3d-bits/pricing/other-currencies): Selling into more than one market.
 - [Going live](https://learn.bitbybit.dev/learn/3d-bits/pricing/going-live): Testing checklist, multi-currency advice, and reviewing configured orders.
-- [Troubleshooting](https://learn.bitbybit.dev/learn/3d-bits/pricing/troubleshooting): What each shopper-facing message means and what to do.
+- [Pricing troubleshooting](https://learn.bitbybit.dev/learn/3d-bits/pricing/troubleshooting): What each shopper-facing message means and what to do.
 
-Add 3D product configurators to Shopify stores with both Low-Code and Pro-Code options.
+### 3D Assets
 
-- 3D Bits Introduction: https://learn.bitbybit.dev/learn/3d-bits/intro
-- Shopify App: https://apps.shopify.com/3d-bits-1
+- [3D assets overview](https://learn.bitbybit.dev/learn/3d-bits/3d-assets): Section index.
+- [Preparing glTF](https://learn.bitbybit.dev/learn/3d-bits/3d-assets/preparing-gltf): Getting a model ready for the web.
+- [Size and performance](https://learn.bitbybit.dev/learn/3d-bits/3d-assets/size-and-performance): File-size limits and what they cost on a phone.
+- [Configurators are games](https://learn.bitbybit.dev/learn/3d-bits/3d-assets/configurators-are-games): Why real-time rendering constraints apply to a product page.
+- [Asset security](https://learn.bitbybit.dev/learn/3d-bits/3d-assets/asset-security): What is public once a project is published, and what that means for your models.
 
-### Theme App Extensions
+### Subscription Plans
 
-- BITBYBIT RUNNER Block: https://learn.bitbybit.dev/learn/3d-bits/tutorials/bitbybit-runner/settings
-- BITBYBIT APPS Block: https://learn.bitbybit.dev/learn/3d-bits/tutorials/bitbybit-apps/settings
+- [Subscription plans](https://learn.bitbybit.dev/learn/3d-bits/plans/subscription-plans): The three tiers, what each includes, and what it costs.
+
+### Theme Blocks
+
+Most stores need only the app embed, which places 3D on product pages automatically. Theme blocks
+are for placing the 3D view or part of the option panel somewhere specific in a product template.
+
+- [Theme blocks overview](https://learn.bitbybit.dev/learn/3d-bits/theme-blocks/overview): Which block to reach for, and when none is needed.
+- [App embed](https://learn.bitbybit.dev/learn/3d-bits/theme-blocks/app-embed): The default, store-wide install with no theme edits.
+- [BITBYBIT VIEWER](https://learn.bitbybit.dev/learn/3d-bits/theme-blocks/bitbybit-viewer): Renders a product's 3D scene at an exact spot in the template.
+- [BITBYBIT GUI CONTROLS](https://learn.bitbybit.dev/learn/3d-bits/theme-blocks/bitbybit-gui): Hosts one area of the option panel wherever it is dropped.
+- [BITBYBIT PREVIEW](https://learn.bitbybit.dev/learn/3d-bits/theme-blocks/bitbybit-preview): Embeds a published bitbybit.dev project as an iframe.
+- [BITBYBIT APPS](https://learn.bitbybit.dev/learn/3d-bits/theme-blocks/bitbybit-apps): Runs a custom TypeScript single-page application on the product page. Pro plan.
+- [BITBYBIT RUNNER](https://learn.bitbybit.dev/learn/3d-bits/theme-blocks/bitbybit-runner): Legacy. Runs an exported script directly in the template.
+
+### Block Settings Reference
+
+- [Shared block settings](https://learn.bitbybit.dev/learn/3d-bits/tutorials/getting-started/common-settings): Every setting that appears on more than one block. Shopify links here from the theme editor.
+- [BITBYBIT VIEWER settings](https://learn.bitbybit.dev/learn/3d-bits/tutorials/bitbybit-viewer/settings)
+- [BITBYBIT RUNNER settings](https://learn.bitbybit.dev/learn/3d-bits/tutorials/bitbybit-runner/settings)
+- [BITBYBIT APPS settings](https://learn.bitbybit.dev/learn/3d-bits/tutorials/bitbybit-apps/settings)
+- [BITBYBIT PREVIEW settings](https://learn.bitbybit.dev/learn/3d-bits/tutorials/bitbybit-preview/settings)
+
+### Integrations
+
+- [Driving 3D Bits from your own form](https://learn.bitbybit.dev/learn/3d-bits/integrations/custom-forms): The contract between a custom product form and 3D Bits.
+- [Logic without a panel](https://learn.bitbybit.dev/learn/3d-bits/integrations/logic-without-a-panel): What Composer's rules still do when the choices come from elsewhere.
+- [When you need another app](https://learn.bitbybit.dev/learn/3d-bits/integrations/when-you-need-another-app): Where a separate product options app still makes sense.
 
 ### Programming Options
 

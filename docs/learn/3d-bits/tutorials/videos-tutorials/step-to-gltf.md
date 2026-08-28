@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 8
 title: "From STEP to GLTF - Convert PRO CAD 3D Models For 3D Bits Shopify App"
 sidebar_label: Preparing GLTF Assets
 description: Merchants often have product files created for manufacturing in professional CAD software such as FreeCAD, Fusion 360, CATIA, SolidWorks, Rhino, and others. But preparing these precise CAD models for web configurators is not straightforward.
@@ -36,7 +36,7 @@ That’s why it’s essential to choose an efficient workflow for converting STE
 
 In this tutorial, Matas Ubarevicius walks you through the full process of converting BREP-based geometry into lightweight, high-quality meshes:
 
-1 - Start in FreeCAD – Import your STEP file, group parts by color, and tessellate them into meshes.
+1 - Start in FreeCAD - Import your STEP file, group parts by color, and tessellate them into meshes.
 2 - Merge meshes so each one represents a single material.
 3 - Export to PLY files and bring them into Blender.
 4 - Apply materials in Blender, then export the model as GLTF.

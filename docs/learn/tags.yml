@@ -203,11 +203,6 @@ ai:
   permalink: /ai
   description: Using AI assistants to generate and modify 3D scripts with natural language prompts.
 
-viewer-editor:
- label: Viewer Editor
- permalink: /viewer-editor
- description: No-code tool for configuring 3D product viewers without writing any scripts.
-
 canvas:
  label: Canvas
  permalink: /canvas
@@ -222,6 +217,11 @@ layout:
  label: Layout
  permalink: /layout
  description: Arranging UI panels, controls, and 3D viewports in your application.
+
+limits:
+ label: Limits
+ permalink: /limits
+ description: How large a configuration can get before a platform ceiling is reached.
 
 architecture:
  label: Architecture
@@ -947,3 +947,48 @@ orders:
   label: Orders
   permalink: /orders
   description: Reviewing and fulfilling orders for configured products.
+
+composer:
+  label: Composer
+  permalink: /composer
+  description: The visual editor where a 3D Bits configurator is built.
+
+gui:
+  label: Option Panel
+  permalink: /gui
+  description: The panel of options a shopper uses on the product page.
+
+parts:
+  label: Parts
+  permalink: /parts
+  description: The bill of materials a configured product resolves to.
+
+pdf:
+  label: PDF Documents
+  permalink: /pdf
+  description: Documents generated from a configuration, for the customer and for the workshop.
+
+personalization:
+  label: Personalisation
+  permalink: /personalization
+  description: Putting a customer's own image or text onto the product itself.
+
+scripting:
+  label: Scripting
+  permalink: /scripting
+  description: Linking a parametric program into a configurator.
+
+theme-blocks:
+  label: Theme Blocks
+  permalink: /theme-blocks
+  description: The Liquid blocks that place 3D Bits into a Shopify theme.
+
+app-embed:
+  label: App Embed
+  permalink: /app-embed
+  description: The embed that puts 3D onto product pages automatically.
+
+testing:
+  label: Testing
+  permalink: /testing
+  description: Checking a configurator behaves before it goes on sale.

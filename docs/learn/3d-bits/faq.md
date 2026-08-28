@@ -1,16 +1,16 @@
 ---
-sidebar_position: 2
+sidebar_position: 11
 title: "3D Bits Shopify App - FAQ"
 sidebar_label: "FAQ"
-description: "Frequently asked questions about using the 3D Bits app to integrate 3D models and product configurators into your Shopify store."
+description: "Common questions about 3D Bits: building configurators without code, pricing what shoppers configure, the app embed, and working with your existing theme and apps."
 tags: [shopify, 3d-bits]
 ---
 
 import Admonition from '@theme/Admonition';
 
-# 3D Bits Shopify App: Frequently Asked Questions
+# Frequently Asked Questions
 
-As 3D Bits makes its way into Shopify stores, we’ve started getting some recurring questions from merchants. So, here’s a quick FAQ with some honest answers to help you understand what 3D Bits can do for your store.
+These are the questions merchants ask us most often, answered honestly.
 
 <Admonition type="info" title="Don't see your question answered?">
   <p>If you have other questions or just need some initial guidance, please contact us, we're here to help you out!</p>
@@ -19,144 +19,108 @@ As 3D Bits makes its way into Shopify stores, we’ve started getting some recur
 
 ---
 
-### Can I use 3D Bits if I have zero coding skills?
+### Can I use 3D Bits with no coding skills at all?
 
-**Yes, absolutely!** If you can click buttons and copy-paste, you’re good to go for basic 3D model display.
+Yes. Everything most stores need is built without code.
 
-**Here's the simple process:**
-1.  Install 3D Bits app, subscribe to Base plan to begin your trial and pin the app.
-2.  Go to Metafields sections within the app admin page and hit create button.
-3.  Upload your 3D models to Shopify via **Content > Files**.
-4.  Copy the link to your uploaded 3D model.
-5.  Paste this link into one of our designated 3D Bits metafields associated with your product.
-6.  Voilà! Your 3D model should now appear on your product page.
+You create a project in the app, open Composer, and upload your 3D model. From there you arrange the scene, build the panel of options your shoppers will use, and set what each option costs. Press Play to try it, then Publish to send it to your product pages. At no point are you asked to write anything.
 
-Feeling a bit more adventurous but still don't want to code? You can try our **BITBYBIT VIEWER** editor block within the Shopify Theme Editor. It allows for arranging slightly fancier scenes with multiple models or different camera angles, still without writing any code – just courage required!
-
-<Admonition type="note" title="Quick Start Guide">
-  For a detailed walkthrough, check out our guide: <a href="/learn/3d-bits/theme-app-extensions/bitbybit-viewer" target="_blank" rel="noopener noreferrer">3D Bits Setup Guide</a>.
-</Admonition>
+Coding only enters the picture if your product is parametric, meaning the shape itself has to be calculated from the shopper's numbers rather than picked from models you prepared in advance. That is what the Scripting features on the Standard and Pro plans are for, and most merchants never need them.
 
 ---
 
-### Can I build a product configurator without writing code?
+### Do I need a separate app for product options or pricing?
 
-**To a certain extent, yes.**
+No. 3D Bits builds the option panel and prices what the shopper configures, and Shopify charges that amount at checkout.
 
-The **BITBYBIT VIEWER** block (used within the Viewer Editor) lets you match static 3D models with your existing Shopify product variants. This is great for handling common scenarios like:
-*   Showing a different 3D model for each color option (e.g., a blue chair model when "Blue" is selected).
-*   Displaying different models for size variations.
+There are fourteen control types: dropdowns, radio buttons, checkboxes, switches, sliders, number fields, text fields, long text areas, email fields, colour pickers, date and time pickers, file uploads for shoppers sending you artwork, and buttons that trigger an action rather than carry a value. A radio or checkbox group can present its choices six ways - plain text, colour swatches, image swatches, cards, buttons or pills. You can group controls into sections, accordions and tabs, style them to match your theme, translate them, and show or hide options depending on what else the shopper picked.
 
-<Admonition type="info" title="Our Design Philosophy">
-  As technical founders, our initial inclination was to build in complex parametric logic for everything. However, we quickly realized that many merchants simply want to achieve straightforward visual changes based on standard Shopify variants – like showing the blue chair when "Blue" is selected. And that's perfectly fine and often all that's needed! 3D Bits handles this simple variant swapping effectively.
-</Admonition>
+On the pricing side you set a starting price, add an amount to particular options, write a formula for anything sold by size or length, and let a shopper choose how many of an option they want with a stepper that appears beside it. On the Pro plan an option can also point at real products in your catalogue - one option links up to ten of them, each with its own quantity - and you can build a parts list that turns every configuration into a bill of materials. See [Pricing](/learn/3d-bits/pricing) for how to set it up.
 
-- Have GLTF files ready? Check this tutorial: [No-Code GLTF Configurators with BITBYBIT VIEWER Editor on Shopify](/learn/3d-bits/tutorials/videos-tutorials/viewer-no-code-gltf-configurators)
-- Want to use 3D scans (Gaussian splatting)? [No-Code Gaussian Splat Configurators with BITBYBIT VIEWER Editor on Shopify](/learn/3d-bits/tutorials/videos-tutorials/viewer-no-code-3d-scan-configurators)
-
-For more complex configurators (e.g., where parts change dynamically beyond pre-set variants, or intricate rules are needed), you'd likely need to explore options involving some level of scripting, as discussed in later questions.
+If you already run an options app you like, that still works. Leave configurator pricing switched off for those products and keep using it. You can mix the two across your catalogue.
 
 ---
 
-### I already use [bitbybit.dev](https://bitbybit.dev) for my projects – can I connect those to Shopify?
+### What is the app embed, and do I need it?
 
-**Yes, you can!**
+The app embed is a single switch in your theme that turns 3D Bits on for your whole store. Once it is on, every product you publish from the app shows its configurator automatically, and products you have not published are untouched.
 
-*   **For Simple Previews:** Use the **BITBYBIT PREVIEW** extension block in the Shopify Theme Editor. Make your project public on `bitbybit.dev`, and paste the project link into the block. That’s it! This is great for showcasing existing non-interactive or pre-animated scenes.
-*   **For More Interactivity:** If you want your `bitbybit.dev` script to react to Shopify variants or other page elements, you'll need to integrate your scripts using the **BITBYBIT RUNNER** theme extension block. This involves exporting your script from `bitbybit.dev` (as a JavaScript snippet) and then setting up the Runner block to execute it. This approach is more complex but offers much greater control.
+It is the recommended way to run 3D Bits, and the app gives you a button that turns it on for you. You only need to think about theme blocks if you want the 3D view or the option panel in a specific spot in your template that the automatic placement does not reach.
 
-<Admonition type="note" title="Integration Guide">
-  Learn more about connecting your projects: <a href="/learn/3d-bits/theme-app-extensions/bitbybit-preview" target="_blank" rel="noopener noreferrer">Connecting bitbybit.dev Projects to Shopify</a>.
-</Admonition>
+See [Quick Start](/learn/3d-bits/quick-start) for how to turn it on.
 
 ---
 
-### I'm a merchant, but my store is managed by professional developers. What are my options?
+### What happened to the Viewer Editor?
 
-You have a couple of flexible paths, depending on your needs and your team's skills:
+It is now called Composer, and it does considerably more than it did under the old name. Alongside the 3D scene, it is where you build the shopper-facing option panel, write the rules that connect options to each other, set your prices, design PDF documents, and preview the whole thing in Play mode.
 
-- **Want to do it yourself?**  
-  Our plans include No-Code and Low-Code editors, so you can create 3D product experiences and even basic configurators without writing any code. If you’re comfortable with simple setup steps, you can get started on your own.
-
-- **Have a developer team?**  
-  If your developers are comfortable with coding, they’ll get the most out of our Pro plan. It unlocks advanced features and tools designed for building fully custom 3D experiences.  
-  For more details on what 3D Bits offers to developers, see the next question.
+Older tutorials and videos may still say Viewer Editor. It is the same tool, in the same place in the app.
 
 ---
 
-### We’re developers building stores for merchants. Should we bother with 3D Bits?
+### Should I build in Composer or write a script?
 
-**Absolutely.**
+Start in Composer. It is the right answer for the large majority of products, including ones with a lot of options, because swapping between prepared parts of a 3D model is fast, reliable and easy to change later.
 
-While you *could* build your own 3D integration from scratch (handling WebGL viewers, model loading, Shopify integration, etc.), that’s a lot of repeated work for every project or theme.
-
-**3D Bits takes care of the essentials:**
-*   Simple 3D model embedding.
-*   No-Code solutions that your clients will appreciate.
-*   Seamless Shopify metafield integration for 3D assets.
-*   Easy mapping between product variants and 3D models.
-*   The Runner block, which lets you run your own JavaScript/TypeScript to control the 3D scene and respond to store events.
-
-This means you can focus on what makes your client’s store unique-custom logic, creative 3D experiences, and advanced interactivity-without reinventing the technical foundation every time. We’ve been there, and it’s not fun!
-
-**Need more power? Go Pro!**  
-Our Pro plan is built specifically for development teams building advanced 3D experiences:
-*   Access private TypeScript Vite project templates.
-*   Use any editor you want-VSCode, Visual Studio, XCode, etc.
-*   Host your codebase on Git for easy team collaboration.
-*   Integrate web game engines such as `ThreeJS`, `BabylonJS`, `PlayCanvas`, or others.
-*   Integrate other web-based packages or technologies as needed.
-*   Ensure quality with unit tests.
-*   Simple deployment process between local and production environments.
-*   Access our private `bits-pro` npm package to establish communication with the Shopify product page.
-
-<Admonition type="note" title="Note on rendering engines">
-    We currently use BabylonJS in the 3D Bits app whenever you use the Base plan. For anything else, you'll need to go Pro.
-</Admonition>
+Reach for a script when the geometry has to be calculated. A shelf whose shape follows the exact width and height the shopper types, a part generated from an uploaded profile, anything where you cannot prepare the variations in advance. You build scripts in our visual node editor or in TypeScript, and then link them into a Composer project, so the option panel, the pricing and the publishing all stay the same.
 
 ---
 
-### Can I use 3D Bits for complex pricing (e.g., a slider value changes the product price)?
+### Can the price change with a slider?
 
-**Yes.** Configurator pricing can build a price from what the shopper picks - a base price, an amount per option, a formula over a slider or number field, and extra products included with certain choices - and charge it through Shopify at checkout.
+Yes, and this is exactly what formulas are for.
 
-A slider that changes both the model and the price is exactly the case it was built for: the 3D updates, the price updates with it, and the amount your customer pays is charged by Shopify.
+Say you sell worktops by the centimetre. You add a width slider, write a formula such as `width * 2.5`, and the price follows the slider as the shopper drags it. The 3D model resizes at the same time. What they see is what Shopify charges.
 
-Start with [Pricing](/learn/3d-bits/pricing) for how to set it up and which charging method to choose.
-
-**And it stays compatible with what you already run.** If a product is better priced by Shopify variants or by a product-options app you already pay for, switch configurator pricing off for that product and keep using it. Both work, and you can mix them across your catalogue.
+Formulas can combine several inputs, round to sensible amounts, and apply only when certain other options are selected. [Setting up pricing](/learn/3d-bits/pricing/setting-up-pricing) walks through it.
 
 ---
 
-### My product has a ton of configurable parts and complex logic. Can I build a fully custom configurator with 3D Bits?
+### Will it work with my theme?
 
-**Yes, if you or your team can write JavaScript or TypeScript.**
+In almost all cases, yes. The app embed places the configurator next to your add to cart form, which every theme has, and you can point it somewhere else if you prefer.
 
-This is where our **Pro** plan really shines, but you can also use the **BITBYBIT RUNNER** theme extension block. It acts as a bridge:
-1.  You develop your complex configuration logic, part-swapping rules, and geometric manipulations as a script (e.g., using Rete, Blockly, or TypeScript on `bitbybit.dev` and then exporting it, or writing it directly for the runner).
-2.  The Runner block executes this script within your Shopify theme.
-3.  Your script can then interact with the 3D scene, listen to Shopify variant changes (or other custom UI elements you add to the page), and update the 3D model accordingly.
+Where themes differ is in how they present their own variant pickers. If you are letting Shopify variants drive the 3D model, 3D Bits reads your theme's own selectors, which works as long as the theme uses ordinary HTML form fields. Nearly all of them do. [How It Works](/learn/3d-bits/how-it-works) covers this and how to check.
 
-3D Bits provides the 3D rendering pipeline and the connection to Shopify. You'll need to bring your own:
-*   Custom configuration logic (as a script).
-*   Pricing strategy (likely handled by Shopify or another app).
-*   Custom UI elements (if Shopify's default variant selectors aren't sufficient).
-
-<Admonition type="note" title="Advanced Configuration Guide">
-  Dive deeper into building custom configurators: <a href="/learn/3d-bits/theme-app-extensions/bitbybit-runner" target="_blank" rel="noopener noreferrer">Using the Bitbybit Runner for Custom Logic</a>.
-</Admonition>
+If you build the whole option panel in Composer instead, this stops being a concern, because the panel is ours and nothing has to be read from the theme.
 
 ---
 
-### Does 3D Bits offer fancy UI controls for product pages (like custom sliders, color swatches, etc.)?
+### I already use bitbybit.dev for my own projects. Can I connect those to Shopify?
 
-**In general - no. 3D Bits is not here to reinvent the dropdown or the color swatch. But we do provide fancy 3D linked UI elements that improve product experience, such as points of interest - when users click on them camera flies to pre-defined position in fluid cinematic motion.**
+Yes. On the Standard and Pro plans you can create a Script in the app using the same Rete, Blockly or TypeScript editors you already know, then link it into a Composer project and publish. The Composer project handles the scene, the options panel, the pricing and the product links, while your script does the geometry.
 
-There are many excellent Shopify apps and theme development techniques dedicated to creating sophisticated UI controls for product options. Having said that Pro plan does have the ability to use frameworks such as React, Angular or others to create UI elements. However keep in mind that we do not offer any special technologies to alter the prices. If you need such functionality you'll need to build it yourself.
+There is also a Preview block for simply embedding a published bitbybit.dev project on a page, which is useful for showing something off but does not react to product options.
 
-3D Bits focuses on the 3D visualization. It's designed to **listen** to what options are already selected on your product page (whether through standard Shopify variants or custom UI controls you've implemented) and then **update the 3D scene accordingly**:
-*   Show the correct 3D model or parts.
-*   Hide what shouldn’t be visible.
-*   Update 3D model dimensions or features based on selected options.
+---
 
-**Think of 3D Bits as the 3D backbone of your product visualization – not the entire user interface nervous system. 💪** It plays well with others, allowing you to choose the best UI tools for your store while it handles the 3D heavy lifting.
+### My store is managed by a development team. What are their options?
+
+They can use everything above, and they may prefer to. Scripts written in TypeScript, options linked to real catalogue products, and the ability to drive the configurator from your own product form if you have built one, which is covered in [Custom Forms](/learn/3d-bits/integrations/custom-forms).
+
+---
+
+### We build stores for merchants. Is 3D Bits worth it for us?
+
+We think so, mostly because of what you do not have to build. Model loading, the viewer, mobile behaviour, the option panel, the connection to Shopify variants, and the checkout side of configured pricing are all done and maintained.
+
+That leaves your time for the parts that make each client's store theirs. And when a client wants to change an option or a price six months later, they can do it themselves in Composer instead of coming back to you.
+
+---
+
+### How good does my 3D model need to be?
+
+Good enough to load quickly and look like your product, which is a lower bar than it sounds but not a trivial one.
+
+The main things that matter are file size, sensible geometry, and objects that are separated the way your options need them. If your shopper picks legs separately from the tabletop, the legs need to be their own objects in the file. Our [3D Assets](/learn/3d-bits/3d-assets) guides cover how to prepare models, and we do model preparation as a paid service if you would rather not.
+
+---
+
+### What does 3D Bits not do?
+
+It does not replace Shopify. Tax, shipping rates, discount codes, payment, fraud checks and refunds all stay exactly where they are, and we never process or hold money. 3D Bits decides what the configured product costs, and Shopify collects it.
+
+One detail is worth knowing about tax. With the default Product lines charging, part of the configured price is carried by helper products 3D Bits generates in your catalogue, and Shopify taxes those at your shop's default rate. If you rely on a reduced or zero rate set up as a tax override, it will not necessarily reach them, so check it before you go live - [Helper products](/learn/3d-bits/pricing/helper-products) explains what these generated products are.
+
+It is also not a general page builder. It builds the configurator and its option panel, not the rest of your storefront.
