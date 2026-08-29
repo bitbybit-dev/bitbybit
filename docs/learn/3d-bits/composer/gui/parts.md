@@ -144,7 +144,7 @@ Two things to know. A choice named in *When it runs out* wins, so use one field 
 
 ## Where your parts appear
 
-- **The option panel**, if you add a **Parts list** element in the [Layout](/learn/3d-bits/composer/gui/layout) tab. It shows labels and quantities, and can show each part's picture, fold away behind a toggle, and group rows the way the cart charges them. It never shows SKUs.
+- **The option panel**, if you add a **Parts list** element in the [Layout](/learn/3d-bits/composer/gui/layout) tab. It shows labels and quantities, and can show each part's picture, say what each part costs, fold away behind a toggle, and group rows the way the cart charges them. It never shows SKUs. The **Price** element can draw the same rows inside its breakdown instead - see [Layout](/learn/3d-bits/composer/gui/layout).
 - **The PDF documents**, if you add a **Parts table** section. See [PDF Reports](/learn/3d-bits/composer/gui/pdf-reports). It shows labels, quantities and units, never SKUs.
 - **Order review** in the 3D Bits app, against the version the order was actually sold under.
 - **A parts export**, downloadable from Order review as a spreadsheet, shaped for a cutting list.
