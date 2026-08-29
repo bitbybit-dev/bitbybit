@@ -116,6 +116,16 @@ Pausing stops new configurations being added. A shopper who already has one in t
 
 If you would rather not pause, you can set the Shopify product to **Draft** while you work - but that removes the product page entirely, including for anyone arriving from an ad or a search result.
 
+## Refreshing every link at once
+
+**Refresh linked products**, in the project page's action menu, re-reads every product this configurator links - options and parts alike - and saves anything that has moved: the **price**, the product's **name**, and its **picture**. It backs the project up first, then publishes, because a price only reaches shoppers when you publish.
+
+It is the same action the health banner offers as **Update prices and publish**. The difference is that the banner appears only once a price has already drifted, while this one is always there - so you can re-pull after a sale ends without waiting to be told, and on a configurator built product by product it is the fastest way to fill in every picture at once.
+
+:::tip This is how a parts list gets its pictures
+`imageUrl` is recorded when you pick a product, so a link made before pictures were shown in the parts list has none, and a configuration imported as JSON has none at all. One refresh fills them in for every link in the project.
+:::
+
 ## Parts are linked the same way
 
 The things a configured product is **made of** are linked from their own tab, not from an option. A part can link a product exactly as an option does, and the same health states apply to it.

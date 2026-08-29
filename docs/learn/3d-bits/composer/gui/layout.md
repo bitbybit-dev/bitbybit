@@ -32,6 +32,12 @@ You build the panel from elements, added with **Add Element**.
 
 **Parts list** shows what the configuration is made of, drawn from the [Parts](/learn/3d-bits/composer/gui/parts) tab. It lists labels and quantities, and never shows your internal part numbers. You can turn the quantities off, and set what it says when the configuration resolves to no parts at all - by default it simply hides itself. Parts themselves need the Pro plan.
 
+Three more options are worth knowing:
+
+- **Group rows** decides whether the list reads like your parts tab or like the order. Left as *one row per part*, it prints exactly what you authored. Set to *one row per product*, any product that several parts point at gets a row carrying the total for that product, with those parts listed underneath it. Use it when your bill of materials names the same product more than once - four shelf positions each fitted with the same bracket read as four rows of one, while the cart charges a single line of four, and a shopper comparing the two concludes something went missing. Like every row in the list, the number is for one configured item: a shopper buying two is charged twice it. Parts nested inside an assembly are left as they are, because grouping them would pull them out from under the part they belong to.
+- **Show each part's picture** puts the linked product's image beside each row. Only parts linked to a store product have one, and a part linked before pictures were recorded shows none until you **Refresh linked products** on the project page - see [Linked products](/learn/3d-bits/pricing/linked-products). Size the pictures under [Style](/learn/3d-bits/composer/gui/style-and-translations).
+- **Let the shopper fold the list away** puts the list behind a toggle, the way the price breakdown can be. The heading stays visible while it is shut, so a long bill of materials does not push your buy button off the screen. You choose whether it starts open.
+
 **Price** shows the running total. Add it if you are charging for options, otherwise your shopper is choosing without knowing the cost. It can show an itemised breakdown, which is worth doing since a total that changes without explanation makes people suspicious.
 
 :::note The Price element needs pricing switched on

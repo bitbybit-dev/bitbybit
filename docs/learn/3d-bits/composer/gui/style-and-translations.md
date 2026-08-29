@@ -28,6 +28,18 @@ Take your colours from your actual theme rather than from memory. Most Shopify t
 
 **Inherit the store's font** is on by default, so the panel simply picks up the typeface the product page already uses. Switch it off and the panel falls back to a neutral system font instead - worth doing when your store's display face is wrong for a dense column of options. Either way, a font family you set on a type role below wins over both.
 
+## Sizing the pictures
+
+Two settings decide how big pictures are, and they are deliberately separate, because a card a shopper picks from and a thumbnail in a list want different sizes.
+
+**Option cards - Card width** sets how wide an option card is. Cards never grow past the panel, so a width larger than the space available simply fills it. Cards lay out in as many columns as fit the panel, so this is the column width, and the picture fills it at the aspect you chose. Left empty, cards are 120px wide and stretch to fill the row, which is the behaviour every existing theme has. Set it and they keep that width - which is what you want when a control has two options and you do not want two enormous cards.
+
+**Parts list - Picture size** sets how big each part's picture is in a [parts list](/learn/3d-bits/composer/gui/layout) that has pictures switched on. It is a square, 40px by default.
+
+:::tip Custom CSS you can now delete
+If you sized option cards with a `max-width` rule in the theme's custom CSS box, the Card width setting replaces it. Setting one number is better than three rules, and it survives a preset change.
+:::
+
 ## Which setting controls which text
 
 Type is set by **role**, not by component. There are five, and every piece of text in the panel follows exactly one of them, so a change to a role moves everything that shares it.

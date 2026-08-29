@@ -44,6 +44,7 @@ The tab shows which is which: each part is labelled *charged* or *recorded* besi
 | **Already part of the base price** | The part still ships and still decrements stock, but adds nothing on top of your base price. |
 | **Included when** | The condition that decides whether the part is in this configuration at all. |
 | **When it runs out** | Which shopper choices to cross out while this part cannot be sold. |
+| **Only while** | The same, for a part that exists only under a combination of choices. |
 
 ### Linking a product
 
@@ -127,11 +128,23 @@ Name the shopper choices that should be crossed out while this part cannot be so
 The part has to **link a store product** - a part with a typed price has no stock to run out of - and the project has to have **Disable options that cannot currently be sold (live catalog)** switched on in the [Pricing](/learn/3d-bits/composer/gui/pricing) tab. With either of those missing, filling this in is harmless but nothing is ever crossed out.
 :::
 
-Nothing is guessed from the part's own condition, because a condition like "oak **and** large" does not point at any single choice. Naming nothing is safe: a shopper who picks a configuration needing a part you cannot sell is refused at Add to cart regardless. The only thing this field decides is whether they find out early or late.
+Naming nothing is safe: a shopper who picks a configuration needing a part you cannot sell is refused at Add to cart regardless. The only thing this field decides is whether they find out early or late.
+
+### A part that exists only under a combination
+
+Naming a choice outright says "cross this out whenever the part is unsellable". That is right for a part decided by one choice, and wrong for a part decided by two.
+
+Take a handle that comes in two finishes. If the brass one is sold out, crossing out **Bar** is too much: the steel bar handle is in stock and perfectly sellable, and a shopper who wanted it in steel has just lost a choice you could have sold them.
+
+**Only while** is that case. Give it the same condition you would write in *Included when* - `Handle is Bar` **and** `Finish is Brass` - and each choice it names is crossed out only while the rest of the condition holds. **Bar** greys out once the shopper is on brass, and comes back the moment they switch to steel. Because it is judged against what the shopper has picked so far, it also works the other way round: with Bar already chosen, it is **Brass** that greys out.
+
+**Copy from "Included when"** fills it in from the condition the part already carries, which is usually exactly what you want.
+
+Two things to know. A choice named in *When it runs out* wins, so use one field or the other on a given part. And a condition written as a typed expression rather than with the condition builder crosses nothing out - there is no single choice to read out of an expression, and greying out the wrong one is worse than greying out none.
 
 ## Where your parts appear
 
-- **The option panel**, if you add a **Parts list** element in the [Layout](/learn/3d-bits/composer/gui/layout) tab. It shows labels and quantities. It never shows SKUs.
+- **The option panel**, if you add a **Parts list** element in the [Layout](/learn/3d-bits/composer/gui/layout) tab. It shows labels and quantities, and can show each part's picture, fold away behind a toggle, and group rows the way the cart charges them. It never shows SKUs.
 - **The PDF documents**, if you add a **Parts table** section. See [PDF Reports](/learn/3d-bits/composer/gui/pdf-reports). It shows labels, quantities and units, never SKUs.
 - **Order review** in the 3D Bits app, against the version the order was actually sold under.
 - **A parts export**, downloadable from Order review as a spreadsheet, shaped for a cutting list.
