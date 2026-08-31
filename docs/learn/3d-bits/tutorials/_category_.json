@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Block Settings and Video Tutorials",
-        "description": "Reference for every setting on every theme block, plus our YouTube walkthroughs. The settings pages are the ones Shopify links to from the theme editor. Videos are free to watch whether or not you have the app.",
+        "description": "Reference for the settings on each 3D Bits theme block, alongside video walkthroughs of the app. This section is organised by block rather than by task: every setting on the Apps, Preview, Viewer and legacy Runner blocks, plus the settings all of them share. Reach for it when you know which block you are placing and need to know what a particular field does, rather than when you are learning the app for the first time. The video tutorials cover complete builds end to end, which is often the faster way in.",
         "slug": "/3d-bits/tutorials"
     }
 }

@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Settings Shared by the 3D Bits Blocks",
-        "description": "Settings that appear on more than one 3D Bits block, explained one by one. Shopify links here from the theme editor when you click Learn more next to a setting.",
+        "description": "The settings that appear on every 3D Bits theme block, documented once instead of repeated four times. Canvas sizing, camera and lighting defaults, loading behaviour, and the way a block binds to a product all work the same way regardless of which block you placed. Reading this page first makes the per-block references much shorter, because they only need to cover what is genuinely specific to that block. Start here when you are placing your first block, then move to the reference for the specific block you are configuring.",
         "slug": "/3d-bits/tutorials/getting-started"
     }
 }

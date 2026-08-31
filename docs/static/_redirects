@@ -40,3 +40,10 @@
 /learn/3d-bits/for-developers               /learn/3d-bits/integrations  301
 /learn/3d-bits/theme-app-extensions/*       /learn/3d-bits/theme-blocks/:splat  301
 /learn/3d-bits/theme-app-extensions         /learn/3d-bits/theme-blocks  301
+
+# The runners/engines categories had no slug, so Docusaurus put them on /learn/category/*.
+# Slugs added Aug 2026; these keep the old, already-indexed URLs working.
+/learn/category/engines      /learn/runners/engines             301
+/learn/category/babylonjs    /learn/runners/engines/babylonjs   301
+/learn/category/threejs      /learn/runners/engines/threejs     301
+/learn/category/playcanvas   /learn/runners/engines/playcanvas  301

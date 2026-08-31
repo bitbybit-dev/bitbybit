@@ -3,6 +3,8 @@
   "position": 1,
   "link": {
     "type": "generated-index",
-    "description": "Learn how to use Bitbybit runners with PlayCanvas engine."
+    "title": "Bitbybit Runners with PlayCanvas",
+    "description": "Use the Bitbybit runner inside a PlayCanvas application. These guides show how to load the runner, execute a script authored in the Bitbybit editors, and turn the resulting geometry into PlayCanvas entities and mesh instances you can place in your own hierarchy. They cover project setup, passing parameters in at runtime so a configurator reacts to user input, and running the OCCT, JSCAD and Manifold kernels in a web worker. Start here if you build with PlayCanvas and want parametric CAD geometry driving your scene.",
+    "slug": "/runners/engines/playcanvas"
   }
 }

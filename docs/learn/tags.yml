@@ -18,11 +18,6 @@ typescript:
   permalink: /typescript
   description: Writing code with full type safety, autocompletion, and access to all Bitbybit APIs.
 
-monaco:
-  label: Monaco Editor
-  permalink: /monaco-editor
-  description: The code editor powering Bitbybit's TypeScript environment, same as VS Code.
-
 threejs:
   label: Three.js
   permalink: /threejs
@@ -238,245 +233,40 @@ advanced:
  permalink: /advanced
  description: Complex techniques for experienced users pushing beyond the basics.
 
-rotation:
- label: Rotation
- permalink: /rotation
- description: Spinning objects and controlling orientation in 3D space.
-
-animation:
- label: Animation
- permalink: /animation
- description: Creating movement, transitions, and dynamic behavior in 3D scenes.
-
-auto-rotate:
- label: Auto-Rotate
- permalink: /auto-rotate
- description: Automatic spinning of products when users aren't interacting.
-
-idle:
- label: Idle
- permalink: /idle
- description: Behaviors triggered after a period of user inactivity.
-
-multiple-models:
- label: Multiple Models
- permalink: /multiple-models
- description: Loading and managing several 3D models in one scene.
-
-scene-management:
- label: Scene Management
- permalink: /scene-management
- description: Organizing objects, lights, and cameras in complex 3D scenes.
-
 performance:
  label: Performance
  permalink: /performance
  description: Making your 3D applications load faster and render smoothly.
-
-organization:
- label: Organization
- permalink: /organization
- description: Structuring projects, naming conventions, and file management.
-
-options:
- label: Options
- permalink: /options
- description: Product configuration choices that users can select.
-
-mapping:
- label: Mapping
- permalink: /mapping
- description: Connecting user selections to 3D changes like materials or visibility.
-
-compatibility:
- label: Compatibility
- permalink: /compatibility
- description: Ensuring apps work across browsers, devices, and platforms.
-
-maintenance:
- label: Maintenance
- permalink: /maintenance
- description: Updating and maintaining applications after deployment.
-
-tutorial:
- label: Tutorial
- permalink: /tutorial
- description: Step-by-step guides walking through specific features or projects.
 
 interface:
  label: Interface
  permalink: /interface
  description: Bitbybit's user interface and how to navigate it.
 
-ui:
- label: UI
- permalink: /ui
- description: Building user interface elements and controls for your apps.
-
 overview:
  label: Overview
  permalink: /overview
  description: High-level introductions to Bitbybit concepts and capabilities.
-
-no-code:
- label: No-Code
- permalink: /no-code
- description: Building 3D applications without writing any code.
-
-toolbar:
- label: Toolbar
- permalink: /toolbar
- description: Toolbar controls and actions available in the editor.
-
-reference:
- label: Reference
- permalink: /reference
- description: Technical documentation and API details for developers.
 
 dimensions:
  label: Dimensions
  permalink: /dimensions
  description: Adding measurement labels and size annotations to 3D models.
 
-angular:
- label: Angular
- permalink: /angular
- description: Angle measurements between edges or surfaces.
-
-angles:
- label: Angles
- permalink: /angles
- description: Working with angular values and rotations.
-
-measurements:
- label: Measurements
- permalink: /measurements
- description: Displaying sizes, distances, and dimensions on models.
-
-degrees:
- label: Degrees
- permalink: /degrees
- description: Angle units and degree-based calculations.
-
-bounding-box:
- label: Bounding Box
- permalink: /bounding-box
- description: Overall dimensions showing how much space a model occupies.
-
-overall-size:
- label: Overall Size
- permalink: /overall-size
- description: Total width, height, and depth of configured products.
-
-shipping:
- label: Shipping
- permalink: /shipping
- description: Package dimensions and logistics information for e-commerce.
-
-space-planning:
- label: Space Planning
- permalink: /space-planning
- description: Visualizing how products fit in rooms or spaces.
-
-diametral:
- label: Diametral
- permalink: /diametral
- description: Diameter annotations for circular features.
-
-diameter:
- label: Diameter
- permalink: /diameter
- description: Measuring across circular shapes.
-
-circles:
- label: Circles
- permalink: /circles
- description: Circular geometry and arc-based shapes.
-
-cylinders:
- label: Cylinders
- permalink: /cylinders
- description: Cylindrical shapes and tube-like geometry.
-
-annotations:
- label: Annotations
- permalink: /annotations
- description: Text labels, callouts, and markers on 3D models.
-
-technical:
- label: Technical
- permalink: /technical
- description: Detailed technical specifications and engineering data.
-
-professional:
- label: Professional
- permalink: /professional
- description: Features available on the Professional subscription tier.
-
 enterprise:
  label: Enterprise
  permalink: /enterprise
  description: Features available on the Enterprise subscription tier.
-
-linear:
- label: Linear
- permalink: /linear
- description: Straight-line distance measurements.
-
-width:
- label: Width
- permalink: /width
- description: Horizontal size measurements.
-
-height:
- label: Height
- permalink: /height
- description: Vertical size measurements.
-
-depth:
- label: Depth
- permalink: /depth
- description: Front-to-back size measurements.
-
-ordinate:
- label: Ordinate
- permalink: /ordinate
- description: Coordinate-based dimension chains from a reference point.
-
-coordinates:
- label: Coordinates
- permalink: /coordinates
- description: X, Y, Z positioning and coordinate systems.
 
 cad:
  label: CAD
  permalink: /cad
  description: Computer-Aided Design techniques and file formats.
 
-radial:
- label: Radial
- permalink: /radial
- description: Radius measurements from center to edge.
-
-radius:
- label: Radius
- permalink: /radius
- description: Distance from circle center to circumference.
-
-curves:
- label: Curves
- permalink: /curves
- description: Bezier curves, splines, and smooth paths.
-
 export:
  label: Export
  permalink: /export
  description: Saving data, configurations, or 3D files for external use.
-
-json:
- label: JSON
- permalink: /json
- description: JSON data format for configurations and data exchange.
 
 deployment:
  label: Deployment
@@ -508,60 +298,20 @@ errors:
  permalink: /errors
  description: Understanding and handling error messages.
 
-debugging:
- label: Debugging
- permalink: /debugging
- description: Finding and fixing problems in your scripts.
-
-quality-assurance:
- label: Quality Assurance
- permalink: /quality-assurance
- description: Testing and verifying applications work correctly.
-
 gltf:
  label: GLTF
  permalink: /gltf
  description: Web-optimized 3D format for fast loading in browsers.
-
-nodes:
- label: Nodes
- permalink: /nodes
- description: Individual objects and hierarchy in 3D scenes.
-
-visibility:
- label: Visibility
- permalink: /visibility
- description: Showing and hiding objects based on user selections.
-
-structure:
- label: Structure
- permalink: /structure
- description: How data and files are organized.
 
 optimization:
  label: Optimization
  permalink: /optimization
  description: Improving speed, memory usage, and file sizes.
 
-management:
- label: Management
- permalink: /management
- description: Organizing and maintaining projects and assets.
-
-materials:
- label: Materials
- permalink: /materials
- description: Surface appearance - colors, textures, metallic, roughness.
-
 variants:
  label: Variants
  permalink: /variants
  description: Different versions of products or materials.
-
-KHR_materials_variants:
- label: KHR Materials Variants
- permalink: /khr-materials-variants
- description: GLTF extension for switching between material sets.
 
 models:
  label: Models
@@ -593,160 +343,15 @@ navigation:
  permalink: /navigation
  description: Moving around 3D scenes with pan, zoom, and rotate.
 
-camera:
- label: Camera
- permalink: /camera
- description: Viewpoint settings, angles, and camera controls.
-
-animations:
- label: Animations
- permalink: /animations
- description: Motion, transitions, and dynamic visual effects.
-
-transitions:
- label: Transitions
- permalink: /transitions
- description: Smooth changes between states or camera positions.
-
-easing:
- label: Easing
- permalink: /easing
- description: Animation curves that control acceleration and deceleration.
-
-poi:
- label: POI
- permalink: /poi
- description: Points of Interest for camera focus and guided tours.
-
-points-of-interest:
- label: Points of Interest
- permalink: /points-of-interest
- description: Saved camera positions highlighting product features.
-
-hotspots:
- label: Hotspots
- permalink: /hotspots
- description: Clickable markers on 3D models showing information.
-
-tours:
- label: Tours
- permalink: /tours
- description: Guided sequences moving through points of interest.
-
-customization:
- label: Customization
- permalink: /customization
- description: Tailoring appearance and behavior to your needs.
-
-branding:
- label: Branding
- permalink: /branding
- description: Applying brand colors, logos, and visual identity.
-
-background:
- label: Background
- permalink: /background
- description: Scene backgrounds - colors, gradients, or images.
-
 scene:
  label: Scene
  permalink: /scene
  description: The 3D environment containing objects, lights, and cameras.
 
-colors:
- label: Colors
- permalink: /colors
- description: Color values, palettes, and color-related operations.
-
-gradients:
- label: Gradients
- permalink: /gradients
- description: Smooth color transitions for backgrounds and materials.
-
-images:
- label: Images
- permalink: /images
- description: Texture images, backgrounds, and image processing.
-
-arc-rotate:
- label: Arc Rotate
- permalink: /arc-rotate
- description: Orbital camera that rotates around a target point.
-
 controls:
  label: Controls
  permalink: /controls
  description: User input handling - mouse, touch, keyboard.
-
-zoom:
- label: Zoom
- permalink: /zoom
- description: Camera zoom levels and magnification controls.
-
-interaction:
- label: Interaction
- permalink: /interaction
- description: How users interact with 3D objects and UI.
-
-lighting:
- label: Lighting
- permalink: /lighting
- description: Light sources that illuminate 3D scenes.
-
-directional-light:
- label: Directional Light
- permalink: /directional-light
- description: Parallel light rays simulating distant sources like the sun.
-
-shadows:
- label: Shadows
- permalink: /shadows
- description: Dynamic shadows cast by objects in the scene.
-
-intensity:
- label: Intensity
- permalink: /intensity
- description: Brightness levels for lights and effects.
-
-loading:
- label: Loading
- permalink: /loading
- description: Asset loading, progress indicators, and initialization.
-
-progress:
- label: Progress
- permalink: /progress
- description: Loading progress bars and status indicators.
-
-user-experience:
- label: User Experience
- permalink: /user-experience
- description: Making apps intuitive and pleasant to use.
-
-skybox:
- label: Skybox
- permalink: /skybox
- description: 360-degree environment surrounding the scene.
-
-hdr:
- label: HDR
- permalink: /hdr
- description: High Dynamic Range images for realistic lighting.
-
-environment:
- label: Environment
- permalink: /environment
- description: Surrounding imagery that affects lighting and reflections.
-
-reflections:
- label: Reflections
- permalink: /reflections
- description: Mirror-like surface effects on shiny materials.
-
-pbr:
- label: PBR
- permalink: /pbr
- description: Physically Based Rendering for realistic material appearance.
 
 subscription:
  label: Subscription
@@ -768,11 +373,6 @@ troubleshooting:
  permalink: /troubleshooting
  description: Solving common problems and finding fixes.
 
-faq:
- label: FAQ
- permalink: /faq
- description: Answers to frequently asked questions.
-
 help:
  label: Help
  permalink: /help
@@ -782,31 +382,6 @@ mobile:
  label: Mobile
  permalink: /mobile
  description: Mobile device support and responsive design.
-
-loading-speed:
- label: Loading Speed
- permalink: /loading-speed
- description: How fast your 3D content loads for users.
-
-fps:
- label: FPS
- permalink: /fps
- description: Frames per second - measuring rendering smoothness.
-
-advanced-matching:
- label: Advanced Matching
- permalink: /advanced-matching
- description: Complex logic for mapping options to 3D changes.
-
-expressions:
- label: Expressions
- permalink: /expressions
- description: Formulas and conditional logic in configurations.
-
-simple-matching:
- label: Simple Matching
- permalink: /simple-matching
- description: Basic one-to-one mapping between options and 3D states.
 
 product-options:
  label: Product Options
@@ -927,11 +502,6 @@ markets:
   label: Markets
   permalink: /markets
   description: Selling in more than one country or currency with Shopify Markets.
-
-currency:
-  label: Currency
-  permalink: /currency
-  description: Currencies, conversion and how amounts are shown.
 
 fees:
   label: Fees

@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Subscription Plans",
-        "description": "What you get on each plan, and what it costs.",
+        "description": "The 3D Bits subscription plans, and what each one unlocks. Plan choice affects real capability rather than just quota: the pricing methods available to a configurator, whether you can run custom scripts, PDF report generation, and the integration surfaces open to your storefront. This page lays out what is included at each level so you can match a plan to what your store actually needs, and points at the feature pages where each capability is documented in full. Start here if you are deciding whether a configurator you have in mind is buildable on your current plan.",
         "slug": "/3d-bits/plans"
     }
 }

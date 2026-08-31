@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Bitbybit OCCT Library Shapes",
-        "description": "Learn how to use various shape types via Bitbybit's OCCT category of algorithms.",
+        "description": "The OCCT shape hierarchy in Bitbybit, from vertices and edges up through wires, faces, shells, solids and compounds. Understanding this hierarchy is the thing that makes OCCT click: every operation expects a particular level, and most confusing errors come from handing a function the wrong one. These pages explain what each shape type is and how they nest, then work through each level in detail with its own primitives and construction methods. If you are new to boundary representation modelling, read the hierarchy overview first and the individual shape pages after.",
         "slug": "/code/common/occt/shapes"
     }
 }

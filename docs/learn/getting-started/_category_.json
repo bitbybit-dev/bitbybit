@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Getting started with Bitbybit",
-        "description": "Learn how to get started with Bitbybit - use Rete, Blockly & Monaco editors, cloud features & other relevant topics.",
+        "description": "Your first steps with Bitbybit - the platform, the editors, and how a parametric 3D script actually comes together. Bitbybit gives you three ways to write the same thing: Rete for node-based visual programming, Blockly for block-based coding, and Monaco for TypeScript with full IntelliSense. These pages cover the basics that apply whichever you pick - projects, scripts, assets, drawing and error handling - then walk through a first Hello World and a parametric cube in each editor. If you are new here, start with the overview and pick the editor that matches how you like to work.",
         "slug": "/getting-started"
     }
 }

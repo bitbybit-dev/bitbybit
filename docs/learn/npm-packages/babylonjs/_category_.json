@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Integrate Bitbybit with BabylonJS",
-        "description": "Learn how to integrate Bitbybit with BabylonJS to create interactive 3D experiences, CAD apps, 3D configurators or other procedural web applications.",
+        "description": "Use the Bitbybit npm packages inside a Babylon.js application. You get the full OCCT, JSCAD and Manifold geometry libraries as ordinary npm dependencies, plus a thin Babylon.js adapter that turns the resulting geometry into native meshes for your scene. These pages cover installation and project setup, a quick start that gets geometry on screen, and two worked builds: an advanced parametric model driven by a GUI, and a parametric hex house concept. Suitable if you are building your own Babylon.js application rather than working inside the Bitbybit editors.",
         "slug": "/npm-packages/babylonjs"
     }
 }

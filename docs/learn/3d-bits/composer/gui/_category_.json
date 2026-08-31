@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "The Option Panel",
-        "description": "The controls your customers use, how they are arranged, how they are styled, and how they are translated.",
+        "description": "The option panel is what a customer actually touches - the controls beside the 3D scene that drive the model and the price. Getting it right is largely a question of layout and language: which controls appear, in what order, how they are grouped, what they cost, and how they read in each of your markets. These pages cover the available control types, panel layout, styling and translations, live pricing display, the parts breakdown behind a configured product, PDF reports, the cart overview, and remembering a configuration between visits.",
         "slug": "/3d-bits/composer/gui"
     }
 }

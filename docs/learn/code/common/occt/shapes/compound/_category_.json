@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Compound Shapes",
-        "description": "Compound shapes are formed by combining multiple basic shapes. These tutorials will help you understand how to create and manipulate compound shapes in your 3D models.",
+        "description": "Compounds group several OCCT shapes into one object in Bitbybit without fusing them together. That distinction matters: a boolean union merges overlapping solids into a single body, while a compound keeps each part separate and individually addressable, which is what you want for a multi-part assembly, a set of laser-cut pieces laid out on a sheet, or any result you will later colour or export part by part. These pages cover creating compounds, drawing them, taking them apart again to get at the shapes inside, and when a compound is the right choice over a union.",
         "slug": "/code/common/occt/shapes/compound"
     }
 }

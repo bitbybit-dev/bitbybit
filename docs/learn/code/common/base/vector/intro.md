@@ -32,7 +32,7 @@ This straightforward representation makes it easy to pass vector data around and
 
 ## What Can You Do With the Vector Class?
 
-The `Vector` class helps you perform a wide range of operations. Here's a look at the main categories of features it supports. For the exact input parameters, default values, and more advanced functions, please consult the detailed [Vector API Documentation](https://docs.bitbybit.dev/classes/Bit.Vector.html) (or the GitHub source linked above).
+The `Vector` class helps you perform a wide range of operations. Here's a look at the main categories of features it supports. For the exact input parameters, default values, and more advanced functions, please consult the detailed [Vector API Documentation](https://docs.bitbybit.dev/classes/Bit.Vector) (or the GitHub source linked above).
 
 ### 1. Creating Vectors and Number Sequences
 

@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Wires",
-        "description": "Wires are one of the most fundamental pieces of geometry that you can create inside OCCT kernel. These tutorials will help you understand how to create and manipulate wires in your 3D models.",
+        "description": "Wires are connected chains of edges in OCCT, and they are where most parametric models actually begin. A wire is the profile you extrude, the path you sweep along, the outline you turn into a face, and the shape you send to a laser cutter. These pages cover the wire primitives - rectangles, circles, polygons, stars and helices - building wires from edges or point lists, Bezier curves with weighted control points, and filleting wire corners in 2D. Worked examples build hexagonal grids and advanced repeating patterns from wires alone.",
         "slug": "/code/common/occt/shapes/wire"
     }
 }

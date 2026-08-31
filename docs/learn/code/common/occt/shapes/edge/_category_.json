@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Edges",
-        "description": "Edges are one of the most fundamental pieces of geometry that you can create inside OCCT kernel. These tutorials will help you understand how to create and manipulate edges in your 3D models.",
+        "description": "Edges are the curves that bound faces and chain together into wires in OCCT. Working with them directly is how you get precise control over a model: selecting the exact edges to fillet, measuring along a curve, dividing one into evenly spaced points, or building a wire from edges you constructed individually. These pages cover the edge primitives - lines, arcs, circles and ellipses - and constructing edges from constraints. They also cover edge indexing, which is the practical key to fillets and chamfers, along with a way to visualise those indices so you can pick the right ones.",
         "slug": "/code/common/occt/shapes/edge"
     }
 }

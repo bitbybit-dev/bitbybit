@@ -32,6 +32,7 @@
           "Health"
         ],
         "summary": "Health - status check",
+        "description": "Returns the operational status of the Bitbybit CAD Cloud API, including service health and readiness. Requires no authentication, so it is suitable for uptime monitoring, load balancer probes and deployment smoke tests.",
         "security": [],
         "responses": {
           "200": {
@@ -206,6 +207,7 @@
           "Models"
         ],
         "summary": "Models - list available models",
+        "description": "Lists every parametric model available for generation, by name. Use the returned names with the definitions and generation endpoints to discover each model's parameter schema and defaults before submitting a job.",
         "responses": {
           "200": {
             "description": "Model name list",

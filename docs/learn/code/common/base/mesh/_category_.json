@@ -3,7 +3,7 @@
     "link": {
         "type": "generated-index",
         "title": "Meshes in Bitbybit",
-        "description": "Introduction to meshes in Bitbybit.",
+        "description": "Work with polygonal mesh geometry in Bitbybit - build meshes from points and triangles, inspect their topology, and prepare them for rendering or export. A mesh describes a surface as a network of vertices and faces, which is what every 3D engine ultimately draws, so it is the form your OCCT solids take on their way to the screen or to a GLTF file. These pages cover creating meshes from raw vertex data, reading positions and normals, computing bounding information, and converting between meshes and the solid geometry used elsewhere in the platform.",
         "slug": "/code/common/base/mesh"
     }
 }

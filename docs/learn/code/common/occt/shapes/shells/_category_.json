@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Shells",
-        "description": "Shells are made out of multiple faces connected together. These tutorials will guide you through the process of creating and manipulating shell shapes in your 3D models.",
+        "description": "Shells are collections of connected faces in OCCT, sitting between individual faces and closed solids in the shape hierarchy. They matter when a surface has to be treated as one continuous skin: sewing separately built faces into a watertight boundary before converting to a solid, or working with an open surface that is deliberately not closed. These pages cover creating shells by sewing faces together, checking whether a shell is closed, and converting a closed shell into a solid. This is also where you go when a solid operation fails because its boundary has gaps.",
         "slug": "/code/common/occt/shapes/shells"
     }
 }

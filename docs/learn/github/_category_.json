@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Bitbybit GitHub Monorepo",
-        "description": "Explore the Bitbybit GitHub monorepo, which contains the source code for Bitbybit core libraries, documentation, example applications, and more.",
+        "description": "The Bitbybit source code is open on GitHub, MIT licensed, and these pages explain how it is organised. The monorepo holds the CAD algorithms, the published npm packages, the documentation site you are reading now, and the runnable examples, so knowing your way around it is useful whether you want to contribute, audit how an algorithm works, or just check what a function does before relying on it. These pages cover the repository structure, the testing approach, and the live unit test coverage reports.",
         "slug": "/github"
     }
 }

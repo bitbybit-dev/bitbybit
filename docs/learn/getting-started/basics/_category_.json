@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Basic Introduction Tutorials to Bitbybit",
-        "description": "We have developed a series of tutorials to help you learn the fundamentals of our platform. These tutorials cover how to run your scripts, handle errors, and understand how drawing works—one of the core concepts of Bitbybit. You’ll also learn how to create projects and scripts, upload assets, and much more.",
+        "description": "The concepts that apply to every Bitbybit script, whichever editor you write it in. Before the geometry gets interesting there is a small amount of platform to understand: how projects and scripts are organised in the cloud, how assets get in and out, what running your code actually does, how drawing puts results on screen, and how to read an error when something fails. These pages cover each of those, plus auto save, publishing, and embedding a finished script in your own website. Worth reading once, early, to save a lot of guessing later.",
         "slug": "/getting-started/basics"
     }
 }

@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "OCCT Fillets & Chamfers",
-        "description": "In CAD, it’s common to round the corners of shapes—whether in 2D or 3D. Learn how to create fillets and chamfers using the OCCT library in Bitbybit.",
+        "description": "Round and bevel edges with OCCT fillets and chamfers in Bitbybit. Almost nothing manufactured has a perfectly sharp edge, so this is usually the step that takes a blocky parametric model to something that looks and behaves like a real part. These pages cover filleting solids and 2D wire corners, chamfering circular and curved edges, applying a variable radius or distance along a single edge, and selecting exactly the edges you want by index. They also cover why a fillet fails when the radius is too large for the surrounding geometry, and how to recover.",
         "slug": "/code/common/occt/fillets"
     }
 }

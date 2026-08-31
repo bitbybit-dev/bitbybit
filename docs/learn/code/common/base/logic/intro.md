@@ -21,7 +21,7 @@ Boolean logic revolves around two states: **true** or **false**. These are essen
 
 ## Core Capabilities of the Logic Class
 
-The `Logic` class helps you create, manipulate, and use boolean values effectively. Here's a high-level look at its features. For the exact input parameters, comparison operator symbols, and detailed behaviors, please consult the [full Logic API documentation](https://docs.bitbybit.dev/classes/Bit.Logic.html) or the GitHub source linked above.
+The `Logic` class helps you create, manipulate, and use boolean values effectively. Here's a high-level look at its features. For the exact input parameters, comparison operator symbols, and detailed behaviors, please consult the [full Logic API documentation](https://docs.bitbybit.dev/classes/Bit.Logic) or the GitHub source linked above.
 
 ### 1. Creating Boolean Values and Lists
 

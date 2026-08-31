@@ -23,7 +23,7 @@ Points are the fundamental building blocks for defining locations in 3D space. T
 
 We'll explore this using Rete (visual nodes), Blockly (visual blocks), and TypeScript (code). All examples will generate a spiral of points and draw them in the 3D scene.
 
-For detailed information on each point function, please refer to the [Point API Documentation](https://docs.bitbybit.dev/classes/Bit.Point.html).
+For detailed information on each point function, please refer to the [Point API Documentation](https://docs.bitbybit.dev/classes/Bit.Point).
 
 ## The Core Idea: Generating a Spiral
 

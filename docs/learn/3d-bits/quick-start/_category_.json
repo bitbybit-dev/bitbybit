@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Quick Start with 3D Bits",
-        "description": "Install the app, switch 3D on for your store, and get your first product configurator live.",
+        "description": "The shortest path from an empty Shopify store to a working 3D configurator. This section is deliberately linear: install the app, enable 3D on your theme, build a first configurator against a sample model, and see it running on a product page. It exists so you can judge whether 3D Bits fits your store before investing time in your own assets and pricing rules. Once the first configurator works end to end, the Composer, pricing and theme block sections go into the depth each area deserves.",
         "slug": "/3d-bits/quick-start"
     }
 }

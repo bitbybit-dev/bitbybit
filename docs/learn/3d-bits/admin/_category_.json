@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "The 3D Bits App",
-        "description": "Your way around the app in your Shopify admin: projects, scripts, assets, publishing, storefront settings and reviewing what your customers configured.",
+        "description": "The 3D Bits admin app inside Shopify, where a merchant connects a configurator to a product and controls how it behaves. This is the operational side of the app rather than the design side: uploading and managing assets, choosing which project or script a product uses, setting the canvas size and layout on the storefront, reviewing what a customer configured on an order, and managing the subscription. These pages walk through each area of the app, including the legacy metafield setup kept for stores that were configured before projects existed.",
         "slug": "/3d-bits/admin"
     }
 }

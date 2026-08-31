@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "OCCT Assembly",
-        "description": "Work with OCCT assemblies: load STEP files, export to GLTF, parse hierarchy, create multi-part models, and preserve colors for CAD visualization.",
+        "description": "Build, colour and export multi-part assemblies with OCCT in Bitbybit. A real product is rarely one solid: it is a set of named parts, each with its own material and colour, that has to survive the trip into STEP or GLTF with that structure intact. These pages cover composing shapes into an assembly, parsing the structure of an assembly you imported, attaching colours to individual parts, and exporting the result so it opens correctly in downstream CAD or a 3D viewer. A worked example converts a STEP assembly to GLTF with colours preserved.",
         "slug": "/code/common/occt/assembly"
     }
 }

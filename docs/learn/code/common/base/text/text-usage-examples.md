@@ -26,7 +26,7 @@ Text is a fundamental way to convey information and add detail to your designs. 
 
 We'll explore this using Rete (visual nodes), Blockly (visual blocks), and TypeScript (code). All examples will format a personalized greeting and then display that greeting as 3D text.
 
-For detailed information on each text function, please refer to the [Text API Documentation](https://docs.bitbybit.dev/classes/Bit.Text.html).
+For detailed information on each text function, please refer to the [Text API Documentation](https://docs.bitbybit.dev/classes/Bit.Text).
 
 ## The Core Idea: From String to 3D Object
 

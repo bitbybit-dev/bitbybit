@@ -17,15 +17,9 @@ const config: Config = {
 
     headTags: [
         // Favicons sized as multiples of 48px so Google can index them for search results.
-        {
-            tagName: "link",
-            attributes: {
-                rel: "icon",
-                type: "image/x-icon",
-                href: "/favicon.ico",
-                sizes: "48x48",
-            },
-        },
+        // No .ico is declared on purpose: Cloudflare Pages serves /favicon.ico with
+        // "Content-Type: null", and with nosniff set that cannot be decoded as an image.
+        // The file stays in static/ so blind /favicon.ico probes still resolve.
         {
             tagName: "link",
             attributes: {
@@ -145,8 +139,9 @@ const config: Config = {
                     path: "learn",
                     routeBasePath: "learn",
                     sidebarPath: "./sidebars.ts",
+                    onInlineTags: "throw",
                     editUrl:
-                        "https://github.com/bitbybit-dev/bitbybit/docs",
+                        "https://github.com/bitbybit-dev/bitbybit/tree/master/docs/",
                 },
                 blog: {
                     showReadingTime: true,
@@ -157,7 +152,7 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+                        "https://github.com/bitbybit-dev/bitbybit/tree/master/docs/",
                     // Useful options to enforce blogging best practices
                     onInlineTags: "warn",
                     onInlineAuthors: "warn",
@@ -170,6 +165,13 @@ const config: Config = {
                     lastmod: "date",
                     changefreq: null,
                     priority: null,
+                    ignorePatterns: [
+                        "/learn/tags", "/learn/tags/**",
+                        "/blog/tags", "/blog/tags/**",
+                        "/api/tags", "/api/tags/**",
+                        "/blog/page/**",
+                        "/blog/authors", "/blog/authors/**",
+                    ],
                 },
             } as Preset.Options,
         ],
@@ -281,6 +283,12 @@ const config: Config = {
                     "aria-label": "Sign Up to Bitbybit.dev",
                 },
                 {
+                    href: "https://docs.bitbybit.dev",
+                    label: "API Reference",
+                    position: "right",
+                    "aria-label": "TypeScript API Reference",
+                },
+                {
                     href: "https://github.com/bitbybit-dev/bitbybit",
                     label: "GitHub",
                     position: "right",
@@ -299,6 +307,10 @@ const config: Config = {
                         {
                             label: "Code",
                             to: "/learn/code/intro",
+                        },
+                        {
+                            label: "TypeScript API Reference",
+                            href: "https://docs.bitbybit.dev",
                         },
                     ],
                 },
@@ -344,7 +356,7 @@ const config: Config = {
                         },
                         {
                             label: "GitHub",
-                            href: "https://github.com/facebook/docusaurus",
+                            href: "https://github.com/bitbybit-dev/bitbybit",
                         },
                     ],
                 },

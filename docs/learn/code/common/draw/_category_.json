@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Drawing in Bitbybit",
-        "description": "Learn how to use the drawing capabilities in Bitbybit, including creating and manipulating shapes, lines, and other graphical elements.",
+        "description": "Put geometry on the screen in Bitbybit with the Draw category, the single entry point for rendering anything your script produces. Draw is deliberately engine-agnostic: hand it a point, a list of wires, an OCCT solid or a mesh and it works out how to render it, so the same script draws correctly whether it runs on Babylon.js, Three.js or PlayCanvas. These pages cover the draw components and their options, controlling colour, opacity and size, updating what is already drawn instead of redrawing it, and when to reach for the more specific drawing functions.",
         "slug": "/code/common/draw"
     }
 }
