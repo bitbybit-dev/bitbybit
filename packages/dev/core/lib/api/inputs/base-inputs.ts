@@ -4,6 +4,10 @@
  */
 import { Base as BaseTypes } from "@bitbybit-dev/base";
 
+/**
+ * The core layer's re-export of the shared primitive types, so a script that only imports the core
+ * package still sees Point3, Vector3 and the rest without reaching into the base package.
+ */
 export namespace Base {
     // Re-export all types from base package
     export type Color = BaseTypes.Color;

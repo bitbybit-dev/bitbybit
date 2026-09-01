@@ -6,9 +6,9 @@ import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
 
 /**
- * Advanced glTF/glb tooling on top of the basic import/export in io. It keeps the rich asset container instead of
- * collapsing everything into a single mesh, which unlocks KHR_materials_variants, animation groups and other glTF
- * level features that need the loaded asset graph.
+ * Advanced glTF/glb tooling on top of the basic import/export in io. It keeps the rich asset container
+ * instead of collapsing everything into a single mesh, which unlocks KHR_materials_variants, animation
+ * groups and other glTF level features that need the loaded asset graph.
  */
 export class BabylonGltf {
 

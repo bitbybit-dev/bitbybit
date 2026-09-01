@@ -2,8 +2,8 @@ import { ManifoldWorkerManager } from "../../manifold-worker/manifold-worker-man
 import * as Inputs from "@bitbybit-dev/manifold/lib/api/inputs";
 
 /**
- * Contains various functions for transforming cross section from Manifold library https://github.com/elalish/manifold
- * Thanks Manifold community for developing this kernel
+ * Contains various functions for transforming cross section from Manifold library
+ * https://github.com/elalish/manifold Thanks Manifold community for developing this kernel
  */
 export class CrossSectionTransforms {
 

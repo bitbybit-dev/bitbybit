@@ -2,8 +2,8 @@ import * as Inputs from "../inputs";
 import { ContextBase } from "../context";
 
 /**
- * Tags help you to put text on top of your 3D objects. Tags are heavily used in data visualization scenarios
- * where you need to convery additional textual information.
+ * Tags help you to put text on top of your 3D objects. Tags are heavily used in data visualization
+ * scenarios where you need to convery additional textual information.
  */
 
 export class Tag {

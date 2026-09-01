@@ -2,6 +2,7 @@
     "name": "@bitbybit-dev/babylonjs",
     "version": "1.1.1",
     "description": "Bit By Bit Developers BABYLONJS CAD Library to Program Geometry",
+    "homepage": "https://docs.bitbybit.dev/classes/Bit.Babylon",
     "main": "index.js",
     "repository": {
         "type": "git",

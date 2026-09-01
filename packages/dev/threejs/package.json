@@ -2,6 +2,7 @@
   "name": "@bitbybit-dev/threejs",
   "version": "1.1.1",
   "description": "Bit By Bit Developers THREEJS CAD Library to Program Geometry",
+  "homepage": "https://docs.bitbybit.dev/modules/Bit",
   "main": "index.js",
   "repository": {
     "type": "git",

@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for JSON handling: the value or text to act on, the path to query or edit, and the
+ * formatting options used when stringifying.
+ */
 export namespace JSON {
 
     export class StringifyDto {

@@ -1,8 +1,17 @@
 import { Base } from "../../inputs";
 
+/**
+ * The name of a curve's underlying type - line, circle, ellipse, hyperbola, parabola, Bezier,
+ * B-spline and the rest - as it appears in a geometry report.
+ */
 export type CurveTypeName =
     "line" | "circle" | "ellipse" | "hyperbola" | "parabola" | "bezier" | "bspline" | "offset" | "other";
 
+/**
+ * The name of a surface's underlying type - plane, cylinder, cone, sphere, torus, Bezier,
+ * B-spline and the rest - as it appears in a geometry report. Recognising a run of cylindrical
+ * faces of equal radius is how a hole pattern is found.
+ */
 export type SurfaceTypeName =
     "plane" | "cylinder" | "cone" | "sphere" | "torus" | "bezier" | "bspline" | "revolution" | "extrusion" | "offset" | "other";
 

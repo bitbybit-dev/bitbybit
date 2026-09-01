@@ -3,6 +3,11 @@ import { Base } from "./base-inputs";
 
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for polygonal mesh geometry: vertex, index and normal data, the options for building and
+ * inspecting a mesh, and the settings that control conversion between the mesh representations the
+ * different kernels and the renderer expect.
+ */
 export namespace Mesh {
     export class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base.Point3, plane?: Base.TrianglePlane3) {

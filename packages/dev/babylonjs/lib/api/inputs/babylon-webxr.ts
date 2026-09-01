@@ -1,6 +1,10 @@
 import * as BABYLON from "@babylonjs/core";
 
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for WebXR: entering virtual or augmented reality, the reference space to use, and the
+ * options for controllers, teleportation and hit testing.
+ */
 export namespace BabylonWebXR {
 
     export class WebXRDefaultExperienceOptions {

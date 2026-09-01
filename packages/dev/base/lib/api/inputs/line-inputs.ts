@@ -2,6 +2,11 @@ import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 
+/**
+ * Parameters for straight line segments: the start and end points that define one, the options for
+ * creating many at once from point lists, and the settings for measuring, reversing, transforming and
+ * converting them into polylines or kernel edges.
+ */
 export namespace Line {
     export class LinePointsDto {
         /**

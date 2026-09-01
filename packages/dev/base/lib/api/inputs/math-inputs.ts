@@ -2,8 +2,19 @@
 
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for numeric helpers: the operands of arithmetic and trigonometry, the source and target
+ * ranges for remapping a value, rounding and clamping bounds, interpolation factors, and the seed for
+ * reproducible randomness. Remapping is the one that appears in nearly every parametric model, because
+ * it turns a user-facing slider range into the range the geometry needs.
+ */
 export namespace Math {
 
+    /**
+     * The arithmetic operation applied to two numbers: add, subtract, multiply, divide, power or
+     * modulus. Exists so a visual script can choose the operation at runtime instead of wiring a
+     * different node for each one.
+     */
     export enum mathTwoNrOperatorEnum {
         add = "add",
         subtract = "subtract",
@@ -13,6 +24,13 @@ export namespace Math {
         modulus = "modulus",
     }
 
+    /**
+     * The operation applied to a single number: absolute, negate, natural and base-10 logarithms,
+     * powers of ten, rounding up, down or to nearest, square root, the trigonometric functions and
+     * their inverses, exponential, and conversion between radians and degrees. Note that the
+     * trigonometric functions work in radians - use radToDeg and degToRad at the boundary, because
+     * almost every angle a user types is in degrees.
+     */
     export enum mathOneNrOperatorEnum {
         absolute = "absolute",
         negate = "negate",
@@ -34,6 +52,13 @@ export namespace Math {
         radToDeg = "radToDeg",
         degToRad = "degToRad",
     }
+    /**
+     * The easing curve applied when interpolating between two values, in the usual in/out/inOut
+     * families - sine, quadratic, cubic, quartic, quintic, exponential and the rest. Governs how an
+     * animated or blended value accelerates: easeInOut starts and ends gently, easeIn only starts
+     * gently, easeOut only ends gently. Linear interpolation, with no easing, is what makes animation
+     * look mechanical.
+     */
     export enum easeEnum {
         easeInSine = "easeInSine",
         easeOutSine = "easeOutSine",

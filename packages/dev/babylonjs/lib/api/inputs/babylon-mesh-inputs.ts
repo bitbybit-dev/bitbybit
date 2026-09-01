@@ -3,8 +3,17 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for mesh objects in the scene: visibility, picking, parenting, position, rotation and
+ * scale, material assignment, and the options for cloning, merging and disposing a mesh.
+ */
 export namespace BabylonMesh {
 
+    /**
+     * Which face of a surface is rendered: the front, the back, or both. Meshes are single-sided by
+     * default, so a surface can look missing when viewed from behind - setting this to double-sided is
+     * the usual fix.
+     */
     export enum sideOrientationEnum {
         frontside = "frontside",
         backside = "backside",

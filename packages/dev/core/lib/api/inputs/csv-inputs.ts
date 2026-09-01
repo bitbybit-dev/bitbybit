@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
+/**
+ * Parameters for reading and writing CSV: the text or rows to act on, the delimiter, whether the first
+ * row is a header, and the type coercion applied to parsed cells.
+ */
 export namespace CSV {
 
     export class ParseToArrayDto {

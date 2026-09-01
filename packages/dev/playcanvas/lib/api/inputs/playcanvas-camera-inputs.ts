@@ -2,6 +2,10 @@ import * as pc from "playcanvas";
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for PlayCanvas cameras: position, target, field of view and clipping planes, plus the
+ * orbit settings that decide how a user moves the view.
+ */
 export namespace PlayCanvasCamera {
     export class OrbitCameraDto {
         constructor(

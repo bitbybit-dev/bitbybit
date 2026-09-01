@@ -4,8 +4,8 @@ import { Point } from "./point";
 import { Vector } from "./vector";
 
 /**
- * Contains various methods for lines and segments. Line in bitbybit is a simple object that has start and end point properties.
- * { start: [ x, y, z ], end: [ x, y, z ] }
+ * Contains various methods for lines and segments. Line in bitbybit is a simple object that has start and
+ * end point properties. { start: [ x, y, z ], end: [ x, y, z ] }
  */
 export class Line {
 

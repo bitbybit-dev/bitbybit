@@ -3,7 +3,8 @@ import { Polyline } from "./polyline";
 import { Vector } from "./vector";
 
 /**
- * Contains various mesh helper methods that are not necessarily present in higher level CAD kernels that bitbybit is using.
+ * Contains various mesh helper methods that are not necessarily present in higher level CAD kernels that
+ * bitbybit is using.
  */
 export class MeshBitByBit {
     constructor(private readonly vector: Vector, private readonly polyline: Polyline) { }

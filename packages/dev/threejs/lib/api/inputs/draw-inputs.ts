@@ -4,6 +4,11 @@ import * as Inputs from "./index";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Options for drawing geometry into a Three.js scene: colour, opacity, size, and the per-kind settings
+ * that control how points, lines, polylines, meshes, surfaces and kernel shapes become renderer
+ * objects. Passing an existing drawn object back in updates it in place.
+ */
 export namespace Draw {
 
     export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;

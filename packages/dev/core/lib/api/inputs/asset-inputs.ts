@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
+/**
+ * Parameters for loading and managing external files - 3D models, textures, fonts and arbitrary data -
+ * from the project's asset store or from a URL. Carries the file name or URL, the expected type, and
+ * the options that control caching and how the loaded content is handed on to the kernels or renderer.
+ */
 export namespace Asset {
     export class GetAssetDto {
         constructor(fileName?: string) {

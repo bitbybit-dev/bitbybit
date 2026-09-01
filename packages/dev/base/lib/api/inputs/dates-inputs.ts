@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for date and time values: the date to act on, the unit and amount for arithmetic, and the
+ * format and locale used when parsing or printing one.
+ */
 export namespace Dates {
     export class DateDto {
         constructor(date?: Date) {

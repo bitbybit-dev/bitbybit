@@ -8,6 +8,7 @@ Source code in `packages/`, `languages/`, and `examples/` is [MIT licensed](./LI
 
 # [FULL PLATFORM AT BITBYBIT.DEV](https://bitbybit.dev)   
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   
+# [TYPESCRIPT API REFERENCE](https://docs.bitbybit.dev)   
 
 Essential introduction by Matas   
 [![Introduction by Matas Ubarevicius](https://img.youtube.com/vi/noc6Rg6tMe0/maxresdefault.jpg)](https://www.youtube.com/watch?v=noc6Rg6tMe0)
@@ -46,6 +47,10 @@ Your subscription directly funds continued open-source development of these pack
 | Topic | Link |
 |-------|------|
 | Getting Started | https://learn.bitbybit.dev/learn/getting-started/overview |
+| TypeScript API Reference | https://docs.bitbybit.dev |
+| API Reference - OCCT kernel | https://docs.bitbybit.dev/classes/Bit.OCCT |
+| API Reference - JSCAD kernel | https://docs.bitbybit.dev/classes/Bit.JSCAD |
+| API Reference - Manifold kernel | https://docs.bitbybit.dev/classes/Bit.Manifold |
 | NPM Packages Intro | https://learn.bitbybit.dev/learn/npm-packages/intro |
 | Integrate with Three.js | https://learn.bitbybit.dev/learn/npm-packages/threejs/start-with-three-js |
 | Integrate with BabylonJS | https://learn.bitbybit.dev/learn/npm-packages/babylonjs/start-with-babylon-js |

@@ -5,8 +5,8 @@ import { Vector } from "./vector";
 import { Line } from "./line";
 
 /**
- * Contains various methods for polyline. Polyline in bitbybit is a simple object that has points property containing an array of points.
- * { points: number[][] }
+ * Contains various methods for polyline. Polyline in bitbybit is a simple object that has points property
+ * containing an array of points. { points: number[][] }
  */
 export class Polyline {
 

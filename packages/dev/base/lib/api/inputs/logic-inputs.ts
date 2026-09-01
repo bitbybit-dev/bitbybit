@@ -4,8 +4,19 @@ import { Base } from "./base-inputs";
 
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for boolean logic and control flow: the operands of comparisons and and/or/not, the
+ * branches of a conditional selection, and the gate values that visual scripts use where code would
+ * use an if statement.
+ */
 export namespace Logic {
 
+    /**
+     * The comparison used between two values: less than, less or equal, greater, greater or equal,
+     * strict equality and inequality, and their loose equivalents. The strict forms compare type as
+     * well as value and are the safer default; the loose forms coerce, which is occasionally what you
+     * want when comparing a number against text a user typed.
+     */
     export enum BooleanOperatorsEnum {
         less = "<",
         lessOrEqual = "<=",

@@ -41,7 +41,17 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/manifold |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/intro |
+| **API Reference** | https://docs.bitbybit.dev/classes/Bit.Manifold |
 | **Unit Test Coverage** | https://tests.bitbybit.dev/manifold |
+
+### API reference
+
+Every class, method and input type in this package is documented in the generated TypeScript API reference:
+
+- [Manifold](https://docs.bitbybit.dev/classes/Bit.Manifold)
+- [Manifold shapes](https://docs.bitbybit.dev/classes/Bit.ManifoldShapes)
+- [Manifold booleans](https://docs.bitbybit.dev/classes/Bit.ManifoldBooleans)
+- [Manifold input types](https://docs.bitbybit.dev/modules/Bit.Inputs.Manifold)
 
 ## Example Applications
 

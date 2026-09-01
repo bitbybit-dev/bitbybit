@@ -4,9 +4,9 @@ import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 
 /**
- * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually containing numbers.
- * In 3D [x, y, z] form describes space, where y is the up vector.
- * Because of this form Vector can be interchanged with Point, which also is an array in [x, y, z] form.
+ * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually
+ * containing numbers. In 3D [x, y, z] form describes space, where y is the up vector. Because of this form
+ * Vector can be interchanged with Point, which also is an array in [x, y, z] form.
  */
 export class Vector {
 

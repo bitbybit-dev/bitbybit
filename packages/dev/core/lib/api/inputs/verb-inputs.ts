@@ -3,6 +3,11 @@
 import { BaseTypes } from "../bitbybit/base-types";
 import { Base } from "./base-inputs";
 
+/**
+ * Parameters for the Verb NURBS library: control points, weights, knots and degree for freeform curves
+ * and surfaces, plus the options for interpolation, lofting, sweeping, intersection and closest-point
+ * queries. Verb geometry converts to kernel geometry when a surface needs to become a solid.
+ */
 export namespace Verb {
 
     export class CurveDto {
@@ -875,7 +880,8 @@ export namespace Verb {
          */
         opacity = 1;
         /**
-         * Hex colour strings, there has to be a colour for every single surface and lengths of arrays need to match
+         * Hex colour strings, there has to be a colour for every single surface and lengths of arrays need
+         * to match
          */
         colours: string | string[];
         /**

@@ -4,6 +4,10 @@ import { Base } from "./base-inputs";
 import * as MATERIALS from "@babylonjs/materials";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for materials: base colour, metallic and roughness, emissive and ambient contributions,
+ * alpha and blending, backface culling, and the texture slots a physically-based material accepts.
+ */
 export namespace BabylonMaterial {
     export class PBRMetallicRoughnessDto {
         constructor(name?: string, baseColor?: Base.Color, emissiveColor?: Base.Color, metallic?: number, roughness?: number, alpha?: number, backFaceCulling?: boolean, zOffset?: number) {

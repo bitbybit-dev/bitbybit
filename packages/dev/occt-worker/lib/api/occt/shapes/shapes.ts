@@ -9,6 +9,12 @@ import { OCCTShell } from "./shell";
 import { OCCTShape } from "./shape";
 import { OCCTVertex } from "./vertex";
 
+/**
+ * Shape construction in OpenCascade, grouped by what you are building: vertices, edges, wires,
+ * faces, shells, solids and compounds. The groups mirror the topological hierarchy, and a normal
+ * modelling session climbs it - points become a wire, the wire becomes a face, the face is extruded
+ * into a solid. Reach into the group for the kind you want rather than looking for one flat list.
+ */
 export class OCCTShapes {
     public readonly vertex: OCCTVertex;
     public readonly edge: OCCTEdge;

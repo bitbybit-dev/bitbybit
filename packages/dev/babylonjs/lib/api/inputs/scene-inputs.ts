@@ -2,6 +2,10 @@
 import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
+/**
+ * Parameters for the scene itself: background and clear colour, fog, environment and skybox settings,
+ * active camera, and the scene-level options that affect everything drawn into it.
+ */
 export namespace BabylonScene {
 
     export class SceneBackgroundColourDto {
@@ -524,6 +528,10 @@ export namespace BabylonScene {
         hideSkybox?: boolean = false;
     }
 
+    /**
+     * A pointer event in the scene: which button, where on the canvas, and what was under it. The
+     * input side of picking, as opposed to the geometric result the pick returns.
+     */
     export class PointerDto {
         statement_update: () => void;
     }

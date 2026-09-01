@@ -3,6 +3,11 @@ import { BabylonMesh } from "./babylon-mesh-inputs";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for the engine's own mesh primitives - boxes, spheres, cylinders, planes, tubes, ribbons
+ * and the rest. These build display geometry directly, without going through a CAD kernel, which is
+ * the right choice for scene furniture that never has to be manufactured.
+ */
 export namespace BabylonMeshBuilder {
 
     export class CreateBoxDto {
