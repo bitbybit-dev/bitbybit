@@ -216,7 +216,7 @@ Composer is where a configurator is built: the 3D scene, the option panel, the l
 
 - [Pricing overview](https://learn.bitbybit.dev/learn/3d-bits/pricing/overview): Build a price from the options a shopper picks and charge it through Shopify.
 - [Set up pricing](https://learn.bitbybit.dev/learn/3d-bits/pricing/setting-up-pricing): Turn on configurator pricing and price your first option.
-- [Charging methods](https://learn.bitbybit.dev/learn/3d-bits/pricing/charging-methods): Product lines, Variant matrix and Single line compared.
+- [Charging methods](https://learn.bitbybit.dev/learn/3d-bits/pricing/charging-methods): Product lines, Bundled parts, Variant matrix and Single line compared.
 - [Helper products](https://learn.bitbybit.dev/learn/3d-bits/pricing/helper-products): The hidden 3D Bits Fee products and the rules for living with them.
 - [Linked products](https://learn.bitbybit.dev/learn/3d-bits/pricing/linked-products): Charge through products you already sell, link several to one option, and keep the links healthy.
 - [Complexity](https://learn.bitbybit.dev/learn/3d-bits/pricing/complexity): How large a configurator can get, and which choices are the expensive ones.

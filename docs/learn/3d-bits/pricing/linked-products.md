@@ -34,8 +34,8 @@ This is how you sell a set. "Oak leg set" links four of your *Oak Leg* product a
 
 The option charges the total of the products you linked to it. Each one ships as its own line, so your stock and your picking list stay correct for every piece.
 
-:::warning An option with more than one product always charges through Product lines
-The linked goods have to reach the order as their own lines, so a configuration with a multi-product option cannot use **Variant matrix**, and a **Single line** choice is moved down to **Product lines** when you publish. See [Charging methods](./charging-methods).
+:::warning An option with more than one product cannot use Variant matrix or Single line
+The linked goods have to reach the order as their own lines, so a configuration with a multi-product option cannot use **Variant matrix**, and a **Single line** choice is moved down to **Product lines** when you publish. **Bundled parts** handles them too, and prices each linked product separately on the order. See [Charging methods](./charging-methods).
 :::
 
 **A typed amount still wins.** If you put a figure in **Price +/-** as well, that figure is what the shopper is charged. It may not be *less* than the products you linked come to, and publishing tells you if it is.
@@ -77,7 +77,7 @@ These do **not** need one:
 - ❌ Making it Active again after it was archived - fix it in Shopify admin and the configurator carries on
 
 :::warning Your own product's price is the one people forget
-With **Product lines** charging, the price of the product the configurator sits on is posted on every configured order and acts as a floor. Raising it in Shopify without republishing can put configurations below that floor, and a shopper meets it as an add to cart that will not complete.
+With **Product lines** charging, the price of the product the configurator sits on is posted on every configured order and acts as a floor. Raising it in Shopify without republishing can put configurations below that floor, and a shopper meets it as an add to cart that will not complete. **Bundled parts** has no such floor - the bundle is priced from its parts alone.
 
 Whenever you change that price, publish the project again. Publishing checks the whole range of configurations and stops with an explanation if any of them no longer works. See [Setting up pricing](./setting-up-pricing).
 :::

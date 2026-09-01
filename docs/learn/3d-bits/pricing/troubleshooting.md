@@ -82,9 +82,9 @@ Publishing stops rather than going live with a setup that would charge incorrect
 | A linked product costs more than the option charges | Raise the option's amount, or unlink it |
 | A product is draft, archived, or not in the Online Store channel | Fix it in Shopify admin, then publish again |
 | A product is out of stock and set to stop selling | Restock it, or unlink it |
-| A configuration cannot be charged, naming selections and a shortfall | Raise your base price, or set the product's price to the figure the message names |
+| A configuration cannot be charged, naming selections and a shortfall | Raise your base price, set the product's price to the figure the message names, or switch to Bundled parts charging, which has no such floor |
 | The store's currency could not be read | Try again - this is usually transient |
-| The pricing rules are too large | Reduce priced options or conditions, or switch to Variant matrix or Single line ([charging methods](./charging-methods)) |
+| The pricing rules are too large | Reduce priced options or conditions, or switch to Bundled parts, Variant matrix or Single line ([charging methods](./charging-methods)) |
 | Two projects target one product | One product can only be driven by one published project. Unlink it from the other |
 
 ## Nothing is wrong, but nothing appears

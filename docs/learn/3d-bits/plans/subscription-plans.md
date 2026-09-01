@@ -57,6 +57,7 @@ Configurator pricing works on every plan. What differs is how the charge is asse
 | Charging method | Base | Standard | Pro |
 |---|:---:|:---:|:---:|
 | Product lines, the default | <PlanIncludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
+| Bundled parts | <PlanIncludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Variant matrix | <PlanIncludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Single line | <PlanExcludedIcon /> | <PlanConditionalIcon /><br />Shopify Plus or a development store | <PlanConditionalIcon /><br />Shopify Plus or a development store |
 

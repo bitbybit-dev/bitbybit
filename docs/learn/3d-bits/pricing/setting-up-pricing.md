@@ -29,7 +29,7 @@ If a configuration a shopper could reach falls below that floor, **publishing is
 
 Take the number it gives you. Set the product's price to the figure the message names rather than dropping it to nothing - we have seen a product priced at nothing coincide with a cart that stops bundling the configuration into a single item.
 
-**Variant matrix** and **Single line** charging do not have this floor, so switching method is the other way out.
+**Bundled parts**, **Variant matrix** and **Single line** charging do not have this floor, so switching method is the other way out. Bundled parts is the closest change to make: it charges through exactly the same products, and prices the cart entirely from them, so your product's own price stops reaching the order at all.
 :::
 
 ## 3. Price an option

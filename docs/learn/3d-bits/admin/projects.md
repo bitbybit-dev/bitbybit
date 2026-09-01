@@ -119,7 +119,7 @@ Older guidance said to zero the product's price to keep it out of the way. Do no
 
 Worth repeating because it catches people out. **Save** keeps your work in the project. **Publish** puts it on your storefront. You can save as often as you like without any of it reaching a shopper.
 
-Publishing from this page asks you to confirm whenever the project charges through Product lines, because that is the method that creates and updates hidden helper products in your store. Pricing test mode suppresses the question, since it creates nothing. The same dialog offers to add the exclusion rule that keeps those products out of your automated collections, and that offer is ticked by default.
+Publishing from this page asks you to confirm whenever the project charges through Product lines or Bundled parts, because those are the methods that create and update hidden helper products in your store. Pricing test mode suppresses the question, since it creates nothing. The same dialog offers to add the exclusion rule that keeps those products out of your automated collections, and that offer is ticked by default.
 
 ## Deleting a project
 

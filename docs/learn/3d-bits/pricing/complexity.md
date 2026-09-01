@@ -84,7 +84,8 @@ These do not move, whatever else you do:
 
 Each option that adds money is remembered in the rules, and in Product lines charging each one that
 is switched on becomes its own cart line. Many priced options therefore cost you in two ways at
-once.
+once. The table below is about **Product lines**; Bundled parts is counted differently and is
+covered under [Charging methods](/learn/3d-bits/pricing/charging-methods).
 
 What costs is **how many priced options one configuration can have switched on at the same time**,
 not how many you have authored. Twenty priced options spread across a few dropdowns post only as
@@ -103,6 +104,8 @@ If you have a great many, consider:
 
 - **Combining them into one line.** There is a setting for charging all options through a single
   combined line instead of one line each.
+- **Bundled parts charging**, which nests the parts under one cart line so checkout only has to
+  verify that one. It charges through the same products and keeps every part on the order.
 - **Single line charging**, which prices everything into the product itself.
 
 See [Charging methods](/learn/3d-bits/pricing/charging-methods) for the trade-offs.
@@ -116,7 +119,8 @@ publish rather than by a shopper at checkout. The message names what is binding:
 - **Too expensive to work out** - almost always distinct quantity formulas. Share one formula across
   parts, or replace formulas with fixed numbers where the quantity never varies.
 - **Too many cart lines** - a single configuration would add more lines than checkout can verify.
-  Combine option lines, or switch charging method.
+  Combine option lines, or switch charging method. **Bundled parts** is usually the answer here: it
+  raises the ceiling from roughly 48 parts to roughly 130 by nesting them under one line.
 
 A project that publishes with a **lower cart limit** has not failed. It simply means shoppers can
 buy fewer of that configured product at once, and 3D Bits tells the shopper clearly if they try to
@@ -130,7 +134,10 @@ In rough order of how much they buy you:
 2. **Replace formulas with fixed numbers** wherever a quantity never varies.
 3. **Simplify the formulas themselves** - a short expression is cheaper than a long one.
 4. **Reduce priced options**, or combine their cart lines.
-5. **Split the product** into two simpler configurators if it is really two products.
+5. **Switch to Bundled parts charging**, which changes what is counted rather than how much of it
+   there is. Its own limit is how many parts one configuration ships, about 130 of them, and it
+   halves as a shopper buys more of the same configured product in one cart.
+6. **Split the product** into two simpler configurators if it is really two products.
 
 Nesting deeper, or adding more parts with fixed quantities, is nearly free - so restructure toward
 those rather than away from them.

@@ -121,6 +121,6 @@ The main things that matter are file size, sensible geometry, and objects that a
 
 It does not replace Shopify. Tax, shipping rates, discount codes, payment, fraud checks and refunds all stay exactly where they are, and we never process or hold money. 3D Bits decides what the configured product costs, and Shopify collects it.
 
-One detail is worth knowing about tax. With the default Product lines charging, part of the configured price is carried by helper products 3D Bits generates in your catalogue, and Shopify taxes those at your shop's default rate. If you rely on a reduced or zero rate set up as a tax override, it will not necessarily reach them, so check it before you go live - [Helper products](/learn/3d-bits/pricing/helper-products) explains what these generated products are.
+One detail is worth knowing about tax. With Product lines charging (the default) or Bundled parts, part of the configured price is carried by helper products 3D Bits generates in your catalogue, and Shopify taxes those at your shop's default rate. If you rely on a reduced or zero rate set up as a tax override, it will not necessarily reach them, so check it before you go live - [Helper products](/learn/3d-bits/pricing/helper-products) explains what these generated products are.
 
 It is also not a general page builder. It builds the configurator and its option panel, not the rest of your storefront.

@@ -52,6 +52,8 @@ How far it can drift depends on how many lines a configuration posts, so:
 - **Charging the options through one combined line** leaves a single line to round instead of several. On the project's page, set **How option charges reach the order** to *One combined charge*.
 - **[Variant matrix](./charging-methods) charging** avoids the question entirely - it creates real Shopify variants, so all of Shopify's own per-market pricing applies natively.
 
+**Bundled parts** converts each part on its own, so a converted order can come to a fraction of a unit less per part than a single conversion of the whole. It is a rounding difference of hundredths, not a pricing rule, and it goes the shopper's way rather than yours. In your own store currency there is no difference at all.
+
 When you publish, 3D Bits tells you which of your markets round, and how many lines your busiest configuration posts.
 
 ## Markets that include tax in the price

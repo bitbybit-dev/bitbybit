@@ -75,7 +75,7 @@ Configurator pricing decides **what the product costs**. Everything around that 
 ## Where to go next
 
 1. **[Set up your first price](./setting-up-pricing)** - turn it on and price one option, start to finish.
-2. **[Choose a charging method](./charging-methods)** - three ways to turn a configured price into a real Shopify charge, and how to pick.
+2. **[Choose a charging method](./charging-methods)** - four ways to turn a configured price into a real Shopify charge, and how to pick.
 3. **[Link your own products](./linked-products)** - charge through products you already sell.
 4. **[Helper products](./helper-products)** - the hidden products 3D Bits creates, and the rules for living with them.
 5. **[Test your prices first](./test-mode)** - see your numbers on a real product page before anything is created.

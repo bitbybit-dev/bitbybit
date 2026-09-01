@@ -8,7 +8,7 @@ tags: [shopify, 3d-bits, pricing, fees, ecommerce]
 
 # Helper Products
 
-When you publish with **Product lines** charging, 3D Bits creates some products in your Shopify catalogue carrying the vendor name **3D Bits Fee**. This page explains what they are and, more importantly, what not to do with them.
+When you publish with **Product lines** or **Bundled parts** charging, 3D Bits creates some products in your Shopify catalogue carrying the vendor name **3D Bits Fee**. This page explains what they are and, more importantly, what not to do with them.
 
 :::tip You can see your prices before any of this is created
 [Pricing test mode](./test-mode) puts your configurator on a real product page and shows its computed prices without creating a single helper product.
@@ -57,6 +57,8 @@ If Shopify refuses to archive one, 3D Bits tells you which product it was. That 
 
 ## If you use Variant matrix or Single line
 
-Neither creates any. Helper products are made only for **Product lines** charging.
+Neither creates any. Helper products are made for **Product lines** and **Bundled parts** charging.
 
 **Variant matrix** generates variants on your own product instead. **Single line** sets the price of the product's own cart line, so there is nothing to assemble it from.
+
+**Bundled parts** uses exactly the same helper products as Product lines - the same fee products, the same price unit. The difference is where they end up: nested under one cart line instead of combined into it. Switching between those two methods creates nothing new and archives nothing.
