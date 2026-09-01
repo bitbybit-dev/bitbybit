@@ -66,5 +66,32 @@ Returns metadata and download URL for a single file.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/files/{fileId}`
+
+Returns metadata and download URL for a single file.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `fileId` | path | string | yes | File ID |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | File details |
+| `404` | Not found |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/files/{fileId}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

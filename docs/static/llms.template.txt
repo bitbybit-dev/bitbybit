@@ -8,6 +8,7 @@ This is the official documentation site for Bitbybit. The platform enables desig
 
 - Main Platform: https://bitbybit.dev
 - TypeScript API Reference: https://docs.bitbybit.dev
+- CAD Cloud API (OpenAPI 3.1.0): https://learn.bitbybit.dev/openapi.json
 - GitHub Repository: https://github.com/bitbybit-dev/bitbybit
 
 ## Getting Started
@@ -277,6 +278,19 @@ are for placing the 3D view or part of the option panel somewhere specific in a 
 ### Tutorials
 
 - Product Laptop Holder (TypeScript): https://learn.bitbybit.dev/learn/3d-bits/tutorials/videos-tutorials/product-laptop-holder
+
+## CAD Cloud API
+
+A hosted HTTP API for generating parametric 3D CAD models, converting STEP files to glTF and running CAD kernel pipelines from any language. Asynchronous: submit a job, poll the task, download the result.
+
+- OpenAPI 3.1.0 specification (machine-readable): https://learn.bitbybit.dev/openapi.json
+- Base URL: https://api.bitbybit.dev
+- API overview: https://learn.bitbybit.dev/api/cloud-api
+- Interactive API reference: https://learn.bitbybit.dev/api/openapi-docs/bitbybit-cad-cloud-api
+- TypeScript SDK: https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk
+- SDK guide: https://learn.bitbybit.dev/api/sdk/typescript
+
+Authentication is an `x-api-key` header on every endpoint except `/health`.
 
 ## AI Integration
 

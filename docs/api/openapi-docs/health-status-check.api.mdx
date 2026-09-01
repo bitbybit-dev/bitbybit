@@ -58,5 +58,25 @@ Returns the operational status of the Bitbybit CAD Cloud API, including service 
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /health`
+
+Returns the operational status of the Bitbybit CAD Cloud API, including service health and readiness. Requires no authentication, so it is suitable for uptime monitoring, load balancer probes and deployment smoke tests.
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Health status |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/health" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

@@ -144,6 +144,8 @@ const config: Config = {
                         "https://github.com/bitbybit-dev/bitbybit/tree/master/docs/",
                 },
                 blog: {
+                    blogTitle: "Bitbybit Blog",
+                    blogDescription: "Release notes, tutorials and product news from the bitbybit.dev 3D CAD platform - visual programming, OpenCascade geometry, Shopify 3D configurators and the open-source packages behind them.",
                     showReadingTime: true,
                     feedOptions: {
                         type: ["rss", "atom"],

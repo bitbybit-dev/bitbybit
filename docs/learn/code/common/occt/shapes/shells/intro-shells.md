@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Shells
 sidebar_label: Intro Shells
-description: Learn how to create shells
+description: Shells are the connected sets of faces that sit between a face and a solid in OCCT. Learn how to build them, when a shell needs to be closed, and how they feed solid construction.
 tags: [code, occt, rete, blockly, typescript]
 ---
 

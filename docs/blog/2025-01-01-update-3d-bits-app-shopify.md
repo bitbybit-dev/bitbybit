@@ -1,6 +1,7 @@
 ---
 slug: updated-3d-bits-app-for-shopify
 title: "UPDATED: 3D Bits App for Shopify - Simpler Static 3D Models & Project Embedding!"
+image: https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-embed-towel-bucket.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Exciting updates for the 3D Bits app for Shopify! Introducing new capabilities for simpler use cases, including easier static 3D model display and direct embedding of public Bitbybit.dev projects."

@@ -66,5 +66,46 @@ Runs multiple operations sequentially. Use '$ref:N' in params to reference step 
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/cad/pipeline`
+
+Runs multiple operations sequentially. Use '$ref:N' in params to reference step N's result.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `steps` | array of object | yes | Ordered list of CAD operations executed sequentially. Later steps can reference earlier results using '$ref:N' syntax. Supports map and choice control-flow steps. |
+| `inputFiles` | array of object | no | References to previously uploaded files. Use '$file:N' in step params to inject file contents (optionally '$file:N:&lt;format&gt;:&lt;codec&gt;' to pick a read format and/or decompress - see PipelineStep.params). |
+| `inputFiles[].fileId` | string | yes | ID of a previously uploaded file (from POST /files/upload) |
+| `inputFiles[].role` | string | yes | Role identifier for the file (e.g. 'step-model', 'coordinates-csv') |
+| `outputs` | object | no | Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf) beyond standard model outputs. |
+| `outputs.formats` | array of object | yes | Output formats to generate. Supports standard CAD formats (step, stpz, gltf, decomposed-mesh) plus pipeline-specific formats (json, csv, stl, 3mf). |
+| `outputs.meshPrecision` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `outputs.gltfMeshPrecision` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `outputs.adjustYtoZ` | boolean | no | Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up. |
+| `outputs.includePipelineInMetadata` | boolean | no | Include the full pipeline definition in metadata.json. Defaults to true. Set to false to exclude it for smaller metadata. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Task accepted |
+| `400` | Validation error |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/cad/pipeline" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

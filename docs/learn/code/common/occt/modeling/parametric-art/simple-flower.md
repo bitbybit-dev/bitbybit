@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Simple Flower
 sidebar_label: Simple Flower
-description: Create simple flower
+description: Build a parametric flower from OCCT wires and faces, driving petal count, radius and curvature from a handful of numbers so the whole shape rebuilds as you change them.
 tags: [code, occt, rete, blockly, typescript]
 ---
 

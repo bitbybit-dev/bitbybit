@@ -1,6 +1,7 @@
 ---
 slug: editors-translated-to-multiple-languages
 title: "BREAKING LANGUAGE BARRIERS: Bitbybit.dev Opens 3D Design to a Global Audience"
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/translated-editors/translated-editors.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "We are excited to announce that all components of Bitbybit.dev's Rete & Blockly visual programming editors are now translated into Spanish, Hindi, Arabic, Chinese, French, and Lithuanian, making 3D design more accessible worldwide."

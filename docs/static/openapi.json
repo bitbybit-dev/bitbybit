@@ -156,7 +156,7 @@
           "CAD Operations"
         ],
         "summary": "CAD - execute compound (parallel) operations",
-        "description": "Runs multiple independent operations in parallel.",
+        "description": "Runs several independent CAD operations in parallel as one compound task. Each sub-operation is executed on its own and produces its own downloadable result, so use this when the operations do not depend on each other - for a sequence where each step consumes the previous one's output, use the chained pipeline endpoint instead. Returns 202 with a compound task id; poll it and download the per-sub-task manifest when it completes.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1231,12 +1231,13 @@
           "Files"
         ],
         "summary": "Files - list uploaded files",
-        "description": "Returns paginated list of uploaded files.",
+        "description": "Returns a paginated list of the files uploaded under your API key, newest first, with each file's id, original name, size, upload status and expiry. Use it to find the file id to pass to a conversion endpoint, and to check that an upload through a pre-signed URL actually completed before you reference it.",
         "parameters": [
           {
             "name": "page",
             "in": "query",
             "required": false,
+            "description": "1-based page number. Defaults to the first page.",
             "schema": {
               "type": "integer",
               "default": 1
@@ -1246,6 +1247,7 @@
             "name": "limit",
             "in": "query",
             "required": false,
+            "description": "How many files to return per page.",
             "schema": {
               "type": "integer",
               "default": 20
@@ -1255,6 +1257,7 @@
             "name": "status",
             "in": "query",
             "required": false,
+            "description": "Return only files in this upload state: pending (a pre-signed URL was issued but the upload has not been confirmed), confirmed (the blob is stored and usable), or expired.",
             "schema": {
               "type": "string",
               "enum": [
@@ -1326,7 +1329,7 @@
           "Files"
         ],
         "summary": "Files - delete a file",
-        "description": "Permanently removes a file and its stored blob.",
+        "description": "Permanently deletes an uploaded file and the stored blob behind it. This cannot be undone, and any task result that still points at the blob stops resolving. Files also expire on their own, so call this only when you need the storage released sooner than that.",
         "parameters": [
           {
             "name": "fileId",
@@ -1412,12 +1415,13 @@
           "Tasks"
         ],
         "summary": "Tasks - list tasks",
-        "description": "Returns paginated list of tasks.",
+        "description": "Returns a paginated list of your tasks, newest first, each with its id, kind, status, creation time and result link when finished. Filter by status to poll only what is still running, or by kind to separate model generation, STEP conversion, pipelines and compound runs. This is the endpoint to build a job dashboard on rather than polling every task id individually.",
         "parameters": [
           {
             "name": "page",
             "in": "query",
             "required": false,
+            "description": "1-based page number. Defaults to the first page.",
             "schema": {
               "type": "integer",
               "default": 1
@@ -1427,6 +1431,7 @@
             "name": "limit",
             "in": "query",
             "required": false,
+            "description": "How many tasks to return per page.",
             "schema": {
               "type": "integer",
               "default": 20
@@ -1436,6 +1441,7 @@
             "name": "status",
             "in": "query",
             "required": false,
+            "description": "Return only tasks in this state. waiting and queued are not started yet, processing is running, completed has a downloadable result, failed carries an error, cancelled was stopped by you, and expired means the result has been cleaned up.",
             "schema": {
               "type": "string",
               "enum": [
@@ -1453,6 +1459,7 @@
             "name": "kind",
             "in": "query",
             "required": false,
+            "description": "Return only tasks of this kind: cad for a single operation, model for a registered parametric model, convert-simple and convert-advanced for STEP conversions, pipeline for a chained run, compound for a parallel run.",
             "schema": {
               "type": "string",
               "enum": [

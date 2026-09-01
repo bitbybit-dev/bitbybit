@@ -1,11 +1,11 @@
 ---
 id: cad-execute-compound-parallel-operations
 title: "CAD - execute compound (parallel) operations"
-description: "Runs multiple independent operations in parallel."
+description: "Runs several independent CAD operations in parallel as one compound task. Each sub-operation is executed on its own and produces its own downloadable result, so use this when the operations do not depend on each other - for a sequence where each step consumes the previous one's output, use the chained pipeline endpoint instead. Returns 202 with a compound task id; poll it and download the per-sub-task manifest when it completes."
 sidebar_label: "CAD - execute compound (parallel) operations"
 hide_title: true
 hide_table_of_contents: true
-api: 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
+api: eJztWW1vG7kR/isDfrFcrGQ5zeEQ9ZPOcXpqk7NhO4eihnGgliOJZy654Yts1RDQ/9B/2F9SzHBXWktKcr4WBYqePml3ueS8PvPM7JOIch7E6Facjd/CRY1eRu1sEHeFUBhKr2u6FiNxlWyAgEv00oC2Cmu0Cm0EetFtXgRtoZZeGoMGZABnEUpX1S5ZBVGG+wGcy3IBIU37m7dAB8BHLFNEBXQZA7gHC9IqqL1TqcSwuancgzVOKjk1CB5DMrGA4CAFhLjQAR4WaCEusCuVcmBdhCw1HYEkhIsL9NCHmfMgIeCnhLZE2sBjXhEi1lA6G1KFgTetPS61S6zZUQCXYp1i0ZyOUC6ktqig1jUabRHQqtppG0HbEFGqAVxhTN4GeDV8BQ86LkA+txBo9QeonTGgI5ug1Tifj75PxuOVlbR6hiFmnXXkjQxGDANRCE8KhfidUysxeuJL7VGJUfQJC1E6G9FGeiTr2uiSbXXycyB/P4lQLrCS9C+uahQj4aY/YxlFIWpPlo0aAz1tvd1ZOXXOoLSCzwixPfB5QH1IIcIUgZ5BH4KeW2nIxjKCjlgFCAuXjKI1tXclhoCKfFEm79FGsxLrQvBKOrrSdpL/nxaiko/txXBYtGJJ7+VKdN75smKb8OksDdFrOxcFHfce7Twu+Lznmr1Lxqz6n5I0eqZRPc8Q0JQ19MAP4DrVtfMxwMXZ2U0BH8idzqgC/nR9Nn5bsPeXWEbnTyoZF52IHpDyZPqsyXMBNnncDzWWeqZLzskKI/rA0c6J0oYR29HWKb7TBg9sd4Uz9JQZAaLbJIBZQaopLFHBjF6kh1OkTFCU+bxj57StOX+tQ+iUiXqpNyZvwc1AflZu6M28q+Dy4voGTliRk/z8mOzincGXnnjlDHbc3JgAm9NwMB/AEQFLv3IKzVEBR6VzXmkrI4Z+GZZHx2K9LjoJe9vq3gh0VwiplKbzpLnsGGkmTdjLtI3/yEPS7qh/wGvkIR1JcTFp44LyiaXKiPfO+UrGA8Fyib5P/myQkZSvZAS3RO+1wjCAyQxcpWNEVbBZGMk2MO/lQ4PqoGSUhGPdbP5q7Bz00HrXnNtgfJkpxxC0nZtObWEI17YL4r0WEo+7FY+N4hOXyE31NKtBx9hnzQ7Z1rtnv9chUih/ofhG19bRbh3uCjDF0lEpk5vsH+zF2gbRW+u+zEbnjQRVMlHXlAodgb/Tcbqa6i/Rhj17SRYX6XnEjdwMjqW0XB+cMajoIL3UKklz2K6NZFwQ101MhNrZkPHl1fDVfjyfPSvNsiyxjqjEf6x8uvuvFU4KBBl/wVYk4WF83ElRSfVzh3RM3mac8rK813bOCSuNocScewyB4vFe24PbN8KKdkdaG9L0Rob7M5eyjZp3tI04Ry8KgY+lSUEv8YO2ukqVGA051fP/N8Pht6dv3rz65vW3r4dv3uxh7I2L0oBN1RQ9JUUbFQFKj5J4ZI+oZ40+B5LOlLChRAztIcqYwkdvvm6xKzQy6iXCx6v3XAOJnTEby6ZkC+b9WDNJLEyMxIms9cny9IQlO3nKDlp3zNNFrhdWw1/q7Y9Wf0oH6lGHAEDv83l0nNmBwseDXqx+jfP+it71p5JKTu0C4wr58LlMDa4yqe7GVbbyAbXR0tm34kHqmO98Spg4Vxv+2EZr5sj0YCa1ydksbYkm/8fHmqFwrwcij4HRMyxXpUF2OI6gOQ96hHH0p0W7UmM4LiBLAT1t89/jArbyQE+WFFlmxVom2um42PB4Bb2mGMql1IZ6nuMCstTQQ++dB1cyI1b0WqsF9FJA399cHxfQaLXZ8ObmPeBjiahQHXfAkpS8zkZes+Vy+hPM2dXFTIxuN6bP6SfWReeOMWK9Z7izrA75uUZfoo1yjtAb/vPv/zgdDo/BeaA3Qc+4TVthJON68tE6OyxF/PBvCjEuY5KmMTNC1BVXyUobowOWzqoAPRYj2ajN1gecAmzrgwI0Afh1Ac7ZXRWGQNrrLWg1Di2yEbgrfdABmQI0vV+Hb/0yArRHH8ZtAO0ws3tchYaV3h7NzZT4aIj1347ujhkpWgkoWHPohD3G0GBRCxSbLO3ET9eNrTX31XsZ08hhCiFVlfQrlpZAfxdCPk/NOmF/nQH5Ou8l9hjjRkUugjv1rVtMOtj+UppOcwFUuZn/vNA0LWl5yADOnI1SM4PSUUvTlKE80zBmWxgPESLWINfLK3btnmcd2Yjpx8uU+f7m5pInHC3DeolWn5F03Dy+arZsONzr4XCftv0ojVaZoLex9l8hbGyMLlx8ebPSqYPt5c6oRJYLbbHvsRl7ZeDnl7t048fx+8nb8c3k4oefzq+uLq4IBBq4+foh36dK2t0j2rcZTaLU5uC0IccEhOhTGRMVmVZAG/ExivVmFpUJy27c86MuA83y7QDaTmQ22rcSvhQ5dkTVNsNh29FBtWtzOo97Dtfqq3Ca5nPCxVbRbdwy1r9lkx3OqRwgL8Y7q6RvZUa7RONq3D12Jz++OZQf1+iX6H/Ljd9y4/84NzgE4sIpMRK1CxyCkgZGm8atlOpk030UInDWBGZ/iRpHsYixDqMTWj+YNrONgcLlftPNAy6+IGYYsExexxVvNa71n3E1TnT07V338TUlXk6H7qItCeSbTLxIGJSKuzIrK3r6l/74ctLPC3asVboaFYwvJ8T/BsDXYQQ8kQzUSChqQuwSfSzgd9B70EaV0qvjAYzpFQ4El+Kmq+beItA24LFEvcQAr4e/h8kP1x/fvZucTc5/uPnp+uzi8jwPnAharrYfKM7bRO1+UMifDRqCe/tsIr/N1O7k+nY7JN4uyCPcTarc7Y0wb9tnd+s7bnZnjk3cxM2zkdWZcYntJgpBoZCFOR2cDk73UUPPF/0aPWcPjV+bIbzXJe/FxoY52naUOL6cdL4J8Pys385PM2fvXd+cXxbwx/c37wpQyKFJbXSFYUF95earE0+6tLMFD3mbZjs7NPBtylYZVraEn92005AOmmogS64GTSS1NhDFTtw/i/l1ISL6KlzMqLzoEj+z8IRX9aVVfWq7dP7kWAijS6Tc3J5Lae81RqLkXzr68I4UZ5TXlbSdPcn0/c2c9BAf3c4ld336tK2Uv30R/d/7ItqgJtWjk9pIbSlkU54AZuS/JUil3D7loZBq+lbG/7tCLKhKjG7F0xNl1Edv1mu6/SmhJyi/K8RSek2OYCQvWkgmZLrHFTc0HD/9mxUXp6U0KQP5DuuicUJ+I7c9X1x71ylk9CFLFGLafPWtmEUJLx8ICuWDGAlRiFynua7wvSdhpJ0nJkMi70m/fwFmYE3H
 sidebar_class_name: "post api-method"
 info_path: api/open/bitbybit-cad-cloud-api
 custom_edit_url: null
@@ -38,7 +38,7 @@ import Translate from "@docusaurus/Translate";
 
 
 
-Runs multiple independent operations in parallel.
+Runs several independent CAD operations in parallel as one compound task. Each sub-operation is executed on its own and produces its own downloadable result, so use this when the operations do not depend on each other - for a sequence where each step consumes the previous one's output, use the chained pipeline endpoint instead. Returns 202 with a compound task id; poll it and download the per-sub-task manifest when it completes.
 
 <Heading
   id={"request"}
@@ -66,5 +66,44 @@ Runs multiple independent operations in parallel.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/cad/compound`
+
+Runs several independent CAD operations in parallel as one compound task. Each sub-operation is executed on its own and produces its own downloadable result, so use this when the operations do not depend on each other - for a sequence where each step consumes the previous one's output, use the chained pipeline endpoint instead. Returns 202 with a compound task id; poll it and download the per-sub-task manifest when it completes.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `parallel` | boolean | yes | Must be true - signals that items should be processed concurrently |
+| `items` | array of object | yes | List of independent CAD operations to execute in parallel. Each item becomes a sub-task. |
+| `items[].operation` | string | yes | Fully-qualified CAD operation identifier. Supports OCCT, Manifold, JSCAD, and vector/math operations. |
+| `items[].params` | object | no | Operation-specific parameters for this sub-task |
+| `items[].inputFiles` | array of object | no | References to previously uploaded files to be used as inputs for this operation |
+| `items[].inputFiles[].fileId` | string | yes | ID of a previously uploaded file (from POST /files/upload) |
+| `items[].inputFiles[].role` | string | yes | Role identifier for the file (e.g. 'step-model', 'coordinates-csv') |
+| `items[].outputFormats` | array of string | no | Per-item output format overrides. If omitted, the task produces raw result data. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Compound task accepted |
+| `400` | Validation error |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/cad/compound" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

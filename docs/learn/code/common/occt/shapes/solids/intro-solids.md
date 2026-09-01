@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Solids
 sidebar_label: Intro Solids
-description: Learn how to create solids
+description: Solids are closed, watertight volumes in OCCT and the shape kind most downstream operations expect. Learn how to create them from primitives and from shells, and how to check one is valid.
 tags: [code, occt, rete, blockly, typescript]
 ---
 

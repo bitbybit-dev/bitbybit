@@ -133,3 +133,32 @@
     display: flex;
     justify-content: center;
 }
+
+/**
+ * Related pages block rendered by src/theme/DocItem/Footer.
+ * Half the hand-written pages had no in-content internal link at all; this gives every
+ * page a real, per-page set of links to its siblings and its parent.
+ */
+.related-pages {
+    margin: 48px 0 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--ifm-toc-border-color);
+}
+
+.related-pages h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+}
+
+.related-pages ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.related-pages li {
+    margin: 0;
+}

@@ -58,5 +58,25 @@ Lists every parametric model available for generation, by name. Use the returned
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/models`
+
+Lists every parametric model available for generation, by name. Use the returned names with the definitions and generation endpoints to discover each model's parameter schema and defaults before submitting a job.
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Model name list |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/models" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).
