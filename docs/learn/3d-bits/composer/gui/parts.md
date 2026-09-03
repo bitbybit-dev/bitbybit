@@ -171,6 +171,13 @@ If any part has a SKU, Composer asks before it hands you the file, and you choos
 
 ## What publishing refuses
 
+Checkout works out every part and every condition on it for each configured item, and that work is
+budgeted. Publishing measures it and refuses a project that would not finish: as a guide, Bundled
+parts holds about 120 linked parts charged at once for one configured item (parts that exclude
+each other on the same choice do not count together; fewer as a shopper buys more of it in one cart), and Single line about 300 parts, or about 200 when each carries a few conditions. When a
+project is over, the message names what is costing the most - conditions, expressions, or the parts
+a bundle has to nest.
+
 Publishing stops rather than going live with parts that could not be charged correctly. It refuses:
 
 - a part carrying **both** a typed price and a linked product;

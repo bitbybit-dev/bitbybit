@@ -20,8 +20,8 @@ far.
 
 - **Parts that carry a typed price are cheap.** A hundred of those is not a problem.
 - **Parts linked to a real product are the expensive kind.** Each one ships as its own cart line
-  for checkout to verify, so they run out long before typed-price parts do - around twenty is where
-  it starts to bite.
+  for checkout to verify, and the whole cart may carry about 118 of those lines, so they run out long
+  before typed-price parts do - around thirty is where it starts to bite.
 - **Nesting is cheap** - far cheaper than one more formula.
 - **Quantity formulas are the expensive thing** - and specifically, how many *different* ones you
   write.
@@ -39,7 +39,9 @@ Checkout remembers each distinct formula it has already worked out. Write the sa
 differ only slightly - `ceil(width / 4000)`, `ceil(width / 4001)`, and so on - and every one is
 worked out separately.
 
-The two projects are the same size. One publishes comfortably. The other is refused outright.
+The two projects are the same size. One is worked out once; the other thirty times. Checkout is fast
+enough today that both publish, but the shared-formula project keeps far more room for parts and
+options, and a large project of bespoke long formulas is refused for its size before anything else.
 
 If several parts need genuinely different quantities, prefer one shared formula driven by a
 different input over many bespoke formulas.
@@ -51,16 +53,18 @@ Rough guidance, with everything else left simple:
 | Your project | Configured items per cart |
 |---|---|
 | Up to 100 parts with typed prices, fixed quantities, no formulas | 4 (the maximum) |
-| 30 parts, six levels deep, all sharing one formula | 1 |
-| 30 parts, six levels deep, each with its own formula | refused - will not publish |
-| 20 parts nested twenty levels deep, one shared formula | 1 |
-| 5 parts linked to real products you ship | 4 |
-| 10 parts linked to real products you ship | 2 |
-| 20 parts linked to real products you ship | 1 |
-| Around 38 linked parts or more | refused - will not publish |
+| 30 parts, six levels deep, all sharing one formula | 4 |
+| 30 parts, six levels deep, each with its own formula | 4 |
+| 20 parts nested twenty levels deep, one shared formula | 4 |
+| Up to about 29 parts linked to real products you ship | 4 |
+| Around 35 parts linked to real products you ship | 3 |
+| Around 50 parts linked to real products you ship | 2 |
+| Around 100 parts linked to real products you ship | 1 |
+| 119 linked parts or more | refused - will not publish |
 
 "Configured items per cart" is how many of *your configured products* a shopper can have in one
-cart at the same time. Ordinary products do not count toward this limit.
+cart at the same time. Ordinary products do not count toward this limit. Every publish states the
+number for the project in its result, whether or not the project lowers it.
 
 Three things to read from that table:
 
@@ -70,7 +74,7 @@ Three things to read from that table:
 3. **A linked part is not a cheap part.** A part with a typed price is only an amount, but a part
    linked to a product you ship is a real cart line, and every line is one more thing checkout has
    to verify. The first four rows assume typed prices throughout - swap those hundred parts for a
-   hundred linked ones and the project is refused.
+   hundred linked ones and the cart holds one of that product at a time.
 
 ## Fixed ceilings
 
@@ -94,11 +98,11 @@ given a switch each can all be on together, and post twenty. Roughly:
 
 | Priced options a shopper can have on at once | Configured items per cart |
 |---|---|
-| 1-2 | 4 |
-| around 5 | 3 |
-| around 10 | 2 |
-| around 20 | 1 |
-| 40 or more | refused - will not publish |
+| up to about 29 | 4 |
+| around 35 | 3 |
+| around 50 | 2 |
+| around 100 | 1 |
+| 119 or more | refused - will not publish |
 
 If you have a great many, consider:
 
@@ -119,8 +123,10 @@ publish rather than by a shopper at checkout. The message names what is binding:
 - **Too expensive to work out** - almost always distinct quantity formulas. Share one formula across
   parts, or replace formulas with fixed numbers where the quantity never varies.
 - **Too many cart lines** - a single configuration would add more lines than checkout can verify.
-  Combine option lines, or switch charging method. **Bundled parts** is usually the answer here: it
-  raises the ceiling from roughly 48 parts to roughly 130 by nesting them under one line.
+  Combine option lines, or switch charging method. **Bundled parts** is usually the answer here: a
+  bundle's parts do not count against the roughly 118 lines the whole cart may carry, so one
+  configured item can nest about 130 of them under its one line - counted as the parts a
+  configuration can charge at once, not every part authored.
 
 A project that publishes with a **lower cart limit** has not failed. It simply means shoppers can
 buy fewer of that configured product at once, and 3D Bits tells the shopper clearly if they try to
@@ -135,8 +141,9 @@ In rough order of how much they buy you:
 3. **Simplify the formulas themselves** - a short expression is cheaper than a long one.
 4. **Reduce priced options**, or combine their cart lines.
 5. **Switch to Bundled parts charging**, which changes what is counted rather than how much of it
-   there is. Its own limit is how many parts one configuration ships, about 130 of them, and it
-   halves as a shopper buys more of the same configured product in one cart.
+   there is. Its own limit is how many parts one configuration can charge at once - parts that
+   exclude each other on the same choice do not count together - about 130 of them, and it halves as
+   a shopper buys more of the same configured product in one cart.
 6. **Split the product** into two simpler configurators if it is really two products.
 
 Nesting deeper, or adding more parts with fixed quantities, is nearly free - so restructure toward

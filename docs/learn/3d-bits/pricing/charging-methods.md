@@ -68,7 +68,7 @@ The same real parts as Product lines, reaching the cart a different way. The sho
 Two things follow from that, and they are the reasons to choose it:
 
 - **A shopper cannot delete one part.** Shopify enforces the tie: the whole configuration goes from the cart or none of it does. Nobody receives an assembly missing its fixings because they tidied their cart.
-- **It holds far more parts.** Checkout re-verifies every line a configuration posts, which is what limits Product lines. A bundle is one line at checkout however many parts it holds, so the ceiling moves from about **48 parts to about 130**.
+- **It holds more parts per item.** Checkout re-verifies every line a configuration posts, and the whole cart may carry about 118 of those lines, shared by every configured item in it - which is what limits Product lines. A bundle is one line at checkout however many parts it holds, so its parts do not count against that. What limits a bundle instead is how much checkout may write when it nests the parts, counted as the parts one configuration can charge **at once** - parts that exclude each other on the same choice do not count together: about **120** of them for one configured item, fewer as a shopper buys more of it in one cart. Single line charging, which nests nothing, is limited by the size of the rules themselves - about 300 parts, or about 200 when each carries a few conditions. Publishing tells you when a project is over, and what is costing the most.
 
 - ✅ Works on **every Shopify plan**
 - ✅ Handles everything Product lines handles: options, formulas, sliders, parts, linked products, quantity
@@ -143,7 +143,7 @@ The limits differ sharply, and they are the main reason a method may not be avai
 | **A shopper-chosen quantity on an option** | ✅ | ✅ | ❌ not possible | ✅ |
 | **Quantity control** | ✅ | ✅ | ❌ not possible | ✅ |
 | **Multi-select checkboxes** | ✅ | ✅ | ❌ not as a dimension | ✅ |
-| **Parts one configuration can carry** | about 48 | **about 130** | not applicable | not applicable |
+| **Parts one configuration can carry** | about 118, shared by every configured item in the cart | **about 130** | not applicable | not applicable |
 
 **Why the matrix is the strict one.** It generates a real Shopify variant for every combination, so it inherits Shopify's own product limits: **3 option dimensions** and **2,048 variants** per product. Four priced controls, or 3 controls whose options multiply past 2,048, cannot be expressed as variants at all.
 
@@ -153,7 +153,7 @@ Multiply your options to check: 8 woods × 5 sizes × 6 finishes = 240 combinati
 
 There is still an overall ceiling: a configuration with a very large number of priced options and conditions can grow past what checkout will verify, and a cart checkout cannot verify is refused rather than waved through. Publishing tells you if you reach it, and names the size - see [Troubleshooting](./troubleshooting). In practice this is far beyond what a shopper would sensibly navigate.
 
-**Why Bundled parts holds more.** Checkout verifies each configured cart line, and a bundle is one line however many parts it holds. What limits it instead is how much the app may write when it nests the parts: about **130 parts** for one configured item in the cart, about **65** each when a shopper buys two of them, about **32** each for four. Publishing works that out for your configurator and tells you the number. If you need more parts than Product lines allows, this is the method that gives them to you.
+**Why Bundled parts holds more.** Checkout verifies each configured cart line, and a bundle is one line however many parts it holds. What limits it instead is how much the app may write when it nests the parts, counted as the parts one configuration can charge at once - parts that exclude each other on the same choice do not count together: about **130 parts** for one configured item in the cart, about **65** each when a shopper buys two of them, about **32** each for four. Publishing works that out for your configurator and tells you the number. Product lines shares its roughly 118 lines across the whole cart, so a 60-part configurator holds one item through Product lines and four through Bundled parts - if you need more parts than Product lines allows, this is the method that gives them to you.
 
 **If the matrix is not possible**, publishing says exactly why and uses Product lines instead rather than failing. It checks these in order, and names the first one it meets:
 

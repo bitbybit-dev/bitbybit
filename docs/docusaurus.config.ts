@@ -17,9 +17,11 @@ const config: Config = {
 
     headTags: [
         // Favicons sized as multiples of 48px so Google can index them for search results.
-        // No .ico is declared on purpose: Cloudflare Pages serves /favicon.ico with
-        // "Content-Type: null", and with nosniff set that cannot be decoded as an image.
-        // The file stays in static/ so blind /favicon.ico probes still resolve.
+        // No .ico is declared, and static/favicon.ico is deliberately absent: Cloudflare Pages
+        // serves .ico files with "Content-Type: null", and with nosniff set that cannot be
+        // decoded as an image. Google probes /favicon.ico regardless of what is declared here,
+        // and a 200 it cannot decode is worse than a clean 404 - the 404 makes it fall through
+        // to the PNGs below. Do not restore the file.
         {
             tagName: "link",
             attributes: {
