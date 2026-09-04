@@ -17,10 +17,10 @@
         "emitDeclarationOnly": false,
         "paths": {
             "@bitbybit-dev/occt": [
-                "../occt",
+                "../occt"
             ],
             "@bitbybit-dev/occt/*": [
-                "../occt/*",
+                "../occt/*"
             ],
             "@bitbybit-dev/base": [
                 "../base/dist"
@@ -32,7 +32,7 @@
         "lib": [
             "es2020",
             "dom"
-        ],
+        ]
     },
     "exclude": [
         "**/*.test.ts"

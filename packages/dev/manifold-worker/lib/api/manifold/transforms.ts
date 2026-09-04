@@ -32,7 +32,7 @@ export class ManifoldTransforms {
      * @shortname scale uniform
      * @drawable true
      */
-    async scale(inputs: Inputs.Manifold.ScaleDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+    async scale(inputs: Inputs.Manifold.Scale3DDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.scale", inputs);
     }
 

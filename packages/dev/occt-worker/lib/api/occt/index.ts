@@ -10,4 +10,8 @@ export * from "./transforms";
 export * from "./shape-fix";
 export * from "./path";
 export * from "./svg";
+export * from "./brep-graph";
+export * from "./corners";
+export * from "./draft";
+export * from "./dimensions";
 

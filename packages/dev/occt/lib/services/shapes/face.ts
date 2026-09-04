@@ -122,7 +122,7 @@ export class OCCTFace {
         return this.och.facesService.subdivideToHexagonHoles(inputs);
     }
 
-    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
         return this.och.facesService.subdivideToNormals(inputs);
     }
 

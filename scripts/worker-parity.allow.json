@@ -1,0 +1,61 @@
+{
+  "occt": {
+    "workerOnly": {
+      "cleanAllCache": "reserved command handled in occ-worker/command-handlers.ts, never dispatched to the kernel",
+      "deleteShape": "reserved command handled in occ-worker/command-handlers.ts, never dispatched to the kernel",
+      "deleteShapes": "reserved command handled in occ-worker/command-handlers.ts, never dispatched to the kernel",
+      "deleteDocument": "reserved command handled in occ-worker/command-handlers.ts, never dispatched to the kernel"
+    },
+    "kernelOnly": {
+      "geom.curves.geom2dCircle": "not exposed through the worker; exposing it is a public API addition, not a parity fix",
+      "io.loadSTEPorIGES": "not exposed through the worker; the worker exposes the text/binary loaders instead",
+      "shapes.edge.createSymmetricPeriodicBSplineEdge": "not exposed through the worker; exposing it is a public API addition, not a parity fix",
+      "shapes.face.subdivideToUVOnParam": "not exposed through the worker; exposing it is a public API addition, not a parity fix",
+      "shapes.face.uvOnFace": "not exposed through the worker; exposing it is a public API addition, not a parity fix",
+      "shapes.shell.isClosed": "not exposed through the worker; exposing it is a public API addition, not a parity fix"
+    },
+    "signature": {
+      "fillets.fillet2d": "kernel narrows the result to face | wire; the worker exposes the general shape pointer",
+      "fillets.fillet2dShapes": "kernel narrows the result to face[] | wire[]; the worker exposes shape pointers",
+      "operations.loft": "kernel also accepts edges; the worker exposes the wire input the editor offers",
+      "operations.loftAdvanced": "kernel also accepts edges; the worker exposes the wire input the editor offers",
+      "operations.closestPointsBetweenTwoShapes": "kernel returns a two-point tuple; the worker exposes it as a point list",
+      "operations.offset3DWire": "kernel returns the loose edges when no wire can be built; the worker exposes the wire",
+      "path.shapeFromPath": "kernel may return undefined for an empty path; the worker exposes the shape"
+    }
+  },
+  "jscad": {
+    "workerOnly": {},
+    "kernelOnly": {
+      "shapeToMesh": "meshing is driven by the worker thread itself (jscad-worker.ts), not exposed as an API call",
+      "shapesToMeshes": "meshing is driven by the worker thread itself (jscad-worker.ts), not exposed as an API call"
+    },
+    "signature": {
+      "downloadSolidSTL": "the kernel hands back a blob; the worker triggers the download and resolves void",
+      "downloadSolidsSTL": "the kernel hands back a blob; the worker triggers the download and resolves void",
+      "downloadGeometryDxf": "the kernel hands back a blob; the worker triggers the download and resolves void",
+      "downloadGeometry3MF": "the kernel hands back a blob; the worker triggers the download and resolves void",
+      "polygon.createFromPoints": "Inputs.JSCAD.PointsDto and Inputs.Point.PointsDto carry the same points field",
+      "text.createVectorText": "JSCAD.text.VectorText is a list of Point2 polylines, which is what the worker declares"
+    }
+  },
+  "manifold": {
+    "workerOnly": {
+      "deleteManifoldOrCrossSection": "reserved command handled in manifold-worker.ts, never dispatched to the kernel",
+      "deleteManifoldsOrCrossSections": "reserved command handled in manifold-worker.ts, never dispatched to the kernel",
+      "manifoldToMeshPointer": "reserved command handled in manifold-worker.ts, never dispatched to the kernel"
+    },
+    "kernelOnly": {
+      "crossSection.deleteCrossSection": "the worker frees cross sections through its reserved delete commands",
+      "crossSection.deleteCrossSections": "the worker frees cross sections through its reserved delete commands"
+    },
+    "signature": {
+      "crossSection.crossSectionToPoints": "number[][][] and Point3[][] are the same shape",
+      "crossSection.operations.compose": "kernel accepts several polygons per entry; the worker exposes one polygon per entry",
+      "decomposeManifoldOrCrossSection": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying",
+      "decomposeManifoldsOrCrossSections": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying",
+      "manifold.manifoldToMesh": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying",
+      "manifold.manifoldsToMeshes": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying"
+    }
+  }
+}

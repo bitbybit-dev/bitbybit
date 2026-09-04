@@ -110,6 +110,17 @@ export const CommandHandlers: Record<string, CommandHandler> = {
     },
 
     /**
+     * Handles assembly document deletion from cache. A document handle lives in the same cache
+     * as shapes; releasing it here frees the OCCT object and forgets the reference, exactly as
+     * shape deletion does. Previously this was dispatched to a kernel method that does not exist.
+     */
+    [ReservedFunctions.DELETE_DOCUMENT]: (inputs, context): CommandResult => {
+        const documentRef = inputs.document as { hash: number | string };
+        context.cacheHelper.cleanCacheForHash(documentRef.hash as string);
+        return { handled: true, result: {} };
+    },
+
+    /**
      * Handles the start of a new run.
      * Cleans cache if threshold is exceeded.
      */

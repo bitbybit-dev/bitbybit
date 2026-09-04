@@ -20,12 +20,18 @@ Start with `README.md` for the project overview and `CONTRIBUTING.md` before ope
 The packages form a dependency DAG and must be built in order. `npm run build-packages` walks it:
 
 ```
-base -> occt -> jscad -> manifold -> occt-worker -> jscad-worker -> manifold-worker -> core -> babylonjs
+base -> occt -> jscad -> manifold -> occt-worker -> jscad-worker -> manifold-worker -> core -> babylonjs -> threejs -> playcanvas
 ```
 
 `ci-packages` and the per-package `ci-*` scripts do the same for CI. Note this ordering is
 maintained by hand and is **not identical** to the publish order in `README.md`; when you change
 one, check the other.
+
+`npm test` at the root runs every package suite, after `npm run check:worker-parity`: each worker
+package mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends
+a path the kernel lacks, when a kernel method has no mirror outside the allow-list, when signatures
+disagree, or when the worker's path set differs from the committed snapshot (those paths are
+persisted in users' saved scripts). A deliberate surface change is accepted with `--update`.
 
 ## Docs
 

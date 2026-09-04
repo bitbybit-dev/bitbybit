@@ -926,7 +926,7 @@ export class FacesService {
         return [newFace, ...faces];
     }
 
-    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }

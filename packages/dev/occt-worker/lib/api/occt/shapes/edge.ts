@@ -78,7 +78,7 @@ export class OCCTEdge {
      * @shortname edges from base lines
      * @drawable true
      */
-    fromBaseLines(inputs: Inputs.OCCT.LineBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+    fromBaseLines(inputs: Inputs.OCCT.LinesBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseLines", inputs);
     }
 
@@ -498,7 +498,7 @@ export class OCCTEdge {
      * @shortname tangent at param
      * @drawable true
      */
-    tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+    tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Vector3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentOnEdgeAtParam", inputs);
     }
 
@@ -546,7 +546,7 @@ export class OCCTEdge {
      * @shortname tangent at length
      * @drawable true
      */
-    tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+    tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Vector3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentOnEdgeAtLength", inputs);
     }
 
@@ -558,7 +558,7 @@ export class OCCTEdge {
      * @shortname tangents at length
      * @drawable true
      */
-    tangentsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+    tangentsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Vector3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentsOnEdgesAtLength", inputs);
     }
 

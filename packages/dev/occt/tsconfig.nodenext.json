@@ -12,7 +12,7 @@
         "declaration": true,
         "downlevelIteration": true,
         "experimentalDecorators": true,
-        "moduleResolution": "node",
+        "moduleResolution": "NodeNext",
         "skipLibCheck": true,
         "target": "es2015",
         "module": "NodeNext",
@@ -24,11 +24,11 @@
             ],
             "@bitbybit-dev/base/*": [
                 "../base/dist/*"
-            ],
+            ]
         },
         "lib": [
             "es2020",
             "dom"
-        ],
+        ]
     }
 }

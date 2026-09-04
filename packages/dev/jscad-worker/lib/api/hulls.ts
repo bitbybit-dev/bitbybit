@@ -35,6 +35,6 @@ export class JSCADHulls {
      * @drawable true
      */
     async hull(inputs: Inputs.JSCAD.HullDto): Promise<Inputs.JSCAD.JSCADEntity>{
-        return this.jscadWorkerManager.genericCallToWorkerPromise("hulls.hullChain", inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("hulls.hull", inputs);
     }
 }

@@ -77,7 +77,7 @@ export class OCCTWire {
      * @shortname wires from base lines
      * @drawable true
      */
-    fromBaseLines(inputs: Inputs.OCCT.LineBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+    fromBaseLines(inputs: Inputs.OCCT.LinesBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromBaseLines", inputs);
     }
 
@@ -489,7 +489,7 @@ export class OCCTWire {
     * @shortname points by distance
     * @drawable true
     */
-    divideWiresByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]> {
+    divideWiresByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[][]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.divideWiresByEqualDistanceToPoints", inputs);
     }
 
@@ -525,7 +525,7 @@ export class OCCTWire {
     * @shortname points at lengths
     * @drawable true
     */
-    pointsOnWireAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3> {
+    pointsOnWireAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.pointsOnWireAtLengths", inputs);
     }
 
@@ -537,7 +537,7 @@ export class OCCTWire {
     * @shortname points at equal length
     * @drawable true
     */
-    pointsOnWireAtEqualLength(inputs: Inputs.OCCT.PointsOnWireAtEqualLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3> {
+    pointsOnWireAtEqualLength(inputs: Inputs.OCCT.PointsOnWireAtEqualLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.pointsOnWireAtEqualLength", inputs);
     }
 
@@ -549,7 +549,7 @@ export class OCCTWire {
      * @shortname points at pattern of lengths
      * @drawable true
      */
-    pointsOnWireAtPatternOfLengths(inputs: Inputs.OCCT.PointsOnWireAtPatternOfLengthsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3> {
+    pointsOnWireAtPatternOfLengths(inputs: Inputs.OCCT.PointsOnWireAtPatternOfLengthsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.pointsOnWireAtPatternOfLengths", inputs);
     }
 

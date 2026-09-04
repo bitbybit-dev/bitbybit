@@ -61,7 +61,7 @@
                 "../occt-worker/dist"
             ],
             "@bitbybit-dev/occt-worker/*": [
-                "../occt-worker/dist"
+                "../occt-worker/dist/*"
             ],
         },
         "lib": [

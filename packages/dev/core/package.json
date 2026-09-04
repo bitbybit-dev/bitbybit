@@ -46,9 +46,9 @@
         "copy-package": "shx cp -R ./package.json ./dist",
         "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
-        "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
-        "test-c": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=false",
-        "test-c-l": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=true"
+        "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
+        "test-c": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false",
+        "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true"
     },
     "author": "Bit by bit developers",
     "license": "MIT",
@@ -70,7 +70,6 @@
     "devDependencies": {
         "shx": "0.4.0",
         "@testing-library/jest-dom": "6.9.1",
-        "mvdir": "1.0.22",
         "jest": "30.4.2",
         "ts-node": "10.9.2",
         "ts-jest": "29.4.10",
