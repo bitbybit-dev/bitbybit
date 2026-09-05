@@ -150,7 +150,7 @@ export class OCCTSolid {
             paramV 
         });
 
-        let result: TopoDS_Shape;
+        let result: TopoDS_Shape | undefined;
 
         // Create forward extrusion if lengthFront > 0
         if (lengthFront > 0) {
@@ -180,7 +180,7 @@ export class OCCTSolid {
             backVec.delete();
 
             // If we have a forward extrusion, fuse them
-            if (lengthFront > 0) {
+            if (result) {
                 const fused = this.och.booleansService.union({ shapes: [result, backShape], keepEdges: false });
                 result.delete();
                 backShape.delete();
@@ -192,6 +192,9 @@ export class OCCTSolid {
         }
 
         face.delete();
+        if (!result) {
+            throw new Error("Cannot create solid: extrusion lengths must be positive");
+        }
         return this.och.converterService.getActualTypeOfShape(result);
     }
 

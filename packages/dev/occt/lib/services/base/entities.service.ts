@@ -146,6 +146,10 @@ export class EntitiesService {
     bRepPrimAPIMakeSphere(center: Base.Point3, direction: Base.Vector3, radius: number): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
         const sphereMaker = this.occ.MakeSphereFromAx2(ax, radius);
+        if (!sphereMaker) {
+            ax.delete();
+            throw new Error("Failed to create the sphere");
+        }
         const sphere = sphereMaker.Shape();
         sphereMaker.delete();
         ax.delete();

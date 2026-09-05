@@ -1,4 +1,4 @@
-import createBitbybitOcct, { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTGeom } from "../geom/geom";
@@ -141,7 +141,7 @@ describe("OCCT edge unit tests", () => {
 
     it("should not be able to get an edge if shape is not provided", async () => {
         expect(() =>
-            edge.getEdge({ shape: undefined, index: 0 })
+            edge.getEdge({ shape: undefined as unknown as TopoDS_Shape, index: 0 })
         ).toThrow("Edge can not be found for shape that is not provided or is of incorrect type");
     });
 

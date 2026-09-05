@@ -1,6 +1,6 @@
 import {
     Geom2d_Curve, Geom_Surface, BitbybitOcctModule, Handle_Geom2d_Curve,
-    TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Circ2d
+    TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Circ2d, gp_Lin2d
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
@@ -349,8 +349,8 @@ export class EdgesService {
         }
 
         if (resultingSol.length === 2 && inputs.circleRemainder !== Inputs.OCCT.circleInclusionEnum.none) {
-            let startPoint;
-            let endPoint;
+            let startPoint: Base.Point3 | undefined;
+            let endPoint: Base.Point3 | undefined;
             if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2) {
                 if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide1) {
                     startPoint = this.startPointOnEdge({ shape: resultingSol[1] });
@@ -369,6 +369,9 @@ export class EdgesService {
                 }
             }
 
+            if (!startPoint || !endPoint) {
+                throw new Error("Circle remainder could not be resolved for the given position result");
+            }
             const edge = this.arcFromCircleAndTwoPoints({ circle: inputs.circle, start: startPoint, end: endPoint, sense: true });
             resultingSol.splice(1, 0, edge);
         }
@@ -430,14 +433,17 @@ export class EdgesService {
         }
 
         if (resultingSol.length === 2 && inputs.circleRemainder !== Inputs.OCCT.circleInclusionEnum.none) {
-            let startPoint;
-            let endPoint;
+            let startPoint: Base.Point3 | undefined;
+            let endPoint: Base.Point3 | undefined;
             if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide1) {
                 startPoint = this.startPointOnEdge({ shape: resultingSol[1] });
                 endPoint = this.startPointOnEdge({ shape: resultingSol[0] });
             } else if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide2) {
                 startPoint = this.startPointOnEdge({ shape: resultingSol[0] });
                 endPoint = this.startPointOnEdge({ shape: resultingSol[1] });
+            }
+            if (!startPoint || !endPoint) {
+                throw new Error("Circle remainder could not be resolved for the given position result");
             }
             const edge = this.arcFromCircleAndTwoPoints({ circle: inputs.circle, start: startPoint, end: endPoint, sense: true });
             resultingSol.splice(1, 0, edge);
@@ -492,7 +498,7 @@ export class EdgesService {
         }
         lin2.delete();
 
-        let adjustLin2Sol;
+        let adjustLin2Sol: gp_Lin2d[] = [];
         if (lin2Sols.length === 4) {
             adjustLin2Sol = [lin2Sols[2], lin2Sols[1], lin2Sols[0], lin2Sols[3]];
         } else if (lin2Sols.length === 2) {
@@ -538,10 +544,10 @@ export class EdgesService {
         }
 
         if (resultingSol.length === 2 && inputs.circleRemainders !== Inputs.OCCT.twoCircleInclusionEnum.none) {
-            let startPoint1;
-            let startPoint2;
-            let endPoint1;
-            let endPoint2;
+            let startPoint1: Base.Point3 | undefined;
+            let startPoint2: Base.Point3 | undefined;
+            let endPoint1: Base.Point3 | undefined;
+            let endPoint2: Base.Point3 | undefined;
             if (inputs.circleRemainders === Inputs.OCCT.twoCircleInclusionEnum.outside) {
                 if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2 || inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
                     startPoint1 = this.startPointOnEdge({ shape: resultingSol[1] });
@@ -586,6 +592,9 @@ export class EdgesService {
                 endPoint2 = this.endPointOnEdge({ shape: resultingSol[0] });
             }
 
+            if (!startPoint1 || !startPoint2 || !endPoint1 || !endPoint2) {
+                throw new Error("Circle remainders could not be resolved for the given position result");
+            }
             const edge1 = this.arcFromCircleAndTwoPoints({ circle: inputs.circle1, start: startPoint1, end: startPoint2, sense: true });
             const edge2 = this.arcFromCircleAndTwoPoints({ circle: inputs.circle2, start: endPoint1, end: endPoint2, sense: true });
 
@@ -722,7 +731,7 @@ export class EdgesService {
             result.delete();
             return pt;
         } else {
-            return undefined;
+            throw new Error("Point on edge could not be evaluated");
         }
     }
 
@@ -885,7 +894,7 @@ export class EdgesService {
         if (edge && !edge.IsNull()) {
             return edge;
         } else {
-            return undefined;
+            throw new Error("Failed to create the symmetric periodic BSpline edge");
         }
     }
 

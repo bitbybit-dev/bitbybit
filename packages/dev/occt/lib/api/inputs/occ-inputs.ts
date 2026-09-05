@@ -750,7 +750,7 @@ export namespace OCCT {
          * @default -1
          * @optional true
          */
-        solution? = -1;
+        solution?: number | undefined = -1;
     }
     export class ClosestPointsOnShapeFromPointsDto<T> {
         constructor(shape?: T, points?: Base.Point3[]) {
@@ -1502,7 +1502,7 @@ export namespace OCCT {
          * Openascade Face
          * @default undefined
          */
-        shape?: T;
+        shape: T;
         /**
          * Number of hexagons on U direction
          * @default 10
@@ -1510,7 +1510,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsU? = 10;
+        nrHexagonsU?: number | undefined = 10;
         /**
          * Number of hexagons on V direction
          * @default 10
@@ -1518,7 +1518,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsV? = 10;
+        nrHexagonsV?: number | undefined = 10;
         // /**
         //  * If true, we will create hexagons with flat tops on U direction
         //  * @default false
@@ -1559,7 +1559,7 @@ export namespace OCCT {
          * @maximum 0.5
          * @step 0.01
          */
-        offsetFromBorderU? = 0;
+        offsetFromBorderU?: number | undefined = 0;
         /**
          * If offset on V is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of V param 1 will be offset from the face border
          * That is often required to create a pattern that is not too close to the face border
@@ -1569,27 +1569,27 @@ export namespace OCCT {
          * @maximum 0.5
          * @step 0.01
          */
-        offsetFromBorderV? = 0;
+        offsetFromBorderV?: number | undefined = 0;
         /**
          * If true, we will extend the hexagons beyond the face u up border by their pointy tops
          * @default false
          */
-        extendUUp? = false;
+        extendUUp?: boolean | undefined = false;
         /**
          * If true, we will extend the hexagons beyond the face u bottom border by their pointy tops
          * @default false
          */
-        extendUBottom? = false;
+        extendUBottom?: boolean | undefined = false;
         /**
          * If true, we will extend the hexagons beyond the face v upper border by their half width
          * @default false
          */
-        extendVUp? = false;
+        extendVUp?: boolean | undefined = false;
         /**
          * If true, we will extend the hexagons beyond the face v bottom border by their half width
          * @default false
          */
-        extendVBottom? = false;
+        extendVBottom?: boolean | undefined = false;
     }
 
     export class FaceSubdivideToHexagonHolesDto<T> {
@@ -1613,7 +1613,7 @@ export namespace OCCT {
          * Openascade Face
          * @default undefined
          */
-        shape?: T;
+        shape: T;
         /**
          * Number of hexagons on U direction
          * @default 10
@@ -1621,7 +1621,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsU? = 10;
+        nrHexagonsU?: number | undefined = 10;
         /**
          * Number of hexagons on V direction
          * @default 10
@@ -1629,7 +1629,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsV? = 10;
+        nrHexagonsV?: number | undefined = 10;
         // /**
         //  * If true, we will create hexagons with flat tops on U direction
         //  * @default false
@@ -1639,7 +1639,7 @@ export namespace OCCT {
          * If true, we will also create holes as faces
          * @default false
          */
-        holesToFaces? = false;
+        holesToFaces?: boolean | undefined = false;
         /**
          * Hexagon scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
@@ -1675,7 +1675,7 @@ export namespace OCCT {
          * @maximum 0.5
          * @step 0.01
          */
-        offsetFromBorderU? = 0;
+        offsetFromBorderU?: number | undefined = 0;
         /**
          * If offset on V is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of V param 1 will be offset from the face border
          * That is often required to create a pattern that is not too close to the face border
@@ -1685,7 +1685,7 @@ export namespace OCCT {
          * @maximum 0.5
          * @step 0.01
          */
-        offsetFromBorderV? = 0;
+        offsetFromBorderV?: number | undefined = 0;
     }
 
     export class FaceSubdivideToRectangleHolesDto<T> {
@@ -2776,7 +2776,7 @@ export namespace OCCT {
          * Force origin to be on the center of the cube
          * @default true
          */
-        originOnCenter? = true;
+        originOnCenter?: boolean | undefined = true;
     }
     export class CubeDto {
         constructor(size?: number, center?: Base.Point3, originOnCenter?: boolean) {
@@ -2801,7 +2801,7 @@ export namespace OCCT {
          * Force origin to be on the center of the cube
          * @default true
          */
-        originOnCenter? = true;
+        originOnCenter?: boolean | undefined = true;
     }
     export class BoxFromCornerDto {
         constructor(width?: number, length?: number, height?: number, corner?: Base.Point3) {
@@ -2953,7 +2953,7 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        angle? = 360;
+        angle?: number | undefined = 360;
     }
     export class LineDto {
         constructor(start?: Base.Point3, end?: Base.Point3) {
@@ -3191,7 +3191,7 @@ export namespace OCCT {
          * Direction for the cylinder
          * @default [0, 1, 0]
          */
-        direction?: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * Angle of the cylinder pie
          * @default 360
@@ -3199,12 +3199,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        angle? = 360;
+        angle?: number | undefined = 360;
         /**
          * Force origin to be on the center of cylinder
          * @default false
          */
-        originOnCenter? = false;
+        originOnCenter?: boolean | undefined = false;
     }
     export class CylindersOnLinesDto {
         constructor(radius?: number, lines?: Base.Line3[]) {
@@ -3245,7 +3245,7 @@ export namespace OCCT {
          * @step 0.1
          * @optional true
          */
-        radius? = 0.1;
+        radius?: number | undefined = 0.1;
         /**
          * Radius list
          * @default undefined
@@ -3279,7 +3279,7 @@ export namespace OCCT {
          * @step 0.1
          * @optional true
          */
-        radius? = 0.1;
+        radius?: number | undefined = 0.1;
         /**
          * Radius list
          * @default undefined
@@ -3448,7 +3448,7 @@ export namespace OCCT {
          * @step 0.1
          * @optional true
          */
-        radius? = 0.1;
+        radius?: number | undefined = 0.1;
         /**
          * Radius list
          * @default undefined
@@ -3488,7 +3488,7 @@ export namespace OCCT {
          * @step 0.1
          * @optional true
          */
-        radius? = 0.1;
+        radius?: number | undefined = 0.1;
         /**
          * Radius list
          * @default undefined
@@ -3527,7 +3527,7 @@ export namespace OCCT {
          * @optional true
          * @step 0.1
          */
-        distance? = 0.1;
+        distance?: number | undefined = 0.1;
         /**
          * Distance for the chamfer
          * @default undefined
@@ -3983,12 +3983,12 @@ export namespace OCCT {
          * Whether to connect the points with straight polyline segments or to interpolate a smooth BSpline through them
          * @default polyline
          */
-        wireType? = wireFromPointsTypeEnum.polyline;
+        wireType?: wireFromPointsTypeEnum | undefined = wireFromPointsTypeEnum.polyline;
         /**
          * Whether to close the resulting wires. For polyline wires this creates a polygon, for interpolated wires this creates a periodic (closed) BSpline.
          * @default false
          */
-        closed? = false;
+        closed?: boolean | undefined = false;
         /**
          * Tolerance used when interpolating the BSpline (only used when wireType is interpolated)
          * @default 1e-7
@@ -3996,7 +3996,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance? = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     export class WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> {
         constructor(shapes?: T[], nrOfDivisions?: number, divideByEqualDistance?: boolean, wireType?: wireFromPointsTypeEnum, closed?: boolean, tolerance?: number) {
@@ -4019,22 +4019,22 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrOfDivisions? = 10;
+        nrOfDivisions?: number | undefined = 10;
         /**
          * If true, the subdivision points will be spaced by equal distance along each shape. By default the parametric subdivision is used, which is not always equal to distance based subdivisions.
          * @default false
          */
-        divideByEqualDistance? = false;
+        divideByEqualDistance?: boolean | undefined = false;
         /**
          * Whether to connect the points with straight polyline segments or to interpolate a smooth BSpline through them
          * @default polyline
          */
-        wireType? = wireFromPointsTypeEnum.polyline;
+        wireType?: wireFromPointsTypeEnum | undefined = wireFromPointsTypeEnum.polyline;
         /**
          * Whether to close the resulting wires. For polyline wires this creates a polygon, for interpolated wires this creates a periodic (closed) BSpline.
          * @default false
          */
-        closed? = false;
+        closed?: boolean | undefined = false;
         /**
          * Tolerance used when interpolating the BSpline (only used when wireType is interpolated)
          * @default 1e-7
@@ -4042,7 +4042,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance? = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
 
     export enum bSplineParametrizationEnum {
@@ -4184,7 +4184,7 @@ export namespace OCCT {
          * @default false
          * @optional true
          */
-        periodic? = false;
+        periodic?: boolean | undefined = false;
     }
     export class BezierWeightsDto {
         constructor(points?: Base.Point3[], weights?: number[], closed?: boolean, periodic?: boolean, degree?: number) {
@@ -4216,7 +4216,7 @@ export namespace OCCT {
          * @default false
          * @optional true
          */
-        periodic? = false;
+        periodic?: boolean | undefined = false;
         /**
          * Maximum local degree used when `periodic` is set (clamped to [1, points-1]); empty uses a
          * sensible default. Ignored for the non-periodic rational Bezier.
@@ -4435,7 +4435,7 @@ export namespace OCCT {
          * Shape representing a wire
          * @default undefined
          */
-        shape?: T;
+        shape: T;
         /**
          * The number of divisions that will be performed on the curve
          * @default 10
@@ -4443,17 +4443,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrOfDivisions? = 10;
+        nrOfDivisions?: number | undefined = 10;
         /**
          * Indicates if algorithm should remove start point
          * @default false
          */
-        removeStartPoint? = false;
+        removeStartPoint?: boolean | undefined = false;
         /**
          * Indicates if algorithm should remove end point
          * @default false
          */
-        removeEndPoint? = false;
+        removeEndPoint?: boolean | undefined = false;
     }
 
     export class ProjectWireDto<T, U> {
@@ -4918,48 +4918,48 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        width? = 10;
+        width?: number | undefined = 10;
         /** Total desired height for the grid area. Note: due to hexagon geometry, the actual grid height might differ slightly if maintaining regular hexagons based on width.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
         */
-        height? = 10;
+        height?: number | undefined = 10;
         /** Number of hexagons desired in width.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsInWidth? = 10;
+        nrHexagonsInWidth?: number | undefined = 10;
         /** Number of hexagons desired in height.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsInHeight? = 10;
+        nrHexagonsInHeight?: number | undefined = 10;
         /** If true, the hexagons will be oriented with their flat sides facing up and down. 
          * @default false
          */
-        flatTop? = false;
+        flatTop?: boolean | undefined = false;
         /** If true, shift the entire grid up by half hex height. 
          * @default false
         */
-        extendTop? = false;
+        extendTop?: boolean | undefined = false;
         /** If true, shift the entire grid down by half hex height. 
          * @default false
         */
-        extendBottom? = false;
+        extendBottom?: boolean | undefined = false;
         /** If true, shift the entire grid left by half hex width. 
          * @default false
         */
-        extendLeft? = false;
+        extendLeft?: boolean | undefined = false;
         /** If true, shift the entire grid right by half hex width. 
          * @default false
         */
-        extendRight? = false;
+        extendRight?: boolean | undefined = false;
         /**
          * Hex scale pattern on width direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
@@ -5501,7 +5501,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        precision1? = 0.01;
+        precision1?: number | undefined = 0.01;
         /**
          * Second shape to be used for intersection
          * @default undefined
@@ -5515,7 +5515,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        precision2? = 0.01;
+        precision2?: number | undefined = 0.01;
     }
     export class MeshMeshesIntersectionOfShapesDto<T> {
         constructor(shape?: T, shapes?: T[], precision?: number, precisionShapes?: number[]) {
@@ -5528,7 +5528,7 @@ export namespace OCCT {
          * Shape to use for the base of computations
          * @default undefined
          */
-        shape?: T;
+        shape: T;
         /**
          * Precision of first shape to be used for meshing and computing intersection. 
          * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
@@ -5537,12 +5537,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        precision? = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * Second shape to be used for intersection
          * @default undefined
          */
-        shapes?: T[];
+        shapes: T[];
         /**
          * Precision of shapes to be used, if undefined, a universal precision will be used of the first shape
          * @default undefined
@@ -7181,25 +7181,25 @@ export namespace OCCT {
          * surface/curve type, tolerance and adjacency). Adds cost; base mesh is unchanged when false.
          * @default false
          */
-        computeMetadata?: boolean = false;
+        computeMetadata?: boolean | undefined = false;
         /**
          * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
          * is flushed off the shape so it does not accumulate in memory across calls.
          * @default false
          */
-        keepMeshData?: boolean = false;
+        keepMeshData?: boolean | undefined = false;
         /**
          * Allow re-meshing to a lower resolution triangulation than one already cached on the shape
          * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
          * @default true
          */
-        allowQualityDecrease?: boolean = true;
+        allowQualityDecrease?: boolean | undefined = true;
         /**
          * Force every face to be re-meshed to the requested precision regardless of any cached
          * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
          * @default false
          */
-        forceFaceDeflection?: boolean = false;
+        forceFaceDeflection?: boolean | undefined = false;
     }
     export class ShapeFacesToPolygonPointsDto<T> {
         constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean) {
@@ -7265,25 +7265,25 @@ export namespace OCCT {
          * surface/curve type, tolerance and adjacency). Adds cost; base mesh is unchanged when false.
          * @default false
          */
-        computeMetadata?: boolean = false;
+        computeMetadata?: boolean | undefined = false;
         /**
          * Keep the cached triangulation on each shape after meshing. When false (default) the mesh data
          * is flushed so it does not accumulate in memory across calls.
          * @default false
          */
-        keepMeshData?: boolean = false;
+        keepMeshData?: boolean | undefined = false;
         /**
          * Allow re-meshing to a lower resolution triangulation than one already cached on a shape
          * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
          * @default true
          */
-        allowQualityDecrease?: boolean = true;
+        allowQualityDecrease?: boolean | undefined = true;
         /**
          * Force every face to be re-meshed to the requested precision regardless of any cached
          * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
          * @default false
          */
-        forceFaceDeflection?: boolean = false;
+        forceFaceDeflection?: boolean | undefined = false;
     }
     export class DocToMeshDto<U> {
         constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
@@ -7319,25 +7319,25 @@ export namespace OCCT {
          * surface/curve type, tolerance, adjacency, UIDs). Adds cost; base mesh is unchanged when false.
          * @default false
          */
-        computeMetadata?: boolean = false;
+        computeMetadata?: boolean | undefined = false;
         /**
          * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
          * is flushed off the shape so it does not accumulate in memory across calls.
          * @default false
          */
-        keepMeshData?: boolean = false;
+        keepMeshData?: boolean | undefined = false;
         /**
          * Allow re-meshing to a lower resolution triangulation than one already cached on the shape
          * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
          * @default true
          */
-        allowQualityDecrease?: boolean = true;
+        allowQualityDecrease?: boolean | undefined = true;
         /**
          * Force every face to be re-meshed to the requested precision regardless of any cached
          * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
          * @default false
          */
-        forceFaceDeflection?: boolean = false;
+        forceFaceDeflection?: boolean | undefined = false;
     }
     export class DocToMeshesDto<U> {
         constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
@@ -7373,25 +7373,25 @@ export namespace OCCT {
          * surface/curve type, tolerance, adjacency, UIDs). Adds cost; base mesh is unchanged when false.
          * @default false
          */
-        computeMetadata?: boolean = false;
+        computeMetadata?: boolean | undefined = false;
         /**
          * Keep the cached triangulation on each shape after meshing. When false (default) the mesh data
          * is flushed so it does not accumulate in memory across calls.
          * @default false
          */
-        keepMeshData?: boolean = false;
+        keepMeshData?: boolean | undefined = false;
         /**
          * Allow re-meshing to a lower resolution triangulation than one already cached on a shape
          * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
          * @default true
          */
-        allowQualityDecrease?: boolean = true;
+        allowQualityDecrease?: boolean | undefined = true;
         /**
          * Force every face to be re-meshed to the requested precision regardless of any cached
          * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
          * @default false
          */
-        forceFaceDeflection?: boolean = false;
+        forceFaceDeflection?: boolean | undefined = false;
     }
     export class SaveStepDto<T> {
         constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean) {
@@ -7420,12 +7420,12 @@ export namespace OCCT {
          * and will compensate by not mirroring the shape along z axis
          * @default false
          */
-        fromRightHanded? = false;
+        fromRightHanded?: boolean | undefined = false;
         /**
          * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
          * @default true
          */
-        tryDownload? = true;
+        tryDownload?: boolean | undefined = true;
     }
     export class SaveStlDto<T> {
         constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, binary?: boolean) {
@@ -7460,12 +7460,12 @@ export namespace OCCT {
          * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
          * @default true
          */
-        tryDownload? = true;
+        tryDownload?: boolean | undefined = true;
         /**
          * Generate binary STL file
          * @default true
          */
-        binary? = true;
+        binary?: boolean | undefined = true;
     }
 
     export class ShapeToDxfPathsDto<T> {
@@ -7573,12 +7573,12 @@ export namespace OCCT {
          * File name
          * @default bitbybit-dev.dxf
          */
-        fileName? = "bitbybit-dev.dxf";
+        fileName?: string | undefined = "bitbybit-dev.dxf";
         /**
          * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
          * @default true
          */
-        tryDownload? = true;
+        tryDownload?: boolean | undefined = true;
     }
 
     export class SaveDxfDto<T> {
@@ -7606,7 +7606,7 @@ export namespace OCCT {
          * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
          * @default true
          */
-        tryDownload? = true;
+        tryDownload?: boolean | undefined = true;
         /**
          * The angular deflection
          * @default 0.1
@@ -8272,7 +8272,7 @@ export namespace OCCT {
          * @min 0
          * @max 1
          */
-        colorRgba?: Base.ColorRGBA = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
+        colorRgba?: Base.ColorRGBA | undefined = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
         /**
          * Optional placement matrix (column-major, 16 numbers) or an ordered list of
          * matrices applied first-to-last. When provided it fully defines the node's
@@ -8332,17 +8332,17 @@ export namespace OCCT {
          * Translation as [x, y, z]
          * @default [0, 0, 0]
          */
-        translation?: Base.Point3 = [0, 0, 0];
+        translation?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Rotation as [rx, ry, rz] Euler angles in degrees (applied Rx * Ry * Rz)
          * @default [0, 0, 0]
          */
-        rotation?: Base.Vector3 = [0, 0, 0];
+        rotation?: Base.Vector3 | undefined = [0, 0, 0];
         /**
          * Uniform scale factor
          * @default 1.0
          */
-        scale? = 1.0;
+        scale?: number | undefined = 1.0;
         /**
          * Optional color override for this instance
          * @default undefined
@@ -9731,7 +9731,7 @@ export namespace OCCT {
          * The text
          * @default Hello World
          */
-        text? = "Hello World";
+        text?: string | undefined = "Hello World";
         /**
          * The x offset
          * @default 0
@@ -9739,7 +9739,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        xOffset? = 0;
+        xOffset?: number | undefined = 0;
         /**
          * The y offset
          * @default 0
@@ -9747,7 +9747,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        yOffset? = 0;
+        yOffset?: number | undefined = 0;
         /**
          * The height of the text
          * @default 1
@@ -9755,7 +9755,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height? = 1;
+        height?: number | undefined = 1;
         /**
          * The line spacing
          * @default 2
@@ -9763,7 +9763,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        lineSpacing? = 2;
+        lineSpacing?: number | undefined = 2;
         /**
          * The letter spacing offset
          * @default 0
@@ -9771,7 +9771,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        letterSpacing? = 0;
+        letterSpacing?: number | undefined = 0;
         /**
          * The extrude offset
          * @default left
@@ -9784,7 +9784,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrudeOffset? = 0;
+        extrudeOffset?: number | undefined = 0;
         /**
          * Indicates whether to center text on origin
          * @default false
@@ -9954,12 +9954,12 @@ export namespace OCCT {
          * The end point for dimension
          * @default undefined
          */
-        end?: Base.Point3;
+        end: Base.Point3;
         /**
          * The dimension direction (must include length)
          * @default undefined
          */
-        direction?: Base.Vector3;
+        direction: Base.Vector3;
         /**
          * The dimension label
          * @default 0
@@ -9967,7 +9967,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        offsetFromPoints? = 0;
+        offsetFromPoints?: number | undefined = 0;
         /**
          * The dimension crossing size
          * @default 0
@@ -9975,7 +9975,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        crossingSize? = 0.2;
+        crossingSize?: number | undefined = 0.2;
         /**
          * The dimension label decimal places
          * @default 2
@@ -9983,12 +9983,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        decimalPlaces? = 2;
+        decimalPlaces?: number | undefined = 2;
         /**
          * The dimension label suffix
          * @default (cm)
          */
-        labelSuffix? = "(cm)";
+        labelSuffix?: string | undefined = "(cm)";
         /**
          * The dimension label size
          * @default 0.1
@@ -9996,7 +9996,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        labelSize? = 0.1;
+        labelSize?: number | undefined = 0.1;
         /**
          * The dimension label offset
          * @default 0.3
@@ -10004,7 +10004,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        labelOffset? = 0.3;
+        labelOffset?: number | undefined = 0.3;
         /**
          * The dimension label rotation
          * @default 0
@@ -10012,12 +10012,12 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        labelRotation? = 0;
+        labelRotation?: number | undefined = 0;
         /**
          * End type for dimension
          * @default none
          */
-        endType? = dimensionEndTypeEnum.none;
+        endType?: dimensionEndTypeEnum | undefined = dimensionEndTypeEnum.none;
         /**
          * The size/length of dimension arrows
          * @default 0.3
@@ -10025,7 +10025,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        arrowSize? = 0.3;
+        arrowSize?: number | undefined = 0.3;
         /**
          * The total angle between arrow lines (max 90 degrees)
          * @default 30
@@ -10033,33 +10033,33 @@ export namespace OCCT {
          * @maximum 90
          * @step 1
          */
-        arrowAngle? = 30;
+        arrowAngle?: number | undefined = 30;
         /**
          * Flip arrows to point outward instead of inward
          * @default false
          */
-        arrowsFlipped? = false;
+        arrowsFlipped?: boolean | undefined = false;
         /**
          * Flip label horizontally
          * @default false
          */
-        labelFlipHorizontal? = false;
+        labelFlipHorizontal?: boolean | undefined = false;
         /**
          * Flip label vertically
          * @default false
          */
-        labelFlipVertical? = false;
+        labelFlipVertical?: boolean | undefined = false;
         /**
          * Override label text with custom expression (supports 'val' for computed value, e.g., '100*val', 'Length: val mm')
          * @default 1*val
          * @optional true
          */
-        labelOverwrite? = "1*val";
+        labelOverwrite?: string | undefined = "1*val";
         /**
          * Remove trailing zeros from decimal places
          * @default false
          */
-        removeTrailingZeros? = false;
+        removeTrailingZeros?: boolean | undefined = false;
     }
     export class SimpleAngularDimensionDto {
         constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
@@ -10161,7 +10161,7 @@ export namespace OCCT {
          * End type for dimension
          * @default none
          */
-        endType? = dimensionEndTypeEnum.none;
+        endType?: dimensionEndTypeEnum | undefined = dimensionEndTypeEnum.none;
         /**
          * The size/length of dimension arrows
          * @default 0.3
@@ -10169,7 +10169,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        arrowSize? = 0.3;
+        arrowSize?: number | undefined = 0.3;
         /**
          * The total angle between arrow lines (max 90 degrees)
          * @default 30
@@ -10177,12 +10177,12 @@ export namespace OCCT {
          * @maximum 90
          * @step 1
          */
-        arrowAngle? = 30;
+        arrowAngle?: number | undefined = 30;
         /**
          * Flip arrows to point outward instead of inward
          * @default false
          */
-        arrowsFlipped? = false;
+        arrowsFlipped?: boolean | undefined = false;
         /**
          * Additional rotation angle for the label in degrees
          * @default 0
@@ -10190,28 +10190,28 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        labelRotation? = 0;
+        labelRotation?: number | undefined = 0;
         /**
          * Flip label horizontally
          * @default false
          */
-        labelFlipHorizontal? = false;
+        labelFlipHorizontal?: boolean | undefined = false;
         /**
          * Flip label vertically
          * @default false
          */
-        labelFlipVertical? = false;
+        labelFlipVertical?: boolean | undefined = false;
         /**
          * Override label text with custom expression (supports 'val' for computed value, e.g., '100*val', 'Angle: val deg')
          * @default 1*val
          * @optional true
          */
-        labelOverwrite? = "1*val";
+        labelOverwrite?: string | undefined = "1*val";
         /**
          * Remove trailing zeros from decimal places
          * @default false
          */
-        removeTrailingZeros? = false;
+        removeTrailingZeros?: boolean | undefined = false;
     }
     export class PinWithLabelDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean) {
@@ -10239,12 +10239,12 @@ export namespace OCCT {
          * The end point for dimension
          * @default [0, 5, 2]
          */
-        endPoint?: Base.Point3 = [0, 5, 2];
+        endPoint?: Base.Point3 | undefined = [0, 5, 2];
         /**
          * The dimension direction (must include length)
          * @default [0, 0, 1]
          */
-        direction?: Base.Vector3 = [0, 0, 1];
+        direction?: Base.Vector3 | undefined = [0, 0, 1];
         /**
          * Offset from the start point
          * @default 0
@@ -10252,12 +10252,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        offsetFromStart? = 0;
+        offsetFromStart?: number | undefined = 0;
         /**
          * The dimension label
          * @default Pin
          */
-        label? = "Pin";
+        label?: string | undefined = "Pin";
         /**
          * The dimension label offset
          * @default 0.3
@@ -10265,7 +10265,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        labelOffset? = 0.3;
+        labelOffset?: number | undefined = 0.3;
         /**
          * The dimension label size
          * @default 0.1
@@ -10273,12 +10273,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        labelSize? = 0.1;
+        labelSize?: number | undefined = 0.1;
         /**
          * End type for dimension
          * @default none
          */
-        endType? = dimensionEndTypeEnum.none;
+        endType?: dimensionEndTypeEnum | undefined = dimensionEndTypeEnum.none;
         /**
          * The size/length of dimension arrows
          * @default 0.3
@@ -10286,7 +10286,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        arrowSize? = 0.3;
+        arrowSize?: number | undefined = 0.3;
         /**
          * The total angle between arrow lines (max 90 degrees)
          * @default 30
@@ -10294,12 +10294,12 @@ export namespace OCCT {
          * @maximum 90
          * @step 1
          */
-        arrowAngle? = 30;
+        arrowAngle?: number | undefined = 30;
         /**
          * Flip arrows to point outward instead of inward
          * @default false
          */
-        arrowsFlipped? = false;
+        arrowsFlipped?: boolean | undefined = false;
         /**
          * Additional rotation angle for the label in degrees
          * @default 0
@@ -10307,17 +10307,17 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        labelRotation? = 0;
+        labelRotation?: number | undefined = 0;
         /**
          * Flip label horizontally
          * @default false
          */
-        labelFlipHorizontal? = false;
+        labelFlipHorizontal?: boolean | undefined = false;
         /**
          * Flip label vertically
          * @default false
          */
-        labelFlipVertical? = false;
+        labelFlipVertical?: boolean | undefined = false;
     }
     export class StarSolidDto extends StarDto {
         constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base.Point3, direction?: Base.Vector3, offsetOuterEdges?: number, half?: boolean, extrusionLengthFront?: number, extrusionLengthBack?: number) {

@@ -113,7 +113,7 @@ export class OperationsService {
         const result = this.occ.ClosestPointsBetweenShapes(shape1, shape2);
         // embind returns a VectorDouble object with .size() and .get() methods, not a native array
         if (result.size() === 6) {
-            return [[result.get(0), result.get(1), result.get(2)], [result.get(3), result.get(4), result.get(5)]];
+            return [[result.get(0)!, result.get(1)!, result.get(2)!], [result.get(3)!, result.get(4)!, result.get(5)!]];
         } else {
             throw new Error("Closest points could not be found.");
         }

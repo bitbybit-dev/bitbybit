@@ -162,7 +162,7 @@ export class WiresService {
     }
 
     createStarWire(inputs: Inputs.OCCT.StarDto) {
-        const lines = this.shapesHelperService.starLines(inputs.innerRadius, inputs.outerRadius, inputs.numRays, inputs.half, inputs.offsetOuterEdges);
+        const lines = this.shapesHelperService.starLines(inputs.innerRadius, inputs.outerRadius, inputs.numRays, inputs.half, inputs.offsetOuterEdges ?? 0);
         const edges: TopoDS_Edge[] = [];
         lines.forEach(line => {
             edges.push(this.edgesService.lineEdge(line));
@@ -385,6 +385,9 @@ export class WiresService {
 
     createLineWireWithExtensions(inputs: Inputs.OCCT.LineWithExtensionsDto): TopoDS_Wire {
         const direction = this.base.vector.normalized({ vector: this.base.vector.sub({ first: inputs.end, second: inputs.start }) });
+        if (!direction) {
+            throw new Error("Line start and end points must differ");
+        }
         const scaledVecStart = this.base.vector.mul({ vector: direction, scalar: -inputs.extensionStart });
         const scaledVecEnd = this.base.vector.mul({ vector: direction, scalar: inputs.extensionEnd });
         const start = this.base.vector.add({ first: inputs.start, second: scaledVecStart }) as Base.Point3;
@@ -572,8 +575,12 @@ export class WiresService {
         return wire;
     }
 
-    interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire | undefined {
-        return this.buildInterpolatedWire(inputs);
+    interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire {
+        const wire = this.buildInterpolatedWire(inputs);
+        if (!wire) {
+            throw new Error("Failed to interpolate the points");
+        }
+        return wire;
     }
 
     /**
@@ -583,7 +590,7 @@ export class WiresService {
      * @param inputs Points to interpolate and tolerance
      * @returns Symmetric periodic BSpline wire
      */
-    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolateSymmetricDto): TopoDS_Wire | undefined {
+    interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolateSymmetricDto): TopoDS_Wire {
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
             coords.push_back(pt[0]);
@@ -598,7 +605,7 @@ export class WiresService {
             coords.delete();
         }
 
-        if (!edge || edge.IsNull()) { edge?.delete(); return undefined; }
+        if (!edge || edge.IsNull()) { edge?.delete(); throw new Error("Failed to interpolate the points symmetrically"); }
         const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
         const wire = wireMaker.Wire();
         edge.delete();
@@ -905,10 +912,12 @@ export class WiresService {
         let currentInclusionPatternIndex = 0;
         let currentFilletPatternIndex = 0;
 
+        const nrHexagonsInHeight = inputs.nrHexagonsInHeight ?? 10;
+        const nrHexagonsInWidth = inputs.nrHexagonsInWidth ?? 10;
         const res = [];
 
-        for (let i = 0; i < inputs.nrHexagonsInHeight; i++) {
-            for (let j = 0; j < inputs.nrHexagonsInWidth; j++) {
+        for (let i = 0; i < nrHexagonsInHeight; i++) {
+            for (let j = 0; j < nrHexagonsInWidth; j++) {
 
                 let scaleFromPatternWidth = 1;
                 if (inputs.scalePatternWidth && inputs.scalePatternWidth.length > 0) {
@@ -946,10 +955,10 @@ export class WiresService {
                 }
 
                 if (include) {
-                    fillet = hex.maxFilletRadius * fillet;
+                    fillet = (hex.maxFilletRadius ?? 0) * fillet;
 
-                    const hexagon = wires[i * inputs.nrHexagonsInWidth + j];
-                    const hexagonCenter = hex.centers[i * inputs.nrHexagonsInWidth + j];
+                    const hexagon = wires[i * nrHexagonsInWidth + j];
+                    const hexagonCenter = hex.centers[i * nrHexagonsInWidth + j];
 
                     if (fillet > 0) {
                         const filletRectangle = this.filletsService.fillet2d({
@@ -1021,7 +1030,7 @@ export class WiresService {
         return wire;
     }
 
-    createBezier(inputs: Inputs.OCCT.BezierDto) {
+    createBezier(inputs: Inputs.OCCT.BezierDto): TopoDS_Wire {
         // A classic Bezier's degree is (control points - 1); OCCT caps Geom_BezierCurve at degree 25
         // and a higher-degree single Bezier oscillates badly. When a degree is requested, or there are
         // more control points than the Bezier cap allows, build a clamped bounded-degree BSpline from
@@ -1068,10 +1077,13 @@ export class WiresService {
         }
 
         coords.delete();
-        return (wire && !wire.IsNull()) ? wire : undefined;
+        if (!wire || wire.IsNull()) {
+            throw new Error("Failed to create the Bezier wire");
+        }
+        return wire;
     }
 
-    createBezierWeights(inputs: Inputs.OCCT.BezierWeightsDto) {
+    createBezierWeights(inputs: Inputs.OCCT.BezierWeightsDto): TopoDS_Wire {
         const periodic = inputs.periodic === true;
         if (periodic) {
             if (inputs.points.length !== inputs.weights.length) {
@@ -1119,7 +1131,10 @@ export class WiresService {
         }
         coords.delete();
         weights.delete();
-        return (wire && !wire.IsNull()) ? wire : undefined;
+        if (!wire || wire.IsNull()) {
+            throw new Error("Failed to create the Bezier wire");
+        }
+        return wire;
     }
 
     addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire {

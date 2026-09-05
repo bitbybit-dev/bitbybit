@@ -48,7 +48,9 @@ export class ShapeGettersService {
             if (i === index) { innerSolid = this.occ.CastToSolid(s); } solidsFound++;
         });
         if (solidsFound === 0) { console.error("NO SOLIDS FOUND IN SHAPE!"); }
-        innerSolid.hash = shape.hash + 1;
+        if (shape.hash !== undefined) {
+            innerSolid.hash = shape.hash + 1;
+        }
         return innerSolid;
     }
 

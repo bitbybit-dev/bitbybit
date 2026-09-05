@@ -94,7 +94,7 @@ export class GeomService {
     divideCurveByEqualLengthDistance(inputs: Inputs.OCCT.DivideDto<BRepAdaptor_Curve>): Base.Point3[] {
         const curve = inputs.shape;
         const curveLen = this.occ.GCPnts_AbscissaPoint_CurveLengthBetween(curve, curve.FirstParameter(), curve.LastParameter());
-        const step = curveLen / inputs.nrOfDivisions;
+        const step = curveLen / (inputs.nrOfDivisions ?? 10);
 
         const lengths: number[] = [];
         for (let i = 0; i <= curveLen + 0.000000001; i += step) {
@@ -128,7 +128,7 @@ export class GeomService {
     divideCompCurveByEqualLengthDistance(inputs: Inputs.OCCT.DivideDto<BRepAdaptor_CompCurve>): Base.Point3[] {
         const curve = inputs.shape;
         const curveLen = this.occ.GCPnts_AbscissaPoint_CompCurveLengthBetween(curve, curve.FirstParameter(), curve.LastParameter());
-        const step = curveLen / inputs.nrOfDivisions;
+        const step = curveLen / (inputs.nrOfDivisions ?? 10);
 
         const lengths: number[] = [];
         for (let i = 0; i <= curveLen + 0.000000001; i += step) {
@@ -162,9 +162,10 @@ export class GeomService {
     divideCurveToNrSegments(inputs: Inputs.OCCT.DivideDto<Geom_Curve | BRepAdaptor_CompCurve>, uMin: number, uMax: number) {
         const curve = inputs.shape;
 
+        const nrOfDivisions = inputs.nrOfDivisions ?? 10;
         const ranges: number[] = [];
-        for (let i = 0; i <= inputs.nrOfDivisions; i++) {
-            const param = (i / inputs.nrOfDivisions);
+        for (let i = 0; i <= nrOfDivisions; i++) {
+            const param = (i / nrOfDivisions);
             const paramMapped = this.vecHelper.remap(param, 0, 1, uMin, uMax);
             ranges.push(paramMapped);
         }

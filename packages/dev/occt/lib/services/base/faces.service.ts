@@ -1,4 +1,4 @@
-import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire, Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire, Geom_Surface, Handle_Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import { OCCReferencedReturns } from "../../occ-referenced-returns";
@@ -303,7 +303,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const u = uMin + (uMax - uMin) * inputs.paramU;
         const v = vMin + (vMax - vMin) * inputs.paramV;
@@ -381,7 +381,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
 
@@ -427,7 +427,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
 
@@ -463,7 +463,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         const params: number[] = [];
@@ -504,7 +504,7 @@ export class FacesService {
         const shapesToDelete = [];
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         const paramsU = [];
@@ -729,7 +729,7 @@ export class FacesService {
         const shapesToDelete: TopoDS_Shape[] = [];
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         // Calculate parametric range
@@ -741,12 +741,14 @@ export class FacesService {
             return [];
         }
 
+        const offsetFromBorderU = inputs.offsetFromBorderU ?? 0;
+        const offsetFromBorderV = inputs.offsetFromBorderV ?? 0;
         // Calculate target parametric dimensions and origin for the grid
-        const gridHeightU = scaleU * (1 - inputs.offsetFromBorderU * 2);
-        const gridWidthV = scaleV * (1 - inputs.offsetFromBorderV * 2);
+        const gridHeightU = scaleU * (1 - offsetFromBorderU * 2);
+        const gridWidthV = scaleV * (1 - offsetFromBorderV * 2);
 
-        const gridOriginU = uMin + scaleU * inputs.offsetFromBorderU;
-        const gridOriginV = vMin + scaleV * inputs.offsetFromBorderV;
+        const gridOriginU = uMin + scaleU * offsetFromBorderU;
+        const gridOriginV = vMin + scaleV * offsetFromBorderV;
 
         if (gridHeightU <= 0 || gridWidthV <= 0) {
             console.warn("Grid dimensions are zero or negative after applying offset. Skipping.");
@@ -801,39 +803,41 @@ export class FacesService {
         let currentInclusionPatternIndex = 0;
         let currentFilletPatternIndex = 0;
 
+        const nrHexagonsU = inputs.nrHexagonsU ?? 10;
+        const nrHexagonsV = inputs.nrHexagonsV ?? 10;
         // Ensure we have enough hexagons generated for the loop counts
-        const totalHexagons = inputs.nrHexagonsU * inputs.nrHexagonsV;
+        const totalHexagons = nrHexagonsU * nrHexagonsV;
         if (uvHexWires.length !== totalHexagons || uvHexCenters.length !== totalHexagons) {
             console.error(`Generated ${uvHexWires.length} hexagons, but expected ${totalHexagons}. Check hexGridScaledToFit logic.`);
             return [];
         }
 
         // Process each hexagon (scale, fillet, place)
-        for (let i = 0; i < inputs.nrHexagonsU; i++) {
-            for (let j = 0; j < inputs.nrHexagonsV; j++) {
-                const hexIndex = i * inputs.nrHexagonsV + j;
+        for (let i = 0; i < nrHexagonsU; i++) {
+            for (let j = 0; j < nrHexagonsV; j++) {
+                const hexIndex = i * nrHexagonsV + j;
 
                 // Get scale/inclusion/fillet values from patterns
                 let scaleFromPatternU = 1;
-                if (inputs.scalePatternU?.length > 0) {
+                if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
                     scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length];
                     currentScalePatternUIndex++;
                 }
 
                 let scaleFromPatternV = 1;
-                if (inputs.scalePatternV?.length > 0) {
+                if (inputs.scalePatternV && inputs.scalePatternV.length > 0) {
                     scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex % inputs.scalePatternV.length];
                     currentScalePatternVIndex++;
                 }
 
                 let include = true;
-                if (inputs.inclusionPattern?.length > 0) {
+                if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
                     include = inputs.inclusionPattern[currentInclusionPatternIndex % inputs.inclusionPattern.length];
                     currentInclusionPatternIndex++;
                 }
 
                 let filletFactor = 0;
-                if (inputs.filletPattern?.length > 0) {
+                if (inputs.filletPattern && inputs.filletPattern.length > 0) {
                     filletFactor = inputs.filletPattern[currentFilletPatternIndex % inputs.filletPattern.length];
                     currentFilletPatternIndex++;
                 }
@@ -844,7 +848,7 @@ export class FacesService {
 
                     let shapeToScale = uvHexagon;
                     // Apply Fillet (using the factor)
-                    const filletRadius = hex.maxFilletRadius * filletFactor;
+                    const filletRadius = (hex.maxFilletRadius ?? 0) * filletFactor;
                     if (filletRadius > 1e-6) {
                         const filletedHex = this.filletsService.fillet2d({
                             shape: uvHexagon,
@@ -932,7 +936,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
 
@@ -974,7 +978,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const placedWire = this.placeWireOnParamSurface(inputs.isU, inputs.param, uMin, uMax, vMin, vMax, surface);
         handle.delete();
@@ -1010,7 +1014,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         const wires: TopoDS_Wire[] = [];
@@ -1029,7 +1033,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
         const removeStart = inputs.removeStartPoint ? 1 : 0;
@@ -1157,7 +1161,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const pts: Base.Point3[] = inputs.paramsUV.map(uv => {
             const u = uMin + (uMax - uMin) * uv[0];
@@ -1176,7 +1180,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const nrmls: Base.Vector3[] = inputs.paramsUV.map(uv => {
             const u = uMin + (uMax - uMin) * uv[0];
@@ -1198,19 +1202,15 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
-        if (surface) {
-            const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-            const u = uMin + (uMax - uMin) * inputs.paramU;
-            const v = vMin + (vMax - vMin) * inputs.paramV;
-            const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
-            const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-            gpPnt.delete();
-            handle.delete();
-            return pt;
-        } else {
-            return undefined;
-        }
+        const surface = this.surfaceOf(handle);
+        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
+        const u = uMin + (uMax - uMin) * inputs.paramU;
+        const v = vMin + (vMax - vMin) * inputs.paramV;
+        const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
+        const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        gpPnt.delete();
+        handle.delete();
+        return pt;
     }
 
     normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
@@ -1224,4 +1224,11 @@ export class FacesService {
         return result;
     }
 
+    private surfaceOf(handle: Handle_Geom_Surface): Geom_Surface {
+        const surface = handle.get();
+        if (!surface) {
+            throw new Error("Face has no surface");
+        }
+        return surface;
+    }
 }

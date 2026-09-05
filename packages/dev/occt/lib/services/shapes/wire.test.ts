@@ -376,7 +376,7 @@ describe("OCCT wire unit tests", () => {
         inp.lengthSecond = 6;
         inp.widthFirst = 3;
         inp.widthSecond = 5;
-        delete inp.align;
+        delete (inp as Partial<Inputs.OCCT.LPolygonDto>).align;
         const res = wire.createLPolygonWire(inp);
         const length = wire.getWireLength({ shape: res });
         const corners = edge.getCornerPointsOfEdgesForShape({ shape: res });
@@ -619,7 +619,7 @@ describe("OCCT wire unit tests", () => {
 
     it("should get wire of a box at 0 index if index is undefined", async () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(3, 4, 5, [0, 0, 0]);
-        const w = wire.getWire({ shape: b, index: undefined });
+        const w = wire.getWire({ shape: b, index: undefined as unknown as number });
         const length = wire.getWireLength({ shape: w });
         expect(length).toEqual(18);
         b.delete();
@@ -627,7 +627,7 @@ describe("OCCT wire unit tests", () => {
     });
 
     it("should throw error if shape is undefined", async () => {
-        expect(() => wire.getWire({ shape: undefined, index: 0 })).toThrow("Shape is not provided or is null");
+        expect(() => wire.getWire({ shape: undefined as unknown as TopoDS_Shape, index: 0 })).toThrow("Shape is not provided or is null");
     });
 
     it("should throw error if shape is of incorrect type", async () => {
@@ -2106,8 +2106,8 @@ describe("OCCT wire unit tests", () => {
 
         const wireReversed = wire.reversedWireFromReversedEdges(opt);
 
-        const lastEdgeOnWire = edge.getEdgesAlongWire({ shape: w }).pop();
-        const firstEdgeOnReversedWire = edge.getEdgesAlongWire({ shape: wireReversed }).shift();
+        const lastEdgeOnWire = edge.getEdgesAlongWire({ shape: w }).pop()!;
+        const firstEdgeOnReversedWire = edge.getEdgesAlongWire({ shape: wireReversed }).shift()!;
 
         const startPointOnEdge = edge.startPointOnEdge({ shape: lastEdgeOnWire });
         const startPointOnReversedEdge = edge.startPointOnEdge({ shape: firstEdgeOnReversedWire });
@@ -2326,7 +2326,7 @@ describe("OCCT wire unit tests", () => {
                 [1, 0, 0],
                 [1, 1, 0],
             ];
-            const w = wire.fromPoints({ points });
+            const w = wire.fromPoints({ points })!;
             const length = wire.getWireLength({ shape: w });
             expect(length).toBe(2); // 1 + 1 = 2
             w.delete();
@@ -2347,7 +2347,7 @@ describe("OCCT wire unit tests", () => {
                 [2, 2, 0],
                 [0, 2, 0],
             ];
-            const w = wire.fromPoints({ points });
+            const w = wire.fromPoints({ points })!;
             const length = wire.getWireLength({ shape: w });
             expect(length).toBe(6); // 2 + 2 + 2 = 6 (open polyline, 3 segments)
             w.delete();
@@ -2624,17 +2624,17 @@ describe("OCCT wire unit tests", () => {
             expect(result).toBeDefined();
             expect(result.data).toBeDefined();
             expect(result.compound).toBeDefined();
-            result.compound.delete();
+            result.compound!.delete();
         });
 
         it("should create text wires with data containing correct structure", () => {
             const dto = new Inputs.OCCT.TextWiresDto("AB", 0, 0, 1);
             const result = wire.textWiresWithData(dto);
             expect(result.data).toBeDefined();
-            expect(result.data.width).toBeGreaterThan(0);
-            expect(result.data.height).toBeGreaterThan(0);
+            expect(result.data!.width).toBeGreaterThan(0);
+            expect(result.data!.height).toBeGreaterThan(0);
             // Data should contain information about the text layout
-            result.compound.delete();
+            result.compound!.delete();
         });
     });
 

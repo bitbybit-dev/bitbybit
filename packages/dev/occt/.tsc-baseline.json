@@ -7,7 +7,7 @@
     "5e38640f01971f6eca12d899bee6e1979d40934c": {
       "file": "lib/api/inputs/occ-inputs.ts",
       "code": "TS2564",
-      "count": 342
+      "count": 349
     },
     "452d7128bb0929af21ad2133586ae0965c9697b5": {
       "file": "lib/api/models/occ-models.ts",
@@ -62,22 +62,7 @@
     "611724a96b3f1c8edbcd4b0940959b5213e4be25": {
       "file": "lib/services/base/dimensions.service.ts",
       "code": "TS2322",
-      "count": 69
-    },
-    "30690b868b6eba73b3a39fd485e9ae1cd6ae6ab7": {
-      "file": "lib/services/base/dimensions.service.ts",
-      "code": "TS18048",
-      "count": 8
-    },
-    "69597580fa0a083394da23e2fe2de4b05da3ef2b": {
-      "file": "lib/services/base/dimensions.service.ts",
-      "code": "TS2345",
-      "count": 2
-    },
-    "2b67d95cc36b1c67d3514600c4151a603723b9f7": {
-      "file": "lib/services/base/dimensions.service.ts",
-      "code": "TS2412",
-      "count": 3
+      "count": 19
     },
     "ab7c01d6c31a870b211e078e15cb8de57f60f758": {
       "file": "lib/services/base/dxf.service.ts",
@@ -102,22 +87,17 @@
     "84e76c1da2b3e302614a5f112752ea98bc99e88f": {
       "file": "lib/services/base/edges.service.ts",
       "code": "TS2322",
-      "count": 56
+      "count": 50
     },
     "edadde12bd0235eac538e6f18779883b77cdd61e": {
       "file": "lib/services/base/edges.service.ts",
       "code": "TS18048",
-      "count": 5
+      "count": 4
     },
     "622a963291fa51025cc48eb6bb330a394d4af89e": {
       "file": "lib/services/base/entities.service.ts",
       "code": "TS2345",
       "count": 1
-    },
-    "942dce2f9e2a959965b17fb8cb5f720101dbac78": {
-      "file": "lib/services/base/entities.service.ts",
-      "code": "TS18047",
-      "count": 2
     },
     "67159bcfdd2e25a965f5ff69aeb3c6b7fcb115e8": {
       "file": "lib/services/base/entities.service.ts",
@@ -127,12 +107,12 @@
     "94c1c10834ffc6afd2877b5c878b9e97e7366252": {
       "file": "lib/services/base/faces.service.ts",
       "code": "TS2322",
-      "count": 32
+      "count": 27
     },
     "296253b2c3d270bdbfc3baf30cea6c8b8de9575e": {
       "file": "lib/services/base/faces.service.ts",
       "code": "TS18048",
-      "count": 26
+      "count": 4
     },
     "f13c648cc4d5272e0d7c7dbdb920609ba577bd3e": {
       "file": "lib/services/base/faces.service.ts",
@@ -142,62 +122,42 @@
     "3fd4aa0582d087357a6e151e9ff4d256db0d6978": {
       "file": "lib/services/base/faces.service.ts",
       "code": "TS2345",
-      "count": 9
-    },
-    "26390c7ab0939913aab9e9ccb4183f60ae89de11": {
-      "file": "lib/services/base/fillets.service.ts",
-      "code": "TS2322",
-      "count": 19
+      "count": 3
     },
     "0f6866c11103f9b66083dcb5296e8fdd3b393bf2": {
       "file": "lib/services/base/fillets.service.ts",
       "code": "TS2345",
       "count": 8
     },
+    "26390c7ab0939913aab9e9ccb4183f60ae89de11": {
+      "file": "lib/services/base/fillets.service.ts",
+      "code": "TS2322",
+      "count": 5
+    },
     "3ea77b0996b51637edb663aa101118f2928c578f": {
       "file": "lib/services/base/fillets.service.ts",
       "code": "TS2379",
       "count": 2
     },
-    "6b8512ff7fc2e09588efc8bcd8206d029d7ecaec": {
-      "file": "lib/services/base/fillets.service.ts",
-      "code": "TS18048",
-      "count": 2
-    },
-    "896f5be89a12fd264b62873621b22dbc3465ee2f": {
-      "file": "lib/services/base/geom.service.ts",
-      "code": "TS2345",
-      "count": 4
-    },
-    "a165b292dd6a858e5e8fbd514ab7397ab41237b2": {
-      "file": "lib/services/base/geom.service.ts",
-      "code": "TS18048",
-      "count": 13
-    },
     "1374672597fddca28da1c94b4e1b48beb6ead02c": {
       "file": "lib/services/base/meshing.service.ts",
       "code": "TS2322",
-      "count": 17
+      "count": 11
     },
     "abc46621456b2dcee61825b5200973641efaf1e4": {
       "file": "lib/services/base/meshing.service.ts",
       "code": "TS18048",
-      "count": 13
-    },
-    "4530e82c50023e9cb39d5db4338bc6ebc9ac8432": {
-      "file": "lib/services/base/meshing.service.ts",
-      "code": "TS2379",
-      "count": 1
+      "count": 9
     },
     "c758207eafd61ba81b84edc75b6d90a1806f15cf": {
       "file": "lib/services/base/operations.service.ts",
       "code": "TS2345",
-      "count": 4
+      "count": 2
     },
     "811ee8133e6ff3ee6629fb4c07f5b8e96f892532": {
       "file": "lib/services/base/operations.service.ts",
       "code": "TS2322",
-      "count": 9
+      "count": 3
     },
     "56f1f85facfb677ef2099df5b3477ed8026614b3": {
       "file": "lib/services/base/operations.service.ts",
@@ -207,11 +167,6 @@
     "37ec8106ab733dba2210d443e0c8c24cf03e22b3": {
       "file": "lib/services/base/operations.service.ts",
       "code": "TS2532",
-      "count": 1
-    },
-    "3f066a95f65caae54f22ce5ff1c2bf67e41ec4eb": {
-      "file": "lib/services/base/shape-getters.ts",
-      "code": "TS18048",
       "count": 1
     },
     "39f5b51bda94f793df937e265388cc9f87d4e311": {
@@ -252,21 +207,21 @@
     "91e24414bc13efbc209f486c103dca16708b32d2": {
       "file": "lib/services/base/wires.service.ts",
       "code": "TS2345",
-      "count": 20
+      "count": 17
     },
     "ba04fb4e234692066a91735b07841b445b78b838": {
       "file": "lib/services/base/wires.service.ts",
       "code": "TS18048",
-      "count": 30
-    },
-    "11227e66f4d6e22b227abd156c4155667a04d90f": {
-      "file": "lib/services/base/wires.service.ts",
-      "code": "TS2322",
-      "count": 17
+      "count": 23
     },
     "a8cc89893f2fffb1e384e9df08e35c03eef4fe1d": {
       "file": "lib/services/base/wires.service.ts",
       "code": "TS2532",
+      "count": 12
+    },
+    "11227e66f4d6e22b227abd156c4155667a04d90f": {
+      "file": "lib/services/base/wires.service.ts",
+      "code": "TS2322",
       "count": 12
     },
     "e62c37a6ad0ff955999142e3ca357f9b8e7777a5": {
@@ -284,24 +239,9 @@
       "code": "TS2345",
       "count": 1
     },
-    "af5b6f8bd417ed35a5833071e82356a37a2d875b": {
-      "file": "lib/services/shapes/shape.ts",
-      "code": "TS2454",
-      "count": 1
-    },
-    "41a00c5587d1f398ee26abbf22f45255919d23b1": {
-      "file": "lib/services/shapes/solid.ts",
-      "code": "TS2454",
-      "count": 3
-    },
     "094beec473c8f5f7775e5a14e903ed4e6b21bfb3": {
       "file": "lib/services/shapes/wire.ts",
       "code": "TS2322",
-      "count": 4
-    },
-    "2a9e253732d2c56d3f8dd1e26c052202d6005dba": {
-      "file": "lib/services/shapes/wire.ts",
-      "code": "TS2345",
       "count": 2
     },
     "2fc6958674f063a4e785566d17fed85e36275e8e": {
@@ -317,16 +257,6 @@
     "08eafb41d2fd7090500df794b3f6298da0209190": {
       "file": "lib/services/transforms.ts",
       "code": "TS2532",
-      "count": 1
-    },
-    "19363e479b0781e9c39659bf666c9bc0cd459ad4": {
-      "file": "lib/shape-parser.ts",
-      "code": "TS2769",
-      "count": 1
-    },
-    "e884126a3a2e521bde22777546860b20317fe492": {
-      "file": "lib/shape-parser.ts",
-      "code": "TS18048",
       "count": 1
     },
     "1a9aec1f35c1ba3d0cb2c43bca2f2332ad1d3fc3": {

@@ -25,7 +25,8 @@
                 "../base/dist/*"
             ]
         },
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "strictNullChecks": true
     },
     "references": [
         {

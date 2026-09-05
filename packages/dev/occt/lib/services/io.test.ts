@@ -106,7 +106,7 @@ describe("OCCT io unit tests", () => {
         });
         
         // Load it back (adjustZtoY should reverse the rotation)
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true })!;
         
         const volumeOriginal = solid.getSolidVolume({ shape: cylinder });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -121,7 +121,7 @@ describe("OCCT io unit tests", () => {
     it("should load cube shape from step file", () => {
         const cube = solid.createCube({ size: 10, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: cube, adjustYtoZ: false, fileName: "cube.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube1.step", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube1.step", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: cube });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -134,7 +134,7 @@ describe("OCCT io unit tests", () => {
         const c = solid.createCylinder({ radius: 10, height: 20, direction: [0, 1, 0], center: [0, 0, 0] });
 
         const stepText = io.saveShapeSTEP({ shape: c, adjustYtoZ: false, fileName: "cone.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cone1.step", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cone1.step", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: c });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -732,7 +732,7 @@ describe("OCCT io unit tests", () => {
     it("should load shape from STEP file with .stp extension", () => {
         const cube = solid.createCube({ size: 5, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: cube, adjustYtoZ: false, fileName: "cube.stp" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube.stp", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube.stp", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: cube });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -745,7 +745,7 @@ describe("OCCT io unit tests", () => {
     it("should load shape from STEP file with adjustZtoY enabled", () => {
         const cylinder = solid.createCylinder({ radius: 3, height: 10, direction: [0, 1, 0], center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: cylinder, adjustYtoZ: true, fileName: "cylinder.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: cylinder });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -758,7 +758,7 @@ describe("OCCT io unit tests", () => {
     it("should load sphere shape from STEP file and preserve volume", () => {
         const sphere = solid.createSphere({ radius: 7, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: sphere, adjustYtoZ: false, fileName: "sphere.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "sphere.step", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "sphere.step", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: sphere });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -771,7 +771,7 @@ describe("OCCT io unit tests", () => {
     it("should load box shape from STEP file and preserve volume", () => {
         const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "box.step", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "box.step", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: box });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });

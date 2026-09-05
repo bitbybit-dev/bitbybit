@@ -56,8 +56,8 @@ export class OCCTWire {
         return inputs.segments.map(segment => this.createLineWire({ start: segment[0], end: segment[1] }));
     }
 
-    fromPoints(inputs: Inputs.OCCT.PointsDto) {
-        let wire;
+    fromPoints(inputs: Inputs.OCCT.PointsDto): TopoDS_Wire | undefined {
+        let wire: TopoDS_Wire | undefined;
         if (inputs.points.length > 1) {
             const start = inputs.points[0];
             const end = inputs.points[1];

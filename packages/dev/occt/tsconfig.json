@@ -1,5 +1,5 @@
-// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces noImplicitAny
-// ahead of the shared loose base: occt is the largest package and is going strict one flag at a time,
+// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces noImplicitAny and
+// strictNullChecks ahead of the shared loose base: occt is the largest package and is going strict one flag at a time,
 // the way base did. The flags are repeated here so the editor and the tests hold the same line; the
 // build config cannot carry this note because the references generator rewrites it without comments.
 {
@@ -16,6 +16,7 @@
                 "../base/dist/*"
             ]
         },
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "strictNullChecks": true
     }
 }

@@ -75,7 +75,7 @@ export class OCCTShape {
 
     getOrientation(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.topAbsOrientationEnum {
         const orientation = inputs.shape.Orientation();
-        let result: Inputs.OCCT.topAbsOrientationEnum;
+        let result!: Inputs.OCCT.topAbsOrientationEnum;
         if (orientation === this.occ.TopAbs_Orientation.FORWARD) {
             result = Inputs.OCCT.topAbsOrientationEnum.forward;
         } else if (orientation === this.occ.TopAbs_Orientation.REVERSED) {

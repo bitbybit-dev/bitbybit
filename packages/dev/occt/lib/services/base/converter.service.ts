@@ -76,7 +76,7 @@ export class ConverterService {
         return resCompound;
     }
 
-    makeCompoundIfNeeded(shapes: TopoDS_Shape[], returnCompound: boolean) {
+    makeCompoundIfNeeded(shapes: TopoDS_Shape[], returnCompound: boolean): TopoDS_Compound | TopoDS_Shape[] {
         if (returnCompound) {
             const compound = this.makeCompound({ shapes });
             shapes.forEach(w => w.delete());

@@ -102,9 +102,12 @@ export class ShapeParser {
     }
 
     static deleteAllShapes<T extends { shapes?: { [x: string]: TopoDS_Shape } }>(part: T) {
-        Object.keys(part.shapes).forEach(key => {
-            part.shapes[key].delete();
-        });
+        const shapes = part.shapes;
+        if (shapes) {
+            Object.keys(shapes).forEach(key => {
+                shapes[key].delete();
+            });
+        }
         Object.keys(part).forEach(key => {
             const sh = (part as Record<string, unknown>)[key];
             if (sh && Array.isArray(sh)) {

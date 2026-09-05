@@ -396,7 +396,7 @@ describe("OCCT operations unit tests", () => {
 
     it("should not slice in pattern if steps property is undefines", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 3);
-        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: undefined })).toThrow("Steps must be provided with at elast one positive value");
+        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: undefined as unknown as number[] })).toThrow("Steps must be provided with at elast one positive value");
     });
 
     it("should not slice in pattern if steps property is an empty array", () => {
@@ -1025,7 +1025,7 @@ describe("OCCT operations unit tests", () => {
     it("should make thick solid simple", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 2, 3, [0, 0, 0]);
         const boxFaces = face.getFaces({ shape: box });
-        const fRem = boxFaces.pop();
+        const fRem = boxFaces.pop()!;
         fRem.delete();
         const sew = shell.sewFaces({ shapes: boxFaces, tolerance: 1e-7 });
         const res = operations.makeThickSolidSimple({ shape: sew, offset: 0.3 });

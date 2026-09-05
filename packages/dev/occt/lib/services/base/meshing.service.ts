@@ -110,8 +110,8 @@ export class MeshingService {
         const shape1 = inputs.shape1;
         const shape2 = inputs.shape2;
 
-        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
-        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1 ?? 0.01, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2 ?? 0.01, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
 
         const res = this.base.mesh.meshMeshIntersectionPolylines({
             mesh1, mesh2
@@ -140,8 +140,8 @@ export class MeshingService {
         const shape1 = inputs.shape1;
         const shape2 = inputs.shape2;
 
-        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
-        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1 ?? 0.01, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2 ?? 0.01, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
 
         return this.base.mesh.meshMeshIntersectionPoints({ mesh1, mesh2 });
     }
