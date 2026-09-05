@@ -39,14 +39,14 @@ export class OccHelper {
     public readonly enumService: EnumService;
 
     public readonly verticesService: VerticesService;
-    public readonly booleansService: BooleansService;
+    public readonly booleansService!: BooleansService;
     public readonly edgesService: EdgesService;
-    public readonly wiresService: WiresService;
+    public readonly wiresService!: WiresService;
     public readonly facesService: FacesService;
     public readonly shellsService: ShellsService;
     public readonly solidsService: SolidsService;
-    public readonly operationsService: OperationsService;
-    public readonly filletsService: FilletsService;
+    public readonly operationsService!: OperationsService;
+    public readonly filletsService!: FilletsService;
     public readonly meshingService: MeshingService;
 
     public readonly dimensionsService: DimensionsService;

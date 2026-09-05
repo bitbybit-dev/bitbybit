@@ -386,15 +386,15 @@ export namespace OCCT {
         /**
          * Face list for decomposed faces
          */
-        faceList: DecomposedFaceDto[];
+        faceList!: DecomposedFaceDto[];
         /**
          * Edge list for decomposed edges
          */
-        edgeList: DecomposedEdgeDto[];
+        edgeList!: DecomposedEdgeDto[];
         /**
          * The points list in a shape that includes vertex shapes
          */
-        pointsList: Base.Point3[];
+        pointsList!: Base.Point3[];
         /**
          * Map of "#rrggbbaa" colour to the face indices carrying it. Only present for the docToMesh /
          * docToMeshes endpoints, which resolve per-face colours from the shape's XCAF document.
@@ -403,15 +403,15 @@ export namespace OCCT {
     }
 
     export class DecomposedFaceDto {
-        faceIndex: number;
-        normalCoord: number[];
-        numberOfTriangles: number;
-        triIndexes: number[];
-        vertexCoord: number[];
-        vertexCoordVec: Base.Vector3[];
-        centerPoint: Base.Point3;
-        centerNormal: Base.Vector3;
-        uvs: number[];
+        faceIndex!: number;
+        normalCoord!: number[];
+        numberOfTriangles!: number;
+        triIndexes!: number[];
+        vertexCoord!: number[];
+        vertexCoordVec!: Base.Vector3[];
+        centerPoint!: Base.Point3;
+        centerNormal!: Base.Vector3;
+        uvs!: number[];
         /** Surface area of the face. Only present when shapeToMesh is called with computeMetadata. */
         area?: number | undefined;
         /** True center of mass of the face. Only present when computeMetadata is enabled. */
@@ -426,9 +426,9 @@ export namespace OCCT {
         faceUid?: number | undefined;
     }
     export class DecomposedEdgeDto {
-        edgeIndex: number;
-        middlePoint: Base.Point3;
-        vertexCoord: Base.Vector3[];
+        edgeIndex!: number;
+        middlePoint!: Base.Point3;
+        vertexCoord!: Base.Vector3[];
         /** Length of the edge. Only present when shapeToMesh is called with computeMetadata. */
         length?: number | undefined;
         /** True center of mass of the edge. Only present when computeMetadata is enabled. */
@@ -450,7 +450,7 @@ export namespace OCCT {
          * The OCCT shapes
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
     }
     export class PointDto {
         constructor(point?: Base.Point3) {
@@ -475,7 +475,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        x: number;
+        x: number = 0;
         /**
          * Y coord
          * @default 0
@@ -483,7 +483,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        y: number;
+        y: number = 0;
         /**
          * Z coord
          * @default 0
@@ -491,7 +491,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        z: number;
+        z: number = 0;
     }
     export class PointsDto {
         constructor(points?: Base.Point3[]) {
@@ -501,7 +501,7 @@ export namespace OCCT {
          * The point
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class ConstraintTanLinesFromPtToCircleDto<T> {
         constructor(circle?: T, point?: Base.Point3, tolerance?: number, positionResult?: positionResultEnum, circleRemainder?: circleInclusionEnum) {
@@ -515,12 +515,12 @@ export namespace OCCT {
          * The circle for tangent points
          * @default undefined
          */
-        circle: T;
+        circle!: T;
         /**
          * The point from which to find the lines
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * tolerance
          * @default 1e-7
@@ -554,17 +554,17 @@ export namespace OCCT {
          * The circle for tangent points
          * @default undefined
          */
-        circle: T;
+        circle!: T;
         /**
          * The point from which to find the lines
          * @default undefined
          */
-        point1: Base.Point3;
+        point1!: Base.Point3;
         /**
          * The point from which to find the lines
          * @default undefined
          */
-        point2: Base.Point3;
+        point2!: Base.Point3;
         /**
          * tolerance
          * @default 1e-7
@@ -597,12 +597,12 @@ export namespace OCCT {
          * The first circle for tangential lines
          * @default undefined
          */
-        circle1: T;
+        circle1!: T;
         /**
          * The second circle for tangential lines
          * @default undefined
          */
-        circle2: T;
+        circle2!: T;
         /**
          * tolerance
          * @default 1e-7
@@ -635,12 +635,12 @@ export namespace OCCT {
          * The first circle for tangential lines
          * @default undefined
          */
-        circle1: T;
+        circle1!: T;
         /**
          * The second circle for tangential lines
          * @default undefined
          */
-        circle2: T;
+        circle2!: T;
         /**
          * tolerance
          * @default 1e-7
@@ -669,12 +669,12 @@ export namespace OCCT {
          * The first circle for tangential lines
          * @default undefined
          */
-        circle: T;
+        circle!: T;
         /**
          * The second circle for tangential lines
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * tolerance
          * @default 1e-7
@@ -701,12 +701,12 @@ export namespace OCCT {
          * Curve
          * @default undefined
          */
-        curve: T;
+        curve!: T;
         /**
          * Surface
          * @default undefined
          */
-        surface: U;
+        surface!: U;
     }
     export class FilletTwoEdgesInPlaneDto<T> {
         constructor(edge1?: T, edge2?: T, planeOrigin?: Base.Point3, planeDirection?: Base.Vector3, radius?: number, solution?: number) {
@@ -721,12 +721,12 @@ export namespace OCCT {
          * First OCCT edge to fillet
          * @default undefined
          */
-        edge1: T;
+        edge1!: T;
         /**
          * Second OCCT edge to fillet
          * @default undefined
          */
-        edge2: T;
+        edge2!: T;
         /**
          * Plane origin that is also used to find the closest solution if two solutions exist.
          * @default [0, 0, 0]
@@ -761,12 +761,12 @@ export namespace OCCT {
          * The OCCT shape
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * The list of points
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class BoundingBoxDto {
         constructor(bbox?: BoundingBoxPropsDto) {
@@ -834,12 +834,12 @@ export namespace OCCT {
          * The OCCT wire shape
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * The list of points
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
 
     export class ClosestPointsOnShapesFromPointsDto<T> {
@@ -851,12 +851,12 @@ export namespace OCCT {
          * The OCCT shapes
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * The list of points
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class ClosestPointsBetweenTwoShapesDto<T> {
         constructor(shape1?: T, shape2?: T) {
@@ -867,12 +867,12 @@ export namespace OCCT {
          * First OCCT shape
          * @default undefined
          */
-        shape1: T;
+        shape1!: T;
         /**
         * Second OCCT shape
         * @default undefined
         */
-        shape2: T;
+        shape2!: T;
     }
     export class FaceFromSurfaceAndWireDto<T, U> {
         constructor(surface?: T, wire?: U, inside?: boolean) {
@@ -884,12 +884,12 @@ export namespace OCCT {
          * Surface from which to create a face
          * @default undefined
          */
-        surface: T;
+        surface!: T;
         /**
          * Wire that represents a boundary on the surface to delimit the face
          * @default undefined
          */
-        wire: U;
+        wire!: U;
         /**
          * Indicates wether face should be created inside or outside the wire
          * @default true
@@ -905,12 +905,12 @@ export namespace OCCT {
          * Wire to place on face
          * @default undefined
          */
-        wire: T;
+        wire!: T;
         /**
          * Face on which the wire will be placed
          * @default undefined
          */
-        face: U;
+        face!: U;
     }
     export class DrawShapeDto<T> {
         /**
@@ -1131,7 +1131,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Face opacity value between 0 and 1
          * @default 1
@@ -1299,7 +1299,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Number of points that will be added on U direction
          * @default 10
@@ -1365,7 +1365,7 @@ export namespace OCCT {
          * Openascade Face
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Number of points that will be added on U direction
          * @default 10
@@ -1414,7 +1414,7 @@ export namespace OCCT {
          * Openascade Face
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Number of rectangles on U direction
          * @default 10
@@ -1436,27 +1436,27 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        scalePatternU: number[];
+        scalePatternU!: number[];
         /**
          * Rectangle scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
          * @optional true
          */
-        scalePatternV: number[];
+        scalePatternV!: number[];
         /**
          * Rectangle fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
          * if 1 is used, the fillet will be exactly half of the length of the shorter side of the rectangle
          * @default undefined
          * @optional true
          */
-        filletPattern: number[];
+        filletPattern!: number[];
         /**
          * Rectangle inclusion pattern - true means that the rectangle will be included, 
          * false means that the rectangle will be removed from the face
          * @default undefined
          * @optional true
          */
-        inclusionPattern: boolean[];
+        inclusionPattern!: boolean[];
         /**
          * If offset on U is bigger then 0 we will use a smaller space for rectangles to be placed. This means that even rectangle of U param 1 will be offset from the face border
          * That is often required to create a pattern that is not too close to the face border
@@ -1502,7 +1502,7 @@ export namespace OCCT {
          * Openascade Face
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Number of hexagons on U direction
          * @default 10
@@ -1613,7 +1613,7 @@ export namespace OCCT {
          * Openascade Face
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Number of hexagons on U direction
          * @default 10
@@ -1708,7 +1708,7 @@ export namespace OCCT {
          * Openascade Face
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Number of rectangles on U direction
          * @default 10
@@ -1730,27 +1730,27 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        scalePatternU: number[];
+        scalePatternU!: number[];
         /**
          * Rectangle scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
          * @optional true
          */
-        scalePatternV: number[];
+        scalePatternV!: number[];
         /**
          * Rectangle fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
          * if 1 is used, the fillet will be exactly half of the length of the shorter side of the rectangle
          * @default undefined
          * @optional true
          */
-        filletPattern: number[];
+        filletPattern!: number[];
         /**
          * Rectangle inclusion pattern - true means that the rectangle will be included, 
          * false means that the rectangle will be removed from the face
          * @default undefined
          * @optional true
          */
-        inclusionPattern: boolean[];
+        inclusionPattern!: boolean[];
         /**
          * If true, we will also output the faces for all the rectangles. The first face in the result will be the original face with holes punched, while the rest will be the rectangles
          * @default false
@@ -1802,7 +1802,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Number of subdivisions on U direction
          * @default 10
@@ -1933,7 +1933,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Linear subdivision direction true - U, false - V
          * @default true
@@ -1984,7 +1984,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Linear subdivision direction true - U, false - V
          * @default true
@@ -2013,7 +2013,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Linear subdivision direction true - U, false - V
          * @default true
@@ -2023,7 +2023,7 @@ export namespace OCCT {
          * Params on direction 0 - 1
          * @default undefined
          */
-        params: number[];
+        params!: number[];
     }
 
     export class DataOnUVDto<T> {
@@ -2039,7 +2039,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Param on U direction 0 to 1
          * @default 0.5
@@ -2069,7 +2069,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Params uv
          * @default [[0.5, 0.5]]
@@ -2084,7 +2084,7 @@ export namespace OCCT {
          * Points points
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class PolygonsDto {
         constructor(polygons?: PolygonDto[], returnCompound?: boolean) {
@@ -2095,7 +2095,7 @@ export namespace OCCT {
          * Polygons
          * @default undefined
          */
-        polygons: PolygonDto[];
+        polygons!: PolygonDto[];
         /**
          * Indicates whether the shapes should be returned as a compound
          */
@@ -2109,7 +2109,7 @@ export namespace OCCT {
          * Points points
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class PolylineBaseDto {
         constructor(polyline?: Base.Polyline3) {
@@ -2119,7 +2119,7 @@ export namespace OCCT {
          * Polyline
          * @default undefined
          */
-        polyline: Base.Polyline3;
+        polyline!: Base.Polyline3;
     }
     export class PolylinesBaseDto {
         constructor(polylines?: Base.Polyline3[]) {
@@ -2129,7 +2129,7 @@ export namespace OCCT {
          * Polylines
          * @default undefined
          */
-        polylines: Base.Polyline3[];
+        polylines!: Base.Polyline3[];
     }
     export class LineBaseDto {
         constructor(line?: Base.Line3) {
@@ -2139,7 +2139,7 @@ export namespace OCCT {
          * Line
          * @default undefined
          */
-        line: Base.Line3;
+        line!: Base.Line3;
     }
     export class LinesBaseDto {
         constructor(lines?: Base.Line3[]) {
@@ -2149,7 +2149,7 @@ export namespace OCCT {
          * Lines
          * @default undefined
          */
-        lines: Base.Line3[];
+        lines!: Base.Line3[];
     }
     export class SegmentBaseDto {
         constructor(segment?: Base.Segment3) {
@@ -2159,7 +2159,7 @@ export namespace OCCT {
          * Segment
          * @default undefined
          */
-        segment: Base.Segment3;
+        segment!: Base.Segment3;
     }
     export class SegmentsBaseDto {
         constructor(segments?: Base.Segment3[]) {
@@ -2169,7 +2169,7 @@ export namespace OCCT {
          * Segments
          * @default undefined
          */
-        segments: Base.Segment3[];
+        segments!: Base.Segment3[];
     }
     export class TriangleBaseDto {
         constructor(triangle?: Base.Triangle3) {
@@ -2179,7 +2179,7 @@ export namespace OCCT {
          * Triangle
          * @default undefined
          */
-        triangle: Base.Triangle3;
+        triangle!: Base.Triangle3;
     }
     export class MeshBaseDto {
         constructor(mesh?: Base.Mesh3) {
@@ -2189,7 +2189,7 @@ export namespace OCCT {
          * Mesh
          * @default undefined
          */
-        mesh: Base.Mesh3;
+        mesh!: Base.Mesh3;
     }
     export class PolylinesDto {
         constructor(polylines?: PolylineDto[], returnCompound?: boolean) {
@@ -2200,7 +2200,7 @@ export namespace OCCT {
          * Polylines
          * @default undefined
          */
-        polylines: PolylineDto[];
+        polylines!: PolylineDto[];
         /**
          * Indicates whether the shapes should be returned as a compound
          */
@@ -3015,7 +3015,7 @@ export namespace OCCT {
          * Lines
          * @default undefined
          */
-        lines: LineDto[];
+        lines!: LineDto[];
         /**
          * Indicates whether the shapes should be returned as a compound
          */
@@ -3054,7 +3054,7 @@ export namespace OCCT {
          * Circular edge
          * @default undefined
          */
-        circle: T;
+        circle!: T;
         /**
          * Start of the arc on the circle
          * @default [0, 0, 0]
@@ -3082,7 +3082,7 @@ export namespace OCCT {
          * Circular edge
          * @default undefined
          */
-        circle: T;
+        circle!: T;
         /**
          * First angle
          * @default 0
@@ -3115,12 +3115,12 @@ export namespace OCCT {
          * Circular edge
          * @default undefined
          */
-        circle: T;
+        circle!: T;
         /**
          * Point on the circle from where to start the arc
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * Angle from point
          * @default 90
@@ -3218,12 +3218,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number;
+        radius: number = 1;
         /**
          * Lines between which to span cylinders
          * @default undefined
          */
-        lines: Base.Line3[];
+        lines!: Base.Line3[];
     }
     export class FilletDto<T> {
         constructor(shape?: T, radius?: number, radiusList?: number[], indexes?: number[]) {
@@ -3236,7 +3236,7 @@ export namespace OCCT {
          * Shape to apply the fillets
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Radius of the fillets
          * @default 0.1
@@ -3270,7 +3270,7 @@ export namespace OCCT {
          * Shapes to apply the fillets
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Radius of the fillets
          * @default 0.1
@@ -3303,17 +3303,17 @@ export namespace OCCT {
          * Shape to apply the fillet
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to use for the fillet
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
         /**
          * Radius list for the fillets. The length of this array must match the length of the edges array. Each index corresponds to fillet on the edge at the same index.
          * @default undefined
          */
-        radiusList: number[];
+        radiusList!: number[];
     }
     export class FilletEdgesListOneRadiusDto<T, U> {
         constructor(shape?: T, edges?: U[], radius?: number) {
@@ -3325,12 +3325,12 @@ export namespace OCCT {
          * Shape to apply the fillet
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to use for the fillet
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
         /**
          * Radius of the fillets
          * @default 0.1
@@ -3352,22 +3352,22 @@ export namespace OCCT {
          * Shape to apply the fillet
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edge to use for the fillet
          * @default undefined
          */
-        edge: U;
+        edge!: U;
         /**
          * Radius list for the fillets that has to match the paramsU list
          * @default undefined
          */
-        radiusList: number[];
+        radiusList!: number[];
         /**
          * List of parameters on the edge to which apply the fillet. Each param must be between 0 and 1.
          * @default undefined
          */
-        paramsU: number[];
+        paramsU!: number[];
     }
     export class FilletEdgesVariableRadiusDto<T, U> {
         constructor(shape?: T, edges?: U[], radiusLists?: number[][], paramsULists?: number[][]) {
@@ -3380,22 +3380,22 @@ export namespace OCCT {
          * Shape to apply the fillet
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to use for the fillet
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
         /**
          * Lists of radius lists for the fillets. Top level array length needs to match the nr of edges used and each second level array needs to match paramsU length array at the same index.
          * @default undefined
          */
-        radiusLists: number[][];
+        radiusLists!: number[][];
         /**
          * Lists of parameter lists on the edges to which apply the fillet. Each param must be between 0 and 1. Top level array length needs to match the nr of edges used and each second level array needs to match radius length array at the same index.
          * @default undefined
          */
-        paramsULists: number[][];
+        paramsULists!: number[][];
     }
     export class FilletEdgesSameVariableRadiusDto<T, U> {
         constructor(shape?: T, edges?: U[], radiusList?: number[], paramsU?: number[]) {
@@ -3408,23 +3408,23 @@ export namespace OCCT {
          * Shape to apply the fillet
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to use for the fillet
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
 
         /**
          * Radius list for the fillets that has to match the paramsU list
          * @default undefined
          */
-        radiusList: number[];
+        radiusList!: number[];
         /**
          * List of parameters on the edges to which apply the fillet. Each param must be between 0 and 1.
          * @default undefined
          */
-        paramsU: number[];
+        paramsU!: number[];
     }
 
     export class Fillet3DWiresDto<T> {
@@ -3439,7 +3439,7 @@ export namespace OCCT {
          * Shapes to apply the fillets on
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Radius of the fillets
          * @default 0.1
@@ -3479,7 +3479,7 @@ export namespace OCCT {
          * Shape to apply the fillets
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Radius of the fillets
          * @default 0.1
@@ -3518,7 +3518,7 @@ export namespace OCCT {
          * Shape to apply the chamfer
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Distance for the chamfer
          * @default 0.1
@@ -3551,17 +3551,17 @@ export namespace OCCT {
          * Shape to apply the chamfer
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to apply the chamfer to
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
         /**
          * Distance for the chamfer
          * @default undefined
          */
-        distanceList: number[];
+        distanceList!: number[];
     }
     export class ChamferEdgeDistAngleDto<T, U, F> {
         constructor(shape?: T, edge?: U, face?: F, distance?: number, angle?: number) {
@@ -3575,17 +3575,17 @@ export namespace OCCT {
          * Shape to apply the chamfer
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edge to apply the chamfer to
          * @default undefined
          */
-        edge: U;
+        edge!: U;
         /**
          * Face from which to apply the angle
          * @default undefined
          */
-        face: F;
+        face!: F;
         /**
          * Distance for the chamfer
          * @default 0.1
@@ -3616,17 +3616,17 @@ export namespace OCCT {
          * Shape to apply the chamfer
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edge to apply the chamfer to
          * @default undefined
          */
-        edge: U;
+        edge!: U;
         /**
          * Face from which to apply the first distance
          * @default undefined
          */
-        face: F;
+        face!: F;
         /**
          * First distance from the face for the chamfer
          * @default 0.1
@@ -3656,27 +3656,27 @@ export namespace OCCT {
          * Shape to apply the chamfer
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to apply the chamfers to
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
         /**
          * Faces from which to apply the angle of the chamfers
          * @default undefined
          */
-        faces: F[];
+        faces!: F[];
         /**
          * Distance 1 list for the chamfers
          * @default undefined
          */
-        distances1: number[];
+        distances1!: number[];
         /**
          * Distance 2 list for the chamfers
          * @default undefined
          */
-        distances2: number[];
+        distances2!: number[];
     }
     export class ChamferEdgesTwoDistancesDto<T, U, F> {
         constructor(shape?: T, edges?: U[], faces?: F[], distance1?: number, distance2?: number) {
@@ -3690,17 +3690,17 @@ export namespace OCCT {
          * Shape to apply the chamfer
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to apply the chamfers to
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
         /**
          * Faces from which to apply the angle of the chamfers
          * @default undefined
          */
-        faces: F[];
+        faces!: F[];
         /**
          * First distance from the face for the chamfer
          * @default 0.1
@@ -3730,27 +3730,27 @@ export namespace OCCT {
          * Shape to apply the chamfer
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to apply the chamfers to
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
         /**
          * Faces from which to apply the angle of the chamfers
          * @default undefined
          */
-        faces: F[];
+        faces!: F[];
         /**
          * Distance list for the chamfers
          * @default undefined
          */
-        distances: number[];
+        distances!: number[];
         /**
          * Angles for the chamfers
          * @default undefined
          */
-        angles: number[];
+        angles!: number[];
     }
 
     export class ChamferEdgesDistAngleDto<T, U, F> {
@@ -3765,17 +3765,17 @@ export namespace OCCT {
          * Shape to apply the chamfer
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Edges to apply the chamfers to
          * @default undefined
          */
-        edges: U[];
+        edges!: U[];
         /**
          * Faces from which to apply the angle of the chamfers
          * @default undefined
          */
-        faces: F[];
+        faces!: F[];
         /**
          * Distance from the face
          * @default 0.1
@@ -3802,7 +3802,7 @@ export namespace OCCT {
          * Points through which the BSpline will be created
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Indicates wether BSpline will be cloed
          * @default false
@@ -3818,7 +3818,7 @@ export namespace OCCT {
          * BSpline definitions
          * @default undefined
          */
-        bSplines: BSplineDto[];
+        bSplines!: BSplineDto[];
         /**
          * Indicates whether the shapes should be returned as a compound
          */
@@ -3836,12 +3836,12 @@ export namespace OCCT {
          * The first circle to be encloed with tangential lines
          * @default undefined
          */
-        circle1: T;
+        circle1!: T;
         /**
          * The second circle to be encloed with tangential lines
          * @default undefined
          */
-        circle2: T;
+        circle2!: T;
         /**
          * Choose which side to keep for the wire. Outside gives non-intersecting solution.
          * @default outside
@@ -3872,7 +3872,7 @@ export namespace OCCT {
          * The circles that will all be joined into a single face through tangential lines
          * @default undefined
          */
-        circles: T[];
+        circles!: T[];
         /**
          * Indicates how circles should be joined together. Users can choose to join all circles with each other. Alternatively it is possible to respect the order of circles and only join consecutive circles. It is also possible to respect order and close the shape with first circle in the list.
          * @default allWithAll
@@ -3903,7 +3903,7 @@ export namespace OCCT {
          * The two dimensional circle array that can host multiple circle collections.
          * @default undefined
          */
-        listsOfCircles: T[][];
+        listsOfCircles!: T[][];
         /**
          * Indicates how circles should be joined together. Users can choose to join all circles with each other. Alternatively it is possible to respect the order of circles and only join consecutive circles. It is also possible to respect order and close the shape with first circle in the list.
          * @default allWithAll
@@ -3936,12 +3936,12 @@ export namespace OCCT {
          * The first wire for zig zag
          * @default undefined
          */
-        wire1: T;
+        wire1!: T;
         /**
          * The second wire for zig zag
          * @default undefined
          */
-        wire2: T;
+        wire2!: T;
         /**
          * How many zig zags to create between the two wires on each edge. The number of edges should match. Edges will be joined by zigzags in order. One zig zag means two edges forming a corner.
          * @default 20
@@ -3954,7 +3954,7 @@ export namespace OCCT {
          * Inverse the the zig zag to go from wire2 to wire1
          * @default false
          */
-        inverse: boolean;
+        inverse: boolean = false;
         /**
          * If true, the zig zags will be spaced equally on each edge. By default we follow parametric subdivision of the edges, which is not always equal to distance based subdivisions.
          * @default false
@@ -3978,7 +3978,7 @@ export namespace OCCT {
          * Two or more wires or edges whose start and end points will be connected
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Whether to connect the points with straight polyline segments or to interpolate a smooth BSpline through them
          * @default polyline
@@ -4011,7 +4011,7 @@ export namespace OCCT {
          * Two or more wires or edges that will be subdivided and connected through the points at matching subdivision indexes
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Into how many segments each wire or edge should be subdivided. The number of resulting wires will be nrOfDivisions + 1.
          * @default 10
@@ -4067,7 +4067,7 @@ export namespace OCCT {
          * Points through which the BSpline will be created
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Indicates wether BSpline will be periodic (closed, tangent-continuous at the seam)
          * @default false
@@ -4122,7 +4122,7 @@ export namespace OCCT {
          * Points through which the symmetric closed BSpline will be created (at least 3)
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * tolerance
          * @default 1e-7
@@ -4141,7 +4141,7 @@ export namespace OCCT {
          * Interpolation definitions
          * @default undefined
          */
-        interpolations: InterpolationDto[];
+        interpolations!: InterpolationDto[];
         /**
          * Indicates whether the shapes should be returned as a compound
          */
@@ -4158,7 +4158,7 @@ export namespace OCCT {
          * Points through which the Bezier curve will be created
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Indicates wether Bezier will be cloed
          * @default false
@@ -4198,12 +4198,12 @@ export namespace OCCT {
          * Points through which the Bezier curve will be created
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
         * Weights for beziers that will be used, values should be between 0 and 1
         * @default undefined
         */
-        weights: number[];
+        weights!: number[];
         /**
          * Indicates wether Bezier will be cloed
          * @default false
@@ -4239,7 +4239,7 @@ export namespace OCCT {
          * Wire or edge whose curve degree is rebuilt.
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Target maximum degree. Lowering relaxes the curve to a smoother, lower-order approximation
          * (within tolerance); raising is exact. The practical lower bound is 3 (cubic).
@@ -4268,7 +4268,7 @@ export namespace OCCT {
          * Periodic wire or edge whose seam is moved (non-periodic is returned unchanged).
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Parameter value at which to place the new seam (origin).
          * @default 0
@@ -4286,7 +4286,7 @@ export namespace OCCT {
          * Periodic wire or edge whose seam is moved (non-periodic is returned unchanged).
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Arc length, measured forward from the current start, at which to place the new seam.
          * @default 0
@@ -4307,7 +4307,7 @@ export namespace OCCT {
          * Face whose surface degree is rebuilt.
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Target maximum U degree (lowering relaxes within tolerance; raising is exact; floor 3).
          * @default 3
@@ -4351,7 +4351,7 @@ export namespace OCCT {
          * Face whose UV parametrization is flipped.
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Swap the U and V directions.
          * @default false
@@ -4381,7 +4381,7 @@ export namespace OCCT {
          * Face to reparametrize.
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Make the U parameter ~uniform by arc length.
          * @default true
@@ -4418,7 +4418,7 @@ export namespace OCCT {
          * Bezier wires
          * @default undefined
          */
-        bezierWires: BezierDto[];
+        bezierWires!: BezierDto[];
         /**
          * Indicates whether the shapes should be returned as a compound
          */
@@ -4435,7 +4435,7 @@ export namespace OCCT {
          * Shape representing a wire
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * The number of divisions that will be performed on the curve
          * @default 10
@@ -4466,12 +4466,12 @@ export namespace OCCT {
          * Wire to project
          * @default undefined
          */
-        wire: T;
+        wire!: T;
         /**
          * Shape to use for projection
          * @default undefined
          */
-        shape: U;
+        shape!: U;
         /**
          * Direction vector for projection
          * @default [0, 1, 0]
@@ -4489,12 +4489,12 @@ export namespace OCCT {
          * Points to project
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Shape to use for projection
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Direction vector for projection - this must take the length into account as well, because algorithm looks for intresections with the shape in this direction. It will not find solutions outside the given length of this vector.
          * @default [0, 10, 0]
@@ -4504,7 +4504,7 @@ export namespace OCCT {
          * Allows user to choose what solutions are being returned by this operation.
          * @default all
          */
-        projectionType: pointProjectionTypeEnum;
+        projectionType: pointProjectionTypeEnum = pointProjectionTypeEnum.all;
     }
     export class WiresToPointsDto<T> {
         constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number) {
@@ -4519,7 +4519,7 @@ export namespace OCCT {
          * Shape to use for parsing edges
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * The angular deflection
          * @default 0.1
@@ -4574,7 +4574,7 @@ export namespace OCCT {
          * Shape to use for parsing edges
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * The angular deflection
          * @default 0.1
@@ -4626,12 +4626,12 @@ export namespace OCCT {
          * Wire to project
          * @default undefined
          */
-        wires: T[];
+        wires!: T[];
         /**
          * Shape to use for projection
          * @default undefined
          */
-        shape: U;
+        shape!: U;
         /**
          * Direction vector for projection
          * @default [0, 1, 0]
@@ -4649,7 +4649,7 @@ export namespace OCCT {
          * Shapes
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * The number of divisions that will be performed on the curve
          * @default 10
@@ -4678,7 +4678,7 @@ export namespace OCCT {
          * Shape representing a geometry
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * 0 - 1 value
          * @default 0.5
@@ -4697,7 +4697,7 @@ export namespace OCCT {
          * Shapes representing a geometry
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * 0 - 1 value
          * @default 0.5
@@ -4718,12 +4718,12 @@ export namespace OCCT {
          * OCCT face to be used for calculation 
          * @default undefined
          */
-        face: T;
+        face!: T;
         /**
          * OCCT edge to be used for calculation
          * @default undefined
          */
-        edge: T;
+        edge!: T;
         /**
          * 0 - 1 value
          * @default 0.5
@@ -4754,7 +4754,7 @@ export namespace OCCT {
          * Shape representing a wire
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * length at which to evaluate the point
          * @default 0.5
@@ -4793,12 +4793,12 @@ export namespace OCCT {
          * Shape representing a wire
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * length at which to evaluate the point
          * @default undefined
          */
-        lengths: number[];
+        lengths!: number[];
         /**
          * Try next point if the point is not found
          * @default false
@@ -4824,7 +4824,7 @@ export namespace OCCT {
          * Shape
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * length at which to evaluate the point
          * @default 0.5
@@ -4844,7 +4844,7 @@ export namespace OCCT {
          * Shapes
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * length at which to evaluate the point
          * @default 0.5
@@ -4864,12 +4864,12 @@ export namespace OCCT {
          * Shape representing a wire
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * lengths at which to evaluate the points
          * @default undefined
          */
-        lengths: number[];
+        lengths!: number[];
     }
     export class CircleDto {
         constructor(radius?: number, center?: Base.Point3, direction?: Base.Vector3) {
@@ -4996,7 +4996,7 @@ export namespace OCCT {
          * Wires through which the loft passes
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Tries to make a solid when lofting
          * @default false
@@ -5022,7 +5022,7 @@ export namespace OCCT {
          * Wires through which the loft passes
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Tries to make a solid when lofting
          * @default false
@@ -5098,7 +5098,7 @@ export namespace OCCT {
          * Shape to offset
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Optionally provide face for the offset
          * @default undefined
@@ -5135,7 +5135,7 @@ export namespace OCCT {
          * Shape to offset
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Optionally provide face for the offset
          * @default undefined
@@ -5181,7 +5181,7 @@ export namespace OCCT {
          * Shape to revolve
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Angle degrees
          * @default 360
@@ -5210,12 +5210,12 @@ export namespace OCCT {
          * The wire path
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Shapes along the path to be piped
          * @default undefined
          */
-        shapes: U[];
+        shapes!: U[];
     }
     export class WiresOnFaceDto<T, U> {
         constructor(wires?: T[], face?: U) {
@@ -5226,12 +5226,12 @@ export namespace OCCT {
          * The wires
          * @default undefined
          */
-        wires: T[];
+        wires!: T[];
         /**
          * Face shape
          * @default undefined
          */
-        face: U;
+        face!: U;
     }
     export class PipeWiresCylindricalDto<T> {
         constructor(shapes?: T[], radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean) {
@@ -5245,7 +5245,7 @@ export namespace OCCT {
          * Wire paths to pipe
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Radius of the cylindrical pipe
          * @default 0.1
@@ -5282,7 +5282,7 @@ export namespace OCCT {
          * Wire path to pipe
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Radius of the cylindrical pipe
          * @default 0.1
@@ -5320,7 +5320,7 @@ export namespace OCCT {
          * Wire path to pipe
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Radius of the cylindrical pipe
          * @default 0.1
@@ -5362,7 +5362,7 @@ export namespace OCCT {
          * Face to extrude
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Direction vector for extrusion
          * @default [0, 1, 0]
@@ -5379,7 +5379,7 @@ export namespace OCCT {
          * Shapes to extrude
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Direction vector for extrusion
          * @default [0, 1, 0]
@@ -5396,12 +5396,12 @@ export namespace OCCT {
          * Shape to split
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Shapes to split from main shape
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Local fuzzy tolerance used for splitting
          * @default 1.0e-4
@@ -5425,7 +5425,7 @@ export namespace OCCT {
          * Objects to be joined together
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Keeps edges
          * @default false
@@ -5442,12 +5442,12 @@ export namespace OCCT {
          * Object to subtract from
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Objects to subtract
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Keeps edges unaffected
          * @default false
@@ -5464,7 +5464,7 @@ export namespace OCCT {
          * Shapes to intersect
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Keep the edges
          * @default false
@@ -5479,7 +5479,7 @@ export namespace OCCT {
          * Shape on which action should be performed
          * @default undefined
          */
-        shape: T;
+        shape!: T;
     }
     export class MeshMeshIntersectionTwoShapesDto<T> {
         constructor(shape1?: T, shape2?: T, precision1?: number, precision2?: number) {
@@ -5492,7 +5492,7 @@ export namespace OCCT {
          * First shape to be used for intersection
          * @default undefined
          */
-        shape1: T;
+        shape1!: T;
         /**
          * Precision of first shape to be used for meshing and computing intersection. 
          * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
@@ -5506,7 +5506,7 @@ export namespace OCCT {
          * Second shape to be used for intersection
          * @default undefined
          */
-        shape2: T;
+        shape2!: T;
         /**
          * Precision of second shape to be used for meshing and computing intersection. 
          * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
@@ -5528,7 +5528,7 @@ export namespace OCCT {
          * Shape to use for the base of computations
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Precision of first shape to be used for meshing and computing intersection. 
          * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
@@ -5542,7 +5542,7 @@ export namespace OCCT {
          * Second shape to be used for intersection
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Precision of shapes to be used, if undefined, a universal precision will be used of the first shape
          * @default undefined
@@ -5559,12 +5559,12 @@ export namespace OCCT {
          * Shape to be compared
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Shape to be compared against
          * @default undefined
          */
-        otherShape: T;
+        otherShape!: T;
     }
     export class FixSmallEdgesInWireDto<T> {
         constructor(shape?: T, lockvtx?: boolean, precsmall?: number) {
@@ -5576,7 +5576,7 @@ export namespace OCCT {
          * Shape on which action should be performed
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Lock vertex. If true, the edge must be kept.
          * @default false
@@ -5602,7 +5602,7 @@ export namespace OCCT {
          * Shape to repair
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Basic precision
          * @default 0.001
@@ -5642,7 +5642,7 @@ export namespace OCCT {
          * Shape on which action should be performed
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Precision for closed wire
          * @default -0.1
@@ -5661,7 +5661,7 @@ export namespace OCCT {
          * The shapes
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Tolerance used for intersections
          * @default 1.0e-7
@@ -5680,7 +5680,7 @@ export namespace OCCT {
          * The shape
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Tolerance used for intersections
          * @default 1.0e-7
@@ -5700,7 +5700,7 @@ export namespace OCCT {
          * Shape
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Index of the entity
          * @default 0
@@ -5719,7 +5719,7 @@ export namespace OCCT {
          * Shape
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Index of the entity
          * @default 0
@@ -5740,7 +5740,7 @@ export namespace OCCT {
          * Wire to extrude by rotating
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Height of rotation
          * @default 1
@@ -5780,12 +5780,12 @@ export namespace OCCT {
          * Shape to make thick
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * closing faces
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Offset to apply
          * @default 1
@@ -5836,7 +5836,7 @@ export namespace OCCT {
          * Shape to transform
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Translation to apply
          * @default [0,0,0]
@@ -5876,7 +5876,7 @@ export namespace OCCT {
          * Shape to transform
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Translation to apply
          * @default [[0,0,0]]
@@ -5907,7 +5907,7 @@ export namespace OCCT {
          * Shape for translation
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Translation vector
          * @default [0, 0, 0]
@@ -5923,7 +5923,7 @@ export namespace OCCT {
          * Shape for translation
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Translation vector
          * @default [[0, 0, 0]]
@@ -5944,7 +5944,7 @@ export namespace OCCT {
          * Shape for translation
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * from origin
          * @default [0, 0, 0]
@@ -5988,7 +5988,7 @@ export namespace OCCT {
          * Shape for translation
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * from origin
          * @default [0, 0, 0]
@@ -6022,7 +6022,7 @@ export namespace OCCT {
          * Shape for translation
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * from origin
          * @default [[0, 0, 0]]
@@ -6055,7 +6055,7 @@ export namespace OCCT {
          * Shape to mirror
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Axis origin point
          * @default [0, 0, 0]
@@ -6077,7 +6077,7 @@ export namespace OCCT {
          * Shape to mirror
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Axis origin point
          * @default [[0, 0, 0]]
@@ -6099,7 +6099,7 @@ export namespace OCCT {
          * Shape to mirror
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Axis origin point
          * @default [0, 0, 0]
@@ -6121,7 +6121,7 @@ export namespace OCCT {
          * Shape to mirror
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Axis origin point
          * @default [[0, 0, 0]]
@@ -6143,7 +6143,7 @@ export namespace OCCT {
          * Shape to align and translate
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Direction on which to align
          * @default [0, 0, 1]
@@ -6165,7 +6165,7 @@ export namespace OCCT {
          * Shape on which action should be performed
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
         * If true, unifies the edges
         * @default true
@@ -6200,12 +6200,12 @@ export namespace OCCT {
          * Face that will be used to filter points
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Points to filter
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Tolerance used for filter
          * @default 1.0e-4
@@ -6271,12 +6271,12 @@ export namespace OCCT {
          * Face that will be used to filter points
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Points to filter
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Tolerance used for filter
          * @default 1.0e-4
@@ -6335,12 +6335,12 @@ export namespace OCCT {
          * Face that will be used to filter points
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Points to filter
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Tolerance used for filter
          * @default 1.0e-4
@@ -6380,7 +6380,7 @@ export namespace OCCT {
          * Shapes to align and translate
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Directions on which to align
          * @default [0, 0, 1]
@@ -6401,7 +6401,7 @@ export namespace OCCT {
          * Shape to rotate
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Axis on which to rotate
          * @default [0, 0, 1]
@@ -6427,7 +6427,7 @@ export namespace OCCT {
          * Shape to rotate
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Angle of rotation to apply
          * @default 0
@@ -6454,12 +6454,12 @@ export namespace OCCT {
          * Shape to rotate
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Axis on which to rotate
          * @default [[0, 0, 1]]
          */
-        axes: Base.Vector3[];
+        axes: Base.Vector3[] = [[0, 0, 1]];
         /**
          * Rotation degrees
          * @default [0]
@@ -6477,7 +6477,7 @@ export namespace OCCT {
          * Shape to scale
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Angles of rotation to apply
          * @default [0]
@@ -6503,7 +6503,7 @@ export namespace OCCT {
          * Shape to scale
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Scale factor to apply
          * @default 1
@@ -6522,7 +6522,7 @@ export namespace OCCT {
          * Shape to scale
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Scale factor to apply
          * @default [1]
@@ -6539,7 +6539,7 @@ export namespace OCCT {
          * Shape to scale
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Scale factor to apply
          * @default [1, 1, 1]
@@ -6561,7 +6561,7 @@ export namespace OCCT {
          * Shape to scale
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Scale factor to apply
          * @default [[1, 1, 1]]
@@ -6586,12 +6586,12 @@ export namespace OCCT {
          * Shape to transform
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Transformation matrix (column-major, 16 numbers) or an ordered list of matrices applied first-to-last
          * @default undefined
          */
-        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+        transformation!: Base.TransformMatrix | Base.TransformMatrixes;
     }
     export class TransformShapesByMatrixDto<T> {
         constructor(shapes?: T[], transformation?: Base.TransformMatrix | Base.TransformMatrixes) {
@@ -6602,12 +6602,12 @@ export namespace OCCT {
          * Shapes to transform (the same transformation is applied to each)
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Transformation matrix (column-major) or an ordered list of matrices applied first-to-last
          * @default undefined
          */
-        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+        transformation!: Base.TransformMatrix | Base.TransformMatrixes;
     }
     export class ShapeTransformQueryDto<T> {
         constructor(shape?: T) {
@@ -6617,7 +6617,7 @@ export namespace OCCT {
          * Shape whose current placement (location) transform will be read
          * @default undefined
          */
-        shape: T;
+        shape!: T;
     }
     export class ScaleFromCenterDto<T> {
         constructor(shape?: T, factor?: number, center?: Base.Point3) {
@@ -6629,7 +6629,7 @@ export namespace OCCT {
          * Shape to scale
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Uniform scale factor
          * @default 1
@@ -6651,7 +6651,7 @@ export namespace OCCT {
          * Shape to mirror
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Point to mirror (point-invert) about
          * @default [0, 0, 0]
@@ -6667,7 +6667,7 @@ export namespace OCCT {
          * Shape to rotate
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Rotation quaternion [x, y, z, w]
          * @default [0, 0, 0, 1]
@@ -6705,7 +6705,7 @@ export namespace OCCT {
          * Ordered list of matrices (applied first-to-last) folded into a single matrix
          * @default undefined
          */
-        transformation: Base.TransformMatrix | Base.TransformMatrixes;
+        transformation!: Base.TransformMatrix | Base.TransformMatrixes;
     }
     export class InvertTransformDto {
         constructor(transformation?: Base.TransformMatrix) {
@@ -6715,7 +6715,7 @@ export namespace OCCT {
          * Transformation matrix (column-major, 16 numbers) to invert
          * @default undefined
          */
-        transformation: Base.TransformMatrix;
+        transformation!: Base.TransformMatrix;
     }
     export class TranslationToMatrixDto {
         constructor(translation?: Base.Vector3) {
@@ -6854,7 +6854,7 @@ export namespace OCCT {
          * Shape the graph is rebuilt from
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Kind of graph node to reconstruct into a sub-shape
          * @default solid
@@ -6876,12 +6876,12 @@ export namespace OCCT {
          * Shape the graph is rebuilt from
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Sub-shape of the shape to locate in the graph
          * @default undefined
          */
-        subShape: T;
+        subShape!: T;
     }
     export class FilletCornerByPointDto<T> {
         constructor(shape?: T, points?: Base.Point3[], radius?: number, taperFactor?: number, snapTolerance?: number, mode?: cornerModeEnum) {
@@ -6896,7 +6896,7 @@ export namespace OCCT {
          * Shell or solid whose corner(s) will be rounded
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Points near the corners to round (the nearest vertex to each is used)
          * @default []
@@ -6941,7 +6941,7 @@ export namespace OCCT {
          * Shell or solid whose corner(s) will be beveled
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Points near the corners to chamfer (the nearest vertex to each is used)
          * @default []
@@ -6981,7 +6981,7 @@ export namespace OCCT {
          * Shell or solid whose corner(s) will be classified
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Points near the corners to classify (the nearest vertex to each is used)
          * @default []
@@ -7005,7 +7005,7 @@ export namespace OCCT {
          * 2D wire or planar face whose corners will be chamfered
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Chamfer setback distance along the corner edge
          * @default 1
@@ -7038,12 +7038,12 @@ export namespace OCCT {
          * Shape to draft
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Faces of the shape to taper
          * @default undefined
          */
-        faces: U[];
+        faces!: U[];
         /**
          * Pull direction the draft is applied along
          * @default [0, 1, 0]
@@ -7083,7 +7083,7 @@ export namespace OCCT {
          * Shape (or face/wire) to draft from
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Draft direction
          * @default [0, 1, 0]
@@ -7120,7 +7120,7 @@ export namespace OCCT {
          * Shape (or face/wire) to draft from
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Draft direction
          * @default [0, 1, 0]
@@ -7136,7 +7136,7 @@ export namespace OCCT {
          * Shape the draft is performed up to
          * @default undefined
          */
-        stopShape: T;
+        stopShape!: T;
         /**
          * Keep the part of the stop shape outside the draft
          * @default false
@@ -7162,7 +7162,7 @@ export namespace OCCT {
          * Shape to save
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Precision of the mesh
          * @default 0.01
@@ -7212,7 +7212,7 @@ export namespace OCCT {
          * Shape to save
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Precision of the mesh
          * @default 0.01
@@ -7246,7 +7246,7 @@ export namespace OCCT {
          * Shapes to transform
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Precision of the mesh
          * @default 0.01
@@ -7300,7 +7300,7 @@ export namespace OCCT {
          * per-face colours are resolved from the document into the colorGroups map of the output.
          * @default undefined
          */
-        document: U;
+        document!: U;
         /**
          * Precision of the mesh
          * @default 0.01
@@ -7354,7 +7354,7 @@ export namespace OCCT {
          * (one array entry), with per-face colours resolved from the document into each colorGroups map.
          * @default undefined
          */
-        document: U;
+        document!: U;
         /**
          * Precision of the mesh
          * @default 0.01
@@ -7404,7 +7404,7 @@ export namespace OCCT {
          * Shape to save
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * File name
          * @default shape.step
@@ -7440,7 +7440,7 @@ export namespace OCCT {
          * Shape to save
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * File name
          * @default shape.stl
@@ -7481,7 +7481,7 @@ export namespace OCCT {
          * Shape to convert to DXF paths
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * The angular deflection for curve tessellation
          * @default 0.1
@@ -7534,7 +7534,7 @@ export namespace OCCT {
          * Array of DXF paths (output from shapeToDxfPaths)
          * @default undefined
          */
-        paths: IO.DxfPathDto[];
+        paths!: IO.DxfPathDto[];
         /**
          * Layer name for these paths
          * @default Default
@@ -7558,7 +7558,7 @@ export namespace OCCT {
          * Array of DXF paths parts (output from dxfPathsWithLayer)
          * @default undefined
          */
-        pathsParts: IO.DxfPathsPartDto[];
+        pathsParts!: IO.DxfPathsPartDto[];
         /**
          * Color format to use in the DXF file
          * @default aci
@@ -7596,7 +7596,7 @@ export namespace OCCT {
          * Shape to save
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * File name
          * @default shape.dxf
@@ -7658,7 +7658,7 @@ export namespace OCCT {
          * The text that represents step or iges contents
          * @default undefined
          */
-        text: string;
+        text!: string;
         /**
          * Identify the import type
          */
@@ -7679,7 +7679,7 @@ export namespace OCCT {
          * This allows to store the imported objects for multiple run cycles in the cache
          * @default undefined
          */
-        assetFile: File;
+        assetFile!: File;
         /**
          * Adjusts models that use Z coordinate as up to Y up system.
          * @default true
@@ -7703,7 +7703,7 @@ export namespace OCCT {
          * - ArrayBuffer: for compressed files (.stpz, .igz)
          * @default undefined
          */
-        filetext: string | ArrayBuffer;
+        filetext!: string | ArrayBuffer;
         /**
          * File name (used to determine file type)
          * @default shape.step
@@ -7729,7 +7729,7 @@ export namespace OCCT {
          * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
          * @default undefined
          */
-        stepData: string | ArrayBuffer | Uint8Array | File | Blob;
+        stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
     }
 
     /**
@@ -7745,7 +7745,7 @@ export namespace OCCT {
          * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
          * @default undefined
          */
-        stepData: string | ArrayBuffer | Uint8Array | File | Blob;
+        stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
         /**
          * Mesh linear deflection (triangulation precision).
          * When `meshRelative` is true (default), this is a fraction of each edge's length
@@ -7905,7 +7905,7 @@ export namespace OCCT {
          * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
          * @default undefined
          */
-        stepData: string | ArrayBuffer | Uint8Array | File | Blob;
+        stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
 
         // ==================== STEP Reading Options ====================
 
@@ -8173,7 +8173,7 @@ export namespace OCCT {
          * Assembly structure definition with parts and nodes
          * @default undefined
          */
-        structure: Models.OCCT.AssemblyStructureDef<T>;
+        structure!: Models.OCCT.AssemblyStructureDef<T>;
         /**
          * Optional existing document handle to reuse.
          * If provided and valid, the document will be cleared and updated instead of creating a new one.
@@ -8213,17 +8213,17 @@ export namespace OCCT {
          * Unique identifier for referencing this part in nodes
          * @default undefined
          */
-        id: string;
+        id!: string;
         /**
          * The shape for this part
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Display name for the part (appears in STEP file and viewers)
          * @default undefined
          */
-        name: string;
+        name!: string;
         /**
          * Optional color for the part (RGBA, values 0-1)
          * @default {"r":0.5,"g":0.5,"b":0.5,"a":1}
@@ -8255,12 +8255,12 @@ export namespace OCCT {
          * Unique identifier for this assembly node
          * @default undefined
          */
-        id: string;
+        id!: string;
         /**
          * Display name for the assembly
          * @default undefined
          */
-        name: string;
+        name!: string;
         /**
          * Parent node ID. Leave undefined for root level assembly.
          * @default undefined
@@ -8312,17 +8312,17 @@ export namespace OCCT {
          * Unique identifier for this instance node
          * @default undefined
          */
-        id: string;
+        id!: string;
         /**
          * ID of the part to instance (must match a part's id)
          * @default undefined
          */
-        partId: string;
+        partId!: string;
         /**
          * Display name for this instance
          * @default undefined
          */
-        name: string;
+        name!: string;
         /**
          * Parent assembly node ID. Leave undefined for root level.
          * @default undefined
@@ -8378,7 +8378,7 @@ export namespace OCCT {
          * Obtain this from document queries like getDocumentParts.
          * @default undefined
          */
-        label: string;
+        label!: string;
         /**
          * New shape to replace the existing shape.
          * If undefined, the shape is not changed.
@@ -8492,7 +8492,7 @@ export namespace OCCT {
          * Unique identifier for referencing this imported part from instance nodes (via partId).
          * @default undefined
          */
-        id: string;
+        id!: string;
         /**
          * Index into the `sourceDocuments` array passed to buildAssemblyDocument.
          * @default 0
@@ -8541,12 +8541,12 @@ export namespace OCCT {
          * Assembly document handle from buildAssemblyDocument or loadStepToDoc
          * @default undefined
          */
-        document: T;
+        document!: T;
         /**
          * Label of the part/instance to color
          * @default undefined
          */
-        label: string;
+        label!: string;
         /**
          * Red component (0.0 - 1.0)
          * @default 0.5
@@ -8595,12 +8595,12 @@ export namespace OCCT {
          * Assembly document handle from buildAssemblyDocument or loadStepToDoc
          * @default undefined
          */
-        document: T;
+        document!: T;
         /**
          * Label to rename
          * @default undefined
          */
-        label: string;
+        label!: string;
         /**
          * New name
          * @default Renamed
@@ -8620,7 +8620,7 @@ export namespace OCCT {
          * Assembly document handle from buildAssemblyDocument or loadStepToDoc
          * @default undefined
          */
-        document: T;
+        document!: T;
     }
 
     /**
@@ -8636,12 +8636,12 @@ export namespace OCCT {
          * Assembly document handle from buildAssemblyDocument or loadStepToDoc
          * @default undefined
          */
-        document: T;
+        document!: T;
         /**
          * Label entry string (e.g., "0:1:1:1")
          * @default undefined
          */
-        label: string;
+        label!: string;
     }
 
     /**
@@ -8657,7 +8657,7 @@ export namespace OCCT {
          * Supports both regular STEP and gzip-compressed STEP-Z.
          * @default undefined
          */
-        stepData: string | ArrayBuffer | Uint8Array | File | Blob;
+        stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
     }
 
     /**
@@ -8684,7 +8684,7 @@ export namespace OCCT {
          * Assembly document handle from buildAssemblyDocument or loadStepToDoc
          * @default undefined
          */
-        document: T;
+        document!: T;
         /**
          * File name for the STEP header and download
          * @default assembly.step
@@ -8738,7 +8738,7 @@ export namespace OCCT {
          * Assembly document handle from buildAssemblyDocument or loadStepToDoc
          * @default undefined
          */
-        document: T;
+        document!: T;
         /**
          * Mesh precision for triangulation. Lower values = finer mesh.
          * @default 0.1
@@ -8868,7 +8868,7 @@ export namespace OCCT {
          * Shapes to add to compound
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
     }
     export class ThisckSolidSimpleDto<T> {
         constructor(shape?: T, offset?: number) {
@@ -8879,7 +8879,7 @@ export namespace OCCT {
          * Shape to make thick
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Offset distance
          * @default 1
@@ -8899,7 +8899,7 @@ export namespace OCCT {
          * Shape to make thick
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Offset distance
          * @default 1
@@ -8923,7 +8923,7 @@ export namespace OCCT {
          * Wire shape to convert into a face
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Should plane be planar
          * @default false
@@ -8940,12 +8940,12 @@ export namespace OCCT {
          * Wire shape to convert into a face
          * @default undefined
          */
-        wire: T;
+        wire!: T;
         /**
          * Face to attach the wire to
          * @default undefined
          */
-        face: U;
+        face!: U;
         /**
          * Indication if wire is inside the surface or outside
          * @default true
@@ -8962,12 +8962,12 @@ export namespace OCCT {
          * Wire shape to convert into a face
          * @default undefined
          */
-        wires: T[];
+        wires!: T[];
         /**
          * Face to attach the wires to
          * @default undefined
          */
-        face: U;
+        face!: U;
         /**
          * Indication if wire is inside the surface or outside
          * @default true
@@ -8983,7 +8983,7 @@ export namespace OCCT {
          * Wire shapes to convert into a faces
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Should plane be planar
          * @default false
@@ -8999,7 +8999,7 @@ export namespace OCCT {
          * Wire shapes to convert into a faces
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Should plane be planar
          * @default false
@@ -9016,12 +9016,12 @@ export namespace OCCT {
          * Wire shapes to convert into a faces
          * @default undefined
          */
-        wires: T[];
+        wires!: T[];
         /**
          * Guide face to use as a base
          * @default undefined
          */
-        face: U;
+        face!: U;
         /**
          * Indication if wire is inside the surface or outside
          * @default true
@@ -9037,7 +9037,7 @@ export namespace OCCT {
          * Faces to construct a shell from
          * @default undefined
          */
-        shapes: T[];
+        shapes!: T[];
         /**
          * Tolerance of sewing
          * @default 1.0e-7
@@ -9058,7 +9058,7 @@ export namespace OCCT {
          * Face shape
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Param at which to find isocurve
          * @default 0.5
@@ -9066,7 +9066,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        param: number;
+        param: number = 0.5;
         /**
          * Direction to find the isocurve
          * @default u
@@ -9085,7 +9085,7 @@ export namespace OCCT {
          * Face shape
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Number of points on U direction
          * @default 10
@@ -9300,7 +9300,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        outerRadius: number;
+        outerRadius: number = 2;
         /**
          * Angle of the rays
          * @default 1
@@ -9308,7 +9308,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        innerRadius: number;
+        innerRadius: number = 1;
         /**
          * Offsets outer edge cornerners along the direction vector
          * @default 0
@@ -9828,7 +9828,7 @@ export namespace OCCT {
          * 2D Curve to trim
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * First param on the curve for trimming. U1 can be greater or lower than U2. The returned curve is oriented from U1 to U2.
          * @default 0
@@ -9887,7 +9887,7 @@ export namespace OCCT {
          * The shape to slice
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Step at which to divide the shape
          * @default 0.1
@@ -9912,7 +9912,7 @@ export namespace OCCT {
          * The shape to slice
          * @default undefined
          */
-        shape: T;
+        shape!: T;
         /**
          * Steps that should be used for slicing. This array is going to be treated as a pattern - 
          * this menas that if the actual number of steps is lower than the number of steps in the pattern, the pattern will be repeated.
@@ -9949,17 +9949,17 @@ export namespace OCCT {
          * The start point for dimension
          * @default undefined
          */
-        start: Base.Point3;
+        start!: Base.Point3;
         /**
          * The end point for dimension
          * @default undefined
          */
-        end: Base.Point3;
+        end!: Base.Point3;
         /**
          * The dimension direction (must include length)
          * @default undefined
          */
-        direction: Base.Vector3;
+        direction!: Base.Vector3;
         /**
          * The dimension label
          * @default 0
@@ -10472,7 +10472,7 @@ export namespace OCCT {
          * End point of the line.
          * @default undefined
          */
-        to: Base.Point2;
+        to!: Base.Point2;
     }
     /** Quadratic bezier with control point `c` to `to`. */
     export class PathQuadraticSegment {
@@ -10489,12 +10489,12 @@ export namespace OCCT {
          * Control point.
          * @default undefined
          */
-        c: Base.Point2;
+        c!: Base.Point2;
         /**
          * End point.
          * @default undefined
          */
-        to: Base.Point2;
+        to!: Base.Point2;
     }
     /** Cubic bezier with control points `c1`, `c2` to `to`. */
     export class PathCubicSegment {
@@ -10512,17 +10512,17 @@ export namespace OCCT {
          * First control point.
          * @default undefined
          */
-        c1: Base.Point2;
+        c1!: Base.Point2;
         /**
          * Second control point.
          * @default undefined
          */
-        c2: Base.Point2;
+        c2!: Base.Point2;
         /**
          * End point.
          * @default undefined
          */
-        to: Base.Point2;
+        to!: Base.Point2;
     }
     /** Elliptical arc in center parametrization (angles in radians). */
     export class PathArcSegment {
@@ -10544,12 +10544,12 @@ export namespace OCCT {
          * End point of the arc.
          * @default undefined
          */
-        to: Base.Point2;
+        to!: Base.Point2;
         /**
          * Ellipse center.
          * @default undefined
          */
-        center: Base.Point2;
+        center!: Base.Point2;
         /**
          * Semi-axis along the (rotated) x direction.
          * @default 0
@@ -10593,12 +10593,12 @@ export namespace OCCT {
          * Absolute start point of the subpath.
          * @default undefined
          */
-        start: Base.Point2;
+        start!: Base.Point2;
         /**
          * Ordered segments; the first segment starts at `start`.
          * @default undefined
          */
-        segments: PathSegment[];
+        segments!: PathSegment[];
         /**
          * Whether the subpath is closed.
          * @default false
@@ -10667,7 +10667,7 @@ export namespace OCCT {
          * Subpaths describing the geometry.
          * @default undefined
          */
-        subpaths: PathSubpath[];
+        subpaths!: PathSubpath[];
         /**
          * Build faces from the (closed) subpaths in addition to wires.
          * @default false
@@ -10719,7 +10719,7 @@ export namespace OCCT {
          * SVG document text.
          * @default <svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>
          */
-        svg: string;
+        svg: string = '<svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>';
         /**
          * How closed, filled shapes become faces. `none` keeps only the outline wires; `auto` honors
          * each element's SVG fill-rule; `nonzero`/`evenOdd` force a rule; `perSubpath` makes one face
@@ -10777,13 +10777,13 @@ export namespace OCCT {
     /** One imported SVG element: its geometry shape plus resolved metadata (an output, not an input). */
     export class SVGShape<T> {
         /** The built shape: a wire, or a face when requested. */
-        shape: T;
+        shape!: T;
         /** True when `shape` is a face, false when it is a wire. */
-        isFace: boolean;
+        isFace!: boolean;
         /** SVG tag the shape came from: "path" | "rect" | "circle" | ... */
-        elementType: string;
+        elementType!: string;
         /** Whether the source subpaths were closed. */
-        closed: boolean;
+        closed!: boolean;
         /** Resolved fill colour, if any. */
         fill?: string | undefined;
         /** Resolved stroke colour, if any. */
@@ -10801,10 +10801,10 @@ export namespace OCCT {
     /** Result of importing an SVG document (an output, not an input). */
     export class SVGResult<T> {
         /** One entry per drawable element, in document order. */
-        shapes: SVGShape<T>[];
+        shapes!: SVGShape<T>[];
         /** viewBox as [minX, minY, width, height] if present. */
         viewBox?: [number, number, number, number] | undefined;
         /** Non-fatal parsing/building issues. */
-        warnings: string[];
+        warnings!: string[];
     }
 }

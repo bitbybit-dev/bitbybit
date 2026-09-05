@@ -25,8 +25,7 @@
                 "../base/dist/*"
             ]
         },
-        "noImplicitAny": true,
-        "strictNullChecks": true,
+        "strict": true,
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
         "noImplicitReturns": true,

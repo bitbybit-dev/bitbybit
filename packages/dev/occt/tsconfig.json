@@ -1,7 +1,9 @@
-// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces every strict flag but
-// strictPropertyInitialization ahead of the shared loose base: occt is the largest package and is going strict one flag at a time,
-// the way base did. The flags are repeated here so the editor and the tests hold the same line; the
-// build config cannot carry this note because the references generator rewrites it without comments.
+// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces the whole
+// strict set of tsconfig.base.cad-strict.json, ahead of the shared loose base: occt is the largest
+// package and the kernel the engine packages build on, and it went strict one flag at a time, the way
+// base did. It carries no strict baseline any more. The flags are repeated here so the editor and the
+// tests hold the same line; the build config cannot carry this note because the references generator
+// rewrites it without comments.
 {
     "extends": "../../../tsconfig.base.cad-loose.json",
     "compileOnSave": false,
@@ -16,8 +18,7 @@
                 "../base/dist/*"
             ]
         },
-        "noImplicitAny": true,
-        "strictNullChecks": true,
+        "strict": true,
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
         "noImplicitReturns": true,

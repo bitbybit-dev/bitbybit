@@ -4,8 +4,8 @@
  * part a section came from - instead of relying on array order.
  */
 export class ShapeWithId<U> {
-    id: string;
-    shape: U;
+    id!: string;
+    shape!: U;
 }
 
 /**

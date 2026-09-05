@@ -11,7 +11,7 @@ export class TextWiresDataDto<T> {
     name = "text";
     compound?: T | undefined;
     characters?: TextWiresCharShapePart<T>[] | undefined;
-    width: number;
-    height: number;
-    center: Base.Point3;
+    width!: number;
+    height!: number;
+    center!: Base.Point3;
 }

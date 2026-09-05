@@ -79,9 +79,9 @@ in both directions, so a fix lands together with `npm run typecheck:strict:save`
 baseline only shrinks. When a package's baseline is empty, its build config goes strict and the baseline
 is deleted; when a flag reaches zero errors in every package, it moves from `tsconfig.base.cad-strict.json`
 into `tsconfig.base.cad-loose.json` and the build enforces it - five have already (the three catch-variable,
-function-type and switch-fallthrough flags and the two unused checks). `base` is the first package
-through: its build config carries the whole strict set, it has no baseline, and its `typecheck:strict`
-is tsc alone. Test support under `__mocks__` is excluded from the build configs: jest compiles it
+function-type and switch-fallthrough flags and the two unused checks). `base` and `occt` are through:
+their build configs carry the whole strict set, they have no baseline, and their `typecheck:strict` is
+tsc alone. Test support under `__mocks__` is excluded from the build configs: jest compiles it
 itself, so dist ships no mocks. Dominant error today: TS2564, property initializers in the
 `*-inputs.ts` classes whose JSDoc `@default` already states the value; `packages/dev/CLAUDE.md` records
 the shape each kind of property takes.
