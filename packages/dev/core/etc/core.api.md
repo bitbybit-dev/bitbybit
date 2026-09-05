@@ -977,7 +977,7 @@ namespace JSCAD {
         colour: string;
         opacity: number;
         path: JSCADEntity;
-        pathMesh?: T;
+        pathMesh?: T | undefined;
         updatable: boolean;
         width: number;
     }
@@ -989,7 +989,7 @@ namespace JSCAD {
         colours: string | string[];
         drawTwoSided: boolean;
         hidden: boolean;
-        jscadMesh?: T;
+        jscadMesh?: T | undefined;
         mesh: JSCADEntity;
         opacity: number;
         updatable: boolean;
@@ -1002,7 +1002,7 @@ namespace JSCAD {
         colours: string | string[];
         drawTwoSided: boolean;
         hidden: boolean;
-        jscadMesh?: T;
+        jscadMesh?: T | undefined;
         meshes: JSCADEntity[];
         opacity: number;
         updatable: boolean;
@@ -1069,7 +1069,7 @@ namespace JSCAD {
     // (undocumented)
     class FromPolygonPoints {
         constructor(polygonPoints?: Base_2.Point3[][]);
-        polygonPoints?: Base_2.Point3[][];
+        polygonPoints: Base_2.Point3[][];
     }
     // (undocumented)
     class GeodesicSphereCentersDto {
@@ -1179,8 +1179,8 @@ namespace JSCAD {
     // (undocumented)
     class PolylinePropertiesDto {
         constructor(points?: Base_2.Point3[], isClosed?: boolean);
-        color?: string | number[];
-        isClosed?: boolean;
+        color?: string | number[] | undefined;
+        isClosed?: boolean | undefined;
         points: Base_2.Point3[];
     }
     // (undocumented)
@@ -1838,18 +1838,18 @@ namespace Manifold {
     // (undocumented)
     class CrossSectionFromPolygonPointsDto {
         constructor(points?: Base_2.Point3[], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number);
-        fillRule?: fillRuleEnum;
+        fillRule?: fillRuleEnum | undefined;
         points: Base_2.Point3[];
-        removeDuplicates?: boolean;
-        tolerance?: number;
+        removeDuplicates?: boolean | undefined;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class CrossSectionFromPolygonsPointsDto {
         constructor(polygonPoints?: Base_2.Point3[][], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number);
-        fillRule?: fillRuleEnum;
+        fillRule?: fillRuleEnum | undefined;
         polygonPoints: Base_2.Point3[][];
-        removeDuplicates?: boolean;
-        tolerance?: number;
+        removeDuplicates?: boolean | undefined;
+        tolerance?: number | undefined;
     }
     type CrossSectionPointer = {
         hash: number;
@@ -1883,21 +1883,21 @@ namespace Manifold {
     }
     class DecomposedManifoldMeshDto {
         // (undocumented)
-        faceID?: Uint32Array;
+        faceID?: Uint32Array | undefined;
         // (undocumented)
-        halfedgeTangent?: Float32Array;
+        halfedgeTangent?: Float32Array | undefined;
         // (undocumented)
-        mergeFromVert?: Uint32Array;
+        mergeFromVert?: Uint32Array | undefined;
         // (undocumented)
-        mergeToVert?: Uint32Array;
+        mergeToVert?: Uint32Array | undefined;
         // (undocumented)
         numProp: number;
         // (undocumented)
-        runIndex?: Uint32Array;
+        runIndex?: Uint32Array | undefined;
         // (undocumented)
-        runOriginalID?: Uint32Array;
+        runOriginalID?: Uint32Array | undefined;
         // (undocumented)
-        runTransform?: Float32Array;
+        runTransform?: Float32Array | undefined;
         // (undocumented)
         triVerts: Uint32Array;
         // (undocumented)
@@ -1907,13 +1907,13 @@ namespace Manifold {
     class DecomposeManifoldOrCrossSectionDto<T> {
         constructor(manifoldOrCrossSection?: T, normalIdx?: number);
         manifoldOrCrossSection: T;
-        normalIdx?: number;
+        normalIdx?: number | undefined;
     }
     // (undocumented)
     class DecomposeManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]);
         manifoldsOrCrossSections: T[];
-        normalIdx?: number[];
+        normalIdx?: number[] | undefined;
     }
     // (undocumented)
     class DrawManifoldOrCrossSectionDto<T, M> {
@@ -1926,9 +1926,9 @@ namespace Manifold {
         crossSectionWidth: number;
         drawTwoSided: boolean;
         faceColour: Base_2.Color;
-        faceMaterial?: M;
+        faceMaterial?: M | undefined;
         faceOpacity: number;
-        manifoldOrCrossSection?: T;
+        manifoldOrCrossSection?: T | undefined;
     }
     // (undocumented)
     class DrawManifoldsOrCrossSectionsDto<T, M> {
@@ -1941,9 +1941,9 @@ namespace Manifold {
         crossSectionWidth: number;
         drawTwoSided: boolean;
         faceColour: Base_2.Color;
-        faceMaterial?: M;
+        faceMaterial?: M | undefined;
         faceOpacity: number;
-        manifoldsOrCrossSections?: T[];
+        manifoldsOrCrossSections?: T[] | undefined;
     }
     // (undocumented)
     class ExtrudeDto<T> {
@@ -1969,7 +1969,7 @@ namespace Manifold {
     // (undocumented)
     class FromPolygonPointsDto {
         constructor(polygonPoints?: Base_2.Point3[][]);
-        polygonPoints?: Base_2.Point3[][];
+        polygonPoints: Base_2.Point3[][];
     }
     // (undocumented)
     class HullPointsDto<T> {
@@ -2034,7 +2034,7 @@ namespace Manifold {
     class ManifoldSimplifyDto<T> {
         constructor(manifold?: T, tolerance?: number);
         manifold: T;
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class ManifoldsMinGapDto<T> {
@@ -2065,13 +2065,13 @@ namespace Manifold {
     class ManifoldsToMeshesDto<T> {
         constructor(manifolds?: T[], normalIdx?: number[]);
         manifolds: T[];
-        normalIdx?: number[];
+        normalIdx?: number[] | undefined;
     }
     // (undocumented)
     class ManifoldToMeshDto<T> {
         constructor(manifold?: T, normalIdx?: number);
         manifold: T;
-        normalIdx?: number;
+        normalIdx?: number | undefined;
     }
     // (undocumented)
     class ManifoldWarpDto<T> {
