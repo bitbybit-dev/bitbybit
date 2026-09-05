@@ -1415,7 +1415,7 @@ namespace Line {
     class DrawLineDto<T> {
         constructor(line?: LinePointsDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, lineMesh?: T);
         colours?: string | string[];
-        line?: LinePointsDto;
+        line: LinePointsDto;
         lineMesh?: T;
         opacity?: number;
         size?: number;
@@ -1425,7 +1425,7 @@ namespace Line {
     class DrawLinesDto<T> {
         constructor(lines?: LinePointsDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, linesMesh?: T);
         colours?: string | string[];
-        lines?: LinePointsDto[];
+        lines: LinePointsDto[];
         linesMesh?: T;
         opacity?: number;
         size?: number;
@@ -1434,26 +1434,26 @@ namespace Line {
     // (undocumented)
     class LineDto {
         constructor(line?: LinePointsDto);
-        line?: LinePointsDto;
+        line: LinePointsDto;
     }
     // (undocumented)
     class LineLineIntersectionDto {
         constructor(line1?: LinePointsDto, line2?: LinePointsDto, tolerance?: number);
         checkSegmentsOnly?: boolean;
-        line1?: LinePointsDto;
-        line2?: LinePointsDto;
+        line1: LinePointsDto;
+        line2: LinePointsDto;
         tolerance?: number;
     }
     // (undocumented)
     class LinePointsDto {
         constructor(start?: Base_2.Point3, end?: Base_2.Point3);
-        end?: Base_2.Point3;
-        start?: Base_2.Point3;
+        end: Base_2.Point3;
+        start: Base_2.Point3;
     }
     // (undocumented)
     class LinesDto {
         constructor(lines?: LinePointsDto[]);
-        lines?: LinePointsDto[];
+        lines: LinePointsDto[];
     }
     // (undocumented)
     class LineStartEndPointsDto {
@@ -1464,41 +1464,41 @@ namespace Line {
     // (undocumented)
     class PointOnLineDto {
         constructor(line?: LinePointsDto, param?: number);
-        line?: LinePointsDto;
+        line: LinePointsDto;
         param?: number;
     }
     // (undocumented)
     class PointsLinesDto {
         constructor(points?: Base_2.Point3[]);
-        points?: Base_2.Point3[];
+        points: Base_2.Point3[];
     }
     // (undocumented)
     class SegmentDto {
         constructor(segment?: Base_2.Segment3);
-        segment?: Base_2.Segment3;
+        segment: Base_2.Segment3;
     }
     // (undocumented)
     class SegmentsDto {
         constructor(segments?: Base_2.Segment3[]);
-        segments?: Base_2.Segment3[];
+        segments: Base_2.Segment3[];
     }
     // (undocumented)
     class TransformLineDto {
         constructor(line?: LinePointsDto, transformation?: Base_2.TransformMatrixes);
-        line?: LinePointsDto;
-        transformation?: Base_2.TransformMatrixes;
+        line: LinePointsDto;
+        transformation: Base_2.TransformMatrixes;
     }
     // (undocumented)
     class TransformLinesDto {
         constructor(lines?: LinePointsDto[], transformation?: Base_2.TransformMatrixes);
-        lines?: LinePointsDto[];
-        transformation?: Base_2.TransformMatrixes;
+        lines: LinePointsDto[];
+        transformation: Base_2.TransformMatrixes;
     }
     // (undocumented)
     class TransformsLinesDto {
         constructor(lines?: LinePointsDto[], transformation?: Base_2.TransformMatrixes[]);
-        lines?: LinePointsDto[];
-        transformation?: Base_2.TransformMatrixes[];
+        lines: LinePointsDto[];
+        transformation: Base_2.TransformMatrixes[];
     }
 }
 
@@ -1706,8 +1706,8 @@ namespace Logic {
     }
     // (undocumented)
     class BooleanListDto {
-        constructor(booleans?: boolean);
-        booleans: any;
+        constructor(booleans?: boolean[]);
+        booleans: boolean[];
     }
     enum BooleanOperatorsEnum {
         // (undocumented)
@@ -2578,33 +2578,33 @@ namespace Mesh {
     // (undocumented)
     class MeshMeshToleranceDto {
         constructor(mesh1?: Base_2.Mesh3, mesh2?: Base_2.Mesh3, tolerance?: number);
-        mesh1?: Base_2.Mesh3;
-        mesh2?: Base_2.Mesh3;
+        mesh1: Base_2.Mesh3;
+        mesh2: Base_2.Mesh3;
         tolerance?: number;
     }
     // (undocumented)
     class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base_2.Point3, plane?: Base_2.TrianglePlane3);
-        plane?: Base_2.TrianglePlane3;
-        point?: Base_2.Point3;
+        plane: Base_2.TrianglePlane3;
+        point: Base_2.Point3;
     }
     // (undocumented)
     class TriangleDto {
         constructor(triangle?: Base_2.Triangle3);
-        triangle?: Base_2.Triangle3;
+        triangle: Base_2.Triangle3;
     }
     // (undocumented)
     class TriangleToleranceDto {
         constructor(triangle?: Base_2.Triangle3);
         tolerance?: number;
-        triangle?: Base_2.Triangle3;
+        triangle: Base_2.Triangle3;
     }
     // (undocumented)
     class TriangleTriangleToleranceDto {
         constructor(triangle1?: Base_2.Triangle3, triangle2?: Base_2.Triangle3, tolerance?: number);
         tolerance?: number;
-        triangle1?: Base_2.Triangle3;
-        triangle2?: Base_2.Triangle3;
+        triangle1: Base_2.Triangle3;
+        triangle2: Base_2.Triangle3;
     }
 }
 
@@ -5487,7 +5487,7 @@ namespace Point_2 {
     class PointsMaxFilletsHalfLineDto {
         constructor(points?: Base_2.Point3[], checkLastWithFirst?: boolean, tolerance?: number);
         checkLastWithFirst?: boolean;
-        points?: Base_2.Point3[];
+        points: Base_2.Point3[];
         tolerance?: number;
     }
     // (undocumented)
@@ -5508,7 +5508,7 @@ namespace Point_2 {
         constructor(points?: Base_2.Point3[], tolerance?: number, checkFirstAndLast?: boolean);
         checkFirstAndLast: boolean;
         points: Base_2.Point3[];
-        tolerance: number;
+        tolerance?: number;
     }
     // (undocumented)
     class RotatePointsCenterAxisDto {
@@ -5551,7 +5551,7 @@ namespace Point_2 {
         constructor(points?: Base_2.Point3[], center?: Base_2.Point3, direction?: Base_2.Vector3, scale?: number);
         center?: Base_2.Point3;
         direction?: Base_2.Vector3;
-        points?: Base_2.Point3[];
+        points: Base_2.Point3[];
         scale?: number;
     }
     // (undocumented)
@@ -5565,9 +5565,9 @@ namespace Point_2 {
     // (undocumented)
     class ThreePointsToleranceDto {
         constructor(start?: Base_2.Point3, center?: Base_2.Point3, end?: Base_2.Point3, tolerance?: number);
-        center?: Base_2.Point3;
-        end?: Base_2.Point3;
-        start?: Base_2.Point3;
+        center: Base_2.Point3;
+        end: Base_2.Point3;
+        start: Base_2.Point3;
         tolerance: number;
     }
     // (undocumented)
@@ -5617,8 +5617,8 @@ namespace Point_2 {
     // (undocumented)
     class TwoPointsToleranceDto {
         constructor(point1?: Base_2.Point3, point2?: Base_2.Point3, tolerance?: number);
-        point1?: Base_2.Point3;
-        point2?: Base_2.Point3;
+        point1: Base_2.Point3;
+        point2: Base_2.Point3;
         tolerance?: number;
     }
 }
@@ -5630,7 +5630,7 @@ namespace Polyline {
         constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: T);
         colours?: string | string[];
         opacity?: number;
-        polyline?: PolylinePropertiesDto;
+        polyline: PolylinePropertiesDto;
         polylineMesh?: T;
         size?: number;
         updatable?: boolean;
@@ -5640,7 +5640,7 @@ namespace Polyline {
         constructor(polylines?: PolylinePropertiesDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylinesMesh?: T);
         colours?: string | string[];
         opacity?: number;
-        polylines?: PolylinePropertiesDto[];
+        polylines: PolylinePropertiesDto[];
         polylinesMesh?: T;
         size?: number;
         updatable?: boolean;
@@ -5649,48 +5649,48 @@ namespace Polyline {
     class PolylineCreateDto {
         constructor(points?: Base_2.Point3[], isClosed?: boolean);
         isClosed?: boolean;
-        points?: Base_2.Point3[];
+        points: Base_2.Point3[];
     }
     // (undocumented)
     class PolylineDto {
         constructor(polyline?: PolylinePropertiesDto);
-        polyline?: PolylinePropertiesDto;
+        polyline: PolylinePropertiesDto;
     }
     // (undocumented)
     class PolylinePropertiesDto {
         constructor(points?: Base_2.Point3[], isClosed?: boolean);
         color?: string | number[];
         isClosed?: boolean;
-        points?: Base_2.Point3[];
+        points: Base_2.Point3[];
     }
     // (undocumented)
     class PolylinesDto {
         constructor(polylines?: PolylinePropertiesDto[]);
-        polylines?: PolylinePropertiesDto[];
+        polylines: PolylinePropertiesDto[];
     }
     // (undocumented)
     class PolylineToleranceDto {
         constructor(polyline?: PolylinePropertiesDto, tolerance?: number);
-        polyline?: PolylinePropertiesDto;
+        polyline: PolylinePropertiesDto;
         tolerance?: number;
     }
     // (undocumented)
     class SegmentsToleranceDto {
         constructor(segments?: Base_2.Segment3[]);
-        segments?: Base_2.Segment3[];
+        segments: Base_2.Segment3[];
         tolerance?: number;
     }
     // (undocumented)
     class TransformPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, transformation?: Base_2.TransformMatrixes);
-        polyline?: PolylinePropertiesDto;
-        transformation?: Base_2.TransformMatrixes;
+        polyline: PolylinePropertiesDto;
+        transformation: Base_2.TransformMatrixes;
     }
     // (undocumented)
     class TwoPolylinesToleranceDto {
         constructor(polyline1?: PolylinePropertiesDto, polyline2?: PolylinePropertiesDto, tolerance?: number);
-        polyline1?: PolylinePropertiesDto;
-        polyline2?: PolylinePropertiesDto;
+        polyline1: PolylinePropertiesDto;
+        polyline2: PolylinePropertiesDto;
         tolerance?: number;
     }
 }
