@@ -322,7 +322,7 @@ export class DrawHelper extends DrawHelperCore {
             positionMap.set(index, pos);
         });
 
-        children.forEach((child: pc.Entity) => {
+        (children as pc.Entity[]).forEach((child: pc.Entity) => {
             // Handle GPU-instanced points
             if (child.tags?.has("instancedPoints")) {
                 const extendedChild = child as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] };

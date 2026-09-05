@@ -28,7 +28,7 @@ export class BabylonIO {
                 return await this.loadAsset("", "", inputs.assetFile, inputs.hidden);
             }
             catch (e) {
-                throw Error(e);
+                throw Error(String(e));
             }
         } else {
             throw Error(`Unsupported file format detected: ${type}`);
@@ -62,7 +62,7 @@ export class BabylonIO {
                 return await this.loadAsset("", inputs.rootUrl, inputs.assetFile, inputs.hidden);
             }
             catch (e) {
-                throw Error(e);
+                throw Error(String(e));
             }
         } else {
             throw Error(`Unsupported file format detected: ${type}`);

@@ -184,11 +184,6 @@
       "code": "TS6138",
       "count": 1
     },
-    "85f29cf90cd5f9c672570e13b1dd27b9f4db005e": {
-      "file": "lib/api/bitbybit/babylon/gui/stack-panel.ts",
-      "code": "TS2769",
-      "count": 1
-    },
     "be092591d2f36d19c8e078e281a071c1f4c6a515": {
       "file": "lib/api/bitbybit/babylon/gui/text-block.ts",
       "code": "TS6138",
@@ -203,11 +198,6 @@
       "file": "lib/api/bitbybit/babylon/io.ts",
       "code": "TS18048",
       "count": 3
-    },
-    "a935d16020b02df938bb1242abd12f2295857357": {
-      "file": "lib/api/bitbybit/babylon/io.ts",
-      "code": "TS2345",
-      "count": 2
     },
     "4cb51e2fc6737568a526b81ae7eb8081cc02c184": {
       "file": "lib/api/bitbybit/babylon/io.ts",
@@ -282,7 +272,7 @@
     "c396335165ff8c2aae485631e7fa78655917f3a3": {
       "file": "lib/api/bitbybit/babylon/mesh.ts",
       "code": "TS2345",
-      "count": 8
+      "count": 6
     },
     "05da5e0fc23f23cc2a1458f6e806a68d0202fe9a": {
       "file": "lib/api/bitbybit/babylon/mesh.ts",

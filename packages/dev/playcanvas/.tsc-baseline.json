@@ -127,7 +127,7 @@
     "da606731e118cb375e73240194d679f1e7b9f8dc": {
       "file": "lib/api/draw-helper.ts",
       "code": "TS2345",
-      "count": 22
+      "count": 21
     },
     "bf2e747f37b99f77bb542471f36b0e2a04a0fd67": {
       "file": "lib/api/draw-helper.ts",

@@ -737,7 +737,7 @@ export class BabylonMesh {
         const parent = new BABYLON.Mesh("instanceContainer" + Math.random(), this.context.scene);
         const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
-            inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
+            (inputs.mesh.getChildMeshes(false) as BABYLON.Mesh[]).forEach((child: BABYLON.Mesh) => {
                 const vertices = child.getTotalVertices();
                 if (child.createInstance && vertices > 0) {
                     child.disableEdgesRendering();
@@ -797,7 +797,7 @@ export class BabylonMesh {
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
             inputs.mesh.setParent(null);
             const container = new BABYLON.Mesh("meshCloneContainer" + Math.random());
-            inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
+            (inputs.mesh.getChildMeshes(false) as BABYLON.Mesh[]).forEach((child: BABYLON.Mesh) => {
                 if (child.createInstance && child.getTotalVertices() > 0 && child.getTotalIndices() > 0) {
                     const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
                     newInstance.parent = container;

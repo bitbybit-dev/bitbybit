@@ -16,6 +16,12 @@
         "moduleResolution": "node",
         "lib": ["es2020", "dom"],
         "strict": false,
+        // Three of the strict flags already hold in every package (measured at zero errors), so the
+        // build enforces them; the rest are the typecheck-only overlay's until a package's baseline is
+        // empty (tsconfig.base.cad-strict.json).
+        "useUnknownInCatchVariables": true,
+        "strictFunctionTypes": true,
+        "noFallthroughCasesInSwitch": true,
         "allowJs": true,
         "declaration": true,
         "emitDeclarationOnly": false,
