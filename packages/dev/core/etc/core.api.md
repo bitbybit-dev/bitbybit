@@ -341,7 +341,7 @@ export class ContextBase {
     // (undocumented)
     canvasZoneClass: string;
     // (undocumented)
-    currentlyPressedKeys: any[];
+    currentlyPressedKeys: string[];
     // (undocumented)
     getFile(file: File): Promise<string | ArrayBuffer>;
     // (undocumented)

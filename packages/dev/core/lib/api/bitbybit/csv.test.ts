@@ -1,5 +1,4 @@
 import { CSVBitByBit } from "./csv";
-import * as Inputs from "../inputs";
 
 describe("CSV unit tests", () => {
     let csv: CSVBitByBit;
@@ -504,9 +503,9 @@ describe("CSV unit tests", () => {
                 columnSeparator: ","
             });
             
-            expect(result[0].name).toBe("John");
-            expect(result[0].age).toBe("30");
-            expect(result[0].city).toBe("NYC");
+            expect(result[0]!.name).toBe("John");
+            expect(result[0]!.age).toBe("30");
+            expect(result[0]!.city).toBe("NYC");
         });
 
         it("should work with typed objects in jsonToCsv", () => {
@@ -556,9 +555,9 @@ describe("CSV unit tests", () => {
                 { name: "John", age: 30, salary: 50000 },
                 { name: "Jane", age: 25, salary: 60000 }
             ]);
-            expect(typeof result[0].age).toBe("number");
-            expect(typeof result[0].salary).toBe("number");
-            expect(typeof result[0].name).toBe("string");
+            expect(typeof result[0]!["age"]).toBe("number");
+            expect(typeof result[0]!["salary"]).toBe("number");
+            expect(typeof result[0]!["name"]).toBe("string");
         });
 
         it("should handle decimal numbers when converting columns", () => {
@@ -591,8 +590,8 @@ describe("CSV unit tests", () => {
                 numberColumns: ["age"]
             });
 
-            expect(result[0].name).toBe("John");
-            expect(isNaN(result[0].age as number)).toBe(true);
+            expect(result[0]!["name"]).toBe("John");
+            expect(isNaN(result[0]!["age"] as number)).toBe(true);
         });
 
         it("should work without numberColumns specified", () => {
@@ -601,7 +600,7 @@ describe("CSV unit tests", () => {
             });
 
             expect(result).toEqual([{ name: "John", age: "30" }]);
-            expect(typeof result[0].age).toBe("string");
+            expect(typeof result[0]!["age"]).toBe("string");
         });
 
         it("should convert specified columns in parseToJsonWithHeaders", () => {
@@ -615,8 +614,8 @@ describe("CSV unit tests", () => {
                 { name: "John", age: 30, bonus: 5000 },
                 { name: "Jane", age: 25, bonus: 6000 }
             ]);
-            expect(typeof result[0].age).toBe("number");
-            expect(typeof result[0].bonus).toBe("number");
+            expect(typeof result[0]!["age"]).toBe("number");
+            expect(typeof result[0]!["bonus"]).toBe("number");
         });
 
         it("should convert numbers in queryColumn", () => {
@@ -691,10 +690,10 @@ describe("CSV unit tests", () => {
                 { id: 1, name: "John", active: "true", score: 95.5 },
                 { id: 2, name: "Jane", active: "false", score: 88.2 }
             ]);
-            expect(typeof result[0].id).toBe("number");
-            expect(typeof result[0].name).toBe("string");
-            expect(typeof result[0].active).toBe("string");
-            expect(typeof result[0].score).toBe("number");
+            expect(typeof result[0]!["id"]).toBe("number");
+            expect(typeof result[0]!["name"]).toBe("string");
+            expect(typeof result[0]!["active"]).toBe("string");
+            expect(typeof result[0]!["score"]).toBe("number");
         });
     });
 

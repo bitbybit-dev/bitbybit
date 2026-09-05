@@ -80,11 +80,11 @@ describe("Asset unit tests", () => {
     });
 });
 
-function mockBlob(size, mimeType) {
+function mockBlob(size?: number, mimeType?: string) {
     size = size || 1024;
     mimeType = mimeType || "plain/txt";
 
-    function range(count) {
+    function range(count: number) {
         let output = "";
         for (let i = 0; i < count; i++) {
             output += "a";

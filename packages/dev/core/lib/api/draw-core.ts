@@ -31,7 +31,7 @@ export class DrawCore {
     detectLine(entity: unknown): boolean {
         if (!entity || typeof entity !== "object") return false;
         const obj = entity as Record<string, unknown>;
-        return (obj.start && obj.end && Array.isArray(obj.start) && Array.isArray(obj.end)) || 
+        return !!(obj["start"] && obj["end"] && Array.isArray(obj["start"]) && Array.isArray(obj["end"])) || 
                (Array.isArray(entity) && entity.length === 2 && 
                 Array.isArray(entity[0]) && Array.isArray(entity[1]) && 
                 this.checkIfElementsInArrayAreNumbers(entity[0]) && entity[0].length === 3 && 
@@ -45,7 +45,7 @@ export class DrawCore {
     detectPolyline(entity: unknown): boolean {
         if (!entity || typeof entity !== "object") return false;
         const obj = entity as Record<string, unknown>;
-        return obj.points !== undefined && Array.isArray(obj.points);
+        return obj["points"] !== undefined && Array.isArray(obj["points"]);
     }
 
     detectPolylines(entity: unknown): boolean {
@@ -55,7 +55,7 @@ export class DrawCore {
     detectNode(entity: unknown): boolean {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
-        return typeof obj.id === "string" && obj.id.includes("node");
+        return typeof obj["id"] === "string" && obj["id"].includes("node");
     }
 
     detectNodes(entity: unknown): boolean {
@@ -65,17 +65,17 @@ export class DrawCore {
     detectVerbCurve(entity: unknown): boolean {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
-        const data = obj._data as Record<string, unknown> | undefined;
-        return data !== undefined && data.controlPoints !== undefined && data.knots !== undefined && data.degree !== undefined;
+        const data = obj["_data"] as Record<string, unknown> | undefined;
+        return data !== undefined && data["controlPoints"] !== undefined && data["knots"] !== undefined && data["degree"] !== undefined;
     }
 
     detectVerbSurface(entity: unknown): boolean {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
-        const data = obj._data as Record<string, unknown> | undefined;
-        return data !== undefined && data.controlPoints !== undefined && 
-               data.degreeU !== undefined && data.degreeV !== undefined && 
-               data.knotsU !== undefined && data.knotsV !== undefined;
+        const data = obj["_data"] as Record<string, unknown> | undefined;
+        return data !== undefined && data["controlPoints"] !== undefined && 
+               data["degreeU"] !== undefined && data["degreeV"] !== undefined && 
+               data["knotsU"] !== undefined && data["knotsV"] !== undefined;
     }
 
     detectVerbCurves(entity: unknown): boolean {
@@ -89,7 +89,7 @@ export class DrawCore {
     detectJscadMesh(entity: unknown): boolean {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
-        return obj.sides !== undefined || obj.polygons !== undefined;
+        return obj["sides"] !== undefined || obj["polygons"] !== undefined;
     }
 
     detectJscadMeshes(entity: unknown): boolean {
@@ -99,7 +99,7 @@ export class DrawCore {
     detectOcctShape(entity: unknown): boolean {
         if (!entity || typeof entity !== "object") return false;
         const obj = entity as Record<string, unknown>;
-        return obj.type === "occ-shape";
+        return obj["type"] === "occ-shape";
     }
 
     detectOcctShapes(entity: unknown): boolean {
@@ -109,7 +109,7 @@ export class DrawCore {
     detectManifoldShape(entity: unknown): boolean {
         if (!entity || typeof entity !== "object") return false;
         const obj = entity as Record<string, unknown>;
-        return obj.type === "manifold-shape";
+        return obj["type"] === "manifold-shape";
     }
 
     detectManifoldShapes(entity: unknown): boolean {
@@ -119,8 +119,8 @@ export class DrawCore {
     detectDecomposedMesh(entity: unknown): boolean {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
-        if (obj.type === "occ-shape" || obj.type === "manifold-shape") return false;
-        return Array.isArray(obj.faceList) || Array.isArray(obj.edgeList) || Array.isArray(obj.pointsList);
+        if (obj["type"] === "occ-shape" || obj["type"] === "manifold-shape") return false;
+        return Array.isArray(obj["faceList"]) || Array.isArray(obj["edgeList"]) || Array.isArray(obj["pointsList"]);
     }
 
     detectDecomposedMeshes(entity: unknown): boolean {
@@ -130,7 +130,7 @@ export class DrawCore {
     detectTag(entity: unknown): boolean {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
-        return obj.text !== undefined;
+        return obj["text"] !== undefined;
     }
 
     detectTags(entity: unknown): boolean {

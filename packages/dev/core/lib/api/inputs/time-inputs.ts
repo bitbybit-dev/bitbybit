@@ -17,6 +17,6 @@ export namespace Time {
         /**
          * Thir party iframe origin url to which data should be posted
          */
-        targetOrigin: string;
+        targetOrigin!: string;
     }
 }

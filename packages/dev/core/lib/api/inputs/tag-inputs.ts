@@ -16,7 +16,7 @@ export namespace Tag {
         /**
          * Text tag to draw
          */
-        tag: TagDto;
+        tag!: TagDto;
         /**
          * Indicates that it is updatable tag
          */
@@ -35,7 +35,7 @@ export namespace Tag {
         /**
          * Text tag to draw
          */
-        tags: TagDto[];
+        tags!: TagDto[];
         /**
          * Indicates that it is updatable tag
          */
@@ -63,7 +63,7 @@ export namespace Tag {
         /**
          * Text of the tag
          */
-        text: string;
+        text!: string;
         /**
          * Position of the tag
          */

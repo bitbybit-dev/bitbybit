@@ -28,13 +28,13 @@ export class ContextBase {
     jsonpath: any;
     canvasZoneClass = "canvasZone";
 
-    promptPrintSave: (prompt: PrintSaveInterface) => void;
-    promptPrint: (prompt: PrintSaveInterface) => void;
-    promptPreviewData: (data: PreviewDataInterface) => void;
-    promptPreviewCSV: (data: PreviewCSVInterface) => void;
-    promptPreviewAssemblyHierarchy: (data: PreviewAssemblyHierarchyInterface) => void;
+    promptPrintSave!: (prompt: PrintSaveInterface) => void;
+    promptPrint!: (prompt: PrintSaveInterface) => void;
+    promptPreviewData!: (data: PreviewDataInterface) => void;
+    promptPreviewCSV!: (data: PreviewCSVInterface) => void;
+    promptPreviewAssemblyHierarchy!: (data: PreviewAssemblyHierarchyInterface) => void;
 
-    rerenderScene: () => void;
+    rerenderScene!: () => void;
     tolerance = 0.00001;
     snapTolerance = 0.00001;
     tagBag: any[] = [];
@@ -53,7 +53,7 @@ export class ContextBase {
         key: string,
         fn: () => void
     })[] = [];
-    currentlyPressedKeys = [];
+    currentlyPressedKeys: string[] = [];
 
     getFile(file: File): Promise<string | ArrayBuffer> {
         return new Promise((resolve, reject) => {

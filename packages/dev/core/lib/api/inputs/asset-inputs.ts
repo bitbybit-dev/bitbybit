@@ -14,7 +14,7 @@ export namespace Asset {
          * The fileName associated with the projects asset
          * @default undefined
          */
-        fileName: string;
+        fileName!: string;
     }
     export class FetchDto {
         constructor(url?: string) {
@@ -24,7 +24,7 @@ export namespace Asset {
          * The url to fetch from
          * @default undefined
          */
-        url: string;
+        url!: string;
     }
     export class FileDto {
         constructor(file?: File | Blob) {
@@ -34,7 +34,7 @@ export namespace Asset {
          * Asset file that was loaded
          * @default undefined
          */
-        file: File | Blob;
+        file!: File | Blob;
     }
     export class FilesDto {
         constructor(files?: (File | Blob)[]) {
@@ -44,7 +44,7 @@ export namespace Asset {
          * Asset file that was loaded
          * @default undefined
          */
-        files: (File | Blob)[];
+        files!: (File | Blob)[];
     }
     export class AssetFileDto {
         constructor(assetFile?: File, hidden?: boolean) {
@@ -55,7 +55,7 @@ export namespace Asset {
          * Asset file that was loaded
          * @default undefined
          */
-        assetFile: File;
+        assetFile!: File;
         /**
          * Import the asset hidden
          * @default false
@@ -72,12 +72,12 @@ export namespace Asset {
          * Asset file name
          * @default undefined
          */
-        assetFile: string;
+        assetFile!: string;
         /**
          * Root url
          * @default undefined
          */
-        rootUrl: string;
+        rootUrl!: string;
         /**
          * Import the asset hidden
          * @default false
@@ -95,12 +95,12 @@ export namespace Asset {
          * The file name for the downloaded file
          * @default undefined
          */
-        fileName: string;
+        fileName!: string;
         /**
          * The content to download (string or Blob)
          * @default undefined
          */
-        content: string | Blob;
+        content!: string | Blob;
         /**
          * The file extension (without dot)
          * @default txt
@@ -122,7 +122,7 @@ export namespace Asset {
          * GLB binary data as Uint8Array (e.g., from OCCT convertStepToGltf)
          * @default undefined
          */
-        glbData: Uint8Array;
+        glbData!: Uint8Array;
         /**
          * Optional file name for the GLB (used for identification)
          * @default model.glb
@@ -144,7 +144,7 @@ export namespace Asset {
          * The blob to convert to a file
          * @default undefined
          */
-        blob: Blob;
+        blob!: Blob;
         /**
          * The file name for the resulting file
          * @default file
@@ -165,7 +165,7 @@ export namespace Asset {
          * The ArrayBuffer to convert to Uint8Array
          * @default undefined
          */
-        arrayBuffer: ArrayBuffer;
+        arrayBuffer!: ArrayBuffer;
     }
     export class Uint8ArrayToArrayBufferDto {
         constructor(uint8Array?: Uint8Array) {
@@ -175,6 +175,6 @@ export namespace Asset {
          * The Uint8Array to convert to ArrayBuffer
          * @default undefined
          */
-        uint8Array: Uint8Array;
+        uint8Array!: Uint8Array;
     }
 }

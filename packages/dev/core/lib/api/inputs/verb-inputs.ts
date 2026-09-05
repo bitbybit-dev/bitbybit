@@ -26,7 +26,7 @@ export namespace Verb {
         /**
          * Basic line
          */
-        line: Base.Line3;
+        line!: Base.Line3;
     }
     export class LinesDto {
         constructor(lines?: Base.Line3[]) {
@@ -35,7 +35,7 @@ export namespace Verb {
         /**
          * Basic lines
          */
-        lines: Base.Line3[];
+        lines!: Base.Line3[];
     }
     export class PolylineDto {
         constructor(polyline?: Base.Polyline3) {
@@ -44,7 +44,7 @@ export namespace Verb {
         /**
          * Basic polyline
          */
-        polyline: Base.Polyline3;
+        polyline!: Base.Polyline3;
     }
     export class PolylinesDto {
         constructor(polylines?: Base.Polyline3[]) {
@@ -53,7 +53,7 @@ export namespace Verb {
         /**
          * Basic polyline
          */
-        polylines: Base.Polyline3[];
+        polylines!: Base.Polyline3[];
     }
     export class CurvesDto {
         constructor(curves?: any[]) {
@@ -62,7 +62,7 @@ export namespace Verb {
         /**
          * Nurbs curves
          */
-        curves: any[];
+        curves!: any[];
     }
     export class ClosestPointDto {
         constructor(curve?: any, point?: Base.Point3) {
@@ -76,7 +76,7 @@ export namespace Verb {
         /**
          * Point
          */
-        point: Base.Point3;
+        point!: Base.Point3;
     }
     export class ClosestPointsDto {
         constructor(curve?: any, points?: Base.Point3[]) {
@@ -91,7 +91,7 @@ export namespace Verb {
         /**
          * Points
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class BezierCurveDto {
         constructor(points?: Base.Point3[], weights?: number[]) {
@@ -101,11 +101,11 @@ export namespace Verb {
         /**
          * Control points
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Weights
          */
-        weights: number[];
+        weights!: number[];
     }
     export class DrawCurveDto<T> {
         /**
@@ -156,7 +156,7 @@ export namespace Verb {
         /**
          * Parameter on the curve
          */
-        parameter: number;
+        parameter!: number;
     }
     export class CurvesParameterDto {
         constructor(curves?: any[], parameter?: number) {
@@ -170,7 +170,7 @@ export namespace Verb {
         /**
          * Parameter on the curve
          */
-        parameter: number;
+        parameter!: number;
     }
     export class CurveTransformDto {
         constructor(curve?: any, transformation?: Base.TransformMatrixes) {
@@ -184,7 +184,7 @@ export namespace Verb {
         /**
          * Transformation matrixes
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class CurvesTransformDto {
         constructor(curves?: any[], transformation?: Base.TransformMatrixes) {
@@ -194,11 +194,11 @@ export namespace Verb {
         /**
          * Nurbs curve
          */
-        curves: any[];
+        curves!: any[];
         /**
          * Transformation matrixes
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class CurveToleranceDto {
         constructor(curve?: any, tolerance?: number) {
@@ -212,7 +212,7 @@ export namespace Verb {
         /**
          * Optional tolerance
          */
-        tolerance: number;
+        tolerance!: number;
     }
 
     export class CurveLengthToleranceDto {
@@ -228,11 +228,11 @@ export namespace Verb {
         /**
          * Length on the curve
          */
-        length: number;
+        length!: number;
         /**
          * Tolerance
          */
-        tolerance: number;
+        tolerance!: number;
     }
     export class CurveDerivativesDto {
         constructor(curve?: any, parameter?: number, numDerivatives?: number) {
@@ -247,11 +247,11 @@ export namespace Verb {
         /**
          * Number of derivatives
          */
-        numDerivatives: number;
+        numDerivatives!: number;
         /**
          * Parameter on the curve
          */
-        parameter: number;
+        parameter!: number;
     }
     export class CurveSubdivisionsDto {
         constructor(curve?: any, subdivision?: number) {
@@ -265,7 +265,7 @@ export namespace Verb {
         /**
          * Number of subdivisions
          */
-        subdivision: number;
+        subdivision!: number;
     }
     export class CurvesSubdivisionsDto {
         constructor(curves?: any[], subdivision?: number) {
@@ -275,11 +275,11 @@ export namespace Verb {
         /**
          * Nurbs curves
          */
-        curves: any[];
+        curves!: any[];
         /**
          * Number of subdivisions
          */
-        subdivision: number;
+        subdivision!: number;
     }
     export class CurvesDivideLengthDto {
         constructor(curves?: any[], length?: number) {
@@ -289,11 +289,11 @@ export namespace Verb {
         /**
          * Nurbs curves
          */
-        curves: any[];
+        curves!: any[];
         /**
          * Length of subdivisions
          */
-        length: number;
+        length!: number;
     }
     export class CurveDivideLengthDto {
         constructor(curve?: any, length?: number) {
@@ -307,7 +307,7 @@ export namespace Verb {
         /**
          * Length of subdivisions
          */
-        length: number;
+        length!: number;
     }
     export class DrawCurvesDto<T> {
         /**
@@ -325,7 +325,7 @@ export namespace Verb {
         /**
          * Nurbs curves
          */
-        curves: any[];
+        curves!: any[];
         /**
          * Value between 0 and 1
          */
@@ -357,19 +357,19 @@ export namespace Verb {
         /**
          * Nurbs curve degree
          */
-        degree: number;
+        degree!: number;
         /**
          * Weights that identify strength that attracts curve to control points
          */
-        weights: number[];
+        weights!: number[];
         /**
          * Knots of the Nurbs curve
          */
-        knots: number[];
+        knots!: number[];
         /**
          * Control points of the nurbs curve
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class CurvePathDataDto {
         constructor(degree?: number, points?: Base.Point3[]) {
@@ -379,11 +379,11 @@ export namespace Verb {
         /**
          * Nurbs curve degree
          */
-        degree: number;
+        degree!: number;
         /**
          * Control points of the nurbs curve
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class EllipseDto {
         constructor(ellipse?: any) {
@@ -421,15 +421,15 @@ export namespace Verb {
         /**
          * X axis of the circle
          */
-        xAxis: Base.Vector3;
+        xAxis!: Base.Vector3;
         /**
          * Y axis of the circle
          */
-        yAxis: Base.Vector3;
+        yAxis!: Base.Vector3;
         /**
          * Center of the circle
          */
-        center: Base.Point3;
+        center!: Base.Point3;
     }
     export class CircleParametersDto {
         constructor(xAxis?: Base.Vector3, yAxis?: Base.Vector3, radius?: number, center?: Base.Point3) {
@@ -441,19 +441,19 @@ export namespace Verb {
         /**
          * X axis of the circle
          */
-        xAxis: Base.Vector3;
+        xAxis!: Base.Vector3;
         /**
          * Y axis of the circle
          */
-        yAxis: Base.Vector3;
+        yAxis!: Base.Vector3;
         /**
          * Radius of the circle
          */
-        radius: number;
+        radius!: number;
         /**
          * Center of the circle
          */
-        center: Base.Point3;
+        center!: Base.Point3;
     }
     export class ArcParametersDto {
         constructor(minAngle?: number, maxAngle?: number, xAxis?: Base.Vector3, yAxis?: Base.Vector3, radius?: number, center?: Base.Point3) {
@@ -467,27 +467,27 @@ export namespace Verb {
         /**
          * Minimum angle in degrees
          */
-        minAngle: number;
+        minAngle!: number;
         /**
          * Maximum angle in degrees
          */
-        maxAngle: number;
+        maxAngle!: number;
         /**
          * X axis of the circle
          */
-        xAxis: Base.Vector3;
+        xAxis!: Base.Vector3;
         /**
          * Y axis of the circle
          */
-        yAxis: Base.Vector3;
+        yAxis!: Base.Vector3;
         /**
          * Radius of the circle
          */
-        radius: number;
+        radius!: number;
         /**
          * Center of the circle
          */
-        center: Base.Point3;
+        center!: Base.Point3;
     }
     export class EllipseArcParametersDto {
         constructor(minAngle?: number, maxAngle?: number, xAxis?: Base.Vector3, yAxis?: Base.Vector3, center?: Base.Point3) {
@@ -500,23 +500,23 @@ export namespace Verb {
         /**
          * Minimum angle in degrees
          */
-        minAngle: number;
+        minAngle!: number;
         /**
          * Maximum angle in degrees
          */
-        maxAngle: number;
+        maxAngle!: number;
         /**
          * X axis of the circle
          */
-        xAxis: Base.Vector3;
+        xAxis!: Base.Vector3;
         /**
          * Y axis of the circle
          */
-        yAxis: Base.Vector3;
+        yAxis!: Base.Vector3;
         /**
          * Center of the circle
          */
-        center: Base.Point3;
+        center!: Base.Point3;
     }
     export class SurfaceDto {
         constructor(surface?: any) {
@@ -539,7 +539,7 @@ export namespace Verb {
         /**
          * Transformations
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class SurfaceParameterDto {
         constructor(surface?: any, parameter?: number, useV?: boolean) {
@@ -554,11 +554,11 @@ export namespace Verb {
         /**
          * Parameter on the surface
          */
-        parameter: number;
+        parameter!: number;
         /**
          * Default parameter is on U direction, use V to switch
          */
-        useV: boolean;
+        useV!: boolean;
     }
     export class IsocurvesParametersDto {
         constructor(surface?: any, parameters?: number[], useV?: boolean) {
@@ -573,11 +573,11 @@ export namespace Verb {
         /**
          * Parameter on the surface
          */
-        parameters: number[];
+        parameters!: number[];
         /**
          * Default parameter is on U direction, use V to switch
          */
-        useV: boolean;
+        useV!: boolean;
     }
     export class IsocurveSubdivisionDto {
         /**
@@ -609,7 +609,7 @@ export namespace Verb {
         /**
          * Number of segments including surface start and end
          */
-        isocurveSegments: number;
+        isocurveSegments!: number;
     }
     export class DerivativesDto {
         constructor(surface?: any, u?: number, v?: number, numDerivatives?: number) {
@@ -625,15 +625,15 @@ export namespace Verb {
         /**
          * U coordinate
          */
-        u: number;
+        u!: number;
         /**
          * V coordinate
          */
-        v: number;
+        v!: number;
         /**
          * Number of derivatives
          */
-        numDerivatives: number;
+        numDerivatives!: number;
     }
     export class SurfaceLocationDto {
         constructor(surface?: any, u?: number, v?: number) {
@@ -648,11 +648,11 @@ export namespace Verb {
         /**
          * U coordinate
          */
-        u: number;
+        u!: number;
         /**
          * V coordinate
          */
-        v: number;
+        v!: number;
     }
     export class CornersDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3, point4?: Base.Point3) {
@@ -664,19 +664,19 @@ export namespace Verb {
         /**
          * Corner 1
          */
-        point1: Base.Point3;
+        point1!: Base.Point3;
         /**
          * Corner 2
          */
-        point2: Base.Point3;
+        point2!: Base.Point3;
         /**
          * Corner 3
          */
-        point3: Base.Point3;
+        point3!: Base.Point3;
         /**
          * Corner 4
          */
-        point4: Base.Point3;
+        point4!: Base.Point3;
     }
     export class SurfaceParamDto {
         constructor(surface?: any, point?: Base.Point3) {
@@ -690,7 +690,7 @@ export namespace Verb {
         /**
          * Point
          */
-        point: Base.Point3;
+        point!: Base.Point3;
     }
     export class KnotsControlPointsWeightsDto {
         constructor(degreeU?: number, degreeV?: number, knotsU?: number[], knotsV?: number[], points?: Base.Point3[], weights?: number[]) {
@@ -704,27 +704,27 @@ export namespace Verb {
         /**
          * U direction degree
          */
-        degreeU: number;
+        degreeU!: number;
         /**
          * V direction degree
          */
-        degreeV: number;
+        degreeV!: number;
         /**
          * U direction knots
          */
-        knotsU: number[];
+        knotsU!: number[];
         /**
          * V direction knots
          */
-        knotsV: number[];
+        knotsV!: number[];
         /**
          * Points
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Weights
          */
-        weights: number[];
+        weights!: number[];
     }
     export class LoftCurvesDto {
         constructor(degreeV?: number, curves?: any[]) {
@@ -734,11 +734,11 @@ export namespace Verb {
         /**
          * V direction degree
          */
-        degreeV: number;
+        degreeV!: number;
         /**
          * Nurbs curves
          */
-        curves: any[];
+        curves!: any[];
     }
     export class DrawSurfaceDto<T> {
         /**
@@ -816,7 +816,7 @@ export namespace Verb {
         /**
          * Nurbs surfaces
          */
-        surfaces: any[];
+        surfaces!: any[];
         /**
          * Value between 0 and 1
          */
@@ -874,7 +874,7 @@ export namespace Verb {
         /**
          * Nurbs surfaces
          */
-        surfaces: any[];
+        surfaces!: any[];
         /**
          * Value between 0 and 1
          */
@@ -883,7 +883,7 @@ export namespace Verb {
          * Hex colour strings, there has to be a colour for every single surface and lengths of arrays need
          * to match
          */
-        colours: string | string[];
+        colours!: string | string[];
         /**
          * Indicates wether the position of these surfaces will change in time
          */
@@ -974,7 +974,7 @@ export namespace Verb {
         /**
          * Direction vector
          */
-        direction: Base.Vector3;
+        direction!: Base.Vector3;
     }
     export class ExtrusionDto {
         constructor(extrusion?: any) {
@@ -993,11 +993,11 @@ export namespace Verb {
         /**
          * Radius of the sphere
          */
-        radius: number;
+        radius!: number;
         /**
          * Center point
          */
-        center: number[];
+        center!: number[];
     }
     export class SphereDto {
         constructor(sphere?: any) {
@@ -1022,15 +1022,15 @@ export namespace Verb {
         /**
          * Center point
          */
-        center: number[];
+        center!: number[];
         /**
          * Axis around which rotation will happen
          */
-        axis: number[];
+        axis!: number[];
         /**
          * Angle at which to rotate in degrees
          */
-        angle: number;
+        angle!: number;
     }
     export class RevolutionDto {
         constructor(revolution?: any) {
@@ -1077,7 +1077,7 @@ export namespace Verb {
         /**
          * Second Nurbs curve
          */
-        secondCurve: number[];
+        secondCurve!: number[];
         /**
          * Optional tolerance parameter
          */
@@ -1128,7 +1128,7 @@ export namespace Verb {
         /**
          * Curve curve intersections
          */
-        intersections: BaseTypes.CurveCurveIntersection[];
+        intersections!: BaseTypes.CurveCurveIntersection[];
     }
     export class CurveSurfaceIntersectionsDto {
         constructor(intersections?: BaseTypes.CurveSurfaceIntersection[]) {
@@ -1137,6 +1137,6 @@ export namespace Verb {
         /**
          * Curve curve intersections
          */
-        intersections: BaseTypes.CurveSurfaceIntersection[];
+        intersections!: BaseTypes.CurveSurfaceIntersection[];
     }
 }
