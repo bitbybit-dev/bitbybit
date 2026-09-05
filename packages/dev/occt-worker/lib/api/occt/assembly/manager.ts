@@ -273,7 +273,7 @@ export class OCCTAssemblyManager {
      * ```
      */
     async setDocLabelColor(inputs: Inputs.OCCT.SetDocLabelColorDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<boolean> {
-        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setDocLabelColor", inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setLabelColor", inputs);
     }
 
     /**
@@ -295,7 +295,7 @@ export class OCCTAssemblyManager {
      * ```
      */
     async setDocLabelName(inputs: Inputs.OCCT.SetDocLabelNameDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<boolean> {
-        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setDocLabelName", inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setLabelName", inputs);
     }
 
     // =====================================================
@@ -441,6 +441,6 @@ export class OCCTAssemblyManager {
      * ```
      */
     async deleteDocument(inputs: Inputs.OCCT.DocumentQueryDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<void> {
-        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.deleteDocument", inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise("deleteDocument", inputs);
     }
 }

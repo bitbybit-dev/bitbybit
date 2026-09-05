@@ -1,6 +1,10 @@
 import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for transform nodes: the invisible parents used to group and move several objects
+ * together, and the queries that walk a node hierarchy.
+ */
 export namespace BabylonNode {
 
     export class NodeDto {

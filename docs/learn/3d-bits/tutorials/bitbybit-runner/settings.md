@@ -1,14 +1,22 @@
 ---
 sidebar_position: 2
-title: "BITBYBIT RUNNER Theme App Extension Block Settings"
-sidebar_label: Block Settings
-description: Learn about various settings that BITBYBIT RUNNER theme app extension block provides to configure parametric 3D configurators with visual programming and TypeScript.
+title: "BITBYBIT RUNNER (legacy) Theme App Extension Block Settings"
+sidebar_label: Block Settings (legacy)
+description: Settings reference for the deprecated BITBYBIT RUNNER theme app extension block. New configurators are built in Composer instead.
 tags: [shopify, 3d-bits]
 ---
 
 # Block Settings
 
-This guide explains all available settings for the **BITBYBIT RUNNER** theme app extension block in Shopify. Use this block to create parametric 3D configurators that generate geometry dynamically based on user input-powered by visual programming or TypeScript code.
+:::warning This block is deprecated
+The theme editor lists it as **BITBYBIT RUNNER (legacy)** and shows this note at the top of its settings:
+
+> Deprecated - this block keeps working for existing setups, but the recommended path is linking scripts inside a Composer project in the 3D Bits admin and publishing the project to your products.
+
+Nothing you have already built stops working, and every setting on this page still does what it says. Do not start anything new here. [The "BITBYBIT RUNNER" Block](/learn/3d-bits/theme-blocks/bitbybit-runner) explains what to build instead.
+:::
+
+This page is the settings reference for the **BITBYBIT RUNNER** theme app extension block in Shopify, kept for the setups that already use it. The block runs a parametric script that generates geometry dynamically from a shopper's input, written with visual programming or TypeScript.
 
 You'll find the BITBYBIT RUNNER settings in your theme editor after adding the block to a template.
 
@@ -34,7 +42,7 @@ All editors are accessible through the **3D Bits admin dashboard** in your Shopi
 1. Create a parametric script using Blockly, Rete, or Monaco on bitbybit.dev
 2. Export the script using "Export to Runner" 
 3. Add the script to your BITBYBIT RUNNER block (inline or via URL)
-4. The script executes when customers change product variants
+4. The script executes when shoppers change product variants
 5. 3D geometry is generated in real-time based on their selections
 
 ## Available Settings
@@ -50,7 +58,6 @@ All editors are accessible through the **3D Bits admin dashboard** in your Shopi
 - [Enable Manifold](#enable-manifold)
 
 ### Advanced Features
-- [Enable Physics](#enable-physics)
 - [Enable Key Event Listeners](#enable-key-event-listeners)
 - [Fonts to Include](#fonts-to-include)
 
@@ -181,20 +188,28 @@ This handles the standard use case where:
 
 #### Available Context Variables
 
-You have access to these contextual variables:
+Your code is wrapped in a function that receives exactly these seven arguments:
 
 - `runner` - The Bitbybit runner instance
 - `script` - Your parametric script content
 - `inputs` - Current variant selections and form values
-- `bitbybit` - Core Bitbybit library
-- `Bit` - Bitbybit namespace
-- `scene` - BabylonJS scene object
-- `engine` - BabylonJS engine instance
-- `BABYLON` - BabylonJS library
-- `GUI` - BabylonJS GUI library
-- `update(previousMeshes, newMeshes)` - Function to update displayed meshes
-- `dispose(meshes)` - Function to clean up meshes from memory
 - `previousMeshes` - Array of meshes from the previous execution
+- `context` - The 3D scene and the Bitbybit libraries, described below
+- `dispose(meshes)` - Function to clean up meshes from memory
+- `update(previousMeshes, newMeshes)` - Function to update displayed meshes
+
+The scene and the libraries are reached **through `context`**, not as bare names:
+
+- `context.bitbybit` - Core Bitbybit library
+- `context.Bit` - Bitbybit namespace
+- `context.scene` - BabylonJS scene object
+- `context.engine` - BabylonJS engine instance
+- `context.BABYLON` - BabylonJS library
+- `context.GUI` - BabylonJS GUI library
+
+:::warning Write `context.scene`, not `scene`
+`scene`, `engine`, `BABYLON`, `GUI`, `bitbybit` and `Bit` are **not** variables of their own. Writing `scene.getMeshByName(...)` throws a `ReferenceError`, which is caught and logged to the browser console as *"Error executing custom JavaScript:"* - the configurator then shows no new geometry, with nothing on the page to say why. Prefix all six with `context.`.
+:::
 
 #### When to Customize
 
@@ -230,7 +245,7 @@ update(dynamicMeshes, newMeshes);
 ```javascript
 // Fade out old meshes
 previousMeshes.forEach(m => {
-  BABYLON.Animation.CreateAndStartAnimation(
+  context.BABYLON.Animation.CreateAndStartAnimation(
     'fadeOut', m, 'visibility', 30, 15, 1, 0, 0
   );
 });
@@ -241,7 +256,7 @@ const newMeshes = (res && res.meshes) ? res.meshes : [];
 // Fade in new meshes
 newMeshes.forEach(m => {
   m.visibility = 0;
-  BABYLON.Animation.CreateAndStartAnimation(
+  context.BABYLON.Animation.CreateAndStartAnimation(
     'fadeIn', m, 'visibility', 30, 15, 0, 1, 0
   );
 });
@@ -372,53 +387,6 @@ Enabling multiple geometry kernels (OCCT + JSCAD + Manifold) increases loading t
 :::
 
 ## Advanced Features
-
----
-
-### Enable Physics
-
-**Default:** `false`
-
-Enables the Havok Physics Engine for advanced physics simulations in your 3D scene.
-
-#### What is Havok Physics?
-
-Havok is a professional-grade physics engine that can simulate:
-- **Rigid body dynamics** - Falling, colliding, and bouncing objects
-- **Constraints and joints** - Hinges, sliders, springs
-- **Forces and impulses** - Gravity, wind, explosions
-- **Collision detection** - Complex shape interactions
-
-#### When to Enable
-
-Enable physics only if your configurator requires:
-- Animated simulations showing how products work
-- Interactive physics-based demonstrations
-- Game-like interactions with 3D objects
-- Structural analysis or stress testing visualizations
-
-#### Common Use Cases
-
-Typical product configurators **do not need physics**. Consider physics for:
-- Furniture that needs to demonstrate stability
-- Mechanical assemblies showing motion
-- Interactive product demonstrations
-- Educational or training simulations
-
-#### Performance Impact
-
-Physics simulation adds computational overhead. Users will experience:
-- Increased initial loading time (physics engine is ~2MB)
-- Ongoing computation during simulation
-- Higher device memory usage
-
-:::warning
-Physics interactions require **Pro-Code** (Monaco TypeScript editor) on bitbybit.dev. The Low-Code editors (Blockly and Rete) do not expose physics APIs directly.
-:::
-
-:::tip
-Leave this disabled (default) unless you specifically need physics simulations.
-:::
 
 ---
 
@@ -703,7 +671,7 @@ Unlike the BITBYBIT VIEWER block, the RUNNER block typically uses **fewer produc
 
 ### How Variants Work with RUNNER
 
-**Key difference from VIEWER:** Your parametric script contains the logic for how variants affect geometry. With VIEWER, you configure variant behavior visually in the Viewer Editor. With RUNNER, you program custom logic in your Blockly, Rete, or TypeScript script.
+**Key difference from VIEWER:** Your parametric script contains the logic for how variants affect geometry. With VIEWER, you configure variant behavior visually in Composer. With RUNNER, you program custom logic in your Blockly, Rete, or TypeScript script.
 
 Example logic in your script:
 ```typescript

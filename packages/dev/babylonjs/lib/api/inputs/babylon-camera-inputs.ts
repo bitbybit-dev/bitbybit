@@ -2,6 +2,10 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for cameras: position, target, field of view, near and far clipping planes, and the
+ * settings specific to free, target and arc-rotate cameras.
+ */
 export namespace BabylonCamera {
     export class ArcRotateCameraDto {
         constructor(radius?: number, alpha?: number, beta?: number, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, panningSensibility?: number, wheelPrecision?: number, maxZ?: number) {

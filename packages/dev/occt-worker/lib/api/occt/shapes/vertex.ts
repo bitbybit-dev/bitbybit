@@ -100,7 +100,7 @@ export class OCCTVertex {
      * @shortname vertex to point
      * @drawable true
      */
-    vertexToPoint(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSVertexPointer>): Promise<Inputs.Base.Point3> {
+    vertexToPoint(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSVertexPointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.vertex.vertexToPoint", inputs);
     }
 

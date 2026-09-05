@@ -70,7 +70,7 @@ export class MeshEvaluate {
      * @shortname transform 4x4 matrix
      * @drawable false
      */
-    async transform(inputs: Inputs.Manifold.MeshVertexIndexDto<Inputs.Manifold.MeshPointer>): Promise<number[]> {
+    async transform(inputs: Inputs.Manifold.MeshTriangleRunIndexDto<Inputs.Manifold.MeshPointer>): Promise<number[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("mesh.evaluate.transform", inputs);
     }
 

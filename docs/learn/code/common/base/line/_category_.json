@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Lines in Bitbybit",
-        "description": "Introduction to lines in Bitbybit.",
+        "description": "Create and manipulate line segments in Bitbybit - build them from two points, read their start, end and direction, and transform them in space. Lines are the simplest geometry the platform offers and the one most parametric constructions start from: a rotation axis, an extrusion path, a measuring edge, or the skeleton of a wire you will thicken later. These pages cover the construction helpers, length and direction queries, reversing and transforming, and converting lines into the OCCT geometry used elsewhere.",
         "slug": "/code/common/base/line"
     }
 }

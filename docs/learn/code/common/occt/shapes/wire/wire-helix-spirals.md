@@ -2,7 +2,7 @@
 sidebar_position: 4
 title: Wire Helix Spirals
 sidebar_label: Wire Helix Spirals
-description: Learn how to create helix occt wires with spirals
+description: Create helix and spiral wires in OCCT from radius, pitch and turn count - the base curve for threads, springs, twisted columns and swept tubes.
 tags: [code, occt, rete, blockly, typescript]
 ---
 

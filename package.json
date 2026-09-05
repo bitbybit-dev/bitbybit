@@ -39,7 +39,7 @@
         "build-jscad": "cd packages/dev/jscad && npm run build-p",
         "build-manifold-worker": "cd packages/dev/manifold-worker && npm run build-p",
         "build-manifold": "cd packages/dev/manifold && npm run build-p",
-        "build-packages": "npm run build-base && npm run build-occt && npm run build-jscad && npm run build-manifold && npm run build-occt-worker && npm run build-jscad-worker && npm run build-manifold-worker && npm run build-core && npm run build-babylonjs && npm run build-threejs",
+        "build-packages": "npm run build-base && npm run build-occt && npm run build-jscad && npm run build-manifold && npm run build-occt-worker && npm run build-jscad-worker && npm run build-manifold-worker && npm run build-core && npm run build-babylonjs && npm run build-threejs && npm run build-playcanvas",
         "rebuild-all-packages": "npm run rm-dist-packages && npm run build-packages",
         "install-rebuild-all-packages": "npm run ci-packages && npm run rebuild-all-packages",
         "test-base": "cd packages/dev/base && npm run test-c",
@@ -49,7 +49,12 @@
         "test-manifold": "cd packages/dev/manifold && npm run test-c",
         "test-threejs": "cd packages/dev/threejs && npm run test-c",
         "test-playcanvas": "cd packages/dev/playcanvas && npm run test-c",
-        "test": "npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs && npm run test-playcanvas",
+        "test-babylonjs": "cd packages/dev/babylonjs && npm run test-c",
+        "test-occt-worker": "cd packages/dev/occt-worker && npm run test-c",
+        "test-jscad-worker": "cd packages/dev/jscad-worker && npm run test-c",
+        "test-manifold-worker": "cd packages/dev/manifold-worker && npm run test-c",
+        "check:worker-parity": "node scripts/worker-parity.mjs",
+        "test": "npm run check:worker-parity && npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs && npm run test-playcanvas && npm run test-babylonjs && npm run test-occt-worker && npm run test-jscad-worker && npm run test-manifold-worker",
         "refresh-lockfiles": "cd packages/dev/base && npm install --package-lock-only && cd ../core && npm install --package-lock-only && cd ../threejs && npm install --package-lock-only && cd ../playcanvas && npm install --package-lock-only && cd ../babylonjs && npm install --package-lock-only && cd ../occt-worker && npm install --package-lock-only && cd ../occt && npm install --package-lock-only && cd ../jscad-worker && npm install --package-lock-only && cd ../jscad && npm install --package-lock-only && cd ../manifold-worker && npm install --package-lock-only && cd ../manifold && npm install --package-lock-only",
         "setup": "npm run install-rebuild-all-packages",
         "setup-and-test": "npm run setup && npm run test",
@@ -80,6 +85,6 @@
     "homepage": "https://bitbybit.dev",
     "devDependencies": {
         "shx": "^0.4.0",
-        "typescript": "^4.3.5"
+        "typescript": "5.9.3"
     }
 }

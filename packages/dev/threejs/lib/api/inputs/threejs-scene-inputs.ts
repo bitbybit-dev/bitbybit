@@ -26,6 +26,10 @@ export interface InitThreeJSResult {
     dispose: () => void;
 }
 
+/**
+ * Parameters for the Three.js scene: background, environment, fog and lighting setup, and the
+ * scene-level options that affect everything drawn into it.
+ */
 export namespace ThreeJSScene {
     export class InitThreeJSDto {
         constructor(

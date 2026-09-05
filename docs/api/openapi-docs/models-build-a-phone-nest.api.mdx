@@ -66,5 +66,59 @@ Parametric 3D-printable desktop phone holder/stand with a lofted cradle surface,
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/models/phone-nest`
+
+Parametric 3D-printable desktop phone holder/stand with a lofted cradle surface, optional ornamental perforations, and a phone mock-up shape. All parameters are optional - defaults produce a ready-to-print model.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `params` | object | no | Phone Nest model parameters - all optional, sane defaults apply |
+| `params.heightBottom` | number | no | Height of the bottom section (cm) |
+| `params.heightTop` | number | no | Height of the top section (cm) |
+| `params.widthBack` | number | no | Width at the back (cm) |
+| `params.widthFront` | number | no | Width at the front (cm) |
+| `params.length` | number | no | Depth / length (cm) |
+| `params.backOffset` | number | no | Back curve offset (cm) |
+| `params.thickness` | number | no | Shell wall thickness |
+| `params.applyOrnaments` | boolean | no | Add decorative perforations to the surface |
+| `params.filletRadius` | number | no | Fillet radius on loft edges |
+| `params.phoneHeight` | number | no | Phone mock-up height (cm) |
+| `params.phoneWidth` | number | no | Phone mock-up width (cm) |
+| `params.phoneThickness` | number | no | Phone mock-up thickness (cm) |
+| `params.precision` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `params.rotation` | number | no | Final rotation angle (degrees) |
+| `params.scale` | number | no | Uniform scale factor. Range: [1e-6, 1000] |
+| `params.origin` | array of object | no | 3D point as [x, y, z] tuple, each coordinate in [-1000, 1000] |
+| `params.direction` | array of object | no | 3D point as [x, y, z] tuple, each coordinate in [-1000, 1000] |
+| `outputs` | object | yes | Controls which output formats are generated and their quality settings |
+| `outputs.formats` | array of object | yes | Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) - each produces a separate downloadable result. Do not include both 'step' and 'stpz' - only one STEP variant is supported per request. |
+| `outputs.meshPrecision` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `outputs.gltfMeshPrecision` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `outputs.adjustYtoZ` | boolean | no | Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Task accepted |
+| `400` | Validation error |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/models/phone-nest" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

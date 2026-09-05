@@ -2,6 +2,10 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for the on-screen manipulators that let a user drag, rotate and scale an object directly:
+ * which axes are enabled, snapping increments, size and colour.
+ */
 export namespace BabylonGizmo {
 
     export enum positionGizmoObservableSelectorEnum {

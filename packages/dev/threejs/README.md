@@ -50,7 +50,17 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/threejs |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/threejs/start-with-three-js |
+| **API Reference** | https://docs.bitbybit.dev/modules/Bit |
 | **Unit Test Coverage** | https://tests.bitbybit.dev/threejs |
+
+### API reference
+
+Every class, method and input type in this package is documented in the generated TypeScript API reference:
+
+- [Full API index](https://docs.bitbybit.dev/modules/Bit)
+- [Draw](https://docs.bitbybit.dev/classes/Bit.Draw)
+- [OCCT](https://docs.bitbybit.dev/classes/Bit.OCCT)
+- [Vector](https://docs.bitbybit.dev/classes/Bit.Vector)
 
 ## Example Applications
 

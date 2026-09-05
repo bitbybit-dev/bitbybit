@@ -2,7 +2,7 @@
 sidebar_position: 6
 title: Hexagons Grid
 sidebar_label: Hexagons Grid
-description: Learn how to create wire based hexagon grids
+description: Generate a grid of hexagonal OCCT wires from rows, columns and radius, the starting point for panelling, perforation patterns and honeycomb structures.
 tags: [code, occt, rete, blockly, typescript]
 ---
 

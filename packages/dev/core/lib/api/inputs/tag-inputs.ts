@@ -1,6 +1,11 @@
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for 3D text labels: the text, its position in the scene, colour, size, offset and whether
+ * it stays screen-facing. Used for dimensions, part numbers, debugging output and any annotation that
+ * should follow the geometry as the camera moves.
+ */
 export namespace Tag {
     export class DrawTagDto {
         constructor(tag?: TagDto, updatable?: boolean, tagVariable?: TagDto) {

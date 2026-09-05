@@ -4,8 +4,8 @@ import { OccStateEnum } from "./occ-state.enum";
 import { OCCTWorkerMock } from "./occ-worker-mock";
 
 /**
- * This is a manager of OpenCascade worker. Promisified API allows to deal with the worker in a more natural way
- * and because all those CAD algorithms are quite heavy this does make a lot of sense at this time.
+ * This is a manager of OpenCascade worker. Promisified API allows to deal with the worker in a more natural
+ * way and because all those CAD algorithms are quite heavy this does make a lot of sense at this time.
  */
 
 export class OCCTWorkerManager {

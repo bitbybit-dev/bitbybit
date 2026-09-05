@@ -2,6 +2,9 @@
 slug: create-bitbybit-app-cli
 title: Scaffold Your 3D CAD Projects in Seconds with create-app CLI
 authors: [ubarevicius]
+description: Scaffold a working 3D CAD project in one command with the @bitbybit-dev/create-app
+  CLI - Vite, TypeScript and the OCCT, JSCAD and Manifold kernels wired up for Three.js,
+  BabylonJS or PlayCanvas, plus full-stack CAD Cloud templates.
 tags: [threejs, babylonjs, playcanvas]
 image: https://ik.imagekit.io/bitbybit/app/assets/blog/create-bitbybit-app-cli/create-bitbybit-app-cli.webp
 ---

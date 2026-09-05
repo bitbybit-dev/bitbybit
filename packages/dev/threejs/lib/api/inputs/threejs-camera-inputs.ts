@@ -51,6 +51,10 @@ export interface OrbitCameraController {
     destroy: () => void;
 }
 
+/**
+ * Parameters for Three.js cameras: position, target, field of view and clipping planes, plus the
+ * orbit-control settings that decide how a user moves the view.
+ */
 export namespace ThreeJSCamera {
     export class OrbitCameraDto {
         constructor(

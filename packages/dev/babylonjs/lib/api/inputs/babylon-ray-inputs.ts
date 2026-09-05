@@ -2,6 +2,10 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for rays: origin, direction and length, and the options for casting one at the scene and
+ * reading back what it hit.
+ */
 export namespace BabylonRay {
     export class BaseRayDto {
         constructor(origin?: Base.Point3, direction?: Base.Vector3, length?: number) {

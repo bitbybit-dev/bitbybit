@@ -1,6 +1,7 @@
 ---
 slug: golden-age-for-open-source-cad-and-ai
 title: GOLDEN AGE FOR OPEN-SOURCE CAD AND AI
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/ai-and-cad/ai-cad.webp
 authors: [ubarevicius]
 tags: [bitbybit, ai]
 ---

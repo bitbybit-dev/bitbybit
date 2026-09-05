@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
 
+/**
+ * Parameters for creating and working with points: single points, points spread along a line or a
+ * curve, points in rectangular and hexagonal grids, spirals and other structured sets, plus the
+ * options for transforming, sorting, closest-point queries and distance measurement. Structured point
+ * sets are where most parametric models begin.
+ */
 export namespace Point {
     export class PointDto {
         constructor(point?: Base.Point3) {

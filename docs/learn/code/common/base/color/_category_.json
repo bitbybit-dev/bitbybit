@@ -3,7 +3,7 @@
     "link": {
         "type": "generated-index",
         "title": "Colors in Bitbybit",
-        "description": "Introduction to colors in Bitbybit.",
+        "description": "Create, convert and blend colours in Bitbybit, working in hex, RGB and HSL and moving between them as your script needs. Colour turns up everywhere in a parametric model: shading a configurator's material options, mapping a value range onto a gradient, or tinting geometry so a preview reads clearly. These pages cover the conversion helpers, component access, and the interpolation used to blend one colour into another across a list of shapes. Each example is shown in Rete, Blockly and TypeScript, so you can follow along in whichever editor you work in.",
         "slug": "/code/common/base/color"
     }
 }

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 9
 title: "Tutorial: Using BITBYBIT VIEWER with a 3D Scanned Product (Gaussian Splat)"
 sidebar_label: Viewer with 3D Scan
 description: Learn how to use the BITBYBIT VIEWER block in Shopify's "3D Bits" app to display a 3D scanned product (Gaussian Splatting model) on your e-commerce store.
@@ -41,4 +41,4 @@ You will learn how to:
 To follow along with the tutorial or to experiment, you can download the finished 3D chair scan (`.splat` format) featured in the video:
 *   [Download Chair 3D Scan (`chair.splat`)](https://cdn.shopify.com/s/files/1/0700/3350/6556/files/chair.splat?v=1735552685)
 
-By the end of this tutorial, you'll be equipped to use the BITBYBIT VIEWER block to seamlessly integrate high-quality 3D scans into your Shopify product pages, offering your customers an immersive and detailed view of your products.
+By the end of this tutorial, you'll be equipped to use the BITBYBIT VIEWER block to seamlessly integrate high-quality 3D scans into your Shopify product pages, offering your shoppers an immersive and detailed view of your products.

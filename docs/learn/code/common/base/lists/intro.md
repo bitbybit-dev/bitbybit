@@ -24,7 +24,7 @@ Example: `[1, 2, 3]`, `["apple", "banana", "cherry"]`, `[[0,0,0], [1,1,1]]`
 
 ## Core Capabilities of the Lists Class
 
-The `Lists` class is designed to make common array manipulations straightforward. Here's a high-level look at its features. For the exact input parameters, options, and specific behaviors, please refer to the [full Lists API documentation](https://docs.bitbybit.dev/classes/Bit.Lists.html) or the GitHub source linked above.
+The `Lists` class is designed to make common array manipulations straightforward. Here's a high-level look at its features. For the exact input parameters, options, and specific behaviors, please refer to the [full Lists API documentation](https://docs.bitbybit.dev/classes/Bit.Lists) or the GitHub source linked above.
 
 ### 1. Creating and Populating Lists
 

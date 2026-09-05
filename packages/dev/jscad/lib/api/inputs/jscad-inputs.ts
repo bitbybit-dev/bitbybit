@@ -2,7 +2,22 @@
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Every parameter object the JSCAD kernel accepts. JSCAD models by combining primitives with
+ * booleans, expansions, hulls and extrusions, working on tessellated geometry rather than exact
+ * surfaces, so its DTOs carry mesh-level settings - segment counts, corner styles, expansion deltas -
+ * where the OCCT equivalents would carry tolerances.
+ * 
+ * It is lighter and quicker to start with than OCCT and a good fit when a shape is a combination of
+ * simple volumes and manufacturing-grade surface accuracy is not required. Names repeat across
+ * kernels: the CircleDto here is not the one in Inputs.OCCT.
+ */
 export namespace JSCAD {
+    /**
+     * A JSCAD geometry object. Deliberately untyped because JSCAD returns several different internal
+     * shapes - 2D geometry, 3D geometry and paths - that share no common interface. Treat it as an
+     * opaque value to pass between JSCAD calls.
+     */
     export type JSCADEntity = any;
 
     export class PolylinePropertiesDto {
@@ -26,6 +41,9 @@ export namespace JSCAD {
          */
         color?: string | number[];
     }
+    /**
+     * How the corners of an expanded or rounded solid are formed.
+     */
     export enum solidCornerTypeEnum {
         /**
          * Edges will meet at a corner
@@ -40,6 +58,9 @@ export namespace JSCAD {
          */
         chamfer = "chamfer",
     }
+    /**
+     * Horizontal alignment of JSCAD text against its anchor point.
+     */
     export enum jscadTextAlignEnum {
         /**
          * Aligns text to the left

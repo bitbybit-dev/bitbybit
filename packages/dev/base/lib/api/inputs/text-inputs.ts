@@ -3,6 +3,19 @@
 import { Base } from "./base-inputs";
 
 
+/**
+
+
+ * Parameters for string handling: the text to act on plus the separator, index, pattern, replacement,
+
+
+ * padding or format an operation needs. Used for labels, tags, engraved 3D text and for assembling the
+
+
+ * data a script hands back out.
+
+
+ */
 export namespace Text {
 
     export class TextDto {

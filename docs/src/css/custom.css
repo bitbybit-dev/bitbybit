@@ -113,3 +113,52 @@
 .badge--primary {
     color: #000 !important;
 }
+
+/* Inline glyphs inside prose tables (plan matrices) sit on the text baseline by
+   default, which drops them below the row's optical centre. */
+.markdown table svg {
+    vertical-align: middle;
+}
+/* Mermaid: the subgraph titles sit on the page background, so they follow the
+   per-mode primary rather than the shared themeVariables palette. */
+.docusaurus-mermaid-container .cluster-label,
+.docusaurus-mermaid-container .cluster-label p,
+.docusaurus-mermaid-container .cluster-label foreignObject div {
+    color: var(--ifm-color-primary);
+    fill: var(--ifm-color-primary);
+    font-weight: 600;
+}
+
+.docusaurus-mermaid-container {
+    display: flex;
+    justify-content: center;
+}
+
+/**
+ * Related pages block rendered by src/theme/DocItem/Footer.
+ * Half the hand-written pages had no in-content internal link at all; this gives every
+ * page a real, per-page set of links to its siblings and its parent.
+ */
+.related-pages {
+    margin: 48px 0 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--ifm-toc-border-color);
+}
+
+.related-pages h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+}
+
+.related-pages ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.related-pages li {
+    margin: 0;
+}

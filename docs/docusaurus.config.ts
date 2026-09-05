@@ -17,15 +17,11 @@ const config: Config = {
 
     headTags: [
         // Favicons sized as multiples of 48px so Google can index them for search results.
-        {
-            tagName: "link",
-            attributes: {
-                rel: "icon",
-                type: "image/x-icon",
-                href: "/favicon.ico",
-                sizes: "48x48",
-            },
-        },
+        // No .ico is declared, and static/favicon.ico is deliberately absent: Cloudflare Pages
+        // serves .ico files with "Content-Type: null", and with nosniff set that cannot be
+        // decoded as an image. Google probes /favicon.ico regardless of what is declared here,
+        // and a 200 it cannot decode is worse than a clean 404 - the 404 makes it fall through
+        // to the PNGs below. Do not restore the file.
         {
             tagName: "link",
             attributes: {
@@ -145,10 +141,13 @@ const config: Config = {
                     path: "learn",
                     routeBasePath: "learn",
                     sidebarPath: "./sidebars.ts",
+                    onInlineTags: "throw",
                     editUrl:
-                        "https://github.com/bitbybit-dev/bitbybit/docs",
+                        "https://github.com/bitbybit-dev/bitbybit/tree/master/docs/",
                 },
                 blog: {
+                    blogTitle: "Bitbybit Blog",
+                    blogDescription: "Release notes, tutorials and product news from the bitbybit.dev 3D CAD platform - visual programming, OpenCascade geometry, Shopify 3D configurators and the open-source packages behind them.",
                     showReadingTime: true,
                     feedOptions: {
                         type: ["rss", "atom"],
@@ -157,7 +156,7 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+                        "https://github.com/bitbybit-dev/bitbybit/tree/master/docs/",
                     // Useful options to enforce blogging best practices
                     onInlineTags: "warn",
                     onInlineAuthors: "warn",
@@ -170,6 +169,13 @@ const config: Config = {
                     lastmod: "date",
                     changefreq: null,
                     priority: null,
+                    ignorePatterns: [
+                        "/learn/tags", "/learn/tags/**",
+                        "/blog/tags", "/blog/tags/**",
+                        "/api/tags", "/api/tags/**",
+                        "/blog/page/**",
+                        "/blog/authors", "/blog/authors/**",
+                    ],
                 },
             } as Preset.Options,
         ],
@@ -219,6 +225,27 @@ const config: Config = {
     themeConfig: {
         // Replace with your project's social card
         image: "img/learn-bitbybit-social-card.jpeg",
+        mermaid: {
+            theme: { light: "base", dark: "base" },
+            options: {
+                themeVariables: {
+                    primaryColor: "#f0cebb",
+                    primaryTextColor: "#1a1c1f",
+                    primaryBorderColor: "#dc966e",
+                    secondaryColor: "#f7e2d4",
+                    secondaryTextColor: "#1a1c1f",
+                    secondaryBorderColor: "#dc966e",
+                    tertiaryColor: "#fdf3ec",
+                    tertiaryTextColor: "#1a1c1f",
+                    tertiaryBorderColor: "#dc966e",
+                    lineColor: "#dc966e",
+                    clusterBkg: "transparent",
+                    clusterBorder: "#dc966e",
+                    edgeLabelBackground: "#f0cebb",
+                    fontFamily: "var(--ifm-font-family-base)",
+                },
+            },
+        },
         colorMode: {
             defaultMode: "dark",
             disableSwitch: false,
@@ -260,6 +287,12 @@ const config: Config = {
                     "aria-label": "Sign Up to Bitbybit.dev",
                 },
                 {
+                    href: "https://docs.bitbybit.dev",
+                    label: "API Reference",
+                    position: "right",
+                    "aria-label": "TypeScript API Reference",
+                },
+                {
                     href: "https://github.com/bitbybit-dev/bitbybit",
                     label: "GitHub",
                     position: "right",
@@ -278,6 +311,10 @@ const config: Config = {
                         {
                             label: "Code",
                             to: "/learn/code/intro",
+                        },
+                        {
+                            label: "TypeScript API Reference",
+                            href: "https://docs.bitbybit.dev",
                         },
                     ],
                 },
@@ -323,7 +360,7 @@ const config: Config = {
                         },
                         {
                             label: "GitHub",
-                            href: "https://github.com/facebook/docusaurus",
+                            href: "https://github.com/bitbybit-dev/bitbybit",
                         },
                     ],
                 },

@@ -41,7 +41,17 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/jscad |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/intro |
+| **API Reference** | https://docs.bitbybit.dev/classes/Bit.JSCAD |
 | **Unit Test Coverage** | https://tests.bitbybit.dev/jscad |
+
+### API reference
+
+Every class, method and input type in this package is documented in the generated TypeScript API reference:
+
+- [JSCAD](https://docs.bitbybit.dev/classes/Bit.JSCAD)
+- [JSCAD shapes](https://docs.bitbybit.dev/classes/Bit.JSCADShapes)
+- [JSCAD booleans](https://docs.bitbybit.dev/classes/Bit.JSCADBooleans)
+- [JSCAD input types](https://docs.bitbybit.dev/modules/Bit.Inputs.JSCAD)
 
 ## Example Applications
 

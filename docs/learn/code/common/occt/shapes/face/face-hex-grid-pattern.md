@@ -1,3 +1,12 @@
+---
+sidebar_position: 5
+title: Face Hexagons Grid
+sidebar_label: Face Hexagons Grid
+description: Create hexagonal face patterns in OCCT that react to a control point, growing
+  hexagons near it and shrinking distant ones for organic wave-like surface effects.
+tags: [code, occt, rete, blockly, typescript]
+---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';

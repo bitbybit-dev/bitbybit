@@ -66,5 +66,43 @@ Simple STEP → glTF conversion using a previously uploaded file. Requires the '
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/convert/step-to-gltf`
+
+Simple STEP → glTF conversion using a previously uploaded file. Requires the 'convert' API key scope. Returns 202 with a task ID.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `stepFileId` | string | yes | ID of the previously uploaded STEP file (returned by the file upload endpoint) |
+| `meshPrecision` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `meshAngle` | number | no | Mesh angular deflection in radians. Range: [0.01, π] |
+| `meshRelative` | boolean | no | Use size-aware relative deflection per face. When true, meshPrecision is a fraction of each edge's length. Set to false for absolute deflection in model units. |
+| `internalVerticesMode` | boolean | no | Add interior vertices for better curved face fidelity (slower, set false for speed). |
+| `controlSurfaceDeflection` | boolean | no | Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed). |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Task accepted |
+| `400` | Validation error |
+| `403` | Insufficient scope |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/convert/step-to-gltf" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

@@ -1,6 +1,7 @@
 ---
 slug: enahncing-the-platform-for-wider-use-and-easy-integration
 title: ENHANCING THE PLATFORM FOR WIDER USE AND EASY INTEGRATION
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/cad-democratisation/bitbybit-npm-packages-web-technologies.png
 authors: [ubarevicius]
 tags: [bitbybit, cloud]
 ---

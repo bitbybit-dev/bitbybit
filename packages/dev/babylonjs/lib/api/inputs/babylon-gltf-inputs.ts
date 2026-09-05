@@ -2,6 +2,10 @@
 import * as BABYLON from "@babylonjs/core";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for glTF and GLB: the file or URL to import, what to do with its nodes, materials,
+ * textures and animations, and the options that control export back out.
+ */
 export namespace BabylonGltf {
 
     export class AssetContainerDto {

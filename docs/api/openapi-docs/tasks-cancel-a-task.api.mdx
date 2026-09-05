@@ -66,5 +66,32 @@ Cancels a waiting or queued task. Has no effect on completed/failed tasks.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`DELETE /api/v1/tasks/{taskId}`
+
+Cancels a waiting or queued task. Has no effect on completed/failed tasks.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `taskId` | path | string | yes | Task ID |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Task cancelled |
+| `404` | Not found |
+
+### Example request
+
+```bash
+curl -X DELETE "https://api.bitbybit.dev/api/v1/tasks/{taskId}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

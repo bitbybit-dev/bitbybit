@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "OCCT Boolean Operations",
-        "description": "Boolean operations are essential for creating complex 3D models. These tutorials will guide you through performing boolean operations, such as Union, Difference & Intersection using the OCCT library.",
+        "description": "Combine, subtract and intersect solids with OCCT boolean operations - the workhorse of solid modelling in Bitbybit. Union fuses shapes into one, difference cuts one shape out of another, and intersection keeps only the overlap, which between them account for most of how manufactured parts are actually modelled: drilling holes, cutting slots, adding bosses, trimming to a boundary. These pages cover each operation, how to apply one shape against a whole list of shapes at once, the performance cost of long boolean chains, and the geometry conditions that make a boolean fail.",
         "slug": "/code/common/occt/booleans"
     }
 }

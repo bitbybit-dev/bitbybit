@@ -41,6 +41,16 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/core |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/intro |
+| **API Reference** | https://docs.bitbybit.dev/modules/Bit |
+
+### API reference
+
+Every class, method and input type in this package is documented in the generated TypeScript API reference:
+
+- [Full API index](https://docs.bitbybit.dev/modules/Bit)
+- [OCCT](https://docs.bitbybit.dev/classes/Bit.OCCT)
+- [JSCAD](https://docs.bitbybit.dev/classes/Bit.JSCAD)
+- [Manifold](https://docs.bitbybit.dev/classes/Bit.Manifold)
 
 ## Example Applications
 

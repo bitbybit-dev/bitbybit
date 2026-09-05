@@ -36,7 +36,7 @@ At this time, PREVIEW has **no communication layer** between Shopify's UI (varia
 - **Prototyping** - Quick testing of bitbybit.dev projects in your store
 
 :::info Not Ideal for Configurators
-Since PREVIEW cannot receive Shopify variant data or form inputs, it's **not suitable for product configurators** that need to respond to customer selections. For configurators, use [VIEWER](../bitbybit-viewer/settings), [RUNNER](../bitbybit-runner/settings) or [APPS](../bitbybit-apps/settings) blocks instead.
+Since PREVIEW cannot receive Shopify variant data or form inputs, it's **not suitable for product configurators** that need to respond to shopper selections. For configurators, use [VIEWER](../bitbybit-viewer/settings), [RUNNER](../bitbybit-runner/settings) or [APPS](../bitbybit-apps/settings) blocks instead.
 :::
 
 ### When to Use PREVIEW vs Other Blocks
@@ -53,7 +53,7 @@ Since PREVIEW cannot receive Shopify variant data or form inputs, it's **not sui
 - You need to pass Shopify data to your 3D experience
 
 **Use VIEWER, RUNNER or APPS instead when:**
-- Building configurators that respond to customer selections
+- Building configurators that respond to shopper selections
 - Need integration with Shopify variants and form inputs
 - Require dynamic updates based on product options
 
@@ -203,7 +203,7 @@ At this time, the PREVIEW block has **no communication layer** between Shopify a
 The PREVIEW block currently:
 - ❌ Cannot read Shopify product variants or options
 - ❌ Cannot receive data from Shopify form inputs
-- ❌ Cannot respond to customer selections on the product page
+- ❌ Cannot respond to shopper selections on the product page
 - ❌ Cannot trigger Shopify cart actions
 - ❌ Cannot access Shopify theme data
 - ✅ Works only with self-contained bitbybit.dev projects

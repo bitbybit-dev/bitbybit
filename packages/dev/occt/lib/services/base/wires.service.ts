@@ -428,7 +428,7 @@ export class WiresService {
         return pt;
     }
 
-    tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Point3 {
+    tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Vector3 {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const tangent = this.geomService.tangentOnCurveAtParam({ ...inputs, shape: curve });
@@ -516,7 +516,7 @@ export class WiresService {
         return res;
     }
 
-    tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Point3 {
+    tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Vector3 {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const res = this.geomService.tangentOnCurveAtLengthCompCurve({ ...inputs, shape: curve });

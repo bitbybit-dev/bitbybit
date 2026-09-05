@@ -2,6 +2,10 @@
 import * as BABYLON from "@babylonjs/core";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for engine-level import and export: the objects to write, the target format, and the
+ * settings applied when reading a file back into the scene.
+ */
 export namespace BabylonIO {
     export class ExportSceneGlbDto {
         constructor(fileName?: string, discardSkyboxAndGrid?: boolean) {

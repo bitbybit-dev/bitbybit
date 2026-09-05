@@ -4,9 +4,27 @@ import * as Inputs from "./index";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Options for drawing geometry into a BabylonJS scene: colour, opacity, size, whether the result is
+ * pickable, and the per-kind settings that control how points, lines, polylines, meshes, surfaces and
+ * kernel shapes are turned into renderer objects. Passing an existing drawn object back in updates it
+ * in place instead of creating a second one, which is what makes animation cheap.
+ */
 export namespace Draw {
 
+    /**
+     * The union of every option shape a draw call accepts. Which one applies depends on what is being
+     * drawn - basic geometry, a Manifold solid or cross section, an OCCT shape, or a node - and the
+     * draw API picks the right one from the entity you pass. Reach for the specific option class when
+     * you want type checking on the fields.
+     */
     export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
+    /**
+     * Everything a draw call will accept: points, vectors, lines, segments and polylines; Verb curves
+     * and surfaces; OCCT shape handles; tags; meshes from any kernel; and lists of any of them. This
+     * union is what makes one draw call able to render anything the platform produces without you
+     * having to say which kind it is.
+     */
     export type Entity = number[] | [number, number, number] | Base.Point3 | Base.Vector3 | Base.Line3  | Base.Segment3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto | { type: string, name?: string, entityName?: string } |
        number[][] | Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Segment3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[] | { type: string[], name?: string, entityName?: string };
 
@@ -912,6 +930,11 @@ export namespace Draw {
         unlit = false;
     }
 
+    /**
+     * The kind of geometry a draw call detected, in singular and plural forms - point, line, node,
+     * polyline, Verb curve and surface, JSCAD mesh, and so on. Returned on drawn objects so you can
+     * tell what a handle refers to when updating or disposing it.
+     */
     export enum drawingTypes {
         point,
         points,

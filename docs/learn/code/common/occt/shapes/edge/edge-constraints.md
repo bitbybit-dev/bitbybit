@@ -2,7 +2,8 @@
 sidebar_position: 4
 title: "Edge Constraints"
 sidebar_label: Edge Constraints
-description: Learn
+description: Build OCCT edges that satisfy geometric constraints - tangency, position and
+  continuity - so curves meet neighbouring shapes smoothly in parametric models.
 tags: [occt]
 ---
 

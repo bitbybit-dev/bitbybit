@@ -185,7 +185,7 @@ export class OCCTFace {
      * @shortname surface
      * @drawable true
      */
-    faceFromSurface(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+    faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.faceFromSurface", inputs);
     }
 

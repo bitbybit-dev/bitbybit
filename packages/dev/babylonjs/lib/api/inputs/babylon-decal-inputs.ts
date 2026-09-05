@@ -3,6 +3,11 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for decals - images projected onto the surface of an existing mesh, following its
+ * curvature. Carries the target mesh, the projection position, direction and size, and the material
+ * used for the projected image.
+ */
 export namespace BabylonDecal {
 
     export class CreateMeshDecalDto {

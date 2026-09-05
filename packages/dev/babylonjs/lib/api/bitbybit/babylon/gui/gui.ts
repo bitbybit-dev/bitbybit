@@ -13,6 +13,11 @@ import { BabylonGuiInputText } from "./input-text";
 import { BabylonGuiColorPicker } from "./color-picker";
 import { BabylonGuiImage } from "./image";
 
+/**
+ * The in-scene 2D interface: buttons, sliders, checkboxes, colour pickers, text blocks, input
+ * fields, images and the containers that lay them out. Use it for controls that live inside the 3D
+ * canvas - a slider floating next to the model - rather than in the surrounding page.
+ */
 export class BabylonGui {
     advancedDynamicTexture: BabylonGuiAdvancedDynamicTexture;
     control: BabylonGuiControl;

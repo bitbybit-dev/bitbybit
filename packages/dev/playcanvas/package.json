@@ -2,6 +2,7 @@
   "name": "@bitbybit-dev/playcanvas",
   "version": "1.1.1",
   "description": "Bit By Bit Developers PlayCanvas CAD Library to Program Geometry",
+  "homepage": "https://docs.bitbybit.dev/modules/Bit",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -46,9 +47,9 @@
     "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
     "delete-coverage": "shx rm -rf ./dist/coverage || true",
     "delete-mocks": "shx rm -rf ./dist/__mocks__ || true",
-    "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
-    "test-c": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=false",
-    "test-c-l": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=true"
+    "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
+    "test-c": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false",
+    "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true"
   },
   "author": "Bit by bit developers",
   "license": "MIT",
@@ -72,7 +73,6 @@
     "jest": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
     "jest-html-reporters": "3.1.7",
-    "mvdir": "1.0.22",
     "shx": "0.4.0",
     "ts-jest": "29.4.10",
     "ts-node": "10.9.2",

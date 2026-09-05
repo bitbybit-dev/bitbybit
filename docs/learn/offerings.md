@@ -126,7 +126,7 @@ Everything you prototype in Studio maps directly to the [API endpoints](/api/ope
 
 An end-to-end Shopify application that adds interactive 3D viewers, parametric product configurators, and Gaussian Splatting scans to your product pages. It connects directly to Shopify Variants for seamless checkout. 3D Bits has its own subscription tiers - separate from the platform Silver/Gold plans.
 
-The app includes the **[Viewer Editor](./getting-started/viewer-editor/intro)** - a no-code tool for building 3D product configurators visually. Import your GLTF or 3DGS assets, set up variant matching, configure lighting and camera controls, and export a ready-to-use configuration without writing a single line of code.
+The app includes the **[Composer](/learn/3d-bits/composer/intro)** - a no-code tool for building 3D product configurators visually. Import your GLTF or 3DGS assets, set up variant matching, configure lighting and camera controls, and export a ready-to-use configuration without writing a single line of code.
 
 **Use when:** You are a Shopify merchant who wants to offer 3D product customization without hiring a development team.
 

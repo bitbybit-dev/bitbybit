@@ -24,7 +24,7 @@ The `Color` class in Bitbybit provides tools for defining, converting, and manip
 
 ## Core Capabilities of the Color Class
 
-The `Color` class makes it easy to work with these common color formats. Here's what it can do. For precise input parameters and detailed behavior (like how RGB ranges are handled), please consult the [full Color API documentation](https://docs.bitbybit.dev/classes/Bit.Color.html) or the GitHub source linked above.
+The `Color` class makes it easy to work with these common color formats. Here's what it can do. For precise input parameters and detailed behavior (like how RGB ranges are handled), please consult the [full Color API documentation](https://docs.bitbybit.dev/classes/Bit.Color) or the GitHub source linked above.
 
 ### 1. Creating and Representing Colors
 

@@ -2,8 +2,16 @@
 
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for array handling: the list to act on plus the index, count, depth, comparison or
+ * grouping key an operation needs. Geometry calls take and return lists constantly, so these turn up
+ * between almost every pair of geometry operations.
+ */
 export namespace Lists {
 
+    /**
+     * Which end of a list to act on: the first item or the last.
+     */
     export enum firstLastEnum {
         first = "first",
         last = "last",

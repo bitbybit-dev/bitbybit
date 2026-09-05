@@ -1,20 +1,10 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
+    "extends": "../../../tsconfig.base.cad-loose.json",
     "compileOnSave": false,
     "compilerOptions": {
         "outDir": "./dist/bitbybit-dev",
         "baseUrl": "./",
-        "sourceMap": false,
-        "declaration": true,
-        "downlevelIteration": true,
-        "experimentalDecorators": true,
-        "moduleResolution": "node",
-        "skipLibCheck": true,
-        "target": "es2015",
-        "module": "es2020",
-        "strict": false,
-        "allowJs": true,
-        "emitDeclarationOnly": false,
         "paths": {
             "@bitbybit-dev/base": [
                 "../base/dist"
@@ -62,12 +52,8 @@
                 "../occt-worker/dist"
             ],
             "@bitbybit-dev/occt-worker/*": [
-                "../occt-worker/dist"
-            ],
-        },
-        "lib": [
-            "es2020",
-            "dom"
-        ],
+                "../occt-worker/dist/*"
+            ]
+        }
     }
 }

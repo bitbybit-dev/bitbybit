@@ -10,6 +10,11 @@ import { BabylonGizmoAxisScaleGizmo } from "./axis-scale-gizmo";
 import { BabylonGizmoBoundingBoxGizmo } from "./bounding-box-gizmo";
 import { BabylonGizmoPlaneRotationGizmo } from "./plane-rotation-gizmo";
 import { BabylonGizmoBase } from "./gizmo-base";
+/**
+ * The on-screen manipulators that let a user move, rotate and scale an object by dragging it.
+ * Attach one to a mesh, choose which axes are active and what the snapping increments are, and read
+ * back the transform the user produced.
+ */
 export class BabylonGizmo {
     manager: BabylonGizmoManager;
     base: BabylonGizmoBase;

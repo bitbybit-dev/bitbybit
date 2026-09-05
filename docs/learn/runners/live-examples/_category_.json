@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Experience Live Runner Examples",
-        "description": "To help you understand how Runners work, we’ve created several practical examples in this section. We typically present the code within the Bitbybit editors, followed by how it appears and runs in a third-party environment—StackBlitz—where Bitbybit Runners are used.",
+        "description": "Working runner examples you can open, interact with and pull apart. Reading about a runner only gets you so far - these are complete, live pages where a published Bitbybit script drives real geometry in a browser, with inputs wired up so you can change parameters and watch the model rebuild. They are a good reference for how the pieces fit together in practice: loading the runner, passing inputs in, receiving geometry back, and connecting it to the page around it. Use them as a starting point for your own integration.",
         "slug": "/runners/live-examples"
     }
 }

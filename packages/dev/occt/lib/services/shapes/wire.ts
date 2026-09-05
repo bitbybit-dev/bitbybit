@@ -232,11 +232,11 @@ export class OCCTWire {
         return this.och.wiresService.pointsOnWireAtPatternOfLengths(inputs);
     }
 
-    tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Inputs.Base.Point3 {
+    tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Inputs.Base.Vector3 {
         return this.och.wiresService.tangentOnWireAtParam(inputs);
     }
 
-    tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Inputs.Base.Point3 {
+    tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Inputs.Base.Vector3 {
         return this.och.wiresService.tangentOnWireAtLength(inputs);
     }
 

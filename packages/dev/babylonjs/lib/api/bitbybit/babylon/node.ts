@@ -5,8 +5,8 @@ import { DrawHelper } from "../../draw-helper";
 import * as Inputs from "../../inputs";
 
 /**
- * Nodes help understand the space and construct more complicated space structures. Nodes can be nested together
- * into child parent relationships to simplify the creation of 3D objects.
+ * Nodes help understand the space and construct more complicated space structures. Nodes can be nested
+ * together into child parent relationships to simplify the creation of 3D objects.
  */
 
 export class BabylonNode {

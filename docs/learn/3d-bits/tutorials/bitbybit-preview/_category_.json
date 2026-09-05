@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Tutorials for Bitbybit Preview",
-        "description": "Learn how to use the Bitbybit Preview theme app extension block with published bitbybit.dev projects.",
+        "description": "Every setting on the BITBYBIT PREVIEW theme block, which displays a 3D model without the full configurator interface. Preview is the right choice where a shopper should be able to look at and rotate a product but not configure it: collection pages, galleries, editorial sections, or anywhere a full option panel would be too heavy. These pages document each field it exposes, including which asset is shown, camera and lighting behaviour, canvas sizing, and the interaction controls available to the visitor.",
         "slug": "/3d-bits/tutorials/bitbybit-preview"
     }
 }

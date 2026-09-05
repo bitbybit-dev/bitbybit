@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Getting Started with Game Engines",
-        "description": "Choose your preferred 3D game engine and learn how to integrate Bitbybit's CAD capabilities. We support BabylonJS, ThreeJS, and PlayCanvas.",
+        "description": "Bitbybit runs on three 3D engines - Babylon.js, Three.js and PlayCanvas - and the geometry code is identical on all of them. Only the rendering layer differs, so the engine you choose is a question of what your project already uses, or which ecosystem you prefer, rather than which features you can reach. These pages introduce each engine as it works inside Bitbybit and cover getting a first scene running on it. If you have no existing preference, any of the three is a reasonable starting point.",
         "slug": "/getting-started/engines"
     }
 }

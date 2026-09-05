@@ -1,6 +1,7 @@
 ---
 slug: testing-3d-geometry-algorithms-in-occt
 title: "TESTING 3D GEOMETRY ALGORITHMS IN OCCT"
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/testing-3d-geometry-algorithms-in-occt/testing-3d-geometry-algorithms-in-occt.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "An introduction to recent improvements in code quality for the @bitbybit-dev/occt layer, focusing on unit testing and refactoring to benefit our platform's users."

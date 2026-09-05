@@ -1,11 +1,11 @@
 ---
 id: files-delete-a-file
 title: "Files - delete a file"
-description: "Permanently removes a file and its stored blob."
+description: "Permanently deletes an uploaded file and the stored blob behind it. This cannot be undone, and any task result that still points at the blob stops resolving. Files also expire on their own, so call this only when you need the storage released sooner than that."
 sidebar_label: "Files - delete a file"
 hide_title: true
 hide_table_of_contents: true
-api: eJy9Vk1vGzcQ/SvEnOKCkuw2J91US26FprYgOUUBQwgociQx5pIMP5QIwv73Yri7tiw5TdJDT9LuzsebmfeGPEASmwjDB7jRBiMsOSiMMmiftLMwhBmGSli0yexZwMrtMDLB1togE1YxnSKLyQVUbGXcqg8cvAiiwoSBwh7AigphCOQxVcBBU1Qv0hY4BPyUdUAFwxQycohyi5WA4QHS3pNXTEHbDXBYu1CJBEPIWSuoT1ESeDYdQ72koNE7GzFSnJ8vL+nnFWuFBhMSIulsQpvITnhvtBRkN/gYyfhwDsqtPqJMVGlwHkPSTSr3eGSzcs6gsE30mJoCCbZI3xGqw/atePVxCx+e3JYchFKaqhBmdhR5LUzE095dO7vW1F3tLEtbkZhgAaPLQSL7LCKLWUqMcZ2N2R+1LelkCNq4vJljzCbBKST3CG3RPwZq0eRk3TDZ2oWGdQUAGZ0ioKnOW3Ooa0Ly9vLt+fRvXWJrl+3/NvpSYM0BQ3Dh28GkU/iaBF5W8aeQW22xF1AosTLISnRWnDngF1H50pu/Ru+m49H99O72w2Q+v5uTdiqMUWy+I8nvuRL2NEXnXUSYhDbxvMd3vpkziylkmTLthw6gTfglQcsTjGmqzv3nzSc2HZfBpyBkg+8l3lO2tdV3CH+QcqdQtW22Dunis05bVp32nPKVNei6ehWu8maj7eap0GeaTijquLTsdZ00BPlR1MIqETrMaHdonMfTtC+EUSiQtk7BsN0ZZW2nLQxhILwe7K4GpLU4ODRruwYOEcOu2+k5GBjCNiUfhwPy6K90Wu1XOvUV7s5oNAtOZVkeaEFHlDnotC+hRl7/gftRpuQPy+PPCxJfI4ljoyfOivKyO1G2KBQG4N1583dvNJv2GoOTjknnUbHRbMoecd9n5TkOWeUUmsiZFIrT9HYYEmc/sTeftVFSBHXRZyNyKWRwObG0RdYNkUUKwwJK1HRGvr38hU1vF+9vbqbX08nt/YfF9d1s0i+DJ2KVQtoJ/do2j12PxuzauFzQAQdqeAP6qn/VvzrXp95sex5D4amVyNqzN2hZYpWS2AYthobGo9m0zxbZexdSZFU2SfcakjOXk8+JvVncT2ac/fbu/oYzhdJV3kVUpPrtBWdeezTaIsMvKDPF5GUt91aCrJq2xfKadCHi3kr20a2YD44Wurabfrt3hSx7t51X1wPgJ+x6wayaQ8JQxbv1AsNOS/yK4aBY9YRVPelsI6YIHIyWSCp4zksCCxqTCPt/Tf16RJqmdzFVwh7FLFcp1mvPyva6dDq8w/Ph8x8uWa0GaMMMvBHaUmsK+kOr5AcSCHGIaFPUDByG7TVsyWHr6Gx6gMOBRvc+mLqm158yBlLmksNOBE1rruhU6Uj/1etr6LiYN/NWEhesu5Z9BW8nZEut3wmT6Qk4POL++cZYL2veqZuANB9HUqJPR25nxzetkqctN568m9xPoK7/ATHFymE=
+api: eJztVk1vGzcQ/SsDnuKCkuw2J91US26FprYgOUUBwwgocqRlzCUZfsgWBP33Yri7tiw5TXLpqSdpd4czb2bePM6OJbGObHjHrrTByO45Uxhl0D5pZ9mQzTDUwqJNZgsKDSaMICxkb5xQqGClDYKwClKFEJMLqGBp3BKWWGmrQKc+3FY6ghTWugRLhGyVs8jLKWG3kER8gIAxmwSpEgli0saAd9qmCCIV18VnTM5HMnVmo+26DwU0CBMd4JPXAcFZMtcB3KPlEB1IYQwkQuCs2cJjhRa2LoNFfAEt1ggBDYqICqJzFgNBsQVPn3HmRRA1JgxUqx2zokY2ZJT8VDHONJXKi1QxzgJ+yTqgYsMUMnIWZYW1YMMdS1tPp2IK2q4ZZysXapHYkOWsFdsfl56Sg+mY7e/JafTORozk5+fzc/p5w7rpECGSzia0ieyE90ZLQXaDz5GMd6eg3PIzykSZBucxJN2Ecg8HNkvnDArbeI+pSZBgi/Qdrjps3/K3Pyzh3fOxe86EUpqyEGZ24HklTMTj2l06u9JUXe2aJoIovMlBIjyKCDFLiTGusnkmNpUt6WQI2ri8mRdSsmNI7oG1Sf8YqEUTE7pmwsqFZoAKADI6RkBdnbfmbL8nJO/P3592/9olWLls/7PWlwT3nGEILnzbmXQK3xqB11n8KWSlLfYCCiWWBqF4h3KYM3wStS+1+Wv0YToe3U5vrj9N5vObOc1OjTGK9XcE+T3Xwh6H6E6XIUxCm3ha4xvf9BliClmmTFLXAbQJnxJreYIxTdXp+XnzCabj0vgUhGzwvcZ7zLY2+w7hD1LuGKq2jerQXDzqVEF9XHOKV7TZdfkqXOb1Wtv1c6IvNJ2Q13Ep2dtz0hDkR1ELq0ToMKPdoHEej8O+GoxCgVQ5xYatZhTZThUbsoHwerC5GNCsxcGuke094yxi2HSanoNhQ1al5ONwQCf6S52W26VOfYWbExrNglNZlgcS6IgyB522xdXI6z9wO8oU/O7+8POChq8ZiUOjZ86K8rK7USoUCgPj3X3zd280m/Yag6OKSedRwWg2hQfc9qE8xyHUTqGJHKRQnLq3wZA4/ATvHrVRUgR11ocRHSlkcLm5bLsmQiQ3EFCi3mCE9+e/wPR68fHqano5nVzfflpc3swm/dJ4IlZJpO3Qr23x4HI0hkvjckHHOKOCN6Av+hf9i9P51Ouq5zEUnlqJ0N69Qcviq6QEa7QYGhqPZtM+LLL3LqQIdTZJ9xqSg8vJ5wTvFreTGYffPtxecVAoXe0d3fQ1xuqMg9cejbYI+IQyk09eZLm3LPtAU7ZYXpedJW6thM9uCT44EnRaRVrdFbLobtuvrgaMH7HrFbP2nCUMdbxZLTBstMSvGA6KVU9Y1ZPONsMUGWdGS6QpeIlLAxY0JhG2/xr6bY/UTe9iqoU98NmsWr32rgRRKnTcvN3L5fP/5thsju1gk2wOvBHaUr9LS3atPN3R1NNg0CwUiWKcDdvd8p6zytGFe8d2O+Ljx2D2e3r9JWMgubnnbCOCJu0u4qN0pP/qbW097NC7eTvnZ9Dtml/B26mTJT5thMn0xDh7wO3LGry/3/NOsghI83EkJfp0cOxkJyF9fJbu8eTD5HbC9vt/AK8dZQw=
 sidebar_class_name: "delete api-method"
 info_path: api/open/bitbybit-cad-cloud-api
 custom_edit_url: null
@@ -38,7 +38,7 @@ import Translate from "@docusaurus/Translate";
 
 
 
-Permanently removes a file and its stored blob.
+Permanently deletes an uploaded file and the stored blob behind it. This cannot be undone, and any task result that still points at the blob stops resolving. Files also expire on their own, so call this only when you need the storage released sooner than that.
 
 <Heading
   id={"request"}
@@ -66,5 +66,32 @@ Permanently removes a file and its stored blob.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`DELETE /api/v1/files/{fileId}`
+
+Permanently deletes an uploaded file and the stored blob behind it. This cannot be undone, and any task result that still points at the blob stops resolving. Files also expire on their own, so call this only when you need the storage released sooner than that.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `fileId` | path | string | yes | File ID |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | File deleted |
+| `404` | Not found |
+
+### Example request
+
+```bash
+curl -X DELETE "https://api.bitbybit.dev/api/v1/files/{fileId}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

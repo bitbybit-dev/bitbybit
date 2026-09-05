@@ -50,6 +50,16 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/babylonjs |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/babylonjs/start-with-babylon-js |
+| **API Reference** | https://docs.bitbybit.dev/classes/Bit.Babylon |
+
+### API reference
+
+Every class, method and input type in this package is documented in the generated TypeScript API reference:
+
+- [Babylon integration](https://docs.bitbybit.dev/classes/Bit.Babylon)
+- [Scene](https://docs.bitbybit.dev/classes/Bit.BabylonScene)
+- [Draw](https://docs.bitbybit.dev/classes/Bit.Draw)
+- [Full API index](https://docs.bitbybit.dev/modules/Bit)
 
 ## Example Applications
 

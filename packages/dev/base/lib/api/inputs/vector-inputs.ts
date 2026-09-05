@@ -2,6 +2,11 @@
 import { Base } from "./base-inputs";
 import { Math } from "./math-inputs";
 
+/**
+ * Parameters for vector arithmetic: the operands for addition, subtraction, scaling, dot and cross
+ * products, normalisation, angle and distance measurement, projection and interpolation. Vectors are
+ * number arrays, so these DTOs mostly carry one or two of them plus a scalar.
+ */
 export namespace Vector {
 
     export class TwoVectorsDto {

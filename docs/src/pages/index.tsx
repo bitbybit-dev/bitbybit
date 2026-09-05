@@ -426,7 +426,7 @@ function ShopifyBitsSection() {
             </p>
             <span className={styles.shopifyBitsCta}>Read the Docs →</span>
           </Link>
-          <Link to="/learn/getting-started/viewer-editor/intro" className={styles.shopifyBitsCard}>
+          <Link to="/learn/3d-bits/composer/intro" className={styles.shopifyBitsCard}>
             <div className={styles.shopifyBitsCardGlow}></div>
             <div className={styles.shopifyBitsIcon}>
               <div className={styles.shopifyBitsIconGlow}></div>
@@ -434,7 +434,7 @@ function ShopifyBitsSection() {
                 <NoCodeIcon size={64} color="#f0cebb" />
               </div>
             </div>
-            <h3>No-Code Viewer Editor</h3>
+            <h3>No-Code Composer</h3>
             <p>
               Create stunning 3D configurators without writing any code. Use our visual editor to design product experiences with drag-and-drop simplicity.
             </p>

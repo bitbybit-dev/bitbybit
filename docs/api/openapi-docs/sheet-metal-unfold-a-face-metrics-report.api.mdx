@@ -66,5 +66,39 @@ Proprietary sheet-metal analysis: computes the unfold metrics report (developabi
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/cad/pro/unfold/face-report`
+
+Proprietary sheet-metal analysis: computes the unfold metrics report (developability, area, ...) for a single face of an uploaded STEP shape. Requires the 'cad' API key scope. Returns 202 with a task ID; the JSON report is delivered in the task metadata.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `stepFileId` | string | yes | ID of the previously uploaded STEP file (returned by the file upload endpoint). Both plain STEP (.step/.stp) and gzip-compressed STEP (.stpz) uploads are accepted - compression is detected automatically. |
+| `faceIndex` | integer | no | 0-based index of the face to analyze.Default: `0`. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Task accepted |
+| `400` | Validation error |
+| `403` | Insufficient scope |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/cad/pro/unfold/face-report" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

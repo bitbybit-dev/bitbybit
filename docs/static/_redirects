@@ -1,0 +1,49 @@
+# Cloudflare Pages redirects for learn.bitbybit.dev
+# The 3D Bits docs were reorganised in July 2026. These keep older links working:
+# the Shopify App Store listing, blog posts, search results and anything a merchant bookmarked.
+
+# Composer, formerly the Viewer Editor, moved under the 3D Bits section.
+/learn/getting-started/viewer-editor/basics/interface-overview  /learn/3d-bits/composer/interface  301
+/learn/getting-started/viewer-editor/basics/getting-started     /learn/3d-bits/quick-start/first-configurator  301
+/learn/getting-started/viewer-editor/basics/overview            /learn/3d-bits/composer/intro  301
+/learn/getting-started/viewer-editor/basics                     /learn/3d-bits/composer  301
+/learn/getting-started/viewer-editor/models/*                   /learn/3d-bits/composer/models/:splat  301
+/learn/getting-started/viewer-editor/intro                      /learn/3d-bits/composer/intro  301
+/learn/getting-started/viewer-editor/*                          /learn/3d-bits/composer/:splat  301
+/learn/getting-started/viewer-editor                            /learn/3d-bits/composer  301
+
+# Composer pages that were merged into the intro and the quick start.
+/learn/3d-bits/composer/overview        /learn/3d-bits/composer/intro  301
+/learn/3d-bits/composer/getting-started /learn/3d-bits/quick-start/first-configurator  301
+
+# Pages that moved into the app and asset sections.
+/learn/3d-bits/tutorials/getting-started/canvas-sizing   /learn/3d-bits/admin/canvas-sizing  301
+/learn/3d-bits/tutorials/getting-started/setting-up      /learn/3d-bits/admin/metafields  301
+/learn/3d-bits/tutorials/getting-started/your-assets     /learn/3d-bits/3d-assets/asset-security  301
+
+# Pages that left the tutorials section.
+/learn/3d-bits/tutorials/getting-started/installation            /learn/3d-bits/quick-start/install  301
+/learn/3d-bits/tutorials/getting-started/before-you-begin        /learn/3d-bits/quick-start/what-to-expect  301
+/learn/3d-bits/tutorials/getting-started/under-the-hood          /learn/3d-bits/how-it-works  301
+/learn/3d-bits/tutorials/getting-started/theme-app-extension-blocks  /learn/3d-bits/theme-blocks/overview  301
+/learn/3d-bits/tutorials/getting-started/apps-for-3d-bits        /learn/3d-bits/integrations/when-you-need-another-app  301
+
+# Retired: a proposed event-based integration API that was never adopted. What a third-party
+# app developer actually needs is in Custom Forms. These two rules must stay ahead of the
+# for-developers wildcard below, because Cloudflare takes the first match.
+/learn/3d-bits/integrations/third-party-app-integrations   /learn/3d-bits/integrations/custom-forms  301
+/learn/3d-bits/for-developers/third-party-app-integrations /learn/3d-bits/integrations/custom-forms  301
+
+# Renamed sections.
+/learn/3d-bits/for-developers/integration   /learn/3d-bits/integrations/custom-forms  301
+/learn/3d-bits/for-developers/*             /learn/3d-bits/integrations/:splat  301
+/learn/3d-bits/for-developers               /learn/3d-bits/integrations  301
+/learn/3d-bits/theme-app-extensions/*       /learn/3d-bits/theme-blocks/:splat  301
+/learn/3d-bits/theme-app-extensions         /learn/3d-bits/theme-blocks  301
+
+# The runners/engines categories had no slug, so Docusaurus put them on /learn/category/*.
+# Slugs added Aug 2026; these keep the old, already-indexed URLs working.
+/learn/category/engines      /learn/runners/engines             301
+/learn/category/babylonjs    /learn/runners/engines/babylonjs   301
+/learn/category/threejs      /learn/runners/engines/threejs     301
+/learn/category/playcanvas   /learn/runners/engines/playcanvas  301

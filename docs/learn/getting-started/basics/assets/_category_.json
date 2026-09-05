@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Managing Local & Cloud Assets",
-        "description": "Learn how to manage local and cloud assets in Bitbybit, including uploading, downloading, and organizing your files.",
+        "description": "Get files into and out of a Bitbybit script - 3D models, images, textures and data. Assets come from two places: local files loaded straight from the visitor's machine or the browser's storage, and cloud assets uploaded to your Bitbybit project and available to every script in it. The distinction matters for sharing, for storefront use and for how much you can rely on a file being there. These pages cover both routes, including importing STEP and glTF files, using images as textures, and choosing which storage suits your project.",
         "slug": "/getting-started/basics/assets"
     }
 }

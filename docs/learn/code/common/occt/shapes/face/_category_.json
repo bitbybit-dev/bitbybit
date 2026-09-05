@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Faces",
-        "description": "Faces are one of the most fundamental pieces of geometry that you can create inside OCCT kernel. These tutorials will help you understand how to create and manipulate faces in your 3D models.",
+        "description": "Faces are the bounded surfaces that make up the skin of a solid in OCCT. Most modelling paths run through them: draw a closed wire, turn it into a face, then extrude or thicken that face into a solid. These pages cover the face primitives, building faces from a list of points or from a closed wire, and the subdivision helpers that place points or shapes evenly across a face for patterning. A worked example builds a hexagonal grid pattern on a face, which is the basis for most perforated and lattice geometry.",
         "slug": "/code/common/occt/shapes/face"
     }
 }

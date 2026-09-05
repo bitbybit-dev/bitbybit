@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Getting Started With Bitbybit Blockly Editor",
-        "description": "Learn how to use the Bitbybit Blockly Editor to create and run scripts. This guide will help you understand the basics of Blockly, how to compose blocks in order to create 3D objects & how to manage your scripts effectively.",
+        "description": "Blockly is Bitbybit's block-based editor, where a program is assembled from interlocking blocks rather than typed. It is the gentlest way into programming 3D geometry, because the blocks only fit together in ways that make sense, so a whole category of syntax mistakes simply cannot happen. That makes it a strong fit for classrooms, for designers who do not write code, and for anyone wanting results before learning a language. These pages cover the editor, a first 3D Hello World, and building a parametric cube whose dimensions you can change.",
         "slug": "/getting-started/blockly"
     }
 }

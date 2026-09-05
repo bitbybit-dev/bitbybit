@@ -20,7 +20,7 @@ Many of its functions are convenient wrappers around standard JavaScript `Math` 
 
 ## Core Capabilities of the Math Class
 
-Here's a breakdown of what the `Math` class offers. For precise input parameters, specific operator names (for `twoNrOperation` and `oneNrOperation`), and detailed behavior, please consult the [full Math API documentation](https://docs.bitbybit.dev/classes/Bit.MathBitByBit.html) or the GitHub source linked above.
+Here's a breakdown of what the `Math` class offers. For precise input parameters, specific operator names (for `twoNrOperation` and `oneNrOperation`), and detailed behavior, please consult the [full Math API documentation](https://docs.bitbybit.dev/classes/Bit.MathBitByBit) or the GitHub source linked above.
 
 ### 1. Basic Arithmetic & Number Operations
 

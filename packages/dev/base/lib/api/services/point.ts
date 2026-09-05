@@ -6,8 +6,8 @@ import * as Models from "../models";
 import { Lists } from "./lists";
 
 /**
- * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
- * Because of this form Point can be interchanged with Vector, which also is an array in [x, y, z] form.
+ * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y,
+ * z]. Because of this form Point can be interchanged with Vector, which also is an array in [x, y, z] form.
  * When creating 2D points, z coordinate is simply set to 0 - [x, y, 0].
  */
 

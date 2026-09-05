@@ -3,14 +3,25 @@ import * as BABYLON from "../../gui-enriched-babylon";
 import { BabylonTexture } from "./babylon-texture-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for the in-scene 2D interface: buttons, sliders, checkboxes, colour pickers, text blocks,
+ * input fields, images and the containers that lay them out. Use it for controls that live inside the
+ * 3D canvas rather than in the surrounding page.
+ */
 export namespace BabylonGui {
 
+    /**
+     * Horizontal alignment of an in-scene GUI control within its container.
+     */
     export enum horizontalAlignmentEnum {
         left = "left",
         center = "center",
         right = "right"
     }
 
+    /**
+     * Vertical alignment of an in-scene GUI control within its container.
+     */
     export enum verticalAlignmentEnum {
         top = "top",
         center = "center",

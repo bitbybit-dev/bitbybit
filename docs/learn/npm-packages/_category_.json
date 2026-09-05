@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Bitbybit NPM Packages",
-        "description": "This category is essential for developers looking to integrate Bitbybit's NPM packages into their projects. It provides comprehensive guides on how to install, configure, and utilize these packages effectively. We use various live demo's to guide you through the process and showcase the capabilities of the platform.",
+        "description": "The Bitbybit npm packages let you use the CAD algorithms directly in your own application, with no Bitbybit editor or account involved. You install the packages, import the parts you need, and call the same OCCT, JSCAD, Manifold and base geometry functions the platform itself runs on. The architecture is deliberately engine-agnostic: the geometry packages know nothing about rendering, and thin adapter packages connect them to Babylon.js, Three.js or PlayCanvas. These pages cover the package layout, that architecture, and a quick start plus worked parametric examples for each engine.",
         "slug": "/npm-packages"
     }
 }

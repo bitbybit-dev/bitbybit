@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
 
+/**
+ * Parameters for connected sequences of line segments: the point list that defines the path, whether
+ * it closes back on itself, and the options for measuring, transforming and converting a polyline into
+ * a kernel wire ready for solid modelling.
+ */
 export namespace Polyline {
     export class PolylineCreateDto {
         /**

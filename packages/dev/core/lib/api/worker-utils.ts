@@ -9,10 +9,9 @@ import { GlobalCDNProvider } from "@bitbybit-dev/base";
  */
 
 /**
- * Worker architecture type for CDN workers.
- * - "32" - 32-bit WebAssembly (default, widest browser support)
- * - "64-bit" - 64-bit WebAssembly (better performance, requires browser support for Memory64)
- * - "64-bit-mt" - 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
+ * Worker architecture type for CDN workers. - "32" - 32-bit WebAssembly (default, widest browser support) -
+ * "64-bit" - 64-bit WebAssembly (better performance, requires browser support for Memory64) - "64-bit-mt" -
+ * 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
  */
 export type WorkerArchitecture = "32" | "64" | "64-mt";
 
@@ -43,11 +42,10 @@ export interface WorkerOptions {
      */
     loadFonts?: string[];
     /**
-     * OCCT worker architecture to use. Defaults to "32" (32-bit).
-     * Note: This only applies to OCCT workers. JSCAD and Manifold always use 32-bit.
-     * - "32" - 32-bit WebAssembly (default, widest browser support)
-     * - "64" - 64-bit WebAssembly (better performance, requires browser support for Memory64)
-     * - "64-mt" - 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
+     * OCCT worker architecture to use. Defaults to "32" (32-bit). Note: This only applies to OCCT workers.
+     * JSCAD and Manifold always use 32-bit. - "32" - 32-bit WebAssembly (default, widest browser support) -
+     * "64" - 64-bit WebAssembly (better performance, requires browser support for Memory64) - "64-mt" -
+     * 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
      */
     occtArchitecture?: WorkerArchitecture;
 }

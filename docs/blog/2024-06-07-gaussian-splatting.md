@@ -1,6 +1,7 @@
 ---
 slug: gaussian-splatting
 title: "GAUSSIAN SPLATTING: Bringing Realistic 3D Scans to Your Projects"
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/gaussian-splatting/gaussian-splatting.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Explore the power of 3D Gaussian Splatting for creating realistic 3D scans of real-world objects and scenes, and learn how to integrate them into your Bitbybit.dev projects."

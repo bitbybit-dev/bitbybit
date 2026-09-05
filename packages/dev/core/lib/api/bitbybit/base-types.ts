@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Shared result and helper types used across the core API - the small structural types that are
+ * neither parameters nor kernel shapes, but the plain data passed between them.
+ */
 export namespace BaseTypes {
     /**
      * Interval represents an object that has two properties - min and max.

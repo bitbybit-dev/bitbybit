@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for textures: the image source, UV scaling and offset, wrapping mode, and the sampling
+ * settings that decide how a texture is filtered.
+ */
 export namespace BabylonTexture {
 
+    /**
+     * How a texture is filtered when magnified or minified - nearest keeps pixels crisp and blocky,
+     * the linear and trilinear modes smooth them, and the mipmap variants trade sharpness for stability
+     * in the distance.
+     */
     export enum samplingModeEnum {
         nearest = "nearest",
         bilinear = "bilinear",

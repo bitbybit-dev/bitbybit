@@ -26,6 +26,10 @@ export interface InitBabylonJSResult {
     dispose: () => void;
 }
 
+/**
+ * Higher-level scene setup parameters: the composed configurations that build a working scene -
+ * camera, lights, environment and ground - in one call rather than piece by piece.
+ */
 export namespace BabylonJSScene {
     export class InitBabylonJSDto {
         constructor(

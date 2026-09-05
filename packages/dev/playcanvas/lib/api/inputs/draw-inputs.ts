@@ -5,6 +5,11 @@ import { Base } from "./base-inputs";
 import * as pc from "playcanvas";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Options for drawing geometry into a PlayCanvas scene: colour, opacity, size, and the per-kind
+ * settings that control how points, lines, polylines, meshes, surfaces and kernel shapes become
+ * renderer entities. Passing an existing drawn entity back in updates it in place.
+ */
 export namespace Draw {
 
     export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;

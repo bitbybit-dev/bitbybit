@@ -2,7 +2,7 @@
 sidebar_position: 3
 title: Face From Points
 sidebar_label: Face From Points
-description: Learn how to create face from the list of points
+description: Create an OCCT face from an ordered list of points, and see how point order, planarity and closure decide whether you get a valid face or a failed operation.
 tags: [code, occt, rete, blockly, typescript]
 ---
 

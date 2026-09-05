@@ -64,6 +64,10 @@ export interface InitPlayCanvasResult {
     dispose: () => void;
 }
 
+/**
+ * Higher-level PlayCanvas scene setup: the composed configurations that build a working scene -
+ * camera, lights, environment and ground - in one call rather than piece by piece.
+ */
 export namespace PlayCanvasScene {
     export class InitPlayCanvasDto {
         constructor(

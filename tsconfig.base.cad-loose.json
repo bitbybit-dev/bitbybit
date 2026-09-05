@@ -1,0 +1,27 @@
+{
+    // The compiler options every published CAD package shares. Each package's tsconfig.json (the
+    // editor and test view) and tsconfig.bitbybit.json (what build-p compiles) extends this and keeps
+    // only what differs there: outDir, paths into the sibling dists, exclusions, and for the occt
+    // NodeNext build its module settings. Extracted with a zero-change proof (the parent monorepo's
+    // scripts/checks/tsconfig-showconfig-diff.mjs compares `tsc --showConfig` before and after), so
+    // the packages compile exactly as they did; making them stricter is a separate, deliberate step,
+    // one package at a time.
+    //
+    // `include`, `exclude` and `files` are replaced by a leaf rather than merged, and relative paths
+    // resolve against the defining file, so those stay in the leaves. This file is self-contained on
+    // purpose: the repository must build from a bare clone with nothing above it.
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "es2020",
+        "moduleResolution": "node",
+        "lib": ["es2020", "dom"],
+        "strict": false,
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": false,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "sourceMap": false,
+        "skipLibCheck": true
+    }
+}

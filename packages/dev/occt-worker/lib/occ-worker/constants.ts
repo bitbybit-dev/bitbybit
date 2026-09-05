@@ -45,6 +45,8 @@ export const ReservedFunctions = {
     DELETE_SHAPE: "deleteShape",
     /** Delete multiple shapes from cache */
     DELETE_SHAPES: "deleteShapes",
+    /** Delete an assembly document handle from cache */
+    DELETE_DOCUMENT: "deleteDocument",
     /** Signal that a new run has started (used for cache cleanup) */
     STARTED_THE_RUN: "startedTheRun",
     /** Clean all cached shapes */
@@ -66,6 +68,7 @@ export const NON_CACHEABLE_FUNCTIONS = new Set<string>([
     ReservedFunctions.DOC_TO_MESHES,
     ReservedFunctions.DELETE_SHAPE,
     ReservedFunctions.DELETE_SHAPES,
+    ReservedFunctions.DELETE_DOCUMENT,
     ReservedFunctions.STARTED_THE_RUN,
     ReservedFunctions.CLEAN_ALL_CACHE,
     ReservedFunctions.ADD_OC,

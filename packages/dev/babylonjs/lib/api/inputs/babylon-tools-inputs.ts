@@ -2,6 +2,10 @@
 import * as BABYLON from "@babylonjs/core";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for engine utilities: screenshots, canvas sizing, colour conversion and the other helpers
+ * that sit around the scene rather than inside it.
+ */
 export namespace BabylonTools {
 
     export class ScreenshotDto {

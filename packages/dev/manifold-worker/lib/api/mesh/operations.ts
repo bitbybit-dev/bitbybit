@@ -31,7 +31,7 @@ export class MeshOperations {
      * @shortname merge
      * @drawable true
      */
-    async merge(inputs: Inputs.Manifold.MeshDto<Inputs.Manifold.MeshPointer>): Promise<Inputs.Manifold.MeshPointer> {
+    async merge(inputs: Inputs.Manifold.MeshDto<Inputs.Manifold.MeshPointer>): Promise<boolean> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("mesh.operations.merge", inputs);
     }
 }

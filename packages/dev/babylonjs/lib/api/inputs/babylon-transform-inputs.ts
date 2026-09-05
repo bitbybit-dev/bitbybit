@@ -2,6 +2,10 @@
 import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
+/**
+ * Parameters for moving objects in the scene: translation, rotation around an axis or a pivot, and
+ * scaling, applied to a mesh or a node rather than to the underlying geometry.
+ */
 export namespace BabylonTransforms {
 
     export class RotationCenterAxisDto {

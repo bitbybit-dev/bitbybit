@@ -10,6 +10,10 @@ tags: [shopify, 3d-bits]
 
 This guide explains all available settings for the **BITBYBIT APPS** theme app extension block in Shopify. Use this block to develop and deploy sophisticated custom 3D & 2D Single Page Applications (SPAs) directly onto Shopify product pages.
 
+:::info This block needs the Pro plan
+BITBYBIT APPS is available exclusively on the **Pro** subscription plan. On any other plan the block does not appear in the theme editor's *Add block* list at all, and its runtime is never loaded - so if you cannot find it, check your subscription first rather than your theme. A block already placed in a template stops rendering if the Pro subscription lapses. See [Subscription plans](/learn/3d-bits/plans/subscription-plans).
+:::
+
 You'll find the BITBYBIT APPS settings in your theme editor after adding the block to a template.
 
 ## What is BITBYBIT APPS?
@@ -137,7 +141,7 @@ The BITBYBIT APPS block supports three distinct modes:
 **3. Production Mode**
 - Set Public Script URL to Shopify CDN: `https://cdn.shopify.com/s/files/1/xxx/index-<hash>.js`
 - Upload final build via Content → Files in Shopify Admin
-- Optimized bundle served to customers
+- Optimized bundle served to shoppers
 - Live production deployment
 
 ### Format
@@ -341,7 +345,7 @@ Switch between modes by simply changing the Public Script URL setting. No code c
 This is a common setting shared across multiple blocks. See the [Common Settings: Show Spinner](../getting-started/common-settings#show-spinner) documentation for detailed information.
 
 :::tip APPS-Specific
-Your application can control the spinner programmatically by dispatching custom events. This allows you to show/hide loading states based on your application's logic.
+There are no custom events involved. The block shows the spinner when it sends your application a new set of inputs, and hides it when your application calls `bitsPro.finishedComputing()`. That call is what ends the loading state, so make it once your application has finished rendering the change.
 :::
 
 ---
@@ -354,7 +358,7 @@ This is a common setting shared across multiple blocks. See the [Common Settings
 - Theme and app update workflow
 
 :::tip APPS-Specific
-Your TypeScript application receives variant data through custom events. This setting controls the format of the data your application receives.
+Your TypeScript application does not listen for events. It receives variant data through the `onUpdate` callback it registered with `bitsPro.init(onUpdate, isProd)`, and this setting controls the format of the data that callback is handed.
 :::
 
 ---
@@ -384,7 +388,7 @@ Debug mode helps verify your application is receiving the correct input data. Us
 This is a common setting shared across multiple blocks. See the [Common Settings: Disable Inputs When Computing](../getting-started/common-settings#disable-inputs-when-computing) documentation for detailed information.
 
 :::tip APPS-Specific
-Your application can also control input disabling programmatically by dispatching custom events, giving you fine-grained control over when inputs should be disabled based on your application state.
+This uses the same handshake as the spinner, and again no custom events. The block disables the inputs when it sends your application a new set of inputs, and re-enables them when your application calls `bitsPro.finishedComputing()` - so how long they stay disabled is decided by when you make that call.
 :::
 
 ---
@@ -449,19 +453,23 @@ BITBYBIT APPS is designed **exclusively for frontend SPA development**. The bloc
 
 ### Handling Pricing Correctly
 
-Any logic that determines or modifies product prices **must** be handled securely:
+Any pricing logic **you write inside your SPA** must be handled securely:
 
-**Option 1: Third-Party Apps**
-- Use specialized Shopify apps for pricing rules
+**Option 1: 3D Bits configurator pricing**
+- Build the price from the options a shopper picks, in Composer rather than in code
+- 3D Bits charges it through Shopify at checkout
+- Recommended whenever it covers what you need - see [Pricing](/learn/3d-bits/pricing)
+
+**Option 2: Third-Party Apps**
+- Use a specialized Shopify pricing app for rules configurator pricing does not cover
 - Your frontend reflects their calculations
-- Recommended for most use cases
 
-**Option 2: Custom Backend**
+**Option 3: Custom Backend**
 - Build separate backend infrastructure
 - Validate pricing server-side
 - Your APPS frontend communicates with it
 - Required for complex custom logic
 
 :::danger Never Trust Client-Side Pricing
-Price calculations in your frontend SPA can be manipulated by users. Always validate pricing server-side or via trusted third-party apps before checkout.
+A price your own SPA calculates in the browser can be manipulated by the shopper. Validate it server-side, use a trusted third-party app, or use 3D Bits configurator pricing - which is authored in Composer and charged through Shopify, not computed by your SPA code.
 :::

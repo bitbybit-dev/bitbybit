@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
 
+/**
+ * Parameters for building transformation matrices: translations, rotations around an axis or a centre,
+ * uniform and non-uniform scaling, and the composition of several transforms into one. The result is a
+ * matrix that any geometry API will accept, so the same transform can be applied to points, curves and
+ * solids alike.
+ */
 export namespace Transforms {
 
     export class RotationCenterAxisDto {

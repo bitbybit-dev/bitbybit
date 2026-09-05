@@ -2,6 +2,10 @@ import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 
+/**
+ * Parameters for reading and writing files: the data or shape to export, the target format and its
+ * options, the file name, and the settings that control how imported content is interpreted.
+ */
 export namespace IO {
 
     /**

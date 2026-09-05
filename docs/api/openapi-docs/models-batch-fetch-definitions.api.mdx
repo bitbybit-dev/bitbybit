@@ -66,5 +66,36 @@ Returns parameter schemas and defaults for the requested model names.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/models/definitions`
+
+Returns parameter schemas and defaults for the requested model names.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `names` | array of string | yes | Array of model slugs to fetch definitions for (e.g. ['dragon-cup', 'phone-nest']) |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Model definitions |
+| `400` | Validation error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/models/definitions" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

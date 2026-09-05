@@ -1,6 +1,7 @@
 ---
 slug: mixed-reality-cad
 title: MIXED REALITY CAD
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/mixed-reality-cad/mixed-reality-cad.jpg
 authors: [ubarevicius]
 description: "Our latest experiment demonstrates that it is possible to use our CAD algorithms in a mixed reality environment, showcasing interactions with parametric 3D models using Meta Quest Pro."
 tags: [bitbybit, cad, xr, vr]
