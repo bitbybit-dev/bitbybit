@@ -2332,12 +2332,11 @@ describe("OCCT wire unit tests", () => {
             w.delete();
         });
 
-        it("should return undefined fromPoints with only one point", () => {
+        it("should throw fromPoints with only one point", () => {
             const points: Inputs.Base.Point3[] = [
                 [0, 0, 0],
             ];
-            const w = wire.fromPoints({ points });
-            expect(w).toBeUndefined();
+            expect(() => wire.fromPoints({ points })).toThrow("At least two points are required");
         });
 
         it("should create square-like polyline fromPoints", () => {

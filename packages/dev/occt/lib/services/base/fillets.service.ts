@@ -86,7 +86,7 @@ export class FilletsService {
         }
     }
 
-    filletEdgesListOneRadius(inputs: Inputs.OCCT.FilletEdgesListOneRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape | undefined {
+    filletEdgesListOneRadius(inputs: Inputs.OCCT.FilletEdgesListOneRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
@@ -100,10 +100,10 @@ export class FilletsService {
             curFillet.delete();
             return result;
         }
-        return undefined;
+        throw new Error("Edges must be provided");
     }
 
-    filletEdgesList(inputs: Inputs.OCCT.FilletEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape | undefined {
+    filletEdgesList(inputs: Inputs.OCCT.FilletEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 && inputs.radiusList && inputs.radiusList.length > 0 && inputs.edges.length === inputs.radiusList.length) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
@@ -117,10 +117,10 @@ export class FilletsService {
             curFillet.delete();
             return result;
         }
-        return undefined;
+        throw new Error("Edges and radius list must be provided with the same length");
     }
 
-    filletEdgeVariableRadius(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape | undefined {
+    filletEdgeVariableRadius(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
         if (inputs.paramsU && inputs.paramsU.length > 0 && inputs.radiusList && inputs.radiusList.length > 0 && inputs.paramsU.length === inputs.radiusList.length) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
@@ -132,10 +132,10 @@ export class FilletsService {
             curFillet.delete();
             return result;
         }
-        return undefined;
+        throw new Error("Params U and radius list must be provided with the same length");
     }
 
-    filletEdgesSameVariableRadius(inputs: Inputs.OCCT.FilletEdgesSameVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape | undefined {
+    filletEdgesSameVariableRadius(inputs: Inputs.OCCT.FilletEdgesSameVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.radiusList && inputs.radiusList.length > 0 &&
             inputs.paramsU.length === inputs.radiusList.length) {
@@ -153,10 +153,10 @@ export class FilletsService {
             curFillet.delete();
             return result;
         }
-        return undefined;
+        throw new Error("Edges, params U and radius list must be provided with the same length");
     }
 
-    filletEdgesVariableRadius(inputs: Inputs.OCCT.FilletEdgesVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape | undefined {
+    filletEdgesVariableRadius(inputs: Inputs.OCCT.FilletEdgesVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.radiusLists && inputs.radiusLists.length > 0 &&
             inputs.paramsULists.length === inputs.radiusLists.length &&
@@ -176,7 +176,7 @@ export class FilletsService {
             curFillet.delete();
             return result;
         }
-        return undefined;
+        throw new Error("Edges, radius lists and params U lists must be provided with the same length");
     }
 
     private assignVariableFilletToEdge(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, mkFillet: BRepFilletAPI_MakeFillet) {
@@ -247,7 +247,7 @@ export class FilletsService {
         }
     }
 
-    chamferEdgesList(inputs: Inputs.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape | undefined {
+    chamferEdgesList(inputs: Inputs.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 && inputs.distanceList && inputs.distanceList.length > 0 && inputs.edges.length === inputs.distanceList.length) {
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
                 inputs.shape
@@ -265,7 +265,7 @@ export class FilletsService {
             curChamfer.delete();
             return result;
         }
-        return undefined;
+        throw new Error("Edges and distance list must be provided with the same length");
     }
 
     chamferEdgeTwoDistances(inputs: Inputs.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
@@ -280,7 +280,7 @@ export class FilletsService {
         return result;
     }
 
-    chamferEdgesTwoDistances(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape | undefined {
+    chamferEdgesTwoDistances(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.edges.length === inputs.faces.length) {
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
@@ -295,11 +295,11 @@ export class FilletsService {
             curChamfer.delete();
             return result;
         } else {
-            return undefined;
+            throw new Error("Edges and faces must be provided with the same length");
         }
     }
 
-    chamferEdgesTwoDistancesLists(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesListsDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape | undefined {
+    chamferEdgesTwoDistancesLists(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesListsDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.faces && inputs.faces.length > 0 &&
             inputs.distances1 && inputs.distances1.length > 0 &&
@@ -319,7 +319,7 @@ export class FilletsService {
             curChamfer.delete();
             return result;
         } else {
-            return undefined;
+            throw new Error("Edges, faces and distance lists must be provided with the same length");
         }
     }
 
@@ -336,7 +336,7 @@ export class FilletsService {
         return result;
     }
 
-    chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape | undefined {
+    chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.faces && inputs.faces.length > 0 &&
             inputs.distances && inputs.distances.length > 0 &&
@@ -357,11 +357,11 @@ export class FilletsService {
             curChamfer.delete();
             return result;
         } else {
-            return undefined;
+            throw new Error("Edges, faces, distances and angles must be provided with the same length");
         }
     }
 
-    chamferEdgesDistAngle(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape | undefined {
+    chamferEdgesDistAngle(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         if (inputs.edges && inputs.edges.length > 0 &&
             inputs.faces && inputs.faces.length > 0 &&
             inputs.edges.length === inputs.faces.length
@@ -379,7 +379,7 @@ export class FilletsService {
             curChamfer.delete();
             return result;
         } else {
-            return undefined;
+            throw new Error("Edges and faces must be provided with the same length");
         }
     }
 

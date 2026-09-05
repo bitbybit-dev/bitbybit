@@ -2,9 +2,15 @@ import { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { Inputs, OCCTTransforms } from "./index";
 import * as Models from "./api/models";
 
+/**
+ * What a value looks like after ShapeParser.parse: every shape object in it has been replaced by
+ * the id it was registered under, everything else keeps its type.
+ */
+export type WithShapeIds<T> = T extends TopoDS_Shape ? string : T extends object ? { [K in keyof T]: WithShapeIds<T[K]> } : T;
+
 export class ShapeParser {
 
-    static parse<T>(obj: T, partShapes: Models.OCCT.ShapeWithId<TopoDS_Shape>[], prefix: string): T {
+    static parse<T>(obj: T, partShapes: Models.OCCT.ShapeWithId<TopoDS_Shape>[], prefix: string): WithShapeIds<T> {
         const stack: unknown[] = [obj];
         let index = 0;
         while (stack.length > 0) {
@@ -47,7 +53,7 @@ export class ShapeParser {
                 }
             }
         }
-        return obj;
+        return obj as unknown as WithShapeIds<T>;
     }
 
     static alignAndTranslateShapesWithChildren<T extends { 

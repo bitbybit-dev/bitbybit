@@ -56,7 +56,7 @@ export class OCCTWire {
         return inputs.segments.map(segment => this.createLineWire({ start: segment[0], end: segment[1] }));
     }
 
-    fromPoints(inputs: Inputs.OCCT.PointsDto): TopoDS_Wire | undefined {
+    fromPoints(inputs: Inputs.OCCT.PointsDto): TopoDS_Wire {
         let wire: TopoDS_Wire | undefined;
         if (inputs.points.length > 1) {
             const start = inputs.points[0]!;
@@ -66,6 +66,9 @@ export class OCCTWire {
             } else {
                 wire = this.createPolylineWire({ points: inputs.points });
             }
+        }
+        if (!wire) {
+            throw new Error("At least two points are required");
         }
         return wire;
     }

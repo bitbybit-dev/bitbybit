@@ -443,8 +443,7 @@ describe("OCCT fillets unit tests", () => {
     it("should not fillet edge with variable radius if params u does not have the same nr of eleemnts as radius list", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
         const edge = occHelper.shapeGettersService.getEdges({ shape: cube })[0]!;
-        const filRes = fillets.filletEdgeVariableRadius({ shape: cube, edge, radiusList: [0.1, 0.3, 0.3, 1], paramsU: [0, 0.2, 0.8] });
-        expect(filRes).toBeUndefined();
+        expect(() => fillets.filletEdgeVariableRadius({ shape: cube, edge, radiusList: [0.1, 0.3, 0.3, 1], paramsU: [0, 0.2, 0.8] })).toThrow("Params U and radius list must be provided with the same length");
     });
 
     it("should fillet edges with variable radius", () => {
@@ -479,7 +478,7 @@ describe("OCCT fillets unit tests", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
         const allEdges = occHelper.shapeGettersService.getEdges({ shape: cube });
         const edges = [allEdges[0]!, allEdges[1]!, allEdges[2]!];
-        const filRes = fillets.filletEdgesVariableRadius({
+        expect(() => fillets.filletEdgesVariableRadius({
             shape: cube,
             edges,
             radiusLists: [
@@ -491,8 +490,7 @@ describe("OCCT fillets unit tests", () => {
                 [0, 0.3, 0.4, 1],
                 [0.3, 0.4]
             ]
-        });
-        expect(filRes).toBeUndefined();
+        })).toThrow("Edges, radius lists and params U lists must be provided with the same length");
         cube.delete();
         allEdges.forEach(e => e.delete());
     });
