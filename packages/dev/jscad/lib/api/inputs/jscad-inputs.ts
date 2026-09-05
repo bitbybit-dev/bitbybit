@@ -31,11 +31,11 @@ export namespace JSCAD {
         /**
          * Points of the polyline
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Can contain is closed information
          */
-        isClosed? = false;
+        isClosed?: boolean | undefined = false;
         /**
          * Can contain color information
          */
@@ -92,7 +92,7 @@ export namespace JSCAD {
         /**
         * Solid Jscad mesh
         */
-        meshes: JSCADEntity[];
+        meshes!: JSCADEntity[];
     }
     export class DrawSolidMeshDto<T> {
         /**
@@ -182,7 +182,7 @@ export namespace JSCAD {
          * @default undefined
          * @optional true
          */
-        meshes: JSCADEntity[];
+        meshes!: JSCADEntity[];
         /**
          * Value between 0 and 1
          * @default 1
@@ -292,12 +292,12 @@ export namespace JSCAD {
          * Solids to be transformed
          * @default undefined
          */
-        meshes: JSCADEntity[];
+        meshes!: JSCADEntity[];
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class TransformSolidDto {
         constructor(mesh?: JSCADEntity, transformation?: Base.TransformMatrixes) {
@@ -313,7 +313,7 @@ export namespace JSCAD {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class DownloadSolidDto {
         constructor(mesh?: JSCADEntity, fileName?: string) {
@@ -329,7 +329,7 @@ export namespace JSCAD {
          * File name
          * @default undefined
          */
-        fileName: string;
+        fileName!: string;
     }
     export class DownloadGeometryDto {
         constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: any) {
@@ -363,12 +363,12 @@ export namespace JSCAD {
          * Solids to be downloaded
          * @default undefined
          */
-        meshes: JSCADEntity[];
+        meshes!: JSCADEntity[];
         /**
          * File name
          * @default undefined
          */
-        fileName: string;
+        fileName!: string;
     }
     export class ColorizeDto {
         constructor(geometry?: JSCADEntity, color?: string) {
@@ -394,7 +394,7 @@ export namespace JSCAD {
          * Contains solid Jscad mesh objects that will be used to perform boolean operation
          * @default undefined
          */
-        meshes: JSCADEntity[];
+        meshes!: JSCADEntity[];
     }
     export class BooleanTwoObjectsDto {
         constructor(first?: JSCADEntity, second?: JSCADEntity) {
@@ -426,7 +426,7 @@ export namespace JSCAD {
          * Contains Jscad Solid
          * @default undefined
          */
-        meshes: JSCADEntity[];
+        meshes!: JSCADEntity[];
     }
     export class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
@@ -542,7 +542,7 @@ export namespace JSCAD {
          * Geometries to use in hull
          * @default undefined
          */
-        meshes: JSCADEntity[];
+        meshes!: JSCADEntity[];
     }
     export class ExtrudeRectangularDto {
         constructor(geometry?: JSCADEntity, height?: number, size?: number) {
@@ -582,7 +582,7 @@ export namespace JSCAD {
          * Points for a path
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Height of linear extrude
          * @default 1
@@ -644,7 +644,7 @@ export namespace JSCAD {
         /**
          * Polyline with points
          */
-        polyline: PolylinePropertiesDto;
+        polyline!: PolylinePropertiesDto;
     }
     export class CurveDto {
         constructor(curve?: any) {
@@ -662,7 +662,7 @@ export namespace JSCAD {
         /**
          * Points
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class PathDto {
         constructor(path?: JSCADEntity) {
@@ -683,7 +683,7 @@ export namespace JSCAD {
          * Points through which to create a path
          * @default undefined
          */
-        points: Base.Point2[];
+        points!: Base.Point2[];
         /**
          * Indicates wether we want to create a closed path
          * @default false
@@ -698,7 +698,7 @@ export namespace JSCAD {
          * Points
          * @default undefined
          */
-        pointsLists: Base.Point3[][] | Base.Point2[][];
+        pointsLists!: Base.Point3[][] | Base.Point2[][];
     }
     export class PathFromPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, closed?: boolean) {
@@ -709,7 +709,7 @@ export namespace JSCAD {
          * Polyline
          * @default undefined
          */
-        polyline: PolylinePropertiesDto;
+        polyline!: PolylinePropertiesDto;
         /**
          * Indicates wether we want to create a closed path
          * @default false
@@ -741,7 +741,7 @@ export namespace JSCAD {
          * Points to append
          * @default undefined
          */
-        points: Base.Point2[];
+        points!: Base.Point2[];
         /**
          * Path to append the points to
          * @default undefined
@@ -757,7 +757,7 @@ export namespace JSCAD {
          * Polyline to append
          * @default undefined
          */
-        polyline: PolylinePropertiesDto;
+        polyline!: PolylinePropertiesDto;
         /**
          * Path to append the polyline to
          * @default undefined
@@ -1058,7 +1058,7 @@ export namespace JSCAD {
          * Center coordinates of the cubes
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Size of the cube
          * @default 1
@@ -1116,7 +1116,7 @@ export namespace JSCAD {
          * Center coordinates of the cuboids
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Width of the cuboids
          * @default 1
@@ -1210,7 +1210,7 @@ export namespace JSCAD {
          * Center coordinates of the cuboids
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Radius for rounding edges
          * @default 0.1
@@ -1304,7 +1304,7 @@ export namespace JSCAD {
          * Centers of the cylinders
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Height of the cylinders
          * @default 1
@@ -1450,7 +1450,7 @@ export namespace JSCAD {
          * Center coordinates
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Radius of the ellipsoid in [x, y, z] form
          * @default [1, 2, 3]
@@ -1503,7 +1503,7 @@ export namespace JSCAD {
          * Center coordinates of the geodesic spheres
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Radius of the sphere
          * @default 1
@@ -1532,7 +1532,7 @@ export namespace JSCAD {
          * Centers of the cylinders
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Height of the cylinders
          * @default 1
@@ -1570,7 +1570,7 @@ export namespace JSCAD {
          * Centers of the cylinders
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Rounding radius
          * @default 0.1
@@ -1642,7 +1642,7 @@ export namespace JSCAD {
          * Center points of the spheres
          * @default undefined
          */
-        centers: Base.Point3[];
+        centers!: Base.Point3[];
         /**
          * Radius of the spheres
          * @default 1
@@ -2004,6 +2004,6 @@ export namespace JSCAD {
         /**
          * Points describing polygons
          */
-        polygonPoints?: Base.Point3[][];
+        polygonPoints!: Base.Point3[][];
     }
 }

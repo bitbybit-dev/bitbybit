@@ -28,7 +28,7 @@ export class JSCADPolygon {
 
     // TODO conversions between various CAD kernels should happen on higher levels of abstraction (this was meant to create jscad polygons from VERB-NURBS curves)
     createFromCurve(inputs: Inputs.JSCAD.CurveDto): Inputs.JSCAD.JSCADEntity {
-        const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
+        const twoDimensionalPoints = inputs.curve.tessellate().map((pt: Inputs.Base.Point3) => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
 

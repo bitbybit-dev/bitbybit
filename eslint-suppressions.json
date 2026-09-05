@@ -255,7 +255,7 @@
   },
   "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker-manager.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
+      "count": 4
     }
   },
   "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker-mock.ts": {

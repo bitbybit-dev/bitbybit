@@ -80,9 +80,9 @@ export class Jscad {
 
         // --- Triangle Reconstruction ---
         for (let i = 0; i < indices.length; i += 3) {
-            const index1 = indices[i];
-            const index2 = indices[i + 1];
-            const index3 = indices[i + 2];
+            const index1 = indices[i]!;
+            const index2 = indices[i + 1]!;
+            const index3 = indices[i + 2]!;
 
             if (index1 >= numVertices || index2 >= numVertices || index3 >= numVertices ||
                 index1 < 0 || index2 < 0 || index3 < 0) {
@@ -94,21 +94,21 @@ export class Jscad {
             const offset2 = index2 * 3;
             const offset3 = index3 * 3;
 
-            const point1: Base.Point3 = [positions[offset1], positions[offset1 + 1], positions[offset1 + 2]];
-            const point2: Base.Point3 = [positions[offset2], positions[offset2 + 1], positions[offset2 + 2]];
-            const point3: Base.Point3 = [positions[offset3], positions[offset3 + 1], positions[offset3 + 2]];
+            const point1: Base.Point3 = [positions[offset1]!, positions[offset1 + 1]!, positions[offset1 + 2]!];
+            const point2: Base.Point3 = [positions[offset2]!, positions[offset2 + 1]!, positions[offset2 + 2]!];
+            const point3: Base.Point3 = [positions[offset3]!, positions[offset3 + 1]!, positions[offset3 + 2]!];
 
             // We must bake the transformations as JSCAD uses those extensively
             const transformation = inputs.mesh.transforms;
             let transformedPoints = [point1, point2, point3];
             if (this.getArrayDepth(transformation) === 2) {
-                transformation.forEach(transform => {
+                transformation.forEach((transform: Base.TransformMatrix) => {
                     transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [transform] });
                 });
             }
             else if (this.getArrayDepth(transformation) === 3) {
-                transformation.forEach(transforms => {
-                    transforms.forEach(mat => {
+                transformation.forEach((transforms: Base.TransformMatrixes) => {
+                    transforms.forEach((mat: Base.TransformMatrix) => {
                         transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [mat] });
                     });
                 });
@@ -147,14 +147,14 @@ export class Jscad {
             }
         }
 
-        const positions = [];
-        const normals = [];
-        const indices = [];
+        const positions: number[] = [];
+        const normals: number[] = [];
+        const indices: number[] = [];
         let countIndices = 0;
 
         for (const polygon of polygons) {
             if (polygon.vertices.length === 3) {
-                polygon.vertices.forEach(vert => {
+                polygon.vertices.forEach((vert: Base.Point3) => {
                     positions.push(vert[0], vert[1], vert[2]);
                     indices.push(countIndices);
                     countIndices++;
@@ -197,13 +197,13 @@ export class Jscad {
         const transformation = inputs.transformation;
         let transformedMesh = this.jscad.geometries.geom3.clone(inputs.mesh);
         if (this.getArrayDepth(transformation) === 2) {
-            transformation.forEach(transform => {
+            transformation.forEach((transform: Base.TransformMatrix) => {
                 transformedMesh = this.jscad.transforms.transform(transform, transformedMesh);
             });
         }
         else if (this.getArrayDepth(transformation) === 3) {
-            transformation.forEach(transforms => {
-                transforms.forEach(mat => {
+            (transformation as unknown as Base.TransformMatrixes[]).forEach((transforms) => {
+                transforms.forEach((mat: Base.TransformMatrix) => {
                     transformedMesh = this.jscad.transforms.transform(mat as any, transformedMesh);
                 });
             });
@@ -247,7 +247,7 @@ export class Jscad {
         return { blob: madeBlob };
     }
 
-    private getArrayDepth = (value): number => {
+    private getArrayDepth = (value: unknown): number => {
         return Array.isArray(value) ?
             1 + Math.max(...value.map(this.getArrayDepth)) :
             0;

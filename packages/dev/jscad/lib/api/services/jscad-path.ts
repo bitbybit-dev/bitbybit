@@ -25,7 +25,7 @@ export class JSCADPath {
         return inputs.pointsLists.map(points => {
             const twoDimensionalPoints = points.map(pt => [pt[0], pt[1]]);
             if (twoDimensionalPoints.length > 1 &&
-                this.geometryHelper.vectorsTheSame(twoDimensionalPoints[0], twoDimensionalPoints[twoDimensionalPoints.length - 1], 0.00001)) {
+                this.geometryHelper.vectorsTheSame(twoDimensionalPoints[0]!, twoDimensionalPoints[twoDimensionalPoints.length - 1]!, 0.00001)) {
                 return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, true);
             }
             return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, false);

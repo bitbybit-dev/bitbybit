@@ -1,9 +1,10 @@
 
 export class CacheHelper {
 
-    hashesFromPreviousRun = {};
-    usedHashes = {};
-    argCache = {};
+    hashesFromPreviousRun: Record<string, string | number> = {};
+    usedHashes: Record<string, string | number> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    argCache: Record<string, any> = {};
     jscadObjectHashes = new Set<string | number>(); // Track which hashes contain JSCAD objects
 
     cleanAllCache(): void {

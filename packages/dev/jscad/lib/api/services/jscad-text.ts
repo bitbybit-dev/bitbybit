@@ -1,3 +1,4 @@
+import { Base } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
 
@@ -43,7 +44,7 @@ export class JSCADText {
     private adjustTextToBeOnCenter(text: any[]): void {
         let maxX = 0;
         text.forEach(txt => {
-            txt.forEach(center => {
+            txt.forEach((center: Base.Point3) => {
                 if (center[0] > maxX) {
                     maxX = center[0];
                 }
@@ -51,7 +52,7 @@ export class JSCADText {
         });
         const compensate = maxX / 2;
         text.forEach(txt => {
-            txt.forEach(center => {
+            txt.forEach((center: Base.Point3) => {
                 let z = center[0];
                 z = z - compensate;
                 center[0] = z;
