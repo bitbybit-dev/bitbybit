@@ -155,7 +155,7 @@ export class Lists {
         }
         const patternLength = pattern.length;
         const listLength = list.length;
-        const result = [];
+        const result: T[] = [];
         if (patternLength >= listLength) {
             list.forEach((item, index) => {
                 if (pattern[index] === true) {
@@ -164,7 +164,7 @@ export class Lists {
             });
         }
         else {
-            const repeatedPattern = [];
+            const repeatedPattern: boolean[] = [];
             const repeatPatternTimes = Math.ceil(listLength / patternLength);
             for (let i = 0; i < repeatPatternTimes; i++) {
                 repeatedPattern.push(...pattern);
@@ -191,8 +191,8 @@ export class Lists {
         const lists = inputs.lists;
         const level = inputs.level;
 
-        const elToMerge = [];
-        const result = [];
+        const elToMerge: unknown[][] = [];
+        const result: unknown[][] = [];
         lists.forEach(list => {
             // flatten to certain level;
             const elementsToMerge = list.flat(level);
@@ -201,7 +201,7 @@ export class Lists {
 
         const lengthMerge = this.getLongestListLength({ lists: elToMerge });
         for (let i = 0; i < lengthMerge; i++) {
-            const temp = [];
+            const temp: unknown[] = [];
             for (let j = 0; j < elToMerge.length; j++) {
                 const element = elToMerge[j][i];
                 if (element !== undefined) {
@@ -213,7 +213,7 @@ export class Lists {
             }
         }
 
-        let final = [];
+        let final: unknown[][] = [];
         if (level > 0) {
             for (let i = 0; i < level; i++) {
                 if (i === level - 1 && i !== 0) {
@@ -227,7 +227,7 @@ export class Lists {
         } else {
             final = result;
         }
-        return final;
+        return final as T[];
     }
 
     /**
@@ -311,9 +311,9 @@ export class Lists {
                 }
             });
             if (allListsSameLength) {
-                const result = [];
+                const result: T[][] = [];
                 for (let i = 0; i < lengthOfFirstList; i++) {
-                    const newList = [];
+                    const newList: T[] = [];
                     inputs.list.forEach(l => {
                         newList.push(l[i]);
                     });
@@ -793,7 +793,7 @@ export class Lists {
      * @drawable false
      */
     concatenate<T>(inputs: Inputs.Lists.ConcatenateDto<T>): T[] {
-        let result = [];
+        let result: T[] = [];
         if (inputs.clone) {
             inputs.lists.forEach(list => {
                 result = result.concat(structuredClone(list));

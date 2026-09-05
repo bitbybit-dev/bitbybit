@@ -60,14 +60,14 @@ export namespace Logic {
         boolean = false;
     }
     export class BooleanListDto {
-        constructor(booleans?: boolean) {
+        constructor(booleans?: boolean[]) {
             if (booleans !== undefined) { this.booleans = booleans; }
         }
         /**
          * Boolean value
          * @default undefined
          */
-        booleans;
+        booleans: boolean[];
     }
     export class ValueGateDto<T> {
         constructor(value?: T, boolean?: boolean) {

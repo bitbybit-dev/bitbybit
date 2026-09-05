@@ -363,7 +363,7 @@ namespace Dates_2 {
 export class GeometryHelper {
     approxEq(num1: number, num2: number, tolerance: number): boolean;
     arePointsTheSame(pointA: Inputs_2.Base.Point3 | Inputs_2.Base.Point2, pointB: Inputs_2.Base.Point3 | Inputs_2.Base.Point2, tolerance: number): boolean;
-    getArrayDepth: (value: any) => number;
+    getArrayDepth: (value: unknown) => number;
     getFlatTransformations(transformation: number[][] | number[][][]): number[][];
     removeAllDuplicateVectors(vectors: number[][], tolerance?: number): number[][];
     removeConsecutivePointDuplicates(points: Inputs_2.Base.Point3[], checkFirstAndLast?: boolean, tolerance?: number): Inputs_2.Base.Point3[];
@@ -835,8 +835,8 @@ namespace Logic_2 {
     }
     // (undocumented)
     class BooleanListDto {
-        constructor(booleans?: boolean);
-        booleans: any;
+        constructor(booleans?: boolean[]);
+        booleans: boolean[];
     }
     enum BooleanOperatorsEnum {
         // (undocumented)

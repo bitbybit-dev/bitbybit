@@ -23,14 +23,14 @@ export class GeometryHelper {
      * Example: [[[matrix1, matrix2]], [[matrix3]]] → [matrix1, matrix2, matrix3]
      */
     getFlatTransformations(transformation: number[][] | number[][][]): number[][] {
-        let transformationArrays = [];
+        let transformationArrays: number[][] = [];
 
         if (this.getArrayDepth(transformation) === 3) {
             transformation.forEach(transform => {
-                transformationArrays.push(...transform);
+                transformationArrays.push(...(transform as number[][]));
             });
         } else {
-            transformationArrays = transformation;
+            transformationArrays = transformation as number[][];
         }
         return transformationArrays;
 }
@@ -39,7 +39,7 @@ export class GeometryHelper {
      * Calculates the nesting depth of an array recursively.
      * Example: [1,2,3] → 1, [[1,2],[3,4]] → 2, [[[1]]] → 3
      */
-    getArrayDepth = (value): number => {
+    getArrayDepth = (value: unknown): number => {
         return Array.isArray(value) ?
             1 + Math.max(...value.map(this.getArrayDepth)) :
             0;

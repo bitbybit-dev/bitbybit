@@ -6,6 +6,7 @@ import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
 import { Lists } from "./lists";
+import { VectorFont } from "../models/simplex";
 
 
 describe("Text unit tests", () => {
@@ -14,7 +15,7 @@ describe("Text unit tests", () => {
     // Mock Font Data Structure (simplified)
     // Uses character code as key.
     // First element is width, then pairs of [x, y] relative coords. `undefined` signifies path break.
-    const mockFont = {
+    const mockFont: VectorFont = {
         // Height of the font design coordinate space
         height: 100, // Example height
         // Glyph for 'A' (char code 65) - simple triangle

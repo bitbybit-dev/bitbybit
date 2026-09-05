@@ -16,7 +16,8 @@
         "tsBuildInfoFile": "./dist/tsconfig.bitbybit.tsbuildinfo",
         "outDir": "./dist",
         "baseUrl": "./",
-        "paths": {}
+        "paths": {},
+        "noImplicitAny": true
     },
     "references": []
 }

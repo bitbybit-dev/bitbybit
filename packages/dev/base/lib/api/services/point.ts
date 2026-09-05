@@ -163,9 +163,9 @@ export class Point {
      * @drawable true
      */
     boundingBoxOfPoints(inputs: Inputs.Point.PointsDto): Inputs.Base.BoundingBox {
-        const xVals = [];
-        const yVals = [];
-        const zVals = [];
+        const xVals: number[] = [];
+        const yVals: number[] = [];
+        const zVals: number[] = [];
 
         inputs.points.forEach(pt => {
             xVals.push(pt[0]);
@@ -273,7 +273,7 @@ export class Point {
      * @drawable true
      */
     multiplyPoint(inputs: Inputs.Point.MultiplyPointDto): Inputs.Base.Point3[] {
-        const points = [];
+        const points: Inputs.Base.Point3[] = [];
         for (let i = 0; i < inputs.amountOfPoints; i++) {
             points.push([inputs.point[0], inputs.point[1], inputs.point[2]]);
         }
@@ -329,9 +329,9 @@ export class Point {
      * @drawable true
      */
     averagePoint(inputs: Inputs.Point.PointsDto): Inputs.Base.Point3 {
-        const xVals = [];
-        const yVals = [];
-        const zVals = [];
+        const xVals: number[] = [];
+        const yVals: number[] = [];
+        const zVals: number[] = [];
 
         inputs.points.forEach(pt => {
             xVals.push(pt[0]);
@@ -385,7 +385,7 @@ export class Point {
     spiral(inputs: Inputs.Point.SpiralDto): Inputs.Base.Point3[] {
         const phi = inputs.phi;
         const b = Math.log(phi) / (Math.PI / inputs.widening);
-        const spiral = [];
+        const spiral: Inputs.Base.Point3[] = [];
         const step = inputs.radius / inputs.numberPoints;
         for (let i = 0; i < inputs.radius; i += step) {
             const th = Math.log(i / inputs.factor) / b;
@@ -408,7 +408,7 @@ export class Point {
      */
     hexGrid(inputs: Inputs.Point.HexGridCentersDto): Inputs.Base.Point3[] {
         const xLength = Math.sqrt(Math.pow(inputs.radiusHexagon, 2) - Math.pow(inputs.radiusHexagon / 2, 2));
-        const points = [];
+        const points: Inputs.Base.Point3[] = [];
         for (let ix = 0; ix < inputs.nrHexagonsX; ix++) {
             const coordX = ix * xLength * 2;
             for (let iy = 0; iy < inputs.nrHexagonsY; iy++) {

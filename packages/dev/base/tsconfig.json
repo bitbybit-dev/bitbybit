@@ -1,10 +1,15 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
+// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces
+// noImplicitAny ahead of the shared loose base: base is the root of the package graph, so the types
+// it declares reach every other package, and it is being made strict first, one flag at a time. The
+// flag is repeated here so the editor and the tests hold the same line; the build config cannot carry
+// this note because the references generator rewrites it without comments.
 {
     "extends": "../../../tsconfig.base.cad-loose.json",
     "compileOnSave": false,
     "compilerOptions": {
         "outDir": "./dist/bitbybit-dev",
         "baseUrl": "./",
-        "paths": {}
+        "paths": {},
+        "noImplicitAny": true
     }
 }
