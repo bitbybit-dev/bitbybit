@@ -54,7 +54,7 @@
     "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
     "delete-coverage": "shx rm -rf ./dist/coverage || true",
     "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
-    "test-c": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false",
+    "test-c": "mkdir -p test-results && NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false --json --outputFile=test-results/jest.json",
     "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true",
     "api:check": "api-extractor run",
     "api:update": "api-extractor run --local"
@@ -97,6 +97,11 @@
     ],
     "collectCoverageFrom": [
       "lib/api/services/**/*"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "json-summary"
     ]
   }
 }

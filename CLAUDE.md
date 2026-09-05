@@ -86,11 +86,13 @@ initializers in the `*-inputs.ts` classes whose JSDoc `@default` already states 
 
 `.github/workflows/verify.yml` proves the repository builds and tests from a bare clone with nothing
 above it, on every push to `develop` and every pull request into `develop` or `master`: one frozen
-install, `lint`, `check:references`, `rebuild-all-packages`,
-`npm test`, `check:strict-baselines`, the SDK's typecheck, tests and build, the scaffolder's build,
-`api:check` and `check:tarballs`. It needs no secrets and must never gain any. A nightly job runs the build and
-tests on every Node line the packages should keep working on; Node comes from `.tool-versions` and
-pnpm from the `packageManager` field. Publishing is not here and will not be added to this file.
+install, `lint`, `check:references`, `rebuild-all-packages`, `npm test`, `check:strict-baselines`,
+the SDK's typecheck, tests with coverage and build, the scaffolder's build, `api:check`,
+`check:tarballs`, and last - on a red run too - `test:report`, which puts every suite's results on
+the run's summary page. It needs no secrets and must never gain any. `nightly.yml` runs the build
+and tests on every Node line the packages should keep working on, on a schedule and by hand; Node
+comes from `.tool-versions` and pnpm from the `packageManager` field. Publishing is in neither
+file and will not be added.
 
 Two of those checks carry committed state. `api:check` runs api-extractor in `base` and `core`
 against their built `dist/index.d.ts` and fails when the public surface differs from the report in
@@ -105,6 +107,15 @@ package mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails
 a path the kernel lacks, when a kernel method has no mirror outside the allow-list, when signatures
 disagree, or when the worker's path set differs from the committed snapshot (those paths are
 persisted in users' saved scripts). A deliberate surface change is accepted with `--update`.
+
+Every runner writes its results as JSON into a `test-results/` folder next to the code it tested
+(`test-c` in the jest packages, the SDK's vitest config), and coverage leaves
+`coverage/coverage-summary.json` beside it. `npm run test:report` (`scripts/test-report.mjs`)
+collects them into one markdown report - files, tests, failures with their messages, skipped tests,
+the slowest files, coverage - printed to the terminal and, on GitHub Actions, written to the job
+summary. Every package with a `test` or `test-c` script must have left results; one that did not
+is listed and fails the step, so a suite that silently stopped running is noticed. Locally the report
+shows whatever the last runs wrote.
 
 ## Docs
 

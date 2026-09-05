@@ -159,6 +159,7 @@ For first-time developers working on this project, follow these steps to set up 
 - `npm run setup` - Install dependencies and build all packages without running tests
 - `npm run setup-and-test` - Install dependencies, build packages, and run all unit tests
 - `npm run test` - Run all unit tests (requires packages to be built first)
+- `npm run test:report` - One report over every suite's last results (files, tests, failures, skipped, coverage); written to the job summary on GitHub Actions
 - `npm run ci-packages` - Install dependencies for all packages (one `pnpm install --frozen-lockfile` for the workspace)
 - `npm run refresh-lockfile` - Rewrite `pnpm-lock.yaml` after a dependency change, without touching node_modules
 - `npm run build-packages` - Build and stage all packages (`tsc -b` over generated project references, run by pnpm in dependency order)

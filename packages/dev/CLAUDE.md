@@ -18,7 +18,7 @@ npm run api:update  # base and core only: rewrite etc/<pkg>.api.md after a delib
 npm run typecheck:strict       # strict typecheck (tsconfig.strict.json); prints only errors not in .tsc-baseline.json
 npm run typecheck:strict:save  # after fixing strict errors: re-record the baseline (it may only shrink)
 npm test            # jest, watch mode
-npm run test-c      # jest with coverage, single run
+npm run test-c      # jest with coverage, single run; writes test-results/jest.json and coverage/coverage-summary.json for the root test:report
 npm run lint
 ```
 

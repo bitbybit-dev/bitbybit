@@ -51,7 +51,7 @@
     "delete-coverage": "shx rm -rf ./dist/coverage || true",
     "delete-mocks": "shx rm -rf ./dist/__mocks__ || true",
     "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
-    "test-c": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false",
+    "test-c": "mkdir -p test-results && NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false --json --outputFile=test-results/jest.json",
     "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true"
   },
   "author": "Bit by bit developers",
@@ -117,6 +117,11 @@
     },
     "collectCoverageFrom": [
       "lib/api/**/*"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "json-summary"
     ]
   }
 }

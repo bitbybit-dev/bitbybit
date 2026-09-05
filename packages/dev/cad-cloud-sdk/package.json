@@ -31,6 +31,7 @@
         "clean": "rm -rf dist",
         "typecheck": "tsc --noEmit",
         "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
         "test:watch": "vitest",
         "coverage": "vitest run --coverage",
         "prepublishOnly": "npm run clean && npm run build"

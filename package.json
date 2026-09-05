@@ -30,6 +30,7 @@
         "check:strict-baselines": "node scripts/check-strict-baselines.mjs",
         "check:worker-parity": "node scripts/worker-parity.mjs",
         "test": "npm run check:references && npm run check:worker-parity && npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs && npm run test-playcanvas && npm run test-babylonjs && npm run test-occt-worker && npm run test-jscad-worker && npm run test-manifold-worker",
+        "test:report": "node scripts/test-report.mjs --expect \"packages/dev/*\"",
         "refresh-lockfile": "pnpm install --lockfile-only",
         "setup": "npm run install-rebuild-all-packages",
         "setup-and-test": "npm run setup && npm run test",

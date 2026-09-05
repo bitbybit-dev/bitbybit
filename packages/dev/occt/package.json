@@ -50,7 +50,7 @@
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "delete-bak": "find ./dist -name '*.bak' -delete || true",
         "test": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --watchAll=true",
-        "test-c": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false",
+        "test-c": "mkdir -p test-results && NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false --json --outputFile=test-results/jest.json",
         "test-c-l": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=true"
     },
     "author": "Bit by bit developers",
@@ -98,6 +98,11 @@
             "lib/api/vector-helper.service.ts",
             "!**/index.ts",
             "!**/io-assembly.ts"
+        ],
+        "coverageReporters": [
+            "text",
+            "lcov",
+            "json-summary"
         ]
     }
 }
