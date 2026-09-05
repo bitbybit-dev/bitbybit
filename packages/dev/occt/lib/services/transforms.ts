@@ -149,10 +149,10 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.translations, inputs.rotationAxes, inputs.rotationAngles, inputs.scaleFactors]);
         return inputs.shapes.map((s, index) => this.transform({
             shape: s,
-            translation: inputs.translations[index],
-            rotationAxis: inputs.rotationAxes[index],
-            rotationAngle: inputs.rotationAngles[index],
-            scaleFactor: inputs.scaleFactors[index],
+            translation: inputs.translations[index]!,
+            rotationAxis: inputs.rotationAxes[index]!,
+            rotationAngle: inputs.rotationAngles[index]!,
+            scaleFactor: inputs.scaleFactors[index]!,
         }));
     }
 
@@ -160,8 +160,8 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.axes, inputs.angles]);
         return inputs.shapes.map((s, index) => this.rotate({
             shape: s,
-            axis: inputs.axes[index],
-            angle: inputs.angles[index],
+            axis: inputs.axes[index]!,
+            angle: inputs.angles[index]!,
         }));
     }
 
@@ -169,9 +169,9 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.axes, inputs.angles]);
         return inputs.shapes.map((s, index) => this.rotateAroundCenter({
             shape: s,
-            axis: inputs.axes[index],
-            angle: inputs.angles[index],
-            center: inputs.centers[index],
+            axis: inputs.axes[index]!,
+            angle: inputs.angles[index]!,
+            center: inputs.centers[index]!,
         }));
     }
 
@@ -179,10 +179,10 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Point3 | Base.Vector3>([inputs.shapes, inputs.fromOrigins, inputs.fromDirections, inputs.toOrigins, inputs.toDirections]);
         return inputs.shapes.map((s, index) => this.align({
             shape: s,
-            fromOrigin: inputs.fromOrigins[index],
-            fromDirection: inputs.fromDirections[index],
-            toOrigin: inputs.toOrigins[index],
-            toDirection: inputs.toDirections[index]
+            fromOrigin: inputs.fromOrigins[index]!,
+            fromDirection: inputs.fromDirections[index]!,
+            toOrigin: inputs.toOrigins[index]!,
+            toDirection: inputs.toDirections[index]!
         }));
     }
 
@@ -190,8 +190,8 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([inputs.shapes, inputs.centers, inputs.directions]);
         return inputs.shapes.map((s, index) => this.alignAndTranslate({
             shape: s,
-            center: inputs.centers[index],
-            direction: inputs.directions[index],
+            center: inputs.centers[index]!,
+            direction: inputs.directions[index]!,
         }));
     }
 
@@ -199,7 +199,7 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([inputs.shapes, inputs.translations]);
         return inputs.shapes.map((s, index) => this.translate({
             shape: s,
-            translation: inputs.translations[index],
+            translation: inputs.translations[index]!,
         }));
     }
 
@@ -207,7 +207,7 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | number>([inputs.shapes, inputs.factors]);
         return inputs.shapes.map((s, index) => this.scale({
             shape: s,
-            factor: inputs.factors[index],
+            factor: inputs.factors[index]!,
         }));
     }
 
@@ -215,8 +215,8 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.scales, inputs.centers]);
         return inputs.shapes.map((s, index) => this.scale3d({
             shape: s,
-            scale: inputs.scales[index],
-            center: inputs.centers[index],
+            scale: inputs.scales[index]!,
+            center: inputs.centers[index]!,
         }));
     }
 
@@ -225,8 +225,8 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.directions, inputs.origins]);
         return inputs.shapes.map((s, index) => this.mirror({
             shape: s,
-            origin: inputs.origins[index],
-            direction: inputs.directions[index],
+            origin: inputs.origins[index]!,
+            direction: inputs.directions[index]!,
         }));
     }
 
@@ -234,13 +234,13 @@ export class OCCTTransforms {
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.normals, inputs.origins]);
         return inputs.shapes.map((s, index) => this.mirrorAlongNormal({
             shape: s,
-            normal: inputs.normals[index],
-            origin: inputs.origins[index],
+            normal: inputs.normals[index]!,
+            origin: inputs.origins[index]!,
         }));
     }
 
     private checkIfListsEqualLength<T>(lists: T[][]) {
-        const firstLength = lists[0].length;
+        const firstLength = lists[0]!.length;
         const notSameLength = lists.some(s => s.length !== firstLength);
         if (notSameLength) {
             throw new Error("Some of the list lengths are not the same. For this operation to work all lists need to be of equal length");

@@ -10,7 +10,7 @@ import { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
 type Attrs = { [k: string]: string };
 
 const num = (attrs: Attrs, name: string, def = 0): number => {
-    const v = parseFloat(attrs[name]);
+    const v = parseFloat(attrs[name]!);
     return Number.isNaN(v) ? def : v;
 };
 
@@ -34,15 +34,15 @@ function parsePoints(value: string | undefined): Base.Point2[] {
     if (!value) { return []; }
     const nums = value.split(/[\s,]+/).map(parseFloat).filter((x) => !Number.isNaN(x));
     const pts: Base.Point2[] = [];
-    for (let i = 0; i + 1 < nums.length; i += 2) { pts.push([nums[i], nums[i + 1]]); }
+    for (let i = 0; i + 1 < nums.length; i += 2) { pts.push([nums[i]!, nums[i + 1]!]); }
     return pts;
 }
 
 function polySubpath(pts: Base.Point2[], closed: boolean): SvgSubpath[] {
     if (pts.length < 2) { return []; }
     const segments: SvgSegment[] = [];
-    for (let i = 1; i < pts.length; i++) { segments.push({ type: "line", to: pts[i] }); }
-    return [{ start: pts[0], segments, closed }];
+    for (let i = 1; i < pts.length; i++) { segments.push({ type: "line", to: pts[i]! }); }
+    return [{ start: pts[0]!, segments, closed }];
 }
 
 /** Rounded-rectangle subpath honoring SVG rx/ry corner rules. */

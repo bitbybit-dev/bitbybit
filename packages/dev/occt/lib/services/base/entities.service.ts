@@ -108,7 +108,7 @@ export class EntitiesService {
         const faces: TopoDS_Face[] = [];
         wires.forEach(currentWire => {
             if (faces.length > 0) {
-                const faceBuilder = new this.occ.BRepBuilderAPI_MakeFace(faces[faces.length - 1], currentWire);
+                const faceBuilder = new this.occ.BRepBuilderAPI_MakeFace(faces[faces.length - 1]!, currentWire);
                 faces.push(faceBuilder.Face());
                 faceBuilder.delete();
             } else {
@@ -246,9 +246,9 @@ export class EntitiesService {
 
     bRepPrimAPIMakeBox(width: number, length: number, height: number, center: number[]): TopoDS_Shape {
         const pt = this.gpPnt([
-            -width / 2 + center[0],
-            -height / 2 + center[1],
-            -length / 2 + center[2]
+            -width / 2 + center[0]!,
+            -height / 2 + center[1]!,
+            -length / 2 + center[2]!
         ]);
         const box = this.occ.MakeBoxFromPntAndDims(pt, width, height, length);
         pt.delete();

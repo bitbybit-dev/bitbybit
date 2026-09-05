@@ -38,7 +38,7 @@ function parseAttrs(raw: string): { [k: string]: string } {
     let m: RegExpExecArray | null;
     while ((m = re.exec(raw)) !== null) {
         const value = m[3] !== undefined ? m[3] : (m[4] !== undefined ? m[4] : "");
-        attrs[m[1]] = decodeEntities(value);
+        attrs[m[1]!] = decodeEntities(value);
     }
     return attrs;
 }
@@ -99,7 +99,7 @@ export function parseXml(input: string): XmlNode | undefined {
             attrs: parseAttrs(attrStr),
             children: [],
         };
-        stack[stack.length - 1].children.push(node);
+        stack[stack.length - 1]!.children.push(node);
         if (!selfClosing) { stack.push(node); }
     }
 

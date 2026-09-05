@@ -64,14 +64,14 @@ describe("OCCT dimensions unit tests", () => {
             const originalEnd = [10, 0, 0];
 
             const hasOriginalStart = vertexPoints.some(p =>
-                Math.abs(p[0] - originalStart[0]) < 0.01 &&
-                Math.abs(p[1] - originalStart[1]) < 0.01 &&
-                Math.abs(p[2] - originalStart[2]) < 0.01
+                Math.abs(p[0] - originalStart[0]!) < 0.01 &&
+                Math.abs(p[1] - originalStart[1]!) < 0.01 &&
+                Math.abs(p[2] - originalStart[2]!) < 0.01
             );
             const hasOriginalEnd = vertexPoints.some(p =>
-                Math.abs(p[0] - originalEnd[0]) < 0.01 &&
-                Math.abs(p[1] - originalEnd[1]) < 0.01 &&
-                Math.abs(p[2] - originalEnd[2]) < 0.01
+                Math.abs(p[0] - originalEnd[0]!) < 0.01 &&
+                Math.abs(p[1] - originalEnd[1]!) < 0.01 &&
+                Math.abs(p[2] - originalEnd[2]!) < 0.01
             );
 
             expect(hasOriginalStart).toBe(true);
@@ -142,14 +142,14 @@ describe("OCCT dimensions unit tests", () => {
             const arrowTipEnd = [10, 2, 0];
 
             const hasArrowStart = vertexPoints.some(p =>
-                Math.abs(p[0] - arrowTipStart[0]) < 0.01 &&
-                Math.abs(p[1] - arrowTipStart[1]) < 0.01 &&
-                Math.abs(p[2] - arrowTipStart[2]) < 0.01
+                Math.abs(p[0] - arrowTipStart[0]!) < 0.01 &&
+                Math.abs(p[1] - arrowTipStart[1]!) < 0.01 &&
+                Math.abs(p[2] - arrowTipStart[2]!) < 0.01
             );
             const hasArrowEnd = vertexPoints.some(p =>
-                Math.abs(p[0] - arrowTipEnd[0]) < 0.01 &&
-                Math.abs(p[1] - arrowTipEnd[1]) < 0.01 &&
-                Math.abs(p[2] - arrowTipEnd[2]) < 0.01
+                Math.abs(p[0] - arrowTipEnd[0]!) < 0.01 &&
+                Math.abs(p[1] - arrowTipEnd[1]!) < 0.01 &&
+                Math.abs(p[2] - arrowTipEnd[2]!) < 0.01
             );
 
             expect(hasArrowStart).toBe(true);
@@ -294,14 +294,14 @@ describe("OCCT dimensions unit tests", () => {
             const originalEnd = [4, 5, 6];
 
             const hasStart = vertexPoints.some(p =>
-                Math.abs(p[0] - originalStart[0]) < 0.01 &&
-                Math.abs(p[1] - originalStart[1]) < 0.01 &&
-                Math.abs(p[2] - originalStart[2]) < 0.01
+                Math.abs(p[0] - originalStart[0]!) < 0.01 &&
+                Math.abs(p[1] - originalStart[1]!) < 0.01 &&
+                Math.abs(p[2] - originalStart[2]!) < 0.01
             );
             const hasEnd = vertexPoints.some(p =>
-                Math.abs(p[0] - originalEnd[0]) < 0.01 &&
-                Math.abs(p[1] - originalEnd[1]) < 0.01 &&
-                Math.abs(p[2] - originalEnd[2]) < 0.01
+                Math.abs(p[0] - originalEnd[0]!) < 0.01 &&
+                Math.abs(p[1] - originalEnd[1]!) < 0.01 &&
+                Math.abs(p[2] - originalEnd[2]!) < 0.01
             );
             expect(vertexPoints.length).toBe(184);
             expect(hasStart).toBe(true);
@@ -390,9 +390,9 @@ describe("OCCT dimensions unit tests", () => {
             // Normalized direction1 * radius = [1, 0, 0] * 5 = [5, 0, 0]
             const dir1End = [5, 0, 0];
             const hasDir1End = vertexPoints.some(p =>
-                Math.abs(p[0] - dir1End[0]) < 0.01 &&
-                Math.abs(p[1] - dir1End[1]) < 0.01 &&
-                Math.abs(p[2] - dir1End[2]) < 0.01
+                Math.abs(p[0] - dir1End[0]!) < 0.01 &&
+                Math.abs(p[1] - dir1End[1]!) < 0.01 &&
+                Math.abs(p[2] - dir1End[2]!) < 0.01
             );
 
             expect(hasDir1End).toBe(true);
@@ -532,9 +532,9 @@ describe("OCCT dimensions unit tests", () => {
             // Check that vertices are at approximately radius 3 from center [5, 5, 5]
             const center = [5, 5, 5];
             const verticesAtRadius = vertexPoints.filter(p => {
-                const dx = p[0] - center[0];
-                const dy = p[1] - center[1];
-                const dz = p[2] - center[2];
+                const dx = p[0] - center[0]!;
+                const dy = p[1] - center[1]!;
+                const dz = p[2] - center[2]!;
                 const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
                 return Math.abs(dist - 3) < 0.1;
             });
@@ -544,7 +544,7 @@ describe("OCCT dimensions unit tests", () => {
             // Verify the dimension is in the correct plane (Y-Z plane around center)
             // At least some vertices should have X coordinate close to center's X
             const verticesNearCenterX = vertexPoints.filter(p =>
-                Math.abs(p[0] - center[0]) < 0.1
+                Math.abs(p[0] - center[0]!) < 0.1
             );
 
             expect(verticesNearCenterX.length).toBeGreaterThan(0);
@@ -602,9 +602,9 @@ describe("OCCT dimensions unit tests", () => {
             // Label line end at endPoint + direction = [0, 5, 0] + [2, 0, 0] = [2, 5, 0]
             const labelLineEnd = [2, 5, 0];
             const hasLabelLineEnd = vertexPoints.some(p =>
-                Math.abs(p[0] - labelLineEnd[0]) < 0.01 &&
-                Math.abs(p[1] - labelLineEnd[1]) < 0.01 &&
-                Math.abs(p[2] - labelLineEnd[2]) < 0.01
+                Math.abs(p[0] - labelLineEnd[0]!) < 0.01 &&
+                Math.abs(p[1] - labelLineEnd[1]!) < 0.01 &&
+                Math.abs(p[2] - labelLineEnd[2]!) < 0.01
             );
 
             expect(hasStart).toBe(true);
@@ -808,9 +808,9 @@ describe("OCCT dimensions unit tests", () => {
             // Label line end: [2, 8, 4] + [0, 0, 2] = [2, 8, 6]
             const labelEnd = [2, 8, 6];
             const hasLabelEnd = vertexPoints.some(p =>
-                Math.abs(p[0] - labelEnd[0]) < 0.01 &&
-                Math.abs(p[1] - labelEnd[1]) < 0.01 &&
-                Math.abs(p[2] - labelEnd[2]) < 0.01
+                Math.abs(p[0] - labelEnd[0]!) < 0.01 &&
+                Math.abs(p[1] - labelEnd[1]!) < 0.01 &&
+                Math.abs(p[2] - labelEnd[2]!) < 0.01
             );
 
             expect(hasStart).toBe(true);

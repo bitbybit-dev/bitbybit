@@ -120,7 +120,7 @@ describe("OCCTSVG + OCCTPath integration", () => {
             const res = svg.loadSVGStructured(dto);
             expect(res.viewBox).toEqual([0, 0, 100, 100]);
             expect(res.shapes).toHaveLength(2);
-            const rect = res.shapes[0];
+            const rect = res.shapes[0]!;
             expect(rect.elementType).toBe("rect");
             expect(rect.fill).toBe("red");
             expect(rect.stroke).toBe("#111");
@@ -140,8 +140,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><rect x="0" y="0" width="20" height="10" fill="blue"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.nonzero;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(200, 3);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(200, 3);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -150,8 +150,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><circle cx="0" cy="0" r="10" fill="black"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.nonzero;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(Math.PI * 100, 0);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(Math.PI * 100, 0);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -160,7 +160,7 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><rect x="0" y="0" width="10" height="10" fill="none" stroke="black"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.nonzero;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(false);
+            expect(res.shapes[0]!.isFace).toBe(false);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -169,8 +169,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><polyline points="0,0 10,0 10,10" fill="red"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.nonzero;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(false);
-            expect(res.shapes[0].closed).toBe(false);
+            expect(res.shapes[0]!.isFace).toBe(false);
+            expect(res.shapes[0]!.closed).toBe(false);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -179,8 +179,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><polygon points="0,0 10,0 10,10 0,10" fill="red"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.nonzero;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(100, 3);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(100, 3);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -190,8 +190,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.evenOdd;
             const res = svg.loadSVGStructured(dto);
             expect(res.shapes).toHaveLength(1);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(300, 0);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(300, 0);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -200,8 +200,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><path fill-rule="evenodd" fill="black" d="M0 0 H20 V20 H0 Z M5 5 H15 V15 H5 Z"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.auto;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(300, 0);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(300, 0);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -210,8 +210,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><path fill="black" d="M0 0 H20 V20 H0 Z M5 5 H15 V15 H5 Z"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.nonzero;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(400, 0);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(400, 0);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -220,8 +220,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><path fill="black" d="M0 0 H10 V10 H0 Z M20 0 H30 V10 H20 Z"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.nonzero;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(200, 0);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(200, 0);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -230,8 +230,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><path fill-rule="evenodd" fill="black" d="M0 0 H20 V20 H0 Z M5 5 H15 V15 H5 Z M8 8 H12 V12 H8 Z"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.evenOdd;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(316, 0);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(316, 0);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -240,8 +240,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><path fill="black" d="M0 0 H20 V20 H0 Z M5 5 H15 V15 H5 Z"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.perSubpath;
             const res = svg.loadSVGStructured(dto);
-            expect(res.shapes[0].isFace).toBe(true);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(500, 0);
+            expect(res.shapes[0]!.isFace).toBe(true);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(500, 0);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -250,7 +250,7 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><path fill-rule="evenodd" fill="black" d="M0 0 H20 V20 H0 Z M5 5 H15 V15 H5 Z"/></svg>`;
             dto.faceStrategy = Inputs.OCCT.svgFaceStrategyEnum.evenOdd;
             const res = svg.loadSVGStructured(dto);
-            expect(faceArea(res.shapes[0].shape)).toBeCloseTo(300, 0);
+            expect(faceArea(res.shapes[0]!.shape)).toBeCloseTo(300, 0);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -259,8 +259,8 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.svg = `<svg><path d="M0 0 C10 0 10 10 20 10 A5 5 0 0 1 30 10 L40 0"/></svg>`;
             const res = svg.loadSVGStructured(dto);
             expect(res.shapes).toHaveLength(1);
-            expect(res.shapes[0].shape.IsNull()).toBe(false);
-            expect(res.shapes[0].isFace).toBe(false);
+            expect(res.shapes[0]!.shape.IsNull()).toBe(false);
+            expect(res.shapes[0]!.isFace).toBe(false);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 
@@ -269,7 +269,7 @@ describe("OCCTSVG + OCCTPath integration", () => {
             dto.flipY = false;
             dto.svg = `<svg><g transform="translate(100 0)"><rect x="0" y="0" width="10" height="10"/></g></svg>`;
             const res = svg.loadSVGStructured(dto);
-            expect(wireLength(res.shapes[0].shape)).toBeCloseTo(40, 3);
+            expect(wireLength(res.shapes[0]!.shape)).toBeCloseTo(40, 3);
             res.shapes.forEach((sh) => sh.shape.delete());
         });
 

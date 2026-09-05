@@ -28,8 +28,8 @@ export class VectorHelperService {
         const vectorsRemaining: T[] = [];
         if (vectors.length > 1) {
             for (let i = 1; i < vectors.length; i++) {
-                const currentVector = vectors[i];
-                const previousVector = vectors[i - 1];
+                const currentVector = vectors[i]!;
+                const previousVector = vectors[i - 1]!;
                 if (!this.vectorsTheSame(currentVector, previousVector, this.tolerance)) {
                     vectorsRemaining.push(previousVector);
                 }
@@ -38,8 +38,8 @@ export class VectorHelperService {
                 }
             }
             if (checkFirstAndLast) {
-                const firstVector = vectorsRemaining[0];
-                const lastVector = vectorsRemaining[vectorsRemaining.length - 1];
+                const firstVector = vectorsRemaining[0]!;
+                const lastVector = vectorsRemaining[vectorsRemaining.length - 1]!;
                 if (this.vectorsTheSame(firstVector, lastVector, this.tolerance)) {
                     vectorsRemaining.pop();
                 }
@@ -57,7 +57,7 @@ export class VectorHelperService {
         } else {
             result = true;
             for (let i = 0; i < vec1.length; i++) {
-                if (!this.approxEq(vec1[i], vec2[i], tolerance)) {
+                if (!this.approxEq(vec1[i]!, vec2[i]!, tolerance)) {
                     result = false;
                     break;
                 }
@@ -73,7 +73,7 @@ export class VectorHelperService {
 
     averageVector(vectors: number[][]): number[] {
         const average = vectors.reduce((acc, val) => {
-            return acc.map((a, i) => a + val[i]);
+            return acc.map((a, i) => a + val[i]!);
         }, [0, 0, 0]);
         return average.map(a => a / vectors.length);
     }

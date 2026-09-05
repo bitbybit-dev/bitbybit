@@ -36,7 +36,7 @@ export class SolidsService {
             inputs.originOnCenter = true;
         }
         if (!inputs.originOnCenter) {
-            center = [center[0], center[1] + inputs.height / 2, center[2]];
+            center = [center[0]!, center[1]! + inputs.height / 2, center[2]!];
         }
         return this.entitiesService.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, center);
     }
@@ -47,7 +47,7 @@ export class SolidsService {
             inputs.originOnCenter = true;
         }
         if (!inputs.originOnCenter) {
-            center = [center[0], center[1] + inputs.size / 2, center[2]];
+            center = [center[0]!, center[1]! + inputs.size / 2, center[2]!];
         }
         return this.entitiesService.bRepPrimAPIMakeBox(inputs.size, inputs.size, inputs.size, center);
     }
@@ -78,7 +78,7 @@ export class SolidsService {
         if (inputs.originOnCenter) {
             const halfHeight = -(inputs.height / 2);
             const normDir = this.vectorHelperService.normalize(dir);
-            result = this.transformsService.translate({ shape: cyl, translation: [normDir[0] * halfHeight, normDir[1] * halfHeight, normDir[2] * halfHeight] });
+            result = this.transformsService.translate({ shape: cyl, translation: [normDir[0]! * halfHeight, normDir[1]! * halfHeight, normDir[2]! * halfHeight] });
             cyl.delete();
         }
         else {

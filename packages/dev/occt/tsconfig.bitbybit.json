@@ -26,7 +26,8 @@
             ]
         },
         "noImplicitAny": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "noUncheckedIndexedAccess": true
     },
     "references": [
         {

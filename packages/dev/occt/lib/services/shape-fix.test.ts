@@ -137,18 +137,18 @@ describe("OCCT shape fix unit tests", () => {
         expect(fixedEdges.length).toBe(3);
 
         // Check that edges are now properly oriented along the wire
-        const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]);
-        const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]);
-        const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]);
+        const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]!);
+        const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]!);
+        const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]!);
 
         // Each edge's end should connect to the next edge's start
-        expect(edge1Points.end[0]).toBeCloseTo(edge2Points.start[0], 5);
-        expect(edge1Points.end[1]).toBeCloseTo(edge2Points.start[1], 5);
-        expect(edge1Points.end[2]).toBeCloseTo(edge2Points.start[2], 5);
+        expect(edge1Points.end[0]).toBeCloseTo(edge2Points.start[0]!, 5);
+        expect(edge1Points.end[1]).toBeCloseTo(edge2Points.start[1]!, 5);
+        expect(edge1Points.end[2]).toBeCloseTo(edge2Points.start[2]!, 5);
 
-        expect(edge2Points.end[0]).toBeCloseTo(edge3Points.start[0], 5);
-        expect(edge2Points.end[1]).toBeCloseTo(edge3Points.start[1], 5);
-        expect(edge2Points.end[2]).toBeCloseTo(edge3Points.start[2], 5);
+        expect(edge2Points.end[0]).toBeCloseTo(edge3Points.start[0]!, 5);
+        expect(edge2Points.end[1]).toBeCloseTo(edge3Points.start[1]!, 5);
+        expect(edge2Points.end[2]).toBeCloseTo(edge3Points.start[2]!, 5);
 
         edge1.delete();
         edge2.delete();
@@ -174,9 +174,9 @@ describe("OCCT shape fix unit tests", () => {
         expect(fixedEdges.length).toBe(3);
 
         // Verify edges maintain correct orientation
-        const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]);
-        const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]);
-        const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]);
+        const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]!);
+        const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]!);
+        const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]!);
 
         expect(edge1Points.start).toEqual([0, 0, 0]);
         expect(edge1Points.end).toEqual([1, 0, 0]);
@@ -214,16 +214,16 @@ describe("OCCT shape fix unit tests", () => {
         expect(fixedEdges.length).toBe(3);
 
         // Check connectivity of fixed edges
-        const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]);
-        const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]);
-        const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]);
+        const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]!);
+        const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]!);
+        const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]!);
 
-        expect(edge1Points.end[0]).toBeCloseTo(edge2Points.start[0], 5);
-        expect(edge1Points.end[1]).toBeCloseTo(edge2Points.start[1], 5);
-        expect(edge2Points.end[0]).toBeCloseTo(edge3Points.start[0], 5);
-        expect(edge2Points.end[1]).toBeCloseTo(edge3Points.start[1], 5);
-        expect(edge3Points.end[0]).toBeCloseTo(edge1Points.start[0], 5);
-        expect(edge3Points.end[1]).toBeCloseTo(edge1Points.start[1], 5);
+        expect(edge1Points.end[0]).toBeCloseTo(edge2Points.start[0]!, 5);
+        expect(edge1Points.end[1]).toBeCloseTo(edge2Points.start[1]!, 5);
+        expect(edge2Points.end[0]).toBeCloseTo(edge3Points.start[0]!, 5);
+        expect(edge2Points.end[1]).toBeCloseTo(edge3Points.start[1]!, 5);
+        expect(edge3Points.end[0]).toBeCloseTo(edge1Points.start[0]!, 5);
+        expect(edge3Points.end[1]).toBeCloseTo(edge1Points.start[1]!, 5);
 
         edge1.delete();
         edge2.delete();
@@ -249,12 +249,12 @@ describe("OCCT shape fix unit tests", () => {
         expect(fixedEdges.length).toBe(3);
 
         // Check that edges are connected properly
-        const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]);
-        const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]);
-        const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]);
+        const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]!);
+        const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]!);
+        const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]!);
 
-        expect(edge1Points.end[0]).toBeCloseTo(edge2Points.start[0], 5);
-        expect(edge2Points.end[0]).toBeCloseTo(edge3Points.start[0], 5);
+        expect(edge1Points.end[0]).toBeCloseTo(edge2Points.start[0]!, 5);
+        expect(edge2Points.end[0]).toBeCloseTo(edge3Points.start[0]!, 5);
 
         edge1.delete();
         arcEdge.delete();
@@ -276,7 +276,7 @@ describe("OCCT shape fix unit tests", () => {
         const fixedEdges = edge.getEdges({ shape: result });
         expect(fixedEdges.length).toBe(1);
 
-        const edgePoints = getEdgeStartAndEndPoints(fixedEdges[0]);
+        const edgePoints = getEdgeStartAndEndPoints(fixedEdges[0]!);
         expect(edgePoints.start).toEqual([0, 0, 0]);
         expect(edgePoints.end).toEqual([1, 0, 0]);
 

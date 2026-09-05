@@ -37,9 +37,9 @@ describe("OCCT corners unit tests", () => {
         const report = corners.classifyCornerByPoint({ shape: b, points: [[5, 5, 5]], snapTolerance: 0 });
         expect(report.ok).toBe(true);
         expect(report.results.length).toBe(1);
-        expect(report.results[0].classification).toBe("solid3d");
-        expect(report.results[0].valence).toBe(3);
-        expect(report.results[0].incidentFaces).toBe(3);
+        expect(report.results[0]!.classification).toBe("solid3d");
+        expect(report.results[0]!.valence).toBe(3);
+        expect(report.results[0]!.incidentFaces).toBe(3);
         b.delete();
     });
 
@@ -79,7 +79,7 @@ describe("OCCT corners unit tests", () => {
         const b = box();
         const report = corners.cornerByPointReport({ shape: b, points: [[5, 5, 5]], radius: 1, taperFactor: 1, snapTolerance: 0, mode: Inputs.OCCT.cornerModeEnum.auto });
         expect(report.ok).toBe(true);
-        expect(report.results[0].applied).toBe(true);
+        expect(report.results[0]!.applied).toBe(true);
         b.delete();
     });
 
@@ -140,7 +140,7 @@ describe("OCCT corners unit tests", () => {
                 const b = box();
                 const report = corners.cornerByPointReport({ shape: b, points: [[5, 5, 5]], radius: 2, taperFactor, snapTolerance: 0, mode: Inputs.OCCT.cornerModeEnum.auto });
                 expect(report.ok).toBe(true);
-                expect(report.results[0].applied).toBe(true);
+                expect(report.results[0]!.applied).toBe(true);
                 b.delete();
             });
         });
@@ -177,7 +177,7 @@ describe("OCCT corners unit tests", () => {
             if (!has("ClassifyCornerByPoint")) { return; }
             const b = box();
             const report = corners.classifyCornerByPoint({ shape: b, points: [[5, 5, 5]], snapTolerance: 0 });
-            expect(report.results[0].classification).toBe("solid3d");
+            expect(report.results[0]!.classification).toBe("solid3d");
             b.delete();
         });
 
@@ -197,7 +197,7 @@ describe("OCCT corners unit tests", () => {
             if (!has("CornerByPointReport")) { return; }
             const b = box();
             const report = corners.cornerByPointReport({ shape: b, points: [[5, 5, 5]], radius: 2, taperFactor: 1, snapTolerance: 0, mode: Inputs.OCCT.cornerModeEnum.planarOnly });
-            expect(report.results[0].applied).toBe(false);
+            expect(report.results[0]!.applied).toBe(false);
             b.delete();
         });
     });

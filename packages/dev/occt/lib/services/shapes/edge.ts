@@ -46,8 +46,8 @@ export class OCCTEdge {
     fromPoints(inputs: Inputs.OCCT.PointsDto) {
         const edges = [];
         for (let i = 0; i < inputs.points.length - 1; i++) {
-            const start = inputs.points[i];
-            const end = inputs.points[i + 1];
+            const start = inputs.points[i]!;
+            const end = inputs.points[i + 1]!;
             edges.push(this.line({ start, end }));
         }
         return edges;
@@ -56,7 +56,7 @@ export class OCCTEdge {
     fromBasePolyline(inputs: Inputs.OCCT.PolylineBaseDto) {
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
-            points.push(points[0]);
+            points.push(points[0]!);
         }
         return this.fromPoints({ points });
     }

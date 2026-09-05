@@ -50,7 +50,7 @@ export class OperationsService {
             vertices.push(v);
         }
         if (inputs.closed && !inputs.periodic) {
-            inputs.shapes.push(inputs.shapes[0]);
+            inputs.shapes.push(inputs.shapes[0]!);
         } else if (inputs.closed && inputs.periodic) {
             const pointsOnCrvs: Inputs.Base.Point3[][] = [];
             inputs.shapes.forEach((s: TopoDS_Wire | TopoDS_Edge) => {
@@ -63,7 +63,7 @@ export class OperationsService {
 
             // <= needed due to start and end points that are added
             for (let i = 0; i <= inputs.nrPeriodicSections; i++) {
-                const ptsForPerpWire = pointsOnCrvs.map(p => p[i]);
+                const ptsForPerpWire = pointsOnCrvs.map(p => p[i]!);
                 const periodicWire = this.wiresService.interpolatePoints({ points: ptsForPerpWire, tolerance: inputs.tolerance, periodic: true });
                 pipe.AddWire(periodicWire);
                 wires.push(periodicWire);
@@ -305,7 +305,7 @@ export class OperationsService {
         const faceEdges: TopoDS_Edge[] = [];
         this.shapeGettersService.getFaces({ shape: thickSolid }).forEach((f, index) => {
             if (index >= firstFaceIndex && index <= lastFaceIndex) {
-                const firstEdge = this.shapeGettersService.getEdges({ shape: f })[2];
+                const firstEdge = this.shapeGettersService.getEdges({ shape: f })[2]!;
                 faceEdges.push(firstEdge);
             }
         });
@@ -522,7 +522,7 @@ export class OperationsService {
         const edges = this.shapeGettersService.getEdges({ shape: wire });
 
         // Get the start point and tangent of the first edge
-        const firstEdge = edges[0];
+        const firstEdge = edges[0]!;
         const startPoint = this.edgesService.startPointOnEdge({ shape: firstEdge });
         const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: firstEdge, param: 0 });
 
@@ -652,7 +652,7 @@ export class OperationsService {
             const planes: TopoDS_Face[] = [];
 
             let index = 0;
-            for (let i = minY; i < maxY; i += inputs.steps[index]) {
+            for (let i = minY; i < maxY; i += inputs.steps[index]!) {
                 const pq = this.facesService.createSquareFace({ size: maxDist, center: [0, i, 0], direction: [0, 1, 0] });
                 planes.push(pq);
                 if (inputs.steps[index + 1] === undefined) {

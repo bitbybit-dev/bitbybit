@@ -69,7 +69,7 @@ export class VerticesService {
     projectPoints(inputs: Inputs.OCCT.ProjectPointsOnShapeDto<TopoDS_Shape>): Inputs.Base.Point3[] {
         const pointsAlongDir = inputs.points.map(p => [p[0] + inputs.direction[0], p[1] + inputs.direction[1], p[2] + inputs.direction[2]] as Inputs.Base.Point3);
         const lines = pointsAlongDir.map((p, i) => ({
-            start: inputs.points[i],
+            start: inputs.points[i]!,
             end: p
         }));
         const wiresFromPoints = this.wiresService.createLines({ lines, returnCompound: false }) as TopoDS_Wire[];
@@ -86,11 +86,11 @@ export class VerticesService {
             if (res) {
                 const pts = this.verticesToPoints({ shapes: res.flat().filter(s => s !== undefined) });
                 if (inputs.projectionType === Inputs.OCCT.pointProjectionTypeEnum.closest) {
-                    return [this.getClosestPointFromPoints(pts, inputs.points[index])];
+                    return [this.getClosestPointFromPoints(pts, inputs.points[index]!)];
                 } else if (inputs.projectionType === Inputs.OCCT.pointProjectionTypeEnum.furthest) {
-                    return [this.getFurthestPointFromPoints(pts, inputs.points[index])];
+                    return [this.getFurthestPointFromPoints(pts, inputs.points[index]!)];
                 } else if (inputs.projectionType === Inputs.OCCT.pointProjectionTypeEnum.closestAndFurthest) {
-                    return [this.getClosestPointFromPoints(pts, inputs.points[index]), this.getFurthestPointFromPoints(pts, inputs.points[index])];
+                    return [this.getClosestPointFromPoints(pts, inputs.points[index]!), this.getFurthestPointFromPoints(pts, inputs.points[index]!)];
                 } else if (inputs.projectionType === Inputs.OCCT.pointProjectionTypeEnum.all) {
                     return pts;
                 } else {

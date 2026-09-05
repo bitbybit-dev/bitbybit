@@ -23,13 +23,13 @@ export class MeshingService {
             const vertices = face.vertexCoord;
             const indices = face.triIndexes;
             for (let i = 0; i < indices.length; i += 3) {
-                const p1 = indices[i];
-                const p2 = indices[i + 1];
-                const p3 = indices[i + 2];
+                const p1 = indices[i]!;
+                const p2 = indices[i + 1]!;
+                const p3 = indices[i + 2]!;
                 let pts: Inputs.Base.Point3[] = [
-                    [vertices[p1 * 3], vertices[p1 * 3 + 1], vertices[p1 * 3 + 2]],
-                    [vertices[p2 * 3], vertices[p2 * 3 + 1], vertices[p2 * 3 + 2]],
-                    [vertices[p3 * 3], vertices[p3 * 3 + 1], vertices[p3 * 3 + 2]],
+                    [vertices[p1 * 3]!, vertices[p1 * 3 + 1]!, vertices[p1 * 3 + 2]!],
+                    [vertices[p2 * 3]!, vertices[p2 * 3 + 1]!, vertices[p2 * 3 + 2]!],
+                    [vertices[p3 * 3]!, vertices[p3 * 3 + 1]!, vertices[p3 * 3 + 2]!],
                 ];
                 if (inputs.reversedPoints) {
                     pts = pts.reverse();
@@ -151,7 +151,7 @@ export class MeshingService {
 
         inputs.shapes.forEach((_shape, index) => {
             const shape1 = inputs.shape;
-            const shape2 = inputs.shapes[index];
+            const shape2 = inputs.shapes[index]!;
             let precision2 = inputs.precision;
             if (inputs.precisionShapes && inputs.precisionShapes.length > 0) {
                 const p = inputs.precisionShapes[index];
@@ -171,7 +171,7 @@ export class MeshingService {
 
         inputs.shapes.forEach((_shape, index) => {
             const shape1 = inputs.shape;
-            const shape2 = inputs.shapes[index];
+            const shape2 = inputs.shapes[index]!;
             let precision2 = inputs.precision;
             if (inputs.precisionShapes && inputs.precisionShapes.length > 0) {
                 const p = inputs.precisionShapes[index];

@@ -162,8 +162,8 @@ export class FacesService {
             for (let i = 0; i < circleWires.length; i++) {
                 for (let j = i + 1; j < circleWires.length; j++) {
                     const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: circleWires[i],
-                        circle2: circleWires[j],
+                        circle1: circleWires[i]!,
+                        circle2: circleWires[j]!,
                         keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                         circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                         tolerance: inputs.tolerance,
@@ -175,8 +175,8 @@ export class FacesService {
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrder) {
             for (let i = 0; i < circleWires.length - 1; i++) {
                 const wire = this.wiresService.createWireFromTwoCirclesTan({
-                    circle1: circleWires[i],
-                    circle2: circleWires[i + 1],
+                    circle1: circleWires[i]!,
+                    circle2: circleWires[i + 1]!,
                     keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                     circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                     tolerance: inputs.tolerance,
@@ -187,8 +187,8 @@ export class FacesService {
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
             for (let i = 0; i < circleWires.length; i++) {
                 const wire = this.wiresService.createWireFromTwoCirclesTan({
-                    circle1: circleWires[i],
-                    circle2: circleWires[(i + 1) % circleWires.length],
+                    circle1: circleWires[i]!,
+                    circle2: circleWires[(i + 1) % circleWires.length]!,
                     keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                     circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                     tolerance: inputs.tolerance,
@@ -213,13 +213,13 @@ export class FacesService {
         if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
             for (let i = 0; i < listsOfCircles.length; i++) {
                 // lists of circles is a 2D array of circular wires
-                const currentCirclesList = listsOfCircles[i];
+                const currentCirclesList = listsOfCircles[i]!;
                 const nextCirclesList = listsOfCircles[(i + 1)];
                 if (nextCirclesList) {
                     for (let j = 0; j < currentCirclesList.length; j++) {
                         for (let k = 0; k < nextCirclesList.length; k++) {
-                            const circle1 = currentCirclesList[j];
-                            const circle2 = nextCirclesList[k];
+                            const circle1 = currentCirclesList[j]!;
+                            const circle2 = nextCirclesList[k]!;
                             const wire = this.wiresService.createWireFromTwoCirclesTan({
                                 circle1,
                                 circle2,
@@ -237,15 +237,15 @@ export class FacesService {
             }
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrder) {
             for (let i = 0; i < listsOfCircles.length; i++) {
-                if (listsOfCircles[i].length !== listsOfCircles[0].length) {
+                if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
                     throw new Error("All lists of circles must have the same length in order to use inOrder strategy.");
                 }
             }
             for (let i = 0; i < listsOfCircles.length - 1; i++) {
-                for (let j = 0; j < listsOfCircles[i].length; j++) {
+                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
                     const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i][j],
-                        circle2: listsOfCircles[i + 1][j],
+                        circle1: listsOfCircles[i]![j]!,
+                        circle2: listsOfCircles[i + 1]![j]!,
                         keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                         circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                         tolerance: inputs.tolerance,
@@ -257,15 +257,15 @@ export class FacesService {
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
             // check if all lists are of the same length
             for (let i = 0; i < listsOfCircles.length; i++) {
-                if (listsOfCircles[i].length !== listsOfCircles[0].length) {
+                if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
                     throw new Error("All lists of circles must have the same length in order to use inOrderClosed strategy.");
                 }
             }
             for (let i = 0; i < listsOfCircles.length - 1; i++) {
-                for (let j = 0; j < listsOfCircles[i].length; j++) {
+                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
                     const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i][j],
-                        circle2: listsOfCircles[i + 1][j],
+                        circle1: listsOfCircles[i]![j]!,
+                        circle2: listsOfCircles[i + 1]![j]!,
                         keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                         circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                         tolerance: inputs.tolerance,
@@ -275,10 +275,10 @@ export class FacesService {
                 }
             }
             for (let i = 0; i < listsOfCircles.length; i++) {
-                for (let j = 0; j < listsOfCircles[i].length; j++) {
+                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
                     const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i][j],
-                        circle2: listsOfCircles[i][(j + 1) % listsOfCircles[i].length],
+                        circle1: listsOfCircles[i]![j]!,
+                        circle2: listsOfCircles[i]![(j + 1) % listsOfCircles[i]!.length]!,
                         keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                         circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                         tolerance: inputs.tolerance,
@@ -483,13 +483,13 @@ export class FacesService {
         if (inputs.shiftHalfStep) {
             const halfStep = step / 2;
             params.forEach((_p, i) => {
-                params[i] = params[i] + halfStep;
+                params[i] = params[i]! + halfStep;
             });
         }
 
         const wires: TopoDS_Wire[] = [];
         for (let i = 0; i < params.length; i++) {
-            const param = params[i];
+            const param = params[i]!;
             const placedWire = this.placeWireOnParamSurface(inputs.isU, param, uMin, uMax, vMin, vMax, surface);
             wires.push(placedWire);
         }
@@ -558,7 +558,7 @@ export class FacesService {
 
                 let scaleFromPatternU = 1;
                 if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
-                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex];
+                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex] ?? 1;
                     currentScalePatternUIndex++;
                     if (currentScalePatternUIndex >= inputs.scalePatternU.length) {
                         currentScalePatternUIndex = 0;
@@ -567,7 +567,7 @@ export class FacesService {
 
                 let scaleFromPatternV = 1;
                 if (inputs.scalePatternV && inputs.scalePatternV.length > 0) {
-                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex];
+                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex] ?? 1;
                     currentScalePatternVIndex++;
                     if (currentScalePatternVIndex >= inputs.scalePatternV.length) {
                         currentScalePatternVIndex = 0;
@@ -575,7 +575,7 @@ export class FacesService {
                 }
                 let include = true;
                 if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
-                    include = inputs.inclusionPattern[currentInclusionPatternIndex];
+                    include = inputs.inclusionPattern[currentInclusionPatternIndex] ?? true;
                     currentInclusionPatternIndex++;
                     if (currentInclusionPatternIndex >= inputs.inclusionPattern.length) {
                         currentInclusionPatternIndex = 0;
@@ -584,7 +584,7 @@ export class FacesService {
 
                 let fillet = 0;
                 if (inputs.filletPattern && inputs.filletPattern.length > 0) {
-                    fillet = inputs.filletPattern[currentFilletPatternIndex];
+                    fillet = inputs.filletPattern[currentFilletPatternIndex] ?? 0;
                     currentFilletPatternIndex++;
                     if (currentFilletPatternIndex >= inputs.filletPattern.length) {
                         currentFilletPatternIndex = 0;
@@ -603,7 +603,7 @@ export class FacesService {
                     }
 
                     const useRec = cachedRectangles.find(r => r.id === `${width}-${length}-${fillet}`)?.shape;
-                    const translation = [paramsV[j] * scaleV + vMin, 0, paramsU[i] * scaleU + uMin] as Base.Vector3;
+                    const translation = [paramsV[j]! * scaleV + vMin, 0, paramsU[i]! * scaleU + uMin] as Base.Vector3;
 
                     if (useRec) {
                         const translated = this.transformsService.translate({
@@ -688,7 +688,7 @@ export class FacesService {
         const wires = this.subdivideToRectangleWires(inputs);
         const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
         const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
-        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))];
+        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))]!;
 
         const revWires = wires.map(wire => { return this.wiresService.reversedWire({ shape: wire }); });
         const listOfWires = [longestFaceWire, ...revWires];
@@ -820,31 +820,31 @@ export class FacesService {
                 // Get scale/inclusion/fillet values from patterns
                 let scaleFromPatternU = 1;
                 if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
-                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length];
+                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length]!;
                     currentScalePatternUIndex++;
                 }
 
                 let scaleFromPatternV = 1;
                 if (inputs.scalePatternV && inputs.scalePatternV.length > 0) {
-                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex % inputs.scalePatternV.length];
+                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex % inputs.scalePatternV.length]!;
                     currentScalePatternVIndex++;
                 }
 
                 let include = true;
                 if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
-                    include = inputs.inclusionPattern[currentInclusionPatternIndex % inputs.inclusionPattern.length];
+                    include = inputs.inclusionPattern[currentInclusionPatternIndex % inputs.inclusionPattern.length]!;
                     currentInclusionPatternIndex++;
                 }
 
                 let filletFactor = 0;
                 if (inputs.filletPattern && inputs.filletPattern.length > 0) {
-                    filletFactor = inputs.filletPattern[currentFilletPatternIndex % inputs.filletPattern.length];
+                    filletFactor = inputs.filletPattern[currentFilletPatternIndex % inputs.filletPattern.length]!;
                     currentFilletPatternIndex++;
                 }
 
                 if (include) {
-                    const uvHexagon = uvHexWires[hexIndex];
-                    const uvCenter = uvHexCenters[hexIndex];
+                    const uvHexagon = uvHexWires[hexIndex]!;
+                    const uvCenter = uvHexCenters[hexIndex]!;
 
                     let shapeToScale = uvHexagon;
                     // Apply Fillet (using the factor)
@@ -897,7 +897,7 @@ export class FacesService {
         const wires = this.subdivideToHexagonWires(inputs);
         const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
         const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
-        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))];
+        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))]!;
 
         const revWires = wires.map(wire => { return this.wiresService.reversedWire({ shape: wire }); });
         const listOfWires = [longestFaceWire, ...revWires];
@@ -1019,7 +1019,7 @@ export class FacesService {
 
         const wires: TopoDS_Wire[] = [];
         for (let i = 0; i < inputs.params.length; i++) {
-            const param = inputs.params[i];
+            const param = inputs.params[i]!;
             const placedWire = this.placeWireOnParamSurface(inputs.isU, param, uMin, uMax, vMin, vMax, surface);
             wires.push(placedWire);
         }

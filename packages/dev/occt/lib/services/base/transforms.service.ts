@@ -431,9 +431,9 @@ export class TransformsService {
         if (list.length === 0) {
             return this.identityTransform();
         }
-        let acc = list[0];
+        let acc = list[0]!;
         for (let i = 1; i < list.length; i++) {
-            acc = this.multiplyMatricesColumnMajor(list[i], acc); // apply acc first, then list[i]
+            acc = this.multiplyMatricesColumnMajor(list[i]!, acc); // apply acc first, then list[i]
         }
         return acc;
     }
@@ -444,7 +444,7 @@ export class TransformsService {
             for (let row = 0; row < 4; row++) {
                 let sum = 0;
                 for (let k = 0; k < 4; k++) {
-                    sum += a[k * 4 + row] * b[col * 4 + k];
+                    sum += a[k * 4 + row]! * b[col * 4 + k]!;
                 }
                 result[col * 4 + row] = sum;
             }

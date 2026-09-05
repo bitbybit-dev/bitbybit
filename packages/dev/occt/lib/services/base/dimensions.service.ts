@@ -132,7 +132,7 @@ export class DimensionsService {
         const basePoint = this.base.point.translatePoints({
             points: [inputs.tipPoint],
             translation: baseVec
-        })[0];
+        })[0]!;
         
         // Calculate the two arrow line endpoints
         const sideVec1 = this.base.vector.mul({ vector: perpNorm, scalar: sideOffset }) as Inputs.Base.Vector3;
@@ -141,12 +141,12 @@ export class DimensionsService {
         const endPoint1 = this.base.point.translatePoints({
             points: [basePoint],
             translation: sideVec1
-        })[0];
+        })[0]!;
         
         const endPoint2 = this.base.point.translatePoints({
             points: [basePoint],
             translation: sideVec2
-        })[0];
+        })[0]!;
         
         // Create the two arrow lines
         const line1 = this.wiresService.createLineWireWithExtensions({
@@ -191,8 +191,8 @@ export class DimensionsService {
             translation: inputs.direction,
         });
 
-        const translatedStartPt = translatedPts[0];
-        const translatedEndPt = translatedPts[1];
+        const translatedStartPt = translatedPts[0]!;
+        const translatedEndPt = translatedPts[1]!;
 
         const startLineToTranslatedPoint = this.wiresService.createLineWireWithExtensions({
             start: inputs.start,
@@ -360,7 +360,7 @@ export class DimensionsService {
         const endPt = this.base.point.translatePoints({
             points: [endVec],
             translation: inputs.center,
-        })[0];
+        })[0]!;
 
         const line1WithExt = this.wiresService.createLineWireWithExtensions({
             start: inputs.center,
@@ -377,7 +377,7 @@ export class DimensionsService {
         const endPt2 = this.base.point.translatePoints({
             points: [endVec2],
             translation: inputs.center,
-        })[0];
+        })[0]!;
         const line2WithExt = this.wiresService.createLineWireWithExtensions({
             start: inputs.center,
             end: endPt2,
@@ -599,7 +599,7 @@ export class DimensionsService {
         const endPtLabelLine = this.base.point.translatePoints({
             points: [endPoint],
             translation: direction,
-        })[0];
+        })[0]!;
 
         const lineBeneathLabel = this.wiresService.createLineWireWithExtensions({
             start: endPoint,

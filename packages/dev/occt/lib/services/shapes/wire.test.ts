@@ -568,13 +568,13 @@ describe("OCCT wire unit tests", () => {
         const w = wire.createPolygonWire({ points });
 
         const allEdges = edge.getEdgesAlongWire({ shape: w });
-        const firstEdgeStart = edge.startPointOnEdge({ shape: allEdges[0] });
+        const firstEdgeStart = edge.startPointOnEdge({ shape: allEdges[0]! });
 
         // Use reversedWireFromReversedEdges for closed wires
         const w2 = wire.reversedWireFromReversedEdges({ shape: w });
 
         const allEdgesRev = edge.getEdgesAlongWire({ shape: w2 });
-        const firstEdgeRevStart = edge.startPointOnEdge({ shape: allEdgesRev[0] });
+        const firstEdgeRevStart = edge.startPointOnEdge({ shape: allEdgesRev[0]! });
 
         // For a reversed wire using reversedWireFromReversedEdges, 
         // the first edge's start should be the original first edge's start
@@ -925,8 +925,8 @@ describe("OCCT wire unit tests", () => {
 
         const pts = wire.divideWiresByParamsToPoints({ shapes: [w1, w2], nrOfDivisions: 12, removeEndPoint: false, removeStartPoint: false });
         expect(pts.length).toEqual(2);
-        expect(pts[0].length).toEqual(13);
-        expect(pts[1].length).toEqual(13);
+        expect(pts[0]!.length).toEqual(13);
+        expect(pts[1]!.length).toEqual(13);
 
         expect(pts).toEqual(
             [
@@ -944,8 +944,8 @@ describe("OCCT wire unit tests", () => {
 
         const pts = wire.divideWiresByEqualDistanceToPoints({ shapes: [w1, w2], nrOfDivisions: 12, removeEndPoint: false, removeStartPoint: false });
         expect(pts.length).toEqual(2);
-        expect(pts[0].length).toEqual(13);
-        expect(pts[1].length).toEqual(13);
+        expect(pts[0]!.length).toEqual(13);
+        expect(pts[1]!.length).toEqual(13);
 
         expect(pts).toEqual([
             [[0, 0, 0], [0.2838222828590555, 0.3424625985680442, 0.14660078927247172], [0.43115226769191084, 0.6289266048122308, 0.4944358428008], [0.4892636529329303, 0.8534643588264631, 0.9105017647338322], [0.49923676534972294, 1.039070056316239, 1.34958322741629], [0.480111123635674, 1.1994436078911832, 1.798331210638773], [0.4414571610105028, 1.3421778455408742, 2.2518017113259283], [0.38869559662499154, 1.4718143774303798, 2.7077969520134704], [0.32519482109496023, 1.5912785788527093, 3.1652093943943727], [0.25319786452105564, 1.702569762342423, 3.6234297445534183], [0.17427907733231243, 1.8071194740156968, 4.082100991708461], [0.08958978033353904, 1.9059914123946882, 4.541004080152873], [2.2204460492503128e-16, 1.9999999999999998, 4.999999999999998]],
@@ -1109,8 +1109,8 @@ describe("OCCT wire unit tests", () => {
         const w2 = wire.createEllipseWire({ radiusMajor: 0.3, radiusMinor: 0.1, center: [0, 0, 0], direction: [0, 1, 0] });
 
         const placed = wire.placeWiresOnFace({ face: f, wires: [w1, w2] });
-        const length1 = wire.getWireLength({ shape: placed[0] });
-        const length2 = wire.getWireLength({ shape: placed[1] });
+        const length1 = wire.getWireLength({ shape: placed[0]! });
+        const length2 = wire.getWireLength({ shape: placed[1]! });
 
         expect(length1).toBeCloseTo(7.489657680597562);
         expect(length2).toBeCloseTo(3.997689022384506);
@@ -1815,7 +1815,7 @@ describe("OCCT wire unit tests", () => {
         expect(wires.length).toBe(4);
         const wireLengths = wires.map(w => wire.getWireLength({ shape: w }));
         expect(wireLengths.length).toEqual(4);
-        wireLengths.forEach((len, i) => expect(len).toBeCloseTo([36.22718914885955, 36.22718914885927, 16.139612940402895, 16.139612940402888][i], 10));
+        wireLengths.forEach((len, i) => expect(len).toBeCloseTo([36.22718914885955, 36.22718914885927, 16.139612940402895, 16.139612940402888][i]!, 10));
 
         star1.delete();
         star2.delete();
@@ -1879,13 +1879,13 @@ describe("OCCT wire unit tests", () => {
         const centers = wire.getWiresCentersOfMass({
             shapes: [w1, w2]
         });
-        expect(centers[0][0]).toBeCloseTo(0);
-        expect(centers[0][1]).toBeCloseTo(1);
-        expect(centers[0][2]).toBeCloseTo(0.5);
+        expect(centers[0]![0]).toBeCloseTo(0);
+        expect(centers[0]![1]).toBeCloseTo(1);
+        expect(centers[0]![2]).toBeCloseTo(0.5);
 
-        expect(centers[1][0]).toBeCloseTo(0);
-        expect(centers[1][1]).toBeCloseTo(2);
-        expect(centers[1][2]).toBeCloseTo(1);
+        expect(centers[1]![0]).toBeCloseTo(0);
+        expect(centers[1]![1]).toBeCloseTo(2);
+        expect(centers[1]![2]).toBeCloseTo(1);
     });
 
     it("should create zig zag wire between two wires", () => {
@@ -1908,20 +1908,20 @@ describe("OCCT wire unit tests", () => {
 
         const wires = wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1, e2] });
         expect(wires.length).toBe(2);
-        const startStart = wire.startPointOnWire({ shape: wires[0] });
-        const startEnd = wire.endPointOnWire({ shape: wires[0] });
-        const endStart = wire.startPointOnWire({ shape: wires[1] });
-        const endEnd = wire.endPointOnWire({ shape: wires[1] });
+        const startStart = wire.startPointOnWire({ shape: wires[0]! });
+        const startEnd = wire.endPointOnWire({ shape: wires[0]! });
+        const endStart = wire.startPointOnWire({ shape: wires[1]! });
+        const endEnd = wire.endPointOnWire({ shape: wires[1]! });
         expect(startStart).toEqual([0, 0, 0]);
         expect(startEnd).toEqual([3, 0, 0]);
         expect(endStart).toEqual([0, 0, 5]);
         expect(endEnd).toEqual([3, 0, 5]);
-        expect(wire.getWireLength({ shape: wires[0] })).toBeCloseTo(3);
-        expect(wire.getWireLength({ shape: wires[1] })).toBeCloseTo(3);
+        expect(wire.getWireLength({ shape: wires[0]! })).toBeCloseTo(3);
+        expect(wire.getWireLength({ shape: wires[1]! })).toBeCloseTo(3);
         e1.delete();
         e2.delete();
-        wires[0].delete();
-        wires[1].delete();
+        wires[0]!.delete();
+        wires[1]!.delete();
     });
 
     it("should create two polyline wires between start and end points of three wires or edges", () => {
@@ -1931,15 +1931,15 @@ describe("OCCT wire unit tests", () => {
 
         const wires = wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1, w2, e3] });
         expect(wires.length).toBe(2);
-        const startCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[0] });
-        const endCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[1] });
+        const startCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[0]! });
+        const endCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[1]! });
         expect(startCorners).toEqual([[0, 0, 0], [3, 0, 0], [6, 0, 0]]);
         expect(endCorners).toEqual([[0, 0, 5], [3, 0, 5], [6, 0, 5]]);
         e1.delete();
         w2.delete();
         e3.delete();
-        wires[0].delete();
-        wires[1].delete();
+        wires[0]!.delete();
+        wires[1]!.delete();
     });
 
     it("should throw when less than two shapes are provided to createWiresBetweenStartEndPointsOfWiresAndEdges", () => {
@@ -1956,13 +1956,13 @@ describe("OCCT wire unit tests", () => {
 
         const wires = wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1, e2, e3], wireType: Inputs.OCCT.wireFromPointsTypeEnum.polyline, closed: true, tolerance: 1e-7 });
         expect(wires.length).toBe(2);
-        expect(wire.isWireClosed({ shape: wires[0] })).toBe(true);
-        expect(wire.isWireClosed({ shape: wires[1] })).toBe(true);
+        expect(wire.isWireClosed({ shape: wires[0]! })).toBe(true);
+        expect(wire.isWireClosed({ shape: wires[1]! })).toBe(true);
         e1.delete();
         e2.delete();
         e3.delete();
-        wires[0].delete();
-        wires[1].delete();
+        wires[0]!.delete();
+        wires[1]!.delete();
     });
 
     it("should create interpolated periodic wires between start and end points when interpolated and closed", () => {
@@ -1972,13 +1972,13 @@ describe("OCCT wire unit tests", () => {
 
         const wires = wire.createWiresBetweenStartEndPointsOfWiresAndEdges({ shapes: [e1, e2, e3], wireType: Inputs.OCCT.wireFromPointsTypeEnum.interpolated, closed: true, tolerance: 1e-7 });
         expect(wires.length).toBe(2);
-        expect(wire.isWireClosed({ shape: wires[0] })).toBe(true);
-        expect(wire.getWireLength({ shape: wires[0] })).toBeGreaterThan(0);
+        expect(wire.isWireClosed({ shape: wires[0]! })).toBe(true);
+        expect(wire.getWireLength({ shape: wires[0]! })).toBeGreaterThan(0);
         e1.delete();
         e2.delete();
         e3.delete();
-        wires[0].delete();
-        wires[1].delete();
+        wires[0]!.delete();
+        wires[1]!.delete();
     });
 
     it("should create polyline wires between subdivided points of wires and edges", () => {
@@ -1992,9 +1992,9 @@ describe("OCCT wire unit tests", () => {
             expect(wire.getWireLength({ shape: w })).toBeCloseTo(6);
             expect(wire.isWireClosed({ shape: w })).toBe(false);
         });
-        const firstCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[0] });
+        const firstCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[0]! });
         expect(firstCorners).toEqual([[0, 0, 0], [3, 0, 0], [6, 0, 0]]);
-        const lastCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[5] });
+        const lastCorners = edge.getCornerPointsOfEdgesForShape({ shape: wires[5]! });
         expect(lastCorners).toEqual([[0, 0, 5], [3, 0, 5], [6, 0, 5]]);
         e1.delete();
         e2.delete();
@@ -2081,12 +2081,12 @@ describe("OCCT wire unit tests", () => {
         opt.shape = w;
         const pts = wire.wiresToPoints(opt);
         expect(pts.length).toBe(1);
-        expect(pts[0].length).toBe(269);
-        expect(pts[0][0]).toEqual([5, 0, -1]);
-        expect(pts[0][33]).toEqual([5, 0, -10]);
-        expect(pts[0][123]).toEqual([-4.168530387697455, 0, -3.444429766980398]);
-        expect(pts[0][200]).toEqual([-1, 0, 10]);
-        expect(pts[0][268]).toEqual([5, 0, -1]);
+        expect(pts[0]!.length).toBe(269);
+        expect(pts[0]![0]).toEqual([5, 0, -1]);
+        expect(pts[0]![33]).toEqual([5, 0, -10]);
+        expect(pts[0]![123]).toEqual([-4.168530387697455, 0, -3.444429766980398]);
+        expect(pts[0]![200]).toEqual([-1, 0, 10]);
+        expect(pts[0]![268]).toEqual([5, 0, -1]);
         squareFace.delete();
         edges.forEach(e => e.delete());
         circleFaces.forEach(f => f.delete());
@@ -2544,9 +2544,9 @@ describe("OCCT wire unit tests", () => {
             });
 
             expect(wires.length).toBe(1);
-            const length = wire.getWireLength({ shape: wires[0] });
+            const length = wire.getWireLength({ shape: wires[0]! });
             expect(length).toBeCloseTo(6.472135954999578);
-            const isClosed = occHelper.wiresService.isWireClosed({ shape: wires[0] });
+            const isClosed = occHelper.wiresService.isWireClosed({ shape: wires[0]! });
             expect(isClosed).toBe(true);
             wires.forEach(w => w.delete());
         });

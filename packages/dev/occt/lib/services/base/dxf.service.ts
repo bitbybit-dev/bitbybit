@@ -42,7 +42,7 @@ export class DxfService {
             
             let i = 0;
             while (i < edges.length) {
-                const edge = edges[i];
+                const edge = edges[i]!;
                 
                 // Check if edge is a full circle - handle separately
                 if (this.edgesService.isEdgeCircular({ shape: edge })) {
@@ -127,7 +127,7 @@ export class DxfService {
         let j = startIndex;
         
         while (j < edges.length) {
-            const currentEdge = edges[j];
+            const currentEdge = edges[j]!;
             const isLinear = this.edgesService.isEdgeLinear({ shape: currentEdge });
             const isCircular = this.edgesService.isEdgeCircular({ shape: currentEdge });
             
@@ -209,7 +209,7 @@ export class DxfService {
                 // The last point of each edge will be the start point of the next edge
                 // For closed wires, the last edge's last point equals the first edge's first point
                 for (let k = 0; k < points3d.length - 1; k++) {
-                    points.push([points3d[k][0], points3d[k][2]]);
+                    points.push([points3d[k]![0], points3d[k]![2]]);
                     bulges.push(0);
                 }
             }
@@ -219,7 +219,7 @@ export class DxfService {
         
         // Add the final endpoint for open polylines
         if (j > startIndex && !shouldBeClosed) {
-            const lastEdge = edges[j - 1];
+            const lastEdge = edges[j - 1]!;
             const endPt = this.edgesService.endPointOnEdge({ shape: lastEdge });
             points.push([endPt[0], endPt[2]]);
             bulges.push(0);

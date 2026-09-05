@@ -47,7 +47,7 @@ export function parseTransform(value: string | undefined | null): Matrix {
     let match: RegExpExecArray | null;
     while ((match = re.exec(value)) !== null) {
         const name = match[1];
-        const nums = match[2]
+        const nums = match[2]!
             .split(/[\s,]+/)
             .map((s) => parseFloat(s))
             .filter((x) => !Number.isNaN(x));
@@ -61,7 +61,7 @@ export function parseTransform(value: string | undefined | null): Matrix {
                 break;
             case "scale": {
                 const sx = nums[0] ?? 1;
-                const sy = nums.length > 1 ? nums[1] : sx;
+                const sy = nums.length > 1 ? nums[1]! : sx;
                 t = [sx, 0, 0, sy, 0, 0];
                 break;
             }
@@ -71,8 +71,8 @@ export function parseTransform(value: string | undefined | null): Matrix {
                 const sin = Math.sin(ang);
                 const rot: Matrix = [cos, sin, -sin, cos, 0, 0];
                 if (nums.length >= 3) {
-                    const cx = nums[1];
-                    const cy = nums[2];
+                    const cx = nums[1]!;
+                    const cy = nums[2]!;
                     t = multiply([1, 0, 0, 1, cx, cy], multiply(rot, [1, 0, 0, 1, -cx, -cy]));
                 } else {
                     t = rot;

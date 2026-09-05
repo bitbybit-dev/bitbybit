@@ -239,8 +239,8 @@ export class EdgesService {
         // The tessellation might be in reverse order relative to the edge's start->end direction
         if (edgePoints.length > 1) {
             const edgeStart = this.startPointOnEdge({ shape: inputs.shape });
-            const tessStart = edgePoints[0];
-            const tessEnd = edgePoints[edgePoints.length - 1];
+            const tessStart = edgePoints[0]!;
+            const tessEnd = edgePoints[edgePoints.length - 1]!;
             
             // Check if first tessellation point is closer to edge start or end
             const distStartToStart = this.vecHelper.distanceBetweenPoints(tessStart, edgeStart);
@@ -341,9 +341,9 @@ export class EdgesService {
         if (inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
             resultingSol = [...solutions1, ...solutions2];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
-            resultingSol = [solutions1[1], solutions2[0]];
+            resultingSol = [solutions1[1]!, solutions2[0]!];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2) {
-            resultingSol = [solutions1[0], solutions2[1]];
+            resultingSol = [solutions1[0]!, solutions2[1]!];
         } else {
             resultingSol = [...solutions1, ...solutions2];
         }
@@ -353,19 +353,19 @@ export class EdgesService {
             let endPoint: Base.Point3 | undefined;
             if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2) {
                 if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide1) {
-                    startPoint = this.startPointOnEdge({ shape: resultingSol[1] });
-                    endPoint = this.startPointOnEdge({ shape: resultingSol[0] });
+                    startPoint = this.startPointOnEdge({ shape: resultingSol[1]! });
+                    endPoint = this.startPointOnEdge({ shape: resultingSol[0]! });
                 } else if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide2) {
-                    startPoint = this.startPointOnEdge({ shape: resultingSol[0] });
-                    endPoint = this.startPointOnEdge({ shape: resultingSol[1] });
+                    startPoint = this.startPointOnEdge({ shape: resultingSol[0]! });
+                    endPoint = this.startPointOnEdge({ shape: resultingSol[1]! });
                 }
             } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
                 if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide1) {
-                    startPoint = this.startPointOnEdge({ shape: resultingSol[0] });
-                    endPoint = this.startPointOnEdge({ shape: resultingSol[1] });
+                    startPoint = this.startPointOnEdge({ shape: resultingSol[0]! });
+                    endPoint = this.startPointOnEdge({ shape: resultingSol[1]! });
                 } else if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide2) {
-                    startPoint = this.startPointOnEdge({ shape: resultingSol[1] });
-                    endPoint = this.startPointOnEdge({ shape: resultingSol[0] });
+                    startPoint = this.startPointOnEdge({ shape: resultingSol[1]! });
+                    endPoint = this.startPointOnEdge({ shape: resultingSol[0]! });
                 }
             }
 
@@ -425,9 +425,9 @@ export class EdgesService {
         if (inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
             resultingSol = [...solutions];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
-            resultingSol = [solutions[0]];
+            resultingSol = [solutions[0]!];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2) {
-            resultingSol = [solutions[1]];
+            resultingSol = [solutions[1]!];
         } else {
             resultingSol = [...solutions];
         }
@@ -436,11 +436,11 @@ export class EdgesService {
             let startPoint: Base.Point3 | undefined;
             let endPoint: Base.Point3 | undefined;
             if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide1) {
-                startPoint = this.startPointOnEdge({ shape: resultingSol[1] });
-                endPoint = this.startPointOnEdge({ shape: resultingSol[0] });
+                startPoint = this.startPointOnEdge({ shape: resultingSol[1]! });
+                endPoint = this.startPointOnEdge({ shape: resultingSol[0]! });
             } else if (inputs.circleRemainder === Inputs.OCCT.circleInclusionEnum.keepSide2) {
-                startPoint = this.startPointOnEdge({ shape: resultingSol[0] });
-                endPoint = this.startPointOnEdge({ shape: resultingSol[1] });
+                startPoint = this.startPointOnEdge({ shape: resultingSol[0]! });
+                endPoint = this.startPointOnEdge({ shape: resultingSol[1]! });
             }
             if (!startPoint || !endPoint) {
                 throw new Error("Circle remainder could not be resolved for the given position result");
@@ -500,14 +500,14 @@ export class EdgesService {
 
         let adjustLin2Sol: gp_Lin2d[] = [];
         if (lin2Sols.length === 4) {
-            adjustLin2Sol = [lin2Sols[2], lin2Sols[1], lin2Sols[0], lin2Sols[3]];
+            adjustLin2Sol = [lin2Sols[2]!, lin2Sols[1]!, lin2Sols[0]!, lin2Sols[3]!];
         } else if (lin2Sols.length === 2) {
-            adjustLin2Sol = [lin2Sols[1], lin2Sols[0]];
+            adjustLin2Sol = [lin2Sols[1]!, lin2Sols[0]!];
         }
         const solutions = [];
         for (let i = 0; i < lin1Sols.length; i++) {
-            const sol1 = lin1Sols[i];
-            const sol2 = adjustLin2Sol[i];
+            const sol1 = lin1Sols[i]!;
+            const sol2 = adjustLin2Sol[i]!;
             const locationStart = sol1.Location();
             const startPoint = [locationStart.X(), locationStart.Y(), 0] as Inputs.Base.Point3;
             const locationEnd = sol2.Location();
@@ -532,13 +532,13 @@ export class EdgesService {
         if (inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
             resultingSol = [...solutions];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1 && solutions.length === 4) {
-            resultingSol = [solutions[1], solutions[3]];
+            resultingSol = [solutions[1]!, solutions[3]!];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2 && solutions.length === 4) {
-            resultingSol = [solutions[0], solutions[2]];
+            resultingSol = [solutions[0]!, solutions[2]!];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1 && solutions.length === 2) {
             resultingSol = [];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2 && solutions.length === 2) {
-            resultingSol = [solutions[0], solutions[1]];
+            resultingSol = [solutions[0]!, solutions[1]!];
         } else {
             resultingSol = [...solutions];
         }
@@ -550,46 +550,46 @@ export class EdgesService {
             let endPoint2: Base.Point3 | undefined;
             if (inputs.circleRemainders === Inputs.OCCT.twoCircleInclusionEnum.outside) {
                 if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2 || inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
-                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[1] });
-                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[0] });
+                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[1]! });
+                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[0]! });
                 } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
-                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[0] });
-                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[1] });
+                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[0]! });
+                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[1]! });
                 }
-                endPoint1 = this.endPointOnEdge({ shape: resultingSol[0] });
-                endPoint2 = this.endPointOnEdge({ shape: resultingSol[1] });
+                endPoint1 = this.endPointOnEdge({ shape: resultingSol[0]! });
+                endPoint2 = this.endPointOnEdge({ shape: resultingSol[1]! });
             } else if (inputs.circleRemainders === Inputs.OCCT.twoCircleInclusionEnum.inside) {
                 if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2 || inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
-                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[0] });
-                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[1] });
+                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[0]! });
+                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[1]! });
                 } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
-                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[1] });
-                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[0] });
+                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[1]! });
+                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[0]! });
                 }
-                endPoint1 = this.endPointOnEdge({ shape: resultingSol[1] });
-                endPoint2 = this.endPointOnEdge({ shape: resultingSol[0] });
+                endPoint1 = this.endPointOnEdge({ shape: resultingSol[1]! });
+                endPoint2 = this.endPointOnEdge({ shape: resultingSol[0]! });
             } else if (inputs.circleRemainders === Inputs.OCCT.twoCircleInclusionEnum.insideOutside) {
 
                 if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2 || inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
-                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[0] });
-                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[1] });
+                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[0]! });
+                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[1]! });
                 } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
-                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[1] });
-                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[0] });
+                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[1]! });
+                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[0]! });
                 }
-                endPoint1 = this.endPointOnEdge({ shape: resultingSol[0] });
-                endPoint2 = this.endPointOnEdge({ shape: resultingSol[1] });
+                endPoint1 = this.endPointOnEdge({ shape: resultingSol[0]! });
+                endPoint2 = this.endPointOnEdge({ shape: resultingSol[1]! });
             } else if (inputs.circleRemainders === Inputs.OCCT.twoCircleInclusionEnum.outsideInside) {
 
                 if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide2 || inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
-                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[1] });
-                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[0] });
+                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[1]! });
+                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[0]! });
                 } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
-                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[0] });
-                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[1] });
+                    startPoint1 = this.startPointOnEdge({ shape: resultingSol[0]! });
+                    startPoint2 = this.startPointOnEdge({ shape: resultingSol[1]! });
                 }
-                endPoint1 = this.endPointOnEdge({ shape: resultingSol[1] });
-                endPoint2 = this.endPointOnEdge({ shape: resultingSol[0] });
+                endPoint1 = this.endPointOnEdge({ shape: resultingSol[1]! });
+                endPoint2 = this.endPointOnEdge({ shape: resultingSol[0]! });
             }
 
             if (!startPoint1 || !startPoint2 || !endPoint1 || !endPoint2) {
@@ -640,7 +640,7 @@ export class EdgesService {
 
         const solutions = [];
         for (let i = 0; i < lin1Sols.length; i++) {
-            const sol = lin1Sols[i];
+            const sol = lin1Sols[i]!;
             const res = this.reconstructCircleAndAlignBack(lin1Sols, sol, alignOpt, cirDir, cirPos);
             solutions.push(res);
         }
@@ -693,7 +693,7 @@ export class EdgesService {
 
         const solutions = [];
         for (let i = 0; i < lin1Sols.length; i++) {
-            const sol = lin1Sols[i];
+            const sol = lin1Sols[i]!;
             const res = this.reconstructCircleAndAlignBack(lin1Sols, sol, alignOpt, cirDir, cirPos);
             solutions.push(res);
         }

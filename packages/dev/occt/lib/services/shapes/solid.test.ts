@@ -203,7 +203,7 @@ describe("OCCT solid unit tests", () => {
 
     it("should filter points on the solid", async () => {
         const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
-        const sphereFace = face.getFaces({ shape: sphere })[0];
+        const sphereFace = face.getFaces({ shape: sphere })[0]!;
         const subdOpt = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(sphereFace);
         subdOpt.nrDivisionsU = 5;
         subdOpt.nrDivisionsV = 5;

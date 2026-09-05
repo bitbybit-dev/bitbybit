@@ -100,9 +100,9 @@ describe("OCCT iterator service unit tests", () => {
             expect(edges.length).toBe(2);
 
             // Check that edges are in correct order
-            const edge1Start = occHelper.edgesService.startPointOnEdge({ shape: edges[0] });
-            const edge1End = occHelper.edgesService.endPointOnEdge({ shape: edges[0] });
-            const edge2Start = occHelper.edgesService.startPointOnEdge({ shape: edges[1] });
+            const edge1Start = occHelper.edgesService.startPointOnEdge({ shape: edges[0]! });
+            const edge1End = occHelper.edgesService.endPointOnEdge({ shape: edges[0]! });
+            const edge2Start = occHelper.edgesService.startPointOnEdge({ shape: edges[1]! });
 
             expect(edge1Start[0]).toBeCloseTo(0, 5);
             expect(edge1End[0]).toBeCloseTo(1, 5);

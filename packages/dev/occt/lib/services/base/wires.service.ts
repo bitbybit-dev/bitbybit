@@ -130,7 +130,7 @@ export class WiresService {
         }
 
         pointsOnInner.forEach((pt, index) => {
-            const ptOnOuter = pointsOnOuter[index];
+            const ptOnOuter = pointsOnOuter[index]!;
             if (index === 0) {
                 halfShapeTreePts.push(ptOnOuter);
             } else if (index !== 0 && index < pointsOnOuter.length - 1) {
@@ -326,19 +326,19 @@ export class WiresService {
     createPolygonWire(inputs: Inputs.OCCT.PolygonDto) {
         const gpPoints: gp_Pnt[] = [];
         for (let ind = 0; ind < inputs.points.length; ind++) {
-            gpPoints.push(this.entitiesService.gpPnt(inputs.points[ind]));
+            gpPoints.push(this.entitiesService.gpPnt(inputs.points[ind]!));
         }
 
         const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
         for (let ind = 0; ind < inputs.points.length - 1; ind++) {
-            const pt1 = gpPoints[ind];
-            const pt2 = gpPoints[ind + 1];
+            const pt1 = gpPoints[ind]!;
+            const pt2 = gpPoints[ind + 1]!;
             const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
             wireMaker.AddWire(innerWire);
         }
 
-        const pt1 = gpPoints[inputs.points.length - 1];
-        const pt2 = gpPoints[0];
+        const pt1 = gpPoints[inputs.points.length - 1]!;
+        const pt2 = gpPoints[0]!;
         const innerWire2 = this.makeWireBetweenTwoPoints(pt1, pt2);
         wireMaker.AddWire(innerWire2);
         const wire = wireMaker.Wire();
@@ -349,13 +349,13 @@ export class WiresService {
     createPolylineWire(inputs: Inputs.OCCT.PolylineDto) {
         const gpPoints: gp_Pnt[] = [];
         for (let ind = 0; ind < inputs.points.length; ind++) {
-            gpPoints.push(this.entitiesService.gpPnt(inputs.points[ind]));
+            gpPoints.push(this.entitiesService.gpPnt(inputs.points[ind]!));
         }
 
         const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
         for (let ind = 0; ind < inputs.points.length - 1; ind++) {
-            const pt1 = gpPoints[ind];
-            const pt2 = gpPoints[ind + 1];
+            const pt1 = gpPoints[ind]!;
+            const pt2 = gpPoints[ind + 1]!;
             const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
             wireMaker.AddWire(innerWire);
         }
@@ -372,8 +372,8 @@ export class WiresService {
 
         const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
         for (let ind = 0; ind < gpPoints.length - 1; ind++) {
-            const pt1 = gpPoints[ind];
-            const pt2 = gpPoints[ind + 1];
+            const pt1 = gpPoints[ind]!;
+            const pt2 = gpPoints[ind + 1]!;
             const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
             wireMaker.AddWire(innerWire);
         }
@@ -490,7 +490,7 @@ export class WiresService {
         let reachedGoal = false;
         while (!reachedGoal) {
             for (let i = 0; i < inputs.lengths.length; i++) {
-                const length = inputs.lengths[i];
+                const length = inputs.lengths[i]!;
                 if (total + length <= wireLength) {
                     lengths.push(total + length);
                     total += length;
@@ -506,9 +506,9 @@ export class WiresService {
         }
         if (inputs.tryNext) {
             if (lastIndex + 1 < inputs.lengths.length) {
-                lengths.push(total + inputs.lengths[lastIndex + 1]);
+                lengths.push(total + inputs.lengths[lastIndex + 1]!);
             } else {
-                lengths.push(total + inputs.lengths[0]);
+                lengths.push(total + inputs.lengths[0]!);
             }
         }
         const res = this.geomService.pointsOnCompCurveAtLengths({ lengths, shape: curve });
@@ -636,7 +636,7 @@ export class WiresService {
         const splitLocations: { edgeIndex: number; parameter: number }[] = [];
 
         // Add the wire's start point
-        const firstEdge = edges[0];
+        const firstEdge = edges[0]!;
         let first = { current: 0 };
         let last = { current: 0 };
         this.occRefReturns.BRep_Tool_Range_1(firstEdge, first, last);
@@ -684,7 +684,7 @@ export class WiresService {
         });
 
         // Add the wire's end point
-        const lastEdge = edges[edges.length - 1];
+        const lastEdge = edges[edges.length - 1]!;
         first = { current: 0 };
         last = { current: 0 };
         this.occRefReturns.BRep_Tool_Range_1(lastEdge, first, last);
@@ -702,13 +702,13 @@ export class WiresService {
         // 4. Create new wires between consecutive split locations
         const newWires: TopoDS_Wire[] = [];
         for (let i = 0; i < uniqueLocations.length - 1; i++) {
-            const startLoc = uniqueLocations[i];
-            const endLoc = uniqueLocations[i + 1];
+            const startLoc = uniqueLocations[i]!;
+            const endLoc = uniqueLocations[i + 1]!;
             const wireBuilder = new this.occ.BRepBuilderAPI_MakeWire();
 
             if (startLoc.edgeIndex === endLoc.edgeIndex) {
                 // Same edge: create a single trimmed edge
-                const edge = edges[startLoc.edgeIndex];
+                const edge = edges[startLoc.edgeIndex]!;
 
                 // Avoid zero-length segments
                 if (startLoc.parameter === endLoc.parameter) continue;
@@ -720,7 +720,7 @@ export class WiresService {
             } else {
                 // Spans multiple edges
                 // Trim the start edge
-                const startEdge = edges[startLoc.edgeIndex];
+                const startEdge = edges[startLoc.edgeIndex]!;
                 const startFirst = { current: 0 };
                 const startLast = { current: 0 };
                 this.occRefReturns.BRep_Tool_Range_1(startEdge, startFirst, startLast);
@@ -735,11 +735,11 @@ export class WiresService {
 
                 // Add full edges in between
                 for (let j = startLoc.edgeIndex + 1; j < endLoc.edgeIndex; j++) {
-                    wireBuilder.AddEdge(edges[j]);
+                    wireBuilder.AddEdge(edges[j]!);
                 }
 
                 // Trim the end edge
-                const endEdge = edges[endLoc.edgeIndex];
+                const endEdge = edges[endLoc.edgeIndex]!;
                 const endFirst = { current: 0 };
                 const endLast = { current: 0 };
                 this.occRefReturns.BRep_Tool_Range_1(endEdge, endFirst, endLast);
@@ -771,8 +771,8 @@ export class WiresService {
         const circleEdge1 = this.shapeGettersService.getEdges({ shape: inputs.circle1 });
         const circleEdge2 = this.shapeGettersService.getEdges({ shape: inputs.circle2 });
         if (circleEdge1.length === 1 && circleEdge2.length === 1) {
-            const circularEdge1 = circleEdge1[0];
-            const circularEdge2 = circleEdge2[0];
+            const circularEdge1 = circleEdge1[0]!;
+            const circularEdge2 = circleEdge2[0]!;
             const result = this.edgesService.constraintTanLinesOnTwoCircles({
                 circle1: circularEdge1,
                 circle2: circularEdge2,
@@ -818,21 +818,21 @@ export class WiresService {
             }
         }
         const wires = points1.map((pts1, index) => {
-            const pts2 = points2[index];
+            const pts2 = points2[index]!;
 
             const ptsInZigZagOrder = [];
             for (let i = 0; i < pts1.length; i++) {
                 if (i % 2 === 0) {
                     if (inputs.inverse) {
-                        ptsInZigZagOrder.push(pts2[i]);
+                        ptsInZigZagOrder.push(pts2[i]!);
                     } else {
-                        ptsInZigZagOrder.push(pts1[i]);
+                        ptsInZigZagOrder.push(pts1[i]!);
                     }
                 } else {
                     if (inputs.inverse) {
-                        ptsInZigZagOrder.push(pts1[i]);
+                        ptsInZigZagOrder.push(pts1[i]!);
                     } else {
-                        ptsInZigZagOrder.push(pts2[i]);
+                        ptsInZigZagOrder.push(pts2[i]!);
                     }
                 }
             }
@@ -868,10 +868,10 @@ export class WiresService {
         const nrOfDivisions = inputs.nrOfDivisions ?? 10;
         const divideByEqualDistance = inputs.divideByEqualDistance ?? false;
         const pointsPerShape = inputs.shapes.map((shape) => this.subdivideWireOrEdgeToPoints(shape, nrOfDivisions, divideByEqualDistance));
-        const nrOfPoints = pointsPerShape[0].length;
+        const nrOfPoints = pointsPerShape[0]!.length;
         const wires: TopoDS_Wire[] = [];
         for (let i = 0; i < nrOfPoints; i++) {
-            const pointsAtIndex = pointsPerShape.map((points) => points[i]);
+            const pointsAtIndex = pointsPerShape.map((points) => points[i]!);
             wires.push(this.createWireFromPointsByType(pointsAtIndex, inputs.wireType, inputs.closed, inputs.tolerance));
         }
         return wires;
@@ -921,7 +921,7 @@ export class WiresService {
 
                 let scaleFromPatternWidth = 1;
                 if (inputs.scalePatternWidth && inputs.scalePatternWidth.length > 0) {
-                    scaleFromPatternWidth = inputs.scalePatternWidth[currentScalePatternWidthIndex];
+                    scaleFromPatternWidth = inputs.scalePatternWidth[currentScalePatternWidthIndex] ?? 1;
                     currentScalePatternWidthIndex++;
                     if (currentScalePatternWidthIndex >= inputs.scalePatternWidth.length) {
                         currentScalePatternWidthIndex = 0;
@@ -930,7 +930,7 @@ export class WiresService {
 
                 let scaleFromPatternHeight = 1;
                 if (inputs.scalePatternHeight && inputs.scalePatternHeight.length > 0) {
-                    scaleFromPatternHeight = inputs.scalePatternHeight[currentScalePatternHeightIndex];
+                    scaleFromPatternHeight = inputs.scalePatternHeight[currentScalePatternHeightIndex] ?? 1;
                     currentScalePatternHeightIndex++;
                     if (currentScalePatternHeightIndex >= inputs.scalePatternHeight.length) {
                         currentScalePatternHeightIndex = 0;
@@ -938,7 +938,7 @@ export class WiresService {
                 }
                 let include = true;
                 if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
-                    include = inputs.inclusionPattern[currentInclusionPatternIndex];
+                    include = inputs.inclusionPattern[currentInclusionPatternIndex] ?? true;
                     currentInclusionPatternIndex++;
                     if (currentInclusionPatternIndex >= inputs.inclusionPattern.length) {
                         currentInclusionPatternIndex = 0;
@@ -947,7 +947,7 @@ export class WiresService {
 
                 let fillet = 0;
                 if (inputs.filletPattern && inputs.filletPattern.length > 0) {
-                    fillet = inputs.filletPattern[currentFilletPatternIndex];
+                    fillet = inputs.filletPattern[currentFilletPatternIndex] ?? 0;
                     currentFilletPatternIndex++;
                     if (currentFilletPatternIndex >= inputs.filletPattern.length) {
                         currentFilletPatternIndex = 0;
@@ -957,8 +957,8 @@ export class WiresService {
                 if (include) {
                     fillet = (hex.maxFilletRadius ?? 0) * fillet;
 
-                    const hexagon = wires[i * nrHexagonsInWidth + j];
-                    const hexagonCenter = hex.centers[i * nrHexagonsInWidth + j];
+                    const hexagon = wires[i * nrHexagonsInWidth + j]!;
+                    const hexagonCenter = hex.centers[i * nrHexagonsInWidth + j]!;
 
                     if (fillet > 0) {
                         const filletRectangle = this.filletsService.fillet2d({
@@ -1013,9 +1013,9 @@ export class WiresService {
         }
         // If closed, add first point again
         if (inputs.closed) {
-            coords.push_back(inputs.points[0][0]);
-            coords.push_back(inputs.points[0][1]);
-            coords.push_back(inputs.points[0][2]);
+            coords.push_back(inputs.points[0]![0]);
+            coords.push_back(inputs.points[0]![1]);
+            coords.push_back(inputs.points[0]![2]);
         }
 
         // Use MakeApproxBSplineEdge which uses GeomAPI_PointsToBSpline
@@ -1048,9 +1048,9 @@ export class WiresService {
         // Non-periodic closed: repeat the first point so the wire is C0-closed. A periodic curve must
         // NOT duplicate poles - its periodic knot vector wraps the control polygon for a smooth seam.
         if (inputs.closed && !periodic) {
-            coords.push_back(inputs.points[0][0]);
-            coords.push_back(inputs.points[0][1]);
-            coords.push_back(inputs.points[0][2]);
+            coords.push_back(inputs.points[0]![0]);
+            coords.push_back(inputs.points[0]![1]);
+            coords.push_back(inputs.points[0]![2]);
         }
 
         let wire: TopoDS_Wire | undefined;
@@ -1105,9 +1105,9 @@ export class WiresService {
         // Non-periodic closed: repeat the first point (C0 closure). A periodic curve must NOT duplicate
         // poles - its periodic knot vector wraps the weighted control polygon for a smooth seam.
         if (inputs.closed && !periodic) {
-            coords.push_back(inputs.points[0][0]);
-            coords.push_back(inputs.points[0][1]);
-            coords.push_back(inputs.points[0][2]);
+            coords.push_back(inputs.points[0]![0]);
+            coords.push_back(inputs.points[0]![1]);
+            coords.push_back(inputs.points[0]![2]);
         }
 
         // Create weights array

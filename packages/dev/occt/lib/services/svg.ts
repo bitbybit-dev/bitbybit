@@ -165,7 +165,7 @@ export class OCCTSVG {
         items.forEach((it) => it.shape.delete());
 
         const placed: PlacedShape[] = items.map((it, i) => ({
-            shape: placedShapes[i],
+            shape: placedShapes[i]!,
             isFace: it.isFace,
             closed: it.el.subpaths.length > 0 && it.el.subpaths.every((sp) => sp.closed),
             meta: this.styleToMeta(it.el),

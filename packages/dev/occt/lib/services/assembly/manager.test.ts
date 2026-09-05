@@ -257,8 +257,8 @@ describe("OCCTAssemblyManager unit tests", () => {
             // Assert
             expect(structure.parts).toHaveLength(1);
             expect(structure.nodes).toHaveLength(1);
-            expect(structure.parts[0].id).toBe("box");
-            expect(structure.nodes[0].id).toBe("inst");
+            expect(structure.parts[0]!.id).toBe("box");
+            expect(structure.nodes[0]!.id).toBe("inst");
             // clearDocument defaults to undefined or false
             expect(structure.clearDocument).toBeFalsy();
 
@@ -305,7 +305,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Assert
             expect(structure.partUpdates).toHaveLength(1);
-            expect(structure.partUpdates![0].label).toBe("0:1:1:1");
+            expect(structure.partUpdates![0]!.label).toBe("0:1:1:1");
         });
 
         it("should set clearDocument flag correctly", () => {
@@ -666,7 +666,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             const parts = query.getDocumentParts({ document: document! });
-            const label = parts[0].label;
+            const label = parts[0]!.label;
 
             // Act
             const result = manager.setLabelColor({

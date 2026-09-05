@@ -43,7 +43,7 @@ function resolveStyleProps(node: XmlNode, inherited: { [k: string]: string }): {
         if (node.attrs[key] !== undefined) { props[key] = node.attrs[key]; }
     }
     const inline = parseInlineStyle(node.attrs.style);
-    for (const key of Object.keys(inline)) { props[key] = inline[key]; }
+    for (const key of Object.keys(inline)) { props[key] = inline[key]!; }
     return props;
 }
 
@@ -77,7 +77,7 @@ function toStyle(props: { [k: string]: string }): SvgStyle {
 function parseViewBox(v: string | undefined): [number, number, number, number] | undefined {
     if (!v) { return undefined; }
     const n = v.split(/[\s,]+/).map(parseFloat).filter((x) => !Number.isNaN(x));
-    return n.length === 4 ? [n[0], n[1], n[2], n[3]] : undefined;
+    return n.length === 4 ? [n[0]!, n[1]!, n[2]!, n[3]!] : undefined;
 }
 
 function subpathsForNode(node: XmlNode, warnings: string[]): SvgSubpath[] {

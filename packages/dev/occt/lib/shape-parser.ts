@@ -105,7 +105,7 @@ export class ShapeParser {
         const shapes = part.shapes;
         if (shapes) {
             Object.keys(shapes).forEach(key => {
-                shapes[key].delete();
+                shapes[key]!.delete();
             });
         }
         Object.keys(part).forEach(key => {

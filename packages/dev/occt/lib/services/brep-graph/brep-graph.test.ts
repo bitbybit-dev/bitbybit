@@ -157,7 +157,7 @@ describe("OCCT brep graph unit tests", () => {
             if (!hasBindings) { return; }
             const sphere = solid.createSphere({ radius: 5, center: [0, 0, 0] });
             const result = brepGraph.faceInfo({ shape: sphere });
-            expect(result.faces[0].surfaceType).toBe("Sphere");
+            expect(result.faces[0]!.surfaceType).toBe("Sphere");
             sphere.delete();
         });
     });
@@ -269,8 +269,8 @@ describe("OCCT brep graph unit tests", () => {
                 expect(edge.faces.length).toBe(2);
             });
             dump.vertices.forEach(v => expect(v.point.length).toBe(3));
-            expect(dump.shells[0].nbFaces).toBe(6);
-            expect(dump.shells[0].closed).toBe(true);
+            expect(dump.shells[0]!.nbFaces).toBe(6);
+            expect(dump.shells[0]!.closed).toBe(true);
 
             const info = brepGraph.faceInfo({ shape: b });
             const dumpUids = dump.faces.map(f => f.uid).sort((a, z) => a - z);
@@ -366,7 +366,7 @@ describe("OCCT brep graph unit tests", () => {
             expect(adjacency.faces.length).toBe(info.faces.length);
             adjacency.faces.forEach((face, i) => {
                 expect(face.index).toBe(i);
-                expect(info.faces[i].index).toBe(i);
+                expect(info.faces[i]!.index).toBe(i);
             });
             b.delete();
         });

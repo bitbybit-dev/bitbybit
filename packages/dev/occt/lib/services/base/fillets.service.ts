@@ -109,7 +109,7 @@ export class FilletsService {
                 inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
             );
             inputs.edges.forEach((edge, index) => {
-                mkFillet.Add(inputs.radiusList[index], edge);
+                mkFillet.Add(inputs.radiusList[index]!, edge);
             });
             const curFillet = mkFillet.Shape();
             mkFillet.delete();
@@ -167,7 +167,7 @@ export class FilletsService {
             );
             inputs.edges.forEach((edge, index) => {
                 this.assignVariableFilletToEdge({
-                    edge, paramsU: inputs.paramsULists[index], radiusList: inputs.radiusLists[index], shape: inputs.shape,
+                    edge, paramsU: inputs.paramsULists[index]!, radiusList: inputs.radiusLists[index]!, shape: inputs.shape,
                 }, mkFillet);
             });
             const curFillet = mkFillet.Shape();
@@ -182,7 +182,7 @@ export class FilletsService {
     private assignVariableFilletToEdge(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, mkFillet: BRepFilletAPI_MakeFillet) {
         const array = new this.occ.TColgp_Array1OfPnt2d(1, inputs.paramsU.length);
         inputs.paramsU.forEach((param, index) => {
-            array.SetValue(index + 1, this.entitiesService.gpPnt2d([param, inputs.radiusList[index]]));
+            array.SetValue(index + 1, this.entitiesService.gpPnt2d([param, inputs.radiusList[index]!]));
         });
         mkFillet.AddWithLaw(array, inputs.edge);
     }
@@ -287,7 +287,7 @@ export class FilletsService {
                 inputs.shape
             );
             inputs.edges.forEach((edge, index) => {
-                mkChamfer.AddTwoDistances(inputs.distance1, inputs.distance2, edge, inputs.faces[index]);
+                mkChamfer.AddTwoDistances(inputs.distance1, inputs.distance2, edge, inputs.faces[index]!);
             });
             const curChamfer = mkChamfer.Shape();
             mkChamfer.delete();
@@ -311,7 +311,7 @@ export class FilletsService {
                 inputs.shape
             );
             inputs.edges.forEach((edge, index) => {
-                mkChamfer.AddTwoDistances(inputs.distances1[index], inputs.distances2[index], edge, inputs.faces[index]);
+                mkChamfer.AddTwoDistances(inputs.distances1[index]!, inputs.distances2[index]!, edge, inputs.faces[index]!);
             });
             const curChamfer = mkChamfer.Shape();
             mkChamfer.delete();
@@ -348,8 +348,8 @@ export class FilletsService {
                 inputs.shape
             );
             inputs.edges.forEach((edge, index) => {
-                const radians = this.vecHelper.degToRad(inputs.angles[index]);
-                mkChamfer.AddDA(inputs.distances[index], radians, edge, inputs.faces[index]);
+                const radians = this.vecHelper.degToRad(inputs.angles[index]!);
+                mkChamfer.AddDA(inputs.distances[index]!, radians, edge, inputs.faces[index]!);
             });
             const curChamfer = mkChamfer.Shape();
             mkChamfer.delete();
@@ -371,7 +371,7 @@ export class FilletsService {
             );
             const radians = this.vecHelper.degToRad(inputs.angle);
             inputs.edges.forEach((edge, index) => {
-                mkChamfer.AddDA(inputs.distance, radians, edge, inputs.faces[index]);
+                mkChamfer.AddDA(inputs.distance, radians, edge, inputs.faces[index]!);
             });
             const curChamfer = mkChamfer.Shape();
             mkChamfer.delete();
@@ -513,13 +513,13 @@ export class FilletsService {
                     if (index <= 1) {
                         return index;
                     } else {
-                        return adjacentList[index - 2];
+                        return adjacentList[index - 2]!;
                     }
                 } else {
                     if (index === 0) {
                         return 1;
                     } else {
-                        return adjacentList[index - 1];
+                        return adjacentList[index - 1]!;
                     }
                 }
             });
@@ -532,7 +532,7 @@ export class FilletsService {
         faces.forEach((f, _i) => {
             // due to reversal of wire in the beginning this is stable index now
             // also we need to translate these edges back along direction
-            const edgeToAdd = this.shapeGettersService.getEdges({ shape: f })[3];
+            const edgeToAdd = this.shapeGettersService.getEdges({ shape: f })[3]!;
             faceEdges.push(edgeToAdd);
         });
 
@@ -548,7 +548,7 @@ export class FilletsService {
     private applyRadiusToVertex(inputs: Inputs.OCCT.FilletDto<TopoDS_Shape>, filletMaker: BRepFilletAPI_MakeFillet2d, cvx: TopoDS_Vertex, index: number) {
         if (inputs.radiusList) {
             const radiusList = inputs.radiusList;
-            filletMaker.AddFillet(cvx, radiusList[index]);
+            filletMaker.AddFillet(cvx, radiusList[index]!);
         } else if (inputs.radius) {
             filletMaker.AddFillet(cvx, inputs.radius);
         }
@@ -589,7 +589,7 @@ export class FilletsService {
             result = this.converterService.getActualTypeOfShape(filletMaker.Shape()) as TopoDS_Face;
         } else {
             const wires = this.shapeGettersService.getWires({ shape: filletMaker.Shape() });
-            result = wires[0];
+            result = wires[0]!;
         }
         filletMaker.delete();
         face.delete();

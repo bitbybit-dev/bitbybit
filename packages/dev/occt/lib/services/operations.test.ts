@@ -100,7 +100,7 @@ describe("OCCT operations unit tests", () => {
 
         const res = operations.loft({ shapes: [ellipse1, ellipse2, ellipse3], makeSolid: false });
         const faces = face.getFaces({ shape: res });
-        const faceOfLoft = faces[0];
+        const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
         expect(area).toEqual(19.731425414345722);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
@@ -128,7 +128,7 @@ describe("OCCT operations unit tests", () => {
         const opt = new Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire>([ellipse1, ellipse2, ellipse3]);
         const res = operations.loftAdvanced(opt);
         const faces = face.getFaces({ shape: res });
-        const faceOfLoft = faces[0];
+        const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
         expect(area).toEqual(19.60954299347563);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
@@ -157,7 +157,7 @@ describe("OCCT operations unit tests", () => {
         opt.closed = true;
         const res = operations.loftAdvanced(opt);
         const faces = face.getFaces({ shape: res });
-        const faceOfLoft = faces[0];
+        const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
         expect(area).toEqual(26.727187158113303);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
@@ -186,7 +186,7 @@ describe("OCCT operations unit tests", () => {
         opt.parType = Inputs.OCCT.approxParametrizationTypeEnum.approxChordLength;
         const res = operations.loftAdvanced(opt);
         const faces = face.getFaces({ shape: res });
-        const faceOfLoft = faces[0];
+        const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
         expect(area).toEqual(19.731425414345722);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
@@ -215,7 +215,7 @@ describe("OCCT operations unit tests", () => {
         opt.parType = Inputs.OCCT.approxParametrizationTypeEnum.approxIsoParametric;
         const res = operations.loftAdvanced(opt);
         const faces = face.getFaces({ shape: res });
-        const faceOfLoft = faces[0];
+        const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
         expect(area).toEqual(19.628737555434956);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
@@ -245,7 +245,7 @@ describe("OCCT operations unit tests", () => {
         opt.endVertex = [0, 4, 0];
         const res = operations.loftAdvanced(opt);
         const faces = face.getFaces({ shape: res });
-        const faceOfLoft = faces[0];
+        const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
         expect(area).toEqual(21.996996042031732);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
@@ -278,7 +278,7 @@ describe("OCCT operations unit tests", () => {
         opt.nrPeriodicSections = 10;
         const res = operations.loftAdvanced(opt);
         const faces = face.getFaces({ shape: res });
-        const faceOfLoft = faces[0];
+        const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
         expect(area).toEqual(25.324671688146765);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
@@ -733,7 +733,7 @@ describe("OCCT operations unit tests", () => {
                 removeIntEdges: false
             });
             const wires = wire.getWires({ shape: offsetRes });
-            const length = wire.getWireLength({ shape: wires[0] });
+            const length = wire.getWireLength({ shape: wires[0]! });
             // Original circumference is 2*PI*1 ≈ 6.28, offset outward by 0.2 gives 2*PI*1.2 ≈ 7.54
             expect(length).toBeCloseTo(2 * Math.PI * 1.2, 1);
             circleWire.delete();

@@ -318,8 +318,8 @@ describe("OCCT transforms unit tests", () => {
 
             const sphereCenter = solid.getSolidCenterOfMass({ shape: sphere });
             const boxCenter = solid.getSolidCenterOfMass({ shape: box });
-            const transformedSphereCenter = solid.getSolidCenterOfMass({ shape: transformed[0] });
-            const transformedBoxCenter = solid.getSolidCenterOfMass({ shape: transformed[1] });
+            const transformedSphereCenter = solid.getSolidCenterOfMass({ shape: transformed[0]! });
+            const transformedBoxCenter = solid.getSolidCenterOfMass({ shape: transformed[1]! });
 
             expect(sphereCenter[0]).toBeCloseTo(0);
             expect(sphereCenter[1]).toBeCloseTo(3);
@@ -356,8 +356,8 @@ describe("OCCT transforms unit tests", () => {
             const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
 
             const transformed = transforms.rotateShapes({ shapes: [sphere, box], axes: [[1, 1, -1], [1, 2, -2]], angles: [64, 32] });
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -387,8 +387,8 @@ describe("OCCT transforms unit tests", () => {
             const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
 
             const transformed = transforms.rotateAroundCenterShapes({ shapes: [sphere, box], axes: [[1, 1, -1], [1, 2, -2]], angles: [64, 32], centers: [[1, 0.1, -1], [1, 2.3, -2]] });
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -417,8 +417,8 @@ describe("OCCT transforms unit tests", () => {
             const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
 
             const transformed = transforms.scale3dShapes({ shapes: [sphere, box], centers: [[1, 0.1, -1], [1, 2.3, -2]], scales: [[1.3, 2, 4], [2.3, 1.5, 3]] });
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -455,8 +455,8 @@ describe("OCCT transforms unit tests", () => {
                 rotationAngles: [64, 32]
             });
 
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -493,8 +493,8 @@ describe("OCCT transforms unit tests", () => {
                 toDirections: [[1, 1, 0], [1, 1, 0]]
             });
 
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -530,8 +530,8 @@ describe("OCCT transforms unit tests", () => {
                 directions: [[0, 0, 1], [0, 0, 1]]
             });
 
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -562,8 +562,8 @@ describe("OCCT transforms unit tests", () => {
                 factors: [2.3, 1.5]
             });
 
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -601,8 +601,8 @@ describe("OCCT transforms unit tests", () => {
                 origins: [[1, 1, -1], [1, 1, -1]]
             });
 
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -638,8 +638,8 @@ describe("OCCT transforms unit tests", () => {
                 origins: [[1, 3, -1], [1, 3, -1]]
             });
 
-            const transformedSphere = transformed[0];
-            const transformedBox = transformed[1];
+            const transformedSphere = transformed[0]!;
+            const transformedBox = transformed[1]!;
 
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
@@ -712,9 +712,9 @@ describe("OCCT transforms unit tests", () => {
             const cr = edge.getCornerPointsOfEdgesForShape({ shape: viaRotate });
             const cm = edge.getCornerPointsOfEdgesForShape({ shape: viaMatrix });
             cr.forEach((p, i) => {
-                expect(cm[i][0]).toBeCloseTo(p[0]);
-                expect(cm[i][1]).toBeCloseTo(p[1]);
-                expect(cm[i][2]).toBeCloseTo(p[2]);
+                expect(cm[i]![0]).toBeCloseTo(p[0]);
+                expect(cm[i]![1]).toBeCloseTo(p[1]);
+                expect(cm[i]![2]).toBeCloseTo(p[2]);
             });
             box.delete();
             viaRotate.delete();
@@ -747,7 +747,7 @@ describe("OCCT transforms unit tests", () => {
             const m = transforms.composeTransform({ translation: [3, -2, 7], rotation: [10, 20, 30], scale: 1 });
             const inv = transforms.invertTransform({ transformation: m });
             const composed = transforms.multiplyTransforms({ transformation: [m, inv] });
-            composed.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]));
+            composed.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]!));
         });
 
         it("should scale a shape about an arbitrary center", () => {
@@ -778,9 +778,9 @@ describe("OCCT transforms unit tests", () => {
             const cq = edge.getCornerPointsOfEdgesForShape({ shape: viaQuat });
             const cr = edge.getCornerPointsOfEdgesForShape({ shape: viaRotate });
             cr.forEach((p, i) => {
-                expect(cq[i][0]).toBeCloseTo(p[0]);
-                expect(cq[i][1]).toBeCloseTo(p[1]);
-                expect(cq[i][2]).toBeCloseTo(p[2]);
+                expect(cq[i]![0]).toBeCloseTo(p[0]);
+                expect(cq[i]![1]).toBeCloseTo(p[1]);
+                expect(cq[i]![2]).toBeCloseTo(p[2]);
             });
             box.delete();
             viaQuat.delete();
@@ -789,14 +789,14 @@ describe("OCCT transforms unit tests", () => {
 
         it("should build an identity rotation matrix from the identity quaternion", () => {
             const m = transforms.quaternionToMatrix({ quaternion: [0, 0, 0, 1] });
-            m.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]));
+            m.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]!));
         });
 
         it("should read an identity placement transform from a fresh shape", () => {
             const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
             const info = transforms.getShapeTransform({ shape: box });
             expect(info.scale).toBeCloseTo(1);
-            info.matrix.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]));
+            info.matrix.forEach((v, i) => expect(v).toBeCloseTo(IDENTITY[i]!));
             expect(info.quaternion[3]).toBeCloseTo(1);
             box.delete();
         });
