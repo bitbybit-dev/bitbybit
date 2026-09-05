@@ -165,11 +165,6 @@
       "count": 1
     }
   },
-  "packages/dev/core/lib/api/bitbybit/csv.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
   "packages/dev/core/lib/api/bitbybit/json.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -179,11 +174,6 @@
     "@typescript-eslint/no-explicit-any": {
       "count": 9
     },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "packages/dev/core/lib/api/bitbybit/tag.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
@@ -246,9 +236,6 @@
   "packages/dev/core/lib/api/context.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 9
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
     }
   },
   "packages/dev/core/lib/api/inputs/base-inputs.ts": {
@@ -319,9 +306,6 @@
   "packages/dev/jscad/lib/api/jscad-service.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
     }
   },
   "packages/dev/jscad/lib/api/services/jscad-extrusions.ts": {
@@ -367,9 +351,6 @@
   "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 5
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
     }
   },
   "packages/dev/manifold/lib/api/manifold-service.test.ts": {
@@ -487,15 +468,7 @@
     }
   },
   "packages/dev/occt/lib/services/base/fillets.service.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 2
-    },
     "no-useless-assignment": {
-      "count": 1
-    }
-  },
-  "packages/dev/occt/lib/services/base/meshing.service.ts": {
-    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
@@ -520,19 +493,9 @@
       "count": 1
     }
   },
-  "packages/dev/occt/lib/services/fillets.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
-    }
-  },
-  "packages/dev/occt/lib/services/geom/curves.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 2
-    }
-  },
   "packages/dev/occt/lib/services/io.ts": {
     "@typescript-eslint/no-unused-vars": {
-      "count": 2
+      "count": 1
     },
     "preserve-caught-error": {
       "count": 5
@@ -555,7 +518,7 @@
   },
   "packages/dev/occt/lib/services/shapes/wire.ts": {
     "@typescript-eslint/no-unused-vars": {
-      "count": 2
+      "count": 1
     }
   },
   "packages/dev/occt/lib/svg/svg-transform.ts": {
@@ -604,7 +567,7 @@
   },
   "packages/dev/playcanvas/lib/api/bitbybit/playcanvas.test.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 2
+      "count": 1
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/camera.test.ts": {

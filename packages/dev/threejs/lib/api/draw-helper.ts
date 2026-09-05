@@ -673,7 +673,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private createMesh(
-        positions: number[], indices: number[], normals: number[], jscadMesh: THREEJS.Group, transforms: number[], updatable: boolean, material: THREEJS.MeshPhysicalMaterial
+        positions: number[], indices: number[], _normals: number[], jscadMesh: THREEJS.Group, transforms: number[], _updatable: boolean, material: THREEJS.MeshPhysicalMaterial
     ): void {
         // Validate worker response
         if (!positions || !indices || !transforms) {
@@ -931,7 +931,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private drawPolylines(lineSegments: THREEJS.LineSegments, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
-        size: number, opacity: number, colours: string | string[], colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+        size: number, _opacity: number, colours: string | string[], colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
         arrowSize = 0, arrowAngle = 30) {
         if (polylinesPoints && polylinesPoints.length > 0) {
             const lineVertices = [];

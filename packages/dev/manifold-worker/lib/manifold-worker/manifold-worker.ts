@@ -3,9 +3,8 @@ import { ManifoldService } from "@bitbybit-dev/manifold";
 
 let manifold: ManifoldService;
 let cacheHelper: CacheHelper;
-let dependencies;
 
-export const initializationComplete = (mnf: any, plugins?: any, doNotPost?: boolean) => {
+export const initializationComplete = (mnf: any, _plugins?: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper();
     manifold = new ManifoldService(mnf);
     if (!doNotPost) {
@@ -106,8 +105,6 @@ export const onMessageInput = (d: DataInput, postMessage) => {
                 Object.keys(d.action.inputs).forEach(c => {
                     manifold.plugins.dependencies[c] = d.action.inputs[c];
                 });
-            } else {
-                dependencies = d.action.inputs;
             }
         }
         if (d.action.functionName === "manifoldToMesh") {

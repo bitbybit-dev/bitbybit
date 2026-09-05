@@ -4,31 +4,6 @@
     "ignoreMessages": true
   },
   "errors": {
-    "08964646a8313fb6753dbb7cdfe9a1932ddd1393": {
-      "file": "__mocks__/@bitbybit-dev/jscad-worker.ts",
-      "code": "TS6133",
-      "count": 5
-    },
-    "4a182d4c28b3cdb234e44f25e65c74c63cf59352": {
-      "file": "__mocks__/@bitbybit-dev/manifold-worker.ts",
-      "code": "TS6133",
-      "count": 3
-    },
-    "8f19ec204bb2496d926bb5b064783a6f3e3bac1d": {
-      "file": "__mocks__/@bitbybit-dev/occt-worker.ts",
-      "code": "TS6133",
-      "count": 3
-    },
-    "c8c34d32eb99b20996329bd200dfc268e62a68ec": {
-      "file": "lib/api/__mocks__/playcanvas.mock.ts",
-      "code": "TS6133",
-      "count": 14
-    },
-    "1b380b2c4b783a9a86af4e25d34b25455eb3736c": {
-      "file": "lib/api/__mocks__/test-helpers.ts",
-      "code": "TS2352",
-      "count": 1
-    },
     "9ac0c9966a1c9db338d5e442d9a8f2c20b6fdc6c": {
       "file": "lib/api/bitbybit/draw.ts",
       "code": "TS2322",
@@ -53,11 +28,6 @@
       "file": "lib/api/bitbybit/draw.ts",
       "code": "TS2339",
       "count": 2
-    },
-    "1ae656711edb2c79f917abee04a6430d41296957": {
-      "file": "lib/api/bitbybit/playcanvas.ts",
-      "code": "TS6138",
-      "count": 1
     },
     "4af81c697058e990b9c6473e92063ef10397a213": {
       "file": "lib/api/bitbybit/playcanvas/orbit-camera.ts",
@@ -127,7 +97,7 @@
     "da606731e118cb375e73240194d679f1e7b9f8dc": {
       "file": "lib/api/draw-helper.ts",
       "code": "TS2345",
-      "count": 21
+      "count": 19
     },
     "bf2e747f37b99f77bb542471f36b0e2a04a0fd67": {
       "file": "lib/api/draw-helper.ts",
@@ -143,11 +113,6 @@
       "file": "lib/api/draw-helper.ts",
       "code": "TS7006",
       "count": 1
-    },
-    "2496d3e0c5a38c72736c5cc81397f5e2ce68fcf9": {
-      "file": "lib/api/draw-helper.ts",
-      "code": "TS6133",
-      "count": 6
     },
     "26d43f32456e6eb1af640d1b281071e5c48dc526": {
       "file": "lib/api/draw-helper.ts",

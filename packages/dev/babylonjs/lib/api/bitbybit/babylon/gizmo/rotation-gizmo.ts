@@ -6,7 +6,7 @@ export class BabylonGizmoRotationGizmo {
 
 
     constructor(
-        private readonly context: Context,
+        _context: Context,
     ) {
     }
 

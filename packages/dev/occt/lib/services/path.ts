@@ -12,8 +12,8 @@ export class OCCTPath {
     private readonly builder: PathBuilder;
 
     constructor(
-        private readonly occ: BitbybitOcctModule,
-        private readonly och: OccHelper
+        occ: BitbybitOcctModule,
+        och: OccHelper
     ) {
         this.builder = new PathBuilder(occ, och);
     }

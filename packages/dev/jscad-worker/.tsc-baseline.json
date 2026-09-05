@@ -44,11 +44,6 @@
       "code": "TS2564",
       "count": 1
     },
-    "0118e60c65933c7555869d3849b29bc8a6739dc5": {
-      "file": "lib/jscad-worker/jscad-worker.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "3906f047b1d4b47940aeff38ef9065f27e73acb3": {
       "file": "lib/jscad-worker/jscad-worker.ts",
       "code": "TS7006",

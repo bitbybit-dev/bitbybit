@@ -619,25 +619,6 @@ export class OperationsService {
         return res;
     }
 
-    private getBRepOffsetMode(offsetMode: Inputs.OCCT.bRepOffsetModeEnum): EmbindEnumValue {
-        let res: EmbindEnumValue;
-        switch (offsetMode) {
-            case Inputs.OCCT.bRepOffsetModeEnum.skin: {
-                res = this.occ.BRepOffset_Mode.Skin;
-                break;
-            }
-            case Inputs.OCCT.bRepOffsetModeEnum.pipe: {
-                res = this.occ.BRepOffset_Mode.Pipe;
-                break;
-            }
-            case Inputs.OCCT.bRepOffsetModeEnum.rectoVerso: {
-                res = this.occ.BRepOffset_Mode.RectoVerso;
-                break;
-            }
-        }
-        return res;
-    }
-
     slice(inputs: Inputs.OCCT.SliceDto<TopoDS_Shape>): TopoDS_Compound {
         if (inputs.step <= 0) {
             throw new Error("Step needs to be positive.");

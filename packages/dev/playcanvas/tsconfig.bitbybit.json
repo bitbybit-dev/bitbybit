@@ -9,6 +9,7 @@
         "coverage",
         "dist",
         "lib/workers/occ/services/advanced/**/*",
+        "**/__mocks__/**",
         "./**/*.test.ts"
     ],
     "compilerOptions": {

@@ -29,11 +29,6 @@
       "code": "TS7034",
       "count": 3
     },
-    "3dbab0df911dfe98924b8da9cccf64c12094b8a0": {
-      "file": "lib/api/jscad-service.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "30891039c23c391eca201fbd5c49c51e5876d4a2": {
       "file": "lib/api/jscad-service.ts",
       "code": "TS7005",

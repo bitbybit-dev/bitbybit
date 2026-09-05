@@ -30,7 +30,7 @@ export class OCCTSVG {
     private readonly faceBuilder: SvgFaceBuilder;
 
     constructor(
-        private readonly occ: BitbybitOcctModule,
+        occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
         this.builder = new PathBuilder(occ, och);

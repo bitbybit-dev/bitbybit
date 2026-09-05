@@ -5,7 +5,7 @@ import * as Inputs from "../../../inputs";
 
 export class BabylonGuiImage {
 
-    constructor(private readonly context: Context) { }
+    constructor(_context: Context) { }
 
     /**
      * Creates image

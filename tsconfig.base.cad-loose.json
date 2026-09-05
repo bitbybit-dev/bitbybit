@@ -22,6 +22,7 @@
         "useUnknownInCatchVariables": true,
         "strictFunctionTypes": true,
         "noFallthroughCasesInSwitch": true,
+        "noUnusedParameters": true,
         "allowJs": true,
         "declaration": true,
         "emitDeclarationOnly": false,

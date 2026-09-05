@@ -10,7 +10,7 @@ export class PlayCanvas {
 
     constructor(
         private readonly context: Context,
-        private readonly drawHelper: DrawHelper
+        _drawHelper: DrawHelper
     ) {
         this.camera = new PlayCanvasCamera(this.context);
     }

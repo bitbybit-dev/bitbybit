@@ -11,7 +11,7 @@ export class Mesh {
     public readonly operations: MeshOperations;
     public readonly evaluate: MeshEvaluate;
     constructor(
-        private readonly manifoldWorkerManager: ManifoldWorkerManager,
+        manifoldWorkerManager: ManifoldWorkerManager,
     ) {
         this.operations = new MeshOperations(manifoldWorkerManager);
         this.evaluate = new MeshEvaluate(manifoldWorkerManager);

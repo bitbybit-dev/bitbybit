@@ -1,7 +1,4 @@
-import {
-    BRepFilletAPI_MakeFillet, BRepFilletAPI_MakeFillet2d, ChFi3d_FilletShape, BitbybitOcctModule,
-    TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire
-} from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BRepFilletAPI_MakeFillet, BRepFilletAPI_MakeFillet2d, BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -528,7 +525,7 @@ export class FilletsService {
 
         const faceEdges: TopoDS_Edge[] = [];
         const faces = this.shapeGettersService.getFaces({ shape: filletShape });
-        faces.forEach((f, i) => {
+        faces.forEach((f, _i) => {
             // due to reversal of wire in the beginning this is stable index now
             // also we need to translate these edges back along direction
             const edgeToAdd = this.shapeGettersService.getEdges({ shape: f })[3];

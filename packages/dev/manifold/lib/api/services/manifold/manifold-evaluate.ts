@@ -3,10 +3,7 @@ import * as Manifold3D from "manifold-3d";
 
 export class ManifoldEvaluate {
 
-    private manifold: Manifold3D.ManifoldToplevel;
-
-    constructor(wasm: Manifold3D.ManifoldToplevel) {
-        this.manifold = wasm;
+    constructor(_wasm: Manifold3D.ManifoldToplevel) {
     }
 
     volume(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): number {

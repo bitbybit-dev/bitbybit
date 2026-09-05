@@ -24,16 +24,6 @@
       "code": "TS2379",
       "count": 1
     },
-    "26b54bb6d1e5fefad0a6c5ad682b96f5cd62faf7": {
-      "file": "lib/api/services/cross-section/cross-section-evaluate.ts",
-      "code": "TS6133",
-      "count": 1
-    },
-    "4d2c8f2b0a66661478b3b6abc0be0f9dd046c07f": {
-      "file": "lib/api/services/cross-section/cross-section-transforms.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "0c2d0ba4f61be9e5036b3c6083afa1235cea3f2d": {
       "file": "lib/api/services/manifold/manifold-booleans.ts",
       "code": "TS7034",
@@ -44,19 +34,9 @@
       "code": "TS7005",
       "count": 2
     },
-    "f23f0ffd27b7a0b2fcb94dbea6fbcd8222365953": {
-      "file": "lib/api/services/manifold/manifold-evaluate.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "4d0ac4e27cac376c79ed2e5459d3611e2d151f52": {
       "file": "lib/api/services/manifold/manifold-shapes.ts",
       "code": "TS18048",
-      "count": 1
-    },
-    "c8ab92d2bab3f71c28302f47517ec1be1ea7bbea": {
-      "file": "lib/api/services/manifold/manifold-transforms.ts",
-      "code": "TS6133",
       "count": 1
     },
     "97894e872e38fb6bedd540be83e6e408aa277295": {
@@ -69,20 +49,10 @@
       "code": "TS2379",
       "count": 1
     },
-    "5c5f7174473ad803b282abb383b0dc793130c09f": {
-      "file": "lib/api/services/mesh/mesh-evaluate.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "b8a2f8a37390e5999c47f42dee398195a8d76ad7": {
       "file": "lib/api/services/mesh/mesh-evaluate.ts",
       "code": "TS2322",
       "count": 10
-    },
-    "64266962c854d4e578ca1be740c68bb501aaa155": {
-      "file": "lib/api/services/mesh/mesh-operations.ts",
-      "code": "TS6133",
-      "count": 1
     }
   }
 }

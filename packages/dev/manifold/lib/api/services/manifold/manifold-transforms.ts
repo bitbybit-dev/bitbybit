@@ -3,10 +3,7 @@ import * as Manifold3D from "manifold-3d";
 
 export class ManifoldTransforms {
 
-    private manifold: Manifold3D.ManifoldToplevel;
-
-    constructor(wasm: Manifold3D.ManifoldToplevel) {
-        this.manifold = wasm;
+    constructor(_wasm: Manifold3D.ManifoldToplevel) {
     }
 
     scale3D(inputs: Inputs.Manifold.Scale3DDto<Manifold3D.Manifold>): Manifold3D.Manifold {

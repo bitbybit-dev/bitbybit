@@ -621,7 +621,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private createMesh(
-        positions: number[], indices: number[], normals: number[], jscadMesh: pc.Entity, transforms: number[], updatable: boolean, material: pc.StandardMaterial
+        positions: number[], indices: number[], normals: number[], jscadMesh: pc.Entity, transforms: number[], _updatable: boolean, material: pc.StandardMaterial
     ): void {
         const mesh = new pc.Mesh(this.context.app.graphicsDevice);
         mesh.setPositions(positions);
@@ -975,65 +975,6 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
-     * Compute per-vertex colors for polylines based on color mapping strategy
-     * @param colours - Single color or array of colors
-     * @param segmentCounts - Number of line segments per polyline
-     * @param colorMapStrategy - Strategy for mapping colors to polylines
-     * @returns Flat array of RGBA values (0-255) for each vertex
-     */
-    private computePolylineColors(
-        colours: string | string[],
-        segmentCounts: number[],
-        colorMapStrategy: Inputs.Base.colorMapStrategyEnum
-    ): number[] {
-        const lineColors: number[] = [];
-        const totalPolylines = segmentCounts.length;
-        
-        segmentCounts.forEach((segmentCount, polylineIndex) => {
-            // Get the color for this polyline using the strategy
-            const colorHex = this.resolveColorForEntity(colours, polylineIndex, totalPolylines, colorMapStrategy);
-            const color = this.hexToColor(colorHex);
-            
-            // Each segment has 2 vertices, apply the same color to both (RGBA as 0-255)
-            for (let i = 0; i < segmentCount * 2; i++) {
-                lineColors.push(
-                    Math.round(color.r * 255),
-                    Math.round(color.g * 255),
-                    Math.round(color.b * 255),
-                    255 // Full opacity
-                );
-            }
-        });
-        
-        return lineColors;
-    }
-
-    /**
-     * Create a new polyline entity with metadata
-     * @param linePositions - Line positions array
-     * @param colours - Colors for the lines
-     * @param size - Line width
-     * @param polylinePoints - Original polyline points for signature
-     * @param segmentCounts - Number of segments per polyline
-     * @param colorMapStrategy - Strategy for mapping colors to polylines
-     * @returns New polyline entity with metadata
-     */
-    private createPolylineEntityWithMetadata(
-        linePositions: number[],
-        colours: string | string[],
-        size: number,
-        polylinePoints: Inputs.Base.Vector3[][],
-        segmentCounts: number[] = [],
-        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
-    ): PolylineEntity {
-        const entity = this.createLineEntity(linePositions, colours, segmentCounts, colorMapStrategy) as PolylineEntity;
-        entity.bitbybitMeta = {
-            linesForRenderLengths: this.computePolylineSignature(polylinePoints)
-        };
-        return entity;
-    }
-
-    /**
      * Create a new polyline entity with explicit colors (for arrow support)
      * @param linePositions - Line positions array
      * @param size - Line width
@@ -1044,7 +985,7 @@ export class DrawHelper extends DrawHelperCore {
      */
     private createPolylineEntityWithExplicitColors(
         linePositions: number[],
-        size: number,
+        _size: number,
         polylinePoints: Inputs.Base.Vector3[][],
         segmentCounts: number[],
         explicitColors: string[]
@@ -1140,7 +1081,7 @@ export class DrawHelper extends DrawHelperCore {
         polylinesPoints: Inputs.Base.Vector3[][], 
         updatable: boolean,
         size: number, 
-        opacity: number, 
+        _opacity: number, 
         colours: string | string[],
         colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
         arrowSize = 0,
@@ -1194,51 +1135,6 @@ export class DrawHelper extends DrawHelperCore {
             segmentCounts,
             allExplicitColors
         );
-    }
-
-    private createLineEntity(
-        linePositions: number[], 
-        colours: string | string[],
-        segmentCounts: number[] = [],
-        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
-    ): pc.Entity {
-        const mesh = new pc.Mesh(this.context.app.graphicsDevice);
-        mesh.setPositions(linePositions);
-        
-        // Use vertex colors if we have segment counts (multiple polylines)
-        const useVertexColors = segmentCounts.length > 0;
-        
-        if (useVertexColors) {
-            const vertexColors = this.computePolylineColors(colours, segmentCounts, colorMapStrategy);
-            mesh.setColors32(vertexColors);
-        }
-        
-        mesh.update(pc.PRIMITIVE_LINES);
-
-        // Create material that uses vertex colors
-        const mat = new pc.StandardMaterial();
-        if (useVertexColors) {
-            // Enable vertex colors in the material
-            mat.diffuseVertexColor = true;
-            mat.emissiveVertexColor = true;
-            mat.diffuse = new pc.Color(1, 1, 1); // White base, vertex colors will tint
-            mat.emissive = new pc.Color(1, 1, 1); // White base for emissive
-        } else {
-            // Single color mode
-            const color = Array.isArray(colours) ? this.hexToColor(colours[0]) : this.hexToColor(colours);
-            mat.emissive = color;
-            mat.diffuse = color;
-        }
-        mat.useLighting = false;
-        mat.update();
-
-        const meshInstance = new pc.MeshInstance(mesh, mat);
-        const lineEntity = new pc.Entity(this.generateEntityId("lines"));
-        lineEntity.addComponent("render", {
-            meshInstances: [meshInstance],
-            castShadows: false
-        });
-        return lineEntity;
     }
 
     private handleDecomposedManifold(
@@ -1494,32 +1390,6 @@ export class DrawHelper extends DrawHelperCore {
         this.entityIdCounter = 0;
 
         console.log("DrawHelper disposed successfully");
-    }
-
-    /**
-     * Normalize polyline colors from multiple sources into a consistent array
-     * @param polylines - Array of polylines with potential embedded colors
-     * @param inputColors - Input colors (single or array)
-     * @param colorMapStrategy - Strategy for mapping colors to polylines when there are more polylines than colors
-     * @returns Array of normalized hex color strings
-     */
-    private normalizePolylineColors(
-        polylines: Inputs.Polyline.PolylinePropertiesDto[], 
-        inputColors: string | string[],
-        colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder
-    ): string[] {
-        const defaultColor = Array.isArray(inputColors) ? inputColors[0] : inputColors;
-        
-        return polylines.map((polyline, index) => {
-            // Priority 1: Polyline-specific color
-            if (polyline.color) {
-                const color = typeof polyline.color === "string" ? polyline.color : polyline.color.join(",");
-                return super.normalizeColor(color, defaultColor);
-            }
-            
-            // Priority 2: Use color map strategy to resolve color
-            return this.resolveColorForEntity(inputColors, index, polylines.length, colorMapStrategy);
-        });
     }
 
     /**

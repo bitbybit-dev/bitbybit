@@ -9,11 +9,6 @@
       "code": "TS2564",
       "count": 342
     },
-    "670fe3039c6d8b2426b443101920ed07d851ff76": {
-      "file": "lib/api/inputs/occ-inputs.ts",
-      "code": "TS6133",
-      "count": 4
-    },
     "452d7128bb0929af21ad2133586ae0965c9697b5": {
       "file": "lib/api/models/occ-models.ts",
       "code": "TS2564",
@@ -44,11 +39,6 @@
       "code": "TS7008",
       "count": 1
     },
-    "c307bab9130a65197492dff22d6e0a4af8df3649": {
-      "file": "lib/occ-service.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "efdb93ad866a20aeb3816a51a7118bdbde5f97dc": {
       "file": "lib/services/assembly/manager.ts",
       "code": "TS2375",
@@ -57,11 +47,6 @@
     "df338c0aa53e1fdeeec21e3e71abea2be8d7cc04": {
       "file": "lib/services/assembly/manager.ts",
       "code": "TS2379",
-      "count": 1
-    },
-    "3b3d7a26052826699d1c6fdc827c87f11300abec": {
-      "file": "lib/services/assembly/query.ts",
-      "code": "TS6138",
       "count": 1
     },
     "1b26ed869f4fafdc0c7b39589cdff0bf822914b3": {
@@ -118,16 +103,6 @@
       "file": "lib/services/base/dxf.service.ts",
       "code": "TS6133",
       "count": 1
-    },
-    "7bb1fbeb3d2efdda14aa55cf49bb0ac0e2d1cba0": {
-      "file": "lib/services/base/edges.service.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "9e67b7b2570109bf44028d369e7f3b05309d22e3": {
-      "file": "lib/services/base/edges.service.ts",
-      "code": "TS6133",
-      "count": 3
     },
     "6f1dd454c10979bb99dd519450bf8b6cc33ac761": {
       "file": "lib/services/base/edges.service.ts",
@@ -189,11 +164,6 @@
       "code": "TS7034",
       "count": 3
     },
-    "02b6d354fd577123282ad63b70e29b58858bb8f5": {
-      "file": "lib/services/base/faces.service.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "56069e7a33ca6e4d169035b53b0b3a5845d2d999": {
       "file": "lib/services/base/faces.service.ts",
       "code": "TS7005",
@@ -208,11 +178,6 @@
       "file": "lib/services/base/faces.service.ts",
       "code": "TS2379",
       "count": 1
-    },
-    "72fecb2a46aad7028562d26dc698fbd49953ead8": {
-      "file": "lib/services/base/fillets.service.ts",
-      "code": "TS6133",
-      "count": 2
     },
     "0f6866c11103f9b66083dcb5296e8fdd3b393bf2": {
       "file": "lib/services/base/fillets.service.ts",
@@ -248,11 +213,6 @@
       "file": "lib/services/base/iterator.service.ts",
       "code": "TS7053",
       "count": 2
-    },
-    "7d85c67730564ed53727c5897b558b3e59d9f4af": {
-      "file": "lib/services/base/meshing.service.ts",
-      "code": "TS6133",
-      "count": 3
     },
     "6e3ad8e521384c5b80683617687108e0863896b6": {
       "file": "lib/services/base/meshing.service.ts",
@@ -294,11 +254,6 @@
       "code": "TS2379",
       "count": 1
     },
-    "006d2874905a68f27b4b92e064783f3179388ccf": {
-      "file": "lib/services/base/operations.service.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "26b6b9bc192c772d1f17569960a9765559616964": {
       "file": "lib/services/base/operations.service.ts",
       "code": "TS7034",
@@ -317,16 +272,6 @@
     "3f066a95f65caae54f22ce5ff1c2bf67e41ec4eb": {
       "file": "lib/services/base/shape-getters.ts",
       "code": "TS18048",
-      "count": 1
-    },
-    "714056185e741b5aad35f8161acb1d839f9be91f": {
-      "file": "lib/services/base/shape-getters.ts",
-      "code": "TS6133",
-      "count": 5
-    },
-    "fb0b401511d79d676a560ccfc0b9a6120e5cdf15": {
-      "file": "lib/services/base/solids.service.ts",
-      "code": "TS6138",
       "count": 1
     },
     "39f5b51bda94f793df937e265388cc9f87d4e311": {
@@ -409,21 +354,6 @@
       "code": "TS7005",
       "count": 2
     },
-    "561d01bb3e836a97a91636f57a0af98447b7f56e": {
-      "file": "lib/services/booleans.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "23e133c83da2d7849f646704384df114aee5754d": {
-      "file": "lib/services/dimensions.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "77b972ed04d2052f8969483531db82d5fc670c41": {
-      "file": "lib/services/fillets.ts",
-      "code": "TS6133",
-      "count": 3
-    },
     "654341b63e84f849470b9dd146898bf15c11407a": {
       "file": "lib/services/fillets.ts",
       "code": "TS2322",
@@ -433,31 +363,6 @@
       "file": "lib/services/fillets.ts",
       "code": "TS2379",
       "count": 2
-    },
-    "5f7300cf079f01464858deef9297bb4899e775ed": {
-      "file": "lib/services/geom/curves.ts",
-      "code": "TS6133",
-      "count": 2
-    },
-    "abb9a9629041abd73b0c19ba5399ce75b7053363": {
-      "file": "lib/services/io.ts",
-      "code": "TS6133",
-      "count": 1
-    },
-    "10b28c61b3f55751d126a341f33564721a3840ae": {
-      "file": "lib/services/operations.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "d34b040cac99be6c95907a537ae29596773adfcb": {
-      "file": "lib/services/path.ts",
-      "code": "TS6138",
-      "count": 2
-    },
-    "932716129360fc7ec75d85049288ef03f64f7a3f": {
-      "file": "lib/services/shapes/compound.ts",
-      "code": "TS6138",
-      "count": 1
     },
     "7f9bce99b3d24fc28383dfdccae468d51a013244": {
       "file": "lib/services/shapes/edge.ts",
@@ -494,29 +399,14 @@
       "code": "TS2454",
       "count": 1
     },
-    "bdda5143094f153d70052444c95c83229972d0a9": {
-      "file": "lib/services/shapes/solid.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "41a00c5587d1f398ee26abbf22f45255919d23b1": {
       "file": "lib/services/shapes/solid.ts",
       "code": "TS2454",
       "count": 3
     },
-    "dc5c642bf3255d8990f95c9e7baf0685fed9b491": {
-      "file": "lib/services/shapes/vertex.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "dcb367e59e7b18d751c1dc793dad9825143673a6": {
       "file": "lib/services/shapes/wire.ts",
       "code": "TS2379",
-      "count": 1
-    },
-    "860d5e9ea4e0d205682f4136f681f6ed74752a90": {
-      "file": "lib/services/shapes/wire.ts",
-      "code": "TS6133",
       "count": 1
     },
     "f5d822b987a8dd2e3d6574325a219df6db26dcc2": {
@@ -538,11 +428,6 @@
       "file": "lib/services/shapes/wire.ts",
       "code": "TS2345",
       "count": 2
-    },
-    "3af7abc36eaa56cc587c5378613cb5cc79fdbf92": {
-      "file": "lib/services/svg.ts",
-      "code": "TS6138",
-      "count": 1
     },
     "2fc6958674f063a4e785566d17fed85e36275e8e": {
       "file": "lib/services/svg.ts",

@@ -482,7 +482,7 @@ export class FacesService {
 
         if (inputs.shiftHalfStep) {
             const halfStep = step / 2;
-            params.forEach((p, i) => {
+            params.forEach((_p, i) => {
                 params[i] = params[i] + halfStep;
             });
         }

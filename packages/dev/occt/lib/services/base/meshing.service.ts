@@ -1,9 +1,4 @@
-import {
-    BitbybitOcctModule,
-    Handle_TDocStd_Document,
-    TDocStd_Document,
-    TopoDS_Shape, TopoDS_Wire
-} from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { WiresService } from "./wires.service";
 import { BaseBitByBit } from "../../base";
@@ -154,7 +149,7 @@ export class MeshingService {
     meshMeshIntersectionOfShapesWires(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
         const wireIntersections: TopoDS_Wire[] = [];
 
-        inputs.shapes.forEach((shape, index) => {
+        inputs.shapes.forEach((_shape, index) => {
             const shape1 = inputs.shape;
             const shape2 = inputs.shapes[index];
             let precision2 = inputs.precision;
@@ -174,7 +169,7 @@ export class MeshingService {
     meshMeshIntersectionOfShapesPoints(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const pointIntersections: Inputs.Base.Point3[][] = [];
 
-        inputs.shapes.forEach((shape, index) => {
+        inputs.shapes.forEach((_shape, index) => {
             const shape1 = inputs.shape;
             const shape2 = inputs.shapes[index];
             let precision2 = inputs.precision;

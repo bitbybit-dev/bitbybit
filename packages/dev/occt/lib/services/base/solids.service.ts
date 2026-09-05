@@ -14,7 +14,7 @@ export class SolidsService {
         private readonly occ: BitbybitOcctModule,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly facesService: FacesService,
-        private readonly enumService: EnumService,
+        _enumService: EnumService,
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
         private readonly transformsService: TransformsService,

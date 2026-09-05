@@ -4,7 +4,7 @@ import { Jscad } from "@bitbybit-dev/jscad";
 let jscad: Jscad;
 let cacheHelper: CacheHelper;
 
-export const initializationComplete = (jcd: any, plugins?: any, doNotPost?: boolean) => {
+export const initializationComplete = (jcd: any, _plugins?: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper();
     jscad = new Jscad(jcd);
     if (!doNotPost) {

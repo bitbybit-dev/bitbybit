@@ -8,6 +8,7 @@
     "exclude": [
         "coverage",
         "dist",
+        "**/__mocks__/**",
         "./**/*.test.ts"
     ],
     "compilerOptions": {

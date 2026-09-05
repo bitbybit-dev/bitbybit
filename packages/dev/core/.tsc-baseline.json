@@ -34,11 +34,6 @@
       "code": "TS18048",
       "count": 3
     },
-    "4946f9043f5c37f08768408aaaa79794089334f2": {
-      "file": "lib/api/bitbybit/csv.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "88bf1378b54024b5d4c2a74b4c363abf46fe1826": {
       "file": "lib/api/bitbybit/csv.ts",
       "code": "TS2322",
@@ -94,11 +89,6 @@
       "code": "TS7034",
       "count": 1
     },
-    "c0451e520de9a4f006763b7821ee832eb2b54bac": {
-      "file": "lib/api/bitbybit/tag.ts",
-      "code": "TS6133",
-      "count": 1
-    },
     "359ed596d57bd57461306b6558a651af99201768": {
       "file": "lib/api/bitbybit/tag.ts",
       "code": "TS7005",
@@ -112,16 +102,6 @@
     "adba155ca6edcce9e802c034b40e9cede0e5f6be": {
       "file": "lib/api/bitbybit/verb/curve.ts",
       "code": "TS7006",
-      "count": 1
-    },
-    "1db3dc5d891a6122664bdc94fa8302b8f1c0e729": {
-      "file": "lib/api/bitbybit/verb/intersect.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "04e9b9e6b717f677fa911236a084469a199feeb3": {
-      "file": "lib/api/bitbybit/verb/surface.ts",
-      "code": "TS6138",
       "count": 1
     },
     "d0ed495a46e368ce5cd23e8cb87292628a864c31": {
@@ -143,11 +123,6 @@
       "file": "lib/api/context.ts",
       "code": "TS2564",
       "count": 6
-    },
-    "0d377546afac387bbcda1c468f7df5cddaee639f": {
-      "file": "lib/api/context.ts",
-      "code": "TS6133",
-      "count": 1
     },
     "6701b0a157c388c899adbef479b0afb9b36ad6c8": {
       "file": "lib/api/draw-core.ts",

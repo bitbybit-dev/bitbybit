@@ -359,11 +359,6 @@
       "code": "TS2322",
       "count": 1
     },
-    "f6c5a52f22f3a4eff486ce3c2b1d70b8d687243b": {
-      "file": "lib/api/mesh/mesh.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "2b20f73907809097d32b90be8b1bd44c61a21947": {
       "file": "lib/manifold-worker/cache-helper.ts",
       "code": "TS7053",
@@ -408,11 +403,6 @@
       "file": "lib/manifold-worker/manifold-worker-mock.ts",
       "code": "TS2564",
       "count": 1
-    },
-    "4d9c1de438339671d106fe3ab618bcc7d4181c6f": {
-      "file": "lib/manifold-worker/manifold-worker.ts",
-      "code": "TS6133",
-      "count": 2
     },
     "6e3ee46501cb001fd72ae6ddf98819b11b83bbe0": {
       "file": "lib/manifold-worker/manifold-worker.ts",

@@ -7,7 +7,7 @@ import * as Inputs from "../api/inputs";
 export class OCCTOperations {
 
     constructor(
-        private readonly occ: BitbybitOcctModule,
+        _occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }

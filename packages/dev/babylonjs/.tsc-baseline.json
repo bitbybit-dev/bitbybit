@@ -4,26 +4,6 @@
     "ignoreMessages": true
   },
   "errors": {
-    "55b823cb28f6935b553985e2c7b6ba3981ce3c2a": {
-      "file": "lib/api/__mocks__/babylonjs.mock.ts",
-      "code": "TS2345",
-      "count": 3
-    },
-    "99bd5d898fe84127435da50d219096b07fe31a1a": {
-      "file": "lib/api/__mocks__/babylonjs.mock.ts",
-      "code": "TS2322",
-      "count": 2
-    },
-    "0ee86abec2766ba0f9f51b78163b66a1cb31c07b": {
-      "file": "lib/api/__mocks__/babylonjs.mock.ts",
-      "code": "TS6133",
-      "count": 18
-    },
-    "79178bff060dad854921f616fede0ae5326ea596": {
-      "file": "lib/api/__mocks__/babylonjs.mock.ts",
-      "code": "TS4114",
-      "count": 1
-    },
     "5beda226c22615e19d582a57ca608a476a8d6a1f": {
       "file": "lib/api/bitbybit-base.ts",
       "code": "TS2565",
@@ -39,69 +19,19 @@
       "code": "TS2322",
       "count": 1
     },
-    "9ca8e1a7f60d7206c1bbd74eba36c0311df252eb": {
-      "file": "lib/api/bitbybit/babylon/gizmo/axis-drag-gizmo.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "603ba8540153a67a3d4d1603dd59668145c64f4b": {
-      "file": "lib/api/bitbybit/babylon/gizmo/axis-scale-gizmo.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "2d301360ffa5581ce5b845b8a1573539c1f41ec4": {
-      "file": "lib/api/bitbybit/babylon/gizmo/bounding-box-gizmo.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "c95089397cc6eb817cc75dabd607647d964e1a8a": {
-      "file": "lib/api/bitbybit/babylon/gizmo/gizmo-base.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "950bec4c73a6b691c2c35664891455886bc9a8c8": {
-      "file": "lib/api/bitbybit/babylon/gizmo/gizmo.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "d13380f2eb982e43fea76a69b5bbc3feaaf923ba": {
       "file": "lib/api/bitbybit/babylon/gizmo/manager.ts",
       "code": "TS2322",
       "count": 4
-    },
-    "c01c133e22352e4c1ca6f4cd6cffebf574ecc048": {
-      "file": "lib/api/bitbybit/babylon/gizmo/plane-drag-gizmo.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "ad9c4a28c76c4b95cb8029a15ad01882b1070b79": {
-      "file": "lib/api/bitbybit/babylon/gizmo/plane-rotation-gizmo.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "a4ca0bbdeef4668ae4386494b866fc864c17e34a": {
-      "file": "lib/api/bitbybit/babylon/gizmo/position-gizmo.ts",
-      "code": "TS6138",
-      "count": 1
     },
     "868436b451cd97fb10615caccabe7e76b52bc397": {
       "file": "lib/api/bitbybit/babylon/gizmo/position-gizmo.ts",
       "code": "TS2322",
       "count": 2
     },
-    "ee71728cb8d9164fbd80c346d3b45fa4492bcdad": {
-      "file": "lib/api/bitbybit/babylon/gizmo/rotation-gizmo.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "a2ece3e474bd843f77a38d32a54cfa2b16c0795e": {
       "file": "lib/api/bitbybit/babylon/gizmo/rotation-gizmo.ts",
       "code": "TS2322",
-      "count": 1
-    },
-    "0b1325b48b75affd1e431443f864ddf96cd5a58e": {
-      "file": "lib/api/bitbybit/babylon/gizmo/scale-gizmo.ts",
-      "code": "TS6138",
       "count": 1
     },
     "a8d20fcb1a12d1126693d3a8b889d5a2ea168969": {
@@ -109,39 +39,14 @@
       "code": "TS2322",
       "count": 1
     },
-    "b21e7ff65e6b85d0a0f132b8c2a4cb75b341e956": {
-      "file": "lib/api/bitbybit/babylon/gui/button.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "06d91d884c7d1f05e16303259903d65186d7d6d9": {
       "file": "lib/api/bitbybit/babylon/gui/button.ts",
       "code": "TS18047",
       "count": 2
     },
-    "ea373b4839aab975c88080493eb9b91d7bf7101c": {
-      "file": "lib/api/bitbybit/babylon/gui/checkbox.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "32a4e14fbf5af2eb8afa50c5186279849b1dda5a": {
-      "file": "lib/api/bitbybit/babylon/gui/color-picker.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "2aa37fb4704441c2a8694665a6631e06f03f4546": {
       "file": "lib/api/bitbybit/babylon/gui/color-picker.ts",
       "code": "TS2322",
-      "count": 1
-    },
-    "33f261f46e352524b1d5f98178d0c3a608250bc0": {
-      "file": "lib/api/bitbybit/babylon/gui/container.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "685c6f08920a7fae681a2ca13450e72e533637c9": {
-      "file": "lib/api/bitbybit/babylon/gui/control.ts",
-      "code": "TS6138",
       "count": 1
     },
     "abb364a7968762e36d81c2d81eda08acfcf71ffe": {
@@ -149,44 +54,9 @@
       "code": "TS2322",
       "count": 1
     },
-    "ecfc4af1a6d4902a566b6cf0b51b4ed7d8ad5dbc": {
-      "file": "lib/api/bitbybit/babylon/gui/gui.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "8e636be6db584eb8fe206834924e9cd3033744ee": {
-      "file": "lib/api/bitbybit/babylon/gui/image.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "7a6c641ef62d6056358faf07f8103c0a36755e43": {
       "file": "lib/api/bitbybit/babylon/gui/image.ts",
       "code": "TS2322",
-      "count": 1
-    },
-    "71348c062fd196fb8c24d2e63e561d21e9fb919f": {
-      "file": "lib/api/bitbybit/babylon/gui/input-text.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "818cc71cf18f479a25acbf7fb714a5fa61981253": {
-      "file": "lib/api/bitbybit/babylon/gui/radio-button.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "93eaf09c1a774a129d4f812c22a2c14a39ff60a5": {
-      "file": "lib/api/bitbybit/babylon/gui/slider.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "77b5ab6530ac8fc343866c4ce899e3ff18f42e27": {
-      "file": "lib/api/bitbybit/babylon/gui/stack-panel.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "be092591d2f36d19c8e078e281a071c1f4c6a515": {
-      "file": "lib/api/bitbybit/babylon/gui/text-block.ts",
-      "code": "TS6138",
       "count": 1
     },
     "d29ed51145c833261c8870927f2e3e7a9976b8bf": {
@@ -214,30 +84,10 @@
       "code": "TS2454",
       "count": 3
     },
-    "a81a9edd2909b6ea7ccd47195c92caa597ac74f8": {
-      "file": "lib/api/bitbybit/babylon/io.ts",
-      "code": "TS6133",
-      "count": 1
-    },
-    "989cdd8b2512e8c34806f76ef7d2c8e02f657a1b": {
-      "file": "lib/api/bitbybit/babylon/lights/lights.ts",
-      "code": "TS6138",
-      "count": 1
-    },
-    "1565e733d12cfd1313336c1d888b6e62c35dcf91": {
-      "file": "lib/api/bitbybit/babylon/lights/shadow-light.ts",
-      "code": "TS6138",
-      "count": 1
-    },
     "c4b7bfc430c4295aa8013c781abe0f7d2dfec6ee": {
       "file": "lib/api/bitbybit/babylon/lights/shadow-light.ts",
       "code": "TS18048",
       "count": 6
-    },
-    "57029b381cc932deca17e1b708bc630db160667d": {
-      "file": "lib/api/bitbybit/babylon/material/material.ts",
-      "code": "TS6138",
-      "count": 2
     },
     "7fcbd9fbab3ea48ef6ebfd0036ef6b7f05f91daa": {
       "file": "lib/api/bitbybit/babylon/material/pbr-metallic-roughness.ts",
@@ -372,11 +222,6 @@
     "2b3793991747c0c87e578e94060c996c55681efa": {
       "file": "lib/api/bitbybit/babylon/web-xr/simple.ts",
       "code": "TS7005",
-      "count": 1
-    },
-    "6b892265974cfe541883dc38fd055e5871e7b4b7": {
-      "file": "lib/api/bitbybit/babylon/web-xr/web-xr.ts",
-      "code": "TS6138",
       "count": 1
     },
     "9ac0c9966a1c9db338d5e442d9a8f2c20b6fdc6c": {

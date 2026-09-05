@@ -27,7 +27,7 @@ export class BabylonGizmo {
     planeDragGizmo: BabylonGizmoPlaneDragGizmo;
     planeRotationGizmo: BabylonGizmoPlaneRotationGizmo;
 
-    constructor(private readonly context: Context) {
+    constructor(context: Context) {
         this.manager = new BabylonGizmoManager(context);
         this.base = new BabylonGizmoBase(context);
         this.positionGizmo = new BabylonGizmoPositionGizmo(context);

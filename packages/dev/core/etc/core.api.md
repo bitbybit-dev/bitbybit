@@ -518,7 +518,7 @@ export class CSVBitByBit {
     parseToArray(inputs: Inputs_3.CSV.ParseToArrayDto): string[][];
     parseToJson<T = Record<string, string | number>>(inputs: Inputs_3.CSV.ParseToJsonDto): T[];
     parseToJsonWithHeaders<T = Record<string, string | number>>(inputs: Inputs_3.CSV.ParseToJsonWithHeadersDto): T[];
-    queryColumn<T = Record<string, string | number>>(inputs: Inputs_3.CSV.QueryColumnDto): (string | number)[];
+    queryColumn(inputs: Inputs_3.CSV.QueryColumnDto): (string | number)[];
     queryRowsByValue<T = Record<string, string | number>>(inputs: Inputs_3.CSV.QueryRowsByValueDto): T[];
 }
 
@@ -2675,7 +2675,7 @@ namespace OCCT {
     }
     // (undocumented)
     class ArcEdgeCirclePointAngleDto<T> {
-        constructor(circle?: T, alphaAngle?: number, alphaAngle2?: number, sense?: boolean);
+        constructor(circle?: T, alphaAngle?: number, _alphaAngle2?: number, sense?: boolean);
         alphaAngle: number;
         circle: T;
         point: Base_2.Point3;
@@ -5099,7 +5099,7 @@ namespace OCCT {
     };
     // (undocumented)
     class TextWiresDto {
-        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base_2.horizontalAlignEnum, extrudeOffset?: number, origin?: Base_2.Point3, rotation?: number, direction?: Base_2.Vector3, centerOnOrigin?: boolean);
+        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base_2.horizontalAlignEnum, extrudeOffset?: number, _origin?: Base_2.Point3, _rotation?: number, _direction?: Base_2.Vector3, centerOnOrigin?: boolean);
         align?: Base_2.horizontalAlignEnum;
         centerOnOrigin: boolean;
         extrudeOffset?: number;
@@ -6623,7 +6623,7 @@ export class VerbCurveEllipse {
 
 // @public
 export class VerbIntersect {
-    constructor(context: ContextBase, geometryHelper: GeometryHelper);
+    constructor(context: ContextBase, _geometryHelper: GeometryHelper);
     curveAndSurface(inputs: Inputs_3.Verb.CurveSurfaceDto): BaseTypes.CurveSurfaceIntersection[];
     curveCurveFirstParams(inputs: Inputs_3.Verb.CurveCurveIntersectionsDto): number[];
     curveCurveFirstPoints(inputs: Inputs_3.Verb.CurveCurveIntersectionsDto): number[][];

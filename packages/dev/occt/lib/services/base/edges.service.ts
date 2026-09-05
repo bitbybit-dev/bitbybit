@@ -18,7 +18,7 @@ export class EdgesService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        private readonly occRefReturns: OCCReferencedReturns,
+        _occRefReturns: OCCReferencedReturns,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly entitiesService: EntitiesService,
         private readonly iteratorService: IteratorService,
@@ -82,7 +82,7 @@ export class EdgesService {
         }
         const edges: TopoDS_Edge[] = [];
         const wireWithFixedEdges = this.fixEdgeOrientationsAlongWire(inputs);
-        this.iteratorService.forEachEdgeAlongWire(wireWithFixedEdges, (i, edge) => {
+        this.iteratorService.forEachEdgeAlongWire(wireWithFixedEdges, (_i, edge) => {
             edges.push(edge);
         });
         return edges;
@@ -90,7 +90,7 @@ export class EdgesService {
 
     fixEdgeOrientationsAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire {
         const edges = [];
-        this.iteratorService.forEachEdgeAlongWire(inputs.shape, (i, edge) => {
+        this.iteratorService.forEachEdgeAlongWire(inputs.shape, (_i, edge) => {
             edges.push(edge);
         });
         // rebuilding wire from edges along wire fixes edge directions
@@ -726,7 +726,7 @@ export class EdgesService {
         }
     }
 
-    private reconstructCircleAndAlignBack(lin1Sols: gp_Circ2d[], sol: gp_Circ2d, alignOpt: Inputs.OCCT.AlignDto<TopoDS_Shape>, dir: Base.Vector3, pos: Base.Point3) {
+    private reconstructCircleAndAlignBack(_lin1Sols: gp_Circ2d[], sol: gp_Circ2d, alignOpt: Inputs.OCCT.AlignDto<TopoDS_Shape>, dir: Base.Vector3, pos: Base.Point3) {
         const locationStart = sol.Location();
         const startPoint = [locationStart.X(), locationStart.Y(), 0] as Inputs.Base.Point3;
         const circle = this.entitiesService.createCircle(sol.Radius(), startPoint, [0, 0, 1], Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;

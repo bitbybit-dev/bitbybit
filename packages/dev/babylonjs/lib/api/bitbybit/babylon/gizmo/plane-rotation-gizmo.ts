@@ -5,7 +5,7 @@ import * as Inputs from "../../../inputs";
 export class BabylonGizmoPlaneRotationGizmo {
 
     constructor(
-        private readonly context: Context,
+        _context: Context,
     ) {
     }
 

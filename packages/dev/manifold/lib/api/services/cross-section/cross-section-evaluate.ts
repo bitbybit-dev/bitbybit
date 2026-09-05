@@ -3,10 +3,7 @@ import * as Manifold3D from "manifold-3d";
 
 export class CrossSectionEvaluate {
 
-    private manifold: Manifold3D.ManifoldToplevel;
-
-    constructor(wasm: Manifold3D.ManifoldToplevel) {
-        this.manifold = wasm;
+    constructor(_wasm: Manifold3D.ManifoldToplevel) {
     }
 
     area(inputs: Inputs.Manifold.CrossSectionDto<Manifold3D.CrossSection>): number {

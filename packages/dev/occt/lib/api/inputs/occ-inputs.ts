@@ -3106,7 +3106,7 @@ export namespace OCCT {
         sense = true;
     }
     export class ArcEdgeCirclePointAngleDto<T> {
-        constructor(circle?: T, alphaAngle?: number, alphaAngle2?: number, sense?: boolean) {
+        constructor(circle?: T, alphaAngle?: number, _alphaAngle2?: number, sense?: boolean) {
             if (circle !== undefined) { this.circle = circle; }
             if (alphaAngle !== undefined) { this.alphaAngle = alphaAngle; }
             if (sense !== undefined) { this.sense = sense; }
@@ -9716,7 +9716,7 @@ export namespace OCCT {
         tolerance = 0.0001;
     }
     export class TextWiresDto {
-        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, origin?: Base.Point3, rotation?: number, direction?: Base.Vector3, centerOnOrigin?: boolean) {
+        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, _origin?: Base.Point3, _rotation?: number, _direction?: Base.Vector3, centerOnOrigin?: boolean) {
             if (text !== undefined) { this.text = text; }
             if (xOffset !== undefined) { this.xOffset = xOffset; }
             if (yOffset !== undefined) { this.yOffset = yOffset; }

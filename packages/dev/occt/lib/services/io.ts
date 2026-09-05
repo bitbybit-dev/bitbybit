@@ -1,4 +1,4 @@
-import { Handle_TDocStd_Document, IGESControl_Reader, BitbybitOcctModule, STEPControl_Reader, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { IGESControl_Reader, BitbybitOcctModule, STEPControl_Reader, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import * as Models from "../api/models";
