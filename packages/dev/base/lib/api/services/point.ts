@@ -28,7 +28,7 @@ export class Point {
         const transformation = inputs.transformation;
         let transformedControlPoints = [inputs.point];
         transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
-        return transformedControlPoints[0];
+        return transformedControlPoints[0]!;
     }
 
     /**
@@ -59,7 +59,7 @@ export class Point {
             throw new Error("You must provide equal nr of points and transformations");
         }
         return inputs.points.map((pt, index) => {
-            return this.geometryHelper.transformControlPoints(inputs.transformation[index], [pt])[0];
+            return this.geometryHelper.transformControlPoints(inputs.transformation[index]!, [pt])[0]!;
         });
     }
 
@@ -93,7 +93,7 @@ export class Point {
         }
         const translationTransforms = this.transforms.translationsXYZ({ translations: inputs.translations });
         return inputs.points.map((pt, index) => {
-            return this.geometryHelper.transformControlPoints(translationTransforms[index], [pt])[0];
+            return this.geometryHelper.transformControlPoints(translationTransforms[index]!, [pt])[0]!;
         });
     }
 
@@ -419,8 +419,8 @@ export class Point {
         }
 
         if (inputs.orientOnCenter) {
-            const compensateX = points[points.length - 1][0] / 2;
-            const compensateY = points[points.length - 1][1] / 2;
+            const compensateX = points[points.length - 1]![0] / 2;
+            const compensateY = points[points.length - 1]![1] / 2;
             points.forEach((p, index) => {
                 points[index] = [p[0] - compensateX, p[1] - compensateY, 0];
             });
@@ -551,7 +551,7 @@ export class Point {
 
         // --- Calculate Shortes/Longest & Extensions ---
         if (scaledHexagons.length !== 0) {
-            const firstHex = scaledHexagons[0];
+            const firstHex = scaledHexagons[0]!;
             maxFilletRadius = this.safestPointsMaxFilletHalfLine({
                 points: firstHex,
                 checkLastWithFirst: true,
@@ -559,7 +559,7 @@ export class Point {
             });
             // Calculate the shortest and longest edge distances
             firstHex.forEach((pt, index) => {
-                const nextPt = firstHex[(index + 1) % firstHex.length];
+                const nextPt = firstHex[(index + 1) % firstHex.length]!;
                 const dist = this.distance({ startPoint: pt, endPoint: nextPt });
                 if (dist < shortestDistEdge) {
                     shortestDistEdge = dist;
@@ -570,8 +570,8 @@ export class Point {
             });
 
             if (extendTop || extendBottom || extendLeft || extendRight) {
-                const pt1Pointy = firstHex[0];
-                const pt2Pointy = firstHex[1];
+                const pt1Pointy = firstHex[0]!;
+                const pt2Pointy = firstHex[1]!;
                 const cellHeight = pt1Pointy[1] - pt2Pointy[1];
                 const cellWidth = pt2Pointy[0] - pt1Pointy[0];
 
@@ -703,13 +703,13 @@ export class Point {
             }
 
             for (let i = 0; i < scaledCenters.length; i++) {
-                scaledCenters[i][0] -= shiftX;
-                scaledCenters[i][1] -= shiftY;
+                scaledCenters[i]![0] -= shiftX;
+                scaledCenters[i]![1] -= shiftY;
             }
             for (let i = 0; i < scaledHexagons.length; i++) {
-                for (let j = 0; j < scaledHexagons[i].length; j++) {
-                    scaledHexagons[i][j][0] -= shiftX;
-                    scaledHexagons[i][j][1] -= shiftY;
+                for (let j = 0; j < scaledHexagons[i]!.length; j++) {
+                    scaledHexagons[i]![j]![0] -= shiftX;
+                    scaledHexagons[i]![j]![1] -= shiftY;
                 }
             }
         }
@@ -717,11 +717,11 @@ export class Point {
         // --- Apply Optional Ground Projection ---
         if (pointsOnGround) {
             for (let i = 0; i < scaledCenters.length; i++) {
-                scaledCenters[i] = [scaledCenters[i][0], 0, scaledCenters[i][1]];
+                scaledCenters[i] = [scaledCenters[i]![0], 0, scaledCenters[i]![1]];
             }
             for (let i = 0; i < scaledHexagons.length; i++) {
-                for (let j = 0; j < scaledHexagons[i].length; j++) {
-                    scaledHexagons[i][j] = [scaledHexagons[i][j][0], 0, scaledHexagons[i][j][1]];
+                for (let j = 0; j < scaledHexagons[i]!.length; j++) {
+                    scaledHexagons[i]![j] = [scaledHexagons[i]![j]![0], 0, scaledHexagons[i]![j]![1]];
                 }
             }
         }
@@ -904,9 +904,9 @@ export class Point {
 
         // 1. Calculate fillets for internal corners (P[1] to P[n-2])
         for (let i = 1; i < n - 1; i++) {
-            const p_prev = points[i - 1];
-            const p_corner = points[i];
-            const p_next = points[i + 1];
+            const p_prev = points[i - 1]!;
+            const p_corner = points[i]!;
+            const p_next = points[i + 1]!;
 
             // Map geometric points to the DTO structure used by calculateMaxFilletRadiusHalfLine
             // DTO: { start: P_prev, center: P_next, end: P_corner, tolerance }
@@ -922,9 +922,9 @@ export class Point {
         // 2. Calculate fillets for closing corners if it's a closed polyline
         if (checkLastWithFirst && n >= 3) {
             // Corner at P[0] (formed by P[n-1]-P[0] and P[1]-P[0])
-            const p_prev_start = points[n - 1]; // Previous point is the last point
-            const p_corner_start = points[0];
-            const p_next_start = points[1];
+            const p_prev_start = points[n - 1]!; // Previous point is the last point
+            const p_corner_start = points[0]!;
+            const p_next_start = points[1]!;
             const startCornerInput: Inputs.Point.ThreePointsToleranceDto = {
                 start: p_prev_start,
                 center: p_next_start,
@@ -934,9 +934,9 @@ export class Point {
             results.push(this.maxFilletRadiusHalfLine(startCornerInput));
 
             // Corner at P[n-1] (formed by P[n-2]-P[n-1] and P[0]-P[n-1])
-            const p_prev_end = points[n - 2];
-            const p_corner_end = points[n - 1];
-            const p_next_end = points[0];     // Next point wraps around to the first point
+            const p_prev_end = points[n - 2]!;
+            const p_corner_end = points[n - 1]!;
+            const p_next_end = points[0]!;     // Next point wraps around to the first point
             const endCornerInput: Inputs.Point.ThreePointsToleranceDto = {
                 start: p_prev_end,
                 center: p_next_end,
@@ -1050,7 +1050,7 @@ export class Point {
         let closestPointIndex!: number;
         let point!: Inputs.Base.Point3;
         for (let i = 0; i < inputs.points.length; i++) {
-            const pt = inputs.points[i];
+            const pt = inputs.points[i]!;
             const currentDist = this.distance({ startPoint: inputs.point, endPoint: pt });
             if (currentDist < distance) {
                 distance = currentDist;

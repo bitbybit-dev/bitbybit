@@ -351,11 +351,11 @@ export class Transforms {
         const d = this.vector.normalized({ vector: direction });
 
         // Handle potential zero vector after normalization (if input was zero)
-        if (!d || isNaN(d[0]) || (d[0] === 0 && d[1] === 0 && d[2] === 0)) {
+        if (!d || isNaN(d[0]!) || (d[0] === 0 && d[1] === 0 && d[2] === 0)) {
             console.warn("Stretch direction vector is zero or invalid. Returning identity matrix.");
             return this.identity();
         }
-        const [dx, dy, dz] = d;
+        const [dx, dy, dz] = d as Base.Vector3;
 
         const s = scale;
         const sMinus1 = s - 1.0;

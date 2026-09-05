@@ -71,8 +71,8 @@ describe("Transforms unit tests", () => {
                 expect(result[0]).toHaveLength(1);
                 expect(result[1]).toBeInstanceOf(Array);
                 expect(result[1]).toHaveLength(1);
-                uh.expectMatrixCloseTo(result[0][0], translationMatrix(1, 2, 3));
-                uh.expectMatrixCloseTo(result[1][0], translationMatrix(4, 5, 6));
+                uh.expectMatrixCloseTo(result[0]![0], translationMatrix(1, 2, 3));
+                uh.expectMatrixCloseTo(result[1]![0], translationMatrix(4, 5, 6));
             });
 
             it("should return an empty array for empty input", () => {

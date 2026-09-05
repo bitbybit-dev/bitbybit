@@ -1,5 +1,5 @@
 // The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces
-// noImplicitAny and strictNullChecks ahead of the shared loose base: base is the root of the package
+// noImplicitAny, strictNullChecks and noUncheckedIndexedAccess ahead of the shared loose base: base is the root of the package
 // graph, so the types it declares reach every other package, and it is being made strict first, one
 // flag at a time. The flags are repeated here so the editor and the tests hold the same line; the
 // build config cannot carry this note because the references generator rewrites it without comments.
@@ -11,6 +11,7 @@
         "baseUrl": "./",
         "paths": {},
         "noImplicitAny": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "noUncheckedIndexedAccess": true
     }
 }

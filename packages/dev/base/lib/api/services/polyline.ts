@@ -24,8 +24,8 @@ export class Polyline {
     length(inputs: Inputs.Polyline.PolylineDto): number {
         let distanceOfPolyline = 0;
         for (let i = 1; i < inputs.polyline.points.length; i++) {
-            const previousPoint = inputs.polyline.points[i - 1];
-            const currentPoint = inputs.polyline.points[i];
+            const previousPoint = inputs.polyline.points[i - 1]!;
+            const currentPoint = inputs.polyline.points[i]!;
             distanceOfPolyline += this.point.distance({ startPoint: previousPoint, endPoint: currentPoint });
         }
         return distanceOfPolyline;
@@ -143,13 +143,13 @@ export class Polyline {
 
         // Create segments between consecutive points
         for (let i = 0; i < numPoints - 1; i++) {
-            segments.push([points[i], points[i + 1]]);
+            segments.push([points[i]!, points[i + 1]!]);
         }
 
         // Add closing segment if the polyline is closed and has enough points
         if (polyline.isClosed && numPoints >= 2) {
-            if (!this.point.twoPointsAlmostEqual({ point1: points[numPoints - 1], point2: points[0], tolerance: 1e-9 })) {
-                segments.push([points[numPoints - 1], points[0]]);
+            if (!this.point.twoPointsAlmostEqual({ point1: points[numPoints - 1]!, point2: points[0]!, tolerance: 1e-9 })) {
+                segments.push([points[numPoints - 1]!, points[0]!]);
             }
         }
 
@@ -190,8 +190,8 @@ export class Polyline {
                 }
 
                 const intersection = this.line.lineLineIntersection({
-                    line1: lines[i],
-                    line2: lines[j],
+                    line1: lines[i]!,
+                    line2: lines[j]!,
                     checkSegmentsOnly: true,
                     tolerance: defaultTolerance,
                 });
@@ -308,7 +308,7 @@ export class Polyline {
 
         // 1. Build the spatial map
         for (let i = 0; i < numSegments; i++) {
-            const segment = segments[i];
+            const segment = segments[i]!;
             if (this.point.twoPointsAlmostEqual({ point1: segment[0], point2: segment[1], tolerance: tolerance })) {
                 used[i] = true; // Mark degenerate as used
                 continue;
@@ -387,7 +387,7 @@ export class Polyline {
 
             // Start a new polyline
             used[i] = true; // Mark the starting segment as used
-            const startSegment = segments[i];
+            const startSegment = segments[i]!;
             const currentPoints: Inputs.Base.Point3[] = [startSegment[0], startSegment[1]];
             let currentHead = startSegment[0];
             let currentTail = startSegment[1];
@@ -400,7 +400,7 @@ export class Polyline {
                 if (!nextMatch) break; // No unused segment connects to the tail
 
                 // We found a potential next segment
-                const nextSegment = segments[nextMatch.segmentIndex];
+                const nextSegment = segments[nextMatch.segmentIndex]!;
                 const pointToAdd = (nextMatch.endpointIndex === 0) ? nextSegment[1] : nextSegment[0];
 
                 // Check for closure *before* adding the point
@@ -424,7 +424,7 @@ export class Polyline {
                     const prevMatch = findConnection(currentHead);
                     if (!prevMatch) break; // No unused segment connects to the head
 
-                    const prevSegment = segments[prevMatch.segmentIndex];
+                    const prevSegment = segments[prevMatch.segmentIndex]!;
                     const pointToAdd = (prevMatch.endpointIndex === 0) ? prevSegment[1] : prevSegment[0];
 
                     // Check for closure against the current tail *before* adding
@@ -451,7 +451,7 @@ export class Polyline {
             // Remove duplicate point for closed loops with more than 2 points
             if (isClosed && currentPoints.length > 2) {
                 // Check if the first and last points are indeed the ones needing merging
-                if (this.point.twoPointsAlmostEqual({ point1: currentPoints[currentPoints.length - 1], point2: currentPoints[0], tolerance: tolerance })) {
+                if (this.point.twoPointsAlmostEqual({ point1: currentPoints[currentPoints.length - 1]!, point2: currentPoints[0]!, tolerance: tolerance })) {
                     currentPoints.pop();
                 }
             }

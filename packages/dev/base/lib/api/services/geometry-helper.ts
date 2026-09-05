@@ -7,7 +7,7 @@ export class GeometryHelper {
      * Each transformation is applied in order (composition of transformations).
      * Example: points=[[0,0,0], [1,0,0]] with translation [5,0,0] → [[5,0,0], [6,0,0]]
      */
-    transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: Inputs.Base.Point3[]): Inputs.Base.Point3[] {
+    transformControlPoints(transformation: Inputs.Base.TransformMatrixes | Inputs.Base.TransformMatrixes[], transformedControlPoints: Inputs.Base.Point3[]): Inputs.Base.Point3[] {
         const transformationArrays = this.getFlatTransformations(transformation);
 
         transformationArrays.forEach(transform => {
@@ -22,15 +22,15 @@ export class GeometryHelper {
      * Handles both 2D arrays (single transform list) and 3D arrays (nested transform lists).
      * Example: [[[matrix1, matrix2]], [[matrix3]]] → [matrix1, matrix2, matrix3]
      */
-    getFlatTransformations(transformation: number[][] | number[][][]): number[][] {
-        let transformationArrays: number[][] = [];
+    getFlatTransformations(transformation: Inputs.Base.TransformMatrixes | Inputs.Base.TransformMatrixes[]): Inputs.Base.TransformMatrixes {
+        let transformationArrays: Inputs.Base.TransformMatrixes = [];
 
         if (this.getArrayDepth(transformation) === 3) {
             transformation.forEach(transform => {
-                transformationArrays.push(...(transform as number[][]));
+                transformationArrays.push(...(transform as Inputs.Base.TransformMatrixes));
             });
         } else {
-            transformationArrays = transformation as number[][];
+            transformationArrays = transformation as Inputs.Base.TransformMatrixes;
         }
         return transformationArrays;
 }
@@ -49,7 +49,7 @@ export class GeometryHelper {
      * Applies a single 4×4 transformation matrix (as flat 16-element array) to multiple points.
      * Example: points=[[0,0,0], [1,0,0]] with translation matrix → transformed points
      */
-    transformPointsByMatrixArray(points: Inputs.Base.Point3[], transform: number[]): Inputs.Base.Point3[] {
+    transformPointsByMatrixArray(points: Inputs.Base.Point3[], transform: Inputs.Base.TransformMatrix): Inputs.Base.Point3[] {
         return this.transformPointsCoordinates(points, transform);
     }
 
@@ -57,8 +57,8 @@ export class GeometryHelper {
      * Transforms multiple points using a transformation matrix (maps each point through the matrix).
      * Example: points=[[1,0,0], [0,1,0]] with 90° rotation → [[0,1,0], [-1,0,0]]
      */
-    transformPointsCoordinates(points: Inputs.Base.Point3[], transform: number[]): Inputs.Base.Point3[] {
-        const transformedPoints = [];
+    transformPointsCoordinates(points: Inputs.Base.Point3[], transform: Inputs.Base.TransformMatrix): Inputs.Base.Point3[] {
+        const transformedPoints: Inputs.Base.Point3[] = [];
         for (const pt of points) {
             const transformedVector = this.transformCoordinates(pt[0], pt[1], pt[2], transform);
             transformedPoints.push(transformedVector);
@@ -91,8 +91,8 @@ export class GeometryHelper {
         const vectorsRemaining: number[][] = [];
         if (vectors.length > 1) {
             for (let i = 1; i < vectors.length; i++) {
-                const currentVector = vectors[i];
-                const previousVector = vectors[i - 1];
+                const currentVector = vectors[i]!;
+                const previousVector = vectors[i - 1]!;
                 if (!this.vectorsTheSame(currentVector, previousVector, tolerance)) {
                     vectorsRemaining.push(previousVector);
                 }
@@ -101,8 +101,8 @@ export class GeometryHelper {
                 }
             }
             if (checkFirstAndLast) {
-                const firstVector = vectorsRemaining[0];
-                const lastVector = vectorsRemaining[vectorsRemaining.length - 1];
+                const firstVector = vectorsRemaining[0]!;
+                const lastVector = vectorsRemaining[vectorsRemaining.length - 1]!;
                 if (this.vectorsTheSame(firstVector, lastVector, tolerance)) {
                     vectorsRemaining.pop();
                 }
@@ -125,7 +125,7 @@ export class GeometryHelper {
         } else {
             result = true;
             for (let i = 0; i < vec1.length; i++) {
-                if (!this.approxEq(vec1[i], vec2[i], tolerance)) {
+                if (!this.approxEq(vec1[i]!, vec2[i]!, tolerance)) {
                     result = false;
                     break;
                 }
@@ -152,8 +152,8 @@ export class GeometryHelper {
         const pointsRemaining = [];
         if (points.length > 1) {
             for (let i = 1; i < points.length; i++) {
-                const currentPoint = points[i];
-                const previousPoint = points[i - 1];
+                const currentPoint = points[i]!;
+                const previousPoint = points[i - 1]!;
                 if (!this.arePointsTheSame(currentPoint, previousPoint, tolerance)) {
                     pointsRemaining.push(previousPoint);
                 }
@@ -162,8 +162,8 @@ export class GeometryHelper {
                 }
             }
             if (checkFirstAndLast) {
-                const firstPoint = pointsRemaining[0];
-                const lastPoint = pointsRemaining[pointsRemaining.length - 1];
+                const firstPoint = pointsRemaining[0]!;
+                const lastPoint = pointsRemaining[pointsRemaining.length - 1]!;
                 if (this.arePointsTheSame(firstPoint, lastPoint, tolerance)) {
                     pointsRemaining.pop();
                 }
@@ -195,7 +195,7 @@ export class GeometryHelper {
         return result;
     }
 
-    private transformCoordinates(x: number, y: number, z: number, transformation: number[]): Inputs.Base.Vector3 {
+    private transformCoordinates(x: number, y: number, z: number, transformation: Inputs.Base.TransformMatrix): Inputs.Base.Vector3 {
         const m = transformation;
         const rx = x * m[0] + y * m[4] + z * m[8] + m[12];
         const ry = x * m[1] + y * m[5] + z * m[9] + m[13];

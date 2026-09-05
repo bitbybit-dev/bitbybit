@@ -331,8 +331,8 @@ describe("Mesh unit tests", () => {
             // For closed polylines, first and last point should be the same
             result.forEach(pointArray => {
                 if (pointArray.length > 1) {
-                    const firstPoint = pointArray[0];
-                    const lastPoint = pointArray[pointArray.length - 1];
+                    const firstPoint = pointArray[0]!;
+                    const lastPoint = pointArray[pointArray.length - 1]!;
                     // Check if the polyline is closed (first equals last)
                     const isClosed =
                         Math.abs(firstPoint[0] - lastPoint[0]) < intersectionTolerance &&
@@ -387,10 +387,10 @@ describe("Mesh unit tests", () => {
 
             // For closed polylines, points array should have one more point than polyline.points
             for (let i = 0; i < polylines.length; i++) {
-                if (polylines[i].isClosed) {
-                    expect(points[i].length).toBe(polylines[i].points.length + 1);
+                if (polylines[i]!.isClosed) {
+                    expect(points[i]!.length).toBe(polylines[i]!.points.length + 1);
                 } else {
-                    expect(points[i].length).toBe(polylines[i].points.length);
+                    expect(points[i]!.length).toBe(polylines[i]!.points.length);
                 }
             }
         });
@@ -400,7 +400,7 @@ describe("Mesh unit tests", () => {
             const singleTri2: Inputs.Base.Triangle3[] = [[[0, 0, 0], [2, 0, 0], [0, 0, 2]]]; // XZ plane
             const result = meshBitByBit.meshMeshIntersectionPoints({ mesh1: singleTri1, mesh2: singleTri2 });
             expect(result.length).toBe(1);
-            expect(result[0].length).toBe(2); // Open polyline with 2 points
+            expect(result[0]!.length).toBe(2); // Open polyline with 2 points
         });
 
         it("should return points as valid 3D coordinates", () => {

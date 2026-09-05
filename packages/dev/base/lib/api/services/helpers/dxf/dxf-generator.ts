@@ -699,7 +699,7 @@ export class DxfGenerator {
             
             // Add bulge value if specified (for arc segments)
             if (polyline.bulges && polyline.bulges.length > index) {
-                const bulge = polyline.bulges[index];
+                const bulge = polyline.bulges[index]!;
                 if (bulge !== 0) {
                     entity.push("42", bulge.toFixed(6));
                 }
@@ -785,11 +785,11 @@ export class DxfGenerator {
     private isClosedPolyline(points: number[][]): boolean {
         if (points.length < 3) return false;
 
-        const first = points[0];
-        const last = points[points.length - 1];
+        const first = points[0]!;
+        const last = points[points.length - 1]!;
 
-        return Math.abs(first[0] - last[0]) < 1e-10 &&
-            Math.abs(first[1] - last[1]) < 1e-10;
+        return Math.abs(first[0]! - last[0]!) < 1e-10 &&
+            Math.abs(first[1]! - last[1]!) < 1e-10;
     }
 
     /**

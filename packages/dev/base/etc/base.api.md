@@ -364,13 +364,13 @@ export class GeometryHelper {
     approxEq(num1: number, num2: number, tolerance: number): boolean;
     arePointsTheSame(pointA: Inputs_2.Base.Point3 | Inputs_2.Base.Point2, pointB: Inputs_2.Base.Point3 | Inputs_2.Base.Point2, tolerance: number): boolean;
     getArrayDepth: (value: unknown) => number;
-    getFlatTransformations(transformation: number[][] | number[][][]): number[][];
+    getFlatTransformations(transformation: Inputs_2.Base.TransformMatrixes | Inputs_2.Base.TransformMatrixes[]): Inputs_2.Base.TransformMatrixes;
     removeAllDuplicateVectors(vectors: number[][], tolerance?: number): number[][];
     removeConsecutivePointDuplicates(points: Inputs_2.Base.Point3[], checkFirstAndLast?: boolean, tolerance?: number): Inputs_2.Base.Point3[];
     removeConsecutiveVectorDuplicates(vectors: number[][], checkFirstAndLast?: boolean, tolerance?: number): number[][];
-    transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: Inputs_2.Base.Point3[]): Inputs_2.Base.Point3[];
-    transformPointsByMatrixArray(points: Inputs_2.Base.Point3[], transform: number[]): Inputs_2.Base.Point3[];
-    transformPointsCoordinates(points: Inputs_2.Base.Point3[], transform: number[]): Inputs_2.Base.Point3[];
+    transformControlPoints(transformation: Inputs_2.Base.TransformMatrixes | Inputs_2.Base.TransformMatrixes[], transformedControlPoints: Inputs_2.Base.Point3[]): Inputs_2.Base.Point3[];
+    transformPointsByMatrixArray(points: Inputs_2.Base.Point3[], transform: Inputs_2.Base.TransformMatrix): Inputs_2.Base.Point3[];
+    transformPointsCoordinates(points: Inputs_2.Base.Point3[], transform: Inputs_2.Base.TransformMatrix): Inputs_2.Base.Point3[];
     vectorsTheSame(vec1: number[], vec2: number[], tolerance: number): boolean;
 }
 

@@ -209,8 +209,8 @@ describe("Polyline unit tests", () => {
             const segments: Inputs.Base.Segment3[] = [[[0, 0, 0], [1, 1, 1]]];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 1, 1]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 1, 1]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should handle two unconnected segments", () => {
@@ -222,10 +222,10 @@ describe("Polyline unit tests", () => {
             const sortedResult = uh.sortPolylinesForComparison(result);
 
             expect(sortedResult).toHaveLength(2);
-            expect(sortedResult[0].points).toEqual([[0, 0, 0], [1, 0, 0]]);
-            expect(sortedResult[0].isClosed).toBe(false);
-            expect(sortedResult[1].points).toEqual([[2, 2, 0], [3, 2, 0]]);
-            expect(sortedResult[1].isClosed).toBe(false);
+            expect(sortedResult[0]!.points).toEqual([[0, 0, 0], [1, 0, 0]]);
+            expect(sortedResult[0]!.isClosed).toBe(false);
+            expect(sortedResult[1]!.points).toEqual([[2, 2, 0], [3, 2, 0]]);
+            expect(sortedResult[1]!.isClosed).toBe(false);
         });
 
         it("should connect two segments in order", () => {
@@ -235,8 +235,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should connect multiple segments in order", () => {
@@ -247,8 +247,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should connect multiple segments in scrambled order", () => {
@@ -259,8 +259,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]); // Check the most likely order based on implementation finding index 0 first
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]); // Check the most likely order based on implementation finding index 0 first
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should connect multiple segments in scrambled order starting from the middle", () => {
@@ -271,8 +271,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 2, 0], [1, 2, 0], [2, 2, 0], [3, 2, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 2, 0], [1, 2, 0], [2, 2, 0], [3, 2, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
 
@@ -285,8 +285,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]); // Closed loop, last point removed
-            expect(result[0].isClosed).toBe(true);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]); // Closed loop, last point removed
+            expect(result[0]!.isClosed).toBe(true);
         });
 
         it("should create a closed polyline from scrambled segments", () => {
@@ -298,8 +298,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[1, 1, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0]]);
-            expect(result[0].isClosed).toBe(true);
+            expect(result[0]!.points).toEqual([[1, 1, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0]]);
+            expect(result[0]!.isClosed).toBe(true);
         });
 
         it("should create a closed polyline detected during backward pass", () => {
@@ -311,8 +311,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[1, 0, 0], [0, 0, 0], [0, 1, 0], [1, 1, 0]]);
-            expect(result[0].isClosed).toBe(true);
+            expect(result[0]!.points).toEqual([[1, 0, 0], [0, 0, 0], [0, 1, 0], [1, 1, 0]]);
+            expect(result[0]!.isClosed).toBe(true);
         });
 
 
@@ -324,8 +324,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments, tolerance });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should NOT connect segments outside tolerance", () => {
@@ -338,10 +338,10 @@ describe("Polyline unit tests", () => {
             const sortedResult = uh.sortPolylinesForComparison(result);
 
             expect(sortedResult).toHaveLength(2);
-            expect(sortedResult[0].points).toEqual([[0, 0, 0], [1, 0, 0]]);
-            expect(sortedResult[0].isClosed).toBe(false);
-            expect(sortedResult[1].points).toEqual([[1.05, 0, 0], [1, 1, 0]]);
-            expect(sortedResult[1].isClosed).toBe(false);
+            expect(sortedResult[0]!.points).toEqual([[0, 0, 0], [1, 0, 0]]);
+            expect(sortedResult[0]!.isClosed).toBe(false);
+            expect(sortedResult[1]!.points).toEqual([[1.05, 0, 0], [1, 1, 0]]);
+            expect(sortedResult[1]!.isClosed).toBe(false);
         });
 
         it("should ignore degenerate segments", () => {
@@ -353,8 +353,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should ignore degenerate segments with custom tolerance", () => {
@@ -366,8 +366,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments, tolerance });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should handle multiple distinct polylines", () => {
@@ -386,11 +386,11 @@ describe("Polyline unit tests", () => {
 
             expect(sortedResult).toHaveLength(2);
 
-            expect(sortedResult[0].points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
-            expect(sortedResult[0].isClosed).toBe(false);
+            expect(sortedResult[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0]]);
+            expect(sortedResult[0]!.isClosed).toBe(false);
 
-            expect(sortedResult[1].points).toEqual([[5, 5, 5], [6, 5, 5], [6, 6, 5], [5, 6, 5]]);
-            expect(sortedResult[1].isClosed).toBe(true);
+            expect(sortedResult[1]!.points).toEqual([[5, 5, 5], [6, 5, 5], [6, 6, 5], [5, 6, 5]]);
+            expect(sortedResult[1]!.isClosed).toBe(true);
         });
 
         it("should chain through junctions using greedy approach", () => { // Rename for clarity
@@ -419,8 +419,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 1, 1]]);
-            expect(result[0].isClosed).toBe(true);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 1, 1]]);
+            expect(result[0]!.isClosed).toBe(true);
         });
 
         it("should handle duplicate segments correctly", () => {
@@ -431,8 +431,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[1, 0, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[1, 0, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should handle segments forming a minimal closed triangle", () => {
@@ -443,8 +443,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [0, 1, 0]]);
-            expect(result[0].isClosed).toBe(true);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [0, 1, 0]]);
+            expect(result[0]!.isClosed).toBe(true);
         });
 
         it("should handle points close to grid boundaries correctly", () => {
@@ -458,10 +458,10 @@ describe("Polyline unit tests", () => {
             const result = polyline.sortSegmentsIntoPolylines({ segments, tolerance });
             const sortedResult = uh.sortPolylinesForComparison(result);
             expect(sortedResult).toHaveLength(2);
-            expect(sortedResult[0].points).toEqual([[0, 0, 0], [0.99, 0, 0], [2, 0, 0]]); // Points from original segments
-            expect(sortedResult[0].isClosed).toBe(false);
-            expect(sortedResult[1].points).toEqual([[1.21, 0, 0], [3, 0, 0]]);
-            expect(sortedResult[1].isClosed).toBe(false);
+            expect(sortedResult[0]!.points).toEqual([[0, 0, 0], [0.99, 0, 0], [2, 0, 0]]); // Points from original segments
+            expect(sortedResult[0]!.isClosed).toBe(false);
+            expect(sortedResult[1]!.points).toEqual([[1.21, 0, 0], [3, 0, 0]]);
+            expect(sortedResult[1]!.isClosed).toBe(false);
         });
 
         it("should connect two segments meeting end-to-end (reversed second segment)", () => {
@@ -471,8 +471,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [2, 0, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [2, 0, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should connect multiple segments with mixed directions", () => {
@@ -483,8 +483,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]);
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]);
+            expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should form a closed loop with mixed directions", () => {
@@ -496,8 +496,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[1, 1, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0]]);
-            expect(result[0].isClosed).toBe(true);
+            expect(result[0]!.points).toEqual([[1, 1, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0]]);
+            expect(result[0]!.isClosed).toBe(true);
         });
 
         it("should connect segments meeting start-to-start", () => {
@@ -507,8 +507,8 @@ describe("Polyline unit tests", () => {
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0].points).toEqual([[2, 0, 0], [1, 0, 0], [0, 0, 0]]); // Order depends on chaining direction
-            expect(result[0].isClosed).toBe(false);
+            expect(result[0]!.points).toEqual([[2, 0, 0], [1, 0, 0], [0, 0, 0]]); // Order depends on chaining direction
+            expect(result[0]!.isClosed).toBe(false);
         });
     });
 

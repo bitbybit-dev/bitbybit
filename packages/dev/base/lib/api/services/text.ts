@@ -542,7 +542,7 @@ export class TextBitByBit {
         let vchar;
         const il = text.length;
         for (let i = 0; i < il; i++) {
-            const character = text[i];
+            const character = text[i]!;
             if (character === "\n") {
                 pushLine();
 

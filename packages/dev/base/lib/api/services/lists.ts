@@ -22,9 +22,9 @@ export class Lists {
         }
         let result;
         if (inputs.clone) {
-            result = structuredClone(inputs.list[inputs.index]);
+            result = structuredClone(inputs.list[inputs.index]!);
         } else {
-            result = inputs.list[inputs.index];
+            result = inputs.list[inputs.index]!;
         }
         return result;
     }
@@ -44,9 +44,9 @@ export class Lists {
         }
         let result;
         if (inputs.clone) {
-            result = structuredClone(inputs.list[0]);
+            result = structuredClone(inputs.list[0]!);
         } else {
-            result = inputs.list[0];
+            result = inputs.list[0]!;
         }
         return result;
     }
@@ -66,9 +66,9 @@ export class Lists {
         }
         let result;
         if (inputs.clone) {
-            result = structuredClone(inputs.list[inputs.list.length - 1]);
+            result = structuredClone(inputs.list[inputs.list.length - 1]!);
         } else {
-            result = inputs.list[inputs.list.length - 1];
+            result = inputs.list[inputs.list.length - 1]!;
         }
         return result;
     }
@@ -91,7 +91,7 @@ export class Lists {
         const newList = [];
         for (let i = 0; i < inputs.list.length; i++) {
             if (Math.random() < inputs.threshold) {
-                newList.push(res[i]);
+                newList.push(res[i]!);
             }
         }
         return newList;
@@ -134,7 +134,7 @@ export class Lists {
         const result = [];
         for (let i = 0; i < cloned.length; i++) {
             if ((i + inputs.offset) % inputs.nth === 0) {
-                result.push(cloned[i]);
+                result.push(cloned[i]!);
             }
         }
         return result;
@@ -203,7 +203,7 @@ export class Lists {
         for (let i = 0; i < lengthMerge; i++) {
             const temp: unknown[] = [];
             for (let j = 0; j < elToMerge.length; j++) {
-                const element = elToMerge[j][i];
+                const element = elToMerge[j]![i];
                 if (element !== undefined) {
                     temp.push(element);
                 }
@@ -217,7 +217,7 @@ export class Lists {
         if (level > 0) {
             for (let i = 0; i < level; i++) {
                 if (i === level - 1 && i !== 0) {
-                    final[i - 1].push(result);
+                    final[i - 1]!.push(result);
                 } else if (i === level - 1) {
                     final.push(result);
                 } else {
@@ -287,7 +287,7 @@ export class Lists {
         }
         for (let i = res.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [res[i], res[j]] = [res[j], res[i]];
+            [res[i], res[j]] = [res[j]!, res[i]!];
         }
         return res;
     }
@@ -303,7 +303,7 @@ export class Lists {
      */
     flipLists<T>(inputs: Inputs.Lists.ListCloneDto<T[]>): T[][] {
         if (inputs.list.length > 0) {
-            const lengthOfFirstList = inputs.list[0].length;
+            const lengthOfFirstList = inputs.list[0]!.length;
             let allListsSameLength = true;
             inputs.list.forEach(l => {
                 if (l.length !== lengthOfFirstList) {
@@ -315,7 +315,7 @@ export class Lists {
                 for (let i = 0; i < lengthOfFirstList; i++) {
                     const newList: T[] = [];
                     inputs.list.forEach(l => {
-                        newList.push(l[i]);
+                        newList.push(l[i]!);
                     });
                     result.push(newList);
                 }
@@ -490,8 +490,8 @@ export class Lists {
         }
         for (let i = 0; i < inputs.indexes.length; i++) {
             if (i > 0) {
-                const prev = inputs.indexes[i - 1];
-                if (prev > inputs.indexes[i]) {
+                const prev = inputs.indexes[i - 1]!;
+                if (prev > inputs.indexes[i]!) {
                     throw new Error("Indexes must be in ascending order");
                 }
             }
@@ -503,7 +503,7 @@ export class Lists {
         const cloneIndexes = [...inputs.indexes];
         cloneIndexes.forEach((index, i) => {
             if (index >= 0 && index + i <= cloned.length) {
-                cloned.splice(index + i, 0, inputs.items[i]);
+                cloned.splice(index + i, 0, inputs.items[i]!);
             }
         });
         return cloned;
@@ -645,7 +645,7 @@ export class Lists {
         const result = [];
         for (let i = 0; i < res.length; i++) {
             if ((i + inputs.offset) % inputs.nth !== 0) {
-                result.push(res[i]);
+                result.push(res[i]!);
             }
         }
         return result;
@@ -668,7 +668,7 @@ export class Lists {
         const newList = [];
         for (let i = 0; i < inputs.list.length; i++) {
             if (Math.random() > inputs.threshold) {
-                newList.push(res[i]);
+                newList.push(res[i]!);
             }
         }
         return newList;
@@ -854,7 +854,7 @@ export class Lists {
         let counter = 0;
         let index = 0;
         while (counter < inputs.lengthLimit) {
-            res.push(inpList[index]);
+            res.push(inpList[index]!);
             index++;
             if (index === inpList.length) {
                 index = 0;
@@ -949,7 +949,7 @@ export class Lists {
         for (let i = 0; i < maxLength; i++) {
             for (const list of lists) {
                 if (i < list.length) {
-                    result.push(list[i]);
+                    result.push(list[i]!);
                 }
             }
         }

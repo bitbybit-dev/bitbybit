@@ -76,7 +76,7 @@ export class Vector {
      * @drawable false
      */
     angleBetweenNormalized2d(inputs: Inputs.Vector.TwoVectorsDto): number {
-        const perpDot = inputs.first[0] * inputs.second[1] - inputs.first[1] * inputs.second[0];
+        const perpDot = inputs.first[0]! * inputs.second[1]! - inputs.first[1]! * inputs.second[0]!;
         return this.math.radToDeg({
             number: Math.atan2(perpDot, this.dot({ first: inputs.first, second: inputs.second }))
         });
@@ -107,10 +107,10 @@ export class Vector {
      */
     addAll(inputs: Inputs.Vector.VectorsDto): number[] {
         const res = [];
-        for (let i = 0; i < inputs.vectors[0].length; i++) {
+        for (let i = 0; i < inputs.vectors[0]!.length; i++) {
             let sum = 0;
             for (const vector of inputs.vectors) {
-                sum += vector[i];
+                sum += vector[i]!;
             }
             res.push(sum);
         }
@@ -129,7 +129,7 @@ export class Vector {
     add(inputs: Inputs.Vector.TwoVectorsDto): number[] {
         const res = [];
         for (let i = 0; i < inputs.first.length; i++) {
-            res.push(inputs.first[i] + inputs.second[i]);
+            res.push(inputs.first[i]! + inputs.second[i]!);
         }
         return res;
     }
@@ -158,9 +158,9 @@ export class Vector {
      */
     cross(inputs: Inputs.Vector.TwoVectorsDto): number[] {
         const res = [];
-        res.push(inputs.first[1] * inputs.second[2] - inputs.first[2] * inputs.second[1]);
-        res.push(inputs.first[2] * inputs.second[0] - inputs.first[0] * inputs.second[2]);
-        res.push(inputs.first[0] * inputs.second[1] - inputs.first[1] * inputs.second[0]);
+        res.push(inputs.first[1]! * inputs.second[2]! - inputs.first[2]! * inputs.second[1]!);
+        res.push(inputs.first[2]! * inputs.second[0]! - inputs.first[0]! * inputs.second[2]!);
+        res.push(inputs.first[0]! * inputs.second[1]! - inputs.first[1]! * inputs.second[0]!);
         return res;
     }
 
@@ -176,7 +176,7 @@ export class Vector {
     distSquared(inputs: Inputs.Vector.TwoVectorsDto): number {
         let res = 0;
         for (let i = 0; i < inputs.first.length; i++) {
-            res += Math.pow(inputs.first[i] - inputs.second[i], 2);
+            res += Math.pow(inputs.first[i]! - inputs.second[i]!, 2);
         }
         return res;
     }
@@ -206,7 +206,7 @@ export class Vector {
     div(inputs: Inputs.Vector.VectorScalarDto): number[] {
         const res = [];
         for (let i = 0; i < inputs.vector.length; i++) {
-            res.push(inputs.vector[i] / inputs.scalar);
+            res.push(inputs.vector[i]! / inputs.scalar);
         }
         return res;
     }
@@ -221,7 +221,7 @@ export class Vector {
      * @drawable false
      */
     domain(inputs: Inputs.Vector.VectorDto): number {
-        return inputs.vector[inputs.vector.length - 1] - inputs.vector[0];
+        return inputs.vector[inputs.vector.length - 1]! - inputs.vector[0]!;
     }
 
     /**
@@ -236,7 +236,7 @@ export class Vector {
     dot(inputs: Inputs.Vector.TwoVectorsDto): number {
         let res = 0;
         for (let i = 0; i < inputs.first.length; i++) {
-            res += inputs.first[i] * inputs.second[i];
+            res += inputs.first[i]! * inputs.second[i]!;
         }
         return res;
     }
@@ -324,7 +324,7 @@ export class Vector {
     mul(inputs: Inputs.Vector.VectorScalarDto): number[] {
         const res = [];
         for (let i = 0; i < inputs.vector.length; i++) {
-            res.push(inputs.vector[i] * inputs.scalar);
+            res.push(inputs.vector[i]! * inputs.scalar);
         }
         return res;
     }
@@ -341,7 +341,7 @@ export class Vector {
     neg(inputs: Inputs.Vector.VectorDto): number[] {
         const res = [];
         for (let i = 0; i < inputs.vector.length; i++) {
-            res.push(-inputs.vector[i]);
+            res.push(-inputs.vector[i]!);
         }
         return res;
     }
@@ -502,7 +502,7 @@ export class Vector {
             res.push(this.math.ease({ x: x, ease: inputs.ease, min: inputs.min, max: inputs.max }));
         }
         if (inputs.intervals) {
-            return res.map((v, i, a) => i === 0 ? v : v - a[i - 1]);
+            return res.map((v, i, a) => i === 0 ? v : v - a[i - 1]!);
         }
         return res;
     }
@@ -538,7 +538,7 @@ export class Vector {
     sub(inputs: Inputs.Vector.TwoVectorsDto): number[] {
         const res = [];
         for (let i = 0; i < inputs.first.length; i++) {
-            res.push(inputs.first[i] - inputs.second[i]);
+            res.push(inputs.first[i]! - inputs.second[i]!);
         }
         return res;
     }

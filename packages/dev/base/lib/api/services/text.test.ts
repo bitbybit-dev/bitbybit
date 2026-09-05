@@ -69,7 +69,7 @@ describe("Text unit tests", () => {
         expected: Inputs.Base.Point3[] | Inputs.Base.Vector3[]
     ) => {
         expect(received.length).toEqual(expected.length);
-        received.forEach((p, i) => expectPointCloseTo(p, expected[i]));
+        received.forEach((p, i) => expectPointCloseTo(p, expected[i]!));
     };
 
     const TOLERANCE = 1e-7;
@@ -304,7 +304,7 @@ describe("Text unit tests", () => {
             const char = "A";
             const code = char.charCodeAt(0);
             const targetHeight = 20;
-            const glyphWidth = mockFont[code][0] as number;
+            const glyphWidth = mockFont[code]![0] as number;
             const fontDesignHeight = mockFont.height;
             const ratio = targetHeight / fontDesignHeight;
             const expectedWidth = glyphWidth * ratio;
@@ -325,7 +325,7 @@ describe("Text unit tests", () => {
                 [50 * ratio + 0, 0, 0 * ratio + 0],
                 [0 * ratio + 0, 0, 0 * ratio + 0],
             ];
-            expectPointsCloseTo(result.paths[0], expectedPath);
+            expectPointsCloseTo(result.paths[0]!, expectedPath);
         });
 
         it("should apply xOffset and yOffset", () => {
@@ -342,7 +342,7 @@ describe("Text unit tests", () => {
             const expectedFirstPoint: Inputs.Base.Point3 = [
                 0 * ratio + xOff, 0, 0 * ratio + yOff
             ];
-            expectPointCloseTo(result.paths[0][0], expectedFirstPoint);
+            expectPointCloseTo(result.paths[0]![0], expectedFirstPoint);
         });
 
         it("should handle extrudeOffset", () => {
@@ -352,7 +352,7 @@ describe("Text unit tests", () => {
             const fontDesignHeight = mockFont.height;
             const ratio = (targetHeight - extrudeOff) / fontDesignHeight;
             const extrudeYOff = extrudeOff / 2;
-            const glyphWidth = mockFont[char.charCodeAt(0)][0] as number;
+            const glyphWidth = mockFont[char.charCodeAt(0)]![0] as number;
             const expectedWidth = glyphWidth * ratio;
 
             const result = text.vectorChar({
@@ -365,8 +365,8 @@ describe("Text unit tests", () => {
             const expectedFirstPointY = 0 * ratio + 0 + extrudeYOff;
             const expectedSecondPointY = 80 * ratio + 0 + extrudeYOff;
 
-            expect(result.paths[0][0][2]).toBeCloseTo(expectedFirstPointY, TOLERANCE);
-            expect(result.paths[0][1][2]).toBeCloseTo(expectedSecondPointY, TOLERANCE);
+            expect(result.paths[0]![0]![2]).toBeCloseTo(expectedFirstPointY, TOLERANCE);
+            expect(result.paths[0]![1]![2]).toBeCloseTo(expectedSecondPointY, TOLERANCE);
         });
 
         it("should create multiple paths for characters with breaks (B)", () => {
@@ -378,15 +378,15 @@ describe("Text unit tests", () => {
             const expectedPath1: Inputs.Base.Point3[] = [[0, 0, 0], [0, 0, 8]];
             const expectedPath2: Inputs.Base.Point3[] = [[3, 0, 0], [3, 0, 8]];
 
-            expectPointsCloseTo(result.paths[0], expectedPath1);
-            expectPointsCloseTo(result.paths[1], expectedPath2);
+            expectPointsCloseTo(result.paths[0]!, expectedPath1);
+            expectPointsCloseTo(result.paths[1]!, expectedPath2);
         });
 
         it("should use fallback character (?) for unknown characters", () => {
             const char = "Z";
             const fallbackCode = 63; // '?'
             const targetHeight = 10;
-            const fallbackGlyphWidth = mockFont[fallbackCode][0] as number; // 45
+            const fallbackGlyphWidth = mockFont[fallbackCode]![0] as number; // 45
             const expectedWidth = fallbackGlyphWidth * (targetHeight / mockFont.height); // 45 * 0.1 = 4.5
 
             const result = text.vectorChar({ char: char, height: targetHeight, font: mockFont } as jest.Mocked<Inputs.Text.VectorCharDto>);
@@ -401,13 +401,13 @@ describe("Text unit tests", () => {
                 [0 * 0.1, 0, 70 * 0.1],
                 [0 * 0.1, 0, 0 * 0.1],
             ];
-            expectPointsCloseTo(result.paths[0], expectedPathFallback);
+            expectPointsCloseTo(result.paths[0]!, expectedPathFallback);
         });
 
         it("should handle space character (width only)", () => {
             const char = " ";
             const targetHeight = 10;
-            const spaceGlyphWidth = mockFont[char.charCodeAt(0)][0] as number; // 20
+            const spaceGlyphWidth = mockFont[char.charCodeAt(0)]![0] as number; // 20
             const expectedWidth = spaceGlyphWidth * (targetHeight / mockFont.height); // 20 * 0.1 = 2
 
             const result = text.vectorChar({ char: char, height: targetHeight, font: mockFont } as jest.Mocked<Inputs.Text.VectorCharDto>);
@@ -421,7 +421,7 @@ describe("Text unit tests", () => {
             const char = "";
             const fallbackCode = 63;
             const targetHeight = 10;
-            const fallbackGlyphWidth = mockFont[fallbackCode][0] as number;
+            const fallbackGlyphWidth = mockFont[fallbackCode]![0] as number;
             const expectedWidth = fallbackGlyphWidth * (targetHeight / mockFont.height);
 
             const result = text.vectorChar({ char: char, height: targetHeight, font: mockFont } as jest.Mocked<Inputs.Text.VectorCharDto>);
@@ -435,21 +435,21 @@ describe("Text unit tests", () => {
         it("should create data for a single character text", () => {
             const result = text.vectorText({ text: "A", font: mockFont, height: 10 } as jest.Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(1);
-            expect(result[0].chars).toHaveLength(1);
-            expect(result[0].chars[0].paths).toHaveLength(3);
+            expect(result[0]!.chars).toHaveLength(1);
+            expect(result[0]!.chars[0]!.paths).toHaveLength(3);
         });
 
         it("should create data for a simple text string (\"AB\")", () => {
             const height = 10;
             const result = text.vectorText({ text: "AB", font: mockFont, height: height } as jest.Mocked<Inputs.Text.VectorTextDto>);
-            expect(result[0].chars[0].paths).toEqual([[[4.285714285714286, 0, 10], [0.47619047619047616, 0, 0]], [[4.285714285714286, 0, 10], [8.095238095238095, 0, 0]], [[1.9047619047619047, 0, 3.333333333333333], [6.666666666666666, 0, 3.333333333333333]]]);
+            expect(result[0]!.chars[0]!.paths).toEqual([[[4.285714285714286, 0, 10], [0.47619047619047616, 0, 0]], [[4.285714285714286, 0, 10], [8.095238095238095, 0, 0]], [[1.9047619047619047, 0, 3.333333333333333], [6.666666666666666, 0, 3.333333333333333]]]);
         });
 
         it("should handle spaces correctly (\"A B\")", () => {
             const height = 10;
 
             const result = text.vectorText({ text: "A B", font: mockFont, height: height } as jest.Mocked<Inputs.Text.VectorTextDto>);
-            expect(result[0].chars[0].paths).toEqual([[[4.285714285714286, 0, 10], [0.47619047619047616, 0, 0]], [[4.285714285714286, 0, 10], [8.095238095238095, 0, 0]], [[1.9047619047619047, 0, 3.333333333333333], [6.666666666666666, 0, 3.333333333333333]]]);
+            expect(result[0]!.chars[0]!.paths).toEqual([[[4.285714285714286, 0, 10], [0.47619047619047616, 0, 0]], [[4.285714285714286, 0, 10], [8.095238095238095, 0, 0]], [[1.9047619047619047, 0, 3.333333333333333], [6.666666666666666, 0, 3.333333333333333]]]);
         });
 
         it("should handle newline characters (\"A\\nB\")", () => {
@@ -459,7 +459,7 @@ describe("Text unit tests", () => {
             const result = text.vectorText({ text: "A\nB", font: mockFont, height: height, lineSpacing: lineSpacing } as jest.Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(2);
 
-            expect(result[0].chars[0].paths).toEqual([[[4.285714285714286, 0, 10], [0.47619047619047616, 0, 0]], [[4.285714285714286, 0, 10], [8.095238095238095, 0, 0]], [[1.9047619047619047, 0, 3.333333333333333], [6.666666666666666, 0, 3.333333333333333]]]);
+            expect(result[0]!.chars[0]!.paths).toEqual([[[4.285714285714286, 0, 10], [0.47619047619047616, 0, 0]], [[4.285714285714286, 0, 10], [8.095238095238095, 0, 0]], [[1.9047619047619047, 0, 3.333333333333333], [6.666666666666666, 0, 3.333333333333333]]]);
         });
 
         it("should apply letterSpacing", () => {
@@ -467,7 +467,7 @@ describe("Text unit tests", () => {
             const letterSpacing = 0.5;
 
             const result = text.vectorText({ text: "AB", font: mockFont, height: height, letterSpacing: letterSpacing } as jest.Mocked<Inputs.Text.VectorTextDto>);
-            expect(result[0].chars[0].paths).toEqual([
+            expect(result[0]!.chars[0]!.paths).toEqual([
                 [[4.285714285714286, 0, 10], [0.47619047619047616, 0, 0]],
                 [[4.285714285714286, 0, 10], [8.095238095238095, 0, 0]],
                 [
@@ -484,7 +484,7 @@ describe("Text unit tests", () => {
             const result = text.vectorText({ text: txt, font: mockFont, height: height, align: Inputs.Base.horizontalAlignEnum.center } as jest.Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(2);
 
-            expect(result[0].chars[0].paths).toEqual([[[14.285714285714285, 0, 10], [10.476190476190476, 0, 0]], [[14.285714285714285, 0, 10], [18.095238095238095, 0, 0]], [[11.904761904761905, 0, 3.333333333333333], [16.666666666666664, 0, 3.333333333333333]]]);
+            expect(result[0]!.chars[0]!.paths).toEqual([[[14.285714285714285, 0, 10], [10.476190476190476, 0, 0]], [[14.285714285714285, 0, 10], [18.095238095238095, 0, 0]], [[11.904761904761905, 0, 3.333333333333333], [16.666666666666664, 0, 3.333333333333333]]]);
         });
 
         it("should align text right", () => {
@@ -493,7 +493,7 @@ describe("Text unit tests", () => {
 
             const result = text.vectorText({ text: txt, font: mockFont, height: height, align: Inputs.Base.horizontalAlignEnum.right } as jest.Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(2);
-            expect(result[0].chars[0].paths).toEqual([
+            expect(result[0]!.chars[0]!.paths).toEqual([
                 [[24.285714285714285, 0, 10], [20.476190476190474, 0, 0]],
                 [[24.285714285714285, 0, 10], [28.095238095238095, 0, 0]],
                 [
@@ -509,8 +509,8 @@ describe("Text unit tests", () => {
 
             const result = text.vectorText({ text: txt, font: mockFont, height: height, centerOnOrigin: true } as jest.Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(1);
-            expect(result[0].chars).toHaveLength(1);
-            expect(result[0].chars[0].paths).toEqual([
+            expect(result[0]!.chars).toHaveLength(1);
+            expect(result[0]!.chars[0]!.paths).toEqual([
                 [[0, 0, 5], [-3.8095238095238093, 0, -5]],
                 [[0, 0, 5], [3.8095238095238093, 0, -5]],
                 [
