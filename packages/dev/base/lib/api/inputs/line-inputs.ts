@@ -39,12 +39,12 @@ export namespace Line {
          * Start points
          * @default undefined
          */
-        startPoints: Base.Point3[];
+        startPoints!: Base.Point3[];
         /**
          * End points
          * @default undefined
          */
-        endPoints: Base.Point3[];
+        endPoints!: Base.Point3[];
     }
     export class DrawLineDto<T> {
         /**

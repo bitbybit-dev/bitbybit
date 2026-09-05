@@ -188,6 +188,6 @@ export namespace Transforms {
          * Translation vectors with [x, y, z] distances
          * @default undefined
          */
-        translations: Base.Vector3[];
+        translations!: Base.Vector3[];
     }
 }

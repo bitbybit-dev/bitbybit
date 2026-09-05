@@ -247,7 +247,7 @@ export namespace Color {
          * Red value component
          * @default undefined
          */
-        rgb: Base.ColorRGB;
+        rgb!: Base.ColorRGB;
         /**
          * Min value of the range
          * @default 0
@@ -322,6 +322,6 @@ export namespace Color {
          * Red value component
          * @default undefined
          */
-        rgb: Base.ColorRGB;
+        rgb!: Base.ColorRGB;
     }
 }

@@ -27,7 +27,7 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Index of the item in the list - 0 means first.
          * @default 0
@@ -53,7 +53,7 @@ export namespace Lists {
          * The list to split into a sublist
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Index from which to start the sublist - 0 means first.
          * @default 0
@@ -85,7 +85,7 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
@@ -100,7 +100,7 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
@@ -125,7 +125,7 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
@@ -147,7 +147,7 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
@@ -172,7 +172,7 @@ export namespace Lists {
          * The list
          * @default undefined
          */
-        list: T[];
+        list!: T[];
     }
     export class GroupListDto<T> {
         constructor(list?: T[], nrElements?: number, keepRemainder?: boolean) {
@@ -184,7 +184,7 @@ export namespace Lists {
          * The list of elements to group together
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The number of elements in each group
          * @default 2
@@ -208,7 +208,7 @@ export namespace Lists {
          * The item to multiply
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * Times to multiply
          * @default 10
@@ -216,7 +216,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        times: number;
+        times: number = 10;
     }
     export class AddItemAtIndexDto<T> {
         constructor(list?: T[], item?: T, index?: number, clone?: boolean) {
@@ -229,12 +229,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * The index to add the item at
          * @default 0
@@ -260,12 +260,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * The index to add the item at
          * @default [0]
@@ -289,12 +289,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        items: T[];
+        items!: T[];
         /**
          * The index to add the item at
          * @default [0]
@@ -316,7 +316,7 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The index to on which remove item
          * @default 0
@@ -341,12 +341,12 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The indexes that should be removed
          * @default undefined
          */
-        indexes: number[];
+        indexes!: number[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
@@ -364,7 +364,7 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The nth item to remove
          * @default 2
@@ -397,7 +397,7 @@ export namespace Lists {
         * The list from which item needs to be updated
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * Threshold for items
          * @default 0.5
@@ -421,7 +421,7 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
@@ -438,7 +438,7 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The tolerance to apply
          * @default 1e-7
@@ -462,7 +462,7 @@ export namespace Lists {
         * The list from which we need to get an item
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The list of booleans to be used as a pattern (true means get, false means skip)
          * @default [true, true, false]
@@ -480,7 +480,7 @@ export namespace Lists {
         * The list from which we need to get an item
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The nth item to get
          * @default 2
@@ -511,7 +511,7 @@ export namespace Lists {
          * The list from which we need to get an item
          * @default undefined
          */
-        lists: T[];
+        lists!: T[];
     }
     export class MergeElementsOfLists<T> {
         constructor(lists?: T[], level?: number) {
@@ -522,7 +522,7 @@ export namespace Lists {
         * The list from which we need to get an item
         * @default undefined
         */
-        lists: T[];
+        lists!: T[];
         /**
          * The level on which to merge the elements. 0 means first level
          * @default 0
@@ -542,12 +542,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
@@ -565,12 +565,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * The option if the item needs to be added at the beginning or the end of the list
          * @default last
@@ -591,7 +591,7 @@ export namespace Lists {
          * The lists to concatenate
          * @default undefined
          */
-        lists: T[][];
+        lists!: T[][];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
@@ -607,12 +607,12 @@ export namespace Lists {
          * The list to check
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to look for
          * @default undefined
          */
-        item: T;
+        item!: T;
     }
     export class InterleaveDto<T> {
         constructor(lists?: T[][], clone?: boolean) {
@@ -623,7 +623,7 @@ export namespace Lists {
          * The lists to interleave
          * @default undefined
          */
-        lists: T[][];
+        lists!: T[][];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true

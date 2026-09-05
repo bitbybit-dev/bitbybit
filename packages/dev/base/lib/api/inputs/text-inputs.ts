@@ -76,7 +76,7 @@ export namespace Text {
          * Text to join
          * @default undefined
          */
-        list: string[];
+        list!: string[];
         /**
          * Text to join by
          * @default ,
@@ -91,7 +91,7 @@ export namespace Text {
          * Item to stringify
          * @default undefined
          */
-        item: T;
+        item!: T;
     }
     export class ToStringEachDto<T> {
         constructor(list?: T[]) {
@@ -101,7 +101,7 @@ export namespace Text {
          * Item to stringify
          * @default undefined
          */
-        list: T[];
+        list!: T[];
     }
 
     export class TextFormatDto {

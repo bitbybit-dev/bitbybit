@@ -18,7 +18,6 @@
         "baseUrl": "./",
         "paths": {},
         "strict": true,
-        "strictPropertyInitialization": false,
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
         "noImplicitReturns": true,

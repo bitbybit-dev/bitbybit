@@ -158,7 +158,7 @@ export namespace Math {
          * Ease function
          * @default easeInSine
          */
-        ease: easeEnum;
+        ease: easeEnum = easeEnum.easeInSine;
     }
     export class RoundToDecimalsDto {
         constructor(number?: number, decimalPlaces?: number) {
@@ -208,7 +208,7 @@ export namespace Math {
          * Point
          * @default add
          */
-        operation: mathTwoNrOperatorEnum;
+        operation: mathTwoNrOperatorEnum = mathTwoNrOperatorEnum.add;
     }
     export class TwoNumbersDto {
         constructor(first?: number, second?: number) {
@@ -249,7 +249,7 @@ export namespace Math {
          * Point
          * @default absolute
          */
-        operation: mathOneNrOperatorEnum;
+        operation: mathOneNrOperatorEnum = mathOneNrOperatorEnum.absolute;
     }
     export class RemapNumberDto {
         constructor(number?: number, fromLow?: number, fromHigh?: number, toLow?: number, toHigh?: number) {
@@ -367,7 +367,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number: number;
+        number!: number;
         /**
          * Number of decimal places
          * @default 2

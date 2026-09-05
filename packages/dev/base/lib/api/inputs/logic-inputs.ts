@@ -37,17 +37,17 @@ export namespace Logic {
          * First item
          * @default undefined
          */
-        first: T;
+        first!: T;
         /**
          * Second item
          * @default undefined
          */
-        second: T;
+        second!: T;
         /**
          * Operator
          * @default less
          */
-        operator: BooleanOperatorsEnum;
+        operator: BooleanOperatorsEnum = BooleanOperatorsEnum.less;
     }
     export class BooleanDto {
         constructor(boolean?: boolean) {
@@ -67,7 +67,7 @@ export namespace Logic {
          * Boolean value
          * @default undefined
          */
-        booleans: boolean[];
+        booleans!: boolean[];
     }
     export class ValueGateDto<T> {
         constructor(value?: T, boolean?: boolean) {
@@ -78,7 +78,7 @@ export namespace Logic {
          * Value to transmit when gate will be released. When value is not released we will transmit undefined value
          * @default undefined
          */
-        value: T;
+        value!: T;
         /**
          * Boolean value to release the gate
          * @default false
@@ -129,7 +129,7 @@ export namespace Logic {
          * Numbers to remap to bools
          * @default undefined
          */
-        numbers: number[];
+        numbers!: number[];
         /**
          * Threshold for the numeric value until which the output will be true
          * @default 1
@@ -137,7 +137,7 @@ export namespace Logic {
          * @maximum Infinity
          * @step 0.1
          */
-        thresholdTotalTrue: number;
+        thresholdTotalTrue: number = 1;
         /**
          * Threshold for the numeric value until which the output will be true
          * @default 2
@@ -145,7 +145,7 @@ export namespace Logic {
          * @maximum Infinity
          * @step 0.1
          */
-        thresholdTotalFalse: number;
+        thresholdTotalFalse: number = 2;
         /**
          * Number of levels to go through in between thresholds for gradient
          * @default 10
@@ -153,14 +153,14 @@ export namespace Logic {
          * @maximum Infinity
          * @step 1
          */
-        nrLevels: number;
+        nrLevels: number = 10;
     }
     export class ThresholdBooleanListDto {
         /**
          * Numbers to remap to bools based on threshold
          * @default undefined
          */
-        numbers: number[];
+        numbers!: number[];
         /**
          * Threshold for the numeric value until which the output will be true. 
          * If number in the list is larger than this threshold it will become false if inverse stays false.
@@ -169,28 +169,28 @@ export namespace Logic {
          * @maximum Infinity
          * @step 0.1
          */
-        threshold: number;
+        threshold: number = 1;
         /**
          * True values become false and false values become true
          * @default false
          */
-        inverse: boolean;
+        inverse: boolean = false;
     }
     export class ThresholdGapsBooleanListDto {
         /**
          * Numbers to remap to bools based on threshold
          * @default undefined
          */
-        numbers: number[];
+        numbers!: number[];
         /**
          * 2D arrays representing gaps of the thresholds on which numbers should be flipped from false to true if inverse is false.
          * @default undefined
          */
-        gapThresholds: Base.Vector2[];
+        gapThresholds!: Base.Vector2[];
         /**
          * True values become false and false values become true
          * @default false
          */
-        inverse: boolean;
+        inverse: boolean = false;
     }
 }

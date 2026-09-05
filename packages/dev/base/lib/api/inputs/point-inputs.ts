@@ -16,7 +16,7 @@ export namespace Point {
          * Point
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
     }
     export class PointXYZDto {
         constructor(x?: number, y?: number, z?: number) {
@@ -79,7 +79,7 @@ export namespace Point {
          * Points
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class TwoPointsDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3) {
@@ -90,12 +90,12 @@ export namespace Point {
          * Point 1
          * @default undefined
          */
-        point1: Base.Point3;
+        point1!: Base.Point3;
         /**
          * Point 2
          * @default undefined
          */
-        point2: Base.Point3;
+        point2!: Base.Point3;
     }
     export class DrawPointDto<T> {
         /**
@@ -113,7 +113,7 @@ export namespace Point {
          * Point
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * Value between 0 and 1
          * @default 1
@@ -162,7 +162,7 @@ export namespace Point {
          * Point
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Value between 0 and 1
          * @default 1
@@ -204,12 +204,12 @@ export namespace Point {
          * Point to transform
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class TransformPointsDto {
         constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes) {
@@ -220,12 +220,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class TranslatePointsWithVectorsDto {
         constructor(points?: Base.Point3[], translations?: Base.Vector3[]) {
@@ -236,12 +236,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Translation vectors for each point
          * @default undefined
          */
-        translations: Base.Vector3[];
+        translations!: Base.Vector3[];
     }
     export class TranslatePointsDto {
         constructor(points?: Base.Point3[], translation?: Base.Vector3) {
@@ -252,12 +252,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Translation vector with x, y and z values
          * @default undefined
          */
-        translation: Base.Vector3;
+        translation!: Base.Vector3;
     }
     export class TranslateXYZPointsDto {
         constructor(points?: Base.Point3[], x?: number, y?: number, z?: number) {
@@ -270,7 +270,7 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * X vector value
          * @default 0
@@ -298,7 +298,7 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * The center from which the scaling is applied
          * @default [0, 0, 0]
@@ -353,7 +353,7 @@ export namespace Point {
         * Points to transform
         * @default undefined
         */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Angle of rotation in degrees
          * @default 90
@@ -382,12 +382,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Transformations that have to match nr of points
          * @default undefined
          */
-        transformation: Base.TransformMatrixes[];
+        transformation!: Base.TransformMatrixes[];
     }
     export class ThreePointsNormalDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3, reverseNormal?: boolean) {
@@ -400,17 +400,17 @@ export namespace Point {
          * Point 1
          * @default undefined
          */
-        point1: Base.Point3;
+        point1!: Base.Point3;
         /**
          * Point 2
          * @default undefined
          */
-        point2: Base.Point3;
+        point2!: Base.Point3;
         /**
          * Point 3
          * @default undefined
          */
-        point3: Base.Point3;
+        point3!: Base.Point3;
         /**
          * Reverse normal direction
          * @default false
@@ -483,7 +483,7 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Tolerance for removing duplicates
          * @default 1e-7
@@ -506,12 +506,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
     }
     export class TwoPointsToleranceDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, tolerance?: number) {
@@ -547,12 +547,12 @@ export namespace Point {
          * Start point
          * @default undefined
          */
-        startPoint: Base.Point3;
+        startPoint!: Base.Point3;
         /**
          * End point
          * @default undefined
          */
-        endPoint: Base.Point3;
+        endPoint!: Base.Point3;
     }
     export class StartEndPointsListDto {
         constructor(startPoint?: Base.Point3, endPoints?: Base.Point3[]) {
@@ -563,12 +563,12 @@ export namespace Point {
          * Start point
          * @default undefined
          */
-        startPoint: Base.Point3;
+        startPoint!: Base.Point3;
         /**
          * End point
          * @default undefined
          */
-        endPoints: Base.Point3[];
+        endPoints!: Base.Point3[];
     }
 
     export class MultiplyPointDto {
@@ -580,12 +580,12 @@ export namespace Point {
          * Point for multiplication
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * Number of points to create in the list
          * @default undefined
          */
-        amountOfPoints: number;
+        amountOfPoints!: number;
     }
 
     export class SpiralDto {
@@ -734,7 +734,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusHexagon: number;
+        radiusHexagon: number = 0.2;
         /**
          * Orient hexagon points grid on center
          * @default false

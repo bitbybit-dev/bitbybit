@@ -1,10 +1,9 @@
 // The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces the whole
-// strict set of tsconfig.base.cad-strict.json except strictPropertyInitialization, ahead of the shared
-// loose base: base is the root of the package graph, so the types it declares reach every other
-// package, and it went strict first, one flag at a time. The one flag still held by the baseline is
-// the property initialisers in the input classes. The flags are repeated here so the editor and the
-// tests hold the same line; the build config cannot carry this note because the references generator
-// rewrites it without comments.
+// strict set of tsconfig.base.cad-strict.json, ahead of the shared loose base: base is the root of the
+// package graph, so the types it declares reach every other package, and it went strict first, one
+// flag at a time. It carries no strict baseline any more. The flags are repeated here so the editor and
+// the tests hold the same line; the build config cannot carry this note because the references
+// generator rewrites it without comments.
 {
     "extends": "../../../tsconfig.base.cad-loose.json",
     "compileOnSave": false,
@@ -13,7 +12,6 @@
         "baseUrl": "./",
         "paths": {},
         "strict": true,
-        "strictPropertyInitialization": false,
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
         "noImplicitReturns": true,

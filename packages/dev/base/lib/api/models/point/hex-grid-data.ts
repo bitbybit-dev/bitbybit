@@ -6,8 +6,8 @@ import { Base } from "../../inputs/base-inputs";
  * and panelised surfaces.
  */
 export class HexGridData {
-    centers: Base.Point3[];
-    hexagons: Base.Point3[][];
+    centers!: Base.Point3[];
+    hexagons!: Base.Point3[][];
     shortestDistEdge: number | undefined;
     longestDistEdge: number | undefined;
     maxFilletRadius: number | undefined;

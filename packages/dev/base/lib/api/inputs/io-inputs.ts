@@ -20,12 +20,12 @@ export namespace IO {
          * Start point of the line
          * @default undefined
          */
-        start: Base.Point2;
+        start!: Base.Point2;
         /**
          * End point of the line
          * @default undefined
          */
-        end: Base.Point2;
+        end!: Base.Point2;
     }
 
     /**
@@ -42,22 +42,22 @@ export namespace IO {
          * Center point of the arc
          * @default undefined
          */
-        center: Base.Point2;
+        center!: Base.Point2;
         /**
          * Radius of the arc
          * @default undefined
          */
-        radius: number;
+        radius!: number;
         /**
          * Start angle in degrees
          * @default undefined
          */
-        startAngle: number;
+        startAngle!: number;
         /**
          * End angle in degrees (counter-clockwise from start angle)
          * @default undefined
          */
-        endAngle: number;
+        endAngle!: number;
     }
 
     /**
@@ -72,12 +72,12 @@ export namespace IO {
          * Center point of the circle
          * @default undefined
          */
-        center: Base.Point2;
+        center!: Base.Point2;
         /**
          * Radius of the circle
          * @default undefined
          */
-        radius: number;
+        radius!: number;
     }
 
     /**
@@ -94,7 +94,7 @@ export namespace IO {
          * Points defining the polyline vertices
          * @default undefined
          */
-        points: Base.Point2[];
+        points!: Base.Point2[];
         /**
          * Whether the polyline is closed
          * @default false
@@ -124,7 +124,7 @@ export namespace IO {
          * Control points defining the spline
          * @default undefined
          */
-        controlPoints: Base.Point2[];
+        controlPoints!: Base.Point2[];
         /**
          * Degree of the spline (typically 2 or 3)
          * @default 3
@@ -150,7 +150,7 @@ export namespace IO {
          * Can include lines, arcs, circles, polylines, and splines
          * @default undefined
          */
-        segments: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[];
+        segments!: (DxfLineSegmentDto | DxfArcSegmentDto | DxfCircleSegmentDto | DxfPolylineSegmentDto | DxfSplineSegmentDto)[];
     }
 
     /**
@@ -176,7 +176,7 @@ export namespace IO {
          * Array of paths, each containing multiple segments
          * @default undefined
          */
-        paths: DxfPathDto[];
+        paths!: DxfPathDto[];
     }
 
     /**
@@ -192,7 +192,7 @@ export namespace IO {
          * Array of path parts, each containing paths with segments
          * @default undefined
          */
-        dxfPathsParts: DxfPathsPartDto[];
+        dxfPathsParts!: DxfPathsPartDto[];
         /**
          * Color format to use in the DXF file
          * - "aci": AutoCAD Color Index (1-255) - Better compatibility with older CAD software like Design CAD 3D Max
