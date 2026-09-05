@@ -40,6 +40,13 @@ refuses a `workspace:`, `link:` or `file:` specifier. A dependency's install scr
 dependency shows up as a decision, not as a silent skip. Use pnpm 11 (`npm install -g pnpm@11`);
 the `packageManager` field pins the exact version and pnpm switches to it on its own.
 
+pnpm's layout is strict: a package resolves only what its own manifest declares, where npm's flat
+hoisting let it reach anything a sibling had installed. Every import in `lib/` must therefore be a
+dependency of that package - the engine packages import `@bitbybit-dev/base`, the three workers,
+`jsonpath-plus` and `verb-nurbs-web` directly, and declare them. Verify a build from a clone that
+sits outside your home directory: a stray `~/node_modules` above the checkout satisfies an
+undeclared import on your machine and nowhere else, which is how one reached CI.
+
 `npm test` at the root runs every package suite, after `npm run check:worker-parity`: each worker
 package mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends
 a path the kernel lacks, when a kernel method has no mirror outside the allow-list, when signatures

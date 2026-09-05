@@ -44,7 +44,7 @@ export function createSimpleMockContext(): Context {
  * Creates a mock window object for testing
  */
 export function mockWindow() {
-    (global as any).window = {
+    (globalThis as any).window = {
         addEventListener: jest.fn(),
         removeEventListener: jest.fn(),
     };
