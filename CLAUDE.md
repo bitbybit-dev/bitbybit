@@ -57,13 +57,35 @@ dependency of that package - the engine packages import `@bitbybit-dev/base`, th
 sits outside your home directory: a stray `~/node_modules` above the checkout satisfies an
 undeclared import on your machine and nowhere else, which is how one reached CI.
 
+## Lint and the strictness ratchet
+
+`npm run lint` is ESLint 10 over the whole repository from one self-contained `eslint.config.mjs`:
+the two recommended sets plus the house style (double quotes, semicolons, underscore-tolerant unused
+variables). Every finding that existed when the config landed is recorded in `eslint-suppressions.json`
+(written by `eslint --suppress-all` from this directory); a new finding fails, and so does a suppression
+that is no longer needed, so the count only goes down. Never load `eslint-plugin-no-comments` here: the
+JSDoc on the public API is a functional input to the studio's component generator, and that rule's
+auto-fix would delete it. The parent repository's knowledge check refuses a config here that loads it.
+
+The packages build loose and typecheck strict. Each CAD package has a `tsconfig.strict.json` - its build
+config plus the flags in `tsconfig.base.cad-strict.json`, the same set the parent repository's strict
+units share, with `noEmit` - and a committed `.tsc-baseline.json` that records today's errors as a count
+per file and error code (tsc-baseline, `--ignoreMessages`, because a message can embed an absolute path
+into the pnpm store). `npm run typecheck:strict` in a package prints the errors that are NOT in its
+baseline; `npm run check:strict-baselines` at the root, which CI runs, holds every baseline to the code
+in both directions, so a fix lands together with `npm run typecheck:strict:save` in that package and the
+baseline only shrinks. When a package's baseline is empty, its build config goes strict and the baseline
+is deleted; when a flag reaches zero errors in every package, it moves from `tsconfig.base.cad-strict.json`
+into `tsconfig.base.cad-loose.json` and the build enforces it. Dominant error today: TS2564, property
+initializers in the `*-inputs.ts` classes whose JSDoc `@default` already states the value.
+
 ## Continuous integration
 
 `.github/workflows/verify.yml` proves the repository builds and tests from a bare clone with nothing
 above it, on every push to `develop` and every pull request into `develop` or `master`: one frozen
-install, an audit that no host-only path leaked in, `check:references`, `rebuild-all-packages`,
-`npm test`, the SDK's typecheck, tests and build, the scaffolder's build, `api:check` and
-`check:tarballs`. It needs no secrets and must never gain any. A nightly job runs the build and
+install, an audit that no host-only path leaked in, `lint`, `check:references`, `rebuild-all-packages`,
+`npm test`, `check:strict-baselines`, the SDK's typecheck, tests and build, the scaffolder's build,
+`api:check` and `check:tarballs`. It needs no secrets and must never gain any. A nightly job runs the build and
 tests on every Node line the packages should keep working on; Node comes from `.tool-versions` and
 pnpm from the `packageManager` field. Publishing is not here and will not be added to this file.
 

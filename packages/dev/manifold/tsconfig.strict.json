@@ -1,0 +1,5 @@
+// The typecheck-only strict overlay: this package's build config, then the shared strict flags.
+// `npm run typecheck:strict` runs it through tsc-baseline against .tsc-baseline.json.
+{
+    "extends": ["./tsconfig.bitbybit.json", "../../../tsconfig.base.cad-strict.json"]
+}

@@ -1,0 +1,27 @@
+{
+    // The strictness the CAD packages are ratcheting towards - the same flag set the parent
+    // repository's strict units share - as a typecheck-only overlay. Each package's tsconfig.strict.json
+    // extends its build config and then this file, so the paths, excludes and references stay in one
+    // place and only the flags come from here; `noEmit` keeps the overlay from ever writing to dist.
+    // The build itself stays on tsconfig.base.cad-loose.json until a package's baseline is empty; a flag
+    // that reaches zero errors in every package moves from here into that file, and is then enforced
+    // by the build rather than by the baseline.
+    //
+    // This file is self-contained on purpose: the repository must typecheck from a bare clone with
+    // nothing above it, so it never extends the parent repository's base.
+    "compilerOptions": {
+        "noEmit": true,
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "skipLibCheck": true
+    }
+}

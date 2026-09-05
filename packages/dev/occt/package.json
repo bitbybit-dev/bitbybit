@@ -40,6 +40,8 @@
     ],
     "scripts": {
         "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false | tsc-baseline check",
+        "typecheck:strict:save": "tsc -p tsconfig.strict.json --pretty false | tsc-baseline --ignoreMessages save",
         "clean-dist": "shx rm -rf dist",
         "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run copy-readme-license && npm run delete-coverage && npm run delete-bak",
         "copy-package": "node ../../../scripts/dist-manifest.mjs",
@@ -49,9 +51,7 @@
         "delete-bak": "find ./dist -name '*.bak' -delete || true",
         "test": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --watchAll=true",
         "test-c": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false",
-        "test-c-l": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=true",
-        "lint": "eslint . --ext .ts",
-        "lint-fix": "eslint . --ext .ts --fix"
+        "test-c-l": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=true"
     },
     "author": "Bit by bit developers",
     "license": "MIT",
@@ -77,8 +77,6 @@
         "@babel/preset-env": "7.29.5",
         "@babel/preset-typescript": "7.28.5",
         "jest-html-reporters": "3.1.7",
-        "@typescript-eslint/parser": "8.59.4",
-        "@typescript-eslint/eslint-plugin": "8.59.4",
         "jest-environment-node": "30.4.1"
     },
     "jest": {

@@ -42,6 +42,8 @@
     },
     "scripts": {
         "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false | tsc-baseline check",
+        "typecheck:strict:save": "tsc -p tsconfig.strict.json --pretty false | tsc-baseline --ignoreMessages save",
         "clean-dist": "shx rm -rf dist",
         "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
         "copy-package": "node ../../../scripts/dist-manifest.mjs",

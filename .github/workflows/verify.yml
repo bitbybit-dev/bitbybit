@@ -43,12 +43,18 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Nothing in this repository may point at the proprietary host it is also developed inside.
+      # Nothing in this repository may point at the proprietary host it is also developed inside. The
+      # bracketed characters keep the pattern from matching its own text, so this file is audited too.
       - name: MIT-clean audit
         run: |
-          if git grep -n -E 'angular-sites/|projects/api-3d|bitbybit-complete|bitbybit-occt-advanced' -- .github scripts '*.json' ':!pnpm-lock.yaml' ':!package-lock.json'; then
+          if git grep -n -E 'angular-sites[/]|projects[/]api-3d|bitbybit[-]complete|bitbybit[-]occt-advanced' -- .github scripts '*.json' ':!pnpm-lock.yaml' ':!package-lock.json'; then
             echo "::error::a host-only path leaked into the public repository"; exit 1
           fi
+
+      # ESLint 10 with a committed suppression baseline: every finding that existed when the config landed
+      # is recorded in eslint-suppressions.json, a new one fails, and so does a suppression no longer needed.
+      - name: Lint
+        run: npm run lint
 
       - name: Project references match the manifests
         run: npm run check:references
@@ -61,6 +67,11 @@ jobs:
       # scaffolder's build - their only gate used to be prepublishOnly at publish time.
       - name: Test aggregate
         run: npm test
+
+      # The strict typecheck each package is ratcheting towards, held to its committed baseline in both
+      # directions: a new error fails, and so does a fixed one whose baseline was not re-saved.
+      - name: Strict baselines match the code
+        run: npm run check:strict-baselines
 
       - name: cad-cloud-sdk
         run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build

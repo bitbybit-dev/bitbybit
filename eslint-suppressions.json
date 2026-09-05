@@ -1,0 +1,724 @@
+{
+  "packages/dev/babylonjs/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/babylonjs/bitbybit.d.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 190
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "no-empty": {
+      "count": 4
+    }
+  },
+  "packages/dev/babylonjs/lib/api/__mocks__/babylonjs.mock.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 17
+    },
+    "quotes": {
+      "count": 2
+    }
+  },
+  "packages/dev/babylonjs/lib/api/bitbybit/babylon/gaussian-splatting.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/babylonjs/lib/api/bitbybit/babylon/io.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    },
+    "no-empty": {
+      "count": 2
+    },
+    "no-unassigned-vars": {
+      "count": 1
+    },
+    "preserve-caught-error": {
+      "count": 2
+    }
+  },
+  "packages/dev/babylonjs/lib/api/bitbybit/babylon/web-xr/simple.ts": {
+    "@typescript-eslint/no-unused-expressions": {
+      "count": 1
+    }
+  },
+  "packages/dev/babylonjs/lib/api/bitbybit/draw.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 11
+    }
+  },
+  "packages/dev/babylonjs/lib/api/context.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/babylonjs/lib/api/draw-helper.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 74
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/babylonjs/lib/api/draw-helper.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    },
+    "no-unassigned-vars": {
+      "count": 1
+    },
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "packages/dev/babylonjs/lib/api/inputs/base-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/babylonjs/lib/api/inputs/draw-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/base/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/base/lib/api/inputs/base-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/base/lib/api/services/lists.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
+  "packages/dev/base/lib/api/services/lists.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "packages/dev/base/lib/api/services/logic.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 5
+    }
+  },
+  "packages/dev/base/lib/api/services/math.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "packages/dev/base/lib/api/services/point.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
+  "packages/dev/base/lib/api/services/polyline.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "no-unassigned-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/base/lib/api/services/text.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/core/bitbybit.d.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 190
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "no-empty": {
+      "count": 4
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/asset.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/asset.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/csv.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/csv.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/json.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/json.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 9
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/tag.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/curve-circle.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/curve-ellipse.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/curve.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 12
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/intersect.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/surface-conical.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/surface-cylindrical.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/surface-extrusion.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/surface-revolved.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/surface-spherical.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/surface-sweep.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/verb/surface.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 11
+    }
+  },
+  "packages/dev/core/lib/api/context.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 9
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/inputs/base-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    }
+  },
+  "packages/dev/core/lib/api/inputs/json-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 26
+    }
+  },
+  "packages/dev/core/lib/api/inputs/time-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "packages/dev/core/lib/api/inputs/verb-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 95
+    }
+  },
+  "packages/dev/core/lib/asset-manager.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/core/mvdocpictures.js": {
+    "quotes": {
+      "count": 4
+    }
+  },
+  "packages/dev/jscad-worker/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/jscad-worker/lib/jscad-worker/cache-helper.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 4
+    }
+  },
+  "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker-manager.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    }
+  },
+  "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker-mock.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
+  "packages/dev/jscad/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/jscad/lib/api/inputs/jscad-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    }
+  },
+  "packages/dev/jscad/lib/api/jscad-service.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 8
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/jscad/lib/api/services/jscad-extrusions.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/jscad/lib/api/services/jscad-path.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/jscad/lib/api/services/jscad-shapes.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/jscad/lib/api/services/jscad-text.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/manifold-worker/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/manifold-worker/lib/manifold-worker/cache-helper.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 4
+    }
+  },
+  "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker-manager.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    }
+  },
+  "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker-mock.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 5
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/manifold/lib/api/manifold-service.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/manifold/lib/api/manifold-service.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/manifold/lib/api/services/manifold/manifold.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/manifold/lib/api/services/mesh/mesh.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt-worker/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/occt-worker/lib/occ-worker/cache-helper.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 6
+    }
+  },
+  "packages/dev/occt-worker/lib/occ-worker/constants.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 8
+    }
+  },
+  "packages/dev/occt-worker/lib/occ-worker/occ-worker-manager.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    }
+  },
+  "packages/dev/occt-worker/lib/occ-worker/occ-worker-mock.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt-worker/lib/occ-worker/occ-worker.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "packages/dev/occt-worker/lib/occ-worker/occ-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/occt/lib/api/inputs/occ-inputs.ts": {
+    "@typescript-eslint/prefer-as-const": {
+      "count": 4
+    },
+    "semi": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/assembly/manager.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 6
+    }
+  },
+  "packages/dev/occt/lib/services/base/converter.service.ts": {
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/base/dimensions.service.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/base/dxf.service.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/base/edges.service.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "no-useless-assignment": {
+      "count": 4
+    },
+    "preserve-caught-error": {
+      "count": 2
+    }
+  },
+  "packages/dev/occt/lib/services/base/enum.service.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    }
+  },
+  "packages/dev/occt/lib/services/base/enum.service.ts": {
+    "no-useless-assignment": {
+      "count": 3
+    }
+  },
+  "packages/dev/occt/lib/services/base/faces.service.ts": {
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/base/fillets.service.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/base/meshing.service.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/base/operations.service.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/base/transforms.service.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "preserve-caught-error": {
+      "count": 2
+    }
+  },
+  "packages/dev/occt/lib/services/base/wires.service.ts": {
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/fillets.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    }
+  },
+  "packages/dev/occt/lib/services/geom/curves.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
+  "packages/dev/occt/lib/services/io.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "preserve-caught-error": {
+      "count": 5
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/edge.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/edge.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/face.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/wire.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
+  "packages/dev/occt/lib/svg/svg-transform.ts": {
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "packages/dev/playcanvas/__mocks__/@bitbybit-dev/jscad-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 5
+    }
+  },
+  "packages/dev/playcanvas/__mocks__/@bitbybit-dev/manifold-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    }
+  },
+  "packages/dev/playcanvas/__mocks__/@bitbybit-dev/occt-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    }
+  },
+  "packages/dev/playcanvas/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/playcanvas/lib/api/__mocks__/playcanvas.mock.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 24
+    }
+  },
+  "packages/dev/playcanvas/lib/api/bitbybit/draw.ts": {
+    "preserve-caught-error": {
+      "count": 1
+    }
+  },
+  "packages/dev/playcanvas/lib/api/bitbybit/playcanvas.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/camera.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/orbit-camera.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 30
+    }
+  },
+  "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/orbit-camera.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/playcanvas/lib/api/draw-helper.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "packages/dev/playcanvas/lib/api/draw-helper.ts": {
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "preserve-caught-error": {
+      "count": 6
+    }
+  },
+  "packages/dev/playcanvas/lib/api/inputs/base-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/playcanvas/lib/api/inputs/playcanvas-camera-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    }
+  },
+  "packages/dev/threejs/__mocks__/@bitbybit-dev/jscad-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 5
+    }
+  },
+  "packages/dev/threejs/__mocks__/@bitbybit-dev/manifold-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    }
+  },
+  "packages/dev/threejs/__mocks__/@bitbybit-dev/occt-worker.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    }
+  },
+  "packages/dev/threejs/babel.config.cjs": {
+    "quotes": {
+      "count": 3
+    }
+  },
+  "packages/dev/threejs/lib/api/bitbybit/draw.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 25
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
+  "packages/dev/threejs/lib/api/bitbybit/draw.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 5
+    }
+  },
+  "packages/dev/threejs/lib/api/bitbybit/threejs/orbit-camera.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/threejs/lib/api/draw-helper.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 12
+    }
+  },
+  "packages/dev/threejs/lib/api/draw-helper.ts": {
+    "no-unassigned-vars": {
+      "count": 1
+    },
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "preserve-caught-error": {
+      "count": 6
+    }
+  },
+  "packages/dev/threejs/lib/api/inputs/base-inputs.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "scripts/gen-ts-references.mjs": {
+    "no-unused-vars": {
+      "count": 3
+    },
+    "preserve-caught-error": {
+      "count": 1
+    }
+  }
+}

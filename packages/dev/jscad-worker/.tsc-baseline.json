@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "baselineFileVersion": 1,
+    "ignoreMessages": true
+  },
+  "errors": {
+    "bf8cc3491d861a29b6e13b8bb8cb2c6e22a2d1a8": {
+      "file": "lib/jscad-worker/cache-helper.ts",
+      "code": "TS7053",
+      "count": 18
+    },
+    "34e339c344a0e9f8c46b74da18f7dbb5174e76ae": {
+      "file": "lib/jscad-worker/jscad-info.ts",
+      "code": "TS2564",
+      "count": 1
+    },
+    "0066d47adb7f0bfdc1a6e62a05b83baca32e5c26": {
+      "file": "lib/jscad-worker/jscad-worker-manager.ts",
+      "code": "TS2564",
+      "count": 2
+    },
+    "db19bf16299ed99055c5969a6c2ed61af023c8b5": {
+      "file": "lib/jscad-worker/jscad-worker-manager.ts",
+      "code": "TS7008",
+      "count": 4
+    },
+    "2fae0041d08ff13183d19b12e35c26426936cb92": {
+      "file": "lib/jscad-worker/jscad-worker-manager.ts",
+      "code": "TS7031",
+      "count": 1
+    },
+    "6db6fc5c0d44b11d51cd3c92f871fd2122d29f2f": {
+      "file": "lib/jscad-worker/jscad-worker-manager.ts",
+      "code": "TS18048",
+      "count": 1
+    },
+    "905528f01112f8839e4504c5436c982808035f45": {
+      "file": "lib/jscad-worker/jscad-worker-mock.ts",
+      "code": "TS7006",
+      "count": 5
+    },
+    "c196b6769352e0b4d5c56a064797d683ccec4e4e": {
+      "file": "lib/jscad-worker/jscad-worker-mock.ts",
+      "code": "TS2564",
+      "count": 1
+    },
+    "0118e60c65933c7555869d3849b29bc8a6739dc5": {
+      "file": "lib/jscad-worker/jscad-worker.ts",
+      "code": "TS6133",
+      "count": 1
+    },
+    "3906f047b1d4b47940aeff38ef9065f27e73acb3": {
+      "file": "lib/jscad-worker/jscad-worker.ts",
+      "code": "TS7006",
+      "count": 4
+    },
+    "3fb23ec7b77500be9c9a4c52a0d7bb613498cac7": {
+      "file": "lib/jscad-worker/jscad-worker.ts",
+      "code": "TS2538",
+      "count": 1
+    },
+    "ef0357dc947bda668d329248d9a40690c11028b9": {
+      "file": "lib/jscad-worker/jscad-worker.ts",
+      "code": "TS7053",
+      "count": 1
+    }
+  }
+}
