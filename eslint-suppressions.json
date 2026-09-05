@@ -4,17 +4,6 @@
       "count": 3
     }
   },
-  "packages/dev/babylonjs/bitbybit.d.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 190
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 2
-    },
-    "no-empty": {
-      "count": 4
-    }
-  },
   "packages/dev/babylonjs/lib/api/__mocks__/babylonjs.mock.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 17
@@ -137,17 +126,6 @@
   "packages/dev/core/babel.config.cjs": {
     "quotes": {
       "count": 3
-    }
-  },
-  "packages/dev/core/bitbybit.d.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 190
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 2
-    },
-    "no-empty": {
-      "count": 4
     }
   },
   "packages/dev/core/lib/api/bitbybit/asset.test.ts": {

@@ -39,7 +39,8 @@ export default defineConfig([
         "packages/dev/jscad/jscad-generated.js",
         "packages/dev/occt/bitbybit-dev-occt*/",
         "packages/dev/*/etc/",
-    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users, generated and vendored code"),
+        "**/*.d.ts",
+    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users, generated and vendored code, and declaration files - every .d.ts here is generated or vendored typings, and a build artifact left in a package root would otherwise be linted and baselined"),
     {
         files: ["**/*.{js,mjs,cjs,ts}"],
         extends: [eslint.configs.recommended],
