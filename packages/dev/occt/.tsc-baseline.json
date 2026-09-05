@@ -169,11 +169,6 @@
       "code": "TS2345",
       "count": 10
     },
-    "7cc42d6726ef6551bc28355c1396f7f94fe7f3c9": {
-      "file": "lib/services/base/faces.service.ts",
-      "code": "TS2379",
-      "count": 1
-    },
     "0f6866c11103f9b66083dcb5296e8fdd3b393bf2": {
       "file": "lib/services/base/fillets.service.ts",
       "code": "TS2345",

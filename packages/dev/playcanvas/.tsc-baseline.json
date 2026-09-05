@@ -17,7 +17,7 @@
     "99c9480a5e35e1a13138ee862859da547f9e44d7": {
       "file": "lib/api/bitbybit/draw.ts",
       "code": "TS2379",
-      "count": 14
+      "count": 8
     },
     "ab769dc56a4794e7a575bec1bb8ad91c4100eb1d": {
       "file": "lib/api/bitbybit/draw.ts",
@@ -98,11 +98,6 @@
       "file": "lib/api/draw-helper.ts",
       "code": "TS2345",
       "count": 19
-    },
-    "41dcbdf071f9f6a90df6615764208ff5b0537d1b": {
-      "file": "lib/api/draw-helper.ts",
-      "code": "TS2379",
-      "count": 2
     },
     "bf2e747f37b99f77bb542471f36b0e2a04a0fd67": {
       "file": "lib/api/draw-helper.ts",

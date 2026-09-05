@@ -12,6 +12,9 @@
     "compilerOptions": {
         "noEmit": true,
         "strict": true,
+        // Named although `strict` implies it: a package whose build enforces everything else turns this one
+        // off in its own config, and the overlay has to keep counting it until the sweep is done.
+        "strictPropertyInitialization": true,
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
         "noImplicitReturns": true,

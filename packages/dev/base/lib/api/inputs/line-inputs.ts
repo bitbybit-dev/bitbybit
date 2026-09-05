@@ -70,12 +70,12 @@ export namespace Line {
          * @maximum 1
          * @step 0.1
          */
-        opacity?: number = 1;
+        opacity?: number | undefined = 1;
         /**
          * Hex colour string
          * @default #444444
          */
-        colours?: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * Width of the line
          * @default 3
@@ -83,17 +83,17 @@ export namespace Line {
          * @maximum Infinity
          * @step 0.1
          */
-        size?: number = 3;
+        size?: number | undefined = 3;
         /**
          * Indicates wether the position of this line will change in time
          * @default false
          */
-        updatable?: boolean = false;
+        updatable?: boolean | undefined = false;
         /**
          * Line mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        lineMesh?: T;
+        lineMesh?: T | undefined;
     }
     export class DrawLinesDto<T> {
 
@@ -120,12 +120,12 @@ export namespace Line {
          * @maximum 1
          * @step 0.1
          */
-        opacity?: number = 1;
+        opacity?: number | undefined = 1;
         /**
          * Hex colour string
          * @default #444444
          */
-        colours?: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * Width of the line
          * @default 3
@@ -133,17 +133,17 @@ export namespace Line {
          * @maximum Infinity
          * @step 0.1
          */
-        size?: number = 3;
+        size?: number | undefined = 3;
         /**
          * Indicates wether the position of these lines will change in time
          * @default false
          */
-        updatable?: boolean = false;
+        updatable?: boolean | undefined = false;
         /**
          * Line mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        linesMesh?: T;
+        linesMesh?: T | undefined;
     }
     export class PointsLinesDto {
         constructor(points?: Base.Point3[]) {
@@ -215,7 +215,7 @@ export namespace Line {
          * Set to false if you want to check for infinite lines
          * @default true
          */ 
-        checkSegmentsOnly?: boolean = true;
+        checkSegmentsOnly?: boolean | undefined = true;
         /**
          * Tolerance for intersection
          * @default 0.01
@@ -223,7 +223,7 @@ export namespace Line {
          * @maximum Infinity
          * @step 0.1
          */
-        tolerance?: number = 0.01;
+        tolerance?: number | undefined = 0.01;
     }
     export class PointOnLineDto {
         constructor(line?: LinePointsDto, param?: number) {
@@ -242,7 +242,7 @@ export namespace Line {
          * @maximum Infinity
          * @step 0.1
          */
-        param?: number = 0.5;
+        param?: number | undefined = 0.5;
     }
     export class TransformLineDto {
         constructor(line?: LinePointsDto, transformation?: Base.TransformMatrixes) {

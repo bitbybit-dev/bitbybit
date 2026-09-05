@@ -810,8 +810,8 @@ namespace IO {
     }
     class DxfModelDto {
         constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015");
-        acadVersion?: "AC1009" | "AC1015";
-        colorFormat?: "aci" | "truecolor";
+        acadVersion?: "AC1009" | "AC1015" | undefined;
+        colorFormat?: "aci" | "truecolor" | undefined;
         dxfPathsParts: DxfPathsPartDto[];
     }
     class DxfPathDto {
@@ -826,15 +826,15 @@ namespace IO {
     }
     class DxfPolylineSegmentDto {
         constructor(points?: Base_2.Point2[], closed?: boolean, bulges?: number[]);
-        bulges?: number[];
-        closed?: boolean;
+        bulges?: number[] | undefined;
+        closed?: boolean | undefined;
         points: Base_2.Point2[];
     }
     class DxfSplineSegmentDto {
         constructor(controlPoints?: Base_2.Point2[], degree?: number, closed?: boolean);
-        closed?: boolean;
+        closed?: boolean | undefined;
         controlPoints: Base_2.Point2[];
-        degree?: number;
+        degree?: number | undefined;
     }
 }
 
@@ -1414,22 +1414,22 @@ namespace Line {
     // (undocumented)
     class DrawLineDto<T> {
         constructor(line?: LinePointsDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, lineMesh?: T);
-        colours?: string | string[];
+        colours?: string | string[] | undefined;
         line: LinePointsDto;
-        lineMesh?: T;
-        opacity?: number;
-        size?: number;
-        updatable?: boolean;
+        lineMesh?: T | undefined;
+        opacity?: number | undefined;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     // (undocumented)
     class DrawLinesDto<T> {
         constructor(lines?: LinePointsDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, linesMesh?: T);
-        colours?: string | string[];
+        colours?: string | string[] | undefined;
         lines: LinePointsDto[];
-        linesMesh?: T;
-        opacity?: number;
-        size?: number;
-        updatable?: boolean;
+        linesMesh?: T | undefined;
+        opacity?: number | undefined;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     // (undocumented)
     class LineDto {
@@ -1439,10 +1439,10 @@ namespace Line {
     // (undocumented)
     class LineLineIntersectionDto {
         constructor(line1?: LinePointsDto, line2?: LinePointsDto, tolerance?: number);
-        checkSegmentsOnly?: boolean;
+        checkSegmentsOnly?: boolean | undefined;
         line1: LinePointsDto;
         line2: LinePointsDto;
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class LinePointsDto {
@@ -1465,7 +1465,7 @@ namespace Line {
     class PointOnLineDto {
         constructor(line?: LinePointsDto, param?: number);
         line: LinePointsDto;
-        param?: number;
+        param?: number | undefined;
     }
     // (undocumented)
     class PointsLinesDto {
@@ -1507,7 +1507,7 @@ namespace Lists {
     // (undocumented)
     class AddItemAtIndexDto<T> {
         constructor(list?: T[], item?: T, index?: number, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         index: number;
         item: T;
         list: T[];
@@ -1515,7 +1515,7 @@ namespace Lists {
     // (undocumented)
     class AddItemAtIndexesDto<T> {
         constructor(list?: T[], item?: T, indexes?: number[], clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         indexes: number[];
         item: T;
         list: T[];
@@ -1523,14 +1523,14 @@ namespace Lists {
     // (undocumented)
     class AddItemDto<T> {
         constructor(list?: T[], item?: T, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         item: T;
         list: T[];
     }
     // (undocumented)
     class AddItemFirstLastDto<T> {
         constructor(list?: T[], item?: T, position?: firstLastEnum, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         item: T;
         list: T[];
         position: firstLastEnum;
@@ -1538,7 +1538,7 @@ namespace Lists {
     // (undocumented)
     class AddItemsAtIndexesDto<T> {
         constructor(list?: T[], items?: T[], indexes?: number[], clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         indexes: number[];
         items: T[];
         list: T[];
@@ -1546,7 +1546,7 @@ namespace Lists {
     // (undocumented)
     class ConcatenateDto<T> {
         constructor(lists?: T[][], clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         lists: T[][];
     }
     enum firstLastEnum {
@@ -1569,7 +1569,7 @@ namespace Lists {
     // (undocumented)
     class GetNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         list: T[];
         nth: number;
         offset: number;
@@ -1590,13 +1590,13 @@ namespace Lists {
     // (undocumented)
     class InterleaveDto<T> {
         constructor(lists?: T[][], clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         lists: T[][];
     }
     // (undocumented)
     class ListCloneDto<T> {
         constructor(list?: T[], clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         list: T[];
     }
     // (undocumented)
@@ -1607,7 +1607,7 @@ namespace Lists {
     // (undocumented)
     class ListItemDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         index: number;
         list: T[];
     }
@@ -1626,41 +1626,41 @@ namespace Lists {
     // (undocumented)
     class RandomThresholdDto<T> {
         constructor(list?: T[], threshold?: number, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         list: T[];
         threshold: number;
     }
     // (undocumented)
     class RemoveDuplicatesDto<T> {
         constructor(list?: T[], clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         list: T[];
     }
     // (undocumented)
     class RemoveDuplicatesToleranceDto<T> {
         constructor(list?: T[], clone?: boolean, tolerance?: number);
-        clone?: boolean;
+        clone?: boolean | undefined;
         list: T[];
         tolerance: number;
     }
     // (undocumented)
     class RemoveItemAtIndexDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         index: number;
         list: T[];
     }
     // (undocumented)
     class RemoveItemsAtIndexesDto<T> {
         constructor(list?: T[], indexes?: number[], clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         indexes: number[];
         list: T[];
     }
     // (undocumented)
     class RemoveNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         list: T[];
         nth: number;
         offset: number;
@@ -1668,21 +1668,21 @@ namespace Lists {
     // (undocumented)
     class RepeatInPatternDto<T> {
         constructor(list?: T[]);
-        clone?: boolean;
+        clone?: boolean | undefined;
         lengthLimit: number;
         list: T[];
     }
     // (undocumented)
     class SortDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         list: T[];
         orderAsc: boolean;
     }
     // (undocumented)
     class SortJsonDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         list: T[];
         orderAsc: boolean;
         property: string;
@@ -1690,7 +1690,7 @@ namespace Lists {
     // (undocumented)
     class SubListDto<T> {
         constructor(list?: T[], indexStart?: number, indexEnd?: number, clone?: boolean);
-        clone?: boolean;
+        clone?: boolean | undefined;
         indexEnd: number;
         indexStart: number;
         list: T[];
@@ -1762,8 +1762,8 @@ namespace Logic {
     // (undocumented)
     class TwoValueGateDto<T, U> {
         constructor(value1?: T, value2?: U);
-        value1?: T;
-        value2?: U;
+        value1?: T | undefined;
+        value2?: U | undefined;
     }
     // (undocumented)
     class ValueGateDto<T> {
@@ -2580,7 +2580,7 @@ namespace Mesh {
         constructor(mesh1?: Base_2.Mesh3, mesh2?: Base_2.Mesh3, tolerance?: number);
         mesh1: Base_2.Mesh3;
         mesh2: Base_2.Mesh3;
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class SignedDistanceFromPlaneToPointDto {
@@ -2596,13 +2596,13 @@ namespace Mesh {
     // (undocumented)
     class TriangleToleranceDto {
         constructor(triangle?: Base_2.Triangle3);
-        tolerance?: number;
+        tolerance?: number | undefined;
         triangle: Base_2.Triangle3;
     }
     // (undocumented)
     class TriangleTriangleToleranceDto {
         constructor(triangle1?: Base_2.Triangle3, triangle2?: Base_2.Triangle3, tolerance?: number);
-        tolerance?: number;
+        tolerance?: number | undefined;
         triangle1: Base_2.Triangle3;
         triangle2: Base_2.Triangle3;
     }
@@ -5429,7 +5429,7 @@ namespace Point_2 {
         colours: string | string[];
         opacity: number;
         point: Base_2.Point3;
-        pointMesh?: T;
+        pointMesh?: T | undefined;
         size: number;
         updatable: boolean;
     }
@@ -5439,7 +5439,7 @@ namespace Point_2 {
         colours: string | string[];
         opacity: number;
         points: Base_2.Point3[];
-        pointsMesh?: T;
+        pointsMesh?: T | undefined;
         size: number;
         updatable: boolean;
     }
@@ -5455,17 +5455,17 @@ namespace Point_2 {
     // (undocumented)
     class HexGridScaledToFitDto {
         constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean);
-        centerGrid?: boolean;
-        extendBottom?: boolean;
-        extendLeft?: boolean;
-        extendRight?: boolean;
-        extendTop?: boolean;
-        flatTop?: boolean;
-        height?: number;
-        nrHexagonsInHeight?: number;
-        nrHexagonsInWidth?: number;
-        pointsOnGround?: boolean;
-        width?: number;
+        centerGrid?: boolean | undefined;
+        extendBottom?: boolean | undefined;
+        extendLeft?: boolean | undefined;
+        extendRight?: boolean | undefined;
+        extendTop?: boolean | undefined;
+        flatTop?: boolean | undefined;
+        height?: number | undefined;
+        nrHexagonsInHeight?: number | undefined;
+        nrHexagonsInWidth?: number | undefined;
+        pointsOnGround?: boolean | undefined;
+        width?: number | undefined;
     }
     // (undocumented)
     class MultiplyPointDto {
@@ -5486,9 +5486,9 @@ namespace Point_2 {
     // (undocumented)
     class PointsMaxFilletsHalfLineDto {
         constructor(points?: Base_2.Point3[], checkLastWithFirst?: boolean, tolerance?: number);
-        checkLastWithFirst?: boolean;
+        checkLastWithFirst?: boolean | undefined;
         points: Base_2.Point3[];
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class PointXYDto {
@@ -5508,7 +5508,7 @@ namespace Point_2 {
         constructor(points?: Base_2.Point3[], tolerance?: number, checkFirstAndLast?: boolean);
         checkFirstAndLast: boolean;
         points: Base_2.Point3[];
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class RotatePointsCenterAxisDto {
@@ -5549,10 +5549,10 @@ namespace Point_2 {
     // (undocumented)
     class StretchPointsDirFromCenterDto {
         constructor(points?: Base_2.Point3[], center?: Base_2.Point3, direction?: Base_2.Vector3, scale?: number);
-        center?: Base_2.Point3;
-        direction?: Base_2.Vector3;
+        center?: Base_2.Point3 | undefined;
+        direction?: Base_2.Vector3 | undefined;
         points: Base_2.Point3[];
-        scale?: number;
+        scale?: number | undefined;
     }
     // (undocumented)
     class ThreePointsNormalDto {
@@ -5619,7 +5619,7 @@ namespace Point_2 {
         constructor(point1?: Base_2.Point3, point2?: Base_2.Point3, tolerance?: number);
         point1: Base_2.Point3;
         point2: Base_2.Point3;
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
 }
 
@@ -5628,27 +5628,27 @@ namespace Polyline {
     // (undocumented)
     class DrawPolylineDto<T> {
         constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: T);
-        colours?: string | string[];
-        opacity?: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         polyline: PolylinePropertiesDto;
-        polylineMesh?: T;
-        size?: number;
-        updatable?: boolean;
+        polylineMesh?: T | undefined;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     // (undocumented)
     class DrawPolylinesDto<T> {
         constructor(polylines?: PolylinePropertiesDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylinesMesh?: T);
-        colours?: string | string[];
-        opacity?: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         polylines: PolylinePropertiesDto[];
-        polylinesMesh?: T;
-        size?: number;
-        updatable?: boolean;
+        polylinesMesh?: T | undefined;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     // (undocumented)
     class PolylineCreateDto {
         constructor(points?: Base_2.Point3[], isClosed?: boolean);
-        isClosed?: boolean;
+        isClosed?: boolean | undefined;
         points: Base_2.Point3[];
     }
     // (undocumented)
@@ -5659,8 +5659,8 @@ namespace Polyline {
     // (undocumented)
     class PolylinePropertiesDto {
         constructor(points?: Base_2.Point3[], isClosed?: boolean);
-        color?: string | number[];
-        isClosed?: boolean;
+        color?: string | number[] | undefined;
+        isClosed?: boolean | undefined;
         points: Base_2.Point3[];
     }
     // (undocumented)
@@ -5672,13 +5672,13 @@ namespace Polyline {
     class PolylineToleranceDto {
         constructor(polyline?: PolylinePropertiesDto, tolerance?: number);
         polyline: PolylinePropertiesDto;
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class SegmentsToleranceDto {
         constructor(segments?: Base_2.Segment3[]);
         segments: Base_2.Segment3[];
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class TransformPolylineDto {
@@ -5691,7 +5691,7 @@ namespace Polyline {
         constructor(polyline1?: PolylinePropertiesDto, polyline2?: PolylinePropertiesDto, tolerance?: number);
         polyline1: PolylinePropertiesDto;
         polyline2: PolylinePropertiesDto;
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
 }
 
@@ -5877,7 +5877,7 @@ namespace Text_3 {
     // (undocumented)
     class TextSubstringDto {
         constructor(text?: string, start?: number, end?: number);
-        end?: number;
+        end?: number | undefined;
         start: number;
         text: string;
     }
@@ -5895,23 +5895,23 @@ namespace Text_3 {
     class VectorCharDto {
         constructor(char?: string, xOffset?: number, yOffset?: number, height?: number, extrudeOffset?: number);
         char: string;
-        extrudeOffset?: number;
-        height?: number;
-        xOffset?: number;
-        yOffset?: number;
+        extrudeOffset?: number | undefined;
+        height?: number | undefined;
+        xOffset?: number | undefined;
+        yOffset?: number | undefined;
     }
     // (undocumented)
     class VectorTextDto {
         constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base_2.horizontalAlignEnum, extrudeOffset?: number, centerOnOrigin?: boolean);
-        align?: Base_2.horizontalAlignEnum;
-        centerOnOrigin?: boolean;
-        extrudeOffset?: number;
-        height?: number;
-        letterSpacing?: number;
-        lineSpacing?: number;
-        text?: string;
-        xOffset?: number;
-        yOffset?: number;
+        align?: Base_2.horizontalAlignEnum | undefined;
+        centerOnOrigin?: boolean | undefined;
+        extrudeOffset?: number | undefined;
+        height?: number | undefined;
+        letterSpacing?: number | undefined;
+        lineSpacing?: number | undefined;
+        text?: string | undefined;
+        xOffset?: number | undefined;
+        yOffset?: number | undefined;
     }
 }
 
@@ -5968,9 +5968,9 @@ namespace Transforms {
     // (undocumented)
     class StretchDirCenterDto {
         constructor(scale?: number, center?: Base_2.Point3, direction?: Base_2.Vector3);
-        center?: Base_2.Point3;
-        direction?: Base_2.Vector3;
-        scale?: number;
+        center?: Base_2.Point3 | undefined;
+        direction?: Base_2.Vector3 | undefined;
+        scale?: number | undefined;
     }
     // (undocumented)
     class TranslationsXYZDto {

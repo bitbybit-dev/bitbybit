@@ -1,8 +1,10 @@
-// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces
-// noImplicitAny, strictNullChecks and noUncheckedIndexedAccess ahead of the shared loose base: base is the root of the package
-// graph, so the types it declares reach every other package, and it is being made strict first, one
-// flag at a time. The flags are repeated here so the editor and the tests hold the same line; the
-// build config cannot carry this note because the references generator rewrites it without comments.
+// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces the whole
+// strict set of tsconfig.base.cad-strict.json except strictPropertyInitialization, ahead of the shared
+// loose base: base is the root of the package graph, so the types it declares reach every other
+// package, and it went strict first, one flag at a time. The one flag still held by the baseline is
+// the property initialisers in the input classes. The flags are repeated here so the editor and the
+// tests hold the same line; the build config cannot carry this note because the references generator
+// rewrites it without comments.
 {
     "extends": "../../../tsconfig.base.cad-loose.json",
     "compileOnSave": false,
@@ -10,8 +12,14 @@
         "outDir": "./dist/bitbybit-dev",
         "baseUrl": "./",
         "paths": {},
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "noUncheckedIndexedAccess": true
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true
     }
 }

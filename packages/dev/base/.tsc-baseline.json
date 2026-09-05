@@ -63,21 +63,6 @@
       "file": "lib/api/models/point/hex-grid-data.ts",
       "code": "TS2564",
       "count": 2
-    },
-    "1fa7a8569d8749690c7326f919c2cd4b25ff2639": {
-      "file": "lib/api/services/mesh.ts",
-      "code": "TS2379",
-      "count": 2
-    },
-    "dbb3107fb7c64eeafa780768e5b01a8235aab671": {
-      "file": "lib/api/services/point.ts",
-      "code": "TS2379",
-      "count": 1
-    },
-    "c06258ec73101f3fc2b22e0614987f2fc37e0c58": {
-      "file": "lib/api/services/polyline.ts",
-      "code": "TS2379",
-      "count": 1
     }
   }
 }

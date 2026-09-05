@@ -95,13 +95,13 @@ export namespace Logic {
          * @default undefined
          * @optional true
          */
-        value1?: T;
+        value1?: T | undefined;
         /**
          * Second value to check
          * @default undefined
          * @optional true
          */
-        value2?: U;
+        value2?: U | undefined;
     }
     export class RandomBooleansDto {
         constructor(length?: number) {

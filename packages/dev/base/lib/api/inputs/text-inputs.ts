@@ -164,7 +164,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 1
          */
-        end?: number = 5;
+        end?: number | undefined = 5;
     }
 
     export class TextIndexDto {
@@ -316,14 +316,14 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        xOffset?: number = 0;
+        xOffset?: number | undefined = 0;
         /**
          * The y offset
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
-        yOffset?: number = 0;
+        yOffset?: number | undefined = 0;
         /**
          * The height of the text
          * @default 1
@@ -331,7 +331,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        height?: number = 1;
+        height?: number | undefined = 1;
         /**
          * The extrude offset
          * @default 0
@@ -339,7 +339,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        extrudeOffset?: number = 0;
+        extrudeOffset?: number | undefined = 0;
     }
     
     export class VectorTextDto {
@@ -358,7 +358,7 @@ export namespace Text {
          * The text
          * @default Hello World
          */
-        text?: string;
+        text?: string | undefined;
         /**
          * The x offset
          * @default 0
@@ -366,7 +366,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        xOffset?: number = 0;
+        xOffset?: number | undefined = 0;
         /**
          * The y offset
          * @default 0
@@ -374,7 +374,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        yOffset?: number = 0;
+        yOffset?: number | undefined = 0;
         /**
          * The height of the text
          * @default 1
@@ -382,7 +382,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        height?: number = 1;
+        height?: number | undefined = 1;
         /**
          * The line spacing
          * @default 1.4
@@ -390,7 +390,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        lineSpacing?: number = 1.4;
+        lineSpacing?: number | undefined = 1.4;
         /**
          * The letter spacing offset
          * @default 0
@@ -398,12 +398,12 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        letterSpacing?: number = 0;
+        letterSpacing?: number | undefined = 0;
         /**
          * The extrude offset
          * @default left
          */
-        align?: Base.horizontalAlignEnum;
+        align?: Base.horizontalAlignEnum | undefined;
         /**
          * The extrude offset
          * @default 0
@@ -411,12 +411,12 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        extrudeOffset?: number = 0;
+        extrudeOffset?: number | undefined = 0;
         /**
          * Will center text on 0, 0, 0
          * @default false
          */
-        centerOnOrigin?: boolean = false;
+        centerOnOrigin?: boolean | undefined = false;
     }
 
 }

@@ -99,7 +99,7 @@ export namespace IO {
          * Whether the polyline is closed
          * @default false
          */
-        closed?: boolean = false;
+        closed?: boolean | undefined = false;
         /**
          * Bulge values for each vertex (optional)
          * Bulge = tan(angle/4) where angle is the arc angle in radians
@@ -108,7 +108,7 @@ export namespace IO {
          * Array length should match points length (or be undefined for all straight segments)
          * @default undefined
          */
-        bulges?: number[];
+        bulges?: number[] | undefined;
     }
 
     /**
@@ -129,12 +129,12 @@ export namespace IO {
          * Degree of the spline (typically 2 or 3)
          * @default 3
          */
-        degree?: number = 3;
+        degree?: number | undefined = 3;
         /**
          * Whether the spline is closed
          * @default false
          */
-        closed?: boolean = false;
+        closed?: boolean | undefined = false;
     }
 
     /**
@@ -199,14 +199,14 @@ export namespace IO {
          * - "truecolor": 24-bit RGB true color - Full color spectrum, requires newer CAD software
          * @default aci
          */
-        colorFormat?: "aci" | "truecolor" = "aci";
+        colorFormat?: "aci" | "truecolor" | undefined = "aci";
         /**
          * AutoCAD version format for DXF file
          * - "AC1009": AutoCAD R12/R11 - Maximum compatibility with older CAD software (e.g., Design CAD 3D Max)
          * - "AC1015": AutoCAD 2000 - Modern format with extended features
          * @default AC1009
          */
-        acadVersion?: "AC1009" | "AC1015" = "AC1009";
+        acadVersion?: "AC1009" | "AC1015" | undefined = "AC1009";
     }
 
 }

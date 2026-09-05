@@ -26,14 +26,20 @@ let total = 0;
 for (const dir of projects) {
     const name = relative(join(ROOT, "packages", "dev"), dir);
     const committed = join(dir, ".tsc-baseline.json");
-    if (!existsSync(committed)) { stale.push(`${name}: no .tsc-baseline.json - run \`npm run typecheck:strict:save\` there`); continue; }
     const tsc = spawnSync(join(ROOT, "node_modules", ".bin", "tsc"), ["-p", "tsconfig.strict.json", "--pretty", "false"], { cwd: dir, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
     const fresh = join(scratch, `${name}.json`);
     execFileSync(join(ROOT, "node_modules", ".bin", "tsc-baseline"), ["--ignoreMessages", "save", "-p", fresh], { cwd: dir, input: tsc.stdout, stdio: ["pipe", "ignore", "inherit"] });
-    const before = JSON.parse(readFileSync(committed, "utf8"));
-    const after = JSON.parse(readFileSync(fresh, "utf8"));
     const count = (b) => Object.values(b.errors).reduce((n, e) => n + e.count, 0);
+    // tsc-baseline writes nothing for a clean package: no errors means no file.
+    const after = existsSync(fresh) ? JSON.parse(readFileSync(fresh, "utf8")) : { errors: {} };
     total += count(after);
+    if (!existsSync(committed)) {
+        if (count(after) === 0) continue;
+        stale.push(`${name}: ${count(after)} strict errors and no .tsc-baseline.json - run \`npm run typecheck:strict:save\` there`);
+        continue;
+    }
+    const before = JSON.parse(readFileSync(committed, "utf8"));
+    if (count(after) === 0) { stale.push(`${name}: baseline ${count(before)} errors, code 0 - the package is strict; delete its .tsc-baseline.json`); continue; }
     if (readFileSync(committed, "utf8") !== readFileSync(fresh, "utf8")) {
         const gone = Object.keys(before.errors).filter((h) => !after.errors[h]).length;
         const added = Object.keys(after.errors).filter((h) => !before.errors[h]).length;

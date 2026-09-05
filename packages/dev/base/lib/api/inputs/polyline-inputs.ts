@@ -24,7 +24,7 @@ export namespace Polyline {
          * Can contain is closed information
          * @default false
          */
-        isClosed?: boolean = false;
+        isClosed?: boolean | undefined = false;
     }
     export class PolylinePropertiesDto {
         /**
@@ -43,12 +43,12 @@ export namespace Polyline {
          * Can contain is closed information
          * @default false
          */
-        isClosed?: boolean = false;
+        isClosed?: boolean | undefined = false;
         /**
          * Optional polyline color
          * @default #444444
          */
-        color?: string | number[];
+        color?: string | number[] | undefined;
     }
     export class PolylineDto {
         constructor(polyline?: PolylinePropertiesDto) {
@@ -110,12 +110,12 @@ export namespace Polyline {
          * @maximum 1
          * @step 0.1
          */
-        opacity?: number = 1;
+        opacity?: number | undefined = 1;
         /**
          * Hex colour string
          * @default #444444
          */
-        colours?: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * Width of the polyline
          * @default 3
@@ -123,17 +123,17 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 0.1
          */
-        size?: number = 3;
+        size?: number | undefined = 3;
         /**
          * Indicates wether the position of this polyline will change in time
          * @default false
          */
-        updatable?: boolean = false;
+        updatable?: boolean | undefined = false;
         /**
          * Line mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        polylineMesh?: T;
+        polylineMesh?: T | undefined;
     }
     export class DrawPolylinesDto<T> {
         /**
@@ -159,12 +159,12 @@ export namespace Polyline {
          * @maximum 1
          * @step 0.1
          */
-        opacity?: number = 1;
+        opacity?: number | undefined = 1;
         /**
          * Hex colour string
          * @default #444444
          */
-        colours?: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * Width of the polyline
          * @default 3
@@ -172,17 +172,17 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 0.1
          */
-        size?: number = 3;
+        size?: number | undefined = 3;
         /**
          * Indicates wether the position of this polyline will change in time
          * @default false
          */
-        updatable?: boolean = false;
+        updatable?: boolean | undefined = false;
         /**
          * Polyline mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        polylinesMesh?: T;
+        polylinesMesh?: T | undefined;
     }
     export class SegmentsToleranceDto {
         constructor(segments?: Base.Segment3[]) {
@@ -200,7 +200,7 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 1e-5
          */
-        tolerance?: number = 1e-5;
+        tolerance?: number | undefined = 1e-5;
     }
     export class PolylineToleranceDto {
         constructor(polyline?: PolylinePropertiesDto, tolerance?: number) {
@@ -219,7 +219,7 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 1e-5
          */
-        tolerance?: number = 1e-5;
+        tolerance?: number | undefined = 1e-5;
     }
     export class TwoPolylinesToleranceDto {
         constructor(polyline1?: PolylinePropertiesDto, polyline2?: PolylinePropertiesDto, tolerance?: number) {
@@ -244,6 +244,6 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 1e-5
          */
-        tolerance?: number = 1e-5;
+        tolerance?: number | undefined = 1e-5;
     }
 }

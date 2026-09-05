@@ -52,7 +52,7 @@ export namespace Mesh {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance?: number = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
 
     export class TriangleTriangleToleranceDto {
@@ -78,7 +78,7 @@ export namespace Mesh {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance?: number = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     export class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number) {
@@ -103,6 +103,6 @@ export namespace Mesh {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance?: number = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
 }

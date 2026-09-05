@@ -40,7 +40,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class SubListDto<T> {
         constructor(list?: T[], indexStart?: number, indexEnd?: number, clone?: boolean) {
@@ -74,7 +74,7 @@ export namespace Lists {
          * Tries to clone the data in the component, sometimes it may not be possible if structure is circular
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class ListCloneDto<T> {
         constructor(list?: T[], clone?: boolean) {
@@ -90,7 +90,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class RepeatInPatternDto<T> {
         constructor(list?: T[]) {
@@ -105,7 +105,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
         /**
          * The limit of the length of the list
          * @default 100
@@ -130,7 +130,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
         /**
          * If true, the list will be sorted in ascending order, otherwise in descending order
          * @default true
@@ -152,7 +152,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
         /**
          * If true, the list will be sorted in ascending order, otherwise in descending order
          * @default true
@@ -247,7 +247,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class AddItemAtIndexesDto<T> {
         constructor(list?: T[], item?: T, indexes?: number[], clone?: boolean) {
@@ -275,7 +275,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
 
     export class AddItemsAtIndexesDto<T> {
@@ -304,7 +304,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveItemAtIndexDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean) {
@@ -329,7 +329,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveItemsAtIndexesDto<T> {
         constructor(list?: T[], indexes?: number[], clone?: boolean) {
@@ -351,7 +351,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean) {
@@ -385,7 +385,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class RandomThresholdDto<T> {
         constructor(list?: T[], threshold?: number, clone?: boolean) {
@@ -410,7 +410,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveDuplicatesDto<T> {
         constructor(list?: T[], clone?: boolean) {
@@ -426,7 +426,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveDuplicatesToleranceDto<T> {
         constructor(list?: T[], clone?: boolean, tolerance?: number) {
@@ -451,7 +451,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class GetByPatternDto<T> {
         constructor(list?: T[], pattern?: boolean[]) {
@@ -501,7 +501,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class GetLongestListLength<T> {
         constructor(lists?: T[]) {
@@ -552,7 +552,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class AddItemFirstLastDto<T> {
         constructor(list?: T[], item?: T, position?: firstLastEnum, clone?: boolean) {
@@ -580,7 +580,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class ConcatenateDto<T> {
         constructor(lists?: T[][], clone?: boolean) {
@@ -596,7 +596,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
     export class IncludesDto<T> {
         constructor(list?: T[], item?: T) {
@@ -628,6 +628,6 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone?: boolean = true;
+        clone?: boolean | undefined = true;
     }
 }

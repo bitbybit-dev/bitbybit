@@ -109,18 +109,18 @@ export namespace Transforms {
         /** The center point around which to stretch.
          * @default [0, 0, 0]
          */
-        center?: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /** The direction vector along which to stretch. Does not need to be normalized initially.
          * @default [0, 0, 1]
         */
-        direction?: Base.Vector3 = [0, 0, 1];
+        direction?: Base.Vector3 | undefined = [0, 0, 1];
         /** The scale factor to apply along the direction vector. 1.0 means no change. 
          * @default 2
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
         */
-        scale?: number = 2;
+        scale?: number | undefined = 2;
     }
     export class ScaleCenterXYZDto {
         constructor(center?: Base.Point3, scaleXyz?: Base.Vector3) {

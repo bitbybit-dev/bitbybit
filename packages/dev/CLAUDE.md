@@ -30,12 +30,16 @@ npm run lint
   `jest.config.js` to look for.
 - **The shape of a DTO property is load-bearing for the declarations.** A property the service always
   reads is required, `line!: LinePointsDto;` - the constructors assign conditionally, so that is a
-  definite-assignment assertion, not an initializer. A property a caller may omit is optional WITH its
-  default and an explicit type, `tolerance?: number = 1e-7;`: without the annotation the declaration
-  emitter prints `tolerance?: number | undefined` once strictNullChecks is on, and the declarations
-  the component generator reads would move with a compiler flag. The service applies that default
-  itself where it reads the property (`inputs.tolerance ?? 1e-7`), because only `new Dto()` runs the
-  initializer; an object literal from a script does not.
+  definite-assignment assertion, not an initializer. A property a caller may omit is optional, spelled
+  with an explicit type that admits undefined, `tolerance?: number | undefined = 1e-7;`: the
+  constructors and the services treat an explicit undefined as "use the default", and under
+  exactOptionalPropertyTypes only that spelling lets a caller pass an optional value straight through
+  (`{ tolerance: inputs.tolerance }`). Write the type out - an inferred one prints differently in the
+  declarations depending on the compiler flags, and the declarations the component generator reads must
+  not move with a flag. The service applies the default itself where it reads the property
+  (`inputs.tolerance ?? 1e-7`), because only `new Dto()` runs the initializer; an object literal from a
+  script does not. Index reads inside a bounds-checked loop, after a length check, or of a regex group
+  the pattern guarantees carry a non-null assertion; everything else narrows.
 - Kernel suites need the raised heap and ESM VM modules the scripts already set. Dropping
   `NODE_OPTIONS` makes them fail in ways that look like test bugs.
 - `occt` ships prebuilt wasm alongside the JavaScript (`bitbybit-dev-occt`, plus 64-bit and
