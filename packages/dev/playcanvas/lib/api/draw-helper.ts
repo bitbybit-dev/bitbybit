@@ -25,7 +25,7 @@ export class DrawHelper extends DrawHelperCore {
     constructor(
         private readonly context: Context,
         private readonly solidText: JSCADText,
-        public readonly vector: Vector,
+        public override readonly vector: Vector,
         private readonly jscadWorkerManager: JSCADWorkerManager,
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager
@@ -46,7 +46,7 @@ export class DrawHelper extends DrawHelperCore {
         try {
             const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
-            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, inputs)).filter(s => s !== undefined);
+            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, inputs)).filter((s): s is pc.Entity => s !== undefined);
             const containerId = this.generateEntityId("manifoldMeshContainer");
             const manifoldMeshContainer = new pc.Entity(containerId);
             meshes.forEach(mesh => {
@@ -60,7 +60,7 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>): Promise<pc.Entity> {
+    async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>): Promise<pc.Entity | undefined> {
         try {
             const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
@@ -128,7 +128,7 @@ export class DrawHelper extends DrawHelperCore {
             
             const s = this.makeMesh({ 
                 ...inputs, 
-                colour,
+                colour: colour!,
                 drawTwoSided: inputs.drawTwoSided,
                 backFaceColour: inputs.backFaceColour,
                 backFaceOpacity: inputs.backFaceOpacity
@@ -176,7 +176,7 @@ export class DrawHelper extends DrawHelperCore {
                 }
                 const m = this.makeMesh({ 
                     ...inputs, 
-                    colour,
+                    colour: colour as string,
                     drawTwoSided: inputs.drawTwoSided,
                     backFaceColour: inputs.backFaceColour,
                     backFaceOpacity: inputs.backFaceOpacity
@@ -212,17 +212,17 @@ export class DrawHelper extends DrawHelperCore {
         const polylineEntity = this.drawPolylines(
             existingMesh,
             processedPoints,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours,
+            inputs.updatable ?? false,
+            inputs.size ?? 3,
+            inputs.opacity ?? 1,
+            inputs.colours ?? "#444444",
             strategy,
             inputs.arrowSize,
             inputs.arrowAngle
         );
         
         // Wrap in container group
-        return this.wrapPolylineInGroup(polylineEntity, inputs.polylinesMesh, inputs.updatable);
+        return this.wrapPolylineInGroup(polylineEntity!, inputs.polylinesMesh, inputs.updatable);
     }
 
     drawPoint(inputs: Inputs.Point.DrawPointDto<pc.Entity>): pc.Entity {
@@ -247,21 +247,21 @@ export class DrawHelper extends DrawHelperCore {
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<pc.Entity> & { arrowSize?: number, arrowAngle?: number }): pc.Entity {
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
-            points.push(points[0]);
+            points.push(points[0]!);
         }
         return this.drawPolyline(
             inputs.polylineMesh,
             points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours,
+            inputs.updatable ?? false,
+            inputs.size ?? 3,
+            inputs.opacity ?? 1,
+            inputs.colours ?? "#444444",
             inputs.arrowSize,
             inputs.arrowAngle
         );
     }
 
-    drawPolyline(mesh: pc.Entity,
+    drawPolyline(mesh: pc.Entity | undefined,
         pointsToDraw: Inputs.Base.Point3[],
         updatable: boolean, size: number, opacity: number, colours: string | string[],
         arrowSize = 0, arrowAngle = 30): pc.Entity {
@@ -269,7 +269,7 @@ export class DrawHelper extends DrawHelperCore {
             Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle);
         if (!mesh) {
             mesh = new pc.Entity(this.generateEntityId("polyline"));
-            mesh.addChild(polylines);
+            mesh.addChild(polylines!);
             this.context.scene.addChild(mesh);
         }
         return mesh;
@@ -280,10 +280,10 @@ export class DrawHelper extends DrawHelperCore {
         return this.drawPolyline(
             inputs.curveMesh,
             points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours
+            inputs.updatable ?? false,
+            inputs.size ?? 3,
+            inputs.opacity ?? 1,
+            inputs.colours ?? "#444444"
         );
     }
 
@@ -376,7 +376,7 @@ export class DrawHelper extends DrawHelperCore {
         inputs.surfaces.forEach((surface, index) => {
             const srf = this.drawSurface({
                 surface,
-                colours: resolvedColours[index],
+                colours: resolvedColours[index]!,
                 updatable: inputs.updatable,
                 opacity: inputs.opacity,
                 hidden: inputs.hidden,
@@ -384,15 +384,15 @@ export class DrawHelper extends DrawHelperCore {
                 backFaceColour: inputs.backFaceColour,
                 backFaceOpacity: inputs.backFaceOpacity,
             });
-            inputs.surfacesMesh.addChild(srf);
+            inputs.surfacesMesh!.addChild(srf);
         });
 
         return inputs.surfacesMesh;
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
-        group: pc.Entity, updatable: boolean, material: pc.StandardMaterial, addToScene: boolean, hidden: boolean
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined }[],
+        group: pc.Entity | undefined, updatable: boolean, material: pc.StandardMaterial, addToScene: boolean, hidden: boolean
     ): pc.Entity {
         const createMesh = () => {
             // Merge all geometries into one
@@ -470,7 +470,7 @@ export class DrawHelper extends DrawHelperCore {
      * @returns Entity containing the back face mesh
      */
     private createBackFaceMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined }[],
         backFaceColour: string,
         backFaceOpacity: number,
         zOffset: number
@@ -526,11 +526,11 @@ export class DrawHelper extends DrawHelperCore {
         };
 
         let countIndices = 0;
-        meshData.faces.forEach((faceIndices) => {
+        meshData.faces.forEach((faceIndices: number[]) => {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        const color = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        const color = Array.isArray(inputs.colours) ? inputs.colours[0]! : inputs.colours;
         const pbr = this.getOrCreateMaterial(color, inputs.opacity, 0, () => {
             const material = new pc.StandardMaterial();
             material.name = this.generateEntityId("pbrSurface");
@@ -575,10 +575,10 @@ export class DrawHelper extends DrawHelperCore {
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
         countIndices: number): number {
         faceIndices.forEach((x) => {
-            const vn = meshData.normals[x];
-            meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
-            const pt = meshData.points[x];
-            meshDataConverted.positions.push(pt[0], pt[1], pt[2]);
+            const vn = meshData.normals[x]!;
+            meshDataConverted.normals.push(vn[0]!, vn[1]!, vn[2]!);
+            const pt = meshData.points[x]!;
+            meshDataConverted.positions.push(pt[0]!, pt[1]!, pt[2]!);
             meshDataConverted.indices.push(countIndices);
             countIndices++;
         });
@@ -709,7 +709,7 @@ export class DrawHelper extends DrawHelperCore {
                 const backFaceMesh = this.createBackFaceMesh(
                     meshData, 
                     options.backFaceColour || DEFAULT_COLORS.BACK_FACE, 
-                    options.backFaceOpacity ?? options.faceOpacity,
+                    options.backFaceOpacity ?? options.faceOpacity ?? 1,
                     inputs.drawEdges ? 2 : 0
                 );
                 shapeGroup.addChild(backFaceMesh);
@@ -717,7 +717,7 @@ export class DrawHelper extends DrawHelperCore {
         }
         if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
 
-            const polylineEdgePoints = [];
+            const polylineEdgePoints: Inputs.Base.Point3[][] = [];
             decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertexCoord.filter(s => s !== undefined);
                 polylineEdgePoints.push(ev);
@@ -733,7 +733,7 @@ export class DrawHelper extends DrawHelperCore {
                 options.edgeArrowSize,
                 options.edgeArrowAngle
             );
-            shapeGroup.addChild(line);
+            shapeGroup.addChild(line!);
         }
 
         if (inputs.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
@@ -774,7 +774,7 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
             const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.edgeIndexColour);
-            shapeGroup.addChild(edgeMesh);
+            shapeGroup.addChild(edgeMesh!);
         }
         if (inputs.drawFaceIndexes) {
             const promises = decomposedMesh.faceList.map(async (face) => {
@@ -803,7 +803,7 @@ export class DrawHelper extends DrawHelperCore {
             const textPolylines = await Promise.all(promises);
 
             const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.faceIndexColour);
-            shapeGroup.addChild(faceMesh);
+            shapeGroup.addChild(faceMesh!);
         }
         return shapeGroup;
     }
@@ -847,7 +847,7 @@ export class DrawHelper extends DrawHelperCore {
                     const backFaceMesh = this.createBackFaceMesh(
                         meshData,
                         options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                        options.backFaceOpacity ?? options.faceOpacity,
+                        options.backFaceOpacity ?? options.faceOpacity ?? 1,
                         zOffset
                     );
                     backFaceMesh.name = `face ${face.faceIndex} backFace`;
@@ -876,7 +876,7 @@ export class DrawHelper extends DrawHelperCore {
                 );
                 if (line) {
                     line.name = `edge ${edge.edgeIndex}`;
-                    shapeGroup.addChild(line);
+                    shapeGroup.addChild(line!);
                 }
             });
         }
@@ -961,8 +961,8 @@ export class DrawHelper extends DrawHelperCore {
         for (const points of polylinesPoints) {
             let segmentCount = 0;
             for (let i = 0; i < points.length - 1; i++) {
-                const current = points[i];
-                const next = points[i + 1];
+                const current = points[i]!;
+                const next = points[i + 1]!;
                 
                 linePositions.push(current[0], current[1], current[2]);
                 linePositions.push(next[0], next[1], next[2]);
@@ -1086,7 +1086,7 @@ export class DrawHelper extends DrawHelperCore {
         colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
         arrowSize = 0,
         arrowAngle = 30
-    ): pc.Entity {
+    ): pc.Entity | undefined {
         // Validate input
         if (!polylinesPoints || polylinesPoints.length === 0) {
             return undefined;
@@ -1139,7 +1139,7 @@ export class DrawHelper extends DrawHelperCore {
 
     private handleDecomposedManifold(
         decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][],
-        options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): pc.Entity {
+        options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): pc.Entity | undefined {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             if (decomposedMesh.triVerts.length !== 0) {
@@ -1156,7 +1156,7 @@ export class DrawHelper extends DrawHelperCore {
                     indexedPositions = [];
                     for (let i = 0; i < numVerts; i++) {
                         const baseIdx = i * numProp;
-                        indexedPositions.push(vertProperties[baseIdx], vertProperties[baseIdx + 1], vertProperties[baseIdx + 2]);
+                        indexedPositions.push(vertProperties[baseIdx]!, vertProperties[baseIdx + 1]!, vertProperties[baseIdx + 2]!);
                     }
                 }
                 
@@ -1166,22 +1166,22 @@ export class DrawHelper extends DrawHelperCore {
                 const indices: number[] = [];
                 
                 for (let i = 0; i < triVerts.length; i += 3) {
-                    const i0 = triVerts[i];
-                    const i1 = triVerts[i + 1];
-                    const i2 = triVerts[i + 2];
+                    const i0 = triVerts[i]!;
+                    const i1 = triVerts[i + 1]!;
+                    const i2 = triVerts[i + 2]!;
                     
                     // Get vertex positions
-                    const v0x = indexedPositions[i0 * 3];
-                    const v0y = indexedPositions[i0 * 3 + 1];
-                    const v0z = indexedPositions[i0 * 3 + 2];
+                    const v0x = indexedPositions[i0 * 3]!;
+                    const v0y = indexedPositions[i0 * 3 + 1]!;
+                    const v0z = indexedPositions[i0 * 3 + 2]!;
                     
-                    const v1x = indexedPositions[i1 * 3];
-                    const v1y = indexedPositions[i1 * 3 + 1];
-                    const v1z = indexedPositions[i1 * 3 + 2];
+                    const v1x = indexedPositions[i1 * 3]!;
+                    const v1y = indexedPositions[i1 * 3 + 1]!;
+                    const v1z = indexedPositions[i1 * 3 + 2]!;
                     
-                    const v2x = indexedPositions[i2 * 3];
-                    const v2y = indexedPositions[i2 * 3 + 1];
-                    const v2z = indexedPositions[i2 * 3 + 2];
+                    const v2x = indexedPositions[i2 * 3]!;
+                    const v2y = indexedPositions[i2 * 3 + 1]!;
+                    const v2z = indexedPositions[i2 * 3 + 2]!;
                     
                     // Compute face normal
                     const e1x = v1x - v0x;
@@ -1255,7 +1255,7 @@ export class DrawHelper extends DrawHelperCore {
                     const backFaceMesh = this.createBackFaceMesh(
                         [{ positions, indices, normals }],
                         options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                        options.backFaceOpacity ?? options.faceOpacity,
+                        options.backFaceOpacity ?? options.faceOpacity ?? 1,
                         0
                     );
                     group.addChild(backFaceMesh);
@@ -1295,7 +1295,7 @@ export class DrawHelper extends DrawHelperCore {
 
     private clearEntity(entity: pc.Entity): void {
         while (entity.children.length > 0) {
-            const child = entity.children[0];
+            const child = entity.children[0]!;
             child.destroy();
         }
     }
@@ -1310,8 +1310,8 @@ export class DrawHelper extends DrawHelperCore {
 
     // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
     // Workers cannot handle complex circular objects like PlayCanvas materials
-    private getSafeWorkerOptions<T extends { faceMaterial?: pc.StandardMaterial }>(inputs: T): Omit<T, "faceMaterial"> {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    private getSafeWorkerOptions<T extends { faceMaterial?: pc.StandardMaterial | undefined }>(inputs: T): Omit<T, "faceMaterial"> {
+         
         const { faceMaterial, ...safeOptions } = inputs;
         return safeOptions as Omit<T, "faceMaterial">;
     }
@@ -1354,7 +1354,7 @@ export class DrawHelper extends DrawHelperCore {
 
         // Evict oldest if at capacity (simple FIFO)
         if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
-            const firstKey = this.materialCache.keys().next().value;
+            const firstKey = this.materialCache.keys().next().value!;
             const material = this.materialCache.get(firstKey);
             if (material && material.destroy) {
                 material.destroy();
@@ -1412,7 +1412,7 @@ export class DrawHelper extends DrawHelperCore {
         // Create new group
         const groupId = this.generateEntityId("polylinesGroup");
         const group = new pc.Entity(groupId);
-        group.addChild(polylineEntity);
+        group.addChild(polylineEntity!);
         this.context.scene.addChild(group);
         
         return group;

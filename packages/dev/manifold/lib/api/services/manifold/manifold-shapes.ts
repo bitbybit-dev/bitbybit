@@ -52,7 +52,7 @@ export class ManifoldShapes {
 
                 // Check if this vertex has already been seen
                 if (vertexMap.has(vertexKey)) {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     
                     index = vertexMap.get(vertexKey)!;
                 } else {
                     // It's a new unique vertex

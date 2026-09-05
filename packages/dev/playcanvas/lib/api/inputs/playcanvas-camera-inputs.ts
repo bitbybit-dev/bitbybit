@@ -134,7 +134,7 @@ export namespace PlayCanvasCamera {
          * Optional focus entity to frame the camera on. If provided, camera will adjust to view this entity.
          * @optional true
          */
-        focusEntity?: pc.Entity;
+        focusEntity?: pc.Entity | undefined;
     }
 
     export class CameraDto {
@@ -145,7 +145,7 @@ export namespace PlayCanvasCamera {
          * PlayCanvas camera entity
          * @default undefined
          */
-        camera: pc.Entity;
+        camera!: pc.Entity;
     }
 
     export class PositionDto {
@@ -157,7 +157,7 @@ export namespace PlayCanvasCamera {
          * PlayCanvas camera entity
          * @default undefined
          */
-        camera: pc.Entity;
+        camera!: pc.Entity;
         /**
          * Position of the camera
          * @default [0, 0, 0]
@@ -196,7 +196,7 @@ export namespace PlayCanvasCamera {
          * Entity to focus the camera on
          * @default undefined
          */
-        entity: pc.Entity;
+        entity!: pc.Entity;
     }
 
     export class ResetCameraDto {

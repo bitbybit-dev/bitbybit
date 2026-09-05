@@ -37,7 +37,7 @@ export function createSimpleMockContext(): Context {
     return {
         app: null,
         scene: null,
-    } as Context;
+    } as unknown as Context;
 }
 
 /**

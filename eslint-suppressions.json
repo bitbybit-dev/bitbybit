@@ -491,25 +491,16 @@
   "packages/dev/playcanvas/__mocks__/@bitbybit-dev/jscad-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 6
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 5
     }
   },
   "packages/dev/playcanvas/__mocks__/@bitbybit-dev/manifold-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
     }
   },
   "packages/dev/playcanvas/__mocks__/@bitbybit-dev/occt-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 6
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
     }
   },
   "packages/dev/playcanvas/babel.config.cjs": {
@@ -544,11 +535,6 @@
   },
   "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/orbit-camera.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "packages/dev/playcanvas/lib/api/draw-helper.test.ts": {
-    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
