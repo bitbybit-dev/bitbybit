@@ -46,3 +46,7 @@ from `docs/static/llms.template.txt` by `docs/scripts/generate-llms.js` on every
 - `UNIT_TESTING_GUIDE.md` at the root is the testing standard for this repository.
 - Kernel-heavy suites need a raised heap; the package scripts already set
   `NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192'`. Keep that when adding one.
+- Every package's `tsconfig.json` and `tsconfig.bitbybit.json` extends `tsconfig.base.cad-loose.json`
+  at the repository root and keeps only what differs: outDir, paths into sibling dists, exclusions.
+  Change a compiler flag for every package in the base; change it for one package in its leaf, and
+  say so there, because a base cannot be un-set by omission.
