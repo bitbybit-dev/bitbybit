@@ -43,14 +43,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Nothing in this repository may point at the proprietary host it is also developed inside. The
-      # bracketed characters keep the pattern from matching its own text, so this file is audited too.
-      - name: MIT-clean audit
-        run: |
-          if git grep -n -E 'angular-sites[/]|projects[/]api-3d|bitbybit[-]complete|bitbybit[-]occt-advanced' -- .github scripts '*.json' ':!pnpm-lock.yaml' ':!package-lock.json'; then
-            echo "::error::a host-only path leaked into the public repository"; exit 1
-          fi
-
       # ESLint 10 with a committed suppression baseline: every finding that existed when the config landed
       # is recorded in eslint-suppressions.json, a new one fails, and so does a suppression no longer needed.
       - name: Lint

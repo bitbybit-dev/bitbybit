@@ -436,11 +436,6 @@
       "count": 1
     }
   },
-  "packages/dev/occt/lib/services/base/dxf.service.test.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
   "packages/dev/occt/lib/services/base/edges.service.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 2

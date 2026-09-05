@@ -64,12 +64,12 @@ the two recommended sets plus the house style (double quotes, semicolons, unders
 variables). Every finding that existed when the config landed is recorded in `eslint-suppressions.json`
 (written by `eslint --suppress-all` from this directory); a new finding fails, and so does a suppression
 that is no longer needed, so the count only goes down. Never load `eslint-plugin-no-comments` here: the
-JSDoc on the public API is a functional input to the studio's component generator, and that rule's
-auto-fix would delete it. The parent repository's knowledge check refuses a config here that loads it.
+JSDoc on the public API is a functional input to the component generator behind the visual editors,
+and that rule's auto-fix would delete it.
 
 The packages build loose and typecheck strict. Each CAD package has a `tsconfig.strict.json` - its build
-config plus the flags in `tsconfig.base.cad-strict.json`, the same set the parent repository's strict
-units share, with `noEmit` - and a committed `.tsc-baseline.json` that records today's errors as a count
+config plus the flags in `tsconfig.base.cad-strict.json`, the full strict set, with `noEmit` - and a
+committed `.tsc-baseline.json` that records today's errors as a count
 per file and error code (tsc-baseline, `--ignoreMessages`, because a message can embed an absolute path
 into the pnpm store). `npm run typecheck:strict` in a package prints the errors that are NOT in its
 baseline; `npm run check:strict-baselines` at the root, which CI runs, holds every baseline to the code
@@ -86,7 +86,7 @@ initializers in the `*-inputs.ts` classes whose JSDoc `@default` already states 
 
 `.github/workflows/verify.yml` proves the repository builds and tests from a bare clone with nothing
 above it, on every push to `develop` and every pull request into `develop` or `master`: one frozen
-install, an audit that no host-only path leaked in, `lint`, `check:references`, `rebuild-all-packages`,
+install, `lint`, `check:references`, `rebuild-all-packages`,
 `npm test`, `check:strict-baselines`, the SDK's typecheck, tests and build, the scaffolder's build,
 `api:check` and `check:tarballs`. It needs no secrets and must never gain any. A nightly job runs the build and
 tests on every Node line the packages should keep working on; Node comes from `.tool-versions` and

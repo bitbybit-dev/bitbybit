@@ -4,7 +4,7 @@
 packages:
   - packages/dev/*
 
-# The manifests keep exact registry pins (the lockstep version, held by the parent repo's syncpack),
+# The manifests keep exact registry pins (the lockstep version),
 # so this is what turns them into local links: a pin that matches the sibling's version links, one
 # that does not falls back to the registry - and the lockfile shows which.
 linkWorkspacePackages: true

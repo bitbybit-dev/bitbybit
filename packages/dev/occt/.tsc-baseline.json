@@ -87,22 +87,17 @@
     "ab7c01d6c31a870b211e078e15cb8de57f60f758": {
       "file": "lib/services/base/dxf.service.ts",
       "code": "TS2322",
-      "count": 19
+      "count": 11
     },
     "e45c3a5ec55b700ee080af64def78daf5cf3ef33": {
       "file": "lib/services/base/dxf.service.ts",
       "code": "TS2345",
-      "count": 4
+      "count": 2
     },
     "e1ecc6746e2087a1d910670292f20c90af3aa419": {
       "file": "lib/services/base/dxf.service.ts",
       "code": "TS2532",
       "count": 2
-    },
-    "703dbae87321884ef3dce2991d125bc031700c8c": {
-      "file": "lib/services/base/dxf.service.ts",
-      "code": "TS6133",
-      "count": 1
     },
     "6f1dd454c10979bb99dd519450bf8b6cc33ac761": {
       "file": "lib/services/base/edges.service.ts",
