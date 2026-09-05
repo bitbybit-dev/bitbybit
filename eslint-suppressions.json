@@ -365,7 +365,7 @@
   },
   "packages/dev/occt-worker/lib/occ-worker/occ-worker-manager.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
+      "count": 4
     }
   },
   "packages/dev/occt-worker/lib/occ-worker/occ-worker-mock.ts": {

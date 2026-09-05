@@ -3,9 +3,10 @@ import { Models } from "@bitbybit-dev/occt";
 
 export class CacheHelper {
 
-    hashesFromPreviousRun = {};
-    usedHashes = {};
-    argCache = {};
+    hashesFromPreviousRun: Record<string, string | number> = {};
+    usedHashes: Record<string, string | number> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    argCache: Record<string, any> = {};
 
     constructor(private readonly occ: BitbybitOcctModule) { }
 
@@ -232,7 +233,7 @@ export class CacheHelper {
                     const compoundHash = this.computeHash({ ...hashableArgs, index: "compound" });
                     objDef.compound.hash = compoundHash;
                     this.addToCache(compoundHash, objDef.compound);
-                    objDef.shapes.forEach((s, index) => {
+                    objDef.shapes!.forEach((s, index) => {
                         const itemHash = this.computeHash({ ...hashableArgs, index });
                         s.shape.hash = itemHash;
                         this.addToCache(itemHash, s.shape);
@@ -470,7 +471,7 @@ export class CacheHelper {
         if (bytes.length === 0) { return hash; }
         for (let i = 0; i < bytes.length; i++) {
             // tslint:disable-next-line: no-bitwise
-            hash = ((hash << 5) - hash) + bytes[i];
+            hash = ((hash << 5) - hash) + bytes[i]!;
             // tslint:disable-next-line: no-bitwise
             hash = hash & hash;
         }

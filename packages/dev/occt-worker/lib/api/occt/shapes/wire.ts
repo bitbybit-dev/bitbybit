@@ -887,8 +887,11 @@ export class OCCTWire {
      */
     async textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Promise<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>> {
         const res: Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", inputs);
+        if (!res.data || !res.shapes) {
+            throw new Error("Text wires could not be created");
+        }
         const mapped = ShapeParser.parse(res.data, res.shapes);
-        const r: Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSShapePointer> = {
+        const r: Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSShapePointer> & { shapes: Models.OCCT.ShapeWithId<Inputs.OCCT.TopoDSShapePointer>[] } = {
             ...mapped,
             type: res.data.type,
             name: res.data.name,

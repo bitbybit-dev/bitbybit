@@ -1,9 +1,9 @@
 import { Inputs, Models } from "@bitbybit-dev/occt";
 
 export class ShapeParser {
-    static parse(obj, partShapes: Models.OCCT.ShapeWithId<Inputs.OCCT.TopoDSShapePointer>[]) {
-        const stack = [obj];
-        const visited = new Set();
+    static parse<T>(obj: T, partShapes: Models.OCCT.ShapeWithId<Inputs.OCCT.TopoDSShapePointer>[]): T {
+        const stack: unknown[] = [obj];
+        const visited = new Set<unknown>();
 
         while (stack.length > 0) {
             const current = stack.pop();
@@ -20,20 +20,20 @@ export class ShapeParser {
                 const keys = Object.keys(current);
 
                 if (keys.includes("shapes")) {
-                    const shapes = current.shapes;
+                    const shapes = (current as { shapes?: unknown }).shapes;
 
                     if (typeof shapes === "object" && shapes !== null) {
                         for (const key in shapes) {
-                            const sh = current.shapes[key];
+                            const sh = (current as { shapes: Record<string, unknown> }).shapes[key];
                             if (sh) {
-                                current.shapes[key] = partShapes.find(s => s.id === current.shapes[key])?.shape;
+                                (current as { shapes: Record<string, unknown> }).shapes[key] = partShapes.find(s => s.id === (current as { shapes: Record<string, unknown> }).shapes[key])?.shape;
                             }
                         }
                     }
                 }
 
                 for (const key in current) {
-                    stack.push(current[key]); // Push object properties onto the stack
+                    stack.push((current as Record<string, unknown>)[key]); // Push object properties onto the stack
                 }
             }
         }

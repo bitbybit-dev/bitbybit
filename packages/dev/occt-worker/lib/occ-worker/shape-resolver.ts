@@ -201,8 +201,8 @@ export class ResultSerializer {
             "compound" in obj &&
             "data" in obj &&
             "shapes" in obj &&
-            Array.isArray(obj.shapes) &&
-            obj.shapes.length > 0
+            Array.isArray(obj["shapes"]) &&
+            obj["shapes"].length > 0
         );
     }
 
@@ -261,11 +261,11 @@ export class FunctionPathResolver {
             if (current === null || current === undefined || typeof current !== "object") {
                 throw new Error(`Cannot resolve path "${functionPath}": "${pathParts[i]}" is not an object`);
             }
-            current = (current as Record<string, unknown>)[pathParts[i]];
+            current = (current as Record<string, unknown>)[pathParts[i]!];
         }
 
         // Get and call the function
-        const functionName = pathParts[pathParts.length - 1];
+        const functionName = pathParts[pathParts.length - 1]!;
         if (current === null || current === undefined || typeof current !== "object") {
             throw new Error(`Cannot resolve path "${functionPath}": parent is not an object`);
         }
