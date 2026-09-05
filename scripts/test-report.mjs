@@ -30,7 +30,13 @@ for (let i = 0; i < argv.length; i++) {
     else { console.error(`unknown argument ${a}`); process.exit(2); }
 }
 
-const rel = (p) => path.relative(options.root, p).split(path.sep).join("/") || ".";
+// Suites are named by their path from the working directory (the repository root in CI), so a
+// report over one unit still says which unit it is.
+const rel = (p) => {
+    const fromCwd = path.relative(process.cwd(), p);
+    const r = fromCwd.startsWith("..") ? path.relative(options.root, p) : fromCwd;
+    return r.split(path.sep).join("/") || ".";
+};
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
 const stripAnsi = (s) => String(s ?? "").replace(ANSI, "");
 const escapeHtml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -128,9 +134,13 @@ function fromPlaywright(json) {
     return suite;
 }
 
-function readCoverage(dir) {
+// Coverage counts only when the same run wrote it: a summary left by an earlier run must not be
+// read as this run's.
+const SAME_RUN_MS = 15 * 60 * 1000;
+function readCoverage(dir, resultsWrittenAt) {
     const file = path.join(dir, "coverage", "coverage-summary.json");
     if (!existsSync(file)) return null;
+    if (Math.abs(statSync(file).mtimeMs - resultsWrittenAt.getTime()) > SAME_RUN_MS) return null;
     try {
         const t = JSON.parse(readFileSync(file, "utf8")).total;
         return { lines: t.lines?.pct, branches: t.branches?.pct, functions: t.functions?.pct, statements: t.statements?.pct };
@@ -149,11 +159,11 @@ function collect() {
         if (Array.isArray(json.testResults) && typeof json.numTotalTests === "number") parsed = fromJestLike(json, suiteDir);
         else if (json.config && Array.isArray(json.suites)) parsed = fromPlaywright(json);
         if (!parsed) continue;
-        suites.push({ dir: rel(suiteDir), runner: path.basename(file, ".json"), writtenAt: statSync(file).mtime, ...parsed });
+        suites.push({ dir: rel(suiteDir), absDir: suiteDir, runner: path.basename(file, ".json"), writtenAt: statSync(file).mtime, ...parsed });
     }
     for (const s of suites) {
         const siblings = suites.filter((o) => o.dir === s.dir);
-        s.coverage = siblings.length === 1 || ["jest", "vitest"].includes(s.runner) ? readCoverage(path.join(options.root, s.dir)) : null;
+        s.coverage = siblings.length === 1 || ["jest", "vitest"].includes(s.runner) ? readCoverage(s.absDir, s.writtenAt) : null;
     }
     return suites;
 }
