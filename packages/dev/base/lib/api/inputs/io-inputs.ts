@@ -99,7 +99,7 @@ export namespace IO {
          * Whether the polyline is closed
          * @default false
          */
-        closed? = false;
+        closed?: boolean = false;
         /**
          * Bulge values for each vertex (optional)
          * Bulge = tan(angle/4) where angle is the arc angle in radians
@@ -129,12 +129,12 @@ export namespace IO {
          * Degree of the spline (typically 2 or 3)
          * @default 3
          */
-        degree? = 3;
+        degree?: number = 3;
         /**
          * Whether the spline is closed
          * @default false
          */
-        closed? = false;
+        closed?: boolean = false;
     }
 
     /**

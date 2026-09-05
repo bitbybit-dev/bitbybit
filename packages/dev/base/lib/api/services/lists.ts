@@ -250,7 +250,7 @@ export class Lists {
             });
             return longestSoFar;
         } else {
-            return undefined;
+            return undefined as unknown as number;
         }
     }
 

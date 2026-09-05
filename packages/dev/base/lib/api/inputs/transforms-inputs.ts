@@ -120,7 +120,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 0.1
         */
-        scale? = 2;
+        scale?: number = 2;
     }
     export class ScaleCenterXYZDto {
         constructor(center?: Base.Point3, scaleXyz?: Base.Vector3) {

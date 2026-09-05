@@ -17,7 +17,8 @@
         "outDir": "./dist",
         "baseUrl": "./",
         "paths": {},
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "strictNullChecks": true
     },
     "references": []
 }

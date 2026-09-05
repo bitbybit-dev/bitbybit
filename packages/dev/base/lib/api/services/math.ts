@@ -28,7 +28,7 @@ export class MathBitByBit {
      * @drawable false
      */
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number {
-        let result;
+        let result!: number;
         switch (inputs.operation) {
             case Inputs.Math.mathTwoNrOperatorEnum.add:
                 result = inputs.first + inputs.second;
@@ -104,7 +104,7 @@ export class MathBitByBit {
      * @drawable false
      */
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number {
-        let result;
+        let result!: number;
         switch (inputs.operation) {
             case Inputs.Math.mathOneNrOperatorEnum.absolute:
                 result = Math.abs(inputs.number);

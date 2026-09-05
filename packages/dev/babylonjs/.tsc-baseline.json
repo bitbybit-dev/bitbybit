@@ -267,7 +267,7 @@
     "bf2e747f37b99f77bb542471f36b0e2a04a0fd67": {
       "file": "lib/api/draw-helper.ts",
       "code": "TS18048",
-      "count": 26
+      "count": 11
     },
     "97b647ba298118e0cdcaa2f8b9bec406c029fe48": {
       "file": "lib/api/draw-helper.ts",

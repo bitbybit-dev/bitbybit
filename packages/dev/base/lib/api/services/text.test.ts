@@ -304,7 +304,7 @@ describe("Text unit tests", () => {
             const char = "A";
             const code = char.charCodeAt(0);
             const targetHeight = 20;
-            const glyphWidth = mockFont[code][0];
+            const glyphWidth = mockFont[code][0] as number;
             const fontDesignHeight = mockFont.height;
             const ratio = targetHeight / fontDesignHeight;
             const expectedWidth = glyphWidth * ratio;
@@ -352,7 +352,7 @@ describe("Text unit tests", () => {
             const fontDesignHeight = mockFont.height;
             const ratio = (targetHeight - extrudeOff) / fontDesignHeight;
             const extrudeYOff = extrudeOff / 2;
-            const glyphWidth = mockFont[char.charCodeAt(0)][0];
+            const glyphWidth = mockFont[char.charCodeAt(0)][0] as number;
             const expectedWidth = glyphWidth * ratio;
 
             const result = text.vectorChar({
@@ -386,7 +386,7 @@ describe("Text unit tests", () => {
             const char = "Z";
             const fallbackCode = 63; // '?'
             const targetHeight = 10;
-            const fallbackGlyphWidth = mockFont[fallbackCode][0]; // 45
+            const fallbackGlyphWidth = mockFont[fallbackCode][0] as number; // 45
             const expectedWidth = fallbackGlyphWidth * (targetHeight / mockFont.height); // 45 * 0.1 = 4.5
 
             const result = text.vectorChar({ char: char, height: targetHeight, font: mockFont } as jest.Mocked<Inputs.Text.VectorCharDto>);
@@ -407,7 +407,7 @@ describe("Text unit tests", () => {
         it("should handle space character (width only)", () => {
             const char = " ";
             const targetHeight = 10;
-            const spaceGlyphWidth = mockFont[char.charCodeAt(0)][0]; // 20
+            const spaceGlyphWidth = mockFont[char.charCodeAt(0)][0] as number; // 20
             const expectedWidth = spaceGlyphWidth * (targetHeight / mockFont.height); // 20 * 0.1 = 2
 
             const result = text.vectorChar({ char: char, height: targetHeight, font: mockFont } as jest.Mocked<Inputs.Text.VectorCharDto>);
@@ -421,7 +421,7 @@ describe("Text unit tests", () => {
             const char = "";
             const fallbackCode = 63;
             const targetHeight = 10;
-            const fallbackGlyphWidth = mockFont[fallbackCode][0];
+            const fallbackGlyphWidth = mockFont[fallbackCode][0] as number;
             const expectedWidth = fallbackGlyphWidth * (targetHeight / mockFont.height);
 
             const result = text.vectorChar({ char: char, height: targetHeight, font: mockFont } as jest.Mocked<Inputs.Text.VectorCharDto>);

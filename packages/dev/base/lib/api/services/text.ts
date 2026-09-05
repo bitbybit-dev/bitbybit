@@ -73,7 +73,7 @@ export class TextBitByBit {
     * @drawable false
     */
     toString<T>(inputs: Inputs.Text.ToStringDto<T>): string {
-        return inputs.item.toString();
+        return (inputs.item as { toString(): string }).toString();
     }
 
     /**
@@ -85,7 +85,7 @@ export class TextBitByBit {
     * @drawable false
     */
     toStringEach<T>(inputs: Inputs.Text.ToStringEachDto<T>): string[] {
-        return inputs.list.map(i => i.toString());
+        return inputs.list.map(i => (i as { toString(): string }).toString());
     }
 
     /**
@@ -483,12 +483,12 @@ export class TextBitByBit {
         const glyph = ([] as (number | undefined)[]).concat(font[code]);
         const ratio = (height - extrudeOffset) / font.height;
         const extrudeYOffset = (extrudeOffset / 2);
-        const width = glyph.shift() * ratio;
+        const width = (glyph.shift() as number) * ratio;
         const paths: Inputs.Base.Point3[][] = [];
         let polyline: Inputs.Base.Point3[] = [];
         for (let i = 0, il = glyph.length; i < il; i += 2) {
-            const gx = ratio * glyph[i] + xOffset;
-            const gy = ratio * glyph[i + 1] + yOffset + extrudeYOffset;
+            const gx = ratio * (glyph[i] as number) + xOffset;
+            const gy = ratio * (glyph[i + 1] as number) + yOffset + extrudeYOffset;
             if (glyph[i] !== undefined) {
                 polyline.push([gx, 0, gy]);
                 continue;
@@ -592,7 +592,7 @@ export class TextBitByBit {
 
             const bbox = this.point.boundingBoxOfPoints({
                 points: pointsFlat,
-            });
+            }) as Required<Inputs.Base.BoundingBox>;
 
             lines.forEach((line) => {
                 line.chars.forEach((vchar) => {

@@ -283,7 +283,7 @@ describe("Point unit tests", () => {
         describe("boundingBoxOfPoints", () => {
             it("should calculate the correct bounding box for multiple points", () => {
                 const points: Inputs.Base.Point3[] = [[1, 2, 3], [4, -1, 6], [0, 5, -2]];
-                const expectedBBox: Inputs.Base.BoundingBox = {
+                const expectedBBox: Required<Inputs.Base.BoundingBox> = {
                     min: [0, -1, -2],
                     max: [4, 5, 6],
                     center: [2, 2, 2],
@@ -291,7 +291,7 @@ describe("Point unit tests", () => {
                     height: 6,
                     length: 8,
                 };
-                const result = point.boundingBoxOfPoints({ points });
+                const result = point.boundingBoxOfPoints({ points }) as Required<Inputs.Base.BoundingBox>;
                 expect(result.min).toEqual(expectedBBox.min);
                 expect(result.max).toEqual(expectedBBox.max);
                 uh.expectPointCloseTo(result.center, expectedBBox.center);
@@ -302,7 +302,7 @@ describe("Point unit tests", () => {
 
             it("should return a zero-dimension bounding box for a single point", () => {
                 const points: Inputs.Base.Point3[] = [[5, 5, 5]];
-                const expectedBBox: Inputs.Base.BoundingBox = {
+                const expectedBBox: Required<Inputs.Base.BoundingBox> = {
                     min: [5, 5, 5],
                     max: [5, 5, 5],
                     center: [5, 5, 5],

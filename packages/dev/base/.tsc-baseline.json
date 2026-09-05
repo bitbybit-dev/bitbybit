@@ -62,17 +62,12 @@
     "8c8f4e64f0bdd03eb647cff597235575426d7635": {
       "file": "lib/api/models/point/hex-grid-data.ts",
       "code": "TS2564",
-      "count": 5
+      "count": 2
     },
     "ba26930e32aa8336eccfaeaad4ee7e80f59c4e03": {
       "file": "lib/api/services/color.ts",
       "code": "TS2345",
       "count": 3
-    },
-    "4e323b2fa24f15573f03f769ad2fb5acc9f13c09": {
-      "file": "lib/api/services/color.ts",
-      "code": "TS2322",
-      "count": 1
     },
     "cc06d11670c23fd407ff61c059482934f8097007": {
       "file": "lib/api/services/geometry-helper.ts",
@@ -102,17 +97,12 @@
     "9562ef2882e4e844e9876ab72f2c426aa1ebbdf2": {
       "file": "lib/api/services/line.ts",
       "code": "TS2322",
-      "count": 19
-    },
-    "415c70f29158da29357de10fa0ffe8ac25960e76": {
-      "file": "lib/api/services/line.ts",
-      "code": "TS18048",
-      "count": 33
+      "count": 6
     },
     "b39f61a795627be43a66b4487860774f2fafd317": {
       "file": "lib/api/services/line.ts",
       "code": "TS2345",
-      "count": 4
+      "count": 3
     },
     "3c419bc39ec56cf836d02fd0112b2181d1dd8093": {
       "file": "lib/api/services/line.ts",
@@ -122,7 +112,7 @@
     "1246585da8ed0d12a4f5920105063eb8981b97f0": {
       "file": "lib/api/services/lists.ts",
       "code": "TS2322",
-      "count": 11
+      "count": 10
     },
     "8397cd63cbecfb00e4734ac4779d598a581bc6e3": {
       "file": "lib/api/services/lists.ts",
@@ -139,11 +129,6 @@
       "code": "TS18048",
       "count": 1
     },
-    "c4f83aeffd0b86cdd8b9a3315e02e1116a74db02": {
-      "file": "lib/api/services/math.ts",
-      "code": "TS2322",
-      "count": 3
-    },
     "28f803cbf24d401631f6f10988cbcd340fa34357": {
       "file": "lib/api/services/math.ts",
       "code": "TS2532",
@@ -159,20 +144,10 @@
       "code": "TS2538",
       "count": 1
     },
-    "a639b7da6d8aff95c7665b2d8f8b1eb162480340": {
-      "file": "lib/api/services/mesh.ts",
-      "code": "TS18048",
-      "count": 31
-    },
-    "714890d4dbe1a3a527e44f3e67947a3efc1a0c56": {
-      "file": "lib/api/services/mesh.ts",
+    "c4f83aeffd0b86cdd8b9a3315e02e1116a74db02": {
+      "file": "lib/api/services/math.ts",
       "code": "TS2322",
-      "count": 2
-    },
-    "1fa7a8569d8749690c7326f919c2cd4b25ff2639": {
-      "file": "lib/api/services/mesh.ts",
-      "code": "TS2379",
-      "count": 4
+      "count": 1
     },
     "b6451210ef2336bd374c0dafe8e96c945c1bbe79": {
       "file": "lib/api/services/mesh.ts",
@@ -184,20 +159,35 @@
       "code": "TS2345",
       "count": 4
     },
+    "a639b7da6d8aff95c7665b2d8f8b1eb162480340": {
+      "file": "lib/api/services/mesh.ts",
+      "code": "TS18048",
+      "count": 14
+    },
+    "714890d4dbe1a3a527e44f3e67947a3efc1a0c56": {
+      "file": "lib/api/services/mesh.ts",
+      "code": "TS2322",
+      "count": 3
+    },
+    "1fa7a8569d8749690c7326f919c2cd4b25ff2639": {
+      "file": "lib/api/services/mesh.ts",
+      "code": "TS2379",
+      "count": 1
+    },
     "cc78d0c112b45cf24bd4b6cfec0629ec65295e80": {
       "file": "lib/api/services/point.ts",
       "code": "TS2322",
-      "count": 28
+      "count": 15
     },
     "624dce4104154efab51f2e710a1a29a31e864f4b": {
       "file": "lib/api/services/point.ts",
       "code": "TS2345",
-      "count": 3
+      "count": 2
     },
     "dbb3107fb7c64eeafa780768e5b01a8235aab671": {
       "file": "lib/api/services/point.ts",
       "code": "TS2379",
-      "count": 2
+      "count": 1
     },
     "6d77d0b1123e035db00c22ad3390ce645bec22b6": {
       "file": "lib/api/services/point.ts",
@@ -207,87 +197,42 @@
     "37c93bd2d388d83787cc76b707b4d13a256ab9c9": {
       "file": "lib/api/services/point.ts",
       "code": "TS18048",
-      "count": 52
-    },
-    "2583379649bd77f0cff0a4e6cee1ea618a658d58": {
-      "file": "lib/api/services/point.ts",
-      "code": "TS2375",
-      "count": 3
-    },
-    "32210e0217afb1f729f6a4e0320e8e80bedcd0d6": {
-      "file": "lib/api/services/point.ts",
-      "code": "TS2454",
-      "count": 2
-    },
-    "219946777444876373536e09a9ce4fb5241c06ae": {
-      "file": "lib/api/services/polyline.ts",
-      "code": "TS18048",
-      "count": 38
+      "count": 9
     },
     "329fe1db6b64a60cae7f0494227fa9ee30f4eda0": {
       "file": "lib/api/services/polyline.ts",
       "code": "TS2322",
-      "count": 7
+      "count": 12
     },
-    "5d56d68e903ad140ad682e256c5c8ba3ce2ecc77": {
+    "219946777444876373536e09a9ce4fb5241c06ae": {
       "file": "lib/api/services/polyline.ts",
-      "code": "TS2345",
-      "count": 1
-    },
-    "6924f3db1dda45e48c71bdc7c54593aa7444d90c": {
-      "file": "lib/api/services/polyline.ts",
-      "code": "TS2375",
-      "count": 1
+      "code": "TS18048",
+      "count": 14
     },
     "c06258ec73101f3fc2b22e0614987f2fc37e0c58": {
       "file": "lib/api/services/polyline.ts",
       "code": "TS2379",
-      "count": 7
-    },
-    "08fe94b31eec7f3a0db96c9cc3009540939b0c71": {
-      "file": "lib/api/services/text.ts",
-      "code": "TS2339",
-      "count": 2
-    },
-    "6046cd2f63997c0bc4cc6ada5c55ad184abe333a": {
-      "file": "lib/api/services/text.ts",
-      "code": "TS2532",
-      "count": 3
+      "count": 1
     },
     "986754298649140af8fa2866c93b05ebf2808d70": {
       "file": "lib/api/services/text.ts",
       "code": "TS2322",
       "count": 1
     },
-    "d9b41bb800cf69693d0d39bdb7550da6fcf0129a": {
-      "file": "lib/api/services/text.ts",
-      "code": "TS18048",
-      "count": 7
-    },
-    "4b6b84dd15f45c10f385a84e7d3dd8ab3a85c638": {
-      "file": "lib/api/services/text.ts",
+    "7761d99466476a02220a57ab4a338bcaa263c7d0": {
+      "file": "lib/api/services/transforms.ts",
       "code": "TS2345",
       "count": 1
     },
     "a92c1fe7e24d6c7f979ff88e5e2f09923b9f7a5a": {
       "file": "lib/api/services/transforms.ts",
       "code": "TS18048",
-      "count": 48
-    },
-    "7761d99466476a02220a57ab4a338bcaa263c7d0": {
-      "file": "lib/api/services/transforms.ts",
-      "code": "TS2345",
-      "count": 2
+      "count": 18
     },
     "8991e0d419219c3887fae0061ccc2df695337074": {
       "file": "lib/api/services/vector.ts",
       "code": "TS2532",
       "count": 32
-    },
-    "2da49795e6799a8a580b78aa90a8f2e0a0a65e30": {
-      "file": "lib/api/services/vector.ts",
-      "code": "TS2322",
-      "count": 1
     },
     "fa2f803e6904ecead092326273dfd45676088d91": {
       "file": "lib/api/unit-test-helper.ts",

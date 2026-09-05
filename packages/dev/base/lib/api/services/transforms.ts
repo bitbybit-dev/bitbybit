@@ -147,10 +147,11 @@ export class Transforms {
      * @drawable false
      */
     stretchDirFromCenter(inputs: Inputs.Transforms.StretchDirCenterDto): Base.TransformMatrixes {
+        const { center = [0, 0, 0], direction = [0, 0, 1], scale = 2 } = inputs;
         return [
-            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            this.stretchDirection(inputs.direction, inputs.scale),
-            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            this.translation(-center[0], -center[1], -center[2]),
+            this.stretchDirection(direction, scale),
+            this.translation(center[0], center[1], center[2]),
         ] as Base.TransformMatrixes;
     }
 
@@ -236,7 +237,7 @@ export class Transforms {
         const c = Math.cos(-angle);
         const c1 = 1 - c;
 
-        const a = this.vector.normalized({ vector: axis });
+        const a = this.vector.normalized({ vector: axis }) as Base.Vector3;
 
         const x = a[0];
         const y = a[1];
@@ -348,13 +349,13 @@ export class Transforms {
      */
     private stretchDirection(direction: Base.Vector3, scale: number): Base.TransformMatrix {
         const d = this.vector.normalized({ vector: direction });
-        const [dx, dy, dz] = d;
 
         // Handle potential zero vector after normalization (if input was zero)
-        if (isNaN(dx) || (dx === 0 && dy === 0 && dz === 0)) {
+        if (!d || isNaN(d[0]) || (d[0] === 0 && d[1] === 0 && d[2] === 0)) {
             console.warn("Stretch direction vector is zero or invalid. Returning identity matrix.");
             return this.identity();
         }
+        const [dx, dy, dz] = d;
 
         const s = scale;
         const sMinus1 = s - 1.0;

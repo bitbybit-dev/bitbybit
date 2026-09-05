@@ -322,7 +322,7 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points?: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * The center from which the scaling is applied
          * @default [0, 0, 0]
@@ -340,7 +340,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        scale? = 2;
+        scale?: number = 2;
     }
     export class RotatePointsCenterAxisDto {
         constructor(points?: Base.Point3[], angle?: number, axis?: Base.Vector3, center?: Base.Point3) {
@@ -428,17 +428,17 @@ export namespace Point {
          * Start point
          * @default undefined
          */
-        start?: Base.Point3;
+        start!: Base.Point3;
         /**
          * Center point
          * @default undefined
          */
-        center?: Base.Point3;
+        center!: Base.Point3;
         /**
          * End point
          * @default undefined
          */
-        end?: Base.Point3;
+        end!: Base.Point3;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -458,12 +458,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points?: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Check first and last point for duplicates
          * @default false
          */
-        checkLastWithFirst? = false;
+        checkLastWithFirst?: boolean = false;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -471,7 +471,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance? = 1e-7;
+        tolerance?: number = 1e-7;
     }
     export class RemoveConsecutiveDuplicatesDto {
         constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean) {
@@ -491,7 +491,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance = 1e-7;
+        tolerance?: number = 1e-7;
         /**
          * Check first and last point for duplicates
          */
@@ -523,12 +523,12 @@ export namespace Point {
          * First point to compare
          * @default undefined
          */
-        point1?: Base.Point3;
+        point1!: Base.Point3;
         /**
          * Second point to compare
          * @default undefined
          */
-        point2?: Base.Point3;
+        point2!: Base.Point3;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -536,7 +536,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance? = 1e-7;
+        tolerance?: number = 1e-7;
     }
     export class StartEndPointsDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3) {
@@ -652,56 +652,56 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        width? = 10;
+        width?: number = 10;
         /** Total desired height for the grid area. Note: due to hexagon geometry, the actual grid height might differ slightly if maintaining regular hexagons based on width.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
         */
-        height? = 10;
+        height?: number = 10;
         /** Number of hexagons desired in width.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsInWidth? = 10;
+        nrHexagonsInWidth?: number = 10;
         /** Number of hexagons desired in height.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsInHeight? = 10;
+        nrHexagonsInHeight?: number = 10;
         /** If true, the hexagons will be oriented with their flat sides facing up and down. 
          * @default false
          */
-        flatTop? = false;
+        flatTop?: boolean = false;
         /** If true, shift the entire grid up by half hex height. 
          * @default false
         */
-        extendTop? = false;
+        extendTop?: boolean = false;
         /** If true, shift the entire grid down by half hex height. 
          * @default false
         */
-        extendBottom? = false;
+        extendBottom?: boolean = false;
         /** If true, shift the entire grid left by half hex width. 
          * @default false
         */
-        extendLeft? = false;
+        extendLeft?: boolean = false;
         /** If true, shift the entire grid right by half hex width. 
          * @default false
         */
-        extendRight? = false;
+        extendRight?: boolean = false;
         /** If true, the grid center (based on totalWidth/totalHeight) will be at [0,0,0].
          * @default false
          */
-        centerGrid? = false;
+        centerGrid?: boolean = false;
         /** If true, swaps Y and Z coordinates and sets Y to 0, placing points on the XZ ground plane.
          * @default false
          */
-        pointsOnGround? = false;
+        pointsOnGround?: boolean = false;
     }
     export class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean) {

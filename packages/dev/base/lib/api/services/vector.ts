@@ -382,7 +382,7 @@ export class Vector {
      * @shortname normalized
      * @drawable false
      */
-    normalized(inputs: Inputs.Vector.VectorDto): number[] {
+    normalized(inputs: Inputs.Vector.VectorDto): number[] | undefined {
         const len = this.length({vector: inputs.vector as Inputs.Base.Vector3});
         if (len <= 1e-8) {
             return undefined;

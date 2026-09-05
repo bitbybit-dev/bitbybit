@@ -27,6 +27,7 @@ describe("Polyline unit tests", () => {
         math = new MathBitByBit();
         vector = new Vector(math, geometryHelper);
         transforms = new Transforms(vector, math);
+        lists = new Lists();
         point = new Point(geometryHelper, transforms, vector, lists);
         line = new Line(vector, point, geometryHelper);
         polyline = new Polyline(vector, point, line, geometryHelper);

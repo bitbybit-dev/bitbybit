@@ -446,10 +446,10 @@ export class Point {
      * @drawable false
      */
     hexGridScaledToFit(inputs: Inputs.Point.HexGridScaledToFitDto): Models.Point.HexGridData {
-        let width = inputs.width;
-        let height = inputs.height;
-        let nrHexagonsInHeight = inputs.nrHexagonsInHeight;
-        let nrHexagonsInWidth = inputs.nrHexagonsInWidth;
+        let width = inputs.width ?? 10;
+        let height = inputs.height ?? 10;
+        let nrHexagonsInHeight = inputs.nrHexagonsInHeight ?? 10;
+        let nrHexagonsInWidth = inputs.nrHexagonsInWidth ?? 10;
         let extendTop = inputs.extendTop ?? false;
         let extendBottom = inputs.extendBottom ?? false;
         let extendLeft = inputs.extendLeft ?? false;
@@ -465,7 +465,7 @@ export class Point {
         // computes pointy-top hexagons
         if (flatTop) {
             const oldWidth = width;
-            width = inputs.height;
+            width = height;
             height = oldWidth;
             const oldNrHexagonsInWidth = nrHexagonsInWidth;
             nrHexagonsInWidth = nrHexagonsInHeight;
@@ -576,11 +576,11 @@ export class Point {
                 const cellWidth = pt2Pointy[0] - pt1Pointy[0];
 
                 if (extendTop && !extendBottom) {
-                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                    const transform = {
                         center: [0, 0, 0],
                         direction: [0, 1, 0],
                         scale: height / (height - cellHeight),
-                    };
+                    } as Inputs.Point.StretchPointsDirFromCenterDto;
                     scaledHexagons = scaledHexagons.map(hex => {
                         transform.points = hex;
                         return this.stretchPointsDirFromCenter(transform);
@@ -589,11 +589,11 @@ export class Point {
                     scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendBottom && !extendTop) {
-                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                    const transform = {
                         center: [0, height, 0],
                         direction: [0, -1, 0],
                         scale: height / (height - cellHeight),
-                    };
+                    } as Inputs.Point.StretchPointsDirFromCenterDto;
                     scaledHexagons = scaledHexagons.map(hex => {
                         transform.points = hex;
                         return this.stretchPointsDirFromCenter(transform);
@@ -602,11 +602,11 @@ export class Point {
                     scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendTop && extendBottom) {
-                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                    const transform = {
                         center: [0, height / 2, 0],
                         direction: [0, 1, 0],
                         scale: height / (height - cellHeight * 2),
-                    };
+                    } as Inputs.Point.StretchPointsDirFromCenterDto;
                     scaledHexagons = scaledHexagons.map(hex => {
                         transform.points = hex;
                         return this.stretchPointsDirFromCenter(transform);
@@ -615,11 +615,11 @@ export class Point {
                     scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendLeft && !extendRight) {
-                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                    const transform = {
                         center: [width, 0, 0],
                         direction: [1, 0, 0],
                         scale: width / (width - cellWidth),
-                    };
+                    } as Inputs.Point.StretchPointsDirFromCenterDto;
                     scaledHexagons = scaledHexagons.map(hex => {
                         transform.points = hex;
                         return this.stretchPointsDirFromCenter(transform);
@@ -628,11 +628,11 @@ export class Point {
                     scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendRight && !extendLeft) {
-                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                    const transform = {
                         center: [0, 0, 0],
                         direction: [1, 0, 0],
                         scale: width / (width - cellWidth),
-                    };
+                    } as Inputs.Point.StretchPointsDirFromCenterDto;
                     scaledHexagons = scaledHexagons.map(hex => {
                         transform.points = hex;
                         return this.stretchPointsDirFromCenter(transform);
@@ -641,11 +641,11 @@ export class Point {
                     scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendLeft && extendRight) {
-                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                    const transform = {
                         center: [width / 2, 0, 0],
                         direction: [1, 0, 0],
                         scale: width / (width - cellWidth * 2),
-                    };
+                    } as Inputs.Point.StretchPointsDirFromCenterDto;
                     scaledHexagons = scaledHexagons.map(hex => {
                         transform.points = hex;
                         return this.stretchPointsDirFromCenter(transform);
@@ -730,7 +730,7 @@ export class Point {
         if(flatTop){
             const grouped = this.lists.groupNth<Inputs.Base.Point3[]>({
                 list: scaledHexagons.reverse(),
-                nrElements: inputs.nrHexagonsInWidth,
+                nrElements: inputs.nrHexagonsInWidth ?? 10,
                 keepRemainder: true,
             });
             const res = this.lists.flipLists({
@@ -741,7 +741,7 @@ export class Point {
 
             const groupedCenters = this.lists.groupNth<Inputs.Base.Point3>({
                 list: scaledCenters.reverse(),
-                nrElements: inputs.nrHexagonsInWidth,
+                nrElements: inputs.nrHexagonsInWidth ?? 10,
                 keepRemainder: true,
             });
             const resCenters = this.lists.flipLists({
@@ -1002,7 +1002,7 @@ export class Point {
      * @shortname normal from 3 points
      * @drawable true
      */
-    normalFromThreePoints(inputs: Inputs.Point.ThreePointsNormalDto): Inputs.Base.Vector3 {
+    normalFromThreePoints(inputs: Inputs.Point.ThreePointsNormalDto): Inputs.Base.Vector3 | undefined {
         const p1 = inputs.point1;
         const p2 = inputs.point2;
         const p3 = inputs.point3;
@@ -1047,8 +1047,8 @@ export class Point {
         index: number, point: Inputs.Base.Point3, distance: number
     } {
         let distance = Number.MAX_SAFE_INTEGER;
-        let closestPointIndex: number;
-        let point: Inputs.Base.Point3;
+        let closestPointIndex!: number;
+        let point!: Inputs.Base.Point3;
         for (let i = 0; i < inputs.points.length; i++) {
             const pt = inputs.points[i];
             const currentDist = this.distance({ startPoint: inputs.point, endPoint: pt });
@@ -1074,7 +1074,7 @@ export class Point {
         const p1 = inputs.point1;
         const p2 = inputs.point2;
         const dist = this.distance({ startPoint: p1, endPoint: p2 });
-        return dist < inputs.tolerance;
+        return dist < (inputs.tolerance ?? 1e-7);
     }
 
     /**

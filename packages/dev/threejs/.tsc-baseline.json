@@ -69,11 +69,6 @@
       "code": "TS2345",
       "count": 26
     },
-    "bf2e747f37b99f77bb542471f36b0e2a04a0fd67": {
-      "file": "lib/api/draw-helper.ts",
-      "code": "TS18048",
-      "count": 22
-    },
     "1b1d26c24c4c3eb1108736797f459490e822ec50": {
       "file": "lib/api/draw-helper.ts",
       "code": "TS2454",
@@ -83,6 +78,11 @@
       "file": "lib/api/draw-helper.ts",
       "code": "TS2532",
       "count": 7
+    },
+    "bf2e747f37b99f77bb542471f36b0e2a04a0fd67": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS18048",
+      "count": 15
     },
     "a8d39ecc1980255c2462dbb55b7f898995236e5a": {
       "file": "lib/api/draw-helper.ts",

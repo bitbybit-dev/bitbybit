@@ -148,7 +148,7 @@ export class Line {
         // Calculate direction vector of line segment
         const point1 = inputs.line.start;
         const point2 = inputs.line.end;
-        const parameter = inputs.param;
+        const parameter = inputs.param ?? 0.5;
 
         const direction = [point2[0] - point1[0], point2[1] - point1[1], point2[2] - point1[2]];
 

@@ -113,9 +113,6 @@
   "packages/dev/base/lib/api/services/polyline.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    },
-    "no-unassigned-vars": {
-      "count": 1
     }
   },
   "packages/dev/base/lib/api/services/text.test.ts": {

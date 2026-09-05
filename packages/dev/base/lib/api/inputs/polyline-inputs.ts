@@ -19,12 +19,12 @@ export namespace Polyline {
          * Points of the polyline
          * @default undefined
          */
-        points?: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Can contain is closed information
          * @default false
          */
-        isClosed? = false;
+        isClosed?: boolean = false;
     }
     export class PolylinePropertiesDto {
         /**
@@ -38,12 +38,12 @@ export namespace Polyline {
          * Points of the polyline
          * @default undefined
          */
-        points?: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Can contain is closed information
          * @default false
          */
-        isClosed? = false;
+        isClosed?: boolean = false;
         /**
          * Optional polyline color
          * @default #444444
@@ -58,7 +58,7 @@ export namespace Polyline {
          * Polyline with points
          * @default undefined
          */
-        polyline?: PolylinePropertiesDto;
+        polyline!: PolylinePropertiesDto;
     }
     export class PolylinesDto {
         constructor(polylines?: PolylinePropertiesDto[]) {
@@ -68,7 +68,7 @@ export namespace Polyline {
          * Polylines array
          * @default undefined
          */
-        polylines?: PolylinePropertiesDto[];
+        polylines!: PolylinePropertiesDto[];
     }
     export class TransformPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, transformation?: Base.TransformMatrixes) {
@@ -79,12 +79,12 @@ export namespace Polyline {
          * Polyline to transform
          * @default undefined
          */
-        polyline?: PolylinePropertiesDto;
+        polyline!: PolylinePropertiesDto;
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation?: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class DrawPolylineDto<T> {
         /**
@@ -102,7 +102,7 @@ export namespace Polyline {
          * Polyline
          * @default undefined
          */
-        polyline?: PolylinePropertiesDto;
+        polyline!: PolylinePropertiesDto;
         /**
          * Value between 0 and 1
          * @default 1
@@ -110,7 +110,7 @@ export namespace Polyline {
          * @maximum 1
          * @step 0.1
          */
-        opacity? = 1;
+        opacity?: number = 1;
         /**
          * Hex colour string
          * @default #444444
@@ -123,12 +123,12 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 0.1
          */
-        size? = 3;
+        size?: number = 3;
         /**
          * Indicates wether the position of this polyline will change in time
          * @default false
          */
-        updatable? = false;
+        updatable?: boolean = false;
         /**
          * Line mesh variable in case it already exists and needs updating
          * @default undefined
@@ -151,7 +151,7 @@ export namespace Polyline {
          * Polylines
          * @default undefined
          */
-        polylines?: PolylinePropertiesDto[];
+        polylines!: PolylinePropertiesDto[];
         /**
          * Value between 0 and 1
          * @default 1
@@ -159,7 +159,7 @@ export namespace Polyline {
          * @maximum 1
          * @step 0.1
          */
-        opacity? = 1;
+        opacity?: number = 1;
         /**
          * Hex colour string
          * @default #444444
@@ -172,12 +172,12 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 0.1
          */
-        size? = 3;
+        size?: number = 3;
         /**
          * Indicates wether the position of this polyline will change in time
          * @default false
          */
-        updatable? = false;
+        updatable?: boolean = false;
         /**
          * Polyline mesh variable in case it already exists and needs updating
          * @default undefined
@@ -192,7 +192,7 @@ export namespace Polyline {
          * Segments array
          * @default undefined
          */
-        segments?: Base.Segment3[];
+        segments!: Base.Segment3[];
         /**
          * Tolerance for the calculation
          * @default 1e-5
@@ -200,7 +200,7 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 1e-5
          */
-        tolerance? = 1e-5;
+        tolerance?: number = 1e-5;
     }
     export class PolylineToleranceDto {
         constructor(polyline?: PolylinePropertiesDto, tolerance?: number) {
@@ -211,7 +211,7 @@ export namespace Polyline {
          * Polyline to check
          * @default undefined
          */
-        polyline?: PolylinePropertiesDto;
+        polyline!: PolylinePropertiesDto;
         /**
          * Tolerance for the calculation
          * @default 1e-5
@@ -219,7 +219,7 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 1e-5
          */
-        tolerance? = 1e-5;
+        tolerance?: number = 1e-5;
     }
     export class TwoPolylinesToleranceDto {
         constructor(polyline1?: PolylinePropertiesDto, polyline2?: PolylinePropertiesDto, tolerance?: number) {
@@ -231,12 +231,12 @@ export namespace Polyline {
          * First polyline to check
          * @default undefined
          */
-        polyline1?: PolylinePropertiesDto;
+        polyline1!: PolylinePropertiesDto;
         /**
          * Second polyline to check
          * @default undefined
          */
-        polyline2?: PolylinePropertiesDto;
+        polyline2!: PolylinePropertiesDto;
         /**
          * Tolerance for the calculation
          * @default 1e-5
@@ -244,6 +244,6 @@ export namespace Polyline {
          * @maximum Infinity
          * @step 1e-5
          */
-        tolerance? = 1e-5;
+        tolerance?: number = 1e-5;
     }
 }

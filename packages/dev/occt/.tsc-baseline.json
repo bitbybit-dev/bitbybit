@@ -67,7 +67,7 @@
     "611724a96b3f1c8edbcd4b0940959b5213e4be25": {
       "file": "lib/services/base/dimensions.service.ts",
       "code": "TS2322",
-      "count": 53
+      "count": 69
     },
     "30690b868b6eba73b3a39fd485e9ae1cd6ae6ab7": {
       "file": "lib/services/base/dimensions.service.ts",
@@ -77,7 +77,7 @@
     "69597580fa0a083394da23e2fe2de4b05da3ef2b": {
       "file": "lib/services/base/dimensions.service.ts",
       "code": "TS2345",
-      "count": 1
+      "count": 2
     },
     "2b67d95cc36b1c67d3514600c4151a603723b9f7": {
       "file": "lib/services/base/dimensions.service.ts",
@@ -147,7 +147,7 @@
     "296253b2c3d270bdbfc3baf30cea6c8b8de9575e": {
       "file": "lib/services/base/faces.service.ts",
       "code": "TS18048",
-      "count": 25
+      "count": 26
     },
     "f13c648cc4d5272e0d7c7dbdb920609ba577bd3e": {
       "file": "lib/services/base/faces.service.ts",
@@ -327,12 +327,12 @@
     "ba04fb4e234692066a91735b07841b445b78b838": {
       "file": "lib/services/base/wires.service.ts",
       "code": "TS18048",
-      "count": 33
+      "count": 30
     },
     "11227e66f4d6e22b227abd156c4155667a04d90f": {
       "file": "lib/services/base/wires.service.ts",
       "code": "TS2322",
-      "count": 15
+      "count": 17
     },
     "a8cc89893f2fffb1e384e9df08e35c03eef4fe1d": {
       "file": "lib/services/base/wires.service.ts",
@@ -399,10 +399,10 @@
       "code": "TS2454",
       "count": 3
     },
-    "dcb367e59e7b18d751c1dc793dad9825143673a6": {
+    "094beec473c8f5f7775e5a14e903ed4e6b21bfb3": {
       "file": "lib/services/shapes/wire.ts",
-      "code": "TS2379",
-      "count": 1
+      "code": "TS2322",
+      "count": 4
     },
     "f5d822b987a8dd2e3d6574325a219df6db26dcc2": {
       "file": "lib/services/shapes/wire.ts",
@@ -412,11 +412,6 @@
     "9719973128711ecea732aaf6a55a40730e86264e": {
       "file": "lib/services/shapes/wire.ts",
       "code": "TS7005",
-      "count": 2
-    },
-    "094beec473c8f5f7775e5a14e903ed4e6b21bfb3": {
-      "file": "lib/services/shapes/wire.ts",
-      "code": "TS2322",
       "count": 2
     },
     "2a9e253732d2c56d3f8dd1e26c052202d6005dba": {
