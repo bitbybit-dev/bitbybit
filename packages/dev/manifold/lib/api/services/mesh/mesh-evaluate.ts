@@ -8,17 +8,17 @@ export class MeshEvaluate {
 
     position(inputs: Inputs.Manifold.MeshVertexIndexDto<Manifold3D.Mesh>): Inputs.Base.Point3 {
         const res = inputs.mesh.position(inputs.vertexIndex);
-        return [res[0], res[1], res[2]];
+        return [res[0]!, res[1]!, res[2]!];
     }
 
     tangent(inputs: Inputs.Manifold.MeshHalfEdgeIndexDto<Manifold3D.Mesh>): number[] {
         const res = inputs.mesh.tangent(inputs.halfEdgeIndex);
-        return [res[0], res[1], res[2], res[4]];
+        return [res[0]!, res[1]!, res[2]!, res[4]!];
     }
 
     verts(inputs: Inputs.Manifold.MeshTriangleIndexDto<Manifold3D.Mesh>): number[] {
         const res = inputs.mesh.verts(inputs.triangleIndex);
-        return [res[0], res[1], res[2]];
+        return [res[0]!, res[1]!, res[2]!];
     }
 
     extras(inputs: Inputs.Manifold.MeshVertexIndexDto<Manifold3D.Mesh>): number[] {

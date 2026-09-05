@@ -39,7 +39,7 @@ export namespace JSCAD {
         /**
          * Can contain color information
          */
-        color?: string | number[];
+        color?: string | number[] | undefined;
     }
     /**
      * How the corners of an expanded or rounded solid are formed.
@@ -142,7 +142,7 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        jscadMesh?: T;
+        jscadMesh?: T | undefined;
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
          * @default true
@@ -212,7 +212,7 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        jscadMesh?: T;
+        jscadMesh?: T | undefined;
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
          * @default true
@@ -281,7 +281,7 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        pathMesh?: T;
+        pathMesh?: T | undefined;
     }
     export class TransformSolidsDto {
         constructor(meshes?: JSCADEntity[], transformation?: Base.TransformMatrixes) {

@@ -50,9 +50,9 @@ export class ManifoldService {
             const numVertices = vertProperties.length / numProp;
 
             for (let i = 0; i < triVerts.length; i += 3) {
-                const index1 = triVerts[i];
-                const index2 = triVerts[i + 1];
-                const index3 = triVerts[i + 2];
+                const index1 = triVerts[i]!;
+                const index2 = triVerts[i + 1]!;
+                const index3 = triVerts[i + 2]!;
 
                 if (index1 >= numVertices || index2 >= numVertices || index3 >= numVertices) {
                     console.error(`Invalid vertex index found in triVerts at offset ${i}. Max index should be ${numVertices - 1}. Indices: ${index1}, ${index2}, ${index3}`);
@@ -66,9 +66,9 @@ export class ManifoldService {
                 const vert3Offset = index3 * numProp;
 
                 // Extract only the first 3 properties (x, y, z) starting from the offset for each vertex.
-                const point1: Inputs.Base.Point3 = [vertProperties[vert1Offset], vertProperties[vert1Offset + 1], vertProperties[vert1Offset + 2]];
-                const point2: Inputs.Base.Point3 = [vertProperties[vert2Offset], vertProperties[vert2Offset + 1], vertProperties[vert2Offset + 2]];
-                const point3: Inputs.Base.Point3 = [vertProperties[vert3Offset], vertProperties[vert3Offset + 1], vertProperties[vert3Offset + 2]];
+                const point1: Inputs.Base.Point3 = [vertProperties[vert1Offset]!, vertProperties[vert1Offset + 1]!, vertProperties[vert1Offset + 2]!];
+                const point2: Inputs.Base.Point3 = [vertProperties[vert2Offset]!, vertProperties[vert2Offset + 1]!, vertProperties[vert2Offset + 2]!];
+                const point3: Inputs.Base.Point3 = [vertProperties[vert3Offset]!, vertProperties[vert3Offset + 1]!, vertProperties[vert3Offset + 2]!];
 
                 const triangle: Inputs.Base.Triangle3 = [point1, point2, point3];
                 polygons.push(triangle);
@@ -76,7 +76,7 @@ export class ManifoldService {
 
             return polygons;
         } else {
-            return undefined;
+            throw new Error("Manifold has no mesh to convert");
         }
     }
 

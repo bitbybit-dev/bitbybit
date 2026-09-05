@@ -315,7 +315,7 @@
   },
   "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker-manager.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
+      "count": 4
     }
   },
   "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker-mock.ts": {

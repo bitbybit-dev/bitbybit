@@ -1,9 +1,9 @@
-import { initializationComplete, onMessageInput } from "./manifold-worker";
+import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
 
 export class ManifoldWorkerMock {
-    initializationComplete = (jscad, plugins: any, doNotPost?: boolean) => { initializationComplete(jscad, plugins, doNotPost); };
-    onMessageInput = (inputs) => {
-        onMessageInput(inputs, (res) => {
+    initializationComplete = (jscad: unknown, plugins: any, doNotPost?: boolean) => { initializationComplete(jscad, plugins, doNotPost); };
+    onMessageInput = (inputs: DataInput) => {
+        onMessageInput(inputs, (res: unknown) => {
             if (this.onmessage) {
                 this.onmessage({ data: res });
             } else {
@@ -12,11 +12,11 @@ export class ManifoldWorkerMock {
         });
     };
 
-    postMessage(data) {
+    postMessage(data: DataInput | "busy") {
         if (data !== "busy") {
             this.onMessageInput(data);
         }
     }
 
-    onmessage: (data) => void;
+    onmessage!: (message: { data: unknown }) => void;
 }

@@ -164,7 +164,7 @@ describe("CacheHelper unit tests", () => {
             cacheHelper.addToCache(hash, mockManifold);
             
             // Simulate deletion by removing $$ property
-            delete mockManifold.$$;
+            delete (mockManifold as Partial<typeof mockManifold>).$$;
             
             // Should return null because manifold is deleted
             const cached = cacheHelper.checkCache(hash);
@@ -196,7 +196,7 @@ describe("CacheHelper unit tests", () => {
             cacheHelper.addToCache(hash, manifolds);
             
             // Simulate deletion of one manifold
-            delete manifold1.$$;
+            delete (manifold1 as Partial<typeof manifold1>).$$;
             
             // Should return null because one manifold is deleted
             const cached = cacheHelper.checkCache(hash);
@@ -326,7 +326,7 @@ describe("CacheHelper unit tests", () => {
             expect(cacheMiss1CallCount).toBe(1);
             
             // Simulate deletion
-            delete manifold1.$$;
+            delete (manifold1 as Partial<typeof manifold1>).$$;
             
             // Second call - should detect deleted manifold and call cacheMiss again
             const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };

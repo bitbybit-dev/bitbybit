@@ -59,6 +59,11 @@
       "code": "TS4115",
       "count": 1
     },
+    "41dcbdf071f9f6a90df6615764208ff5b0537d1b": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS2379",
+      "count": 2
+    },
     "97b647ba298118e0cdcaa2f8b9bec406c029fe48": {
       "file": "lib/api/draw-helper.ts",
       "code": "TS2322",

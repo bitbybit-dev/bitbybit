@@ -53,6 +53,9 @@ export class ManifoldTransforms {
             transformedShapes.push(currentShape);
         });
         const res = transformedShapes.pop();
+        if (!res) {
+            throw new Error("At least one transform is required");
+        }
         transformedShapes.forEach(shape => {
             shape.delete();
         });

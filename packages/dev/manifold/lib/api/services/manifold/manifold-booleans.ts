@@ -18,11 +18,11 @@ export class ManifoldBooleans {
     }
 
     splitByPlaneOnOffsets(inputs: Inputs.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
-        const pieces = [];
+        const pieces: Manifold3D.Manifold[] = [];
 
         const clone = inputs.manifold.asOriginal();
         const remainders = [clone];
-        const junk = [];
+        const junk: Manifold3D.Manifold[] = [];
 
         inputs.originOffsets.forEach((s, i) => {
             if (remainders[i]) {
