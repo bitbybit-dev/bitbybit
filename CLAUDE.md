@@ -57,6 +57,24 @@ dependency of that package - the engine packages import `@bitbybit-dev/base`, th
 sits outside your home directory: a stray `~/node_modules` above the checkout satisfies an
 undeclared import on your machine and nowhere else, which is how one reached CI.
 
+## Continuous integration
+
+`.github/workflows/verify.yml` proves the repository builds and tests from a bare clone with nothing
+above it, on every push to `develop` and every pull request into `develop` or `master`: one frozen
+install, an audit that no host-only path leaked in, `check:references`, `rebuild-all-packages`,
+`npm test`, the SDK's typecheck, tests and build, the scaffolder's build, `api:check` and
+`check:tarballs`. It needs no secrets and must never gain any. A nightly job runs the build and
+tests on every Node line the packages should keep working on; Node comes from `.tool-versions` and
+pnpm from the `packageManager` field. Publishing is not here and will not be added to this file.
+
+Two of those checks carry committed state. `api:check` runs api-extractor in `base` and `core`
+against their built `dist/index.d.ts` and fails when the public surface differs from the report in
+each package's `etc/`: the dotted API is persisted in users' saved scripts, so a change to it lands
+only with a deliberate `npm run api:update` and the report diff in the same commit. `check:tarballs`
+packs every built dist and installs all the tarballs together into an empty project, then compiles a
+probe that imports each package as a consumer would, so a sibling only the workspace could resolve, a
+dependency a manifest forgot, or a shipped build info file fails there and not on a user's machine.
+
 `npm test` at the root runs every package suite, after `npm run check:worker-parity`: each worker
 package mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends
 a path the kernel lacks, when a kernel method has no mirror outside the allow-list, when signatures

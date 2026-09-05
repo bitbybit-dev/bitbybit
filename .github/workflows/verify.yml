@@ -1,0 +1,102 @@
+# The public repository must build and test from a bare clone with nothing above it - no host
+# checkout, no sibling submodules. This workflow is that proof, on every push to the integration
+# branch and every pull request into it or into the release branch. It needs no secrets and must
+# never gain any: fork pull requests run it, and pull_request_target is deliberately not used.
+#
+# The order the packages build in is not written here: each package's manifest declares its
+# siblings, scripts/gen-ts-references.mjs turns that into TypeScript project references, tsc -b
+# compiles in that order and pnpm -r stages in it. check:references fails when the two disagree.
+name: Verify
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    branches: [develop, master]
+  schedule:
+    # Nightly, on the default branch: the Node matrix runs here rather than on every pull request.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm's version comes from the packageManager field; Node's from .tool-versions, the one pin
+      # mise and asdf read on a developer's machine as well.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Nothing in this repository may point at the proprietary host it is also developed inside.
+      - name: MIT-clean audit
+        run: |
+          if git grep -n -E 'angular-sites/|projects/api-3d|bitbybit-complete|bitbybit-occt-advanced' -- .github scripts '*.json' ':!pnpm-lock.yaml' ':!package-lock.json'; then
+            echo "::error::a host-only path leaked into the public repository"; exit 1
+          fi
+
+      - name: Project references match the manifests
+        run: npm run check:references
+
+      - name: Build and stage every package in dependency order
+        run: npm run rebuild-all-packages
+
+      # The root aggregate: the kernel/worker parity walker, then every package's jest suite with
+      # coverage. The two packages outside it follow: the SDK's typecheck, tests and build, and the
+      # scaffolder's build - their only gate used to be prepublishOnly at publish time.
+      - name: Test aggregate
+        run: npm test
+
+      - name: cad-cloud-sdk
+        run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
+
+      - name: create-app
+        run: pnpm --filter @bitbybit-dev/create-app run build
+
+      # The dotted public API is persisted in users' saved scripts. The committed reports under
+      # etc/ are the surface; a change to it lands only with a deliberate `npm run api:update`.
+      - name: Public API surface matches the committed reports
+        run: npm run api:check
+
+      # Pack every dist and install all the tarballs together into an empty project, as a user
+      # would - a sibling only the workspace could resolve, a forgotten dependency or a shipped
+      # build info file fails here, not on a user's machine.
+      - name: Tarballs install standalone
+        run: npm run check:tarballs
+
+  # The same build and tests on every Node line the packages should keep working on, nightly and
+  # by hand. Node 18 and 20 are end of life and pnpm 11 needs 22.13, so the matrix starts at 22.
+  matrix:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: npm run rebuild-all-packages
+      - run: npm test
+      - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run test

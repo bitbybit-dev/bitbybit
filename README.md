@@ -165,6 +165,9 @@ For first-time developers working on this project, follow these steps to set up 
 - `npm run rebuild-all-packages` - Empty every dist, then build all packages
 - `npm run gen:references` - Regenerate the TypeScript project references from the package manifests after a dependency change
 - `npm run check:references` - Fail if the project references and the manifests disagree (the first step of `npm test`)
+- `npm run api:check` - Fail if the public API surface of `base` or `core` differs from the committed report in its `etc/` folder
+- `npm run api:update` - Regenerate those API reports after a deliberate change to the public surface
+- `npm run check:tarballs` - Pack every built package and install the tarballs together into an empty project, as a user would
 
 ### Running Individual Package Tests
 You can also run tests for individual packages:
