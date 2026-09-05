@@ -64,7 +64,7 @@ export class ContextBase {
                     const text = (evt as any).target.result;
                     resolve(text);
                 };
-                reader.onerror = (evt) => {
+                reader.onerror = (_evt) => {
                     reject();
                 };
             } else {

@@ -5,7 +5,7 @@ import * as Inputs from "../../../inputs";
 
 export class BabylonGuiRadioButton {
 
-    constructor(private readonly context: Context) { }
+    constructor(_context: Context) { }
 
     /**
      * Creates radio button

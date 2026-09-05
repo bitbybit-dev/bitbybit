@@ -45,14 +45,19 @@
     "lib": "lib"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.bitbybit.json",
+    "build": "tsc -b tsconfig.bitbybit.json",
+    "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false | tsc-baseline check",
+    "typecheck:strict:save": "tsc -p tsconfig.strict.json --pretty false | tsc-baseline --ignoreMessages save",
+    "clean-dist": "shx rm -rf dist",
     "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
-    "copy-package": "shx cp -R ./package.json ./dist",
+    "copy-package": "node ../../../scripts/dist-manifest.mjs",
     "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
     "delete-coverage": "shx rm -rf ./dist/coverage || true",
     "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
     "test-c": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false",
-    "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true"
+    "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true",
+    "api:check": "api-extractor run",
+    "api:update": "api-extractor run --local"
   },
   "author": "Bit by bit developers",
   "license": "MIT",
@@ -64,7 +69,7 @@
   "type": "module",
   "dependencies": {},
   "devDependencies": {
-    "shx":"0.4.0",
+    "shx": "0.4.0",
     "@testing-library/jest-dom": "6.9.1",
     "jest": "30.4.2",
     "ts-node": "10.9.2",
@@ -75,7 +80,9 @@
     "@babel/core": "7.29.0",
     "@babel/preset-env": "7.29.5",
     "@babel/preset-typescript": "7.28.5",
-    "jest-html-reporters": "3.1.7"
+    "jest-html-reporters": "3.1.7",
+    "jest-environment-node": "30.4.1",
+    "@microsoft/api-extractor": "7.59.0"
   },
   "jest": {
     "preset": "ts-jest",
@@ -86,7 +93,7 @@
       ".ts"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!@bitbybit-dev)/"
+      "node_modules/(?!\\.pnpm|@bitbybit-dev)/"
     ],
     "collectCoverageFrom": [
       "lib/api/services/**/*"

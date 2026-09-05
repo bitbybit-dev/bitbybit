@@ -6,7 +6,7 @@ import * as BABYLON from "../../../../gui-enriched-babylon";
 
 export class BabylonGuiInputText {
     
-    constructor(private readonly context: Context) { }
+    constructor(_context: Context) { }
 
     /**
      * Creates input text

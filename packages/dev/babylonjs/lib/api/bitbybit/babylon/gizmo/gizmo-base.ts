@@ -6,7 +6,7 @@ export class BabylonGizmoBase {
 
 
     constructor(
-        private readonly context: Context,
+        _context: Context,
     ) {
     }
 

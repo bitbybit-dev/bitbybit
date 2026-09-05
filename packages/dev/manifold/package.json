@@ -45,9 +45,12 @@
         "lib": "lib"
     },
     "scripts": {
-        "build": "tsc -p tsconfig.bitbybit.json",
+        "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false | tsc-baseline check",
+        "typecheck:strict:save": "tsc -p tsconfig.strict.json --pretty false | tsc-baseline --ignoreMessages save",
+        "clean-dist": "shx rm -rf dist",
         "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
-        "copy-package": "shx cp -R ./package.json ./dist",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
         "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
@@ -79,7 +82,8 @@
         "@babel/preset-env": "7.29.5",
         "@babel/preset-typescript": "7.28.5",
         "babel-plugin-transform-import-meta": "2.3.3",
-        "jest-html-reporters": "3.1.7"
+        "jest-html-reporters": "3.1.7",
+        "jest-environment-node": "30.4.1"
     },
     "jest": {
         "preset": "ts-jest",
@@ -90,7 +94,7 @@
             ".ts"
         ],
         "transformIgnorePatterns": [
-            "node_modules/(?!@bitbybit-dev)/"
+            "node_modules/(?!\\.pnpm|@bitbybit-dev)/"
         ],
         "collectCoverageFrom": [
             "lib/api/**/*"

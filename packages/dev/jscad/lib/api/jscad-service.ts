@@ -171,7 +171,7 @@ export class Jscad {
                             reversedVertices[i + 2],
                         ]);
                 }
-                triangles.forEach((triangle, index) => {
+                triangles.forEach((triangle, _index) => {
                     triangle.forEach(vert => {
                         positions.push(vert[0], vert[1], vert[2]);
                         indices.push(countIndices);

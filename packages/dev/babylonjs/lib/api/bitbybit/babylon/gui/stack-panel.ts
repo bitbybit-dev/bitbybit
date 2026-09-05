@@ -5,7 +5,7 @@ import * as Inputs from "../../../inputs";
 
 export class BabylonGuiStackPanel {
 
-    constructor(private readonly context: Context) { }
+    constructor(_context: Context) { }
 
     /**
      * Creates stack panel
@@ -18,8 +18,8 @@ export class BabylonGuiStackPanel {
         const stackPanel = new BABYLON.GUI.StackPanel(inputs.name);
         stackPanel.isVertical = inputs.isVertical;
         stackPanel.spacing = inputs.spacing;
-        stackPanel.onDisposeObservable.add((s: BABYLON.GUI.StackPanel) => {
-            s.clearControls();
+        stackPanel.onDisposeObservable.add((s) => {
+            (s as BABYLON.GUI.StackPanel).clearControls();
         });
         if (inputs.width !== undefined) {
             stackPanel.width = inputs.width;

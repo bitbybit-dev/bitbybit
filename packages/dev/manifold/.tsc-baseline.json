@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "baselineFileVersion": 1,
+    "ignoreMessages": true
+  },
+  "errors": {
+    "8e82f57c9eb9b57d7ccb82c0ff040f6ef6edfc48": {
+      "file": "lib/api/inputs/manifold-inputs.ts",
+      "code": "TS2564",
+      "count": 89
+    },
+    "98d67f0e09ed32d5262385ca0ca46fd556668237": {
+      "file": "lib/api/manifold-service.ts",
+      "code": "TS18048",
+      "count": 6
+    },
+    "527a1dd955dcee28a0a0f94d678247dbaf7abf8f": {
+      "file": "lib/api/manifold-service.ts",
+      "code": "TS2322",
+      "count": 10
+    },
+    "7ac6473e35480ec29a68d43afdcc9591a7248ed6": {
+      "file": "lib/api/manifold-service.ts",
+      "code": "TS2379",
+      "count": 1
+    },
+    "0c2d0ba4f61be9e5036b3c6083afa1235cea3f2d": {
+      "file": "lib/api/services/manifold/manifold-booleans.ts",
+      "code": "TS7034",
+      "count": 2
+    },
+    "c46ab9e642ea3271118bc995ea1a89584213b363": {
+      "file": "lib/api/services/manifold/manifold-booleans.ts",
+      "code": "TS7005",
+      "count": 2
+    },
+    "4d0ac4e27cac376c79ed2e5459d3611e2d151f52": {
+      "file": "lib/api/services/manifold/manifold-shapes.ts",
+      "code": "TS18048",
+      "count": 1
+    },
+    "97894e872e38fb6bedd540be83e6e408aa277295": {
+      "file": "lib/api/services/manifold/manifold-transforms.ts",
+      "code": "TS2322",
+      "count": 1
+    },
+    "d2972f83e45791ca3494dfadee31cf6730fd5d3f": {
+      "file": "lib/api/services/manifold/manifold.ts",
+      "code": "TS2379",
+      "count": 1
+    },
+    "b8a2f8a37390e5999c47f42dee398195a8d76ad7": {
+      "file": "lib/api/services/mesh/mesh-evaluate.ts",
+      "code": "TS2322",
+      "count": 10
+    }
+  }
+}

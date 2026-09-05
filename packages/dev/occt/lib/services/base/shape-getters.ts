@@ -60,7 +60,7 @@ export class ShapeGettersService {
             throw (new Error("Shape is not provided or is of incorrect type"));
         }
         const edges: TopoDS_Edge[] = [];
-        this.iteratorService.forEachEdge(inputs.shape, (i, edge) => {
+        this.iteratorService.forEachEdge(inputs.shape, (_i, edge) => {
             edges.push(edge);
         });
         return edges;
@@ -89,7 +89,7 @@ export class ShapeGettersService {
 
     getWires(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire[] {
         const wires: TopoDS_Wire[] = [];
-        this.iteratorService.forEachWire(inputs.shape, (wireIndex: number, myWire: TopoDS_Wire) => {
+        this.iteratorService.forEachWire(inputs.shape, (_wireIndex: number, myWire: TopoDS_Wire) => {
             wires.push(myWire);
         });
         return wires;
@@ -118,7 +118,7 @@ export class ShapeGettersService {
 
     getFaces(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Face[] {
         const faces: TopoDS_Face[] = [];
-        this.iteratorService.forEachFace(inputs.shape, (faceIndex, myFace) => {
+        this.iteratorService.forEachFace(inputs.shape, (_faceIndex, myFace) => {
             faces.push(myFace);
         });
         return faces;
@@ -126,7 +126,7 @@ export class ShapeGettersService {
 
     getSolids(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Solid[] {
         const solids: TopoDS_Face[] = [];
-        this.iteratorService.forEachSolid(inputs.shape, (faceIndex, myFace) => {
+        this.iteratorService.forEachSolid(inputs.shape, (_faceIndex, myFace) => {
             solids.push(myFace);
         });
         return solids;
@@ -163,7 +163,7 @@ export class ShapeGettersService {
             throw (new Error("Shape is not provided or is of incorrect type"));
         }
         const vertices: TopoDS_Vertex[] = [];
-        this.iteratorService.forEachVertex(inputs.shape, (i, vertex) => {
+        this.iteratorService.forEachVertex(inputs.shape, (_i, vertex) => {
             vertices.push(vertex);
         });
         return vertices;

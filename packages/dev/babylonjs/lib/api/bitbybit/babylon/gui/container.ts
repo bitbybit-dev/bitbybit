@@ -5,7 +5,7 @@ import * as Inputs from "../../../inputs";
 
 export class BabylonGuiContainer {
 
-    constructor(private readonly context: Context) { }
+    constructor(_context: Context) { }
 
     /**
      * Adds controls to container and keeps the order

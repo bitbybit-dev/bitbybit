@@ -2,10 +2,9 @@
     // The compiler options every published CAD package shares. Each package's tsconfig.json (the
     // editor and test view) and tsconfig.bitbybit.json (what build-p compiles) extends this and keeps
     // only what differs there: outDir, paths into the sibling dists, exclusions, and for the occt
-    // NodeNext build its module settings. Extracted with a zero-change proof (the parent monorepo's
-    // scripts/checks/tsconfig-showconfig-diff.mjs compares `tsc --showConfig` before and after), so
-    // the packages compile exactly as they did; making them stricter is a separate, deliberate step,
-    // one package at a time.
+    // NodeNext build its module settings. Extracted with a zero-change proof (`tsc --showConfig`
+    // compared before and after for every package), so the packages compile exactly as they did;
+    // making them stricter is a separate, deliberate step, one package at a time.
     //
     // `include`, `exclude` and `files` are replaced by a leaf rather than merged, and relative paths
     // resolve against the defining file, so those stay in the leaves. This file is self-contained on
@@ -16,6 +15,14 @@
         "moduleResolution": "node",
         "lib": ["es2020", "dom"],
         "strict": false,
+        // Five of the strict flags already hold in every package (measured at zero errors), so the
+        // build enforces them; the rest are the typecheck-only overlay's until a package's baseline is
+        // empty (tsconfig.base.cad-strict.json).
+        "useUnknownInCatchVariables": true,
+        "strictFunctionTypes": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
         "allowJs": true,
         "declaration": true,
         "emitDeclarationOnly": false,

@@ -19,7 +19,7 @@ export class OCCTAssemblyQuery {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        private readonly och: OccHelper
+        _och: OccHelper
     ) { }
 
     /**

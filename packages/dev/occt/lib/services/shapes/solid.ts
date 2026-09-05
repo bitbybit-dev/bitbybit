@@ -120,7 +120,7 @@ export class OCCTSolid {
         return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
     }
 
-    private extrudeFaceToSolid(face: TopoDS_Shape, direction: Base.Vector3, lengthFront: number, lengthBack: number): TopoDS_Solid {
+    private extrudeFaceToSolid(face: TopoDS_Shape, _direction: Base.Vector3, lengthFront: number, lengthBack: number): TopoDS_Solid {
         // Check if both lengths are 0
         if (lengthFront === 0 && lengthBack === 0) {
             face.delete();

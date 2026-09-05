@@ -32,7 +32,7 @@ export class BabylonGui {
     colorPicker: BabylonGuiColorPicker;
     image: BabylonGuiImage;
 
-    constructor(private readonly context: Context) {
+    constructor(context: Context) {
         this.advancedDynamicTexture = new BabylonGuiAdvancedDynamicTexture(context);
         this.control = new BabylonGuiControl(context);
         this.container = new BabylonGuiContainer(context);

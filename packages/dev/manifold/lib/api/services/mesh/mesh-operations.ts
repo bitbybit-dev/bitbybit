@@ -3,10 +3,7 @@ import * as Manifold3D from "manifold-3d";
 
 export class MeshOperations {
 
-    private manifold: Manifold3D.ManifoldToplevel;
-
-    constructor(wasm: Manifold3D.ManifoldToplevel) {
-        this.manifold = wasm;
+    constructor(_wasm: Manifold3D.ManifoldToplevel) {
     }
 
     merge(inputs: Inputs.Manifold.MeshDto<Manifold3D.Mesh>): boolean {

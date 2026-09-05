@@ -5,7 +5,7 @@ import * as Inputs from "../../../inputs";
 
 export class BabylonGuiControl {
 
-    constructor(private readonly context: Context) { }
+    constructor(_context: Context) { }
 
     /**
      * Change the padding for the control

@@ -36,7 +36,7 @@ export class OCCTService {
     public plugins?;
 
     constructor(
-        private readonly occ: BitbybitOcctModule,
+        occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
         this.shapes = new OCCTShapes(occ, och);

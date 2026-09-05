@@ -1,0 +1,133 @@
+{
+  "meta": {
+    "baselineFileVersion": 1,
+    "ignoreMessages": true
+  },
+  "errors": {
+    "9ac0c9966a1c9db338d5e442d9a8f2c20b6fdc6c": {
+      "file": "lib/api/bitbybit/draw.ts",
+      "code": "TS2322",
+      "count": 3
+    },
+    "99c9480a5e35e1a13138ee862859da547f9e44d7": {
+      "file": "lib/api/bitbybit/draw.ts",
+      "code": "TS2379",
+      "count": 11
+    },
+    "ab769dc56a4794e7a575bec1bb8ad91c4100eb1d": {
+      "file": "lib/api/bitbybit/draw.ts",
+      "code": "TS7053",
+      "count": 2
+    },
+    "5352d99e38c06ee151ad9200bca5ca1d35b2af0c": {
+      "file": "lib/api/bitbybit/draw.ts",
+      "code": "TS2339",
+      "count": 2
+    },
+    "f68413414b74b52b30502f2ad3865ba9983a0bae": {
+      "file": "lib/api/bitbybit/draw.ts",
+      "code": "TS4111",
+      "count": 5
+    },
+    "d51284ffc229292d72834c555a7d53728af8af6b": {
+      "file": "lib/api/bitbybit/draw.ts",
+      "code": "TS7006",
+      "count": 2
+    },
+    "d8d0c13972fe03c14ad3b6c6e47e5899f114dc3a": {
+      "file": "lib/api/bitbybit/threejs/orbit-camera.ts",
+      "code": "TS1205",
+      "count": 3
+    },
+    "e2c6d5d548dc611b8a9cd46331ded8ce8babda0b": {
+      "file": "lib/api/bitbybit/threejs/orbit-camera.ts",
+      "code": "TS2532",
+      "count": 8
+    },
+    "b207a9ccbcd79aceaebc9ac759cfc218853e96cb": {
+      "file": "lib/api/bitbybit/threejs/orbit-camera.ts",
+      "code": "TS2345",
+      "count": 6
+    },
+    "672ecfc26d9c6d2943a42f301fbdb9284d6417bf": {
+      "file": "lib/api/context.ts",
+      "code": "TS2564",
+      "count": 1
+    },
+    "aa23e0e3b697a0ea3773ee2e644515e27f676db3": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS4115",
+      "count": 1
+    },
+    "97b647ba298118e0cdcaa2f8b9bec406c029fe48": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS2322",
+      "count": 5
+    },
+    "da606731e118cb375e73240194d679f1e7b9f8dc": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS2345",
+      "count": 26
+    },
+    "bf2e747f37b99f77bb542471f36b0e2a04a0fd67": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS18048",
+      "count": 22
+    },
+    "1b1d26c24c4c3eb1108736797f459490e822ec50": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS2454",
+      "count": 2
+    },
+    "bf0370f0a9129523e9a0d2078f16e50a16fe7ae4": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS2532",
+      "count": 7
+    },
+    "a8d39ecc1980255c2462dbb55b7f898995236e5a": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS4111",
+      "count": 2
+    },
+    "41dcbdf071f9f6a90df6615764208ff5b0537d1b": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS2379",
+      "count": 2
+    },
+    "f9a6990517ffc1210a2049abc05e450bc5417375": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS18047",
+      "count": 1
+    },
+    "26d43f32456e6eb1af640d1b281071e5c48dc526": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS7034",
+      "count": 2
+    },
+    "097136550e5d7675d46d7cc5c212957299864485": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS7005",
+      "count": 4
+    },
+    "59e2afdbdc88287cc1bcbe61c273b8b3378ad391": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS2375",
+      "count": 1
+    },
+    "1edcc0e55df0ea54f0fff2053a5fb9b0037bbc69": {
+      "file": "lib/api/init-kernels.ts",
+      "code": "TS2375",
+      "count": 1
+    },
+    "cf42719c1bb79796689461e458604a0308403c53": {
+      "file": "lib/api/inputs/draw-inputs.ts",
+      "code": "TS2564",
+      "count": 3
+    },
+    "5576bf3192a94634220f9b1bbf80f877cb470a12": {
+      "file": "lib/api/inputs/threejs-camera-inputs.ts",
+      "code": "TS2564",
+      "count": 9
+    }
+  }
+}

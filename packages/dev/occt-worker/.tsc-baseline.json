@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "baselineFileVersion": 1,
+    "ignoreMessages": true
+  },
+  "errors": {
+    "f7bbb7edd60f7fd40e03088249386fecd3a267b4": {
+      "file": "lib/api/occt/shapes/wire.ts",
+      "code": "TS2345",
+      "count": 1
+    },
+    "95704fe38345171adbbb2f6ce429fd05173b0fb7": {
+      "file": "lib/api/occt/shapes/wire.ts",
+      "code": "TS18048",
+      "count": 2
+    },
+    "4134bd4beb83a3a59d5184141d8024a121d96e56": {
+      "file": "lib/occ-worker/cache-helper.ts",
+      "code": "TS7053",
+      "count": 19
+    },
+    "15bb3435cf62dce47a3e3ff49fc00681ebe4a79c": {
+      "file": "lib/occ-worker/cache-helper.ts",
+      "code": "TS18048",
+      "count": 1
+    },
+    "5d73fc5bb9c2491024a6d1a5573f4b88fc87f77f": {
+      "file": "lib/occ-worker/cache-helper.ts",
+      "code": "TS2532",
+      "count": 1
+    },
+    "3dbf9ebc01ec982c8d738c15af524dd509606f29": {
+      "file": "lib/occ-worker/command-handlers.ts",
+      "code": "TS4111",
+      "count": 4
+    },
+    "39d75bb73c7e656acea4de6842ca18e9fb9b0ddd": {
+      "file": "lib/occ-worker/occ-info.ts",
+      "code": "TS2564",
+      "count": 1
+    },
+    "80cc0e3439a6f5435708288f2de064c5d3641174": {
+      "file": "lib/occ-worker/occ-worker-manager.ts",
+      "code": "TS2564",
+      "count": 2
+    },
+    "542d57f3f5b6358d97598f2b86050cfebd4fd3bd": {
+      "file": "lib/occ-worker/occ-worker-manager.ts",
+      "code": "TS7008",
+      "count": 4
+    },
+    "b3c816d774a2049383b24e021311bf2c50a60eed": {
+      "file": "lib/occ-worker/occ-worker-manager.ts",
+      "code": "TS7031",
+      "count": 1
+    },
+    "64b75c155f8d3eb2fb53d3cd20e83a0ab3efec36": {
+      "file": "lib/occ-worker/occ-worker-mock.ts",
+      "code": "TS7006",
+      "count": 4
+    },
+    "c3e2c10bfa735c1ab49acde77dec9878e0269edc": {
+      "file": "lib/occ-worker/occ-worker-mock.ts",
+      "code": "TS2564",
+      "count": 1
+    },
+    "651c62a99ee2c26d2cdf34d3ab6e455a2d8faee5": {
+      "file": "lib/occ-worker/shape-resolver.ts",
+      "code": "TS4111",
+      "count": 2
+    },
+    "d50224f6fc43e9b75f389e3967ea9d9e70fd211e": {
+      "file": "lib/occ-worker/shape-resolver.ts",
+      "code": "TS2538",
+      "count": 2
+    },
+    "9646333a942b91787ded9bfe873fb5c4341c8044": {
+      "file": "lib/shape-parser.ts",
+      "code": "TS7006",
+      "count": 1
+    }
+  }
+}

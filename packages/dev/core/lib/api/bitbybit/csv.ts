@@ -140,7 +140,7 @@ export class CSVBitByBit {
      * @shortname query column
      * @drawable false
      */
-    queryColumn<T = Record<string, string | number>>(inputs: Inputs.CSV.QueryColumnDto): (string | number)[] {
+    queryColumn(inputs: Inputs.CSV.QueryColumnDto): (string | number)[] {
         const numberColumns = inputs.asNumber ? [inputs.column] : undefined;
         
         const jsonData = this.parseToJson({

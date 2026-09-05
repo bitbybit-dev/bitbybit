@@ -3,10 +3,7 @@ import * as Manifold3D from "manifold-3d";
 
 export class CrossSectionTransforms {
 
-    private manifold: Manifold3D.ManifoldToplevel;
-
-    constructor(wasm: Manifold3D.ManifoldToplevel) {
-        this.manifold = wasm;
+    constructor(_wasm: Manifold3D.ManifoldToplevel) {
     }
 
     scale2D(inputs: Inputs.Manifold.Scale2DCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {

@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "baselineFileVersion": 1,
+    "ignoreMessages": true
+  },
+  "errors": {
+    "dc459530538ca4ba2f0728dfdc9aafe6fe18a9e4": {
+      "file": "lib/api/inputs/jscad-inputs.ts",
+      "code": "TS2564",
+      "count": 29
+    },
+    "93c9d3b9483b69b17bec76b38f13c9eef1fcb648": {
+      "file": "lib/api/jscad-service.ts",
+      "code": "TS18048",
+      "count": 9
+    },
+    "a11d56f3aee65a7a43bffb4cdd2d14eff123a2aa": {
+      "file": "lib/api/jscad-service.ts",
+      "code": "TS2322",
+      "count": 9
+    },
+    "be4e936a387b65ae239741937403a7152bea116d": {
+      "file": "lib/api/jscad-service.ts",
+      "code": "TS7006",
+      "count": 5
+    },
+    "1194679d581ffef4c3af869a9cd23aa2899a16e3": {
+      "file": "lib/api/jscad-service.ts",
+      "code": "TS7034",
+      "count": 3
+    },
+    "30891039c23c391eca201fbd5c49c51e5876d4a2": {
+      "file": "lib/api/jscad-service.ts",
+      "code": "TS7005",
+      "count": 3
+    },
+    "36bb692089dd76dadab5aeccf1737e79679a3fc9": {
+      "file": "lib/api/services/jscad-path.ts",
+      "code": "TS2345",
+      "count": 1
+    },
+    "ff9a790bb387404907985003f82b828a3fba9303": {
+      "file": "lib/api/services/jscad-polygon.ts",
+      "code": "TS7006",
+      "count": 1
+    },
+    "fed0787f4251a8df2cfe7cced457dc69c1c888fc": {
+      "file": "lib/api/services/jscad-shapes.ts",
+      "code": "TS18048",
+      "count": 1
+    },
+    "6fb5c2872a33d5ea7a6800d7d2829e593add4987": {
+      "file": "lib/api/services/jscad-text.ts",
+      "code": "TS7006",
+      "count": 2
+    }
+  }
+}

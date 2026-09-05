@@ -28,7 +28,7 @@ export class BabylonIO {
                 return await this.loadAsset("", "", inputs.assetFile, inputs.hidden);
             }
             catch (e) {
-                throw Error(e);
+                throw Error(String(e));
             }
         } else {
             throw Error(`Unsupported file format detected: ${type}`);
@@ -62,7 +62,7 @@ export class BabylonIO {
                 return await this.loadAsset("", inputs.rootUrl, inputs.assetFile, inputs.hidden);
             }
             catch (e) {
-                throw Error(e);
+                throw Error(String(e));
             }
         } else {
             throw Error(`Unsupported file format detected: ${type}`);
@@ -211,7 +211,7 @@ export class BabylonIO {
         return Promise.resolve({});
     }
 
-    private async loadAsset(meshNames: any, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<BABYLON.Mesh> {
+    private async loadAsset(_meshNames: any, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<BABYLON.Mesh> {
         const res = await BABYLON.SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
         const container = new BABYLON.Mesh("ImportedMeshContainer" + Math.random(), this.context.scene);

@@ -92,7 +92,7 @@ export class Tag {
             });
         } else {
             const tagsToCreate = [];
-            inputs.tags.forEach((tag, index) => {
+            inputs.tags.forEach((tag, _index) => {
                 const textNode = document.createElement("span");
                 const id = "_tag" + new Date().getTime() + this.context.tagBag.length;
                 tag.id = id;

@@ -3,10 +3,7 @@ import * as Manifold3D from "manifold-3d";
 
 export class MeshEvaluate {
 
-    private manifold: Manifold3D.ManifoldToplevel;
-
-    constructor(wasm: Manifold3D.ManifoldToplevel) {
-        this.manifold = wasm;
+    constructor(_wasm: Manifold3D.ManifoldToplevel) {
     }
 
     position(inputs: Inputs.Manifold.MeshVertexIndexDto<Manifold3D.Mesh>): Inputs.Base.Point3 {

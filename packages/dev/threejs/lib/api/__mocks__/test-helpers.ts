@@ -202,7 +202,7 @@ export function mockWorkerError(workerManager: any, method: string, error: Error
  * Creates a mock window object for testing
  */
 export function mockWindow() {
-    (global as any).window = {
+    (globalThis as any).window = {
         addEventListener: jest.fn(),
         removeEventListener: jest.fn(),
         innerWidth: 1920,

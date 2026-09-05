@@ -13,7 +13,7 @@ export class BabylonWebXR {
     // base: BabylonWebXRBase;
 
     constructor(
-        private readonly context: Context,
+        context: Context,
     ) {
         this.simple = new BabylonWebXRSimple(context);
         // this.base = new BabylonWebXRBase(context);

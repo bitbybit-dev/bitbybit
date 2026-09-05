@@ -26,7 +26,7 @@ export class VerbSurface {
     constructor(
         private readonly context: ContextBase,
         private readonly geometryHelper: GeometryHelper,
-        private readonly math: MathBitByBit,
+        math: MathBitByBit,
     ) {
         this.cone = new VerbSurfaceConical(context);
         this.cylinder = new VerbSurfaceCylindrical(context);

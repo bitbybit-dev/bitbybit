@@ -6,7 +6,7 @@ export class BabylonGizmoPlaneDragGizmo {
 
 
     constructor(
-        private readonly context: Context,
+        _context: Context,
     ) {
     }
 

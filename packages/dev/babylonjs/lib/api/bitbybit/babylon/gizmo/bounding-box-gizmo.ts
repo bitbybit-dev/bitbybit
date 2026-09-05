@@ -6,7 +6,7 @@ export class BabylonGizmoBoundingBoxGizmo {
 
 
     constructor(
-        private readonly context: Context,
+        _context: Context,
     ) {
     }
 

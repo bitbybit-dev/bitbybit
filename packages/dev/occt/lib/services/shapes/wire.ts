@@ -72,7 +72,6 @@ export class OCCTWire {
 
     fromBasePolyline(inputs: Inputs.OCCT.PolylineBaseDto) {
         let wire;
-        const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
             wire = this.createPolygonWire({ points: inputs.polyline.points });
         } else {
