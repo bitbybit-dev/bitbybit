@@ -68,7 +68,9 @@ JSDoc on the public API is a functional input to the component generator behind 
 and that rule's auto-fix would delete it.
 
 The packages build loose and typecheck strict. Each CAD package has a `tsconfig.strict.json` - its build
-config plus the flags in `tsconfig.base.cad-strict.json`, the full strict set, with `noEmit` - and a
+config plus the flags in `tsconfig.base.cad-strict.json`, the full strict set, with `noEmit`; the same
+generator writes it, because a project's references are not inherited through `extends`, and an overlay
+without them followed a sibling's declarations into another package's source - and a
 committed `.tsc-baseline.json` that records today's errors as a count
 per file and error code (tsc-baseline, `--ignoreMessages`, because a message can embed an absolute path
 into the pnpm store). `npm run typecheck:strict` in a package prints the errors that are NOT in its
