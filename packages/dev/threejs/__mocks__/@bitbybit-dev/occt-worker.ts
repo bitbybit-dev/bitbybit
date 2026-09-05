@@ -7,7 +7,7 @@ export class OCCTWorkerManager {
     
     constructor() {}
     
-    setOccWorker(worker: any) {}
+    setOccWorker(_worker: any) {}
     
     shapeToMesh = jest.fn().mockResolvedValue({
         faceList: [],
@@ -16,7 +16,7 @@ export class OCCTWorkerManager {
 }
 
 export class OCCT {
-    constructor(context?: any, occWorkerManager?: any) {}
+    constructor(_context?: any, _occWorkerManager?: any) {}
 }
 
 // Base class for OCCT IO operations - extended by core package

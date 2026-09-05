@@ -65,7 +65,7 @@ namespace Asset_2 {
         constructor(blob?: Blob, fileName?: string, mimeType?: string);
         blob: Blob;
         fileName: string;
-        mimeType?: string;
+        mimeType?: string | undefined;
     }
     // (undocumented)
     class DownloadDto {
@@ -407,9 +407,9 @@ export function createWorkersFromCDN(options: WorkerOptions_2): WorkerInstances;
 
 // @public
 export function createWorkersFromUrls(workerUrls: {
-    occtWorkerUrl?: URL | string;
-    jscadWorkerUrl?: URL | string;
-    manifoldWorkerUrl?: URL | string;
+    occtWorkerUrl?: URL | string | undefined;
+    jscadWorkerUrl?: URL | string | undefined;
+    manifoldWorkerUrl?: URL | string | undefined;
 }): WorkerInstances;
 
 // @public
@@ -418,91 +418,91 @@ namespace CSV {
     class ArrayToCsvDto {
         constructor(array?: (string | number | boolean | null | undefined)[][], rowSeparator?: string, columnSeparator?: string);
         array: (string | number | boolean | null | undefined)[][];
-        columnSeparator?: string;
-        rowSeparator?: string;
+        columnSeparator?: string | undefined;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class GetHeadersDto {
         constructor(csv?: string, headerRow?: number, rowSeparator?: string, columnSeparator?: string);
-        columnSeparator?: string;
+        columnSeparator?: string | undefined;
         csv: string;
-        headerRow?: number;
-        rowSeparator?: string;
+        headerRow?: number | undefined;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class GetRowCountDto {
         constructor(csv?: string, hasHeaders?: boolean, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string);
-        columnSeparator?: string;
+        columnSeparator?: string | undefined;
         csv: string;
-        dataStartRow?: number;
-        hasHeaders?: boolean;
-        rowSeparator?: string;
+        dataStartRow?: number | undefined;
+        hasHeaders?: boolean | undefined;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class JsonToCsvAutoDto<T = Record<string, unknown>> {
         constructor(json?: T[], includeHeaders?: boolean, rowSeparator?: string, columnSeparator?: string);
-        columnSeparator?: string;
-        includeHeaders?: boolean;
+        columnSeparator?: string | undefined;
+        includeHeaders?: boolean | undefined;
         json: T[];
-        rowSeparator?: string;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class JsonToCsvDto<T = Record<string, unknown>> {
         constructor(json?: T[], headers?: string[], includeHeaders?: boolean, rowSeparator?: string, columnSeparator?: string);
-        columnSeparator?: string;
+        columnSeparator?: string | undefined;
         headers: string[];
-        includeHeaders?: boolean;
+        includeHeaders?: boolean | undefined;
         json: T[];
-        rowSeparator?: string;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class ParseToArrayDto {
         constructor(csv?: string, rowSeparator?: string, columnSeparator?: string);
-        columnSeparator?: string;
+        columnSeparator?: string | undefined;
         csv: string;
-        rowSeparator?: string;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class ParseToJsonDto {
         constructor(csv?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
-        columnSeparator?: string;
+        columnSeparator?: string | undefined;
         csv: string;
-        dataStartRow?: number;
-        headerRow?: number;
-        numberColumns?: string[];
-        rowSeparator?: string;
+        dataStartRow?: number | undefined;
+        headerRow?: number | undefined;
+        numberColumns?: string[] | undefined;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class ParseToJsonWithHeadersDto {
         constructor(csv?: string, headers?: string[], dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
-        columnSeparator?: string;
+        columnSeparator?: string | undefined;
         csv: string;
-        dataStartRow?: number;
+        dataStartRow?: number | undefined;
         headers: string[];
-        numberColumns?: string[];
-        rowSeparator?: string;
+        numberColumns?: string[] | undefined;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class QueryColumnDto {
         constructor(csv?: string, column?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, asNumber?: boolean);
-        asNumber?: boolean;
+        asNumber?: boolean | undefined;
         column: string;
-        columnSeparator?: string;
+        columnSeparator?: string | undefined;
         csv: string;
-        dataStartRow?: number;
-        headerRow?: number;
-        rowSeparator?: string;
+        dataStartRow?: number | undefined;
+        headerRow?: number | undefined;
+        rowSeparator?: string | undefined;
     }
     // (undocumented)
     class QueryRowsByValueDto {
         constructor(csv?: string, column?: string, value?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
         column: string;
-        columnSeparator?: string;
+        columnSeparator?: string | undefined;
         csv: string;
-        dataStartRow?: number;
-        headerRow?: number;
-        numberColumns?: string[];
-        rowSeparator?: string;
+        dataStartRow?: number | undefined;
+        headerRow?: number | undefined;
+        numberColumns?: string[] | undefined;
+        rowSeparator?: string | undefined;
         value: string;
     }
 }
@@ -716,15 +716,15 @@ export class DrawHelperCore {
 // @public
 export interface DrawOptionsBase {
     // (undocumented)
-    colours?: string | string[];
+    colours?: string | string[] | undefined;
     // (undocumented)
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     // (undocumented)
-    opacity?: number;
+    opacity?: number | undefined;
     // (undocumented)
-    size?: number;
+    size?: number | undefined;
     // (undocumented)
-    updatable?: boolean;
+    updatable?: boolean | undefined;
 }
 
 // @public
@@ -750,7 +750,7 @@ export function getOrCreateWorkers(options: InitBitByBitOptions): WorkerInstance
 
 // @public
 export interface InitBitByBitOptions extends WorkerOptions_2 {
-    workers?: WorkerInstances;
+    workers?: WorkerInstances | undefined;
 }
 
 // @public
@@ -2617,7 +2617,7 @@ export interface MeshData {
     // (undocumented)
     positions: number[];
     // (undocumented)
-    uvs?: number[];
+    uvs?: number[] | undefined;
 }
 
 // @public
@@ -5700,23 +5700,23 @@ export interface PreviewAssemblyHierarchyInterface {
     // (undocumented)
     data: any;
     // (undocumented)
-    hidden?: boolean;
+    hidden?: boolean | undefined;
 }
 
 // @public (undocumented)
 export interface PreviewCSVInterface {
     // (undocumented)
-    columnSeparator?: string;
+    columnSeparator?: string | undefined;
     // (undocumented)
     data: string | any[][];
     // (undocumented)
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     // (undocumented)
-    maxRows?: number;
+    maxRows?: number | undefined;
     // (undocumented)
-    rowSeparator?: string;
+    rowSeparator?: string | undefined;
     // (undocumented)
-    startRow?: number;
+    startRow?: number | undefined;
 }
 
 // @public (undocumented)
@@ -5724,9 +5724,9 @@ export interface PreviewDataInterface {
     // (undocumented)
     data: any;
     // (undocumented)
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     // (undocumented)
-    viewMode?: "data" | "schema" | "metadata";
+    viewMode?: "data" | "schema" | "metadata" | undefined;
 }
 
 // @public (undocumented)
@@ -5753,22 +5753,22 @@ namespace Tag_2 {
     class DrawTagDto {
         constructor(tag?: TagDto, updatable?: boolean, tagVariable?: TagDto);
         tag: TagDto;
-        tagVariable?: TagDto;
+        tagVariable?: TagDto | undefined;
         updatable: boolean;
     }
     // (undocumented)
     class DrawTagsDto {
         constructor(tags?: TagDto[], updatable?: boolean, tagsVariable?: TagDto[]);
         tags: TagDto[];
-        tagsVariable?: TagDto[];
+        tagsVariable?: TagDto[] | undefined;
         updatable: boolean;
     }
     class TagDto {
         constructor(text?: string, position?: Base.Point3, colour?: string, size?: number, adaptDepth?: boolean, needsUpdate?: boolean, id?: string);
         adaptDepth: boolean;
         colour: string;
-        id?: string;
-        needsUpdate?: boolean;
+        id?: string | undefined;
+        needsUpdate?: boolean | undefined;
         position: Base.Point3;
         size: number;
         text: string;
@@ -6206,7 +6206,7 @@ namespace Verb_2 {
         constructor(firstCurve?: any, secondCurve?: any, tolerance?: number);
         firstCurve: any;
         secondCurve: number[];
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class CurveCurveIntersectionsDto {
@@ -6298,7 +6298,7 @@ namespace Verb_2 {
         constructor(curve?: any, surface?: any, tolerance?: number);
         curve: any;
         surface: any;
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class CurveSurfaceIntersectionsDto {
@@ -6335,7 +6335,7 @@ namespace Verb_2 {
         constructor(curve?: any, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curveMesh?: T);
         colours: string | string[];
         curve: any;
-        curveMesh?: T;
+        curveMesh?: T | undefined;
         opacity: number;
         size: number;
         updatable: boolean;
@@ -6345,7 +6345,7 @@ namespace Verb_2 {
         constructor(curves?: any[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curvesMesh?: T);
         colours: string | string[];
         curves: any[];
-        curvesMesh?: T;
+        curvesMesh?: T | undefined;
         opacity: number;
         size: number;
         updatable: boolean;
@@ -6360,7 +6360,7 @@ namespace Verb_2 {
         hidden: boolean;
         opacity: number;
         surface: any;
-        surfaceMesh?: T;
+        surfaceMesh?: T | undefined;
         updatable: boolean;
     }
     // (undocumented)
@@ -6373,7 +6373,7 @@ namespace Verb_2 {
         hidden: boolean;
         opacity: number;
         surfaces: any[];
-        surfacesMesh?: T;
+        surfacesMesh?: T | undefined;
         updatable: boolean;
     }
     // (undocumented)
@@ -6386,7 +6386,7 @@ namespace Verb_2 {
         hidden: boolean;
         opacity: number;
         surfaces: any[];
-        surfacesMesh?: T;
+        surfacesMesh?: T | undefined;
         updatable: boolean;
     }
     // (undocumented)
@@ -6527,7 +6527,7 @@ namespace Verb_2 {
         constructor(firstSurface?: any, secondSurface?: any, tolerance?: number);
         firstSurface: any;
         secondSurface: any;
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     // (undocumented)
     class SurfaceTransformDto {
@@ -6743,21 +6743,21 @@ export type WorkerArchitecture = "32" | "64" | "64-mt";
 // @public
 export interface WorkerInstances {
     // (undocumented)
-    jscadWorker?: Worker;
+    jscadWorker?: Worker | undefined;
     // (undocumented)
-    manifoldWorker?: Worker;
+    manifoldWorker?: Worker | undefined;
     // (undocumented)
-    occtWorker?: Worker;
+    occtWorker?: Worker | undefined;
 }
 
 // @public
 interface WorkerOptions_2 {
-    cdnUrl?: string;
-    enableJSCAD?: boolean;
-    enableManifold?: boolean;
-    enableOCCT?: boolean;
-    loadFonts?: string[];
-    occtArchitecture?: WorkerArchitecture;
+    cdnUrl?: string | undefined;
+    enableJSCAD?: boolean | undefined;
+    enableManifold?: boolean | undefined;
+    enableOCCT?: boolean | undefined;
+    loadFonts?: string[] | undefined;
+    occtArchitecture?: WorkerArchitecture | undefined;
 }
 export { WorkerOptions_2 as WorkerOptions }
 

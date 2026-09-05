@@ -7,18 +7,18 @@ export class JSCADWorkerManager {
     
     constructor() {}
     
-    setJscadWorker(worker: any) {}
+    setJscadWorker(_worker: any) {}
     
     genericCallToWorkerPromise = jest.fn().mockResolvedValue({});
 }
 
 export class JSCADText {
-    constructor(context?: any, jscadWorkerManager?: any) {}
+    constructor(_context?: any, _jscadWorkerManager?: any) {}
     
     // Returns array of polylines (array of [x, y] points)
     createVectorText = jest.fn().mockResolvedValue([]);
 }
 
 export class JSCAD {
-    constructor(context?: any, jscadWorkerManager?: any) {}
+    constructor(_context?: any, _jscadWorkerManager?: any) {}
 }

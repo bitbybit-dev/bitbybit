@@ -27,7 +27,7 @@ export function createMockContext(): Context {
 export function createSimpleMockContext(): Context {
     return {
         scene: null,
-    } as Context;
+    } as unknown as Context;
 }
 
 /**
@@ -128,9 +128,9 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } {
     }
 
     return {
-        r: parseInt(result[1], 16) / 255,
-        g: parseInt(result[2], 16) / 255,
-        b: parseInt(result[3], 16) / 255
+        r: parseInt(result[1]!, 16) / 255,
+        g: parseInt(result[2]!, 16) / 255,
+        b: parseInt(result[3]!, 16) / 255
     };
 }
 
@@ -162,7 +162,7 @@ export function getMaterialFromMesh(mesh: THREEJS.Mesh | THREEJS.LineSegments | 
  */
 export function createMockJSCADMesh(overrides = {}) {
     return {
-        type: "solid" as const,
+        type: "occ-shape" as const,
         polygons: [],
         ...overrides
     };
@@ -174,7 +174,7 @@ export function createMockJSCADMesh(overrides = {}) {
 export function createMockOCCTShape(overrides = {}) {
     return {
         hash: 123,
-        type: "solid" as const,
+        type: "occ-shape" as const,
         ...overrides
     };
 }

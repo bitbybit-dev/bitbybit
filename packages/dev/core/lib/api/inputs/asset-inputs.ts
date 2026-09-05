@@ -155,7 +155,7 @@ export namespace Asset {
          * @default undefined
          * @optional true
          */
-        mimeType?: string;
+        mimeType?: string | undefined;
     }
     export class ArrayBufferToUint8ArrayDto {
         constructor(arrayBuffer?: ArrayBuffer) {

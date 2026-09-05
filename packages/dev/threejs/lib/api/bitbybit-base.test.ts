@@ -267,7 +267,7 @@ describe("BitByBitBase unit tests", () => {
                 triangle: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] 
             });
             expect(plane).toBeDefined();
-            expect(plane.normal).toBeDefined();
+            expect(plane!.normal).toBeDefined();
         });
 
         it("should have functional logic operations", () => {

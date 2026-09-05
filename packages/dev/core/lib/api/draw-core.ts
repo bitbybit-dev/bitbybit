@@ -2,11 +2,11 @@
  * Base interface for draw options - engine-specific implementations extend this
  */
 export interface DrawOptionsBase {
-    updatable?: boolean;
-    hidden?: boolean;
-    opacity?: number;
-    colours?: string | string[];
-    size?: number;
+    updatable?: boolean | undefined;
+    hidden?: boolean | undefined;
+    opacity?: number | undefined;
+    colours?: string | string[] | undefined;
+    size?: number | undefined;
 }
 
 /**

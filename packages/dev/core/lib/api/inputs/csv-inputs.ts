@@ -21,12 +21,12 @@ export namespace CSV {
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
     }
 
     export class ParseToJsonDto {
@@ -50,7 +50,7 @@ export namespace CSV {
          * @maximum Infinity
          * @step 1
          */
-        headerRow? = 0;
+        headerRow?: number | undefined = 0;
         /**
          * Row index where data starts
          * @default 1
@@ -58,23 +58,23 @@ export namespace CSV {
          * @maximum Infinity
          * @step 1
          */
-        dataStartRow? = 1;
+        dataStartRow?: number | undefined = 1;
         /**
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
         /**
          * Column names that should be converted to numbers
          * @default undefined
          * @optional true
          */
-        numberColumns?: string[];
+        numberColumns?: string[] | undefined;
     }
 
     export class ParseToJsonWithHeadersDto {
@@ -103,23 +103,23 @@ export namespace CSV {
          * @maximum Infinity
          * @step 1
          */
-        dataStartRow? = 0;
+        dataStartRow?: number | undefined = 0;
         /**
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
         /**
          * Column names that should be converted to numbers
          * @default undefined
          * @optional true
          */
-        numberColumns?: string[];
+        numberColumns?: string[] | undefined;
     }
 
     export class QueryColumnDto {
@@ -149,7 +149,7 @@ export namespace CSV {
          * @maximum Infinity
          * @step 1
          */
-        headerRow? = 0;
+        headerRow?: number | undefined = 0;
         /**
          * Row index where data starts
          * @default 1
@@ -157,22 +157,22 @@ export namespace CSV {
          * @maximum Infinity
          * @step 1
          */
-        dataStartRow? = 1;
+        dataStartRow?: number | undefined = 1;
         /**
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
         /**
          * Convert column values to numbers
          * @default false
          */
-        asNumber? = false;
+        asNumber?: boolean | undefined = false;
     }
 
     export class QueryRowsByValueDto {
@@ -208,7 +208,7 @@ export namespace CSV {
          * @maximum Infinity
          * @step 1
          */
-        headerRow? = 0;
+        headerRow?: number | undefined = 0;
         /**
          * Row index where data starts
          * @default 1
@@ -216,23 +216,23 @@ export namespace CSV {
          * @maximum Infinity
          * @step 1
          */
-        dataStartRow? = 1;
+        dataStartRow?: number | undefined = 1;
         /**
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
         /**
          * Column names that should be converted to numbers
          * @default undefined
          * @optional true
          */
-        numberColumns?: string[];
+        numberColumns?: string[] | undefined;
     }
 
     export class ArrayToCsvDto {
@@ -250,12 +250,12 @@ export namespace CSV {
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
     }
 
     export class JsonToCsvDto<T = Record<string, unknown>> {
@@ -280,17 +280,17 @@ export namespace CSV {
          * Whether to include headers in output
          * @default true
          */
-        includeHeaders? = true;
+        includeHeaders?: boolean | undefined = true;
         /**
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
     }
 
     export class JsonToCsvAutoDto<T = Record<string, unknown>> {
@@ -309,17 +309,17 @@ export namespace CSV {
          * Whether to include headers in output
          * @default true
          */
-        includeHeaders? = true;
+        includeHeaders?: boolean | undefined = true;
         /**
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
     }
 
     export class GetHeadersDto {
@@ -341,17 +341,17 @@ export namespace CSV {
          * @maximum Infinity
          * @step 1
          */
-        headerRow? = 0;
+        headerRow?: number | undefined = 0;
         /**
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
     }
 
     export class GetRowCountDto {
@@ -371,23 +371,23 @@ export namespace CSV {
          * Whether CSV has headers
          * @default true
          */
-        hasHeaders? = true;
+        hasHeaders?: boolean | undefined = true;
         /**
          * Row index where data starts (overrides hasHeaders if set)
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        dataStartRow?: number;
+        dataStartRow?: number | undefined;
         /**
          * Row separator (newline character)
          * @default \n
          */
-        rowSeparator? = "\n";
+        rowSeparator?: string | undefined = "\n";
         /**
          * Column separator (delimiter)
          * @default ,
          */
-        columnSeparator? = ",";
+        columnSeparator?: string | undefined = ",";
     }
 }

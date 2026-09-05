@@ -3,22 +3,22 @@ import { PrintSaveInterface } from "../models/print-save.model";
 
 export interface PreviewDataInterface {
     data: any;
-    viewMode?: "data" | "schema" | "metadata";
-    hidden?: boolean;
+    viewMode?: "data" | "schema" | "metadata" | undefined;
+    hidden?: boolean | undefined;
 }
 
 export interface PreviewCSVInterface {
     data: string | any[][];
-    columnSeparator?: string;
-    rowSeparator?: string;
-    startRow?: number;
-    maxRows?: number;
-    hidden?: boolean;
+    columnSeparator?: string | undefined;
+    rowSeparator?: string | undefined;
+    startRow?: number | undefined;
+    maxRows?: number | undefined;
+    hidden?: boolean | undefined;
 }
 
 export interface PreviewAssemblyHierarchyInterface {
     data: any;
-    hidden?: boolean;
+    hidden?: boolean | undefined;
 }
 
 export class ContextBase {

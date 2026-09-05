@@ -210,12 +210,12 @@ export namespace ThreeJSCamera {
          * Optional focus object to frame the camera on. If provided, camera will adjust to view this object.
          * @optional true
          */
-        focusObject?: THREEJS.Object3D;
+        focusObject?: THREEJS.Object3D | undefined;
         /**
          * Container element to attach event listeners to. If not provided, uses the renderer's DOM element.
          * @optional true
          */
-        domElement?: HTMLElement;
+        domElement?: HTMLElement | undefined;
     }
 
     export class CameraDto {
@@ -226,7 +226,7 @@ export namespace ThreeJSCamera {
          * ThreeJS camera
          * @default undefined
          */
-        camera: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera;
+        camera!: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera;
     }
 
     export class PositionDto {
@@ -238,7 +238,7 @@ export namespace ThreeJSCamera {
          * ThreeJS camera
          * @default undefined
          */
-        camera: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera;
+        camera!: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera;
         /**
          * Position of the camera
          * @default [0, 0, 0]
@@ -255,7 +255,7 @@ export namespace ThreeJSCamera {
          * Orbit camera controller instance
          * @default undefined
          */
-        orbitCamera: OrbitCameraController;
+        orbitCamera!: OrbitCameraController;
         /**
          * Pivot point for the orbit camera
          * @default [0, 0, 0]
@@ -273,12 +273,12 @@ export namespace ThreeJSCamera {
          * Orbit camera controller instance
          * @default undefined
          */
-        orbitCamera: OrbitCameraController;
+        orbitCamera!: OrbitCameraController;
         /**
          * Object to focus the camera on
          * @default undefined
          */
-        object: THREEJS.Object3D;
+        object!: THREEJS.Object3D;
         /**
          * Padding multiplier for the focus distance (1 = tight fit, higher = more space around object)
          * @default 1.5
@@ -300,7 +300,7 @@ export namespace ThreeJSCamera {
          * Orbit camera controller instance
          * @default undefined
          */
-        orbitCamera: OrbitCameraController;
+        orbitCamera!: OrbitCameraController;
         /**
          * Yaw angle in degrees
          * @default 45
@@ -335,7 +335,7 @@ export namespace ThreeJSCamera {
          * Orbit camera controller instance
          * @default undefined
          */
-        orbitCamera: OrbitCameraController;
+        orbitCamera!: OrbitCameraController;
     }
 
     export class SetDistanceLimitsDto {
@@ -348,7 +348,7 @@ export namespace ThreeJSCamera {
          * Orbit camera controller instance
          * @default undefined
          */
-        orbitCamera: OrbitCameraController;
+        orbitCamera!: OrbitCameraController;
         /**
          * Minimum distance
          * @default 0.1
@@ -377,7 +377,7 @@ export namespace ThreeJSCamera {
          * Orbit camera controller instance
          * @default undefined
          */
-        orbitCamera: OrbitCameraController;
+        orbitCamera!: OrbitCameraController;
         /**
          * Minimum pitch angle in degrees
          * @default -90

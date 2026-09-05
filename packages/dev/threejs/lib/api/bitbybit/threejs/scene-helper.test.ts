@@ -652,7 +652,7 @@ describe("initThreeJS unit tests", () => {
             // Arrange
             const result = initThreeJS();
             const onRenderMock = jest.fn();
-            let animateCallback: ((time: number, frame?: XRFrame) => void) | null = null;
+            let animateCallback: XRFrameRequestCallback | null = null;
             
             jest.spyOn(result.renderer, "setAnimationLoop").mockImplementation((callback) => {
                 animateCallback = callback;

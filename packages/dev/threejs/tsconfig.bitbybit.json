@@ -66,7 +66,15 @@
             "@bitbybit-dev/occt-worker/*": [
                 "../occt-worker/dist/*"
             ]
-        }
+        },
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true
     },
     "references": [
         {

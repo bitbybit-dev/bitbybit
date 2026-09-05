@@ -229,11 +229,6 @@
       "code": "TS2322",
       "count": 3
     },
-    "99c9480a5e35e1a13138ee862859da547f9e44d7": {
-      "file": "lib/api/bitbybit/draw.ts",
-      "code": "TS2379",
-      "count": 2
-    },
     "ab769dc56a4794e7a575bec1bb8ad91c4100eb1d": {
       "file": "lib/api/bitbybit/draw.ts",
       "code": "TS7053",
@@ -252,17 +247,12 @@
     "da606731e118cb375e73240194d679f1e7b9f8dc": {
       "file": "lib/api/draw-helper.ts",
       "code": "TS2345",
-      "count": 33
+      "count": 31
     },
     "bf0370f0a9129523e9a0d2078f16e50a16fe7ae4": {
       "file": "lib/api/draw-helper.ts",
       "code": "TS2532",
       "count": 4
-    },
-    "59e2afdbdc88287cc1bcbe61c273b8b3378ad391": {
-      "file": "lib/api/draw-helper.ts",
-      "code": "TS2375",
-      "count": 3
     },
     "bf2e747f37b99f77bb542471f36b0e2a04a0fd67": {
       "file": "lib/api/draw-helper.ts",
@@ -288,6 +278,11 @@
       "file": "lib/api/draw-helper.ts",
       "code": "TS7006",
       "count": 5
+    },
+    "59e2afdbdc88287cc1bcbe61c273b8b3378ad391": {
+      "file": "lib/api/draw-helper.ts",
+      "code": "TS2375",
+      "count": 3
     },
     "41dcbdf071f9f6a90df6615764208ff5b0537d1b": {
       "file": "lib/api/draw-helper.ts",

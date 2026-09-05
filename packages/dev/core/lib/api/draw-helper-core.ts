@@ -9,7 +9,7 @@ export interface MeshData {
     positions: number[];
     indices: number[];
     normals: number[];
-    uvs?: number[];
+    uvs?: number[] | undefined;
 }
 
 /**

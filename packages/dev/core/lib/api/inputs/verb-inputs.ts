@@ -142,7 +142,7 @@ export namespace Verb {
         /**
          * Curve mesh variable in case it already exists and needs updating
          */
-        curveMesh?: T;
+        curveMesh?: T | undefined;
     }
     export class CurveParameterDto {
         constructor(curve?: any, parameter?: number) {
@@ -345,7 +345,7 @@ export namespace Verb {
         /**
          * Curve mesh variable in case it already exists and needs updating
          */
-        curvesMesh?: T;
+        curvesMesh?: T | undefined;
     }
     export class CurveNurbsDataDto {
         constructor(degree?: number, weights?: number[], knots?: number[], points?: Base.Point3[]) {
@@ -778,7 +778,7 @@ export namespace Verb {
         /**
          * Surface mesh variable in case it already exists and needs updating
          */
-        surfaceMesh?: T;
+        surfaceMesh?: T | undefined;
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
          * @default true
@@ -836,7 +836,7 @@ export namespace Verb {
         /**
          * Surfaces mesh variable in case it already exists and needs updating
          */
-        surfacesMesh?: T;
+        surfacesMesh?: T | undefined;
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
          * @default true
@@ -895,7 +895,7 @@ export namespace Verb {
         /**
          * Surfaces mesh variable in case it already exists and needs updating
          */
-        surfacesMesh?: T;
+        surfacesMesh?: T | undefined;
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
          * @default true
@@ -1081,7 +1081,7 @@ export namespace Verb {
         /**
          * Optional tolerance parameter
          */
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     export class CurveSurfaceDto {
         constructor(curve?: any, surface?: any, tolerance?: number) {
@@ -1100,7 +1100,7 @@ export namespace Verb {
         /**
          * Optional tolerance parameter
          */
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     export class SurfaceSurfaceDto {
         constructor(firstSurface?: any, secondSurface?: any, tolerance?: number) {
@@ -1119,7 +1119,7 @@ export namespace Verb {
         /**
          * Optional tolerance parameter
          */
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     export class CurveCurveIntersectionsDto {
         constructor(intersections?: BaseTypes.CurveCurveIntersection[]) {

@@ -24,11 +24,6 @@
       "code": "TS2532",
       "count": 2
     },
-    "4e4c8b64d6e23f25274f02bef34bf7870de09ea4": {
-      "file": "lib/api/bitbybit/csv.ts",
-      "code": "TS2379",
-      "count": 7
-    },
     "ab20fcc463f0ddcdeb48e76d6b4b025cc0fcdb61": {
       "file": "lib/api/bitbybit/csv.ts",
       "code": "TS18048",
@@ -153,11 +148,6 @@
       "file": "lib/api/draw-helper-core.ts",
       "code": "TS18048",
       "count": 78
-    },
-    "fa49ecf6208320743012a937f93ff3f80686149e": {
-      "file": "lib/api/draw-helper-core.ts",
-      "code": "TS2375",
-      "count": 1
     },
     "60ebbd0e8271021a579d9bdedd208bbffac477a7": {
       "file": "lib/api/inputs/asset-inputs.ts",

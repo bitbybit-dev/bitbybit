@@ -19,9 +19,9 @@ export type WorkerArchitecture = "32" | "64" | "64-mt";
  * Worker configuration containing the Worker instance or undefined
  */
 export interface WorkerInstances {
-    occtWorker?: Worker;
-    jscadWorker?: Worker;
-    manifoldWorker?: Worker;
+    occtWorker?: Worker | undefined;
+    jscadWorker?: Worker | undefined;
+    manifoldWorker?: Worker | undefined;
 }
 
 /**
@@ -29,25 +29,25 @@ export interface WorkerInstances {
  */
 export interface WorkerOptions {
     /** Enable OCCT (OpenCASCADE) kernel */
-    enableOCCT?: boolean;
+    enableOCCT?: boolean | undefined;
     /** Enable JSCAD kernel */
-    enableJSCAD?: boolean;
+    enableJSCAD?: boolean | undefined;
     /** Enable Manifold kernel */
-    enableManifold?: boolean;
+    enableManifold?: boolean | undefined;
     /** Custom CDN URL (defaults to GlobalCDNProvider.BITBYBIT_CDN_URL) */
-    cdnUrl?: string;
+    cdnUrl?: string | undefined;
     /** 
      * Array of font keys to load for OCCT, or undefined to load all fonts.
      * Pass an empty array to skip loading fonts.
      */
-    loadFonts?: string[];
+    loadFonts?: string[] | undefined;
     /**
      * OCCT worker architecture to use. Defaults to "32" (32-bit). Note: This only applies to OCCT workers.
      * JSCAD and Manifold always use 32-bit. - "32" - 32-bit WebAssembly (default, widest browser support) -
      * "64" - 64-bit WebAssembly (better performance, requires browser support for Memory64) - "64-mt" -
      * 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
      */
-    occtArchitecture?: WorkerArchitecture;
+    occtArchitecture?: WorkerArchitecture | undefined;
 }
 
 /**
@@ -200,9 +200,9 @@ export function createWorkersFromCDN(options: WorkerOptions): WorkerInstances {
  * ```
  */
 export function createWorkersFromUrls(workerUrls: {
-    occtWorkerUrl?: URL | string;
-    jscadWorkerUrl?: URL | string;
-    manifoldWorkerUrl?: URL | string;
+    occtWorkerUrl?: URL | string | undefined;
+    jscadWorkerUrl?: URL | string | undefined;
+    manifoldWorkerUrl?: URL | string | undefined;
 }): WorkerInstances {
     const workers: WorkerInstances = {};
     

@@ -24,7 +24,7 @@ export namespace Tag {
         /**
          * Optional existing tag in case it needs updating
          */
-        tagVariable?: TagDto;
+        tagVariable?: TagDto | undefined;
     }
     export class DrawTagsDto {
         constructor(tags?: TagDto[], updatable?: boolean, tagsVariable?: TagDto[]) {
@@ -43,7 +43,7 @@ export namespace Tag {
         /**
          * Optional existing tag in case it needs updating
          */
-        tagsVariable?: TagDto[];
+        tagsVariable?: TagDto[] | undefined;
     }
     /**
      * Class representing a tag
@@ -83,11 +83,11 @@ export namespace Tag {
         /**
          * Indicates if tag needs updating
          */
-        needsUpdate?: boolean;
+        needsUpdate?: boolean | undefined;
         /**
          * Unique id of the tag
          */
-        id?: string;
+        id?: string | undefined;
     }
 }
 

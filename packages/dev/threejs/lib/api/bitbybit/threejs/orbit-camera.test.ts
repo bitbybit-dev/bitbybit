@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ThreeJSOrbitCamera, OrbitCameraController, OrbitCameraInstance } from "./orbit-camera";
+import { ThreeJSOrbitCamera, OrbitCameraController } from "./orbit-camera";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
 import * as THREEJS from "three";
@@ -61,9 +61,9 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
             expect(controller.camera).toBeInstanceOf(THREEJS.PerspectiveCamera);
             expect(typeof controller.orbitCamera.distance).toBe("number");
-            expect(typeof controller.mouseInput.destroy).toBe("function");
-            expect(typeof controller.touchInput.destroy).toBe("function");
-            expect(typeof controller.keyboardInput.destroy).toBe("function");
+            expect(typeof controller.mouseInput!.destroy).toBe("function");
+            expect(typeof controller.touchInput!.destroy).toBe("function");
+            expect(typeof controller.keyboardInput!.destroy).toBe("function");
             expect(typeof controller.update).toBe("function");
             expect(typeof controller.destroy).toBe("function");
         });
@@ -119,17 +119,17 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
         it("should setup mouse input handlers with destroy method", () => {
             const controller = orbitCamera.create(createDefaultInputs(mockDomElement));
-            expect(typeof controller.mouseInput.destroy).toBe("function");
+            expect(typeof controller.mouseInput!.destroy).toBe("function");
         });
 
         it("should setup touch input handlers with destroy method", () => {
             const controller = orbitCamera.create(createDefaultInputs(mockDomElement));
-            expect(typeof controller.touchInput.destroy).toBe("function");
+            expect(typeof controller.touchInput!.destroy).toBe("function");
         });
 
         it("should setup keyboard input handlers with destroy method", () => {
             const controller = orbitCamera.create(createDefaultInputs(mockDomElement));
-            expect(typeof controller.keyboardInput.destroy).toBe("function");
+            expect(typeof controller.keyboardInput!.destroy).toBe("function");
         });
 
         it("should create camera with correct default properties", () => {
@@ -144,9 +144,9 @@ describe("ThreeJSOrbitCamera unit tests", () => {
             const controller = orbitCamera.create(createDefaultInputs(mockDomElement));
             
             // Verify input handlers exist with destroy methods before destruction
-            expect(typeof controller.mouseInput.destroy).toBe("function");
-            expect(typeof controller.touchInput.destroy).toBe("function");
-            expect(typeof controller.keyboardInput.destroy).toBe("function");
+            expect(typeof controller.mouseInput!.destroy).toBe("function");
+            expect(typeof controller.touchInput!.destroy).toBe("function");
+            expect(typeof controller.keyboardInput!.destroy).toBe("function");
 
             // Destroy should complete without error
             controller.destroy();

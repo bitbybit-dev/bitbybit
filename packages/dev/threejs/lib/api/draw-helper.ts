@@ -25,7 +25,7 @@ export class DrawHelper extends DrawHelperCore {
     constructor(
         private readonly context: Context,
         private readonly solidText: JSCADText,
-        public readonly vector: Vector,
+        public override readonly vector: Vector,
         private readonly jscadWorkerManager: JSCADWorkerManager,
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager
@@ -80,7 +80,7 @@ export class DrawHelper extends DrawHelperCore {
         try {
             const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
-            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, inputs)).filter(s => s !== undefined);
+            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, inputs)).filter((s): s is THREEJS.Group => s !== undefined);
             const manifoldMeshContainer = new THREEJS.Group();
             manifoldMeshContainer.name = this.generateEntityId("manifoldMeshContainer");
             meshes.forEach(mesh => {
@@ -94,7 +94,7 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group> {
+    async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group | undefined> {
         try {
             if (!inputs.manifoldOrCrossSection) {
                 throw new Error("Manifold or cross section parameter is required");
@@ -178,7 +178,7 @@ export class DrawHelper extends DrawHelperCore {
                 updatable: inputs.updatable,
                 opacity: inputs.opacity,
                 hidden: inputs.hidden,
-                colour,
+                colour: colour!,
                 drawTwoSided: inputs.drawTwoSided,
                 backFaceColour: inputs.backFaceColour,
                 backFaceOpacity: inputs.backFaceOpacity
@@ -219,7 +219,7 @@ export class DrawHelper extends DrawHelperCore {
                 let colour;
                 if (r.color) {
                     const c = r.color;
-                    colour = "#" + new THREEJS.Color(c[0], c[1], c[2]).getHexString();
+                    colour = "#" + new THREEJS.Color(c[0]!, c[1]!, c[2]!).getHexString();
                 } else if (colourIsArrayAndMatches) {
                     colour = inputs.colours[index];
                 } else if (colorsAreArrays) {
@@ -229,7 +229,7 @@ export class DrawHelper extends DrawHelperCore {
                 }
                 const m = this.makeMesh({ 
                     ...inputs, 
-                    colour,
+                    colour: colour as string,
                     drawTwoSided: inputs.drawTwoSided,
                     backFaceColour: inputs.backFaceColour,
                     backFaceOpacity: inputs.backFaceOpacity
@@ -253,7 +253,7 @@ export class DrawHelper extends DrawHelperCore {
             const pts = s.points;
             //handle jscad
             if (s.isClosed) {
-                pts.push(pts[0]);
+                pts.push(pts[0]!);
             }
             // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
             if (s.color) {
@@ -261,7 +261,7 @@ export class DrawHelper extends DrawHelperCore {
                     colours = [];
                 }
                 if (Array.isArray(s.color)) {
-                    colours[index] = "#" + new THREEJS.Color(s.color[0], s.color[1], s.color[2]).getHexString();
+                    colours[index] = "#" + new THREEJS.Color(s.color[0]!, s.color[1]!, s.color[2]!).getHexString();
                 } else {
                     colours[index] = s.color;
                 }
@@ -269,26 +269,26 @@ export class DrawHelper extends DrawHelperCore {
             return pts;
         });
 
-        let lineSegments: THREEJS.LineSegments;
+        let lineSegments: THREEJS.LineSegments | undefined;
         if (inputs.polylinesMesh && inputs.updatable) {
             lineSegments = inputs.polylinesMesh.children[0] as THREEJS.LineSegments;
         }
         const polylines = this.drawPolylines(
             lineSegments,
             points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            colours,
+            inputs.updatable ?? false,
+            inputs.size ?? 3,
+            inputs.opacity ?? 1,
+            colours ?? "#444444",
             strategy,
             inputs.arrowSize,
             inputs.arrowAngle
         );
         if (inputs.polylinesMesh && inputs.updatable) {
-            if (inputs.polylinesMesh.children[0].name !== polylines.name) {
+            if (inputs.polylinesMesh.children[0]!.name !== polylines!.name) {
                 const group = new THREEJS.Group();
                 group.name = this.generateEntityId("polylines");
-                group.add(polylines);
+                group.add(polylines!);
                 this.context.scene.add(group);
                 return group;
             } else {
@@ -297,7 +297,7 @@ export class DrawHelper extends DrawHelperCore {
         } else {
             const group = new THREEJS.Group();
             group.name = this.generateEntityId("polylines");
-            group.add(polylines);
+            group.add(polylines!);
             this.context.scene.add(group);
             return group;
         }
@@ -325,25 +325,25 @@ export class DrawHelper extends DrawHelperCore {
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<THREEJS.Group> & { arrowSize?: number, arrowAngle?: number }): THREEJS.Group {
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
-            points.push(points[0]);
+            points.push(points[0]!);
         }
         return this.drawPolyline(
             inputs.polylineMesh,
             points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours,
+            inputs.updatable ?? false,
+            inputs.size ?? 3,
+            inputs.opacity ?? 1,
+            inputs.colours ?? "#444444",
             inputs.arrowSize,
             inputs.arrowAngle
         );
     }
 
-    drawPolyline(mesh: THREEJS.Group,
+    drawPolyline(mesh: THREEJS.Group | undefined,
         pointsToDraw: Inputs.Base.Point3[],
         updatable: boolean, size: number, opacity: number, colours: string | string[],
         arrowSize = 0, arrowAngle = 30): THREEJS.Group {
-        let lineSegments: THREEJS.LineSegments;
+        let lineSegments: THREEJS.LineSegments | undefined;
         if (mesh && mesh.children.length > 0) {
             lineSegments = mesh.children[0] as THREEJS.LineSegments;
         }
@@ -352,7 +352,7 @@ export class DrawHelper extends DrawHelperCore {
         if (!mesh) {
             mesh = new THREEJS.Group();
             mesh.name = this.generateEntityId("polyline");
-            mesh.add(polylines);
+            mesh.add(polylines!);
             this.context.scene.add(mesh);
         }
         return mesh;
@@ -428,7 +428,7 @@ export class DrawHelper extends DrawHelperCore {
 
         // Each InstancedMesh has metadata with the original indices of points it contains
         children.forEach((instancedMesh: THREEJS.InstancedMesh) => {
-            const indices = instancedMesh.userData.pointIndices as number[];
+            const indices = instancedMesh.userData["pointIndices"] as number[];
             if (indices) {
                 const matrix = new THREEJS.Matrix4();
                 indices.forEach((originalIndex, instanceIndex) => {
@@ -463,7 +463,7 @@ export class DrawHelper extends DrawHelperCore {
         inputs.surfaces.forEach((surface, index) => {
             const srf = this.drawSurface({
                 surface,
-                colours: resolvedColours[index],
+                colours: resolvedColours[index]!,
                 updatable: inputs.updatable,
                 opacity: inputs.opacity,
                 hidden: inputs.hidden,
@@ -471,15 +471,15 @@ export class DrawHelper extends DrawHelperCore {
                 backFaceColour: inputs.backFaceColour,
                 backFaceOpacity: inputs.backFaceOpacity,
             });
-            inputs.surfacesMesh.add(srf);
+            inputs.surfacesMesh!.add(srf);
         });
 
         return inputs.surfacesMesh;
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
-        group: THREEJS.Group, updatable: boolean, material: THREEJS.MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined }[],
+        group: THREEJS.Group | undefined, updatable: boolean, material: THREEJS.MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
     ): THREEJS.Group {
         const createMesh = () => {
             // Merge all geometries into one
@@ -539,14 +539,16 @@ export class DrawHelper extends DrawHelperCore {
                 group.add(mesh);
             }
         } else {
-            let scene = null;
+            let scene: THREEJS.Scene | null = null;
             if (addToScene) {
                 scene = this.context.scene;
             }
 
             group = new THREEJS.Group();
             group.name = this.generateEntityId("surface");
-            scene.add(group);
+            if (scene) {
+                scene.add(group);
+            }
             const geometry = createMesh();
             if (material) {
                 const mesh = new THREEJS.Mesh(geometry, material);
@@ -580,7 +582,7 @@ export class DrawHelper extends DrawHelperCore {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        const hex = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        const hex = Array.isArray(inputs.colours) ? inputs.colours[0]! : inputs.colours;
         const pbr = this.getOrCreateMaterial(hex, inputs.opacity, 0, () => {
             const mat = new THREEJS.MeshPhysicalMaterial();
             mat.name = this.generateEntityId("surfaceMaterial");
@@ -624,10 +626,10 @@ export class DrawHelper extends DrawHelperCore {
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
         countIndices: number): number {
         faceIndices.forEach((x) => {
-            const vn = meshData.normals[x];
-            meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
-            const pt = meshData.points[x];
-            meshDataConverted.positions.push(pt[0], pt[1], pt[2]);
+            const vn = meshData.normals[x]!;
+            meshDataConverted.normals.push(vn[0]!, vn[1]!, vn[2]!);
+            const pt = meshData.points[x]!;
+            meshDataConverted.positions.push(pt[0]!, pt[1]!, pt[2]!);
             meshDataConverted.indices.push(countIndices);
             countIndices++;
         });
@@ -749,7 +751,7 @@ export class DrawHelper extends DrawHelperCore {
         }
         if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
 
-            const polylineEdgePoints = [];
+            const polylineEdgePoints: Inputs.Base.Point3[][] = [];
             decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertexCoord.filter(s => s !== undefined);
                 polylineEdgePoints.push(ev);
@@ -765,7 +767,7 @@ export class DrawHelper extends DrawHelperCore {
                 options.edgeArrowSize,
                 options.edgeArrowAngle
             );
-            shapeGroup.add(line);
+            shapeGroup.add(line!);
         }
 
         if (inputs.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
@@ -807,7 +809,7 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
             const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.edgeIndexColour);
-            shapeGroup.add(edgeMesh);
+            shapeGroup.add(edgeMesh!);
         }
         if (inputs.drawFaceIndexes) {
             const promises = decomposedMesh.faceList.map(async (face) => {
@@ -836,7 +838,7 @@ export class DrawHelper extends DrawHelperCore {
             const textPolylines = await Promise.all(promises);
 
             const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.faceIndexColour);
-            faceMesh.parent = shapeGroup;
+            faceMesh!.parent = shapeGroup;
         }
         return shapeGroup;
     }
@@ -930,11 +932,11 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    private drawPolylines(lineSegments: THREEJS.LineSegments, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
+    private drawPolylines(lineSegments: THREEJS.LineSegments | undefined, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
         size: number, _opacity: number, colours: string | string[], colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
         arrowSize = 0, arrowAngle = 30) {
         if (polylinesPoints && polylinesPoints.length > 0) {
-            const lineVertices = [];
+            const lineVertices: THREEJS.Vector3[] = [];
             // Track how many line segments (pairs of vertices) each polyline/arrow has
             const polylineSegmentCounts: number[] = [];
             // Track colors in order of segments (polyline, then its arrows, then next polyline, etc.)
@@ -944,8 +946,8 @@ export class DrawHelper extends DrawHelperCore {
                 const polylineColor = this.resolveColorForEntity(colours, polylineIndex, polylinesPoints.length, colorMapStrategy);
                 let segmentCount = 0;
                 for (let i = 0; i < pts.length - 1; i++) {
-                    const c = pts[i];
-                    const n = pts[i + 1];
+                    const c = pts[i]!;
+                    const n = pts[i + 1]!;
 
                     lineVertices.push(new THREEJS.Vector3(
                         c[0],
@@ -966,8 +968,8 @@ export class DrawHelper extends DrawHelperCore {
                 if (arrowSize > 0 && pts.length >= 2) {
                     const arrowLines = this.computeArrowHeadLines(pts as Inputs.Base.Point3[], arrowSize, arrowAngle);
                     arrowLines.forEach(arrowLine => {
-                        lineVertices.push(new THREEJS.Vector3(arrowLine[0][0], arrowLine[0][1], arrowLine[0][2]));
-                        lineVertices.push(new THREEJS.Vector3(arrowLine[1][0], arrowLine[1][1], arrowLine[1][2]));
+                        lineVertices.push(new THREEJS.Vector3(arrowLine[0]![0], arrowLine[0]![1], arrowLine[0]![2]));
+                        lineVertices.push(new THREEJS.Vector3(arrowLine[1]![0], arrowLine[1]![1], arrowLine[1]![2]));
                         polylineSegmentCounts.push(1); // Each arrow line is 1 segment
                         allColors.push(polylineColor); // Arrow uses same color as its parent polyline
                     });
@@ -976,7 +978,7 @@ export class DrawHelper extends DrawHelperCore {
             let lines: THREEJS.LineSegments;
             
             if (lineSegments && updatable) {
-                if (lineSegments?.userData?.linesForRenderLengths === polylinesPoints.map(l => l.length).toString()) {
+                if (lineSegments?.userData?.["linesForRenderLengths"] === polylinesPoints.map(l => l.length).toString()) {
                     lineSegments.geometry.clearGroups();
                     lineSegments.geometry.setFromPoints(lineVertices);
                     // Update colors when updating geometry
@@ -1089,7 +1091,7 @@ export class DrawHelper extends DrawHelperCore {
 
     private handleDecomposedManifold(
         decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][],
-        options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): THREEJS.Group {
+        options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): THREEJS.Group | undefined {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             if (decomposedMesh.triVerts.length !== 0) {
@@ -1186,7 +1188,7 @@ export class DrawHelper extends DrawHelperCore {
 
     // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
     // Workers cannot handle complex circular objects like Three.js materials
-    private getSafeWorkerOptions<T extends { faceMaterial?: THREEJS.Material }>(inputs: T): Omit<T, "faceMaterial"> {
+    private getSafeWorkerOptions<T extends { faceMaterial?: THREEJS.Material | undefined }>(inputs: T): Omit<T, "faceMaterial"> {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { faceMaterial, ...safeOptions } = inputs;
         return safeOptions as Omit<T, "faceMaterial">;
@@ -1230,7 +1232,7 @@ export class DrawHelper extends DrawHelperCore {
 
         // Evict oldest if at capacity (simple FIFO)
         if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
-            const firstKey = this.materialCache.keys().next().value;
+            const firstKey = this.materialCache.keys().next().value!;
             const material = this.materialCache.get(firstKey);
             if (material && material.dispose) {
                 material.dispose();
@@ -1268,7 +1270,7 @@ export class DrawHelper extends DrawHelperCore {
 
         // Evict oldest if at capacity (simple FIFO)
         if (this.unlitMaterialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
-            const firstKey = this.unlitMaterialCache.keys().next().value;
+            const firstKey = this.unlitMaterialCache.keys().next().value!;
             const material = this.unlitMaterialCache.get(firstKey);
             if (material && material.dispose) {
                 material.dispose();

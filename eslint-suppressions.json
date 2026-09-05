@@ -573,25 +573,16 @@
   "packages/dev/threejs/__mocks__/@bitbybit-dev/jscad-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 6
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 5
     }
   },
   "packages/dev/threejs/__mocks__/@bitbybit-dev/manifold-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
     }
   },
   "packages/dev/threejs/__mocks__/@bitbybit-dev/occt-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 6
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
     }
   },
   "packages/dev/threejs/babel.config.cjs": {
@@ -602,9 +593,6 @@
   "packages/dev/threejs/lib/api/bitbybit/draw.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 25
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 2
     }
   },
   "packages/dev/threejs/lib/api/bitbybit/draw.ts": {
