@@ -23,41 +23,6 @@
       "file": "lib/occ-helper.ts",
       "code": "TS2565",
       "count": 5
-    },
-    "efdb93ad866a20aeb3816a51a7118bdbde5f97dc": {
-      "file": "lib/services/assembly/manager.ts",
-      "code": "TS2375",
-      "count": 6
-    },
-    "df338c0aa53e1fdeeec21e3e71abea2be8d7cc04": {
-      "file": "lib/services/assembly/manager.ts",
-      "code": "TS2379",
-      "count": 1
-    },
-    "3ea77b0996b51637edb663aa101118f2928c578f": {
-      "file": "lib/services/base/fillets.service.ts",
-      "code": "TS2379",
-      "count": 2
-    },
-    "56f1f85facfb677ef2099df5b3477ed8026614b3": {
-      "file": "lib/services/base/operations.service.ts",
-      "code": "TS2379",
-      "count": 1
-    },
-    "e62c37a6ad0ff955999142e3ca357f9b8e7777a5": {
-      "file": "lib/services/fillets.ts",
-      "code": "TS2379",
-      "count": 2
-    },
-    "7c7ea60b51eb12fa5f7502ed666f61ddf9045cae": {
-      "file": "lib/svg/svg-normalizer.ts",
-      "code": "TS4111",
-      "count": 19
-    },
-    "44cd7a827fd2a7d2c469aa5abcd87c9d4479bdd4": {
-      "file": "lib/svg/svg-shapes.ts",
-      "code": "TS4111",
-      "count": 4
     }
   }
 }

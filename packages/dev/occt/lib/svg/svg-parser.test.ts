@@ -281,15 +281,15 @@ describe("xml parser", () => {
     it("parses nested elements and attributes", () => {
         const root = parseXml("<svg width=\"10\"><g id=\"a\"><rect x=\"1\"/></g></svg>");
         expect(root?.tag).toBe("svg");
-        expect(root?.attrs.width).toBe("10");
+        expect(root?.attrs["width"]).toBe("10");
         expect(root?.children[0]!.tag).toBe("g");
         expect(root?.children[0]!.children[0]!.tag).toBe("rect");
     });
 
     it("handles single-quoted attributes", () => {
         const root = parseXml("<svg><rect x='3' y='4'/></svg>");
-        expect(root?.children[0]!.attrs.x).toBe("3");
-        expect(root?.children[0]!.attrs.y).toBe("4");
+        expect(root?.children[0]!.attrs["x"]).toBe("3");
+        expect(root?.children[0]!.attrs["y"]).toBe("4");
     });
 
     it("skips comments, CDATA, PI and DOCTYPE; decodes entities", () => {

@@ -42,7 +42,7 @@ function resolveStyleProps(node: XmlNode, inherited: { [k: string]: string }): {
     for (const key of STYLE_KEYS) {
         if (node.attrs[key] !== undefined) { props[key] = node.attrs[key]; }
     }
-    const inline = parseInlineStyle(node.attrs.style);
+    const inline = parseInlineStyle(node.attrs["style"]);
     for (const key of Object.keys(inline)) { props[key] = inline[key]!; }
     return props;
 }
@@ -55,11 +55,11 @@ function num(v: string | undefined): number | undefined {
 
 function toStyle(props: { [k: string]: string }): SvgStyle {
     const style: SvgStyle = {};
-    if (props.fill !== undefined) { style.fill = props.fill; }
-    if (props.stroke !== undefined) { style.stroke = props.stroke; }
+    if (props["fill"] !== undefined) { style.fill = props["fill"]; }
+    if (props["stroke"] !== undefined) { style.stroke = props["stroke"]; }
     const sw = num(props["stroke-width"]);
     if (sw !== undefined) { style.strokeWidth = sw; }
-    const op = num(props.opacity);
+    const op = num(props["opacity"]);
     if (op !== undefined) { style.opacity = op; }
     const fo = num(props["fill-opacity"]);
     if (fo !== undefined) { style.fillOpacity = fo; }
@@ -68,7 +68,7 @@ function toStyle(props: { [k: string]: string }): SvgStyle {
     if (props["fill-rule"] === "evenodd" || props["fill-rule"] === "nonzero") {
         style.fillRule = props["fill-rule"];
     }
-    if (props.display === "none" || props.visibility === "hidden" || props.visibility === "collapse") {
+    if (props["display"] === "none" || props["visibility"] === "hidden" || props["visibility"] === "collapse") {
         style.hidden = true;
     }
     return style;
@@ -82,7 +82,7 @@ function parseViewBox(v: string | undefined): [number, number, number, number] |
 
 function subpathsForNode(node: XmlNode, warnings: string[]): SvgSubpath[] {
     if (node.tag === "path") {
-        const d = node.attrs.d;
+        const d = node.attrs["d"];
         if (!d) { return []; }
         try {
             return parsePathData(d);
@@ -108,9 +108,9 @@ export function normalizeSvg(svg: string): SvgScene {
         return { elements: [], warnings };
     }
 
-    const viewBox = parseViewBox(svgRoot.attrs.viewBox);
-    const width = num(svgRoot.attrs.width);
-    const height = num(svgRoot.attrs.height);
+    const viewBox = parseViewBox(svgRoot.attrs["viewBox"]);
+    const width = num(svgRoot.attrs["width"]);
+    const height = num(svgRoot.attrs["height"]);
 
     const elements: SvgElement[] = [];
     let warnedStyleEl = false;
@@ -122,7 +122,7 @@ export function normalizeSvg(svg: string): SvgScene {
         }
         if (SKIP_GEOMETRY.has(node.tag)) { return; }
 
-        const matrix = multiply(parentMatrix, parseTransform(node.attrs.transform));
+        const matrix = multiply(parentMatrix, parseTransform(node.attrs["transform"]));
         const props = resolveStyleProps(node, inheritedProps);
 
         if (DRAWABLE.has(node.tag)) {
@@ -134,8 +134,8 @@ export function normalizeSvg(svg: string): SvgScene {
                     style: toStyle(props),
                     subpaths,
                 };
-                if (node.attrs.id) { el.id = node.attrs.id; }
-                if (node.attrs.class) { el.className = node.attrs.class; }
+                if (node.attrs["id"]) { el.id = node.attrs["id"]; }
+                if (node.attrs["class"]) { el.className = node.attrs["class"]; }
                 elements.push(el);
             }
         }
@@ -144,7 +144,7 @@ export function normalizeSvg(svg: string): SvgScene {
     };
 
     // Root <svg> may itself carry a transform; start the cascade from its props.
-    const rootMatrix = multiply(IDENTITY, parseTransform(svgRoot.attrs.transform));
+    const rootMatrix = multiply(IDENTITY, parseTransform(svgRoot.attrs["transform"]));
     const rootProps = resolveStyleProps(svgRoot, {});
     for (const child of svgRoot.children) { walk(child, rootMatrix, rootProps); }
 

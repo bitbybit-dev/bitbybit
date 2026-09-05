@@ -18,21 +18,21 @@ export type SurfaceTypeName =
 /** Introspection of an edge's underlying curve (degree, poles, periodicity, range, length, ...). */
 export interface EdgeDebugInfo {
     valid: boolean;
-    type?: CurveTypeName;
-    firstParameter?: number;
-    lastParameter?: number;
-    closed?: boolean;
-    periodic?: boolean;
-    period?: number;
-    length?: number;
-    isLinear?: boolean;
-    isCircular?: boolean;
-    degree?: number;
-    nbPoles?: number;
-    nbKnots?: number;
-    rational?: boolean;
-    start?: Base.Point3;
-    end?: Base.Point3;
+    type?: CurveTypeName | undefined;
+    firstParameter?: number | undefined;
+    lastParameter?: number | undefined;
+    closed?: boolean | undefined;
+    periodic?: boolean | undefined;
+    period?: number | undefined;
+    length?: number | undefined;
+    isLinear?: boolean | undefined;
+    isCircular?: boolean | undefined;
+    degree?: number | undefined;
+    nbPoles?: number | undefined;
+    nbKnots?: number | undefined;
+    rational?: boolean | undefined;
+    start?: Base.Point3 | undefined;
+    end?: Base.Point3 | undefined;
 }
 
 /** Introspection of a wire: edge count, closed flag, total length, plus per-edge debug info. */
@@ -66,26 +66,26 @@ export interface SolidDebugInfo {
 /** Introspection of a face's underlying surface (U/V degree, poles, periodicity, bounds, area, ...). */
 export interface FaceDebugInfo {
     valid: boolean;
-    type?: SurfaceTypeName;
-    uMin?: number;
-    uMax?: number;
-    vMin?: number;
-    vMax?: number;
-    uClosed?: boolean;
-    vClosed?: boolean;
-    uPeriodic?: boolean;
-    vPeriodic?: boolean;
-    isPlanar?: boolean;
-    uDegree?: number;
-    vDegree?: number;
-    nbUPoles?: number;
-    nbVPoles?: number;
-    nbUKnots?: number;
-    nbVKnots?: number;
-    uRational?: boolean;
-    vRational?: boolean;
-    area?: number;
-    reversed?: boolean;
-    nbWires?: number;
-    nbEdges?: number;
+    type?: SurfaceTypeName | undefined;
+    uMin?: number | undefined;
+    uMax?: number | undefined;
+    vMin?: number | undefined;
+    vMax?: number | undefined;
+    uClosed?: boolean | undefined;
+    vClosed?: boolean | undefined;
+    uPeriodic?: boolean | undefined;
+    vPeriodic?: boolean | undefined;
+    isPlanar?: boolean | undefined;
+    uDegree?: number | undefined;
+    vDegree?: number | undefined;
+    nbUPoles?: number | undefined;
+    nbVPoles?: number | undefined;
+    nbUKnots?: number | undefined;
+    nbVKnots?: number | undefined;
+    uRational?: boolean | undefined;
+    vRational?: boolean | undefined;
+    area?: number | undefined;
+    reversed?: boolean | undefined;
+    nbWires?: number | undefined;
+    nbEdges?: number | undefined;
 }

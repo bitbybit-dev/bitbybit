@@ -199,7 +199,7 @@ export class OCCTAssemblyManager {
         const { structure, existingDocument, sourceDocuments } = inputs;
         
         const shapes: TopoDS_Shape[] = [];
-        const partsJson: { id: string; shapeIndex: number; name: string; colorRgba?: Inputs.Base.ColorRGBA }[] = [];
+        const partsJson: { id: string; shapeIndex: number; name: string; colorRgba?: Inputs.Base.ColorRGBA | undefined }[] = [];
         
         // Add new parts to shapes array
         for (const part of structure.parts) {
@@ -213,10 +213,10 @@ export class OCCTAssemblyManager {
         }
         
         // Process partUpdates - add their shapes to the shapes array and reference by index
-        const partUpdatesJson: { label: string; shapeIndex?: number; name?: string; colorRgba?: Inputs.Base.ColorRGBA }[] = [];
+        const partUpdatesJson: { label: string; shapeIndex?: number | undefined; name?: string | undefined; colorRgba?: Inputs.Base.ColorRGBA | undefined }[] = [];
         if (structure.partUpdates) {
             for (const update of structure.partUpdates) {
-                const updateJson: { label: string; shapeIndex?: number; name?: string; colorRgba?: Inputs.Base.ColorRGBA } = {
+                const updateJson: { label: string; shapeIndex?: number | undefined; name?: string | undefined; colorRgba?: Inputs.Base.ColorRGBA | undefined } = {
                     label: update.label
                 };
                 if (update.shape) {

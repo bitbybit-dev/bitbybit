@@ -37,5 +37,5 @@ export interface CornerByPointReport {
     ok: boolean;
     modified: boolean;
     results: CornerResult[];
-    error?: string;
+    error?: string | undefined;
 }

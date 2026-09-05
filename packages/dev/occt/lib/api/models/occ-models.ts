@@ -13,7 +13,7 @@ export class ShapeWithId<U> {
  * shape it refers to.
  */
 export class ObjectDefinition<M, U> {
-    compound?: U;
-    shapes?: ShapeWithId<U>[];
-    data?: M;
+    compound?: U | undefined;
+    shapes?: ShapeWithId<U>[] | undefined;
+    data?: M | undefined;
 }

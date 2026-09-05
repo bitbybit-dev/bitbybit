@@ -3,7 +3,7 @@
  * ready to be turned into faces or extruded.
  */
 export class TextWiresCharShapePart<T> {
-    id?: string;
+    id?: string | undefined;
     shapes?: {
         compound?: T,
     };

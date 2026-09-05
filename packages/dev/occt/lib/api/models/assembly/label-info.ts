@@ -20,9 +20,9 @@ export interface LabelInfo {
     /** Whether it's a free shape (top-level) */
     isFreeShape: boolean;
     /** Reference label (for instances) */
-    refLabel?: string;
+    refLabel?: string | undefined;
     /** Child labels (for assemblies) */
-    children?: string[];
+    children?: string[] | undefined;
     /** Shape type (vertex, edge, wire, face, shell, solid, compound, etc.) */
-    shapeType?: string;
+    shapeType?: string | undefined;
 }

@@ -27,7 +27,13 @@
         },
         "noImplicitAny": true,
         "strictNullChecks": true,
-        "noUncheckedIndexedAccess": true
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true
     },
     "references": [
         {

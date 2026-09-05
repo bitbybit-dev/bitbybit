@@ -399,7 +399,7 @@ export namespace OCCT {
          * Map of "#rrggbbaa" colour to the face indices carrying it. Only present for the docToMesh /
          * docToMeshes endpoints, which resolve per-face colours from the shape's XCAF document.
          */
-        colorGroups?: { [color: string]: number[] };
+        colorGroups?: { [color: string]: number[] } | undefined;
     }
 
     export class DecomposedFaceDto {
@@ -413,34 +413,34 @@ export namespace OCCT {
         centerNormal: Base.Vector3;
         uvs: number[];
         /** Surface area of the face. Only present when shapeToMesh is called with computeMetadata. */
-        area?: number;
+        area?: number | undefined;
         /** True center of mass of the face. Only present when computeMetadata is enabled. */
-        centerOfMass?: Base.Point3;
+        centerOfMass?: Base.Point3 | undefined;
         /** Surface kind, e.g. "Plane", "Cylinder", "BSplineSurface". Only present with computeMetadata. */
-        surfaceType?: string;
+        surfaceType?: string | undefined;
         /** OCCT tolerance of the face. Only present with computeMetadata. */
-        tolerance?: number;
+        tolerance?: number | undefined;
         /** Indices of faces sharing an edge with this face. Only present with computeMetadata. */
-        adjacentFaces?: number[];
+        adjacentFaces?: number[] | undefined;
         /** Stable BRepGraph UID of the face (-1 if unavailable). Only present with computeMetadata. */
-        faceUid?: number;
+        faceUid?: number | undefined;
     }
     export class DecomposedEdgeDto {
         edgeIndex: number;
         middlePoint: Base.Point3;
         vertexCoord: Base.Vector3[];
         /** Length of the edge. Only present when shapeToMesh is called with computeMetadata. */
-        length?: number;
+        length?: number | undefined;
         /** True center of mass of the edge. Only present when computeMetadata is enabled. */
-        centerOfMass?: Base.Point3;
+        centerOfMass?: Base.Point3 | undefined;
         /** Curve kind, e.g. "Line", "Circle", "BSplineCurve". Only present with computeMetadata. */
-        curveType?: string;
+        curveType?: string | undefined;
         /** Whether the edge is degenerated (no 3D curve). Only present with computeMetadata. */
-        degenerated?: boolean;
+        degenerated?: boolean | undefined;
         /** Indices of faces incident to this edge. Only present with computeMetadata. */
-        incidentFaces?: number[];
+        incidentFaces?: number[] | undefined;
         /** Stable BRepGraph UID of the edge (-1 if unavailable). Only present with computeMetadata. */
-        edgeUid?: number;
+        edgeUid?: number | undefined;
     }
     export class ShapesDto<T> {
         constructor(shapes?: T[]) {
@@ -776,7 +776,7 @@ export namespace OCCT {
          * Bounding box
          * @default undefined
          */
-        bbox?: BoundingBoxPropsDto;
+        bbox?: BoundingBoxPropsDto | undefined;
     }
     export class BoundingBoxPropsDto {
         constructor(min?: Base.Point3, max?: Base.Point3, center?: Base.Point3, size?: Base.Vector3) {
@@ -947,7 +947,7 @@ export namespace OCCT {
          * Brep OpenCascade geometry
          * @default undefined
          */
-        shape?: T;
+        shape?: T | undefined;
         /**
          * Face opacity value between 0 and 1
          * @default 1
@@ -974,7 +974,7 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        faceMaterial?: Base.Material;
+        faceMaterial?: Base.Material | undefined;
         /**
          * Hex colour string for face colour
          * @default #ff0000
@@ -1158,7 +1158,7 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        faceMaterial?: Base.Material;
+        faceMaterial?: Base.Material | undefined;
         /**
          * Hex colour string for face colour
          * @default #ff0000
@@ -1529,27 +1529,27 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        scalePatternU?: number[];
+        scalePatternU?: number[] | undefined;
         /**
          * Hexagon scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
          * @optional true
          */
-        scalePatternV?: number[];
+        scalePatternV?: number[] | undefined;
         /**
          * Hexagon fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
          * if 1 is used, the fillet will be exactly half of the length of the shortest segment of the hexagon
          * @default undefined
          * @optional true
          */
-        filletPattern?: number[];
+        filletPattern?: number[] | undefined;
         /**
          * Hexagon inclusion pattern - true means that the hexagon will be included, 
          * false means that the hexagon will be removed from the face
          * @default undefined
          * @optional true
          */
-        inclusionPattern?: boolean[];
+        inclusionPattern?: boolean[] | undefined;
         /**
          * If offset on U is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of U param 1 will be offset from the face border
          * That is often required to create a pattern that is not too close to the face border
@@ -1645,27 +1645,27 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        scalePatternU?: number[];
+        scalePatternU?: number[] | undefined;
         /**
          * Hexagon scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
          * @optional true
          */
-        scalePatternV?: number[];
+        scalePatternV?: number[] | undefined;
         /**
          * Hexagon fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
          * if 1 is used, the fillet will be exactly half of the length of the shortest segment of the hexagon
          * @default undefined
          * @optional true
          */
-        filletPattern?: number[];
+        filletPattern?: number[] | undefined;
         /**
          * Hexagon inclusion pattern - true means that the hexagon will be included, 
          * false means that the hexagon will be removed from the face
          * @default undefined
          * @optional true
          */
-        inclusionPattern?: boolean[];
+        inclusionPattern?: boolean[] | undefined;
         /**
          * If offset on U is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of U param 1 will be offset from the face border
          * That is often required to create a pattern that is not too close to the face border
@@ -3251,13 +3251,13 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        radiusList?: number[];
+        radiusList?: number[] | undefined;
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          * @default undefined
          * @optional true
          */
-        indexes?: number[];
+        indexes?: number[] | undefined;
     }
     export class FilletShapesDto<T> {
         constructor(shapes?: T[], radius?: number, radiusList?: number[], indexes?: number[]) {
@@ -3285,13 +3285,13 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        radiusList?: number[];
+        radiusList?: number[] | undefined;
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          * @default undefined
          * @optional true
          */
-        indexes?: number[];
+        indexes?: number[] | undefined;
     }
     export class FilletEdgesListDto<T, U> {
         constructor(shape?: T, edges?: U[], radiusList?: number[]) {
@@ -3454,13 +3454,13 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        radiusList?: number[];
+        radiusList?: number[] | undefined;
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          * @default undefined
          * @optional true
          */
-        indexes?: number[];
+        indexes?: number[] | undefined;
         /**
          * Orientation direction for the fillet
          * @default [0, 1, 0]
@@ -3494,13 +3494,13 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        radiusList?: number[];
+        radiusList?: number[] | undefined;
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          * @default undefined
          * @optional true
          */
-        indexes?: number[];
+        indexes?: number[] | undefined;
         /**
          * Orientation direction for the fillet
          * @default [0, 1, 0]
@@ -3533,13 +3533,13 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        distanceList?: number[];
+        distanceList?: number[] | undefined;
         /**
          * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
          * @default undefined
          * @optional true
          */
-        indexes?: number[];
+        indexes?: number[] | undefined;
     }
     export class ChamferEdgesListDto<T, U> {
         constructor(shape?: T, edges?: U[], distanceList?: number[]) {
@@ -4087,26 +4087,26 @@ export namespace OCCT {
          * cusps and overshoot.
          * @default chordLength
          */
-        parametrization?: bSplineParametrizationEnum;
+        parametrization?: bSplineParametrizationEnum | undefined;
         /**
          * Optional tangent direction enforced at the start (non-periodic only).
          * @default undefined
          * @optional true
          */
-        startTangent?: Base.Vector3;
+        startTangent?: Base.Vector3 | undefined;
         /**
          * Optional tangent direction enforced at the end (non-periodic only).
          * @default undefined
          * @optional true
          */
-        endTangent?: Base.Vector3;
+        endTangent?: Base.Vector3 | undefined;
         /**
          * Optional per-point tangent directions (one per point); entries that are undefined are
          * left free. When provided, takes precedence over startTangent/endTangent.
          * @default undefined
          * @optional true
          */
-        tangents?: (Base.Vector3 | undefined)[];
+        tangents?: (Base.Vector3 | undefined)[] | undefined;
     }
     /**
      * Options for the symmetric interpolation. This variant is always a closed (periodic) loop and
@@ -4176,7 +4176,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        degree?: number;
+        degree?: number | undefined;
         /**
          * Build a smooth CLOSED (periodic) curve that wraps the control polygon, continuous across the
          * seam - unlike `closed`, which only meets C0 by repeating the first point. Uses degree (or a
@@ -4226,7 +4226,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        degree?: number;
+        degree?: number | undefined;
     }
     /** Rebuild (relax/raise) the polynomial degree of a wire or edge curve. */
     export class RebuildCurveDegreeDto<T> {
@@ -4965,27 +4965,27 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        scalePatternWidth?: number[];
+        scalePatternWidth?: number[] | undefined;
         /**
          * Hex scale pattern on height direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
          * @optional true
          */
-        scalePatternHeight?: number[];
+        scalePatternHeight?: number[] | undefined;
         /**
          * Hex fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
          * if 1 is used, the fillet will be exactly half of the length of the shorter side of the hex
          * @default undefined
          * @optional true
          */
-        filletPattern?: number[];
+        filletPattern?: number[] | undefined;
         /**
          * Inclusion pattern - true means that the hex will be included, 
          * false means that the hex will be removed
          * @default undefined
          * @optional true
          */
-        inclusionPattern?: boolean[];
+        inclusionPattern?: boolean[] | undefined;
     }
     export class LoftDto<T> {
         constructor(shapes?: T[], makeSolid?: boolean) {
@@ -5079,13 +5079,13 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        startVertex?: Base.Point3;
+        startVertex?: Base.Point3 | undefined;
         /**
          * Optional if loft should end with a vertex
          * @default undefined
          * @optional true
          */
-        endVertex?: Base.Point3;
+        endVertex?: Base.Point3 | undefined;
     }
     export class OffsetDto<T, U> {
         constructor(shape?: T, face?: U, distance?: number, tolerance?: number) {
@@ -5104,7 +5104,7 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        face?: U;
+        face?: U | undefined;
         /**
          * Distance of offset
          * @default 0.2
@@ -5141,7 +5141,7 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        face?: U;
+        face?: U | undefined;
         /**
          * Distance of offset
          * @default 0.2
@@ -5548,7 +5548,7 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        precisionShapes?: number[];
+        precisionShapes?: number[] | undefined;
     }
     export class CompareShapesDto<T> {
         constructor(shape?: T, otherShape?: T) {
@@ -7022,7 +7022,7 @@ export namespace OCCT {
          * Optional 1-based corner indexes to chamfer; chamfers all corners when omitted
          * @default undefined
          */
-        indexes?: number[];
+        indexes?: number[] | undefined;
     }
     export class DraftAngleDto<T, U> {
         constructor(shape?: T, faces?: U[], direction?: Base.Vector3, angle?: number, neutralPlaneOrigin?: Base.Point3, neutralPlaneDirection?: Base.Vector3, flag?: boolean) {
@@ -8181,7 +8181,7 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        existingDocument?: D;
+        existingDocument?: D | undefined;
         /**
          * Optional array of source document handles referenced by `structure.loadedParts` entries
          * via `sourceDocumentIndex`. Typically these are documents previously loaded with
@@ -8190,7 +8190,7 @@ export namespace OCCT {
          * @default undefined
          * @optional true
          */
-        sourceDocuments?: D[];
+        sourceDocuments?: D[] | undefined;
     }
 
     /**
@@ -8230,7 +8230,7 @@ export namespace OCCT {
          * @min 0
          * @max 1
          */
-        colorRgba?: Base.ColorRGBA;
+        colorRgba?: Base.ColorRGBA | undefined;
     }
 
     /**
@@ -8265,7 +8265,7 @@ export namespace OCCT {
          * Parent node ID. Leave undefined for root level assembly.
          * @default undefined
          */
-        parentId?: string;
+        parentId?: string | undefined;
         /**
          * Optional color for the assembly
          * @default {"r":0.5,"g":0.5,"b":0.5,"a":1}
@@ -8279,7 +8279,7 @@ export namespace OCCT {
          * placement and takes precedence over any translation/rotation/scale.
          * @default undefined
          */
-        matrix?: Base.TransformMatrix | Base.TransformMatrixes;
+        matrix?: Base.TransformMatrix | Base.TransformMatrixes | undefined;
     }
 
     /**
@@ -8327,7 +8327,7 @@ export namespace OCCT {
          * Parent assembly node ID. Leave undefined for root level.
          * @default undefined
          */
-        parentId?: string;
+        parentId?: string | undefined;
         /**
          * Translation as [x, y, z]
          * @default [0, 0, 0]
@@ -8347,14 +8347,14 @@ export namespace OCCT {
          * Optional color override for this instance
          * @default undefined
          */
-        colorRgba?: Base.ColorRGBA;
+        colorRgba?: Base.ColorRGBA | undefined;
         /**
          * Optional placement matrix (column-major, 16 numbers) or an ordered list of
          * matrices applied first-to-last. When provided it fully defines the instance's
          * placement and takes precedence over translation/rotation/scale.
          * @default undefined
          */
-        matrix?: Base.TransformMatrix | Base.TransformMatrixes;
+        matrix?: Base.TransformMatrix | Base.TransformMatrixes | undefined;
     }
 
     /**
@@ -8384,19 +8384,19 @@ export namespace OCCT {
          * If undefined, the shape is not changed.
          * @default undefined
          */
-        shape?: T;
+        shape?: T | undefined;
         /**
          * New name for the part.
          * If undefined, the name is not changed.
          * @default undefined
          */
-        name?: string;
+        name?: string | undefined;
         /**
          * New color for the part.
          * If undefined, the color is not changed.
          * @default undefined
          */
-        colorRgba?: Base.ColorRGBA;
+        colorRgba?: Base.ColorRGBA | undefined;
     }
 
     /**
@@ -8439,14 +8439,14 @@ export namespace OCCT {
          * Ignored when creating a new document (no existingDocument provided).
          * @default undefined
          */
-        removals?: string[];
+        removals?: string[] | undefined;
         /**
          * Updates to apply to existing parts in the document.
          * Each update can change the shape, name, and/or color of a part.
          * Ignored when creating a new document (no existingDocument provided).
          * @default undefined
          */
-        partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[];
+        partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[] | undefined;
         /**
          * Whether to clear the existing document before adding new content.
          * Only relevant when an existingDocument is provided to buildAssemblyDocument.
@@ -8465,7 +8465,7 @@ export namespace OCCT {
          * them by `partId` to place the imported assembly multiple times with different transforms.
          * @default undefined
          */
-        loadedParts?: Models.OCCT.AssemblyLoadedPartDef[];
+        loadedParts?: Models.OCCT.AssemblyLoadedPartDef[] | undefined;
     }
 
     /**
@@ -8504,17 +8504,17 @@ export namespace OCCT {
          * assembly compound when there are multiple).
          * @default undefined
          */
-        sourceLabel?: string;
+        sourceLabel?: string | undefined;
         /**
          * Optional display name override applied to the imported root label.
          * @default undefined
          */
-        name?: string;
+        name?: string | undefined;
         /**
          * Optional color override applied to the imported root label.
          * @default undefined
          */
-        colorRgba?: Base.ColorRGBA;
+        colorRgba?: Base.ColorRGBA | undefined;
     }
 
     /**
@@ -9316,7 +9316,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        offsetOuterEdges?: number;
+        offsetOuterEdges?: number | undefined;
         /**
          * Construct half of the star
          * @default false
@@ -9776,7 +9776,7 @@ export namespace OCCT {
          * The extrude offset
          * @default left
          */
-        align?: Base.horizontalAlignEnum;
+        align?: Base.horizontalAlignEnum | undefined;
         /**
          * The extrude offset
          * @default 0
@@ -10785,17 +10785,17 @@ export namespace OCCT {
         /** Whether the source subpaths were closed. */
         closed: boolean;
         /** Resolved fill colour, if any. */
-        fill?: string;
+        fill?: string | undefined;
         /** Resolved stroke colour, if any. */
-        stroke?: string;
+        stroke?: string | undefined;
         /** Stroke width (the "strength" of the line), if any. */
-        strokeWidth?: number;
+        strokeWidth?: number | undefined;
         /** Combined opacity in [0, 1], if any. */
-        opacity?: number;
+        opacity?: number | undefined;
         /** Element id, if any. */
-        id?: string;
+        id?: string | undefined;
         /** Element class attribute, if any. */
-        className?: string;
+        className?: string | undefined;
     }
 
     /** Result of importing an SVG document (an output, not an input). */
@@ -10803,7 +10803,7 @@ export namespace OCCT {
         /** One entry per drawable element, in document order. */
         shapes: SVGShape<T>[];
         /** viewBox as [minX, minY, width, height] if present. */
-        viewBox?: [number, number, number, number];
+        viewBox?: [number, number, number, number] | undefined;
         /** Non-fatal parsing/building issues. */
         warnings: string[];
     }

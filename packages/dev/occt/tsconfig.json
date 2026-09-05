@@ -1,5 +1,5 @@
-// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces noImplicitAny,
-// strictNullChecks and noUncheckedIndexedAccess ahead of the shared loose base: occt is the largest package and is going strict one flag at a time,
+// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces every strict flag but
+// strictPropertyInitialization ahead of the shared loose base: occt is the largest package and is going strict one flag at a time,
 // the way base did. The flags are repeated here so the editor and the tests hold the same line; the
 // build config cannot carry this note because the references generator rewrites it without comments.
 {
@@ -18,6 +18,12 @@
         },
         "noImplicitAny": true,
         "strictNullChecks": true,
-        "noUncheckedIndexedAccess": true
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true
     }
 }

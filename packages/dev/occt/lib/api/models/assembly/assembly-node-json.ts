@@ -9,7 +9,7 @@ export interface AssemblyNodeJson {
     /** Unique path identifier (e.g., "/0:1:1:1/0:1:1:2") */
     id: string;
     /** Parent node ID for hierarchy reconstruction (undefined for root nodes) */
-    parentId?: string;
+    parentId?: string | undefined;
     /** Depth in the assembly hierarchy (0 = root) */
     depth: number;
     /** Part/assembly name */
@@ -22,11 +22,11 @@ export interface AssemblyNodeJson {
      * Definition ID that this instance refers to (only set if isInstance is true).
      * Multiple instances with the same definitionId share the same geometry.
      */
-    definitionId?: string;
+    definitionId?: string | undefined;
     /** Visibility flag */
     visible: boolean;
     /** Surface color (if set) */
-    colorRgba?: Base.ColorRGBA;
+    colorRgba?: Base.ColorRGBA | undefined;
     /** 4x4 transformation matrix in column-major order (if not identity) */
-    transform?: Base.TransformMatrix;
+    transform?: Base.TransformMatrix | undefined;
 }

@@ -9,5 +9,5 @@ export interface AssemblyJsonResult {
     /** Array of assembly nodes in depth-first traversal order */
     nodes: AssemblyNodeJson[];
     /** Error message (if parsing failed) */
-    error?: string;
+    error?: string | undefined;
 }

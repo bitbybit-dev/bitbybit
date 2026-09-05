@@ -77,8 +77,8 @@ function rectSubpath(x: number, y: number, w: number, h: number, rxIn: number, r
 export function shapeToSubpaths(tag: string, attrs: Attrs): SvgSubpath[] {
     switch (tag) {
         case "rect": {
-            const hasRx = attrs.rx !== undefined;
-            const hasRy = attrs.ry !== undefined;
+            const hasRx = attrs["rx"] !== undefined;
+            const hasRy = attrs["ry"] !== undefined;
             const rx = hasRx ? num(attrs, "rx") : (hasRy ? num(attrs, "ry") : 0);
             const ry = hasRy ? num(attrs, "ry") : (hasRx ? num(attrs, "rx") : 0);
             return rectSubpath(num(attrs, "x"), num(attrs, "y"), num(attrs, "width"), num(attrs, "height"), rx, ry);
@@ -95,9 +95,9 @@ export function shapeToSubpaths(tag: string, attrs: Attrs): SvgSubpath[] {
             return [{ start: [x1, y1], segments: [{ type: "line", to: [x2, y2] }], closed: false }];
         }
         case "polyline":
-            return polySubpath(parsePoints(attrs.points), false);
+            return polySubpath(parsePoints(attrs["points"]), false);
         case "polygon":
-            return polySubpath(parsePoints(attrs.points), true);
+            return polySubpath(parsePoints(attrs["points"]), true);
         default:
             return [];
     }

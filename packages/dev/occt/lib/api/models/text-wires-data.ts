@@ -9,8 +9,8 @@ import { TextWiresCharShapePart } from "./text-wires-char-shape-part";
 export class TextWiresDataDto<T> {
     type = "text";
     name = "text";
-    compound?: T;
-    characters?: TextWiresCharShapePart<T>[];
+    compound?: T | undefined;
+    characters?: TextWiresCharShapePart<T>[] | undefined;
     width: number;
     height: number;
     center: Base.Point3;

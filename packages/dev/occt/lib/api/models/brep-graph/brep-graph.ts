@@ -7,7 +7,7 @@ import { Base } from "../../inputs";
  */
 export interface BRepGraphResult {
     ok: boolean;
-    error?: string;
+    error?: string | undefined;
 }
 
 /**
@@ -338,7 +338,7 @@ export interface BRepGraphDumpResult extends BRepGraphResult {
  */
 export interface BRepGraphNodeLookup {
     valid: boolean;
-    kind?: string;
-    index?: number;
-    uid?: number;
+    kind?: string | undefined;
+    index?: number | undefined;
+    uid?: number | undefined;
 }

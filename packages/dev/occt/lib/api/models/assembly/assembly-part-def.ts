@@ -12,5 +12,5 @@ export interface AssemblyPartDef<T> {
     /** Display name for the part */
     name: string;
     /** Optional color for the part */
-    colorRgba?: Base.ColorRGBA;
+    colorRgba?: Base.ColorRGBA | undefined;
 }
