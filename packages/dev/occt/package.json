@@ -41,7 +41,7 @@
     "scripts": {
         "build": "tsc -p tsconfig.bitbybit.json",
         "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run copy-readme-license && npm run delete-coverage && npm run delete-bak",
-        "copy-package": "shx cp -R ./package.json ./dist/package.json",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
         "copy-occt": "shx cp -R ./bitbybit-dev-occt ./dist && shx cp -R ./bitbybit-dev-occt-64-bit ./dist && shx cp -R ./bitbybit-dev-occt-64-bit-mt ./dist",
         "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
@@ -77,7 +77,8 @@
         "@babel/preset-typescript": "7.28.5",
         "jest-html-reporters": "3.1.7",
         "@typescript-eslint/parser": "8.59.4",
-        "@typescript-eslint/eslint-plugin": "8.59.4"
+        "@typescript-eslint/eslint-plugin": "8.59.4",
+        "jest-environment-node": "30.4.1"
     },
     "jest": {
         "preset": "ts-jest",

@@ -43,7 +43,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.bitbybit.json",
     "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage && npm run delete-mocks",
-    "copy-package": "shx cp -R ./package.json ./dist",
+    "copy-package": "node ../../../scripts/dist-manifest.mjs",
     "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
     "delete-coverage": "shx rm -rf ./dist/coverage || true",
     "delete-mocks": "shx rm -rf ./dist/__mocks__ || true",
@@ -87,7 +87,7 @@
       ".ts"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!playcanvas|@bitbybit-dev)"
+      "node_modules/(?!\\.pnpm|playcanvas|@bitbybit-dev)"
     ],
     "moduleNameMapper": {
       "^@bitbybit-dev/base$": "<rootDir>/../base/dist/index.js",

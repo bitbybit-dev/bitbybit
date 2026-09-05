@@ -1,0 +1,29 @@
+# The thirteen published packages are one workspace: a sibling links as a symlink instead of
+# installing from the registry at the same version, one lockfile replaces fourteen, and the graph
+# is walked in dependency order. docs/ and examples/ stay outside on purpose - each is its own app.
+packages:
+  - packages/dev/*
+
+# The manifests keep exact registry pins (the lockstep version, held by the parent repo's syncpack),
+# so this is what turns them into local links: a pin that matches the sibling's version links, one
+# that does not falls back to the registry - and the lockfile shows which.
+linkWorkspacePackages: true
+
+# pnpm 11 waits a day before installing a fresh release; our own packages are released together
+# and consumed the same day.
+minimumReleaseAgeExclude:
+  - "@bitbybit-dev/*"
+
+# pnpm 11 runs no dependency's install script until it is listed here, and refuses the install
+# while any is unreviewed (it writes the unreviewed names into this block itself - replace the
+# placeholder, never leave it). canvas is the one that must run: jsdom picks it up in the renderer
+# packages' jest suites, and its script downloads the prebuilt binary. The rest are reviewed off:
+# core-js prints a funding banner; @parcel/watcher is sass's optional watcher and nothing here
+# watches; unrs-resolver (jest) and webworker-threads (verb-nurbs-web, a browser library) ship or
+# need native code that the platform packages or the browser make unnecessary.
+allowBuilds:
+  canvas: true
+  core-js: false
+  "@parcel/watcher": false
+  unrs-resolver: false
+  webworker-threads: false

@@ -43,7 +43,7 @@
     "scripts": {
         "build": "tsc -p tsconfig.bitbybit.json",
         "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
-        "copy-package": "shx cp -R ./package.json ./dist",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
         "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
@@ -79,7 +79,8 @@
         "@babel/core": "7.29.0",
         "@babel/preset-env": "7.29.5",
         "@babel/preset-typescript": "7.28.5",
-        "jest-html-reporters": "3.1.7"
+        "jest-html-reporters": "3.1.7",
+        "jest-environment-node": "30.4.1"
     },
     "jest": {
         "preset": "ts-jest",
@@ -90,7 +91,7 @@
             ".ts"
         ],
         "transformIgnorePatterns": [
-            "node_modules/(?!@babylonjs|@bitbybit-dev)"
+            "node_modules/(?!\\.pnpm|@babylonjs|@bitbybit-dev)"
         ],
         "collectCoverageFrom": [
             "lib/workers/**/*",

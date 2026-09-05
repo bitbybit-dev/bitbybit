@@ -143,7 +143,12 @@ For first-time developers working on this project, follow these steps to set up 
    cd bitbybit
    ```
 
-2. Run the complete first-time setup (this will install all dependencies, build all packages, and run all unit tests):
+2. Install pnpm 11 once (the packages are one pnpm workspace; the `packageManager` field pins the exact version):
+   ```bash
+   npm install -g pnpm@11
+   ```
+
+3. Run the complete first-time setup (this will install all dependencies, build all packages, and run all unit tests):
    ```bash
    npm run first-time-setup
    ```
@@ -154,7 +159,8 @@ For first-time developers working on this project, follow these steps to set up 
 - `npm run setup` - Install dependencies and build all packages without running tests
 - `npm run setup-and-test` - Install dependencies, build packages, and run all unit tests
 - `npm run test` - Run all unit tests (requires packages to be built first)
-- `npm run ci-packages` - Install dependencies for all packages
+- `npm run ci-packages` - Install dependencies for all packages (one `pnpm install --frozen-lockfile` for the workspace)
+- `npm run refresh-lockfile` - Rewrite `pnpm-lock.yaml` after a dependency change, without touching node_modules
 - `npm run build-packages` - Build all packages
 - `npm run rebuild-all-packages` - Clean and rebuild all packages
 
@@ -173,7 +179,7 @@ You can also run tests for individual packages:
 If you encounter issues during setup:
 1. Make sure you have Node.js v16+ installed
 2. Clear npm cache: `npm cache clean --force`
-3. Delete node_modules and package-lock.json, then run `npm install`
+3. Delete `node_modules` at the root and under `packages/dev/*`, then run `pnpm install`
 
 ## Major Dependencies
 BabylonJS, ThreeJS, PlayCanvas, OpenCascade, Manifold, JSCAD, Verbnurbs

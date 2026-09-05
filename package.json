@@ -1,21 +1,12 @@
 {
     "name": "bitbybit",
     "version": "1.1.1",
+    "private": true,
     "description": "Monorepo for browser CAD which holds bitbybit.dev npm packages",
+    "packageManager": "pnpm@11.25.0",
     "main": "index.js",
     "scripts": {
-        "ci-base": "cd packages/dev/base && npm install",
-        "ci-core": "cd packages/dev/core && npm install",
-        "ci-threejs": "cd packages/dev/threejs && npm install",
-        "ci-playcanvas": "cd packages/dev/playcanvas && npm install",
-        "ci-babylonjs": "cd packages/dev/babylonjs && npm install",
-        "ci-occt-worker": "cd packages/dev/occt-worker && npm install",
-        "ci-occt": "cd packages/dev/occt && npm install",
-        "ci-jscad-worker": "cd packages/dev/jscad-worker && npm install",
-        "ci-jscad": "cd packages/dev/jscad && npm install",
-        "ci-manifold-worker": "cd packages/dev/manifold-worker && npm install",
-        "ci-manifold": "cd packages/dev/manifold && npm install",
-        "ci-packages": "npm run ci-base && npm run ci-core && npm run ci-threejs && npm run ci-playcanvas && npm run ci-babylonjs && npm run ci-occt-worker && npm run ci-occt && npm run ci-jscad-worker && npm run ci-jscad && npm run ci-manifold-worker && npm run ci-manifold",
+        "ci-packages": "pnpm install --frozen-lockfile",
         "rm-dist-base-if-exists": "shx rm -rf packages/dev/base/dist",
         "rm-dist-core-if-exists": "shx rm -rf packages/dev/core/dist",
         "rm-dist-threejs-if-exists": "shx rm -rf packages/dev/threejs/dist",
@@ -55,10 +46,10 @@
         "test-manifold-worker": "cd packages/dev/manifold-worker && npm run test-c",
         "check:worker-parity": "node scripts/worker-parity.mjs",
         "test": "npm run check:worker-parity && npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs && npm run test-playcanvas && npm run test-babylonjs && npm run test-occt-worker && npm run test-jscad-worker && npm run test-manifold-worker",
-        "refresh-lockfiles": "cd packages/dev/base && npm install --package-lock-only && cd ../core && npm install --package-lock-only && cd ../threejs && npm install --package-lock-only && cd ../playcanvas && npm install --package-lock-only && cd ../babylonjs && npm install --package-lock-only && cd ../occt-worker && npm install --package-lock-only && cd ../occt && npm install --package-lock-only && cd ../jscad-worker && npm install --package-lock-only && cd ../jscad && npm install --package-lock-only && cd ../manifold-worker && npm install --package-lock-only && cd ../manifold && npm install --package-lock-only",
+        "refresh-lockfile": "pnpm install --lockfile-only",
         "setup": "npm run install-rebuild-all-packages",
         "setup-and-test": "npm run setup && npm run test",
-        "first-time-setup": "npm install && npm run setup-and-test"
+        "first-time-setup": "npm run setup-and-test"
     },
     "repository": {
         "type": "git",

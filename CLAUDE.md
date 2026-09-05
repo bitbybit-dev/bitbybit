@@ -23,9 +23,22 @@ The packages form a dependency DAG and must be built in order. `npm run build-pa
 base -> occt -> jscad -> manifold -> occt-worker -> jscad-worker -> manifold-worker -> core -> babylonjs -> threejs -> playcanvas
 ```
 
-`ci-packages` and the per-package `ci-*` scripts do the same for CI. Note this ordering is
-maintained by hand and is **not identical** to the publish order in `README.md`; when you change
-one, check the other.
+Note this ordering is maintained by hand and is **not identical** to the publish order in
+`README.md`; when you change one, check the other.
+
+## The workspace
+
+The thirteen packages under `packages/dev/` are one pnpm workspace (`pnpm-workspace.yaml`): one
+`pnpm install` at the root - `npm run ci-packages` is exactly that, frozen to the lockfile - installs
+all of them, and a sibling dependency whose exact pin matches the sibling's version becomes a
+symlink instead of a registry copy (`linkWorkspacePackages`). One `pnpm-lock.yaml` replaces the
+per-package npm locks; `npm run refresh-lockfile` rewrites it without touching node_modules. The
+manifests keep exact registry pins on purpose and never the `workspace:` protocol: `dist/` is what
+npm publishes, and `copy-package` writes its manifest through `scripts/dist-manifest.mjs`, which
+refuses a `workspace:`, `link:` or `file:` specifier. A dependency's install script runs only when
+`allowBuilds` lists it - pnpm refuses the install while one is unreviewed, so a new native
+dependency shows up as a decision, not as a silent skip. Use pnpm 11 (`npm install -g pnpm@11`);
+the `packageManager` field pins the exact version and pnpm switches to it on its own.
 
 `npm test` at the root runs every package suite, after `npm run check:worker-parity`: each worker
 package mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends
