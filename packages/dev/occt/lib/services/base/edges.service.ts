@@ -89,7 +89,7 @@ export class EdgesService {
     }
 
     fixEdgeOrientationsAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire {
-        const edges = [];
+        const edges: TopoDS_Edge[] = [];
         this.iteratorService.forEachEdgeAlongWire(inputs.shape, (_i, edge) => {
             edges.push(edge);
         });
@@ -521,7 +521,7 @@ export class EdgesService {
             locationEnd.delete();
         }
 
-        let resultingSol = [];
+        let resultingSol: TopoDS_Shape[] = [];
 
         if (inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
             resultingSol = [...solutions];

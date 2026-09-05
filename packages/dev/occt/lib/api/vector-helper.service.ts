@@ -24,8 +24,8 @@ export class VectorHelperService {
     }
 
     // Algorithm works with arbitrary length numeric vectors. 
-    removeConsecutiveDuplicates(vectors: number[][], checkFirstAndLast = true): number[][] {
-        const vectorsRemaining: number[][] = [];
+    removeConsecutiveDuplicates<T extends number[]>(vectors: T[], checkFirstAndLast = true): T[] {
+        const vectorsRemaining: T[] = [];
         if (vectors.length > 1) {
             for (let i = 1; i < vectors.length; i++) {
                 const currentVector = vectors[i];

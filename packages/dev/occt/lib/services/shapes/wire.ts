@@ -86,7 +86,7 @@ export class OCCTWire {
     }
 
     fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto) {
-        const wires = [];
+        const wires: TopoDS_Wire[] = [];
         inputs.mesh.forEach((triangle) => {
             try {
                 wires.push(this.fromBaseTriangle({ triangle }));
@@ -459,7 +459,7 @@ export class OCCTWire {
     }
 
     projectWires(inputs: Inputs.OCCT.ProjectWiresDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Compound[] {
-        const shapes = [];
+        const shapes: TopoDS_Compound[] = [];
         inputs.wires.forEach(wire => {
             const gpDir = this.och.entitiesService.gpDir(inputs.direction);
             const proj = new this.occ.BRepProj_Projection(wire, inputs.shape, gpDir);

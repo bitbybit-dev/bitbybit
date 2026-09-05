@@ -24,7 +24,8 @@
             "@bitbybit-dev/base/*": [
                 "../base/dist/*"
             ]
-        }
+        },
+        "noImplicitAny": true
     },
     "references": [
         {

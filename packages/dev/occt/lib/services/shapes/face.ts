@@ -34,7 +34,7 @@ export class OCCTFace {
     }
 
     fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto) {
-        const faces = [];
+        const faces: TopoDS_Face[] = [];
         inputs.mesh.forEach((triangle) => {
             try {
                 faces.push(this.fromBaseTriangle({ triangle }));

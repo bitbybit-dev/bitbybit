@@ -1,4 +1,4 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Shape, gp_Trsf, gp_GTrsf } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ConverterService } from "./converter.service";
@@ -55,7 +55,7 @@ export class TransformsService {
         return result;
     }
 
-    translate(inputs: Inputs.OCCT.TranslateDto<TopoDS_Shape>) {
+    translate(inputs: Inputs.OCCT.TranslateDto<TopoDS_Shape>): TopoDS_Shape {
         const transformation = new this.occ.gp_Trsf();
         const gpVec = new this.occ.gp_Vec(inputs.translation[0], inputs.translation[1], inputs.translation[2]);
         transformation.SetTranslation(gpVec);
@@ -69,7 +69,7 @@ export class TransformsService {
         return shp;
     }
 
-    mirror(inputs: Inputs.OCCT.MirrorDto<TopoDS_Shape>) {
+    mirror(inputs: Inputs.OCCT.MirrorDto<TopoDS_Shape>): TopoDS_Shape {
         const transformation = new this.occ.gp_Trsf();
         const ax1 = this.entitiesService.gpAx1(inputs.origin, inputs.direction);
         transformation.SetMirrorAx1(ax1);
@@ -85,7 +85,7 @@ export class TransformsService {
         return shp;
     }
 
-    mirrorAlongNormal(inputs: Inputs.OCCT.MirrorAlongNormalDto<TopoDS_Shape>) {
+    mirrorAlongNormal(inputs: Inputs.OCCT.MirrorAlongNormalDto<TopoDS_Shape>): TopoDS_Shape {
         const transformation = new this.occ.gp_Trsf();
         const ax = this.entitiesService.gpAx2(inputs.origin, inputs.normal);
         transformation.SetMirrorOnPlane(ax);
@@ -99,7 +99,7 @@ export class TransformsService {
         return shp;
     }
 
-    rotate(inputs: Inputs.OCCT.RotateDto<TopoDS_Shape>) {
+    rotate(inputs: Inputs.OCCT.RotateDto<TopoDS_Shape>): TopoDS_Shape {
         let rotated;
         if (inputs.angle === 0) {
             rotated = inputs.shape;
@@ -129,7 +129,7 @@ export class TransformsService {
         return actualShape;
     }
 
-    align(inputs: Inputs.OCCT.AlignDto<TopoDS_Shape>) {
+    align(inputs: Inputs.OCCT.AlignDto<TopoDS_Shape>): TopoDS_Shape {
         const transformation = new this.occ.gp_Trsf();
 
         const ax1 = this.entitiesService.gpAx3_4(inputs.fromOrigin, inputs.fromDirection);
@@ -151,7 +151,7 @@ export class TransformsService {
         return shp;
     }
 
-    alignNormAndAxis(inputs: Inputs.OCCT.AlignNormAndAxisDto<TopoDS_Shape>) {
+    alignNormAndAxis(inputs: Inputs.OCCT.AlignNormAndAxisDto<TopoDS_Shape>): TopoDS_Shape {
         const transformation = new this.occ.gp_Trsf();
         const ax1 = this.entitiesService.gpAx3_3(inputs.fromOrigin, inputs.fromNorm, inputs.fromAx);
         const ax2 = this.entitiesService.gpAx3_3(inputs.toOrigin, inputs.toNorm, inputs.toAx);
@@ -358,7 +358,7 @@ export class TransformsService {
         ];
     }
 
-    private applyTrsf(shape: TopoDS_Shape, transformation): TopoDS_Shape {
+    private applyTrsf(shape: TopoDS_Shape, transformation: gp_Trsf): TopoDS_Shape {
         const transf = new this.occ.BRepBuilderAPI_Transform(shape, transformation, true);
         const s = transf.Shape();
         const shp = this.converterService.getActualTypeOfShape(s);
@@ -387,7 +387,7 @@ export class TransformsService {
         return rxyz;
     }
 
-    private trsfToMatrix(trsf): Inputs.Base.TransformMatrix {
+    private trsfToMatrix(trsf: gp_Trsf): Inputs.Base.TransformMatrix {
         return [
             trsf.Value(1, 1), trsf.Value(2, 1), trsf.Value(3, 1), 0,
             trsf.Value(1, 2), trsf.Value(2, 2), trsf.Value(3, 2), 0,
@@ -396,7 +396,7 @@ export class TransformsService {
         ];
     }
 
-    private gtrsfToMatrix(gtrsf): Inputs.Base.TransformMatrix {
+    private gtrsfToMatrix(gtrsf: gp_GTrsf): Inputs.Base.TransformMatrix {
         return [
             gtrsf.Value(1, 1), gtrsf.Value(2, 1), gtrsf.Value(3, 1), 0,
             gtrsf.Value(1, 2), gtrsf.Value(2, 2), gtrsf.Value(3, 2), 0,

@@ -34,35 +34,35 @@ export class OCCTFillets {
         return this.och.filletsService.filletEdgesSameVariableRadius(inputs);
     }
 
-    chamferEdges(inputs: Inputs.OCCT.ChamferDto<TopoDS_Shape>) {
+    chamferEdges(inputs: Inputs.OCCT.ChamferDto<TopoDS_Shape>): TopoDS_Shape {
         return this.och.filletsService.chamferEdges(inputs);
     }
 
-    chamferEdgesList(inputs: Inputs.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>) {
+    chamferEdgesList(inputs: Inputs.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
         return this.och.filletsService.chamferEdgesList(inputs);
     }
 
-    chamferEdgeDistAngle(inputs: Inputs.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>) {
+    chamferEdgeDistAngle(inputs: Inputs.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         return this.och.filletsService.chamferEdgeDistAngle(inputs);
     }
 
-    chamferEdgesDistAngle(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>) {
+    chamferEdgesDistAngle(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         return this.och.filletsService.chamferEdgesDistAngle(inputs);
     }
 
-    chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>) {
+    chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         return this.och.filletsService.chamferEdgesDistsAngles(inputs);
     }
 
-    chamferEdgeTwoDistances(inputs: Inputs.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>) {
+    chamferEdgeTwoDistances(inputs: Inputs.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         return this.och.filletsService.chamferEdgeTwoDistances(inputs);
     }
 
-    chamferEdgesTwoDistances(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>) {
+    chamferEdgesTwoDistances(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         return this.och.filletsService.chamferEdgesTwoDistances(inputs);
     }
 
-    chamferEdgesTwoDistancesLists(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesListsDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>) {
+    chamferEdgesTwoDistancesLists(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesListsDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
         return this.och.filletsService.chamferEdgesTwoDistancesLists(inputs);
     }
 
@@ -90,7 +90,7 @@ export class OCCTFillets {
         return result;
     }
 
-    fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>) {
+    fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>): TopoDS_Shape[] {
         return inputs.shapes.map(shape => this.och.filletsService.fillet3DWire({
             shape,
             radius: inputs.radius,
@@ -100,7 +100,7 @@ export class OCCTFillets {
         }));
     }
 
-    fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>) {
+    fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>): TopoDS_Shape {
         return this.och.filletsService.fillet3DWire(inputs);
     }
 

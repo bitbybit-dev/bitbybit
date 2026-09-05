@@ -136,7 +136,7 @@ export class SolidsService {
     }
 
     filterSolidPoints(inputs: Inputs.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {
-        const points = [];
+        const points: Base.Point3[] = [];
         if (inputs.points.length > 0) {
             inputs.points.forEach(pt => {
                 const gpPnt = this.entitiesService.gpPnt(pt);

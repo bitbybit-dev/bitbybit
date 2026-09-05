@@ -67,7 +67,7 @@ export class OCCTEdge {
     }
 
     fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto) {
-        const edges = [];
+        const edges: TopoDS_Edge[][] = [];
         inputs.mesh.forEach((triangle) => {
             try {
                 edges.push(this.fromBaseTriangle({ triangle }));

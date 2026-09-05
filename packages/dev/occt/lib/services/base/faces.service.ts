@@ -466,7 +466,7 @@ export class FacesService {
         const surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
-        const params = [];
+        const params: number[] = [];
         const step = 1 / inputs.nrDivisions;
         for (let i = 0; i <= inputs.nrDivisions; i++) {
             const p = step * i;
@@ -704,7 +704,7 @@ export class FacesService {
             newFace.Reverse();
         }
 
-        let faces = [];
+        let faces: TopoDS_Face[] = [];
         if (inputs.holesToFaces) {
             faces = wires.map(wire => {
                 return this.createFaceFromWireOnFace({ wire, face: inputs.shape, inside: true });
@@ -909,7 +909,7 @@ export class FacesService {
             newFace.Reverse();
         }
 
-        let faces = [];
+        let faces: TopoDS_Face[] = [];
         if (inputs.holesToFaces) {
             faces = wires.map(wire => {
                 return this.createFaceFromWireOnFace({ wire, face: inputs.shape, inside: true });
@@ -1098,7 +1098,7 @@ export class FacesService {
                 const stepsU = stepU * j;
                 p = uMin + (inputs.shiftHalfStep ? halfStepU : 0) + stepsU;
             }
-            let uv;
+            let uv: Inputs.Base.Point2;
             if (inputs.isU) {
                 uv = [param, p];
             } else {

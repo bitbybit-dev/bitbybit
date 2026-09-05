@@ -396,11 +396,6 @@
       "count": 1
     }
   },
-  "packages/dev/occt/lib/services/assembly/manager.test.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 6
-    }
-  },
   "packages/dev/occt/lib/services/base/converter.service.ts": {
     "no-useless-assignment": {
       "count": 1
@@ -443,9 +438,6 @@
     }
   },
   "packages/dev/occt/lib/services/base/operations.service.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
     }

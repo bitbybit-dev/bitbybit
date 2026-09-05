@@ -34,6 +34,11 @@
       "code": "TS4111",
       "count": 4
     },
+    "f7a353da2ed1213c584cda5c0e4fa2d83032b71d": {
+      "file": "lib/occ-worker/command-handlers.ts",
+      "code": "TS18048",
+      "count": 1
+    },
     "39d75bb73c7e656acea4de6842ca18e9fb9b0ddd": {
       "file": "lib/occ-worker/occ-info.ts",
       "code": "TS2564",
@@ -62,6 +67,11 @@
     "c3e2c10bfa735c1ab49acde77dec9878e0269edc": {
       "file": "lib/occ-worker/occ-worker-mock.ts",
       "code": "TS2564",
+      "count": 1
+    },
+    "660788f3a1830455de7e0b0457b8989b07566d5b": {
+      "file": "lib/occ-worker/occ-worker.ts",
+      "code": "TS18048",
       "count": 1
     },
     "651c62a99ee2c26d2cdf34d3ab6e455a2d8faee5": {

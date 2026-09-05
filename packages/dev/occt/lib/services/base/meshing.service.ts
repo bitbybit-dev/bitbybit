@@ -18,7 +18,7 @@ export class MeshingService {
             adjustYtoZ: inputs.adjustYtoZ,
             computeMetadata: false,
         });
-        const res = [];
+        const res: Inputs.Base.Point3[][] = [];
         def.faceList.forEach(face => {
             const vertices = face.vertexCoord;
             const indices = face.triIndexes;
@@ -26,7 +26,7 @@ export class MeshingService {
                 const p1 = indices[i];
                 const p2 = indices[i + 1];
                 const p3 = indices[i + 2];
-                let pts = [
+                let pts: Inputs.Base.Point3[] = [
                     [vertices[p1 * 3], vertices[p1 * 3 + 1], vertices[p1 * 3 + 2]],
                     [vertices[p2 * 3], vertices[p2 * 3 + 1], vertices[p2 * 3 + 2]],
                     [vertices[p3 * 3], vertices[p3 * 3 + 1], vertices[p3 * 3 + 2]],
@@ -116,7 +116,7 @@ export class MeshingService {
         const res = this.base.mesh.meshMeshIntersectionPolylines({
             mesh1, mesh2
         });
-        const wires = [];
+        const wires: TopoDS_Wire[] = [];
         res.forEach(r => {
             if (r.points && r.points.length > 0) {
                 if (r.isClosed) {

@@ -13,7 +13,7 @@ export class EntitiesService {
         public readonly occ: BitbybitOcctModule,
     ) { }
 
-    createCircle(radius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum) {
+    createCircle(radius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum): TopoDS_Edge | TopoDS_Wire | TopoDS_Face {
         const ax = this.gpAx2(center, direction);
         if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
             const edge = this.occ.MakeCircleEdge(ax, radius);
@@ -36,7 +36,7 @@ export class EntitiesService {
         return wire;
     }
 
-    createEllipse(minorRadius: number, majorRadius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum) {
+    createEllipse(minorRadius: number, majorRadius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum): TopoDS_Edge | TopoDS_Wire | TopoDS_Face {
         const ax = this.gpAx2(center, direction);
         if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
             const edge = this.occ.MakeEllipseEdge(ax, majorRadius, minorRadius);

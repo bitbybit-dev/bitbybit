@@ -33,7 +33,7 @@ export class OCCTService {
     public readonly io: OCCTIO;
     public readonly path: OCCTPath;
     public readonly svg: OCCTSVG;
-    public plugins?;
+    public plugins?: { dependencies: { [key: string]: unknown }, [key: string]: unknown };
 
     constructor(
         occ: BitbybitOcctModule,

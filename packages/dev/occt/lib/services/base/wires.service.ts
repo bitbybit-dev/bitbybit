@@ -1187,7 +1187,7 @@ export class WiresService {
 
         lines.forEach((line) => {
             line.chars.forEach((char, index) => {
-                const characterWires = [];
+                const characterWires: TopoDS_Wire[] = [];
                 char.paths.forEach(polyline => {
                     const wire = this.createPolylineWire({ points: polyline });
                     if (wire) {
@@ -1247,7 +1247,7 @@ export class WiresService {
 
     wiresToPoints(inputs: Inputs.OCCT.WiresToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const wires = this.shapeGettersService.getWires({ shape: inputs.shape });
-        const allWirePoints = [];
+        const allWirePoints: Inputs.Base.Point3[][] = [];
         wires.forEach(w => {
             const edgePoints = this.edgesService.edgesToPoints({ ...inputs, shape: w });
             const flatPoints = edgePoints.flat();

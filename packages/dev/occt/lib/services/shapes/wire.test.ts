@@ -1,4 +1,4 @@
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
@@ -1657,7 +1657,7 @@ describe("OCCT wire unit tests", () => {
         });
         const split = wire.splitOnPoints({ shape: rectangle, points: pts });
         expect(split.length).toBe(10);
-        const edges = [];
+        const edges: TopoDS_Edge[][] = [];
         split.forEach(s => {
             edges.push(edge.getEdges({ shape: s }));
         });
@@ -1681,7 +1681,7 @@ describe("OCCT wire unit tests", () => {
         });
         const split = wire.splitOnPoints({ shape: rectangle, points: pts });
         expect(split.length).toBe(10);
-        const edges = [];
+        const edges: TopoDS_Edge[][] = [];
         split.forEach(s => {
             edges.push(edge.getEdges({ shape: s }));
         });
@@ -1705,7 +1705,7 @@ describe("OCCT wire unit tests", () => {
         });
         const split = wire.splitOnPoints({ shape: rectangle, points: pts });
         expect(split.length).toBe(10);
-        const edges = [];
+        const edges: TopoDS_Edge[][] = [];
         split.forEach(s => {
             edges.push(edge.getEdges({ shape: s }));
         });
