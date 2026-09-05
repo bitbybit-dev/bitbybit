@@ -161,8 +161,10 @@ For first-time developers working on this project, follow these steps to set up 
 - `npm run test` - Run all unit tests (requires packages to be built first)
 - `npm run ci-packages` - Install dependencies for all packages (one `pnpm install --frozen-lockfile` for the workspace)
 - `npm run refresh-lockfile` - Rewrite `pnpm-lock.yaml` after a dependency change, without touching node_modules
-- `npm run build-packages` - Build all packages
-- `npm run rebuild-all-packages` - Clean and rebuild all packages
+- `npm run build-packages` - Build and stage all packages (`tsc -b` over generated project references, run by pnpm in dependency order)
+- `npm run rebuild-all-packages` - Empty every dist, then build all packages
+- `npm run gen:references` - Regenerate the TypeScript project references from the package manifests after a dependency change
+- `npm run check:references` - Fail if the project references and the manifests disagree (the first step of `npm test`)
 
 ### Running Individual Package Tests
 You can also run tests for individual packages:

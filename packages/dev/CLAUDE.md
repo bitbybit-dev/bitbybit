@@ -6,12 +6,13 @@ Thirteen packages, all published to npm: `base`, `occt`, `occt-worker`, `jscad`,
 
 They form a DAG. `base` is the root and depends on nothing; `core` sits on `base` and the three
 workers; `babylonjs`, `threejs` and `playcanvas` each sit on `core` and carry their engine as a peer
-or hard dependency. Build order matters - `npm run build-packages` at the repo root walks it.
+or hard dependency. The build order is derived from these manifests - see "Building the packages"
+in the root CLAUDE.md; `npm run build-packages` at the repo root runs it.
 
 ## Per-package commands (run from the package directory)
 
 ```bash
-npm run build       # tsc -p tsconfig.bitbybit.json
+npm run build       # tsc -b tsconfig.bitbybit.json - builds the siblings it references first
 npm run build-p     # build, then stage dist/ for publishing (package.json, README, LICENSE, assets)
 npm test            # jest, watch mode
 npm run test-c      # jest with coverage, single run

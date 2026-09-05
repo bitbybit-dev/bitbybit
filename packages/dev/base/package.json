@@ -45,7 +45,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.bitbybit.json",
+    "build": "tsc -b tsconfig.bitbybit.json",
+    "clean-dist": "shx rm -rf dist",
     "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
     "copy-package": "node ../../../scripts/dist-manifest.mjs",
     "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",

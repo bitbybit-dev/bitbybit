@@ -17,14 +17,24 @@ Start with `README.md` for the project overview and `CONTRIBUTING.md` before ope
 
 ## Building the packages
 
-The packages form a dependency DAG and must be built in order. `npm run build-packages` walks it:
+The packages form a dependency DAG, and the order has one source: each package's `package.json`
+dependencies. `scripts/gen-ts-references.mjs` turns them into TypeScript project references -
+every `tsconfig.bitbybit.json` is a composite project that references the siblings its manifest
+declares, and `tsconfig.build.json` at the root references all eleven - so `tsc -b` orders the
+compiles itself and rebuilds only what changed. `npm run build-packages` is `pnpm -r run build-p`:
+pnpm orders the eleven stagings by the same manifests, and each `build-p` compiles with `tsc -b`
+(which builds the siblings it references first), then stages dist/ for publishing.
+`npm run rebuild-all-packages` empties every dist first; `tsc -b tsconfig.build.json --verbose`
+prints the order it derives and what it considered up to date.
 
-```
-base -> occt -> jscad -> manifold -> occt-worker -> jscad-worker -> manifold-worker -> core -> babylonjs -> threejs -> playcanvas
-```
-
-Note this ordering is maintained by hand and is **not identical** to the publish order in
-`README.md`; when you change one, check the other.
+After changing a dependency between packages, run `npm run gen:references` and commit the result.
+`npm run check:references`, the first step of `npm test`, fails when the references and the
+manifests disagree - nothing about the order is written by hand any more, and a second hand-written
+list must not come back. Two things are placed on purpose: the build info sits in each dist/
+(`tsc -b` trusts it over the outputs when it decides a project is up to date, so it has to vanish
+with the dist it describes, and the `.npmignore` that `copy-package` writes keeps it out of the
+tarball), and every build config excludes `dist` and `coverage`, whose files TypeScript would
+otherwise read as inputs.
 
 ## The workspace
 
