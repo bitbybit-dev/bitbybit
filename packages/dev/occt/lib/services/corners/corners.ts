@@ -11,6 +11,14 @@ export class OCCTCorners {
         private readonly och: OccHelper
     ) { }
 
+    /**
+     * Rounds (fillets) the corner(s) of a shell or solid nearest the given point(s), affecting the corner only
+     * @param inputs Shape, points near corners, radius, taper factor, snap tolerance and mode
+     * @returns OpenCascade shape with rounded corner(s)
+     * @group by point
+     * @shortname fillet corner by point
+     * @drawable true
+     */
     filletCornerByPoint(inputs: Inputs.OCCT.FilletCornerByPointDto<TopoDS_Shape>): TopoDS_Shape {
         const points = this.pointsToVectorDouble(inputs.points);
         const mode = this.cornerModeToNumber(inputs.mode);
@@ -25,6 +33,14 @@ export class OCCTCorners {
         return shape;
     }
 
+    /**
+     * Bevels (chamfers) the corner(s) of a shell or solid nearest the given point(s), affecting the corner only
+     * @param inputs Shape, points near corners, distance, angle, snap tolerance and mode
+     * @returns OpenCascade shape with beveled corner(s)
+     * @group by point
+     * @shortname chamfer corner by point
+     * @drawable true
+     */
     chamferCornerByPoint(inputs: Inputs.OCCT.ChamferCornerByPointDto<TopoDS_Shape>): TopoDS_Shape {
         const points = this.pointsToVectorDouble(inputs.points);
         const mode = this.cornerModeToNumber(inputs.mode);
@@ -39,6 +55,14 @@ export class OCCTCorners {
         return shape;
     }
 
+    /**
+     * Classifies the corner(s) nearest the given point(s) without modifying the shape
+     * @param inputs Shape, points near corners and snap tolerance
+     * @returns Per-point classification report
+     * @group by point
+     * @shortname classify corner by point
+     * @drawable false
+     */
     classifyCornerByPoint(inputs: Inputs.OCCT.ClassifyCornerByPointDto<TopoDS_Shape>): Models.OCCT.CornerByPointReport {
         const points = this.pointsToVectorDouble(inputs.points);
         const json = this.occ.ClassifyCornerByPoint(inputs.shape, points, inputs.snapTolerance);
@@ -46,6 +70,14 @@ export class OCCTCorners {
         return JSON.parse(json) as Models.OCCT.CornerByPointReport;
     }
 
+    /**
+     * Runs the corner fillet and returns a per-point diagnostic report alongside it
+     * @param inputs Shape, points near corners, radius, taper factor, snap tolerance and mode
+     * @returns Per-point corner report
+     * @group by point
+     * @shortname corner by point report
+     * @drawable false
+     */
     cornerByPointReport(inputs: Inputs.OCCT.FilletCornerByPointDto<TopoDS_Shape>): Models.OCCT.CornerByPointReport {
         const points = this.pointsToVectorDouble(inputs.points);
         const mode = this.cornerModeToNumber(inputs.mode);

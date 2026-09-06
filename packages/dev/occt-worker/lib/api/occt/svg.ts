@@ -2,8 +2,10 @@ import { Inputs } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 
 /**
- * SVG importer (worker facade). Parses an SVG document and builds OCCT
- * wires/faces, laid on the ground and aligned per the import options.
+ * SVG importer. Parses an SVG document (XML, the path mini-language, transforms, presentation
+ * style cascade and basic shapes), reduces it to the generic path vocabulary and builds OCCT
+ * wires/faces laid on the ground and aligned per the import options, with per-element
+ * colour/stroke metadata bundled alongside each shape.
  */
 export class OCCTSVG {
 

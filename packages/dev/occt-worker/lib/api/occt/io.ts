@@ -272,7 +272,7 @@ export class OCCTIO {
      * - name: Part or assembly name
      * - isAssembly: Whether this is an assembly node (has children)
      * - visible: Visibility flag
-     * - color: Surface color (if set) with r, g, b, a components
+     * - colorRgba: Surface color (if set) with r, g, b, a components
      * - transform: 4x4 transformation matrix in column-major order (if not identity)
      * 
      * @param inputs - STEP file content. Accepts File, Blob, string, ArrayBuffer, or Uint8Array.

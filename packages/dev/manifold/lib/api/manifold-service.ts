@@ -6,6 +6,10 @@ import { Mesh } from "./services/mesh/mesh";
 import { BaseBitByBit } from "../base";
 
 // Worker make an instance of this class itself
+/**
+ * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
+ * Thanks Manifold community for developing this kernel
+ */
 export class ManifoldService {
     plugins: any;
 
@@ -21,6 +25,14 @@ export class ManifoldService {
         this.mesh = new Mesh(wasm);
     }
 
+    /**
+     * Turns manifold shape into a collection of polygon points representing the mesh.
+     * @param inputs Manifold shape
+     * @returns polygon points
+     * @group decompose
+     * @shortname to polygon points
+     * @drawable false
+     */
     toPolygonPoints(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Inputs.Base.Mesh3 {
         // Ensure the manifold is decomposed to access the mesh data.
         // The getMesh() method provides the necessary structure.
@@ -80,6 +92,14 @@ export class ManifoldService {
         }
     }
 
+    /**
+     * Decomposes manifold or cross section shape into a mesh or simple polygons
+     * @param inputs Manifold shape or cross section
+     * @returns Decomposed mesh definition or simple polygons
+     * @group decompose
+     * @shortname decompose m or cs
+     * @drawable false
+     */
     decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
         if ((inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh) {
             return (inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh(inputs.normalIdx);
@@ -88,6 +108,14 @@ export class ManifoldService {
         }
     }
 
+    /**
+     * Decomposes manifold or cross section shape into a mesh or simple polygons
+     * @param inputs Manifold shapes or cross sections
+     * @returns Decomposed mesh definitions or a list of simple polygons
+     * @group decompose
+     * @shortname decompose m's or cs's
+     * @drawable false
+     */
     decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Manifold3D.Manifold | Manifold3D.CrossSection>): (Manifold3D.Mesh | Manifold3D.SimplePolygon[])[] {
         return inputs.manifoldsOrCrossSections.map((manifoldOrCrossSection, index) => {
             const normalIdx = inputs.normalIdx ? inputs.normalIdx[index] : undefined;

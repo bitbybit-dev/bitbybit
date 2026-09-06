@@ -11,6 +11,15 @@ export class OCCTShell {
     ) {
     }
 
+    /**
+     * Returns debug info about the shell: face/edge counts, total surface area and per-face surface
+     * debug info (type, U/V degree, poles/knots, bounds, area, ...).
+     * @param inputs shell
+     * @returns Shell debug info
+     * @group debug
+     * @shortname shell debug info
+     * @drawable false
+     */
     debugInfo(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): Models.OCCT.ShellDebugInfo {
         if (!inputs.shape || inputs.shape.IsNull()) {
             return { valid: false, nbFaces: 0, nbEdges: 0, area: 0, faces: [] };
@@ -22,6 +31,14 @@ export class OCCTShell {
         return { valid: true, nbFaces: faces.length, nbEdges: edges.length, area, faces: faceInfos };
     }
 
+    /**
+     * Creates a shell from faces
+     * @param inputs OpenCascade shell and faces
+     * @returns OpenCascade shell
+     * @group create
+     * @shortname sew
+     * @drawable true
+     */
     sewFaces(inputs: Inputs.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
         return this.och.shellsService.sewFaces(inputs);
     }
@@ -30,6 +47,14 @@ export class OCCTShell {
         return this.occ.BRep_Tool_IsClosed(inputs.shape);
     }
 
+    /**
+     * Get shell surface area
+     * @param inputs shell shape
+     * @returns Surface area
+     * @group get
+     * @shortname area
+     * @drawable false
+     */
     getShellSurfaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): number {
         return this.och.shellsService.getShellSurfaceArea(inputs);
     }

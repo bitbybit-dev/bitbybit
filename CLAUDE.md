@@ -105,8 +105,10 @@ dependency a manifest forgot, or a shipped build info file fails there and not o
 `npm test` at the root runs every package suite, after `npm run check:worker-parity`: each worker
 package mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends
 a path the kernel lacks, when a kernel method has no mirror outside the allow-list, when signatures
-disagree, or when the worker's path set differs from the committed snapshot (those paths are
-persisted in users' saved scripts). A deliberate surface change is accepted with `--update`.
+disagree, when the JSDoc on a mirrored method or class reads differently on the two sides, or when
+the worker's path set differs from the committed snapshot (those paths are persisted in users' saved
+scripts). A deliberate surface change is accepted with `--update`; a doc change is made on the
+kernel and copied to the worker (see `packages/dev/CLAUDE.md`).
 
 Every runner writes its results as JSON into a `test-results/` folder next to the code it tested
 (`test-c` in the jest packages, the SDK's vitest config), and coverage leaves

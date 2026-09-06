@@ -20,10 +20,10 @@ type BuiltScene = {
 };
 
 /**
- * SVG importer: parses an SVG document entirely in TypeScript (XML, the path
- * mini-language, transforms, presentation style cascade and basic shapes),
- * reduces it to the generic path vocabulary, and builds OCCT wires/faces with
- * per-element colour/stroke metadata bundled alongside each shape.
+ * SVG importer. Parses an SVG document (XML, the path mini-language, transforms, presentation
+ * style cascade and basic shapes), reduces it to the generic path vocabulary and builds OCCT
+ * wires/faces laid on the ground and aligned per the import options, with per-element
+ * colour/stroke metadata bundled alongside each shape.
  */
 export class OCCTSVG {
     private readonly builder: PathBuilder;
@@ -177,9 +177,13 @@ export class OCCTSVG {
     }
 
     /**
-     * Parse an SVG document and build a single compound shape containing every drawable element,
-     * laid on the ground and aligned according to the import options. Use this when you want the
-     * drawing as one shape to draw, extrude or transform.
+     * Parses an SVG document and builds a single compound shape containing every drawable element,
+     * laid on the ground and aligned per the import options. Use this to draw, extrude or transform
+     * the whole drawing as one shape.
+     * @param inputs SVG text and import/placement options
+     * @group io
+     * @shortname load svg
+     * @drawable true
      */
     loadSVG(inputs: Inputs.OCCT.LoadSVGDto): TopoDS_Compound {
         const { placed } = this.buildAndPlace(inputs);
@@ -190,9 +194,13 @@ export class OCCTSVG {
     }
 
     /**
-     * Parse an SVG document and build an OCCT shape per drawable element, each bundled with its
-     * resolved metadata (fill/stroke/id/class), plus any warnings and the SVG view box. Use this
-     * when you need per-element shapes and their colours/styles.
+     * Parses an SVG document and builds an OCCT shape per drawable element, each bundled with its
+     * resolved fill/stroke/stroke-width metadata, plus warnings and the SVG view box. Use this when
+     * you need per-element shapes and their colours/styles. Faces are optional and best-effort.
+     * @param inputs SVG text and import/placement options
+     * @group io
+     * @shortname load svg structured
+     * @drawable false
      */
     loadSVGStructured(inputs: Inputs.OCCT.LoadSVGDto): Inputs.OCCT.SVGResult<TopoDS_Shape> {
         const { placed, warnings, viewBox } = this.buildAndPlace(inputs);

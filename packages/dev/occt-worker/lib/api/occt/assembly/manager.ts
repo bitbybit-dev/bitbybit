@@ -32,7 +32,7 @@ export class OCCTAssemblyManager {
      * Create a part definition for use in assembly structures.
      * This is a helper for visual programming - it simply wraps the inputs into a part object.
      * 
-     * @param inputs - Part details including id, shape, name, and optional color
+     * @param inputs - Part details including id, shape, name, and optional colorRgba
      * @returns Part definition that can be added to an assembly structure
      * @group assembly
      * @shortname create part
@@ -41,7 +41,7 @@ export class OCCTAssemblyManager {
      * @example
      * ```typescript
      * const box = await occt.shapes.solid.createBox({ width: 10, length: 10, height: 10 });
-     * const part = await occt.assembly.manager.createPart({ id: "box", shape: box, name: "Box", color: { r: 1, g: 0, b: 0, a: 1 } });
+     * const part = await occt.assembly.manager.createPart({ id: "box", shape: box, name: "Box", colorRgba: { r: 1, g: 0, b: 0, a: 1 } });
      * ```
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -194,6 +194,13 @@ export class OCCTAssemblyManager {
      * If existingDocument is provided and valid, the document will be cleared and 
      * updated instead of creating a new one. This is useful for updating an assembly
      * without allocating a new document each time.
+     * 
+     * When updating an existing document (existingDocument provided):
+     * - If `structure.removals` is provided, those labels are removed first
+     * - If `structure.partUpdates` is provided, those parts are updated (shape, name, color)
+     * - New `parts` and `nodes` are added to the document
+     * - If neither `removals` nor `partUpdates` is provided, the document is cleared first (backward compatible)
+     * - Use `clearDocument: false` in structure to preserve existing content while adding new parts/nodes
      * 
      * @param inputs - Assembly structure definition and optional existing document
      * @returns The document handle (reference to worker-side document, new or updated)

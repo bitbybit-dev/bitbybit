@@ -14,7 +14,12 @@
  *   2. every kernel method is mirrored by the worker, outside the allow-list of deliberate
  *      kernel-only surface (scripts/worker-parity.allow.json);
  *   3. the worker's path set equals the committed snapshot (scripts/worker-parity.snapshot.json),
- *      so any change to the public surface is a reviewed diff, never a side effect.
+ *      so any change to the public surface is a reviewed diff, never a side effect;
+ *   4. the JSDoc on a mirrored method, and on a mirrored class, reads the same on both sides
+ *      (indentation aside). The docs are authored on the kernel and describe the public API the
+ *      worker exposes; the worker's copy is what the declarations bundle and the visual editors
+ *      read, so a doc that drifts on either side fails here. Structural exceptions (one kernel
+ *      method behind several worker methods) are allow-listed under "docs" with a reason.
  * Plus a signature comparison: where both sides declare a return type, they must agree once the
  * worker's Promise wrapper and the pointer/handle type aliases are normalised; disagreements are
  * listed and fail unless allow-listed with a reason.
@@ -33,9 +38,9 @@ const ALLOW = path.join(ROOT, "scripts/worker-parity.allow.json");
 const update = process.argv.includes("--update");
 
 const PAIRS = [
-    { name: "occt", kernelDir: "packages/dev/occt/lib", kernelRoot: "OCCTService", workerDir: "packages/dev/occt-worker/lib/api" },
-    { name: "jscad", kernelDir: "packages/dev/jscad/lib", kernelRoot: "Jscad", workerDir: "packages/dev/jscad-worker/lib/api" },
-    { name: "manifold", kernelDir: "packages/dev/manifold/lib", kernelRoot: "ManifoldService", workerDir: "packages/dev/manifold-worker/lib/api" },
+    { name: "occt", kernelDir: "packages/dev/occt/lib", kernelRoot: "OCCTService", workerDir: "packages/dev/occt-worker/lib/api", workerRoot: "OCCT" },
+    { name: "jscad", kernelDir: "packages/dev/jscad/lib", kernelRoot: "Jscad", workerDir: "packages/dev/jscad-worker/lib/api", workerRoot: "JSCAD" },
+    { name: "manifold", kernelDir: "packages/dev/manifold/lib", kernelRoot: "ManifoldService", workerDir: "packages/dev/manifold-worker/lib/api", workerRoot: "ManifoldBitByBit" },
 ];
 
 function sourceFiles(dir) {
@@ -57,9 +62,16 @@ const parse = (file) => ts.createSourceFile(file, readFileSync(file, "utf8"), ts
 const isPublic = (node) => !(ts.getCombinedModifierFlags(node) & (ts.ModifierFlags.Private | ts.ModifierFlags.Protected | ts.ModifierFlags.Static));
 const nameOf = (node) => (node.name && ts.isIdentifier(node.name) ? node.name.text : null);
 const typeText = (node, sf) => (node ? node.getText(sf).replace(/\s+/g, "") : "");
+/** The JSDoc block directly above a declaration, or null. */
+function jsdocOf(node, sf) {
+    const blocks = (ts.getLeadingCommentRanges(sf.text, node.getFullStart()) || []).filter((r) => sf.text.substring(r.pos, r.pos + 3) === "/**");
+    return blocks.length ? sf.text.substring(blocks[blocks.length - 1].pos, blocks[blocks.length - 1].end) : null;
+}
+/** Two docs are the same when their lines read the same; indentation belongs to the file, not the doc. */
+const normaliseDoc = (doc) => (doc ? doc.split(/\r?\n/).map((l) => l.trim()).join("\n") : "");
 
-/** Every class declared under the kernel dir, by name. Kernel class names are unique per package. */
-function kernelClasses(dir) {
+/** Every class declared under a package dir, by name. Class names are unique per package. */
+function classesUnder(dir) {
     const classes = new Map();
     for (const file of sourceFiles(dir)) {
         const sf = parse(file);
@@ -75,14 +87,19 @@ function kernelClasses(dir) {
     return classes;
 }
 
-/** Walk the kernel from its root class exactly as the worker's path resolver would at runtime. */
-function kernelSurface(classes, rootName) {
+/**
+ * Walk a class tree from its root exactly as the worker's path resolver would at runtime: every
+ * public method by dotted path, and every class by the dotted prefix it sits at (the root is "").
+ */
+function classSurface(classes, rootName) {
     const surface = new Map();
+    const classDocs = new Map();
     const visitClass = (className, prefix, seen) => {
         const entry = classes.get(className);
         if (!entry || seen.has(className)) return;
         seen = new Set([...seen, className]);
         const { node, sf } = entry;
+        if (!classDocs.has(prefix)) classDocs.set(prefix, { className, doc: jsdocOf(node, sf), file: path.relative(ROOT, entry.file) });
         for (const clause of node.heritageClauses || []) {
             if (clause.token !== ts.SyntaxKind.ExtendsKeyword) continue;
             for (const t of clause.types) if (ts.isIdentifier(t.expression)) visitClass(t.expression.text, prefix, seen);
@@ -95,7 +112,7 @@ function kernelSurface(classes, rootName) {
             if (!name || !isPublic(member)) continue;
             const full = prefix ? `${prefix}.${name}` : name;
             if (ts.isMethodDeclaration(member)) {
-                surface.set(full, { params: member.parameters.map((p) => typeText(p.type, sf)), returns: typeText(member.type, sf) });
+                surface.set(full, { params: member.parameters.map((p) => typeText(p.type, sf)), returns: typeText(member.type, sf), doc: jsdocOf(member, sf), file: path.relative(ROOT, entry.file) });
             } else if (ts.isPropertyDeclaration(member) || ts.isParameter(member)) {
                 const t = member.type;
                 if (t && ts.isTypeReferenceNode(t) && ts.isIdentifier(t.typeName) && classes.has(t.typeName.text)) {
@@ -105,10 +122,10 @@ function kernelSurface(classes, rootName) {
         }
     };
     visitClass(rootName, "", new Set());
-    return surface;
+    return { surface, classDocs };
 }
 
-/** Every dotted path a worker method sends, with the sending method's signature. */
+/** Every dotted path a worker method sends, with the sending method's signature and doc. */
 function workerSurface(dir) {
     const surface = new Map();
     for (const file of sourceFiles(dir)) {
@@ -119,7 +136,7 @@ function workerSurface(dir) {
                 && node.expression.name.text === "genericCallToWorkerPromise"
                 && node.arguments.length && ts.isStringLiteral(node.arguments[0])) {
                 const p = node.arguments[0].text;
-                const sig = method ? { params: method.parameters.map((x) => typeText(x.type, sf)), returns: typeText(method.type, sf) } : { params: [], returns: "" };
+                const sig = method ? { params: method.parameters.map((x) => typeText(x.type, sf)), returns: typeText(method.type, sf), doc: jsdocOf(method, sf) } : { params: [], returns: "", doc: null };
                 if (!surface.has(p)) surface.set(p, { ...sig, file: path.relative(ROOT, file) });
             }
             ts.forEachChild(node, (child) => visit(child, method));
@@ -159,20 +176,25 @@ const failures = [];
 const problem = (pair, kind, detail) => failures.push(`${pair}: ${kind}: ${detail}`);
 
 for (const pair of PAIRS) {
-    const classes = kernelClasses(path.join(ROOT, pair.kernelDir));
+    const classes = classesUnder(path.join(ROOT, pair.kernelDir));
     const dup = [...classes.values()].filter((c) => c.duplicates.length);
     for (const d of dup) problem(pair.name, "duplicate kernel class name (walk is by name)", `${nameOf(d.node)} in ${path.relative(ROOT, d.file)} and ${d.duplicates.map((f) => path.relative(ROOT, f)).join(", ")}`);
     if (!classes.has(pair.kernelRoot)) { problem(pair.name, "kernel root class not found", pair.kernelRoot); continue; }
+    const workerClasses = classesUnder(path.join(ROOT, pair.workerDir));
+    if (!workerClasses.has(pair.workerRoot)) { problem(pair.name, "worker root class not found", pair.workerRoot); continue; }
 
-    const kernel = kernelSurface(classes, pair.kernelRoot);
+    const { surface: kernel, classDocs: kernelClassDocs } = classSurface(classes, pair.kernelRoot);
     const worker = workerSurface(path.join(ROOT, pair.workerDir));
+    const { classDocs: workerClassDocs } = classSurface(workerClasses, pair.workerRoot);
     const allowed = allow[pair.name] || {};
     // workerOnly: reserved commands the worker thread handles itself, never reaching the kernel.
     // kernelOnly: kernel methods deliberately not mirrored. signature: differences that are
-    // structural, not defects. Every entry carries its reason as the value.
+    // structural, not defects. docs: paths whose doc cannot read the same on both sides because
+    // the worker splits one kernel method into several. Every entry carries its reason as the value.
     const workerOnlyAllowed = new Set(Object.keys(allowed.workerOnly || {}));
     const kernelOnlyAllowed = new Set(Object.keys(allowed.kernelOnly || {}));
     const signatureAllowed = allowed.signature || {};
+    const docsAllowed = allowed.docs || {};
 
     const workerOnly = [...worker.keys()].filter((p) => !kernel.has(p) && !workerOnlyAllowed.has(p)).sort();
     const kernelOnly = [...kernel.keys()].filter((p) => !worker.has(p) && !kernelOnlyAllowed.has(p)).sort();
@@ -198,12 +220,34 @@ for (const pair of PAIRS) {
         if (paramsDiffer) drifts.push(`${p}: worker takes ${w.params.join(", ")} / kernel takes ${k.params.join(", ")}  (${w.file})`);
     }
 
-    console.log(`${pair.name}: kernel ${kernel.size} paths, worker ${worker.size} paths; allow-listed: ${workerOnlyAllowed.size} worker-only, ${kernelOnlyAllowed.size} kernel-only, ${Object.keys(signatureAllowed).length} signatures`);
+    const docDrifts = [];
+    const docsAllowedButAgreeing = [];
+    let docsCompared = 0;
+    for (const [p, w] of worker) {
+        const k = kernel.get(p);
+        if (!k) continue;
+        docsCompared++;
+        const same = normaliseDoc(w.doc) === normaliseDoc(k.doc);
+        if (docsAllowed[p]) { if (same) docsAllowedButAgreeing.push(p); continue; }
+        if (!same) docDrifts.push(`${p}: ${w.doc ? "worker" : "worker has no doc"}${k.doc ? "" : ", kernel has no doc"}  (${w.file} / ${k.file})`);
+    }
+    for (const p of Object.keys(docsAllowed)) if (!worker.has(p) || !kernel.has(p)) docDrifts.push(`${p}: docs allow-list entry names a path that is not mirrored`);
+    const classDocDrifts = [];
+    for (const [prefix, w] of workerClassDocs) {
+        const k = kernelClassDocs.get(prefix);
+        if (!k) { classDocDrifts.push(`"${prefix}": worker class ${w.className} has no kernel class at that prefix`); continue; }
+        if (normaliseDoc(w.doc) !== normaliseDoc(k.doc)) classDocDrifts.push(`"${prefix}": ${w.className} (${w.file}) / ${k.className} (${k.file})`);
+    }
+
+    console.log(`${pair.name}: kernel ${kernel.size} paths, worker ${worker.size} paths, ${docsCompared} docs and ${workerClassDocs.size} class docs compared; allow-listed: ${workerOnlyAllowed.size} worker-only, ${kernelOnlyAllowed.size} kernel-only, ${Object.keys(signatureAllowed).length} signatures, ${Object.keys(docsAllowed).length} docs`);
     for (const p of workerOnly) problem(pair.name, "worker sends a path the kernel does not have (runtime throw)", `${p}  (${worker.get(p).file})`);
     for (const p of kernelOnly) problem(pair.name, "kernel method not mirrored by the worker and not allow-listed", p);
     for (const p of staleAllow) problem(pair.name, "allow-list entry no longer needed", p);
     for (const p of driftsAllowedButAgreeing) problem(pair.name, "signature allow-list entry no longer needed (both sides agree)", p);
     for (const d of drifts) problem(pair.name, "signature drift", d);
+    for (const p of docsAllowedButAgreeing) problem(pair.name, "docs allow-list entry no longer needed (both sides read the same)", p);
+    for (const d of docDrifts) problem(pair.name, "method doc differs between kernel and worker", d);
+    for (const d of classDocDrifts) problem(pair.name, "class doc differs between kernel and worker", d);
 
     nextSnapshot[pair.name] = [...worker.keys()].sort();
     if (!update) {

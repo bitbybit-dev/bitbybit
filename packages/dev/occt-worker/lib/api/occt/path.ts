@@ -2,7 +2,7 @@ import { Inputs } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 
 /**
- * Generic 2D-path builder (worker facade). Describe a complex path with the
+ * Generic 2D-path builder. Describe a complex path with the
  * line/quadratic/cubic/arc vocabulary and build a wire or face in a single call.
  * SVG-agnostic; also used by the SVG importer.
  */

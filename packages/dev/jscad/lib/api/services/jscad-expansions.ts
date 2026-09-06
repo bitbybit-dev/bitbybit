@@ -11,6 +11,14 @@ export class JSCADExpansions {
         private readonly jscad: typeof JSCAD,
     ) { }
 
+    /**
+     * Expand geometries of solid category
+     * @param inputs Contains options and geometries for expansion
+     * @returns Expanded geometry
+     * @group expansion
+     * @shortname expand
+     * @drawable true
+     */
     expand(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
         const geometry = inputs.geometry.length && inputs.geometry.length > 0 ? inputs.geometry : [inputs.geometry];
         if (!inputs.corners) {
@@ -24,6 +32,14 @@ export class JSCADExpansions {
         return result;
     }
 
+    /**
+     * Offset 2d geometries of solid category
+     * @param inputs Contains options and geometries for offset
+     * @returns Expanded geometry
+     * @group expansion
+     * @shortname offset
+     * @drawable true
+     */
     offset(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
         const geometry = inputs.geometry.length && inputs.geometry.length > 0 ? inputs.geometry : [inputs.geometry];
         if (!inputs.corners) {

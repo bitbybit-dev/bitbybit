@@ -7,6 +7,10 @@ import { ManifoldEvaluate } from "./manifold-evaluate";
 import * as Inputs from "../../inputs";
 
 // Worker make an instance of this class itself
+/**
+ * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
+ * Thanks Manifold community for developing this kernel
+ */
 export class Manifold {
 
     plugins: any;
@@ -25,10 +29,26 @@ export class Manifold {
         this.evaluate = new ManifoldEvaluate(wasm);
     }
     
+    /**
+     * Turns manifold shape into a mesh
+     * @param inputs Manifold shape
+     * @returns Decomposed mesh definition
+     * @group meshing
+     * @shortname manifold to mesh
+     * @drawable false
+     */
     manifoldToMesh(inputs: Inputs.Manifold.ManifoldToMeshDto<Manifold3D.Manifold>): Manifold3D.Mesh {
         return inputs.manifold.getMesh(inputs.normalIdx);
     }
 
+    /**
+     * Turns manifold shapes into meshes
+     * @param inputs Manifold shapes
+     * @returns Decomposed mesh definitions
+     * @group meshing
+     * @shortname manifolds to meshes
+     * @drawable false
+     */
     manifoldsToMeshes(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Manifold3D.Manifold>): (Manifold3D.Mesh)[] {
         return inputs.manifolds.map((manifold, index) => {
             const normalIdx = inputs.normalIdx ? inputs.normalIdx[index] : undefined;

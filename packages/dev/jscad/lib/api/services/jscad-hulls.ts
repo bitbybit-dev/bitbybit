@@ -11,10 +11,28 @@ export class JSCADHulls {
         private readonly jscad: typeof JSCAD,
     ) { }
 
+    /**
+     * Hull chain connects solids or 2d geometries by filling an empty space in between objects in order.
+     * Geometries need to be of the same type.
+     * @param inputs Geometries
+     * @returns Chain hulled geometry
+     * @group hulls
+     * @shortname hull chain
+     * @drawable true
+     */
     hullChain(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.hulls.hullChain(...inputs.meshes);
     }
 
+    /**
+     * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
+     * Geometries need to be of the same type.
+     * @param inputs Geometries
+     * @returns Hulled geometry
+     * @group hulls
+     * @shortname hull
+     * @drawable true
+     */
     hull(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity  {
         return this.jscad.hulls.hull(...inputs.meshes);
     }

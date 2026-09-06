@@ -15,6 +15,10 @@ import * as JSCAD from "@jscad/modeling";
 
 
 // Worker make an instance of this class itself
+/**
+ * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
+ * Thanks JSCAD community for developing this kernel
+ */
 export class Jscad {
 
     private jscad: typeof JSCAD;
@@ -49,6 +53,14 @@ export class Jscad {
         this.jscad = jscad;
     }
 
+    /**
+     * Converts the Jscad mesh to polygon points representing triangles of the mesh.
+     * @param inputs Jscad mesh
+     * @returns polygon points
+     * @group conversions
+     * @shortname to polygon points
+     * @drawable false
+     */
     toPolygonPoints(inputs: Inputs.JSCAD.MeshDto): Base.Mesh3 {
 
         const meshData = this.shapeToMesh({ mesh: inputs.mesh });
@@ -186,6 +198,14 @@ export class Jscad {
         };
     }
 
+    /**
+     * Transforms the Jscad solid meshes with a given list of transformations.
+     * @param inputs Solids with the transformation matrixes
+     * @returns Solids with a transformation
+     * @group transforms
+     * @shortname transform solids
+     * @drawable true
+     */
     transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): any {
         const solidsToTransform = inputs.meshes;
         return solidsToTransform.map(mesh => {
@@ -193,6 +213,14 @@ export class Jscad {
         });
     }
 
+    /**
+     * Transforms the Jscad solid mesh with a given list of transformations.
+     * @param inputs Solid with the transformation matrixes
+     * @returns Solid with a transformation
+     * @group transforms
+     * @shortname transform solid
+     * @drawable true
+     */
     transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): any {
         const transformation = inputs.transformation;
         let transformedMesh = this.jscad.geometries.geom3.clone(inputs.mesh);
@@ -214,6 +242,12 @@ export class Jscad {
         return transformedMesh;
     }
 
+    /**
+     * Downloads the binary STL file from a 3D solid
+     * @param inputs 3D Solid
+     * @group io
+     * @shortname solid to stl
+     */
     downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): { blob: Blob } {
         const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
             inputs.mesh
@@ -222,6 +256,12 @@ export class Jscad {
         return { blob: madeBlob };
     }
 
+    /**
+     * Downloads the dxf file from jscad geometry. Supports paths and meshes in array.
+     * @param inputs 3D geometry
+     * @group io
+     * @shortname geometry to dxf
+     */
     downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const options = inputs.options ? inputs.options : {};
         const rawData = (this.jscad as any).DXFSERIALIZER.serialize(options,
@@ -231,6 +271,12 @@ export class Jscad {
         return { blob: madeBlob };
     }
 
+    /**
+     * Downloads the 3MF file from jscad geometry.
+     * @param inputs 3D geometry
+     * @group io
+     * @shortname geometry to 3mf
+     */
     downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const options = inputs.options ? inputs.options : {};
         const rawData = (this.jscad as any).THREEMFSERIALIZER.serialize(options,
@@ -240,6 +286,12 @@ export class Jscad {
         return { blob: madeBlob };
     }
 
+    /**
+     * Downloads the binary STL file from a 3D solids
+     * @param inputs 3D Solid
+     * @group io
+     * @shortname solids to stl
+     */
     downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): { blob: Blob } {
         const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
             ...inputs.meshes);

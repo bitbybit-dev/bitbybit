@@ -22,6 +22,10 @@
       "operations.closestPointsBetweenTwoShapes": "kernel returns a two-point tuple; the worker exposes it as a point list",
       "operations.offset3DWire": "kernel returns the loose edges when no wire can be built; the worker exposes the wire",
       "path.shapeFromPath": "kernel may return undefined for an empty path; the worker exposes the shape"
+    },
+    "docs": {
+      "io.saveShapeSTEP": "the worker splits the call into saveShapeSTEP (triggers the download) and saveShapeSTEPAndReturn (resolves the text), each documented on its own; the kernel returns the text and carries the returning wrapper's doc",
+      "io.saveShapeStl": "the worker splits the call into saveShapeStl (triggers the download) and saveShapeStlAndReturn (resolves the text), each documented on its own; the kernel returns the text and carries the returning wrapper's doc"
     }
   },
   "jscad": {

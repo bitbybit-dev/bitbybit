@@ -15,6 +15,14 @@ export class JSCADExtrusions {
         private readonly math: MathBitByBit
     ) { }
 
+    /**
+     * Linear extrude 2D geometries of solid category
+     * @param inputs Contains options and geometries for linear extrude
+     * @returns Extruded geometry
+     * @group extrude
+     * @shortname linear
+     * @drawable true
+     */
     extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Inputs.JSCAD.JSCADEntity {
         const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
         const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
@@ -28,6 +36,14 @@ export class JSCADExtrusions {
         return extrusions;
     }
 
+    /**
+     * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
+     * @param inputs Contains options and geometries for rectangular extrude
+     * @returns Extruded geometry
+     * @group extrude
+     * @shortname rectangular
+     * @drawable true
+     */
     extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Inputs.JSCAD.JSCADEntity {
         const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
         const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
@@ -37,6 +53,14 @@ export class JSCADExtrusions {
         return extrusions;
     }
 
+    /**
+     * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
+     * @param inputs Contains options and points for extrusion
+     * @returns Extruded geometry
+     * @group extrude
+     * @shortname rectangular points
+     * @drawable true
+     */
     extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
         const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveVectorDuplicates(twoDimensionalPoints);
@@ -45,6 +69,14 @@ export class JSCADExtrusions {
         return extrusion;
     }
 
+    /**
+     * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
+     * @param inputs Contains options and points for extrusion
+     * @returns Extruded geometry
+     * @group extrude
+     * @shortname rotational
+     * @drawable true
+     */
     extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Inputs.JSCAD.JSCADEntity {
         const options = {
             angle: this.math.degToRad({ number: inputs.angle }),
