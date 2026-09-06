@@ -224,11 +224,6 @@
       "count": 1
     }
   },
-  "packages/dev/core/mvdocpictures.js": {
-    "quotes": {
-      "count": 4
-    }
-  },
   "packages/dev/jscad-worker/babel.config.cjs": {
     "quotes": {
       "count": 3
