@@ -5,14 +5,21 @@
 // published manifest is a mistake, and pnpm would not rewrite it on the way out of dist/. It also
 // writes the .npmignore that keeps tsc's build info out of the tarball: the build info lives in
 // dist/ so that deleting dist/ deletes it too (tsc -b trusts it over the outputs when it decides a
-// project is up to date), and npm must not ship it.
+// project is up to date), and npm must not ship it. And it holds the manifest to the one repository
+// field npm's provenance accepts: the publish workflow runs in github.com/bitbybit-dev/bitbybit and
+// the registry compares the published manifest's repository.url against it, so a URL with a
+// /tree/... path or without the canonical form fails the publish after the tarball is built.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 
 const dir = process.cwd();
 const text = readFileSync(join(dir, "package.json"), "utf8");
 const manifest = JSON.parse(text);
 const offenders = [];
+const repository = manifest.repository ?? {};
+if (repository.type !== "git" || repository.url !== "git+https://github.com/bitbybit-dev/bitbybit.git" || repository.directory !== `packages/dev/${basename(dir)}`) {
+    offenders.push(`repository must be { "type": "git", "url": "git+https://github.com/bitbybit-dev/bitbybit.git", "directory": "packages/dev/${basename(dir)}" } for provenance, found ${JSON.stringify(repository)}`);
+}
 for (const field of ["dependencies", "peerDependencies", "optionalDependencies"]) {
     for (const [name, spec] of Object.entries(manifest[field] ?? {})) {
         if (/^(workspace|link|file|portal):/.test(String(spec))) offenders.push(`${field}.${name} = ${spec}`);

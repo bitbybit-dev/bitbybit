@@ -1,0 +1,86 @@
+# Publishes the thirteen @bitbybit-dev/* packages to npm, by hand-dispatch only, through npm
+# trusted publishing: the job's OIDC token is exchanged for a short-lived publish token per package,
+# so no npm token exists anywhere and every published version carries a provenance attestation
+# tying it to this repository and this workflow. The attestation is why this runs here, in the
+# public repository, on a GitHub-hosted runner, and why every package manifest's repository field
+# names this repository exactly (scripts/dist-manifest.mjs refuses one that does not).
+#
+# The order is not written here either: scripts/publish-packages.mjs derives the tiers from the
+# manifests, skips versions the registry already has (a failed run is re-run, never repaired by
+# hand) and waits for the registry to resolve a tier before publishing its dependents.
+#
+# The rehearsal is the default: the `next` dist-tag makes the versions installable by exact version
+# without changing what `npm install` picks. Run the install smoke, then dispatch again with
+# `latest` (versions already published are skipped; the promotion is the dist-tag step below).
+#
+# Before the first release from here, each of the thirteen packages needs a trusted publisher on
+# npmjs.com pointing at bitbybit-dev/bitbybit and this file, publish.yml. A package's first ever
+# version cannot be published this way; all thirteen already exist.
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "npm dist-tag: next to rehearse (installable by exact version only), latest to release"
+        type: choice
+        options: [next, latest]
+        default: next
+      dry_run:
+        description: "build and check everything, publish nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      # trusted publishing needs npm 11.5.1 or newer; Node 22 bundles an older npm
+      - run: npm install -g npm@latest && npm --version
+
+      - run: pnpm install --frozen-lockfile
+
+      # the same gates verify.yml runs, because a publish must never depend on a green run somewhere else
+      - run: npm run check:references
+      - run: npm run rebuild-all-packages
+      - run: npm test
+      - run: npm run check:tarballs
+      - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
+      - run: pnpm --filter @bitbybit-dev/create-app run build
+
+      - name: Publish in dependency order
+        run: node scripts/publish-packages.mjs --tag ${{ inputs.tag }} ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      # a consumer's install of the engine package pulls the whole chain at this exact version
+      - name: Install smoke
+        if: ${{ !inputs.dry_run }}
+        run: |
+          VERSION=$(node -p "require('./packages/dev/threejs/package.json').version")
+          mkdir -p /tmp/smoke && cd /tmp/smoke && npm init -y > /dev/null
+          npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps "@bitbybit-dev/threejs@$VERSION" "@bitbybit-dev/babylonjs@$VERSION" "@bitbybit-dev/playcanvas@$VERSION" "@bitbybit-dev/cad-cloud-sdk@$VERSION"
+          for p in base occt occt-worker jscad jscad-worker manifold manifold-worker core threejs babylonjs playcanvas cad-cloud-sdk; do
+            test "$(node -p "require('@bitbybit-dev/$p/package.json').version")" = "$VERSION" || { echo "@bitbybit-dev/$p resolved to another version"; exit 1; }
+          done
+          npm view "@bitbybit-dev/core@$VERSION" --json | node -e "const j=JSON.parse(require('fs').readFileSync(0,'utf8')); if (!j.dist || !j.dist.attestations) { console.error('no provenance attestation on core'); process.exit(1); } console.log('provenance:', j.dist.attestations.url)"
+
+      - name: Promotion reminder
+        if: ${{ !inputs.dry_run && inputs.tag == 'next' }}
+        run: echo "Rehearsal published under the next tag. To release, dispatch again with tag = latest (already-published versions are skipped) or promote each package with npm dist-tag add <pkg>@<version> latest."

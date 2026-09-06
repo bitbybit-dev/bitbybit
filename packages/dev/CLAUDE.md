@@ -69,6 +69,10 @@ npm run lint
 - `cad-cloud-sdk` is different from its siblings: it uses **Vitest**, and part of its `src/types/`
   is **generated** by the API-3D platform rather than hand-written. Do not edit those by hand.
 - `create-app` is the `npx @bitbybit-dev/create-app` scaffolder, not a library.
+- **The `repository` field is load-bearing.** npm's provenance check compares the published manifest's
+  `repository.url` with the repository the publish workflow runs in, so every package declares
+  `git+https://github.com/bitbybit-dev/bitbybit.git` with its `directory`; `copy-package` refuses a
+  manifest that says anything else, before the tarball exists.
 - `threejs` and `playcanvas` take their engine as an ordinary **dependency**; `babylonjs` takes
   its engine as a **peer dependency**. The runner tooling reads `peerDependencies` to decide
   which engine version to install, so the distinction is not cosmetic. Both also run a

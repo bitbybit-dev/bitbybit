@@ -14,7 +14,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitbybit-dev/bitbybit"
+    "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+    "directory": "packages/dev/create-app"
   },
   "keywords": [
     "Bit By Bit Developers",

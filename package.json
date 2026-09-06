@@ -41,7 +41,8 @@
         "first-time-setup": "npm run setup-and-test",
         "api:check": "pnpm -r run api:check",
         "api:update": "pnpm -r run api:update",
-        "check:tarballs": "node scripts/check-tarballs.mjs"
+        "check:tarballs": "node scripts/check-tarballs.mjs",
+        "publish:packages": "node scripts/publish-packages.mjs"
     },
     "repository": {
         "type": "git",

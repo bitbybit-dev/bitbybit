@@ -91,8 +91,18 @@ the SDK's typecheck, tests with coverage and build, the scaffolder's build, `api
 `check:tarballs`, and last - on a red run too - `test:report`, which puts every suite's results on
 the run's summary page. It needs no secrets and must never gain any. `nightly.yml` runs the build
 and tests on every Node line the packages should keep working on, on a schedule and by hand; Node
-comes from `.tool-versions` and pnpm from the `packageManager` field. Publishing is in neither
-file and will not be added.
+comes from `.tool-versions` and pnpm from the `packageManager` field. Neither publishes.
+
+`publish.yml` does, by hand-dispatch only, through npm trusted publishing: the job's OIDC token is
+exchanged for a short-lived publish token per package, so no npm token is stored anywhere and every
+version carries a provenance attestation naming this repository - which is why every manifest's
+`repository` field is exactly `git+https://github.com/bitbybit-dev/bitbybit.git` with the package's
+`directory` (`scripts/dist-manifest.mjs` refuses anything else). `scripts/publish-packages.mjs`
+(`npm run publish:packages`) derives the tiers from the manifests, skips versions the registry has
+(a failed run is re-run, never repaired by hand) and waits for the registry to resolve a tier before
+its dependents publish. The default dispatch publishes under the `next` dist-tag as a rehearsal; a
+second dispatch with `latest` releases. Each package needs a trusted publisher configured on
+npmjs.com for this repository and `publish.yml`.
 
 Two of those checks carry committed state. `api:check` runs api-extractor in `base` and `core`
 against their built `dist/index.d.ts` and fails when the public surface differs from the report in
