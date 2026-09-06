@@ -9,7 +9,8 @@
         "coverage",
         "dist",
         "**/__mocks__/**",
-        "./**/*.test.ts"
+        "./**/*.test.ts",
+        "babel.config.cjs"
     ],
     "compilerOptions": {
         "composite": true,

@@ -44,11 +44,22 @@ all of them, and a sibling dependency whose exact pin matches the sibling's vers
 symlink instead of a registry copy (`linkWorkspacePackages`). One `pnpm-lock.yaml` replaces the
 per-package npm locks; `npm run refresh-lockfile` rewrites it without touching node_modules. The
 manifests keep exact registry pins on purpose and never the `workspace:` protocol: `dist/` is what
-npm publishes, and `copy-package` writes its manifest through `scripts/dist-manifest.mjs`, which
+npm publishes, and `copy-package` derives its manifest through `scripts/dist-manifest.mjs`, which
 refuses a `workspace:`, `link:` or `file:` specifier. A dependency's install script runs only when
 `allowBuilds` lists it - pnpm refuses the install while one is unreviewed, so a new native
 dependency shows up as a decision, not as a silent skip. Use pnpm 11 (`npm install -g pnpm@11`);
 the `packageManager` field pins the exact version and pnpm switches to it on its own.
+
+Every dist-published manifest also carries the same `exports` map, with the `@bitbybit-dev/source`
+condition first in each entry: a consumer that declares the condition resolves the TypeScript
+sources - each package's jest does, through `customExportConditions`, so a test sees a sibling's
+edit without a rebuild - and one that does not resolves `dist/`. The map never reaches npm:
+`dist-manifest.mjs` drops it, together with `devDependencies`, `jest` and `scripts`, and a
+published package resolves through `main` and `types` as every version has, because an exports
+map in a tarball would refuse the extensionless deep imports the examples make. `npm run
+check:exports` (in `npm test` and verify.yml) holds every manifest to that shape and every built
+`dist/package.json` to the derivation; `check:tarballs` imports the packed packages the way the
+examples do.
 
 pnpm's layout is strict: a package resolves only what its own manifest declares, where npm's flat
 hoisting let it reach anything a sibling had installed. Every import in `lib/` must therefore be a

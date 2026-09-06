@@ -60,6 +60,18 @@
     "url": "https://bitbybit.dev/auth/pick-plan"
   },
   "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "@bitbybit-dev/source": "./index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "@bitbybit-dev/source": "./*",
+      "types": "./dist/*",
+      "default": "./dist/*"
+    }
+  },
   "type": "module",
   "dependencies": {
     "@bitbybit-dev/base": "1.1.1",
@@ -131,6 +143,13 @@
       "text",
       "lcov",
       "json-summary"
-    ]
+    ],
+    "testEnvironmentOptions": {
+      "customExportConditions": [
+        "@bitbybit-dev/source",
+        "node",
+        "node-addons"
+      ]
+    }
   }
 }

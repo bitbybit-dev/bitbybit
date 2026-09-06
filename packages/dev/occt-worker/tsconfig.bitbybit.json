@@ -11,7 +11,8 @@
         "dist",
         "lib/workers/occ/services/advanced/**/*",
         "**/__mocks__/**",
-        "./**/*.test.ts"
+        "./**/*.test.ts",
+        "babel.config.cjs"
     ],
     "compilerOptions": {
         "composite": true,
