@@ -17,8 +17,8 @@
  *      so any change to the public surface is a reviewed diff, never a side effect;
  *   4. the JSDoc on a mirrored method, and on a mirrored class, reads the same on both sides
  *      (indentation aside). The docs are authored on the kernel and describe the public API the
- *      worker exposes; the worker's copy is what the declarations bundle and the visual editors
- *      read, so a doc that drifts on either side fails here. Structural exceptions (one kernel
+ *      worker exposes; the worker's copy is what the visual editors are generated from, so a doc
+ *      that drifts on either side fails here. Structural exceptions (one kernel
  *      method behind several worker methods) are allow-listed under "docs" with a reason;
  *   5. every reserved command the worker API sends (a workerOnly allow-list entry) is declared in the
  *      worker thread's ReservedFunctions (occt-worker's constants.ts), so the thread handles it itself

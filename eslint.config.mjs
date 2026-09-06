@@ -6,7 +6,7 @@ import globals from "globals";
 // The lint of this repository, self-contained: it runs from a bare clone with nothing above it.
 //
 // What is deliberately NOT here: eslint-plugin-no-comments. The JSDoc on the public API is a
-// functional input - the component generator behind the visual editors reads its tags (@default,
+// functional input - the visual editors are generated from its tags (@default,
 // @optional, @step and the rest, thousands of them) to build editor controls - and that rule is
 // auto-fixable with an allow-list that REPLACES its defaults, so one --fix run with it pointed at
 // packages/dev would delete the corpus.

@@ -3,9 +3,9 @@
  * Assemble packages/dev/occt/lib/api/inputs/occ-inputs.ts from its fragments.
  *
  * The OCCT inputs are one `export namespace OCCT` of some 300 DTO classes, enums and pointer types.
- * TypeScript cannot merge a namespace across modules, the declarations bundle that feeds the visual
- * editors is assembled from the emitted .d.ts, and the component generator matches DTOs on the
- * innermost namespace name - so the namespace has to stay one compilation unit. What is split is the
+ * TypeScript cannot merge a namespace across modules, and the visual editors are generated from the
+ * emitted .d.ts, matching DTOs on the innermost namespace name - so the namespace has to stay one
+ * compilation unit. What is split is the
  * authoring: every file in lib/api/inputs/occt/ holds a slice of the namespace body, unindented and
  * with imports so it reads and type-checks as an ordinary module, and this script writes them back into
  * the namespace, in file-name order, indented by four spaces. The fragments' imports are dropped (the

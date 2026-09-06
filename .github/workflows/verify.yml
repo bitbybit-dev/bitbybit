@@ -1,7 +1,7 @@
-# The public repository must build and test from a bare clone with nothing above it - no host
-# checkout, no sibling submodules. This workflow is that proof, on every push to the integration
-# branch and every pull request into it or into the release branch. It needs no secrets and must
-# never gain any: fork pull requests run it, and pull_request_target is deliberately not used.
+# This repository must build and test from a bare clone, with nothing else checked out. This
+# workflow is that proof, on every push to the integration branch and every pull request into it or
+# into the release branch. It needs no secrets and must never gain any: fork pull requests run it,
+# and pull_request_target is deliberately not used.
 #
 # The order the packages build in is not written here: each package's manifest declares its
 # siblings, scripts/gen-ts-references.mjs turns that into TypeScript project references, tsc -b

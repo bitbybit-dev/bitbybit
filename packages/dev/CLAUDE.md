@@ -34,7 +34,7 @@ npm run lint
   constructors and the services treat an explicit undefined as "use the default", and under
   exactOptionalPropertyTypes only that spelling lets a caller pass an optional value straight through
   (`{ tolerance: inputs.tolerance }`). Write the type out - an inferred one prints differently in the
-  declarations depending on the compiler flags, and the declarations the component generator reads must
+  declarations depending on the compiler flags, and the declarations the visual editors are generated from must
   not move with a flag. The service applies the default itself where it reads the property
   (`inputs.tolerance ?? 1e-7`), because only `new Dto()` runs the initializer; an object literal from a
   script does not. Index reads inside a bounds-checked loop, after a length check, or of a regex group
@@ -70,7 +70,7 @@ npm run lint
   it produces a package that resolves but cannot run. The tarball also carries `NOTICE` and the
   OCCT and Draco license texts.
 - `cad-cloud-sdk` is different from its siblings: it uses **Vitest**, and part of its `src/types/`
-  is **generated** by the API-3D platform rather than hand-written. Do not edit those by hand.
+  is **generated** from the CAD Cloud API's schemas rather than hand-written. Do not edit those by hand.
 - `create-app` is the `npx @bitbybit-dev/create-app` scaffolder, not a library.
 - **The `repository` field is load-bearing.** npm's provenance check compares the published manifest's
   `repository.url` with the repository the publish workflow runs in, so every package declares

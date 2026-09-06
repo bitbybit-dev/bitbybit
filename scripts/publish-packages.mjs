@@ -19,10 +19,8 @@
  *     cad-cloud-sdk and create-app publish their package root through their files allowlist and
  *     their prepublishOnly build.
  *
- * Authentication is npm trusted publishing: the workflow that runs this has id-token: write and
- * npm exchanges it for a short-lived publish token per package - no npm token is stored anywhere,
- * and every publish carries a provenance attestation. Locally, the same script runs against a
- * logged-in npm (2FA prompts included) - or, with --dry-run, against nothing.
+ * Authentication comes from where it runs: publish.yml publishes through npm trusted publishing,
+ * a local run through the logged-in npm, and --dry-run publishes nothing.
  *
  *   node scripts/publish-packages.mjs [--tag next|latest] [--dry-run]
  *
