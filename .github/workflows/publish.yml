@@ -98,4 +98,4 @@ jobs:
 
       - name: Promotion reminder
         if: ${{ !inputs.dry_run && inputs.tag == 'next' }}
-        run: echo "Published under the next tag: installable by exact version, while npm install still picks latest. This cannot be promoted from a workflow - OIDC signs publishes, not dist-tags - so a release version is published directly with tag = latest, and next is for prereleases."
+        run: echo "Published under the next tag, installable by exact version, while npm install still picks latest. Promoting it from a workflow is not possible - OIDC signs publishes, not dist-tags - so a release version is published directly with tag = latest, and next is for prereleases."
