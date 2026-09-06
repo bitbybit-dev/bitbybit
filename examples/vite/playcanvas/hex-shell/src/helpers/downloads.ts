@@ -23,13 +23,13 @@ export const downloadStep = async (
     }
 };
 
-export const downloadSTL = (scene: Entity) => {
+export const downloadSTL = (_scene: Entity) => {
     // PlayCanvas doesn't have built-in STL exporter like Three.js
     // For now, log a message - could implement custom exporter later
     console.warn("STL export is not yet implemented for PlayCanvas");
 };
 
-export const downloadGLB = (scene: Entity) => {
+export const downloadGLB = (_scene: Entity) => {
     // PlayCanvas doesn't have built-in GLB exporter like Three.js
     // For now, log a message - could implement custom exporter later
     console.warn("GLB export is not yet implemented for PlayCanvas");

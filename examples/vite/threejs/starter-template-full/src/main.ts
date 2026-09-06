@@ -1,5 +1,5 @@
 import "./style.css"; // Basic styling
-import { BitByBitBase, Inputs, initBitByBit, initThreeJS, type InitBitByBitOptions, type OrbitCameraController } from "@bitbybit-dev/threejs";
+import { BitByBitBase, Inputs, initBitByBit, initThreeJS, type InitBitByBitOptions} from "@bitbybit-dev/threejs";
 
 // Store the orbit camera controller globally so bitbybit can access it
 

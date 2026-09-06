@@ -13,4 +13,6 @@ so departs from `packages/dev/CLAUDE.md` in several ways:
 
 Because it scaffolds projects that then install the published packages, its templates pin versions
 that must exist on npm. Bumping the packages without updating the templates produces a scaffold that
-fails on first install, and nothing in this repository's test suites would catch that.
+fails on first install. `npm run smoke` (scripts/smoke.mjs) scaffolds every template into a
+temporary directory and installs each from the registry; examples.yml runs it weekly and on every
+published version.

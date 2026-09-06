@@ -12,7 +12,7 @@ Start with `README.md` for the project overview and `CONTRIBUTING.md` before ope
 |---|---|
 | `packages/dev/*` | the 13 published npm packages - see `packages/dev/CLAUDE.md` |
 | `docs/` | the Docusaurus site for learn.bitbybit.dev, including the generated API reference |
-| `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react) |
+| `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one, weekly in examples.yml |
 | `languages/` | i18n source JSON for the platform |
 
 ## Building the packages

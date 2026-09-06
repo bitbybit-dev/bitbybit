@@ -335,7 +335,7 @@ export const createShapeLod2 = async (
             
             // Disable shadow casting on edge entities (third child in each group)
             if (g.children && g.children.length >= 3) {
-                const edgeEntity = g.children[2];
+                const edgeEntity = g.children[2] as Entity | undefined;
                 if (edgeEntity && edgeEntity.render) {
                     edgeEntity.render.castShadows = false;
                 }
@@ -472,7 +472,7 @@ export const createShapeLod1 = async (
             applyDepthBias(g, 0.1);
             
             if (g.children && g.children.length >= 3) {
-                const edgeEntity = g.children[2];
+                const edgeEntity = g.children[2] as Entity | undefined;
                 if (edgeEntity && edgeEntity.render) {
                     edgeEntity.render.castShadows = false;
                 }
@@ -484,8 +484,9 @@ export const createShapeLod1 = async (
             dimensionsGroup.render.castShadows = false;
         }
         dimensionsGroup.children.forEach((child) => {
-            if (child.render) {
-                child.render.castShadows = false;
+            const entity = child as Entity;
+            if (entity.render) {
+                entity.render.castShadows = false;
             }
         });
 

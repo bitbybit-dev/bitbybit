@@ -37,7 +37,13 @@
                         "styles": [
                             "src/styles.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "externalDependencies": [
+                            "fs",
+                            "module",
+                            "path",
+                            "crypto"
+                        ]
                     }
                 },
                 "serve": {

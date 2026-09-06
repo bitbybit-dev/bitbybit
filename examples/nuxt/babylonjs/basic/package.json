@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@bitbybit-dev/babylonjs": "1.1.1",
-    "nuxt": "4.4.6",
+    "nuxt": "4.5.2",
     "vue": "latest",
     "vue-router": "latest"
   }
