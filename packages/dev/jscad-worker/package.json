@@ -72,10 +72,31 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/jscad-worker": {
+            "@bitbybit-dev/source": "./lib/jscad-worker/index.ts",
+            "types": "./dist/lib/jscad-worker/index.d.ts",
+            "default": "./dist/lib/jscad-worker/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
         "./*": {
-            "@bitbybit-dev/source": "./*",
-            "types": "./dist/*",
-            "default": "./dist/*"
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
         }
     },
     "type": "module",

@@ -70,10 +70,31 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api/inputs": {
+            "@bitbybit-dev/source": "./lib/api/inputs/index.ts",
+            "types": "./dist/lib/api/inputs/index.d.ts",
+            "default": "./dist/lib/api/inputs/index.js"
+        },
+        "./lib/api/services": {
+            "@bitbybit-dev/source": "./lib/api/services/index.ts",
+            "types": "./dist/lib/api/services/index.d.ts",
+            "default": "./dist/lib/api/services/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
         "./*": {
-            "@bitbybit-dev/source": "./*",
-            "types": "./dist/*",
-            "default": "./dist/*"
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
         }
     },
     "type": "module",

@@ -68,10 +68,51 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/api/occt": {
+            "@bitbybit-dev/source": "./lib/api/occt/index.ts",
+            "types": "./dist/lib/api/occt/index.d.ts",
+            "default": "./dist/lib/api/occt/index.js"
+        },
+        "./lib/api/occt/assembly": {
+            "@bitbybit-dev/source": "./lib/api/occt/assembly/index.ts",
+            "types": "./dist/lib/api/occt/assembly/index.d.ts",
+            "default": "./dist/lib/api/occt/assembly/index.js"
+        },
+        "./lib/api/occt/geom": {
+            "@bitbybit-dev/source": "./lib/api/occt/geom/index.ts",
+            "types": "./dist/lib/api/occt/geom/index.d.ts",
+            "default": "./dist/lib/api/occt/geom/index.js"
+        },
+        "./lib/api/occt/shapes": {
+            "@bitbybit-dev/source": "./lib/api/occt/shapes/index.ts",
+            "types": "./dist/lib/api/occt/shapes/index.d.ts",
+            "default": "./dist/lib/api/occt/shapes/index.js"
+        },
+        "./lib/occ-worker": {
+            "@bitbybit-dev/source": "./lib/occ-worker/index.ts",
+            "types": "./dist/lib/occ-worker/index.d.ts",
+            "default": "./dist/lib/occ-worker/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
         "./*": {
-            "@bitbybit-dev/source": "./*",
-            "types": "./dist/*",
-            "default": "./dist/*"
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
         }
     },
     "type": "module",

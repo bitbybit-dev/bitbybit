@@ -50,8 +50,9 @@ refuses a `workspace:`, `link:` or `file:` specifier. A dependency's install scr
 dependency shows up as a decision, not as a silent skip. Use pnpm 11 (`npm install -g pnpm@11`);
 the `packageManager` field pins the exact version and pnpm switches to it on its own.
 
-Every dist-published manifest also carries the same `exports` map, with the `@bitbybit-dev/source`
-condition first in each entry: a consumer that declares the condition resolves the TypeScript
+Every dist-published manifest also carries an `exports` map derived from its tree by `npm run
+gen:exports` (the root, every directory index under `lib/`, every kernel module, then patterns), with
+the `@bitbybit-dev/source` condition first in each entry: a consumer that declares the condition resolves the TypeScript
 sources - each package's jest does, through `customExportConditions`, so a test sees a sibling's
 edit without a rebuild - and one that does not resolves `dist/`. The map never reaches npm:
 `dist-manifest.mjs` drops it, together with `devDependencies`, `jest` and `scripts`, and a

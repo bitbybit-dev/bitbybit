@@ -68,10 +68,56 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/api/bitbybit": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/index.ts",
+            "types": "./dist/lib/api/bitbybit/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/index.js"
+        },
+        "./lib/api/bitbybit/occt": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/occt/index.ts",
+            "types": "./dist/lib/api/bitbybit/occt/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/occt/index.js"
+        },
+        "./lib/api/bitbybit/verb": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/verb/index.ts",
+            "types": "./dist/lib/api/bitbybit/verb/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/verb/index.js"
+        },
+        "./lib/api/inputs": {
+            "@bitbybit-dev/source": "./lib/api/inputs/index.ts",
+            "types": "./dist/lib/api/inputs/index.d.ts",
+            "default": "./dist/lib/api/inputs/index.js"
+        },
+        "./lib/api/models": {
+            "@bitbybit-dev/source": "./lib/api/models/index.ts",
+            "types": "./dist/lib/api/models/index.d.ts",
+            "default": "./dist/lib/api/models/index.js"
+        },
+        "./lib/models": {
+            "@bitbybit-dev/source": "./lib/models/index.ts",
+            "types": "./dist/lib/models/index.d.ts",
+            "default": "./dist/lib/models/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
         "./*": {
-            "@bitbybit-dev/source": "./*",
-            "types": "./dist/*",
-            "default": "./dist/*"
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
         }
     },
     "type": "module",

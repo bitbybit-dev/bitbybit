@@ -67,10 +67,101 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/api/inputs": {
+            "@bitbybit-dev/source": "./lib/api/inputs/index.ts",
+            "types": "./dist/lib/api/inputs/index.d.ts",
+            "default": "./dist/lib/api/inputs/index.js"
+        },
+        "./lib/api/models": {
+            "@bitbybit-dev/source": "./lib/api/models/index.ts",
+            "types": "./dist/lib/api/models/index.d.ts",
+            "default": "./dist/lib/api/models/index.js"
+        },
+        "./lib/services": {
+            "@bitbybit-dev/source": "./lib/services/index.ts",
+            "types": "./dist/lib/services/index.d.ts",
+            "default": "./dist/lib/services/index.js"
+        },
+        "./lib/services/assembly": {
+            "@bitbybit-dev/source": "./lib/services/assembly/index.ts",
+            "types": "./dist/lib/services/assembly/index.d.ts",
+            "default": "./dist/lib/services/assembly/index.js"
+        },
+        "./lib/services/geom": {
+            "@bitbybit-dev/source": "./lib/services/geom/index.ts",
+            "types": "./dist/lib/services/geom/index.d.ts",
+            "default": "./dist/lib/services/geom/index.js"
+        },
+        "./lib/services/shapes": {
+            "@bitbybit-dev/source": "./lib/services/shapes/index.ts",
+            "types": "./dist/lib/services/shapes/index.d.ts",
+            "default": "./dist/lib/services/shapes/index.js"
+        },
+        "./bitbybit-dev-occt/bitbybit-dev-occt": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt/bitbybit-dev-occt.js",
+            "types": "./dist/bitbybit-dev-occt/bitbybit-dev-occt.d.ts",
+            "default": "./dist/bitbybit-dev-occt/bitbybit-dev-occt.js"
+        },
+        "./bitbybit-dev-occt/index": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt/index.js",
+            "types": "./dist/bitbybit-dev-occt/index.d.ts",
+            "default": "./dist/bitbybit-dev-occt/index.js"
+        },
+        "./bitbybit-dev-occt/*": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt/*",
+            "types": "./dist/bitbybit-dev-occt/*",
+            "default": "./dist/bitbybit-dev-occt/*"
+        },
+        "./bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit.js",
+            "types": "./dist/bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit.d.ts",
+            "default": "./dist/bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit.js"
+        },
+        "./bitbybit-dev-occt-64-bit/index": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit/index.js",
+            "types": "./dist/bitbybit-dev-occt-64-bit/index.d.ts",
+            "default": "./dist/bitbybit-dev-occt-64-bit/index.js"
+        },
+        "./bitbybit-dev-occt-64-bit/*": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit/*",
+            "types": "./dist/bitbybit-dev-occt-64-bit/*",
+            "default": "./dist/bitbybit-dev-occt-64-bit/*"
+        },
+        "./bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt.js",
+            "types": "./dist/bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt.d.ts",
+            "default": "./dist/bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt.js"
+        },
+        "./bitbybit-dev-occt-64-bit-mt/index": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit-mt/index.js",
+            "types": "./dist/bitbybit-dev-occt-64-bit-mt/index.d.ts",
+            "default": "./dist/bitbybit-dev-occt-64-bit-mt/index.js"
+        },
+        "./bitbybit-dev-occt-64-bit-mt/*": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit-mt/*",
+            "types": "./dist/bitbybit-dev-occt-64-bit-mt/*",
+            "default": "./dist/bitbybit-dev-occt-64-bit-mt/*"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
         "./*": {
-            "@bitbybit-dev/source": "./*",
-            "types": "./dist/*",
-            "default": "./dist/*"
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
         }
     },
     "type": "module",

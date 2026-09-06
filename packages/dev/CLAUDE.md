@@ -77,7 +77,8 @@ npm run lint
   `git+https://github.com/bitbybit-dev/bitbybit.git` with its `directory`; `copy-package` refuses a
   manifest that says anything else, before the tarball exists.
 - **`exports` is for this workspace, not for npm.** Each dist-published manifest carries the map
-  with the `@bitbybit-dev/source` condition first; jest declares it and so resolves sibling sources.
+  `npm run gen:exports` derives from its tree, with the `@bitbybit-dev/source` condition first; jest
+  declares it and so resolves sibling sources. Added a directory index under `lib/`? Regenerate.
   `copy-package` drops the map (and `devDependencies`, `jest`, `scripts`) from `dist/package.json`,
   and `npm run check:exports` holds both sides to the shape `scripts/dist-manifest.mjs` expects.
 - `threejs` and `playcanvas` take their engine as an ordinary **dependency**; `babylonjs` takes
