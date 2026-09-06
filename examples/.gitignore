@@ -1,1 +1,10 @@
+dist
+node_modules
+.angular
+.nuxt
+.output
+
+test-chainable-api
+
+# the example runner's per-example logs
 .verify-logs
