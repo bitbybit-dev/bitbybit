@@ -641,7 +641,7 @@ export class EdgesService {
         const solutions = [];
         for (let i = 0; i < lin1Sols.length; i++) {
             const sol = lin1Sols[i]!;
-            const res = this.reconstructCircleAndAlignBack(lin1Sols, sol, alignOpt, cirDir, cirPos);
+            const res = this.reconstructCircleAndAlignBack(sol, alignOpt, cirDir, cirPos);
             solutions.push(res);
         }
 
@@ -694,7 +694,7 @@ export class EdgesService {
         const solutions = [];
         for (let i = 0; i < lin1Sols.length; i++) {
             const sol = lin1Sols[i]!;
-            const res = this.reconstructCircleAndAlignBack(lin1Sols, sol, alignOpt, cirDir, cirPos);
+            const res = this.reconstructCircleAndAlignBack(sol, alignOpt, cirDir, cirPos);
             solutions.push(res);
         }
 
@@ -735,7 +735,7 @@ export class EdgesService {
         }
     }
 
-    private reconstructCircleAndAlignBack(_lin1Sols: gp_Circ2d[], sol: gp_Circ2d, alignOpt: Inputs.OCCT.AlignDto<TopoDS_Shape>, dir: Base.Vector3, pos: Base.Point3) {
+    private reconstructCircleAndAlignBack(sol: gp_Circ2d, alignOpt: Inputs.OCCT.AlignDto<TopoDS_Shape>, dir: Base.Vector3, pos: Base.Point3) {
         const locationStart = sol.Location();
         const startPoint = [locationStart.X(), locationStart.Y(), 0] as Inputs.Base.Point3;
         const circle = this.entitiesService.createCircle(sol.Radius(), startPoint, [0, 0, 1], Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;
