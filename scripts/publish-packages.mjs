@@ -25,8 +25,10 @@
  *   node scripts/publish-packages.mjs [--tag next|latest] [--dry-run]
  *
  * --tag next publishes every package under the `next` dist-tag: installable by exact version, not
- * what `npm install` picks by default. That is the rehearsal mode - the promotion to latest is
- * `npm dist-tag add <pkg>@<version> latest`, per package, after an install smoke.
+ * what `npm install` picks by default. It is for prerelease versions, not for rehearsing a release
+ * one - --dry-run is the rehearsal, and a release version goes straight to `latest`, because a
+ * published version cannot be republished and moving a dist-tag afterwards needs a granular token
+ * or an interactive login, which a workflow authenticating through OIDC does not have.
  */
 import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -115,4 +117,4 @@ for (const [i, tier] of tiers.entries()) {
     if (!dryRun && i < tiers.length - 1) await waitForTier(tier);
 }
 console.log(`\n${dryRun ? "dry run complete" : `published ${publishedNow}, skipped ${skipped} already on the registry`}`);
-if (!dryRun && tag === "next" && publishedNow) console.log(`promote with: ${[...packages.keys()].map((n) => `npm dist-tag add ${n}@${version} latest`).join(" && ")}`);
+if (!dryRun && tag === "next" && publishedNow) console.log(`published under next; promoting needs a token or an npm login, OIDC cannot:\n  ${[...packages.keys()].map((n) => `npm dist-tag add ${n}@${version} latest`).join(" && ")}`);
