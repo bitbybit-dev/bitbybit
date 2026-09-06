@@ -87,8 +87,8 @@ excluded from the build configs: jest compiles it itself, so dist ships no mocks
 `.github/workflows/verify.yml` proves the repository builds and tests from a bare clone with nothing
 above it, on every push to `develop` and every pull request into `develop` or `master`: one frozen
 install, `lint`, `check:references`, `rebuild-all-packages`, `npm test`, `check:strict-baselines`,
-the SDK's typecheck, tests with coverage and build, the scaffolder's build, `api:check`,
-`check:tarballs`, and last - on a red run too - `test:report`, which puts every suite's results on
+the SDK's typecheck, tests with coverage and build, the scaffolder's build, `check:openapi` (the
+committed OpenAPI document's version equals the SDK's), `api:check`, `check:tarballs`, and last - on a red run too - `test:report`, which puts every suite's results on
 the run's summary page. It needs no secrets and must never gain any. `nightly.yml` runs the build
 and tests on every Node line the packages should keep working on, on a schedule and by hand; Node
 comes from `.tool-versions` and pnpm from the `packageManager` field. Neither publishes.

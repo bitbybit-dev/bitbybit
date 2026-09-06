@@ -42,6 +42,7 @@
         "api:check": "pnpm -r run api:check",
         "api:update": "pnpm -r run api:update",
         "check:tarballs": "node scripts/check-tarballs.mjs",
+        "check:openapi": "node scripts/check-openapi.mjs",
         "kernels:fetch": "node scripts/fetch-kernels.mjs",
         "kernels:check": "node scripts/fetch-kernels.mjs --check",
         "publish:packages": "node scripts/publish-packages.mjs"

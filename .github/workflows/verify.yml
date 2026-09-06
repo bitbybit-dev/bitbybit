@@ -80,6 +80,11 @@ jobs:
       - name: create-app
         run: pnpm --filter @bitbybit-dev/create-app run build
 
+      # The SDK is generated from the API's OpenAPI document, and the documentation site publishes
+      # that document; both carry the version, and they must agree before either ships.
+      - name: OpenAPI document matches the SDK version
+        run: npm run check:openapi
+
       # The dotted public API is persisted in users' saved scripts. The committed reports under
       # etc/ are the surface; a change to it lands only with a deliberate `npm run api:update`.
       - name: Public API surface matches the committed reports

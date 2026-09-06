@@ -75,6 +75,7 @@ jobs:
       - run: npm run check:tarballs
       - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
       - run: pnpm --filter @bitbybit-dev/create-app run build
+      - run: npm run check:openapi
 
       - name: Publish in dependency order
         run: node scripts/publish-packages.mjs --tag ${{ inputs.tag }} ${{ inputs.dry_run && '--dry-run' || '' }}
