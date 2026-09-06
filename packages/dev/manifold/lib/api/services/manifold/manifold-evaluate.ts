@@ -11,18 +11,6 @@ export class ManifoldEvaluate {
     }
 
     /**
-     * Get volume of manifold
-     * @param inputs manifold
-     * @returns volume of manifold
-     * @group basic
-     * @shortname volume
-     * @drawable false
-     */
-    volume(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): number {
-        return inputs.manifold.volume();
-    }
-
-    /**
      * Get surface area of manifold
      * @param inputs manifold
      * @returns surface area of manifold
@@ -32,6 +20,18 @@ export class ManifoldEvaluate {
      */
     surfaceArea(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): number {
         return inputs.manifold.surfaceArea();
+    }
+
+    /**
+     * Get volume of manifold
+     * @param inputs manifold
+     * @returns volume of manifold
+     * @group basic
+     * @shortname volume
+     * @drawable false
+     */
+    volume(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): number {
+        return inputs.manifold.volume();
     }
 
     /**

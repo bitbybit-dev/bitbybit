@@ -24,6 +24,19 @@ export class MeshEvaluate {
     }
 
     /**
+     * Gets the three vertex indices of this triangle in CCW order.
+     * @param inputs mesh
+     * @returns verts
+     * @group basic
+     * @shortname verts
+     * @drawable false
+     */
+    verts(inputs: Inputs.Manifold.MeshTriangleIndexDto<Manifold3D.Mesh>): number[] {
+        const res = inputs.mesh.verts(inputs.triangleIndex);
+        return [res[0]!, res[1]!, res[2]!];
+    }
+
+    /**
      * Gets the tangent vector starting at verts(tri)[j] pointing to the next
      * Bezier point along the CCW edge. The fourth value is its weight.
      * @param inputs mesh
@@ -35,19 +48,6 @@ export class MeshEvaluate {
     tangent(inputs: Inputs.Manifold.MeshHalfEdgeIndexDto<Manifold3D.Mesh>): number[] {
         const res = inputs.mesh.tangent(inputs.halfEdgeIndex);
         return [res[0]!, res[1]!, res[2]!, res[4]!];
-    }
-
-    /**
-     * Gets the three vertex indices of this triangle in CCW order.
-     * @param inputs mesh
-     * @returns verts
-     * @group basic
-     * @shortname verts
-     * @drawable false
-     */
-    verts(inputs: Inputs.Manifold.MeshTriangleIndexDto<Manifold3D.Mesh>): number[] {
-        const res = inputs.mesh.verts(inputs.triangleIndex);
-        return [res[0]!, res[1]!, res[2]!];
     }
 
     /**

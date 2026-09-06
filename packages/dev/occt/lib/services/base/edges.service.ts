@@ -151,7 +151,7 @@ export class EdgesService {
         return this.occ.GetEdgeLength(inputs.shape);
     }
 
-    getEdgeLengthsOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): number[] {
+    getEdgeLengthsOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): number[] {
         const edgesOnShape = this.shapeGettersService.getEdges({ shape: inputs.shape });
         return edgesOnShape.map(edge => {
             return this.getEdgeLength({ shape: edge });

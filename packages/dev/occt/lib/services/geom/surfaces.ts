@@ -1,4 +1,4 @@
-import { BitbybitOcctModule, TopoDS_Face } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Face, Geom_CylindricalSurface, Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 
@@ -18,7 +18,7 @@ export class OCCTSurfaces {
      * @shortname cylindrical
      * @drawable false
      */
-    cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto) {
+    cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Geom_CylindricalSurface {
         const ax = this.och.entitiesService.gpAx3_4(inputs.center, inputs.direction);
         const res = new this.occ.Geom_CylindricalSurface(ax, inputs.radius);
         ax.delete();
@@ -33,7 +33,7 @@ export class OCCTSurfaces {
      * @shortname from face
      * @drawable false
      */
-    surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>) {
+    surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Geom_Surface {
         return this.och.surfaceFromFace(inputs);
     }
 

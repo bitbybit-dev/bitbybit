@@ -64,20 +64,6 @@ export class CrossSectionBooleans {
     }
 
     /**
-     * Difference of multiple cross sections
-     * @param inputs multiple cross sections
-     * @returns difference of cross sections
-     * @group multiple
-     * @shortname diff cross sections
-     * @drawable true
-     */
-    difference(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        const { CrossSection } = this.manifold;
-        const { difference } = CrossSection;
-        return difference(inputs.crossSections);
-    }
-
-    /**
      * Union of two cross sections
      * @param inputs two cross sections
      * @returns union of two cross sections
@@ -92,20 +78,6 @@ export class CrossSectionBooleans {
     }
 
     /**
-     * Union of multiple cross sections
-     * @param inputs multiple cross sections
-     * @returns union of two cross sections
-     * @group multiple
-     * @shortname union cross sections
-     * @drawable true
-     */
-    union(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        const { CrossSection } = this.manifold;
-        const { union } = CrossSection;
-        return union(inputs.crossSections);
-    }
-
-    /**
      * Intersection of two cross sections
      * @param inputs two shapes
      * @returns intersection of two cross sections
@@ -117,6 +89,34 @@ export class CrossSectionBooleans {
         const { CrossSection } = this.manifold;
         const { intersection } = CrossSection;
         return intersection(inputs.crossSection1, inputs.crossSection2);
+    }
+
+    /**
+     * Difference of multiple cross sections
+     * @param inputs multiple cross sections
+     * @returns difference of cross sections
+     * @group multiple
+     * @shortname diff cross sections
+     * @drawable true
+     */
+    difference(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
+        const { CrossSection } = this.manifold;
+        const { difference } = CrossSection;
+        return difference(inputs.crossSections);
+    }
+
+    /**
+     * Union of multiple cross sections
+     * @param inputs multiple cross sections
+     * @returns union of two cross sections
+     * @group multiple
+     * @shortname union cross sections
+     * @drawable true
+     */
+    union(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
+        const { CrossSection } = this.manifold;
+        const { union } = CrossSection;
+        return union(inputs.crossSections);
     }
 
     /**

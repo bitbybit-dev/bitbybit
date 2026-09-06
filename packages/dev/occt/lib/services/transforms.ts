@@ -166,6 +166,180 @@ export class OCCTTransforms {
     }
 
     /**
+     * Transforms the array of shapes with transformations
+     * @param inputs Transformation descriptions
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname transforms
+     * @drawable true
+     */
+    transformShapes(inputs: Inputs.OCCT.TransformShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.translations, inputs.rotationAxes, inputs.rotationAngles, inputs.scaleFactors]);
+        return inputs.shapes.map((s, index) => this.transform({
+            shape: s,
+            translation: inputs.translations[index]!,
+            rotationAxis: inputs.rotationAxes[index]!,
+            rotationAngle: inputs.rotationAngles[index]!,
+            scaleFactor: inputs.scaleFactors[index]!,
+        }));
+    }
+
+    /**
+     * Rotate the shapes with rotations
+     * @param inputs Rotation descriptions
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname rotations
+     * @drawable true
+     */
+    rotateShapes(inputs: Inputs.OCCT.RotateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.axes, inputs.angles]);
+        return inputs.shapes.map((s, index) => this.rotate({
+            shape: s,
+            axis: inputs.axes[index]!,
+            angle: inputs.angles[index]!,
+        }));
+    }
+
+    /**
+     * Rotate the shapes around the center and an axis
+     * @param inputs Rotation descriptions
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname rotations around center
+     * @drawable true
+     */
+    rotateAroundCenterShapes(inputs: Inputs.OCCT.RotateAroundCenterShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.axes, inputs.angles]);
+        return inputs.shapes.map((s, index) => this.rotateAroundCenter({
+            shape: s,
+            axis: inputs.axes[index]!,
+            angle: inputs.angles[index]!,
+            center: inputs.centers[index]!,
+        }));
+    }
+
+    /**
+     * Align the shapes with alignments
+     * @param inputs Align descriptions
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname alignments
+     * @drawable true
+     */
+    alignShapes(inputs: Inputs.OCCT.AlignShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Point3 | Base.Vector3>([inputs.shapes, inputs.fromOrigins, inputs.fromDirections, inputs.toOrigins, inputs.toDirections]);
+        return inputs.shapes.map((s, index) => this.align({
+            shape: s,
+            fromOrigin: inputs.fromOrigins[index]!,
+            fromDirection: inputs.fromDirections[index]!,
+            toOrigin: inputs.toOrigins[index]!,
+            toDirection: inputs.toDirections[index]!
+        }));
+    }
+
+    /**
+     * Align and translate the shapes
+     * @param inputs Align descriptions
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname align and translate
+     * @drawable true
+     */
+    alignAndTranslateShapes(inputs: Inputs.OCCT.AlignAndTranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([inputs.shapes, inputs.centers, inputs.directions]);
+        return inputs.shapes.map((s, index) => this.alignAndTranslate({
+            shape: s,
+            center: inputs.centers[index]!,
+            direction: inputs.directions[index]!,
+        }));
+    }
+
+    /**
+     * Translates the shapes with translations
+     * @param inputs Translation descriptions
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname translations
+     * @drawable true
+     */
+    translateShapes(inputs: Inputs.OCCT.TranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([inputs.shapes, inputs.translations]);
+        return inputs.shapes.map((s, index) => this.translate({
+            shape: s,
+            translation: inputs.translations[index]!,
+        }));
+    }
+
+    /**
+     * Scales the shapes with scale factors
+     * @param inputs Scale descriptions
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname scales
+     * @drawable true
+     */
+    scaleShapes(inputs: Inputs.OCCT.ScaleShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | number>([inputs.shapes, inputs.factors]);
+        return inputs.shapes.map((s, index) => this.scale({
+            shape: s,
+            factor: inputs.factors[index]!,
+        }));
+    }
+
+    /**
+     * Scales the shape in 3D
+     * @param inputs Scale 3D descriptions
+     * @returns OpenCascade scaled shapes
+     * @group on shapes
+     * @shortname scales 3d
+     * @drawable true
+     */
+    scale3dShapes(inputs: Inputs.OCCT.Scale3DShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.scales, inputs.centers]);
+        return inputs.shapes.map((s, index) => this.scale3d({
+            shape: s,
+            scale: inputs.scales[index]!,
+            center: inputs.centers[index]!,
+        }));
+    }
+
+
+    /**
+     * Mirrors the shapes with multiple mirrors
+     * @param inputs Mirror axis origins, axis directions and shapes
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname mirrors
+     * @drawable true
+     */
+    mirrorShapes(inputs: Inputs.OCCT.MirrorShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.directions, inputs.origins]);
+        return inputs.shapes.map((s, index) => this.mirror({
+            shape: s,
+            origin: inputs.origins[index]!,
+            direction: inputs.directions[index]!,
+        }));
+    }
+
+    /**
+     * Mirrors the shapes along the normal and origin
+     * @param inputs Normals for mirroring with origins
+     * @returns OpenCascade shapes
+     * @group on shapes
+     * @shortname mirrors normal
+     * @drawable true
+     */
+    mirrorAlongNormalShapes(inputs: Inputs.OCCT.MirrorAlongNormalShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.normals, inputs.origins]);
+        return inputs.shapes.map((s, index) => this.mirrorAlongNormal({
+            shape: s,
+            normal: inputs.normals[index]!,
+            origin: inputs.origins[index]!,
+        }));
+    }
+
+    /**
      * Scales the shape uniformly about an arbitrary center point
      * @param inputs Scale factor, center and shape
      * @returns OpenCascade shape
@@ -368,180 +542,6 @@ export class OCCTTransforms {
      */
     quaternionToMatrix(inputs: Inputs.OCCT.QuaternionToMatrixDto): Base.TransformMatrix {
         return this.och.transformsService.quaternionToMatrix(inputs);
-    }
-
-    /**
-     * Transforms the array of shapes with transformations
-     * @param inputs Transformation descriptions
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname transforms
-     * @drawable true
-     */
-    transformShapes(inputs: Inputs.OCCT.TransformShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.translations, inputs.rotationAxes, inputs.rotationAngles, inputs.scaleFactors]);
-        return inputs.shapes.map((s, index) => this.transform({
-            shape: s,
-            translation: inputs.translations[index]!,
-            rotationAxis: inputs.rotationAxes[index]!,
-            rotationAngle: inputs.rotationAngles[index]!,
-            scaleFactor: inputs.scaleFactors[index]!,
-        }));
-    }
-
-    /**
-     * Rotate the shapes with rotations
-     * @param inputs Rotation descriptions
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname rotations
-     * @drawable true
-     */
-    rotateShapes(inputs: Inputs.OCCT.RotateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.axes, inputs.angles]);
-        return inputs.shapes.map((s, index) => this.rotate({
-            shape: s,
-            axis: inputs.axes[index]!,
-            angle: inputs.angles[index]!,
-        }));
-    }
-
-    /**
-     * Rotate the shapes around the center and an axis
-     * @param inputs Rotation descriptions
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname rotations around center
-     * @drawable true
-     */
-    rotateAroundCenterShapes(inputs: Inputs.OCCT.RotateAroundCenterShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.axes, inputs.angles]);
-        return inputs.shapes.map((s, index) => this.rotateAroundCenter({
-            shape: s,
-            axis: inputs.axes[index]!,
-            angle: inputs.angles[index]!,
-            center: inputs.centers[index]!,
-        }));
-    }
-
-    /**
-     * Align the shapes with alignments
-     * @param inputs Align descriptions
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname alignments
-     * @drawable true
-     */
-    alignShapes(inputs: Inputs.OCCT.AlignShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Point3 | Base.Vector3>([inputs.shapes, inputs.fromOrigins, inputs.fromDirections, inputs.toOrigins, inputs.toDirections]);
-        return inputs.shapes.map((s, index) => this.align({
-            shape: s,
-            fromOrigin: inputs.fromOrigins[index]!,
-            fromDirection: inputs.fromDirections[index]!,
-            toOrigin: inputs.toOrigins[index]!,
-            toDirection: inputs.toDirections[index]!
-        }));
-    }
-
-    /**
-     * Align and translate the shapes
-     * @param inputs Align descriptions
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname align and translate
-     * @drawable true
-     */
-    alignAndTranslateShapes(inputs: Inputs.OCCT.AlignAndTranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([inputs.shapes, inputs.centers, inputs.directions]);
-        return inputs.shapes.map((s, index) => this.alignAndTranslate({
-            shape: s,
-            center: inputs.centers[index]!,
-            direction: inputs.directions[index]!,
-        }));
-    }
-
-    /**
-     * Translates the shapes with translations
-     * @param inputs Translation descriptions
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname translations
-     * @drawable true
-     */
-    translateShapes(inputs: Inputs.OCCT.TranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([inputs.shapes, inputs.translations]);
-        return inputs.shapes.map((s, index) => this.translate({
-            shape: s,
-            translation: inputs.translations[index]!,
-        }));
-    }
-
-    /**
-     * Scales the shapes with scale factors
-     * @param inputs Scale descriptions
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname scales
-     * @drawable true
-     */
-    scaleShapes(inputs: Inputs.OCCT.ScaleShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | number>([inputs.shapes, inputs.factors]);
-        return inputs.shapes.map((s, index) => this.scale({
-            shape: s,
-            factor: inputs.factors[index]!,
-        }));
-    }
-
-    /**
-     * Scales the shape in 3D
-     * @param inputs Scale 3D descriptions
-     * @returns OpenCascade scaled shapes
-     * @group on shapes
-     * @shortname scales 3d
-     * @drawable true
-     */
-    scale3dShapes(inputs: Inputs.OCCT.Scale3DShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.scales, inputs.centers]);
-        return inputs.shapes.map((s, index) => this.scale3d({
-            shape: s,
-            scale: inputs.scales[index]!,
-            center: inputs.centers[index]!,
-        }));
-    }
-
-
-    /**
-     * Mirrors the shapes with multiple mirrors
-     * @param inputs Mirror axis origins, axis directions and shapes
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname mirrors
-     * @drawable true
-     */
-    mirrorShapes(inputs: Inputs.OCCT.MirrorShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.directions, inputs.origins]);
-        return inputs.shapes.map((s, index) => this.mirror({
-            shape: s,
-            origin: inputs.origins[index]!,
-            direction: inputs.directions[index]!,
-        }));
-    }
-
-    /**
-     * Mirrors the shapes along the normal and origin
-     * @param inputs Normals for mirroring with origins
-     * @returns OpenCascade shapes
-     * @group on shapes
-     * @shortname mirrors normal
-     * @drawable true
-     */
-    mirrorAlongNormalShapes(inputs: Inputs.OCCT.MirrorAlongNormalShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.normals, inputs.origins]);
-        return inputs.shapes.map((s, index) => this.mirrorAlongNormal({
-            shape: s,
-            normal: inputs.normals[index]!,
-            origin: inputs.origins[index]!,
-        }));
     }
 
     private checkIfListsEqualLength<T>(lists: T[][]) {

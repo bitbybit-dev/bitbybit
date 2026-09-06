@@ -15,8 +15,8 @@ export class CrossSection {
 
     shapes: CrossSectionShapes;
     operations: CrossSectionOperations;
-    transforms: CrossSectionTransforms;
     booleans: CrossSectionBooleans;
+    transforms: CrossSectionTransforms;
     evaluate: CrossSectionEvaluate;
 
     private manifold: Manifold3D.ManifoldToplevel;
@@ -27,8 +27,8 @@ export class CrossSection {
         this.base = base;
         this.shapes = new CrossSectionShapes(wasm);
         this.operations = new CrossSectionOperations(wasm);
-        this.transforms = new CrossSectionTransforms(wasm);
         this.booleans = new CrossSectionBooleans(wasm);
+        this.transforms = new CrossSectionTransforms(wasm);
         this.evaluate = new CrossSectionEvaluate(wasm);
     }
 

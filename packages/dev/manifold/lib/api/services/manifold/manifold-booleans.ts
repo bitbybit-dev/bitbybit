@@ -14,6 +14,126 @@ export class ManifoldBooleans {
     }
 
     /**
+     * Subtract two manifold shapes
+     * @param inputs two shapes
+     * @returns subtracted manifold shape
+     * @group a to b
+     * @shortname subtract
+     * @drawable true
+     */
+    subtract(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold1.subtract(inputs.manifold2);
+    }
+
+    /**
+     * Add two manifold shapes
+     * @param inputs two shapes
+     * @returns unioned manifold shape
+     * @group a to b
+     * @shortname add
+     * @drawable true
+     */
+    add(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold1.add(inputs.manifold2);
+    }
+
+    /**
+     * Intersect two manifold shapes
+     * @param inputs two shapes
+     * @returns intersected manifold shape
+     * @group a to b
+     * @shortname intersect
+     * @drawable true
+     */
+    intersect(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold1.intersect(inputs.manifold2);
+    }
+
+    /**
+     * Difference of two manifold shapes
+     * @param inputs two shapes
+     * @returns difference of two manifold shapes
+     * @group 2 manifolds
+     * @shortname difference 2 manifolds
+     * @drawable true
+     */
+    differenceTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        const { Manifold } = this.manifold;
+        const { difference } = Manifold;
+        return difference(inputs.manifold1, inputs.manifold2);
+    }
+
+    /**
+     * Union of two manifold shapes
+     * @param inputs two shapes
+     * @returns union of two manifold shapes
+     * @group 2 manifolds
+     * @shortname union 2 manifolds
+     * @drawable true
+     */
+    unionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        const { Manifold } = this.manifold;
+        const { union } = Manifold;
+        return union(inputs.manifold1, inputs.manifold2);
+    }
+
+    /**
+     * Intersection of two manifold shapes
+     * @param inputs two shapes
+     * @returns intersection of two manifold shapes
+     * @group 2 manifolds
+     * @shortname intersection 2 manifolds
+     * @drawable true
+     */
+    intersectionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        const { Manifold } = this.manifold;
+        const { intersection } = Manifold;
+        return intersection(inputs.manifold1, inputs.manifold2);
+    }
+
+    /**
+     * Difference of multiple manifold shapes
+     * @param inputs multiple shapes
+     * @returns difference of two manifold shapes
+     * @group multiple
+     * @shortname difference manifolds
+     * @drawable true
+     */
+    difference(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        const { Manifold } = this.manifold;
+        const { difference } = Manifold;
+        return difference(inputs.manifolds);
+    }
+
+    /**
+     * Union of multiple manifold shapes
+     * @param inputs multiple shapes
+     * @returns union of two manifold shapes
+     * @group multiple
+     * @shortname union manifolds
+     * @drawable true
+     */
+    union(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        const { Manifold } = this.manifold;
+        const { union } = Manifold;
+        return union(inputs.manifolds);
+    }
+
+    /**
+     * Intersection of multiple manifold shapes
+     * @param inputs two shapes
+     * @returns intersection of multiple manifold shapes
+     * @group multiple
+     * @shortname intersection manifolds
+     * @drawable true
+     */
+    intersection(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        const { Manifold } = this.manifold;
+        const { intersection } = Manifold;
+        return intersection(inputs.manifolds);
+    }
+
+    /**
      * Split manifold by another manifold
      * @param inputs manifold to split and manifold cutter
      * @returns split manifold
@@ -84,126 +204,6 @@ export class ManifoldBooleans {
      */
     trimByPlane(inputs: Inputs.Manifold.TrimByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.asOriginal().trimByPlane(inputs.normal, inputs.originOffset);
-    }
-
-    /**
-     * Subtract two manifold shapes
-     * @param inputs two shapes
-     * @returns subtracted manifold shape
-     * @group a to b
-     * @shortname subtract
-     * @drawable true
-     */
-    subtract(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold1.subtract(inputs.manifold2);
-    }
-
-    /**
-     * Add two manifold shapes
-     * @param inputs two shapes
-     * @returns unioned manifold shape
-     * @group a to b
-     * @shortname add
-     * @drawable true
-     */
-    add(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold1.add(inputs.manifold2);
-    }
-
-    /**
-     * Intersect two manifold shapes
-     * @param inputs two shapes
-     * @returns intersected manifold shape
-     * @group a to b
-     * @shortname intersect
-     * @drawable true
-     */
-    intersect(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold1.intersect(inputs.manifold2);
-    }
-
-    /**
-     * Difference of two manifold shapes
-     * @param inputs two shapes
-     * @returns difference of two manifold shapes
-     * @group 2 manifolds
-     * @shortname difference 2 manifolds
-     * @drawable true
-     */
-    differenceTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        const { Manifold } = this.manifold;
-        const { difference } = Manifold;
-        return difference(inputs.manifold1, inputs.manifold2);
-    }
-
-    /**
-     * Difference of multiple manifold shapes
-     * @param inputs multiple shapes
-     * @returns difference of two manifold shapes
-     * @group multiple
-     * @shortname difference manifolds
-     * @drawable true
-     */
-    difference(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        const { Manifold } = this.manifold;
-        const { difference } = Manifold;
-        return difference(inputs.manifolds);
-    }
-
-    /**
-     * Union of two manifold shapes
-     * @param inputs two shapes
-     * @returns union of two manifold shapes
-     * @group 2 manifolds
-     * @shortname union 2 manifolds
-     * @drawable true
-     */
-    unionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        const { Manifold } = this.manifold;
-        const { union } = Manifold;
-        return union(inputs.manifold1, inputs.manifold2);
-    }
-
-    /**
-     * Union of multiple manifold shapes
-     * @param inputs multiple shapes
-     * @returns union of two manifold shapes
-     * @group multiple
-     * @shortname union manifolds
-     * @drawable true
-     */
-    union(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        const { Manifold } = this.manifold;
-        const { union } = Manifold;
-        return union(inputs.manifolds);
-    }
-
-    /**
-     * Intersection of two manifold shapes
-     * @param inputs two shapes
-     * @returns intersection of two manifold shapes
-     * @group 2 manifolds
-     * @shortname intersection 2 manifolds
-     * @drawable true
-     */
-    intersectionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        const { Manifold } = this.manifold;
-        const { intersection } = Manifold;
-        return intersection(inputs.manifold1, inputs.manifold2);
-    }
-
-    /**
-     * Intersection of multiple manifold shapes
-     * @param inputs two shapes
-     * @returns intersection of multiple manifold shapes
-     * @group multiple
-     * @shortname intersection manifolds
-     * @drawable true
-     */
-    intersection(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        const { Manifold } = this.manifold;
-        const { intersection } = Manifold;
-        return intersection(inputs.manifolds);
     }
 
 }

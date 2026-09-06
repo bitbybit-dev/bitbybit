@@ -17,7 +17,7 @@ export class OCCTCurves {
      * @group primitives
      * @shortname ellipse 2d
      */
-    geom2dEllipse(inputs: Inputs.OCCT.Geom2dEllipseDto) {
+    geom2dEllipse(inputs: Inputs.OCCT.Geom2dEllipseDto): Handle_Geom2d_Curve {
         // Create axis with primary direction, perpendicular direction is computed internally
         const dir2: Inputs.Base.Vector2 = [-inputs.direction[1], inputs.direction[0]]; // Perpendicular to direction
         const axis2d = this.och.entitiesService.gpAx22d(inputs.center, inputs.direction, dir2);
@@ -26,7 +26,7 @@ export class OCCTCurves {
         return res;
     }
 
-    geom2dCircle(inputs: Inputs.OCCT.Geom2dCircleDto) {
+    geom2dCircle(inputs: Inputs.OCCT.Geom2dCircleDto): Handle_Geom2d_Curve {
         // Create axis with primary direction, perpendicular direction is computed internally
         const dir2: Inputs.Base.Vector2 = [-inputs.direction[1], inputs.direction[0]]; // Perpendicular to direction
         const axis2d = this.och.entitiesService.gpAx22d(inputs.center, inputs.direction, dir2);
@@ -42,7 +42,7 @@ export class OCCTCurves {
      * @group create
      * @shortname trimmed 2d
      */
-    geom2dTrimmedCurve(inputs: Inputs.OCCT.Geom2dTrimmedCurveDto<Handle_Geom2d_Curve>) {
+    geom2dTrimmedCurve(inputs: Inputs.OCCT.Geom2dTrimmedCurveDto<Handle_Geom2d_Curve>): Handle_Geom2d_Curve {
         return this.occ.CreateGeom2d_TrimmedCurve(inputs.shape, inputs.u1, inputs.u2);
     }
 
@@ -53,7 +53,7 @@ export class OCCTCurves {
      * @group primitives
      * @shortname segment 2d
      */
-    geom2dSegment(inputs: Inputs.OCCT.Geom2dSegmentDto) {
+    geom2dSegment(inputs: Inputs.OCCT.Geom2dSegmentDto): Handle_Geom2d_Curve {
         const pt1 = this.och.entitiesService.gpPnt2d(inputs.start);
         const pt2 = this.och.entitiesService.gpPnt2d(inputs.end);
         const res = this.occ.CreateGeom2d_Segment(pt1, pt2);
@@ -69,9 +69,9 @@ export class OCCTCurves {
      * @group get
      * @shortname 2d point on curve
      */
-    get2dPointFrom2dCurveOnParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Geom2d_Curve>) {
+    get2dPointFrom2dCurveOnParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Geom2d_Curve>): Inputs.Base.Point2 {
         const pt2d = inputs.shape.Value(inputs.param);
-        const pt = [pt2d.X(), pt2d.Y()]; 
+        const pt: Inputs.Base.Point2 = [pt2d.X(), pt2d.Y()];
         pt2d.delete();
         return pt;
     }

@@ -12,17 +12,33 @@ import { BaseBitByBit } from "../base";
  */
 export class ManifoldService {
     plugins: any;
+    public manifold: Manifold;
 
     public crossSection: CrossSection;
-    public manifold: Manifold;
     private base: BaseBitByBit;
     mesh: Mesh;
 
     constructor(wasm: Manifold3D.ManifoldToplevel) {
         this.base = new BaseBitByBit();
-        this.crossSection = new CrossSection(wasm, this.base);
         this.manifold = new Manifold(wasm);
+        this.crossSection = new CrossSection(wasm, this.base);
         this.mesh = new Mesh(wasm);
+    }
+
+    /**
+     * Decomposes manifold or cross section shape into a mesh or simple polygons
+     * @param inputs Manifold shape or cross section
+     * @returns Decomposed mesh definition or simple polygons
+     * @group decompose
+     * @shortname decompose m or cs
+     * @drawable false
+     */
+    decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
+        if ((inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh) {
+            return (inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh(inputs.normalIdx);
+        } else {
+            return (inputs.manifoldOrCrossSection as Manifold3D.CrossSection).toPolygons();
+        }
     }
 
     /**
@@ -89,22 +105,6 @@ export class ManifoldService {
             return polygons;
         } else {
             throw new Error("Manifold has no mesh to convert");
-        }
-    }
-
-    /**
-     * Decomposes manifold or cross section shape into a mesh or simple polygons
-     * @param inputs Manifold shape or cross section
-     * @returns Decomposed mesh definition or simple polygons
-     * @group decompose
-     * @shortname decompose m or cs
-     * @drawable false
-     */
-    decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
-        if ((inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh) {
-            return (inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh(inputs.normalIdx);
-        } else {
-            return (inputs.manifoldOrCrossSection as Manifold3D.CrossSection).toPolygons();
         }
     }
 

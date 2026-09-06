@@ -98,11 +98,11 @@ export class SolidsService {
         return cylinders;
     }
 
-    createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Shape {
+    createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Solid {
         return this.entitiesService.bRepPrimAPIMakeSphere(inputs.center, [0., 0., 1.], inputs.radius);
     }
 
-    createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Shape {
+    createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Solid {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
         const angle = inputs.angle === undefined ? Math.PI * 2 : this.vectorHelperService.degToRad(inputs.angle);
         const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, angle);
@@ -112,7 +112,7 @@ export class SolidsService {
         return coneShape;
     }
 
-    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Shape {
+    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Solid {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
         const angle = inputs.angle === undefined || inputs.angle === null
             ? 2 * Math.PI

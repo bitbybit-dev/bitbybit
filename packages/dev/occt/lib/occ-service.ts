@@ -23,16 +23,16 @@ import { OCCTSVG } from "./services/svg";
 export class OCCTService {
     public readonly shapes: OCCTShapes;
     public readonly geom: OCCTGeom;
+    public readonly fillets: OCCTFillets;
     public readonly transforms: OCCTTransforms;
     public readonly operations: OCCTOperations;
     public readonly booleans: OCCTBooleans;
-    public readonly fillets: OCCTFillets;
     public readonly dimensions: OCCTDimensions;
+    public readonly shapeFix: OCCTShapeFix;
     public readonly assembly: OCCTAssembly;
     public readonly brepGraph: OCCTBrepGraph;
     public readonly corners: OCCTCorners;
     public readonly draft: OCCTDraft;
-    public readonly shapeFix: OCCTShapeFix;
     public readonly io: OCCTIO;
     public readonly path: OCCTPath;
     public readonly svg: OCCTSVG;
@@ -44,12 +44,12 @@ export class OCCTService {
     ) {
         this.shapes = new OCCTShapes(occ, och);
         this.geom = new OCCTGeom(occ, och);
+        this.fillets = new OCCTFillets(occ, och);
         this.transforms = new OCCTTransforms(occ, och);
         this.operations = new OCCTOperations(occ, och);
         this.booleans = new OCCTBooleans(occ, och);
-        this.fillets = new OCCTFillets(occ, och);
-        this.shapeFix = new OCCTShapeFix(occ, och);
         this.dimensions = new OCCTDimensions(occ, och);
+        this.shapeFix = new OCCTShapeFix(occ, och);
         this.assembly = new OCCTAssembly(occ, och);
         this.brepGraph = new OCCTBrepGraph(occ, och);
         this.corners = new OCCTCorners(occ, och);
@@ -77,8 +77,8 @@ export class OCCTService {
      * @shortname shape to mesh
      * @drawable false
      */
-    shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto[] {
-        return this.och.meshingService.shapesToMeshes(inputs);
+    shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {
+        return this.och.meshingService.shapeToMesh(inputs);
     }
 
     /**
@@ -88,18 +88,8 @@ export class OCCTService {
      * @shortname shape to mesh
      * @drawable false
      */
-    shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {
-        return this.och.meshingService.shapeToMesh(inputs);
-    }
-
-    /**
-     * Meshes an XCAF document's free (top-level) shapes into separate meshes (one per shape), resolving
-     * per-face colours into each output's colorGroups map.
-     * @param inputs document
-     * @ignore true
-     */
-    docToMeshes(inputs: Inputs.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
-        return this.och.meshingService.docToMeshes(inputs);
+    shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto[] {
+        return this.och.meshingService.shapesToMeshes(inputs);
     }
 
     /**
@@ -110,6 +100,16 @@ export class OCCTService {
      */
     docToMesh(inputs: Inputs.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
         return this.och.meshingService.docToMesh(inputs);
+    }
+
+    /**
+     * Meshes an XCAF document's free (top-level) shapes into separate meshes (one per shape), resolving
+     * per-face colours into each output's colorGroups map.
+     * @param inputs document
+     * @ignore true
+     */
+    docToMeshes(inputs: Inputs.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
+        return this.och.meshingService.docToMeshes(inputs);
     }
 
 

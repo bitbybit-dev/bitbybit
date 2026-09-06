@@ -73,6 +73,18 @@ export class ManifoldTransforms {
     }
 
     /**
+     * Translates a manifold shape along x, y, z
+     * @param inputs manifold and trnaslation coordinates
+     * @returns Translated manifold shape
+     * @group transforms
+     * @shortname translate xyz
+     * @drawable true
+     */
+    translateXYZ(inputs: Inputs.Manifold.TranslateXYZDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.translate(inputs.x, inputs.y, inputs.z);
+    }
+
+    /**
      * Rotates a manifold shape along the vector containing euler angles
      * @param inputs manifold and rotation vector
      * @returns Rotated manifold shape
@@ -94,18 +106,6 @@ export class ManifoldTransforms {
      */
     rotateXYZ(inputs: Inputs.Manifold.RotateXYZDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.rotate(inputs.x, inputs.y, inputs.z);
-    }
-
-    /**
-     * Translates a manifold shape along x, y, z
-     * @param inputs manifold and trnaslation coordinates
-     * @returns Translated manifold shape
-     * @group transforms
-     * @shortname translate xyz
-     * @drawable true
-     */
-    translateXYZ(inputs: Inputs.Manifold.TranslateXYZDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.translate(inputs.x, inputs.y, inputs.z);
     }
 
     /**

@@ -59,6 +59,18 @@ export class OCCTFillets {
     }
 
     /**
+     * Fillets multiple provided edges with the same variable radiuses on u params for each edge.
+     * @param inputs Shape, edge, radius list and param list
+     * @returns OpenCascade shape with filleted edges
+     * @group 3d fillets
+     * @shortname fillet edges same variable r
+     * @drawable true
+     */
+    filletEdgesSameVariableRadius(inputs: Inputs.OCCT.FilletEdgesSameVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
+        return this.och.filletsService.filletEdgesSameVariableRadius(inputs);
+    }
+
+    /**
      * Fillets multiple provided edges with variable radius lists on given params lists. You need to provide a list of params to identify on which U param to apply the radius on.
      * @param inputs Shape, edge, radius list and param list
      * @returns OpenCascade shape with filleted edges
@@ -71,15 +83,39 @@ export class OCCTFillets {
     }
 
     /**
-     * Fillets multiple provided edges with the same variable radiuses on u params for each edge.
-     * @param inputs Shape, edge, radius list and param list
+     * Fillets OpenCascade 3d wire, this algorithm takes one guiding direction for fillets to be formed. 
+     * It does not respect tangent directions on each filleted corner. This algorithm is based on extruding wire along the given direction
+     * to form a shell, then filleting the shell and finally extracting the filleted wire from the shell itself.
+     * Make sure you provide a direction that is not parallel to the wire and that forms high enough extrusion for the fillet to succeed.
+     * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      * @group 3d fillets
-     * @shortname fillet edges same variable r
+     * @shortname fillet 3d wire
      * @drawable true
      */
-    filletEdgesSameVariableRadius(inputs: Inputs.OCCT.FilletEdgesSameVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
-        return this.och.filletsService.filletEdgesSameVariableRadius(inputs);
+    fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>): TopoDS_Shape {
+        return this.och.filletsService.fillet3DWire(inputs);
+    }
+
+    /**
+     * Fillets OpenCascade 3d wires, this algorithm takes one guiding direction for fillets to be formed. 
+     * It does not respect tangent directions on each filleted corner. This algorithm is based on extruding wires along the given direction
+     * to form a shell, then filleting the shell and finally extracting the filleted wire from the shell itself.
+     * Make sure you provide a direction that is not parallel to the wire and that forms high enough extrusion for the fillet to succeed.
+     * @param inputs Shapes, radius and edge indexes to fillet
+     * @returns OpenCascade shape with filleted edges
+     * @group 3d fillets
+     * @shortname fillet 3d wires
+     * @drawable true
+     */
+    fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>): TopoDS_Shape[] {
+        return inputs.shapes.map(shape => this.och.filletsService.fillet3DWire({
+            shape,
+            radius: inputs.radius,
+            radiusList: inputs.radiusList,
+            indexes: inputs.indexes,
+            direction: inputs.direction
+        }));
     }
 
     /**
@@ -104,42 +140,6 @@ export class OCCTFillets {
      */
     chamferEdgesList(inputs: Inputs.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
         return this.och.filletsService.chamferEdgesList(inputs);
-    }
-
-    /**
-     * Chamfers edge by a given distance and angle from the face
-     * @param inputs Shape, edge, face, distance and angle
-     * @returns OpenCascade shape with chamfered edges
-     * @group 3d chamfers
-     * @shortname chamfer edge angle
-     * @drawable true
-     */
-    chamferEdgeDistAngle(inputs: Inputs.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        return this.och.filletsService.chamferEdgeDistAngle(inputs);
-    }
-
-    /**
-     * Chamfers multiple edges by a given distance and angle from the faces
-     * @param inputs Shape, edge, face, distance and angle
-     * @returns OpenCascade shape with chamfered edges
-     * @group 3d chamfers
-     * @shortname chamfer edges angle
-     * @drawable true
-     */
-    chamferEdgesDistAngle(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        return this.och.filletsService.chamferEdgesDistAngle(inputs);
-    }
-
-    /**
-     * Chamfers edges by a given distances and angles from the faces
-     * @param inputs Shape, edges, faces, distances and angles
-     * @returns OpenCascade shape with chamfered edges
-     * @group 3d chamfers
-     * @shortname chamfer edges angles
-     * @drawable true
-     */
-    chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        return this.och.filletsService.chamferEdgesDistsAngles(inputs);
     }
 
     /**
@@ -179,71 +179,39 @@ export class OCCTFillets {
     }
 
     /**
-     * Fillets two planar edges into a wire by providing a radius, plane, edges and possible solution index if more than one result exists
-     * @param inputs Definition for fillets
-     * @returns OpenCascade wire shape if solution is found
-     * @group 2d fillets
-     * @shortname fillet 2 edges
+     * Chamfers edge by a given distance and angle from the face
+     * @param inputs Shape, edge, face, distance and angle
+     * @returns OpenCascade shape with chamfered edges
+     * @group 3d chamfers
+     * @shortname chamfer edge angle
      * @drawable true
      */
-    filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto<TopoDS_Edge>): TopoDS_Wire {
-        const pln = this.och.entitiesService.gpPln(inputs.planeOrigin, inputs.planeDirection);
-        const fil = new this.occ.ChFi2d_FilletAlgo(inputs.edge1, inputs.edge2, pln);
-        fil.Perform(inputs.radius);
-        const pt = this.och.entitiesService.gpPnt(inputs.planeOrigin);
-        const edge1 = new this.occ.TopoDS_Edge();
-        const edge2 = new this.occ.TopoDS_Edge();
-
-        let solution = -1;
-        if (inputs.solution !== undefined) {
-            solution = inputs.solution;
-        }
-        const filletedEdge = fil.Result(pt, edge1, edge2, solution);
-
-        const result = this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge1, filletedEdge, edge2] });
-        fil.delete();
-        pt.delete();
-        pln.delete();
-        edge1.delete();
-        edge2.delete();
-        filletedEdge.delete();
-        return result;
+    chamferEdgeDistAngle(inputs: Inputs.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
+        return this.och.filletsService.chamferEdgeDistAngle(inputs);
     }
 
     /**
-     * Fillets OpenCascade 3d wires, this algorithm takes one guiding direction for fillets to be formed. 
-     * It does not respect tangent directions on each filleted corner. This algorithm is based on extruding wires along the given direction
-     * to form a shell, then filleting the shell and finally extracting the filleted wire from the shell itself.
-     * Make sure you provide a direction that is not parallel to the wire and that forms high enough extrusion for the fillet to succeed.
-     * @param inputs Shapes, radius and edge indexes to fillet
-     * @returns OpenCascade shape with filleted edges
-     * @group 3d fillets
-     * @shortname fillet 3d wires
+     * Chamfers multiple edges by a given distance and angle from the faces
+     * @param inputs Shape, edge, face, distance and angle
+     * @returns OpenCascade shape with chamfered edges
+     * @group 3d chamfers
+     * @shortname chamfer edges angle
      * @drawable true
      */
-    fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>): TopoDS_Shape[] {
-        return inputs.shapes.map(shape => this.och.filletsService.fillet3DWire({
-            shape,
-            radius: inputs.radius,
-            radiusList: inputs.radiusList,
-            indexes: inputs.indexes,
-            direction: inputs.direction
-        }));
+    chamferEdgesDistAngle(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
+        return this.och.filletsService.chamferEdgesDistAngle(inputs);
     }
 
     /**
-     * Fillets OpenCascade 3d wire, this algorithm takes one guiding direction for fillets to be formed. 
-     * It does not respect tangent directions on each filleted corner. This algorithm is based on extruding wire along the given direction
-     * to form a shell, then filleting the shell and finally extracting the filleted wire from the shell itself.
-     * Make sure you provide a direction that is not parallel to the wire and that forms high enough extrusion for the fillet to succeed.
-     * @param inputs Shape, radius and edge indexes to fillet
-     * @returns OpenCascade shape with filleted edges
-     * @group 3d fillets
-     * @shortname fillet 3d wire
+     * Chamfers edges by a given distances and angles from the faces
+     * @param inputs Shape, edges, faces, distances and angles
+     * @returns OpenCascade shape with chamfered edges
+     * @group 3d chamfers
+     * @shortname chamfer edges angles
      * @drawable true
      */
-    fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.filletsService.fillet3DWire(inputs);
+    chamferEdgesDistsAngles(inputs: Inputs.OCCT.ChamferEdgesDistsAnglesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
+        return this.och.filletsService.chamferEdgesDistsAngles(inputs);
     }
 
     /**
@@ -273,6 +241,38 @@ export class OCCTFillets {
             radiusList: inputs.radiusList,
             indexes: inputs.indexes
         }));
+    }
+
+    /**
+     * Fillets two planar edges into a wire by providing a radius, plane, edges and possible solution index if more than one result exists
+     * @param inputs Definition for fillets
+     * @returns OpenCascade wire shape if solution is found
+     * @group 2d fillets
+     * @shortname fillet 2 edges
+     * @drawable true
+     */
+    filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto<TopoDS_Edge>): TopoDS_Wire {
+        const pln = this.och.entitiesService.gpPln(inputs.planeOrigin, inputs.planeDirection);
+        const fil = new this.occ.ChFi2d_FilletAlgo(inputs.edge1, inputs.edge2, pln);
+        fil.Perform(inputs.radius);
+        const pt = this.och.entitiesService.gpPnt(inputs.planeOrigin);
+        const edge1 = new this.occ.TopoDS_Edge();
+        const edge2 = new this.occ.TopoDS_Edge();
+
+        let solution = -1;
+        if (inputs.solution !== undefined) {
+            solution = inputs.solution;
+        }
+        const filletedEdge = fil.Result(pt, edge1, edge2, solution);
+
+        const result = this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge1, filletedEdge, edge2] });
+        fil.delete();
+        pt.delete();
+        pln.delete();
+        edge1.delete();
+        edge2.delete();
+        filletedEdge.delete();
+        return result;
     }
 
     /**

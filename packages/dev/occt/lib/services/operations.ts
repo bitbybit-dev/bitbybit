@@ -13,6 +13,30 @@ export class OCCTOperations {
     }
 
     /**
+     * Lofts wires into a shell
+     * @param inputs Loft wires
+     * @returns Resulting loft shape
+     * @group lofts
+     * @shortname loft
+     * @drawable true
+     */
+    loft(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        return this.och.operationsService.loft(inputs);
+    }
+
+    /**
+     * Lofts wires into a shell by using many advanced options
+     * @param inputs Advanced loft parameters
+     * @returns Resulting loft shell
+     * @group lofts
+     * @shortname loft adv.
+     * @drawable true
+     */
+    loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        return this.och.operationsService.loftAdvanced(inputs);
+    }
+
+    /**
      * Computes two closest points between two shapes
      * @param inputs two shapes
      * @returns Resulting points
@@ -187,64 +211,15 @@ export class OCCTOperations {
     }
 
     /**
-     * Lofts wires into a shell
-     * @param inputs Loft wires
-     * @returns Resulting loft shape
-     * @group lofts
-     * @shortname loft
+     * Extrudes the shape along direction - wire will produce shell, face will produce solid
+     * @param inputs Shape to extrude and direction parameter with tolerance
+     * @returns Resulting extruded shape
+     * @group extrusions
+     * @shortname extrude
      * @drawable true
      */
-    loft(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
-        return this.och.operationsService.loft(inputs);
-    }
-
-    /**
-     * Lofts wires into a shell by using many advanced options
-     * @param inputs Advanced loft parameters
-     * @returns Resulting loft shell
-     * @group lofts
-     * @shortname loft adv.
-     * @drawable true
-     */
-    loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
-        return this.och.operationsService.loftAdvanced(inputs);
-    }
-
-    /**
-     * Offset for various shapes
-     * @param inputs Shape to offset and distance with tolerance
-     * @returns Resulting offset shape
-     * @group offsets
-     * @shortname offset
-     * @drawable true
-     */
-    offset(inputs: Inputs.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
-        return this.och.operationsService.offset(inputs);
-    }
-
-    /**
-     * Offset advanced that give more options for offset, such as joinType for edges and corners
-     * @param inputs Shape to offset and advanced parameters
-     * @returns Resulting offset shape
-     * @group offsets
-     * @shortname offset adv.
-     * @drawable true
-     */
-    offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
-        return this.och.operationsService.offsetAdv(inputs);
-    }
-
-    /**
-     * Offset the 3D wire. When using this method consider using it on filleted wires that do not contain sharp corners.
-     * You can use fillet 3D on it.
-     * @param inputs wire and shape
-     * @returns OpenCascade compound
-     * @group offsets
-     * @shortname offset 3d wire
-     * @drawable true
-     */
-    offset3DWire(inputs: Inputs.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
-        return this.och.operationsService.offset3DWire(inputs);
+    extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.operationsService.extrude(inputs);
     }
 
     /**
@@ -260,18 +235,6 @@ export class OCCTOperations {
     }
 
     /**
-     * Extrudes the shape along direction - wire will produce shell, face will produce solid
-     * @param inputs Shape to extrude and direction parameter with tolerance
-     * @returns Resulting extruded shape
-     * @group extrusions
-     * @shortname extrude
-     * @drawable true
-     */
-    extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.operationsService.extrude(inputs);
-    }
-
-    /**
      * Splits the shape with shapes
      * @param inputs Shape to split and shapes to split with
      * @returns Resulting shapes
@@ -279,7 +242,7 @@ export class OCCTOperations {
      * @shortname split
      * @drawable true
      */
-    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>) {
+    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
         return this.och.operationsService.splitShapeWithShapes(inputs);
     }
 
@@ -332,6 +295,18 @@ export class OCCTOperations {
     }
 
     /**
+     * Pipe wires with cylindrical shape
+     * @param inputs Path wires and radius
+     * @returns OpenCascade piped shapes
+     * @group pipeing
+     * @shortname pipe wires cylindrical
+     * @drawable true
+     */
+    pipeWiresCylindrical(inputs: Inputs.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
+        return this.och.operationsService.pipeWiresCylindrical(inputs);
+    }
+
+    /**
      * Pipe wire with cylindrical shape
      * @param inputs Path wire and radius
      * @returns OpenCascade piped shapes
@@ -344,15 +319,27 @@ export class OCCTOperations {
     }
 
     /**
-     * Pipe wires with cylindrical shape
-     * @param inputs Path wires and radius
-     * @returns OpenCascade piped shapes
-     * @group pipeing
-     * @shortname pipe wires cylindrical
+     * Offset for various shapes
+     * @param inputs Shape to offset and distance with tolerance
+     * @returns Resulting offset shape
+     * @group offsets
+     * @shortname offset
      * @drawable true
      */
-    pipeWiresCylindrical(inputs: Inputs.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
-        return this.och.operationsService.pipeWiresCylindrical(inputs);
+    offset(inputs: Inputs.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
+        return this.och.operationsService.offset(inputs);
+    }
+
+    /**
+     * Offset advanced that give more options for offset, such as joinType for edges and corners
+     * @param inputs Shape to offset and advanced parameters
+     * @returns Resulting offset shape
+     * @group offsets
+     * @shortname offset adv.
+     * @drawable true
+     */
+    offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
+        return this.och.operationsService.offsetAdv(inputs);
     }
 
     /**
@@ -401,5 +388,18 @@ export class OCCTOperations {
      */
     sliceInStepPattern(inputs: Inputs.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound {
         return this.och.operationsService.sliceInStepPattern(inputs);
+    }
+
+    /**
+     * Offset the 3D wire. When using this method consider using it on filleted wires that do not contain sharp corners.
+     * You can use fillet 3D on it.
+     * @param inputs wire and shape
+     * @returns OpenCascade compound
+     * @group offsets
+     * @shortname offset 3d wire
+     * @drawable true
+     */
+    offset3DWire(inputs: Inputs.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
+        return this.och.operationsService.offset3DWire(inputs);
     }
 }

@@ -80,6 +80,20 @@ export class ManifoldOperations {
     }
 
     /**
+     * Returns the first of n sequential new unique mesh IDs for marking sets of triangles that can be looked up after further operations. Assign to Mesh.runOriginalID vector.
+     * @param inputs count
+     * @returns void
+     * @group basic
+     * @shortname reserve id
+     * @drawable false
+     */
+    reserveIds(inputs: Inputs.Manifold.CountDto): number {
+        const { Manifold } = this.manifold;
+        const { reserveIDs } = Manifold;
+        return reserveIDs(inputs.count);
+    }
+
+    /**
      * If you copy a manifold, but you want this new copy to have new properties
      * (e.g. a different UV mapping), you can reset its IDs to a new original,
      * meaning it will now be referenced by its descendants instead of the meshes
@@ -99,20 +113,6 @@ export class ManifoldOperations {
      */
     asOriginal(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.asOriginal();
-    }
-
-    /**
-     * Returns the first of n sequential new unique mesh IDs for marking sets of triangles that can be looked up after further operations. Assign to Mesh.runOriginalID vector.
-     * @param inputs count
-     * @returns void
-     * @group basic
-     * @shortname reserve id
-     * @drawable false
-     */
-    reserveIds(inputs: Inputs.Manifold.CountDto): number {
-        const { Manifold } = this.manifold;
-        const { reserveIDs } = Manifold;
-        return reserveIDs(inputs.count);
     }
 
     /**

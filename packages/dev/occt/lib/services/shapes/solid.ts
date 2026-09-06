@@ -113,7 +113,7 @@ export class OCCTSolid {
      * @shortname sphere
      * @drawable true
      */
-    createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Shape {
+    createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Solid {
         return this.och.solidsService.createSphere(inputs);
     }
 
@@ -125,7 +125,7 @@ export class OCCTSolid {
      * @shortname cone
      * @drawable true
      */
-    createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Shape {
+    createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Solid {
         return this.och.solidsService.createCone(inputs);
     }
 
@@ -137,64 +137,8 @@ export class OCCTSolid {
      * @shortname torus
      * @drawable true
      */
-    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Shape {
+    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Solid {
         return this.och.solidsService.createTorus(inputs);
-    }
-
-    /**
-     * Creates OpenCascade I-beam profile solid
-     * @param inputs I-beam profile solid parameters
-     * @returns OpenCascade I-beam profile solid
-     * @group beam
-     * @shortname I-beam profile
-     * @drawable true
-     */
-    createIBeamProfileSolid(inputs: Inputs.OCCT.IBeamProfileSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createIBeamProfileWire(inputs);
-        const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
-    }
-
-    /**
-     * Creates OpenCascade H-beam profile solid
-     * @param inputs H-beam profile solid parameters
-     * @returns OpenCascade H-beam profile solid
-     * @group beam
-     * @shortname H-beam profile
-     * @drawable true
-     */
-    createHBeamProfileSolid(inputs: Inputs.OCCT.HBeamProfileSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createHBeamProfileWire(inputs);
-        const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
-    }
-
-    /**
-     * Creates OpenCascade T-beam profile solid
-     * @param inputs T-beam profile solid parameters
-     * @returns OpenCascade T-beam profile solid
-     * @group beam
-     * @shortname T-beam profile
-     * @drawable true
-     */
-    createTBeamProfileSolid(inputs: Inputs.OCCT.TBeamProfileSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createTBeamProfileWire(inputs);
-        const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
-    }
-
-    /**
-     * Creates OpenCascade U-beam profile solid
-     * @param inputs U-beam profile solid parameters
-     * @returns OpenCascade U-beam profile solid
-     * @group beam
-     * @shortname U-beam profile
-     * @drawable true
-     */
-    createUBeamProfileSolid(inputs: Inputs.OCCT.UBeamProfileSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createUBeamProfileWire(inputs);
-        const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
     }
 
     /**
@@ -277,6 +221,62 @@ export class OCCTSolid {
      */
     createLPolygonSolid(inputs: Inputs.OCCT.LPolygonSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createLPolygonWire(inputs);
+        const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
+        return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+    }
+
+    /**
+     * Creates OpenCascade I-beam profile solid
+     * @param inputs I-beam profile solid parameters
+     * @returns OpenCascade I-beam profile solid
+     * @group beam
+     * @shortname I-beam profile
+     * @drawable true
+     */
+    createIBeamProfileSolid(inputs: Inputs.OCCT.IBeamProfileSolidDto): TopoDS_Solid {
+        const wire = this.och.wiresService.createIBeamProfileWire(inputs);
+        const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
+        return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+    }
+
+    /**
+     * Creates OpenCascade H-beam profile solid
+     * @param inputs H-beam profile solid parameters
+     * @returns OpenCascade H-beam profile solid
+     * @group beam
+     * @shortname H-beam profile
+     * @drawable true
+     */
+    createHBeamProfileSolid(inputs: Inputs.OCCT.HBeamProfileSolidDto): TopoDS_Solid {
+        const wire = this.och.wiresService.createHBeamProfileWire(inputs);
+        const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
+        return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+    }
+
+    /**
+     * Creates OpenCascade T-beam profile solid
+     * @param inputs T-beam profile solid parameters
+     * @returns OpenCascade T-beam profile solid
+     * @group beam
+     * @shortname T-beam profile
+     * @drawable true
+     */
+    createTBeamProfileSolid(inputs: Inputs.OCCT.TBeamProfileSolidDto): TopoDS_Solid {
+        const wire = this.och.wiresService.createTBeamProfileWire(inputs);
+        const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
+        return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+    }
+
+    /**
+     * Creates OpenCascade U-beam profile solid
+     * @param inputs U-beam profile solid parameters
+     * @returns OpenCascade U-beam profile solid
+     * @group beam
+     * @shortname U-beam profile
+     * @drawable true
+     */
+    createUBeamProfileSolid(inputs: Inputs.OCCT.UBeamProfileSolidDto): TopoDS_Solid {
+        const wire = this.och.wiresService.createUBeamProfileWire(inputs);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
         return this.extrudeFaceToSolid(face, inputs.direction, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
     }

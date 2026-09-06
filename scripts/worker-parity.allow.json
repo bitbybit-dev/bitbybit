@@ -21,7 +21,8 @@
       "operations.loftAdvanced": "kernel also accepts edges; the worker exposes the wire input the editor offers",
       "operations.closestPointsBetweenTwoShapes": "kernel returns a two-point tuple; the worker exposes it as a point list",
       "operations.offset3DWire": "kernel returns the loose edges when no wire can be built; the worker exposes the wire",
-      "path.shapeFromPath": "kernel may return undefined for an empty path; the worker exposes the shape"
+      "path.shapeFromPath": "kernel may return undefined for an empty path; the worker exposes the shape",
+      "shapes.wire.textWiresWithData": "the kernel returns an object definition whose shapes are registered under ids; the worker maps the ids back to shape pointers and resolves the data object itself"
     },
     "docs": {
       "io.saveShapeSTEP": "the worker splits the call into saveShapeSTEP (triggers the download) and saveShapeSTEPAndReturn (resolves the text), each documented on its own; the kernel returns the text and carries the returning wrapper's doc",
@@ -39,8 +40,7 @@
       "downloadSolidsSTL": "the kernel hands back a blob; the worker triggers the download and resolves void",
       "downloadGeometryDxf": "the kernel hands back a blob; the worker triggers the download and resolves void",
       "downloadGeometry3MF": "the kernel hands back a blob; the worker triggers the download and resolves void",
-      "polygon.createFromPoints": "Inputs.JSCAD.PointsDto and Inputs.Point.PointsDto carry the same points field",
-      "text.createVectorText": "JSCAD.text.VectorText is a list of Point2 polylines, which is what the worker declares"
+      "polygon.createFromPoints": "Inputs.JSCAD.PointsDto and Inputs.Point.PointsDto carry the same points field"
     }
   },
   "manifold": {

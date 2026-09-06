@@ -84,7 +84,7 @@ export class JSCADText {
      * @shortname vector
      * @drawable false
      */
-    createVectorText(inputs: Inputs.JSCAD.TextDto): JSCAD.text.VectorText {
+    createVectorText(inputs: Inputs.JSCAD.TextDto): Base.Point2[][] {
         return this.jscad.text.vectorText({
             input: inputs.text,
             xOffset: inputs.xOffset,

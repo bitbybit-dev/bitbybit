@@ -69,7 +69,7 @@ export class OCCTFace {
      * @shortname face from triangle
      * @drawable true
      */
-    fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto) {
+    fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto): TopoDS_Face {
         const wire = this.och.wiresService.createPolygonWire({ points: inputs.triangle });
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
@@ -82,7 +82,7 @@ export class OCCTFace {
      * @shortname faces from mesh
      * @drawable true
      */
-    fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto) {
+    fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto): TopoDS_Face[] {
         const faces: TopoDS_Face[] = [];
         inputs.mesh.forEach((triangle) => {
             try {
@@ -92,6 +92,30 @@ export class OCCTFace {
             }
         });
         return faces.flat();
+    }
+
+    /**
+     * Creates a faces from wires on face
+     * @param inputs OpenCascade wires and guiding face
+     * @returns OpenCascade faces
+     * @group from
+     * @shortname faces from wires on face
+     * @drawable true
+     */
+    createFacesFromWiresOnFace(inputs: Inputs.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face[] {
+        return this.och.facesService.createFacesFromWiresOnFace(inputs);
+    }
+
+    /**
+     * Creates a face from wire on face
+     * @param inputs OpenCascade wire shape and guiding face
+     * @returns OpenCascade face shape
+     * @group from
+     * @shortname face from wire on face
+     * @drawable true
+     */
+    createFaceFromWireOnFace(inputs: Inputs.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
+        return this.och.facesService.createFaceFromWireOnFace(inputs);
     }
 
     /**
@@ -107,30 +131,6 @@ export class OCCTFace {
     }
 
     /**
-     * Creates a face from wire on face
-     * @param inputs OpenCascade wire shape and guiding face
-     * @returns OpenCascade face shape
-     * @group from
-     * @shortname face from wire on face
-     * @drawable true
-     */
-    createFaceFromWireOnFace(inputs: Inputs.OCCT.FaceFromWireOnFaceDto<TopoDS_Face, TopoDS_Wire>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWireOnFace(inputs);
-    }
-
-    /**
-     * Creates a faces from wires on face
-     * @param inputs OpenCascade wires and guiding face
-     * @returns OpenCascade faces
-     * @group from
-     * @shortname faces from wires on face
-     * @drawable true
-     */
-    createFacesFromWiresOnFace(inputs: Inputs.OCCT.FacesFromWiresOnFaceDto<TopoDS_Face, TopoDS_Wire>): TopoDS_Face[] {
-        return this.och.facesService.createFacesFromWiresOnFace(inputs);
-    }
-
-    /**
      * Creates a face from wires. This can produce hollow faces.
      * @param inputs OpenCascade wire shapes and indication if face should be planar
      * @returns OpenCascade face shape
@@ -140,6 +140,18 @@ export class OCCTFace {
      */
     createFaceFromWires(inputs: Inputs.OCCT.FaceFromWiresDto<TopoDS_Wire>): TopoDS_Face {
         return this.och.facesService.createFaceFromWires(inputs);
+    }
+
+    /**
+     * Creates a face from wires on the guiding face. This can produce hollow faces.
+     * @param inputs OpenCascade wire shapes and indication if wire is inside the face
+     * @returns OpenCascade face shape
+     * @group from
+     * @shortname face from wires on face
+     * @drawable true
+     */
+    createFaceFromWiresOnFace(inputs: Inputs.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
+        return this.och.facesService.createFaceFromWiresOnFace(inputs);
     }
 
     /**
@@ -155,15 +167,27 @@ export class OCCTFace {
     }
 
     /**
-     * Creates a face from wires on the guiding face. This can produce hollow faces.
-     * @param inputs OpenCascade wire shapes and indication if wire is inside the face
+     * Creates face from multiple circle tangent wires
+     * @param inputs OpenCascade circle wire shapes
      * @returns OpenCascade face shape
      * @group from
-     * @shortname face from wires on face
+     * @shortname face from circles tan
      * @drawable true
      */
-    createFaceFromWiresOnFace(inputs: Inputs.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWiresOnFace(inputs);
+    createFaceFromMultipleCircleTanWires(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
+        return this.och.facesService.createFaceFromMultipleCircleTanWires(inputs);
+    }
+
+    /**
+     * Creates face from multiple circle tangent wire collections
+     * @param inputs OpenCascade circle wire shapes
+     * @returns OpenCascade face shape
+     * @group from
+     * @shortname face from multiple circle tan collections
+     * @drawable true
+     */
+    createFaceFromMultipleCircleTanWireCollections(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
+        return this.och.facesService.createFaceFromMultipleCircleTanWireCollections(inputs);
     }
 
 
@@ -175,7 +199,7 @@ export class OCCTFace {
      * @shortname surface
      * @drawable true
      */
-    faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>) {
+    faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {
         return this.och.facesService.faceFromSurface(inputs);
     }
 
@@ -187,256 +211,8 @@ export class OCCTFace {
      * @shortname surface and wire
      * @drawable true
      */
-    faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>) {
+    faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>): TopoDS_Face {
         return this.och.facesService.faceFromSurfaceAndWire(inputs);
-    }
-
-    /**
-     * Gets the U min bound of the face
-     * @param inputs OCCT Face
-     * @returns u min bound
-     * @group get
-     * @shortname u min
-     * @drawable false
-     */
-    getUMinBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
-        return this.och.facesService.getUMinBound(inputs);
-    }
-
-    /**
-     * Gets the U max bound of the face
-     * @param inputs OCCT Face
-     * @returns u max bound
-     * @group get
-     * @shortname u max
-     * @drawable false
-     */
-    getUMaxBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
-        return this.och.facesService.getUMaxBound(inputs);
-    }
-
-    /**
-     * Gets the V min bound of the face
-     * @param inputs OCCT Face
-     * @returns v min bound
-     * @group get
-     * @shortname v min
-     * @drawable false
-     */
-    getVMinBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
-        return this.och.facesService.getVMinBound(inputs);
-    }
-
-    /**
-     * Gets the V max bound of the face
-     * @param inputs OCCT Face
-     * @returns v max bound
-     * @group get
-     * @shortname v max
-     * @drawable false
-     */
-    getVMaxBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
-        return this.och.facesService.getVMaxBound(inputs);
-    }
-
-    /**
-     * Subdivides a face to point grid with shifts and removals on nth uv rows or columns
-     * @param inputs Face and params for subdivision
-     * @returns points
-     * @group extract
-     * @shortname points nth
-     * @drawable true
-     */
-    subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPointsControlled(inputs);
-    }
-
-    /**
-     * Subdivides a face to point grid
-     * @param inputs Face and options for subdivision
-     * @returns points
-     * @group extract
-     * @shortname points
-     * @drawable true
-     */
-    subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPoints(inputs);
-    }
-
-    /**
-     * Subdivides a face to wires
-     * @param inputs Face and options for subdivision
-     * @returns wires
-     * @group extract
-     * @shortname wires
-     * @drawable true
-     */
-    subdivideToWires(inputs: Inputs.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToWires(inputs);
-    }
-
-    /**
-     * Subdivides a face to rectangle wires
-     * @param inputs Face and options for subdivision
-     * @returns wires
-     * @group patterns
-     * @shortname rectangle wires on face
-     * @drawable true
-     */
-    subdivideToRectangleWires(inputs: Inputs.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToRectangleWires(inputs);
-    }
-
-    /**
-     * Subdivides a face to rectangle wires
-     * @param inputs Face and options for subdivision
-     * @returns wires
-     * @group patterns
-     * @shortname rectangle holes on face
-     * @drawable true
-     */
-    subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
-        return this.och.facesService.subdivideToRectangleHoles(inputs);
-    }
-
-    /**
-     * Subdivides a face to hexagon wires
-     * @param inputs Face and options for subdivision
-     * @returns wires
-     * @group patterns
-     * @shortname hexagon wires on face
-     * @drawable true
-     */
-    subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToHexagonWires(inputs);
-    }
-
-    /**
-     * Subdivides a face to hexagon holes
-     * @param inputs Face and options for subdivision
-     * @returns faces
-     * @group patterns
-     * @shortname hexagon holes on face
-     * @drawable true
-     */
-    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Face[] {
-        return this.och.facesService.subdivideToHexagonHoles(inputs);
-    }
-
-    /**
-     * Subdivides a face to normals grid
-     * @param inputs Face and params for subdivision
-     * @returns normal vectors
-     * @group extract
-     * @shortname normals
-     * @drawable true
-     */
-    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
-        return this.och.facesService.subdivideToNormals(inputs);
-    }
-
-    /**
-     * Subdivides a face to points along a line on parameter
-     * @param inputs Face and params for subdivision
-     * @returns points
-     * @group extract
-     * @shortname points on param
-     * @drawable true
-     */
-    subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPointsOnParam(inputs);
-    }
-
-    /**
-     * Gets the wire along the parameter on the face
-     * @param inputs Face and param
-     * @returns wire
-     * @group extract
-     * @shortname wire along param
-     * @drawable true
-     */
-    wireAlongParam(inputs: Inputs.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire {
-        return this.och.facesService.wireAlongParam(inputs);
-    }
-
-    /**
-     * Gets the wires along the parameters on the face
-     * @param inputs Face and params
-     * @returns wires
-     * @group extract
-     * @shortname wires along params
-     * @drawable true
-     */
-    wiresAlongParams(inputs: Inputs.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.wiresAlongParams(inputs);
-    }
-
-    subdivideToUVOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point2[] {
-        return this.och.facesService.subdivideToUVOnParam(inputs);
-    }
-
-    /**
-     * Subdivides a face to uv grid
-     * @param inputs Face and params for subdivision
-     * @returns uv params in array
-     * @group extract
-     * @shortname uvs
-     * @drawable true
-     */
-    subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point2[] {
-        return this.och.facesService.subdivideToUV(inputs);
-    }
-
-    uvOnFace(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point2 {
-        return this.och.facesService.uvOnFace(inputs);
-    }
-
-    /**
-     * Get points on UVs where U and V are described between 0 and 1 in two dimensional arrays. These will be mapped to real bounds.
-     * @param inputs Face and params for subdivision
-     * @returns points
-     * @group extract
-     * @shortname points on uvs
-     * @drawable true
-     */
-    pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.pointsOnUVs(inputs);
-    }
-
-    /**
-     * Get normals on UVs where U and V are described between 0 and 1 in two dimensional arrays. These will be mapped to real bounds.
-     * @param inputs Face and params for subdivision
-     * @returns normals
-     * @group extract
-     * @shortname normals on uvs
-     * @drawable true
-     */
-    normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
-        return this.och.facesService.normalsOnUVs(inputs);
-    }
-
-    /**
-     * Get point on UV where U and V are described between 0 and 1. These will be mapped to real bounds.
-     * @param inputs Face and params for subdivision
-     * @returns point
-     * @group extract
-     * @shortname point on uv
-     * @drawable true
-     */
-    pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point3 {
-        return this.och.facesService.pointOnUV(inputs);
-    }
-
-    /**
-     * Get normal on UV where U and V are described between 0 and 1. These will be mapped to real bounds.
-     * @param inputs Face and params for subdivision
-     * @returns normal vector
-     * @group extract
-     * @shortname normal on uv
-     * @drawable true
-     */
-    normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
-        return this.och.facesService.faceNormalOnUV(inputs);
     }
 
     /**
@@ -447,7 +223,7 @@ export class OCCTFace {
      * @shortname polygon
      * @drawable true
      */
-    createPolygonFace(inputs: Inputs.OCCT.PolygonDto) {
+    createPolygonFace(inputs: Inputs.OCCT.PolygonDto): TopoDS_Face {
         return this.och.facesService.createPolygonFace(inputs);
     }
 
@@ -526,58 +302,6 @@ export class OCCTFace {
     }
 
     /**
-     * Creates OpenCascade I-beam profile face
-     * @param inputs I-beam profile parameters
-     * @returns OpenCascade I-beam profile face
-     * @group beam profiles
-     * @shortname I-beam profile
-     * @drawable true
-     */
-    createIBeamProfileFace(inputs: Inputs.OCCT.IBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createIBeamProfileWire(inputs);
-        return this.createFaceFromWire({ shape: wire, planar: true });
-    }
-
-    /**
-     * Creates OpenCascade H-beam profile face
-     * @param inputs H-beam profile parameters
-     * @returns OpenCascade H-beam profile face
-     * @group beam profiles
-     * @shortname H-beam profile
-     * @drawable true
-     */
-    createHBeamProfileFace(inputs: Inputs.OCCT.HBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createHBeamProfileWire(inputs);
-        return this.createFaceFromWire({ shape: wire, planar: true });
-    }
-
-    /**
-     * Creates OpenCascade T-beam profile face
-     * @param inputs T-beam profile parameters
-     * @returns OpenCascade T-beam profile face
-     * @group beam profiles
-     * @shortname T-beam profile
-     * @drawable true
-     */
-    createTBeamProfileFace(inputs: Inputs.OCCT.TBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createTBeamProfileWire(inputs);
-        return this.createFaceFromWire({ shape: wire, planar: true });
-    }
-
-    /**
-     * Creates OpenCascade U-beam profile face
-     * @param inputs U-beam profile parameters
-     * @returns OpenCascade U-beam profile face
-     * @group beam profiles
-     * @shortname U-beam profile
-     * @drawable true
-     */
-    createUBeamProfileFace(inputs: Inputs.OCCT.UBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createUBeamProfileWire(inputs);
-        return this.createFaceFromWire({ shape: wire, planar: true });
-    }
-
-    /**
      * Creates OpenCascade star face
      * @param inputs Star parameters
      * @returns OpenCascade star face
@@ -643,27 +367,63 @@ export class OCCTFace {
     }
 
     /**
-     * Creates face from multiple circle tangent wire collections
-     * @param inputs OpenCascade circle wire shapes
-     * @returns OpenCascade face shape
-     * @group from
-     * @shortname face from multiple circle tan collections
+     * Creates OpenCascade I-beam profile face
+     * @param inputs I-beam profile parameters
+     * @returns OpenCascade I-beam profile face
+     * @group beam profiles
+     * @shortname I-beam profile
      * @drawable true
      */
-    createFaceFromMultipleCircleTanWireCollections(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.facesService.createFaceFromMultipleCircleTanWireCollections(inputs);
+    createIBeamProfileFace(inputs: Inputs.OCCT.IBeamProfileDto): TopoDS_Face {
+        const wire = this.och.wiresService.createIBeamProfileWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    subdivideToUVOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point2[] {
+        return this.och.facesService.subdivideToUVOnParam(inputs);
     }
 
     /**
-     * Creates face from multiple circle tangent wires
-     * @param inputs OpenCascade circle wire shapes
-     * @returns OpenCascade face shape
-     * @group from
-     * @shortname face from circles tan
+     * Creates OpenCascade H-beam profile face
+     * @param inputs H-beam profile parameters
+     * @returns OpenCascade H-beam profile face
+     * @group beam profiles
+     * @shortname H-beam profile
      * @drawable true
      */
-    createFaceFromMultipleCircleTanWires(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.facesService.createFaceFromMultipleCircleTanWires(inputs);
+    createHBeamProfileFace(inputs: Inputs.OCCT.HBeamProfileDto): TopoDS_Face {
+        const wire = this.och.wiresService.createHBeamProfileWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    uvOnFace(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point2 {
+        return this.och.facesService.uvOnFace(inputs);
+    }
+
+    /**
+     * Creates OpenCascade T-beam profile face
+     * @param inputs T-beam profile parameters
+     * @returns OpenCascade T-beam profile face
+     * @group beam profiles
+     * @shortname T-beam profile
+     * @drawable true
+     */
+    createTBeamProfileFace(inputs: Inputs.OCCT.TBeamProfileDto): TopoDS_Face {
+        const wire = this.och.wiresService.createTBeamProfileWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    /**
+     * Creates OpenCascade U-beam profile face
+     * @param inputs U-beam profile parameters
+     * @returns OpenCascade U-beam profile face
+     * @group beam profiles
+     * @shortname U-beam profile
+     * @drawable true
+     */
+    createUBeamProfileFace(inputs: Inputs.OCCT.UBeamProfileDto): TopoDS_Face {
+        const wire = this.och.wiresService.createUBeamProfileWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
     /**
@@ -704,6 +464,246 @@ export class OCCTFace {
         const result = this.och.converterService.getActualTypeOfShape(reversed);
         reversed.delete();
         return result;
+    }
+
+    /**
+     * Subdivides a face to point grid
+     * @param inputs Face and options for subdivision
+     * @returns points
+     * @group extract
+     * @shortname points
+     * @drawable true
+     */
+    subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+        return this.och.facesService.subdivideToPoints(inputs);
+    }
+
+    /**
+     * Subdivides a face to wires
+     * @param inputs Face and options for subdivision
+     * @returns wires
+     * @group extract
+     * @shortname wires
+     * @drawable true
+     */
+    subdivideToWires(inputs: Inputs.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+        return this.och.facesService.subdivideToWires(inputs);
+    }
+
+    /**
+     * Subdivides a face to rectangle wires
+     * @param inputs Face and options for subdivision
+     * @returns wires
+     * @group patterns
+     * @shortname rectangle wires on face
+     * @drawable true
+     */
+    subdivideToRectangleWires(inputs: Inputs.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+        return this.och.facesService.subdivideToRectangleWires(inputs);
+    }
+
+    /**
+     * Subdivides a face to rectangle wires
+     * @param inputs Face and options for subdivision
+     * @returns wires
+     * @group patterns
+     * @shortname rectangle holes on face
+     * @drawable true
+     */
+    subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
+        return this.och.facesService.subdivideToRectangleHoles(inputs);
+    }
+
+    /**
+     * Subdivides a face to hexagon wires
+     * @param inputs Face and options for subdivision
+     * @returns wires
+     * @group patterns
+     * @shortname hexagon wires on face
+     * @drawable true
+     */
+    subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+        return this.och.facesService.subdivideToHexagonWires(inputs);
+    }
+
+    /**
+     * Subdivides a face to hexagon holes
+     * @param inputs Face and options for subdivision
+     * @returns faces
+     * @group patterns
+     * @shortname hexagon holes on face
+     * @drawable true
+     */
+    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Face[] {
+        return this.och.facesService.subdivideToHexagonHoles(inputs);
+    }
+
+    /**
+     * Subdivides a face to point grid with shifts and removals on nth uv rows or columns
+     * @param inputs Face and params for subdivision
+     * @returns points
+     * @group extract
+     * @shortname points nth
+     * @drawable true
+     */
+    subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>): Base.Point3[] {
+        return this.och.facesService.subdivideToPointsControlled(inputs);
+    }
+
+    /**
+     * Subdivides a face to normals grid
+     * @param inputs Face and params for subdivision
+     * @returns normal vectors
+     * @group extract
+     * @shortname normals
+     * @drawable true
+     */
+    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
+        return this.och.facesService.subdivideToNormals(inputs);
+    }
+
+    /**
+     * Subdivides a face to uv grid
+     * @param inputs Face and params for subdivision
+     * @returns uv params in array
+     * @group extract
+     * @shortname uvs
+     * @drawable true
+     */
+    subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point2[] {
+        return this.och.facesService.subdivideToUV(inputs);
+    }
+
+    /**
+     * Get point on UV where U and V are described between 0 and 1. These will be mapped to real bounds.
+     * @param inputs Face and params for subdivision
+     * @returns point
+     * @group extract
+     * @shortname point on uv
+     * @drawable true
+     */
+    pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point3 {
+        return this.och.facesService.pointOnUV(inputs);
+    }
+
+    /**
+     * Get normal on UV where U and V are described between 0 and 1. These will be mapped to real bounds.
+     * @param inputs Face and params for subdivision
+     * @returns normal vector
+     * @group extract
+     * @shortname normal on uv
+     * @drawable true
+     */
+    normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
+        return this.och.facesService.faceNormalOnUV(inputs);
+    }
+
+    /**
+     * Get points on UVs where U and V are described between 0 and 1 in two dimensional arrays. These will be mapped to real bounds.
+     * @param inputs Face and params for subdivision
+     * @returns points
+     * @group extract
+     * @shortname points on uvs
+     * @drawable true
+     */
+    pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[] {
+        return this.och.facesService.pointsOnUVs(inputs);
+    }
+
+    /**
+     * Get normals on UVs where U and V are described between 0 and 1 in two dimensional arrays. These will be mapped to real bounds.
+     * @param inputs Face and params for subdivision
+     * @returns normals
+     * @group extract
+     * @shortname normals on uvs
+     * @drawable true
+     */
+    normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
+        return this.och.facesService.normalsOnUVs(inputs);
+    }
+
+    /**
+     * Subdivides a face to points along a line on parameter
+     * @param inputs Face and params for subdivision
+     * @returns points
+     * @group extract
+     * @shortname points on param
+     * @drawable true
+     */
+    subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+        return this.och.facesService.subdivideToPointsOnParam(inputs);
+    }
+
+    /**
+     * Gets the wire along the parameter on the face
+     * @param inputs Face and param
+     * @returns wire
+     * @group extract
+     * @shortname wire along param
+     * @drawable true
+     */
+    wireAlongParam(inputs: Inputs.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire {
+        return this.och.facesService.wireAlongParam(inputs);
+    }
+
+    /**
+     * Gets the wires along the parameters on the face
+     * @param inputs Face and params
+     * @returns wires
+     * @group extract
+     * @shortname wires along params
+     * @drawable true
+     */
+    wiresAlongParams(inputs: Inputs.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
+        return this.och.facesService.wiresAlongParams(inputs);
+    }
+
+    /**
+     * Gets the U min bound of the face
+     * @param inputs OCCT Face
+     * @returns u min bound
+     * @group get
+     * @shortname u min
+     * @drawable false
+     */
+    getUMinBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
+        return this.och.facesService.getUMinBound(inputs);
+    }
+
+    /**
+     * Gets the U max bound of the face
+     * @param inputs OCCT Face
+     * @returns u max bound
+     * @group get
+     * @shortname u max
+     * @drawable false
+     */
+    getUMaxBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
+        return this.och.facesService.getUMaxBound(inputs);
+    }
+
+    /**
+     * Gets the V min bound of the face
+     * @param inputs OCCT Face
+     * @returns v min bound
+     * @group get
+     * @shortname v min
+     * @drawable false
+     */
+    getVMinBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
+        return this.och.facesService.getVMinBound(inputs);
+    }
+
+    /**
+     * Gets the V max bound of the face
+     * @param inputs OCCT Face
+     * @returns v max bound
+     * @group get
+     * @shortname v max
+     * @drawable false
+     */
+    getVMaxBound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
+        return this.och.facesService.getVMaxBound(inputs);
     }
 
     /**

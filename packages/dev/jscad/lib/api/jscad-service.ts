@@ -206,7 +206,7 @@ export class Jscad {
      * @shortname transform solids
      * @drawable true
      */
-    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): any {
+    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Inputs.JSCAD.JSCADEntity[] {
         const solidsToTransform = inputs.meshes;
         return solidsToTransform.map(mesh => {
             return this.transformSolid({ mesh, transformation: inputs.transformation });
@@ -221,7 +221,7 @@ export class Jscad {
      * @shortname transform solid
      * @drawable true
      */
-    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): any {
+    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Inputs.JSCAD.JSCADEntity {
         const transformation = inputs.transformation;
         let transformedMesh = this.jscad.geometries.geom3.clone(inputs.mesh);
         if (this.getArrayDepth(transformation) === 2) {
@@ -257,6 +257,19 @@ export class Jscad {
     }
 
     /**
+     * Downloads the binary STL file from a 3D solids
+     * @param inputs 3D Solid
+     * @group io
+     * @shortname solids to stl
+     */
+    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): { blob: Blob } {
+        const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
+            ...inputs.meshes);
+        const madeBlob = new Blob(rawData, { type: "application/sla" });
+        return { blob: madeBlob };
+    }
+
+    /**
      * Downloads the dxf file from jscad geometry. Supports paths and meshes in array.
      * @param inputs 3D geometry
      * @group io
@@ -283,19 +296,6 @@ export class Jscad {
             inputs.geometry
         );
         const madeBlob = new Blob(rawData);
-        return { blob: madeBlob };
-    }
-
-    /**
-     * Downloads the binary STL file from a 3D solids
-     * @param inputs 3D Solid
-     * @group io
-     * @shortname solids to stl
-     */
-    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): { blob: Blob } {
-        const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
-            ...inputs.meshes);
-        const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
     }
 
