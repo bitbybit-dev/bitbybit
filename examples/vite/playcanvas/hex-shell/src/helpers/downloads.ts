@@ -1,5 +1,4 @@
 import type { BitByBitBase, Inputs } from "@bitbybit-dev/playcanvas";
-import type { Entity } from "playcanvas";
 
 export const downloadStep = async (
     bitbybit: BitByBitBase,
@@ -21,16 +20,4 @@ export const downloadStep = async (
         });
         bitbybit.occt.deleteShape({ shape: exportShape });
     }
-};
-
-export const downloadSTL = (_scene: Entity) => {
-    // PlayCanvas doesn't have built-in STL exporter like Three.js
-    // For now, log a message - could implement custom exporter later
-    console.warn("STL export is not yet implemented for PlayCanvas");
-};
-
-export const downloadGLB = (_scene: Entity) => {
-    // PlayCanvas doesn't have built-in GLB exporter like Three.js
-    // For now, log a message - could implement custom exporter later
-    console.warn("GLB export is not yet implemented for PlayCanvas");
 };
