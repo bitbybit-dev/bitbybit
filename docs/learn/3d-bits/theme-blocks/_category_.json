@@ -1,0 +1,10 @@
+{
+    "label": "Theme Blocks",
+    "position": 8,
+    "link": {
+        "type": "generated-index",
+        "title": "Theme Blocks",
+        "description": "Theme blocks are how a 3D Bits configurator gets onto your storefront. Shopify themes are built from blocks a merchant can place and configure, and 3D Bits ships several: a full configurator, a lightweight preview for collection and gallery contexts, a standalone GUI controls block for custom layouts, and a legacy runner block kept for older setups. These pages cover what each block does, where it belongs in a theme, the app embed settings that apply across all of them, and the settings shared between blocks so you are not relearning them one at a time.",
+        "slug": "/3d-bits/theme-blocks"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "label": "Composer",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Composer",
+        "description": "The Composer is where a 3D Bits configurator is actually built - a visual editor for the scene, the options panel, the pricing and the logic, with no code required. You load models, position cameras and lights, define the options a customer can change, connect those options to the geometry, and preview the result exactly as a shopper will see it. These pages cover the interface, managing models and materials, the option panel, scene and camera setup, dimensions, personalisation, logic rules, scripting, and the saving and publishing flow that pushes a configurator live.",
+        "slug": "/3d-bits/composer"
+    }
+}

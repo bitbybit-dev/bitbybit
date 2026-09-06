@@ -66,5 +66,61 @@ Full-control STEP → glTF conversion with fine-grained mesh, export, and coordi
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/convert/step-to-gltf-advanced`
+
+Full-control STEP → glTF conversion with fine-grained mesh, export, and coordinate options. Requires the 'convert' API key scope. Returns 202 with a task ID.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `stepFileId` | string | yes | ID of the previously uploaded STEP file (returned by the file upload endpoint) |
+| `options` | object | no | Fine-grained options controlling STEP → glTF conversion: tessellation quality, attribute extraction, coordinate systems, and output format. |
+| `options.readColors` | boolean | no | Extract color attributes from the STEP file and apply to glTF materials |
+| `options.readNames` | boolean | no | Extract product/instance names from the STEP file and apply to glTF node names |
+| `options.readMaterials` | boolean | no | Extract material definitions from the STEP file |
+| `options.readLayers` | boolean | no | Extract layer/group structure from the STEP file |
+| `options.readProps` | boolean | no | Extract custom properties (e.g. part numbers, metadata) from the STEP file |
+| `options.meshDeflection` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `options.meshAngle` | number | no | Mesh angular deflection in radians. Range: [0.01, π] |
+| `options.meshParallel` | boolean | no | Enable parallel tessellation for faster processing |
+| `options.meshRelative` | boolean | no | Use size-aware relative deflection per face. When true, meshDeflection is a fraction of each edge's length. Set to false for absolute deflection in model units. |
+| `options.internalVerticesMode` | boolean | no | Add interior vertices for better curved face fidelity (slower, set false for speed). |
+| `options.controlSurfaceDeflection` | boolean | no | Extra post-pass refining triangles that bulge beyond the deflection (slower, set false for speed). |
+| `options.faceCountThreshold` | integer | no | Face count threshold for per-sub-shape meshing fallback. Default -1 means single-pass meshing of the whole compound (fastest). Set to a positive value (e.g. 100000) to fall back to per-solid meshing for very large assemblies in memory-constrained environments. |
+| `options.mergeFaces` | boolean | no | Merge co-planar adjacent faces to reduce mesh complexity |
+| `options.splitIndices16` | boolean | no | Split meshes so each uses 16-bit index buffers (max 65535 vertices per mesh). Improves compatibility with some renderers. |
+| `options.parallelWrite` | boolean | no | Write glTF output in parallel for faster file generation |
+| `options.embedTextures` | boolean | no | Embed texture data directly in the .glb file instead of referencing external URIs |
+| `options.forceUVExport` | boolean | no | Generate UV coordinates even when no textures are present (useful for post-processing) |
+| `options.nodeNameFormat` | `empty` \| `product` \| `instance` \| `instanceOrProduct` \| `productOrInstance` \| `productAndInstance` \| `productAndInstanceAndOcaf` | no | How node/mesh names are derived from STEP product/instance labels |
+| `options.meshNameFormat` | `empty` \| `product` \| `instance` \| `instanceOrProduct` \| `productOrInstance` \| `productAndInstance` \| `productAndInstanceAndOcaf` | no | How node/mesh names are derived from STEP product/instance labels |
+| `options.transformFormat` | `compact` \| `mat4` \| `trs` | no | Transform representation in glTF output |
+| `options.adjustZtoY` | boolean | no | Convert from Z-up (CAD convention) to Y-up (glTF/WebGL convention) coordinate system |
+| `options.scale` | number | no | Uniform scale factor. Range: [1e-6, 1000] |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Task accepted |
+| `400` | Validation error |
+| `403` | Insufficient scope |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/convert/step-to-gltf-advanced" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

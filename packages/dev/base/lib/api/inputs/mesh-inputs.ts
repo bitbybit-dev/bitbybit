@@ -3,6 +3,11 @@ import { Base } from "./base-inputs";
 
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for polygonal mesh geometry: vertex, index and normal data, the options for building and
+ * inspecting a mesh, and the settings that control conversion between the mesh representations the
+ * different kernels and the renderer expect.
+ */
 export namespace Mesh {
     export class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base.Point3, plane?: Base.TrianglePlane3) {
@@ -13,12 +18,12 @@ export namespace Mesh {
          * Point from which to find the distance
          * @default undefined
          */
-        point?: Base.Point3;
+        point!: Base.Point3;
         /**
          * Triangle plane to which the distance is calculated 
          * @default undefined
          */
-        plane?: Base.TrianglePlane3;
+        plane!: Base.TrianglePlane3;
     }
 
     export class TriangleDto {
@@ -29,7 +34,7 @@ export namespace Mesh {
          * Triangle to be used
          * @default undefined
          */
-        triangle?: Base.Triangle3;
+        triangle!: Base.Triangle3;
     }
     export class TriangleToleranceDto {
         constructor(triangle?: Base.Triangle3) {
@@ -39,7 +44,7 @@ export namespace Mesh {
          * Triangle to be used
          * @default undefined
          */
-        triangle?: Base.Triangle3;
+        triangle!: Base.Triangle3;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -47,7 +52,7 @@ export namespace Mesh {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance? = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
 
     export class TriangleTriangleToleranceDto {
@@ -60,12 +65,12 @@ export namespace Mesh {
          * First triangle
          * @default undefined
          */
-        triangle1?: Base.Triangle3;
+        triangle1!: Base.Triangle3;
         /**
          * Second triangle
          * @default undefined
          */
-        triangle2?: Base.Triangle3;
+        triangle2!: Base.Triangle3;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -73,7 +78,7 @@ export namespace Mesh {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance? = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     export class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number) {
@@ -85,12 +90,12 @@ export namespace Mesh {
          * First mesh
          * @default undefined
          */
-        mesh1?: Base.Mesh3;
+        mesh1!: Base.Mesh3;
         /**
          * Second mesh
          * @default undefined
          */
-        mesh2?: Base.Mesh3;
+        mesh2!: Base.Mesh3;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -98,6 +103,6 @@ export namespace Mesh {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance? = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
 }

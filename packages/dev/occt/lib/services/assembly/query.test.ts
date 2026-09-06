@@ -38,7 +38,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
         it("should return empty array for empty document", () => {
             // Arrange
-            const structure = manager.combineStructure({ parts: [], nodes: [] });
+            const structure = manager.combineStructure({ parts: [], nodes: [], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -56,7 +56,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "SinglePart" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -97,7 +97,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 manager.createInstanceNode({ id: "i2", partId: "sphere", name: "SphereInst" }),
                 manager.createInstanceNode({ id: "i3", partId: "cylinder", name: "CylInst" })
             ];
-            const structure = manager.combineStructure({ parts, nodes });
+            const structure = manager.combineStructure({ parts, nodes, clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -140,7 +140,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "LabelTest" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -160,7 +160,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "TypeTest" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -184,7 +184,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 manager.createInstanceNode({ id: "i2", partId: "box", name: "Inst2" }),
                 manager.createInstanceNode({ id: "i3", partId: "box", name: "Inst3" })
             ];
-            const structure = manager.combineStructure({ parts: [part], nodes });
+            const structure = manager.combineStructure({ parts: [part], nodes, clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -208,7 +208,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 colorRgba: { r: 1, g: 0.5, b: 0, a: 1 }
             });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -245,7 +245,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "ShapeTest" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const docParts = query.getDocumentParts({ document: document! });
@@ -274,7 +274,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "sphere", shape: sphere, name: "SphereGeom" });
             const inst = manager.createInstanceNode({ id: "i", partId: "sphere", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const docParts = query.getDocumentParts({ document: document! });
@@ -317,7 +317,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 colorRgba: { r: 0.2, g: 0.4, b: 0.6, a: 0.8 }
             });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const docParts = query.getDocumentParts({ document: document! });
@@ -340,7 +340,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "NoColor" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const docParts = query.getDocumentParts({ document: document! });
@@ -360,7 +360,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "SetColorTest" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const docParts = query.getDocumentParts({ document: document! });
@@ -410,7 +410,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 rotation: [0, 0, 0],
                 scale: 1
             });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const hierarchy = query.getAssemblyHierarchy({ document: document! });
@@ -437,7 +437,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 name: "Translated",
                 translation: [10, 20, 30]
             });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const hierarchy = query.getAssemblyHierarchy({ document: document! });
@@ -465,7 +465,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 name: "MatrixTest",
                 translation: [5, 0, 0]
             });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const hierarchy = query.getAssemblyHierarchy({ document: document! });
@@ -491,7 +491,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 name: "QuatTest",
                 rotation: [45, 0, 0]
             });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const hierarchy = query.getAssemblyHierarchy({ document: document! });
@@ -526,7 +526,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "InfoTest" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const docParts = query.getDocumentParts({ document: document! });
@@ -548,7 +548,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "ShapeTypeTest" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const docParts = query.getDocumentParts({ document: document! });
@@ -570,7 +570,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const part = manager.createPart({ id: "box", shape: box, name: "Box" });
             const rootAsm = manager.createAssemblyNode({ id: "root", name: "ParentAsm" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Child", parentId: "root" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [rootAsm, inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [rootAsm, inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             const hierarchy = query.getAssemblyHierarchy({ document: document! });
@@ -606,7 +606,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "Box" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -627,7 +627,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 manager.createInstanceNode({ id: "i2", partId: "box", name: "Inst2" }),
                 manager.createInstanceNode({ id: "i3", partId: "box", name: "Inst3" })
             ];
-            const structure = manager.combineStructure({ parts: [part], nodes });
+            const structure = manager.combineStructure({ parts: [part], nodes, clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -650,7 +650,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "Box" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "TestNode" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -675,7 +675,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const rootAsm = manager.createAssemblyNode({ id: "root", name: "RootAsm" });
             const subAsm = manager.createAssemblyNode({ id: "sub", name: "SubAsm", parentId: "root" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "DeepInst", parentId: "sub" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [rootAsm, subAsm, inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [rootAsm, subAsm, inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -702,7 +702,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const part = manager.createPart({ id: "box", shape: box, name: "Box" });
             const parentAsm = manager.createAssemblyNode({ id: "parent", name: "ParentAsm" });
             const childInst = manager.createInstanceNode({ id: "child", partId: "box", name: "ChildInst", parentId: "parent" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [parentAsm, childInst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [parentAsm, childInst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -724,7 +724,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const part = manager.createPart({ id: "box", shape: box, name: "Box" });
             const asmNode = manager.createAssemblyNode({ id: "asm", name: "AssemblyNode" });
             const instNode = manager.createInstanceNode({ id: "inst", partId: "box", name: "InstanceNode", parentId: "asm" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [asmNode, instNode] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [asmNode, instNode], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -744,7 +744,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "GeomBox" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -762,7 +762,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
 
             const part = manager.createPart({ id: "box", shape: box, name: "SolidBox" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -795,7 +795,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 manager.createInstanceNode({ id: "s1", partId: "sphere", name: "Sphere1", parentId: "right" }),
                 manager.createInstanceNode({ id: "s2", partId: "sphere", name: "Sphere2", parentId: "right", translation: [0, 10, 0] })
             ];
-            const structure = manager.combineStructure({ parts, nodes });
+            const structure = manager.combineStructure({ parts, nodes, clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
@@ -841,11 +841,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 manager.createInstanceNode({ id: "i1", partId: "box", name: "BoxInst" }),
                 manager.createInstanceNode({ id: "i2", partId: "sphere", name: "SphereInst", translation: [20, 0, 0] })
             ];
-            const structure = manager.combineStructure({ parts, nodes });
+            const structure = manager.combineStructure({ parts, nodes, clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Export to STEP
-            const stepData = manager.exportDocumentToStep({ document: document!, fileName: "roundtrip.step", author: "Test Author", organization: "Test Org" });
+            const stepData = manager.exportDocumentToStep({ document: document!, fileName: "roundtrip.step", author: "Test Author", organization: "Test Org", compress: false, tryDownload: false });
             document.delete();
 
             // Import from STEP
@@ -882,11 +882,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const rootAsm = manager.createAssemblyNode({ id: "root", name: "RootAssembly" });
             const subAsm = manager.createAssemblyNode({ id: "sub", name: "SubAssembly", parentId: "root" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "BoxInst", parentId: "sub" });
-            const structure = manager.combineStructure({ parts: [part], nodes: [rootAsm, subAsm, inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [rootAsm, subAsm, inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
             // Export to STEP
-            const stepData = manager.exportDocumentToStep({ document: document!, fileName: "hierarchy.step", author: "Test Author", organization: "Test Org" });
+            const stepData = manager.exportDocumentToStep({ document: document!, fileName: "hierarchy.step", author: "Test Author", organization: "Test Org", compress: false, tryDownload: false });
             document.delete();
 
             // Import from STEP

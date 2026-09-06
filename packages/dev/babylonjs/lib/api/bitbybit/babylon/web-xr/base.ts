@@ -17,7 +17,11 @@ export class BabylonWebXRBase {
      * @disposableOutput true
      */
     async createDefaultXRExperienceAsync(inputs: Inputs.BabylonWebXR.WebXRDefaultExperienceOptions): Promise<BABYLON.WebXRDefaultExperience> {
-        return this.context.scene.createDefaultXRExperienceAsync(inputs);
+        const options: BABYLON.WebXRDefaultExperienceOptions = {};
+        if (inputs.disableDefaultUI !== undefined) {
+            options.disableDefaultUI = inputs.disableDefaultUI;
+        }
+        return this.context.scene.createDefaultXRExperienceAsync(options);
     }
 
     /**

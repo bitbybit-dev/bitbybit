@@ -1,0 +1,10 @@
+{
+    "label": "Pricing",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Pricing with 3D Bits",
+        "description": "Pricing is the part of a configurator that has to be exactly right, because it decides what a customer is charged. 3D Bits computes a price from the options a shopper selects and then makes that price survive the trip through cart and checkout, where Shopify's own rules apply. These pages cover the charging methods - product lines, variant matrix and single line - and how to choose between them, the limits on how complex a configurator can get before checkout stops coping, and the testing you should do against a real order before going live.",
+        "slug": "/3d-bits/pricing"
+    }
+}

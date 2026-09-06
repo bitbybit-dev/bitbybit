@@ -4,6 +4,10 @@ import { Base } from "./base-inputs";
 import * as MATERIALS from "@babylonjs/materials";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for materials: base colour, metallic and roughness, emissive and ambient contributions,
+ * alpha and blending, backface culling, and the texture slots a physically-based material accepts.
+ */
 export namespace BabylonMaterial {
     export class PBRMetallicRoughnessDto {
         constructor(name?: string, baseColor?: Base.Color, emissiveColor?: Base.Color, metallic?: number, roughness?: number, alpha?: number, backFaceCulling?: boolean, zOffset?: number) {
@@ -30,7 +34,7 @@ export namespace BabylonMaterial {
          * Emissive color of the material
          * @default #000000
          */
-        emissiveColor?: Base.Color = "#000000";
+        emissiveColor?: Base.Color | undefined = "#000000";
         /**
          * Metallic value of the material
          * @default 0.6
@@ -79,12 +83,12 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: BABYLON.PBRMetallicRoughnessMaterial;
+        material!: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Base color of the material
          * @default #0000ff
          */
-        baseColor?: Base.Color = "#0000ff";
+        baseColor?: Base.Color | undefined = "#0000ff";
     }
     export class MaterialPropDto {
         constructor(material?: BABYLON.PBRMetallicRoughnessMaterial) {
@@ -94,7 +98,7 @@ export namespace BabylonMaterial {
          * Material to investigate
          * @default undefined
          */
-        material: BABYLON.PBRMetallicRoughnessMaterial;
+        material!: BABYLON.PBRMetallicRoughnessMaterial;
     }
     export class SkyMaterialPropDto {
         constructor(skyMaterial?: MATERIALS.SkyMaterial) {
@@ -104,7 +108,7 @@ export namespace BabylonMaterial {
          * Material to investigate
          * @default undefined
          */
-        skyMaterial: MATERIALS.SkyMaterial;
+        skyMaterial!: MATERIALS.SkyMaterial;
     }
     export class MetallicDto {
         constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, metallic?: number) {
@@ -115,7 +119,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: BABYLON.PBRMetallicRoughnessMaterial;
+        material!: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Metallic value of the material
          * @default 0.5
@@ -123,7 +127,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.1
          */
-        metallic?: number;
+        metallic?: number | undefined = 0.5;
     }
     export class RoughnessDto {
         constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, roughness?: number) {
@@ -134,7 +138,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: BABYLON.PBRMetallicRoughnessMaterial;
+        material!: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Roughness value of the material
          * @default 0.5
@@ -142,7 +146,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.1
          */
-        roughness?: number;
+        roughness?: number | undefined = 0.5;
     }
     export class AlphaDto {
         constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, alpha?: number) {
@@ -153,7 +157,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: BABYLON.PBRMetallicRoughnessMaterial;
+        material!: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Alpha value of the material
          * @default 0.5
@@ -161,7 +165,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.1
          */
-        alpha?: number;
+        alpha?: number | undefined = 0.5;
     }
     export class BackFaceCullingDto {
         constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, backFaceCulling?: boolean) {
@@ -172,12 +176,12 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: BABYLON.PBRMetallicRoughnessMaterial;
+        material!: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * back face culling
          * @default true
          */
-        backFaceCulling? = true;
+        backFaceCulling?: boolean | undefined = true;
     }
     export class BaseTextureDto {
         constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, baseTexture?: BABYLON.Texture) {
@@ -188,12 +192,12 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: BABYLON.PBRMetallicRoughnessMaterial;
+        material!: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Base texture of the material
          * @default undefined
          */
-        baseTexture: BABYLON.Texture;
+        baseTexture!: BABYLON.Texture;
     }
 
     export class SkyMaterialDto {
@@ -286,7 +290,7 @@ export namespace BabylonMaterial {
          * @default undefined
          * @optional true
          */
-        sunPosition: Base.Vector3;
+        sunPosition!: Base.Vector3;
         /**
          * Defines if the sun position should be computed (inclination and azimuth) according to the given
          * .sunPosition property.
@@ -299,7 +303,7 @@ export namespace BabylonMaterial {
          * @default undefined
          * @optional true
          */
-        cameraOffset: Base.Vector3;
+        cameraOffset!: Base.Vector3;
         /**
          * Defines the vector the skyMaterial should consider as up. (default is Vector3(0, 1, 0) as returned by Vector3.Up())
          * @default [0, 1, 0]
@@ -320,7 +324,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the overall luminance of sky in interval ]0, 1[.
          * @default 1
@@ -328,7 +332,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.01
          */
-        luminance?: number;
+        luminance?: number | undefined = 1;
     }
     export class TurbidityDto {
         constructor(material?: MATERIALS.SkyMaterial, turbidity?: number) {
@@ -339,7 +343,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the amount (scattering) of haze as opposed to molecules in atmosphere.
          * @default 10
@@ -347,7 +351,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 1
          */
-        turbidity?: number;
+        turbidity?: number | undefined = 10;
     }
     export class RayleighDto {
         constructor(material?: MATERIALS.SkyMaterial, rayleigh?: number) {
@@ -358,7 +362,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the sky appearance (light intensity).
          * @default 2
@@ -366,7 +370,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 1
          */
-        rayleigh?: number;
+        rayleigh?: number | undefined = 2;
     }
     export class MieCoefficientDto {
         constructor(material?: MATERIALS.SkyMaterial, mieCoefficient?: number) {
@@ -377,7 +381,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the mieCoefficient in interval [0, 0.1] which affects the property .mieDirectionalG.
          * @default 0.005
@@ -385,7 +389,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 0.001
          */
-        mieCoefficient?: number;
+        mieCoefficient?: number | undefined = 0.005;
     }
     export class MieDirectionalGDto {
         constructor(material?: MATERIALS.SkyMaterial, mieDirectionalG?: number) {
@@ -396,7 +400,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the amount of haze particles following the Mie scattering theory.
          * @default 0.8
@@ -404,7 +408,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 0.1
          */
-        mieDirectionalG?: number;
+        mieDirectionalG?: number | undefined = 0.8;
     }
     export class DistanceDto {
         constructor(material?: MATERIALS.SkyMaterial, distance?: number) {
@@ -415,7 +419,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the distance of the sun according to the active scene camera.
          * @default 500
@@ -423,7 +427,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 10
          */
-        distance?: number;
+        distance?: number | undefined = 500;
     }
     export class InclinationDto {
         constructor(material?: MATERIALS.SkyMaterial, inclination?: number) {
@@ -434,7 +438,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the sun inclination, in interval [-0.5, 0.5]. When the inclination is not 0, the sun is said
          * "inclined".
@@ -443,7 +447,7 @@ export namespace BabylonMaterial {
          * @maximum 0.5
          * @step 0.01
          */
-        inclination?: number;
+        inclination?: number | undefined = 0.49;
     }
     export class AzimuthDto {
         constructor(material?: MATERIALS.SkyMaterial, azimuth?: number) {
@@ -454,7 +458,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the solar azimuth in interval [0, 1]. The azimuth is the angle in the horizontal plan between
          * an object direction and a reference direction.
@@ -463,7 +467,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.01
          */
-        azimuth?: number;
+        azimuth?: number | undefined = 0.25;
     }
     export class SunPositionDto {
         constructor(material?: MATERIALS.SkyMaterial, sunPosition?: Base.Vector3) {
@@ -474,13 +478,13 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the sun position in the sky on (x,y,z). If the property .useSunPosition is set to false, then
          * the property is overridden by the inclination and the azimuth and can be read at any moment.
          * @default undefined
          */
-        sunPosition?: Base.Vector3;
+        sunPosition!: Base.Vector3;
     }
     export class UseSunPositionDto {
         constructor(material?: MATERIALS.SkyMaterial, useSunPosition?: boolean) {
@@ -491,13 +495,13 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines if the sun position should be computed (inclination and azimuth) according to the given
          * .sunPosition property.
          * @default false
          */
-        useSunPosition?: boolean;
+        useSunPosition?: boolean | undefined = false;
     }
     export class CameraOffsetDto {
         constructor(material?: MATERIALS.SkyMaterial, cameraOffset?: Base.Vector3) {
@@ -508,13 +512,13 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines an offset vector used to get a horizon offset.
          * @example skyMaterial.cameraOffset.y = camera.globalPosition.y // Set horizon relative to 0 on the Y axis
          * @default undefined
          */
-        cameraOffset?: Base.Vector3;
+        cameraOffset!: Base.Vector3;
     }
     export class UpDto {
         constructor(material?: MATERIALS.SkyMaterial, up?: Base.Vector3) {
@@ -525,12 +529,12 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines the vector the skyMaterial should consider as up. (default is Vector3(0, 1, 0) as returned by Vector3.Up())
          * @default undefined
          */
-        up?: Base.Vector3;
+        up!: Base.Vector3;
     }
     export class DitheringDto {
         constructor(material?: MATERIALS.SkyMaterial, dithering?: boolean) {
@@ -541,12 +545,12 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: MATERIALS.SkyMaterial;
+        material!: MATERIALS.SkyMaterial;
         /**
          * Defines if sky should be dithered.
          * @default false
          */
-        dithering?: boolean;
+        dithering?: boolean | undefined = false;
     }
 
 }

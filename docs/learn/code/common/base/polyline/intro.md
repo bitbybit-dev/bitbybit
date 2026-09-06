@@ -24,7 +24,7 @@ A polyline can also be `isClosed`, meaning there's an implied segment connecting
 
 ## Core Capabilities of the Polyline Class
 
-The `Polyline` class helps you define, analyze, and manipulate these sequences of points. Here's a high-level look at its features. For the exact input parameters (like DTOs) and detailed behavior, please refer to the [full Polyline API documentation](https://docs.bitbybit.dev/classes/Bit.Polyline.html) or the GitHub source linked above.
+The `Polyline` class helps you define, analyze, and manipulate these sequences of points. Here's a high-level look at its features. For the exact input parameters (like DTOs) and detailed behavior, please refer to the [full Polyline API documentation](https://docs.bitbybit.dev/classes/Bit.Polyline) or the GitHub source linked above.
 
 ### 1. Creating Polylines
 

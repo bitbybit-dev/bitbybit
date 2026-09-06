@@ -18,11 +18,11 @@ export class BabylonMaterialPbrMetallicRoughness {
      */
     create(inputs: Inputs.BabylonMaterial.PBRMetallicRoughnessDto): BABYLON.PBRMetallicRoughnessMaterial {
         const mat = new BABYLON.PBRMetallicRoughnessMaterial(inputs.name, this.context.scene);
-        mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor);
-        mat.metallic = inputs.metallic;
-        mat.roughness = inputs.roughness;
-        mat.alpha = inputs.alpha;
-        mat.backFaceCulling = inputs.backFaceCulling;
+        mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor ?? "#0000ff");
+        mat.metallic = inputs.metallic ?? 0.5;
+        mat.roughness = inputs.roughness ?? 0.5;
+        mat.alpha = inputs.alpha ?? 0.5;
+        mat.backFaceCulling = inputs.backFaceCulling ?? true;
         mat.zOffset = inputs.zOffset;
         mat.alphaMode = 1;
         if(inputs.emissiveColor){
@@ -39,7 +39,7 @@ export class BabylonMaterialPbrMetallicRoughness {
      */
     setBaseColor(inputs: Inputs.BabylonMaterial.BaseColorDto): void {
         const mat = inputs.material;
-        mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor);
+        mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor ?? "#0000ff");
     }
     /**
      * Sets the metallic property of material
@@ -49,7 +49,7 @@ export class BabylonMaterialPbrMetallicRoughness {
      */
     setMetallic(inputs: Inputs.BabylonMaterial.MetallicDto): void {
         const mat = inputs.material;
-        mat.metallic = inputs.metallic;
+        mat.metallic = inputs.metallic ?? 0.5;
     }
     /**
      * Sets the roughness of material
@@ -59,7 +59,7 @@ export class BabylonMaterialPbrMetallicRoughness {
      */
     setRoughness(inputs: Inputs.BabylonMaterial.RoughnessDto): void {
         const mat = inputs.material;
-        mat.roughness = inputs.roughness;
+        mat.roughness = inputs.roughness ?? 0.5;
     }
     /**
      * Sets the alpha of material
@@ -69,7 +69,7 @@ export class BabylonMaterialPbrMetallicRoughness {
      */
     setAlpha(inputs: Inputs.BabylonMaterial.AlphaDto): void {
         const mat = inputs.material;
-        mat.alpha = inputs.alpha;
+        mat.alpha = inputs.alpha ?? 0.5;
     }
     /**
      * Sets the back face culling of material
@@ -79,7 +79,7 @@ export class BabylonMaterialPbrMetallicRoughness {
      */
     setBackFaceCulling(inputs: Inputs.BabylonMaterial.BackFaceCullingDto): void {
         const mat = inputs.material;
-        mat.backFaceCulling = inputs.backFaceCulling;
+        mat.backFaceCulling = inputs.backFaceCulling ?? true;
     }
 
     /**
@@ -160,6 +160,6 @@ export class BabylonMaterialPbrMetallicRoughness {
      * @shortname get base texture
      */
     getBaseTexture(inputs: Inputs.BabylonMaterial.MaterialPropDto): BABYLON.BaseTexture {
-        return inputs.material.baseTexture;
+        return inputs.material.baseTexture!;
     }
 }

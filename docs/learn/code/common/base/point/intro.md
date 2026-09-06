@@ -26,7 +26,7 @@ This simplicity makes it easy to define locations and work with geometric data.
 
 ## Core Capabilities of the Point Class
 
-The `Point` class is all about defining locations and manipulating them. Here's an overview of what it helps you do. For the nitty-gritty details of each function, including specific input parameters, please check the [full Point API documentation](https://docs.bitbybit.dev/classes/Bit.Point.html) or the GitHub source linked above.
+The `Point` class is all about defining locations and manipulating them. Here's an overview of what it helps you do. For the nitty-gritty details of each function, including specific input parameters, please check the [full Point API documentation](https://docs.bitbybit.dev/classes/Bit.Point) or the GitHub source linked above.
 
 ### 1. Creating Points & Point Patterns
 

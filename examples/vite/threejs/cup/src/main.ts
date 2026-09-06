@@ -1,8 +1,8 @@
 import "./style.css";
 import { BitByBitBase, initBitByBit, type InitBitByBitOptions } from "@bitbybit-dev/threejs";
 import { Inputs } from "@bitbybit-dev/threejs";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { STLExporter } from "three/addons/exporters/STLExporter.js";
 import {
   Color,
   DirectionalLight,

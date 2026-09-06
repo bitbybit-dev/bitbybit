@@ -2,10 +2,12 @@
     "name": "@bitbybit-dev/occt-worker",
     "version": "1.1.1",
     "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel adapted for WebWorker",
+    "homepage": "https://docs.bitbybit.dev/classes/Bit.OCCT",
     "main": "index.js",
     "repository": {
         "type": "git",
-        "url": "https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/occt-worker"
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+        "directory": "packages/dev/occt-worker"
     },
     "directories": {
         "lib": "lib"
@@ -41,14 +43,16 @@
         "WASM"
     ],
     "scripts": {
-        "build": "tsc -p tsconfig.bitbybit.json",
+        "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
+        "clean-dist": "shx rm -rf dist",
         "build-p": "npm run build && npm run copy-package && npm run copy-readme-license && npm run delete-coverage",
-        "copy-package": "shx cp -R ./package.json ./dist",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
         "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "docs": "./node_modules/.bin/sass ts-doc-theme/assets/css/main.sass ts-doc-theme/assets/css/main.css && node_modules/.bin/typedoc --out ts-api-docs/ lib/api --theme ./ts-doc-theme --excludePrivate --tsconfig lib/api/tsconfig.bbb.json --media assets/images/blockly-block-images/",
         "test": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --watchAll=true",
-        "test-c": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false",
+        "test-c": "mkdir -p test-results && NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false --json --outputFile=test-results/jest.json",
         "test-c-l": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=true"
     },
     "author": "Bit by bit developers",
@@ -58,15 +62,68 @@
         "url": "https://bitbybit.dev/auth/pick-plan"
     },
     "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "@bitbybit-dev/source": "./index.ts",
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/api/occt": {
+            "@bitbybit-dev/source": "./lib/api/occt/index.ts",
+            "types": "./dist/lib/api/occt/index.d.ts",
+            "default": "./dist/lib/api/occt/index.js"
+        },
+        "./lib/api/occt/assembly": {
+            "@bitbybit-dev/source": "./lib/api/occt/assembly/index.ts",
+            "types": "./dist/lib/api/occt/assembly/index.d.ts",
+            "default": "./dist/lib/api/occt/assembly/index.js"
+        },
+        "./lib/api/occt/geom": {
+            "@bitbybit-dev/source": "./lib/api/occt/geom/index.ts",
+            "types": "./dist/lib/api/occt/geom/index.d.ts",
+            "default": "./dist/lib/api/occt/geom/index.js"
+        },
+        "./lib/api/occt/shapes": {
+            "@bitbybit-dev/source": "./lib/api/occt/shapes/index.ts",
+            "types": "./dist/lib/api/occt/shapes/index.d.ts",
+            "default": "./dist/lib/api/occt/shapes/index.js"
+        },
+        "./lib/occ-worker": {
+            "@bitbybit-dev/source": "./lib/occ-worker/index.ts",
+            "types": "./dist/lib/occ-worker/index.d.ts",
+            "default": "./dist/lib/occ-worker/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
+        "./*": {
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        }
+    },
     "type": "module",
     "dependencies": {
         "@bitbybit-dev/occt": "1.1.1",
+        "@bitbybit-dev/base": "1.1.1",
         "rxjs": "7.8.2"
     },
     "devDependencies": {
         "shx": "0.4.0",
         "@testing-library/jest-dom": "6.9.1",
-        "mvdir": "1.0.22",
         "jest": "30.4.2",
         "ts-node": "10.9.2",
         "ts-jest": "29.4.10",
@@ -76,7 +133,8 @@
         "@babel/core": "7.28.6",
         "@babel/preset-env": "7.28.6",
         "@babel/preset-typescript": "7.28.5",
-        "jest-html-reporters": "3.1.7"
+        "jest-html-reporters": "3.1.7",
+        "jest-environment-node": "30.4.1"
     },
     "jest": {
         "preset": "ts-jest",
@@ -92,6 +150,18 @@
         "collectCoverageFrom": [
             "lib/occ-worker/**/*.ts",
             "lib/api/**/*.ts"
-        ]
+        ],
+        "coverageReporters": [
+            "text",
+            "lcov",
+            "json-summary"
+        ],
+        "testEnvironmentOptions": {
+            "customExportConditions": [
+                "@bitbybit-dev/source",
+                "node",
+                "node-addons"
+            ]
+        }
     }
 }

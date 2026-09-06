@@ -2,6 +2,10 @@
 import * as BABYLON from "@babylonjs/core";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for engine utilities: screenshots, canvas sizing, colour conversion and the other helpers
+ * that sit around the scene rather than inside it.
+ */
 export namespace BabylonTools {
 
     export class ScreenshotDto {
@@ -16,7 +20,7 @@ export namespace BabylonTools {
          * Camera to be used. If not set, active camera will be used
          * @default undefined
          */
-        camera: BABYLON.Camera;
+        camera!: BABYLON.Camera;
         /**
          * width of the screenshot
          * @default 1920
@@ -37,7 +41,7 @@ export namespace BabylonTools {
          * The mime type
          * @default image/png
          */
-        mimeType: string;
+        mimeType = "image/png";
         /**
          * quality of the screenshot
          * @default 1

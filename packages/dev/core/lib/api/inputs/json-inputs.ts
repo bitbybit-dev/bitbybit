@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for JSON handling: the value or text to act on, the path to query or edit, and the
+ * formatting options used when stringifying.
+ */
 export namespace JSON {
 
     export class StringifyDto {
@@ -35,7 +39,7 @@ export namespace JSON {
          * query path
          * @default undefined
          */
-        query: string;
+        query!: string;
     }
 
     export class SetValueOnPropDto {
@@ -71,7 +75,7 @@ export namespace JSON {
          * Array
          * @default undefined
          */
-        jsonArray: any[];
+        jsonArray!: any[];
         /**
          * property to check
          * @default propName
@@ -146,17 +150,17 @@ export namespace JSON {
          * values to be set
          * @default undefined
          */
-        values: any[];
+        values!: any[];
         /**
          * query json structures
          * @default undefined
          */
-        paths: string[];
+        paths!: string[];
         /**
          * properties to update
          * @default undefined
          */
-        props: string[];
+        props!: string[];
     }
     export class PathsDto {
         constructor(json?: any, query?: string) {
@@ -172,7 +176,7 @@ export namespace JSON {
          * query path 
          * @default undefined
          */
-        query: string;
+        query!: string;
     }
 
     export class JsonDto {

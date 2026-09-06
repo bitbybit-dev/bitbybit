@@ -78,7 +78,7 @@ describe("Draw DTO unit tests", () => {
             expect(result.faceMaterial).toBeUndefined();
             expect(result.crossSectionColour).toBe("#ff00ff");
             expect(result.crossSectionWidth).toBe(2);
-            expect(result.crossSectionOpacity).toBeUndefined();
+            expect(result.crossSectionOpacity).toBe(1);
             expect(result.computeNormals).toBe(false);
             expect(result.drawTwoSided).toBe(true);
             expect(result.backFaceColour).toBe("#0000ff");

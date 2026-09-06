@@ -5,9 +5,9 @@ import { ContextBase } from "@bitbybit-dev/core";
 
 export class Context extends ContextBase {
 
-    scene: BABYLON.Scene;
-    engine: BABYLON.Engine | BABYLON.WebGPUEngine;
-    havokPlugin: BABYLON.HavokPlugin;
+    scene!: BABYLON.Scene;
+    engine!: BABYLON.Engine | BABYLON.WebGPUEngine;
+    havokPlugin!: BABYLON.HavokPlugin;
 
     getSamplingMode(samplingMode: Inputs.BabylonTexture.samplingModeEnum): number {
         switch (samplingMode) {

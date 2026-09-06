@@ -28,7 +28,7 @@ export class Logic {
      * @drawable false
      */
     randomBooleans(inputs: Inputs.Logic.RandomBooleansDto): boolean[] {
-        const booleans = [];
+        const booleans: boolean[] = [];
         for (let i = 0; i < inputs.length; i++) {
             booleans.push(Math.random() < inputs.trueThreshold);
         }
@@ -47,7 +47,7 @@ export class Logic {
      * @drawable false
      */
     twoThresholdRandomGradient(inputs: Inputs.Logic.TwoThresholdRandomGradientDto): boolean[] {
-        const booleans = [];
+        const booleans: boolean[] = [];
         inputs.numbers.forEach(n => {
             if (n < inputs.thresholdTotalTrue) {
                 booleans.push(true);
@@ -80,7 +80,7 @@ export class Logic {
      * @drawable false
      */
     thresholdBooleanList(inputs: Inputs.Logic.ThresholdBooleanListDto): boolean[] {
-        const booleans = [];
+        const booleans: boolean[] = [];
         inputs.numbers.forEach(n => {
             if (n < inputs.threshold) {
                 booleans.push(true);
@@ -105,7 +105,7 @@ export class Logic {
      * @drawable false
      */
     thresholdGapsBooleanList(inputs: Inputs.Logic.ThresholdGapsBooleanListDto): boolean[] {
-        const booleans = [];
+        const booleans: boolean[] = [];
 
         inputs.numbers.forEach(n => {
             let foundInThresholds = false;

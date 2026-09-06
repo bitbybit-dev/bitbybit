@@ -3,6 +3,10 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for lights: direction, position, intensity, colour, range and the shadow settings for
+ * point, directional, spot and hemispheric lights.
+ */
 export namespace BabylonLight {
     export class ShadowLightDirectionToTargetDto {
         constructor(shadowLight?: BABYLON.ShadowLight, target?: Base.Vector3) {
@@ -13,12 +17,12 @@ export namespace BabylonLight {
          * Shadow light to update
          * @default undefined
          */
-        shadowLight: BABYLON.ShadowLight;
+        shadowLight!: BABYLON.ShadowLight;
         /**
          * The direction target
          * @default undefined
          */
-        target?: Base.Vector3;
+        target!: Base.Vector3;
     }
 
     export class ShadowLightPositionDto {
@@ -30,12 +34,12 @@ export namespace BabylonLight {
          * Shadow light to update
          * @default undefined
          */
-        shadowLight: BABYLON.ShadowLight;
+        shadowLight!: BABYLON.ShadowLight;
         /**
          * The position
          * @default undefined
          */
-        position?: Base.Vector3;
+        position!: Base.Vector3;
     }
 
 }

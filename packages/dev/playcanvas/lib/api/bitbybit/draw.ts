@@ -38,7 +38,7 @@ export class Draw extends DrawCore {
         super();
     }
 
-    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<BitByBitEntity> {
+    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<BitByBitEntity | undefined> {
         if (!this.isValidDrawInput(inputs.entity)) {
             return Promise.resolve(undefined);
         }
@@ -99,7 +99,7 @@ export class Draw extends DrawCore {
      * @group draw sync
      * @shortname draw sync
      */
-    drawAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
+    drawAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity | undefined {
         if (!this.isValidDrawInput(inputs.entity)) {
             return undefined;
         }
@@ -364,9 +364,9 @@ export class Draw extends DrawCore {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         if (result) {
             return {
-                r: parseInt(result[1], 16) / 255,
-                g: parseInt(result[2], 16) / 255,
-                b: parseInt(result[3], 16) / 255
+                r: parseInt(result[1]!, 16) / 255,
+                g: parseInt(result[2]!, 16) / 255,
+                b: parseInt(result[3]!, 16) / 255
             };
         }
         return { r: 0, g: 0, b: 1 }; // Default blue
@@ -392,7 +392,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.jscadMeshes);
     }
 
-    private handleManifoldShape(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
+    private handleManifoldShape(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity | undefined> {
         return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
             return this.drawHelper.drawManifoldOrCrossSection({
                 manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer,
@@ -436,7 +436,7 @@ export class Draw extends DrawCore {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             const line = inputs.entity as Inputs.Base.Line3 | Inputs.Base.Segment3;
             const pts: Inputs.Base.Point3[] = [];
-            if (line && line["start"]) {
+            if (line && "start" in line) {
                 pts.push((line as Inputs.Base.Line3).start, (line as Inputs.Base.Line3).end);
             } else {
                 pts.push(...line as Inputs.Base.Segment3);
@@ -503,8 +503,8 @@ export class Draw extends DrawCore {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             const lines = inputs.entity as Inputs.Base.Line3[] | Inputs.Base.Segment3[];
             const pts: Inputs.Base.Point3[][] = [];
-            if (lines && lines[0] && lines[0]["start"]) {
-                lines.forEach(e => {
+            if (lines && lines[0] && "start" in lines[0]) {
+                (lines as Inputs.Base.Line3[]).forEach(e => {
                     pts.push([e.start, e.end]);
                 });
             } else {
@@ -584,7 +584,7 @@ export class Draw extends DrawCore {
         return this.attachMetadata(result, Inputs.Draw.drawingTypes.tags, options);
     }
 
-    private updateAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
+    private updateAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity | undefined {
         let result;
         const group = inputs.group as BitByBitEntity;
         if (group && group.bitbybitMeta) {
@@ -671,12 +671,12 @@ export class Draw extends DrawCore {
      * @param type - Geometry type for metadata
      * @returns Promise resolving to drawn entity
      */
-    private async handleAsync(
+    private async handleAsync<T extends pc.Entity | undefined>(
         inputs: Inputs.Draw.DrawAny<pc.Entity>, 
         defaultOptions: Inputs.Draw.DrawOptions, 
-        action: (options: Inputs.Draw.DrawOptions) => Promise<pc.Entity>, 
+        action: (options: Inputs.Draw.DrawOptions) => Promise<T>, 
         type: Inputs.Draw.drawingTypes
-    ): Promise<pc.Entity> {
+    ): Promise<T> {
         try {
             const options = this.resolveDrawOptions(inputs, defaultOptions);
             const result = await action(options);

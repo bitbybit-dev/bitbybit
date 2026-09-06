@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Logic in Bitbybit",
-        "description": "Introduction to logic in Bitbybit.",
+        "description": "Use booleans and conditional logic to make a Bitbybit script react to its inputs rather than always producing the same result. Logic is what turns a fixed model into a configurator: show a feature only when a checkbox is on, pick between two profiles based on a size, or guard an expensive operation behind a condition. These pages cover creating boolean values, the and, or and not operators, comparisons, and the conditional components that route your script down one branch or another. Shown in Rete, Blockly and TypeScript.",
         "slug": "/code/common/base/logic"
     }
 }

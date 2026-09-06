@@ -1,6 +1,7 @@
 ---
 slug: 3d-bits-app-for-shopify
 title: "INTRODUCING: 3D Bits App for Shopify - Revolutionize Your E-commerce!"
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-for-shopify-demo-store-picture.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Introducing the 3D Bits App for Shopify - your gateway to revolutionizing online shopping with cutting-edge 3D technology! Create, customize, and sell stunning 3D products."

@@ -4,7 +4,7 @@ import * as Inputs from "../../inputs";
 import { OrbitCameraInstance, InputHandler, OrbitCameraController } from "../../inputs/threejs-camera-inputs";
 
 // Re-export for backwards compatibility
-export { OrbitCameraInstance, InputHandler, OrbitCameraController };
+export type { OrbitCameraInstance, InputHandler, OrbitCameraController };
 
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
@@ -579,11 +579,11 @@ export class ThreeJSOrbitCamera {
             const touches = event.touches;
 
             if (touches.length === 1) {
-                lastTouchX = touches[0].clientX;
-                lastTouchY = touches[0].clientY;
+                lastTouchX = touches[0]!.clientX;
+                lastTouchY = touches[0]!.clientY;
             } else if (touches.length === 2) {
-                lastPinchDistance = getPinchDistance(touches[0], touches[1]);
-                const mid = getPinchMidpoint(touches[0], touches[1]);
+                lastPinchDistance = getPinchDistance(touches[0]!, touches[1]!);
+                const mid = getPinchMidpoint(touches[0]!, touches[1]!);
                 lastPinchMidX = mid.x;
                 lastPinchMidY = mid.y;
             }
@@ -592,11 +592,11 @@ export class ThreeJSOrbitCamera {
         const onTouchEnd = (event: TouchEvent): void => {
             const touches = event.touches;
             if (touches.length === 1) {
-                lastTouchX = touches[0].clientX;
-                lastTouchY = touches[0].clientY;
+                lastTouchX = touches[0]!.clientX;
+                lastTouchY = touches[0]!.clientY;
             } else if (touches.length === 2) {
-                lastPinchDistance = getPinchDistance(touches[0], touches[1]);
-                const mid = getPinchMidpoint(touches[0], touches[1]);
+                lastPinchDistance = getPinchDistance(touches[0]!, touches[1]!);
+                const mid = getPinchMidpoint(touches[0]!, touches[1]!);
                 lastPinchMidX = mid.x;
                 lastPinchMidY = mid.y;
             }
@@ -607,23 +607,23 @@ export class ThreeJSOrbitCamera {
             const touches = event.touches;
 
             if (touches.length === 1) {
-                const deltaX = touches[0].clientX - lastTouchX;
-                const deltaY = touches[0].clientY - lastTouchY;
+                const deltaX = touches[0]!.clientX - lastTouchX;
+                const deltaY = touches[0]!.clientY - lastTouchY;
 
                 orbitCamera.pitch += deltaY * options.orbitSensitivity;
                 orbitCamera.yaw -= deltaX * options.orbitSensitivity;
 
-                lastTouchX = touches[0].clientX;
-                lastTouchY = touches[0].clientY;
+                lastTouchX = touches[0]!.clientX;
+                lastTouchY = touches[0]!.clientY;
             } else if (touches.length === 2) {
                 // Pinch to zoom
-                const currentPinchDistance = getPinchDistance(touches[0], touches[1]);
+                const currentPinchDistance = getPinchDistance(touches[0]!, touches[1]!);
                 const pinchDelta = currentPinchDistance - lastPinchDistance;
                 orbitCamera.distance -= pinchDelta * options.distanceSensitivity * 0.1 * (orbitCamera.distance * 0.1);
                 lastPinchDistance = currentPinchDistance;
 
                 // Two-finger pan
-                const mid = getPinchMidpoint(touches[0], touches[1]);
+                const mid = getPinchMidpoint(touches[0]!, touches[1]!);
                 const deltaX = mid.x - lastPinchMidX;
                 const deltaY = mid.y - lastPinchMidY;
                 pan(deltaX, deltaY);

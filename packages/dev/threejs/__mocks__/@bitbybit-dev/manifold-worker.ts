@@ -7,7 +7,7 @@ export class ManifoldWorkerManager {
     
     constructor() {}
     
-    setManifoldWorker(worker: any) {}
+    setManifoldWorker(_worker: any) {}
     
     genericCallToWorkerPromise = jest.fn().mockResolvedValue({});
     
@@ -19,5 +19,5 @@ export class ManifoldWorkerManager {
 }
 
 export class ManifoldBitByBit {
-    constructor(context?: any, manifoldWorkerManager?: any) {}
+    constructor(_context?: any, _manifoldWorkerManager?: any) {}
 }

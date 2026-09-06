@@ -2,7 +2,7 @@
 sidebar_position: 4
 title: Face From Wire
 sidebar_label: Face From Wire
-description: Learn how to create face from single closed wire
+description: Create an OCCT face from a single closed wire, the most common way to turn an outline into a surface you can extrude, offset or boolean against.
 tags: [code, occt, rete, blockly, typescript]
 ---
 

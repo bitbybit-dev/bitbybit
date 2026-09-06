@@ -3,8 +3,8 @@ import { BitByBitBase } from "@bitbybit-dev/threejs";
 import { OccStateEnum } from '@bitbybit-dev/occt-worker';
 import './App.css';
 import * as Inputs from '@bitbybit-dev/threejs/lib/api/inputs';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { STLExporter } from 'three/examples/jsm/exporters/STLExporter'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { STLExporter } from 'three/addons/exporters/STLExporter.js'
 import { Button, createTheme, Slider, ThemeProvider } from '@mui/material';
 import { Color, DirectionalLight, Group, HemisphereLight, Mesh, MeshPhongMaterial, PerspectiveCamera, PlaneGeometry, Scene, Vector3, VSMShadowMap, WebGLRenderer } from 'three';
 import { Download } from '@mui/icons-material';
@@ -41,7 +41,7 @@ function App() {
     const firstRenderRef = useRef(true);
 
     useEffect(() => {
-        if (process.env.REACT_APP_ENVIRONMENT !== 'production' &&
+        if (import.meta.env.DEV &&
             firstRenderRef.current) {
             firstRenderRef.current = false;
             return;

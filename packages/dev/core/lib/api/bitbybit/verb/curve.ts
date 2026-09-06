@@ -316,7 +316,7 @@ export class VerbCurve {
      * @returns Points in arrays for each curve
      */
     pointsAtParam(inputs: Inputs.Verb.CurvesParameterDto): Inputs.Base.Point3[] {
-        return inputs.curves.map(curve => this.pointAtParam({ curve, parameter: inputs.parameter }));
+        return inputs.curves.map((curve: unknown) => this.pointAtParam({ curve, parameter: inputs.parameter }));
     }
 
     /**

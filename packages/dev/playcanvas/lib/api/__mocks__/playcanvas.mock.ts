@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
+ 
+ 
 
 /**
  * Centralized PlayCanvas mocks for testing
@@ -104,10 +104,10 @@ export class MockQuat {
         this.z = z;
         this.w = w;
     }
-    setFromEulerAngles(x: number, y: number, z: number) {
+    setFromEulerAngles(_x: number, _y: number, _z: number) {
         return this;
     }
-    setFromMat4(mat: any) {
+    setFromMat4(_mat: any) {
         // Simplified matrix to quaternion conversion for testing
         // This is a mock implementation that just sets identity quaternion
         this.x = 0;
@@ -213,7 +213,7 @@ export class MockEntity {
     setEulerAngles(x: number, y: number, z: number) {
         this._rotation.setFromEulerAngles(x, y, z);
     }
-    lookAt(target: MockVec3) { }
+    lookAt(_target: MockVec3) { }
     findByName() { return null; }
     findOne() { return null; }
     destroy() { 
@@ -253,7 +253,7 @@ export class MockGraphNode { }
 
 export class MockScene {
     _children: any[] = [];
-    findOne(callback: (node: any) => boolean) {
+    findOne(_callback: (node: any) => boolean) {
         return null;
     }
     addChild(entity: any) {
@@ -488,27 +488,27 @@ export function createPlayCanvasMock() {
                 return this;
             }
             // Mock fromGeometry static method for GPU instancing
-            static fromGeometry(graphicsDevice: any, geometry: any) {
+            static fromGeometry(graphicsDevice: any, _geometry: any) {
                 return new MockMesh(graphicsDevice);
             }
         },
         // Mock SphereGeometry for point rendering
         SphereGeometry: class MockSphereGeometry {
-            constructor(options?: any) {
+            constructor(_options?: any) {
                 // Store options for potential validation
             }
         },
         // Mock VertexFormat for instancing
         VertexFormat: class MockVertexFormat {
             constructor() {}
-            static getDefaultInstancingFormat(graphicsDevice: any) {
+            static getDefaultInstancingFormat(_graphicsDevice: any) {
                 return new MockVertexFormat();
             }
         },
         // Mock VertexBuffer for instancing
         VertexBuffer: class MockVertexBuffer {
             private data: ArrayBuffer;
-            constructor(graphicsDevice: any, format: any, numVertices: number, options?: any) {
+            constructor(_graphicsDevice: any, _format: any, numVertices: number, _options?: any) {
                 // Allocate buffer for instance data (16 floats per instance for Mat4)
                 this.data = new ArrayBuffer(numVertices * 16 * 4); // 4 bytes per float
             }
@@ -516,7 +516,7 @@ export function createPlayCanvasMock() {
                 return this.data;
             }
             unlock() {}
-            setData(data: Float32Array) {
+            setData(_data: Float32Array) {
                 // Mock data storage
             }
             destroy() {
@@ -528,7 +528,7 @@ export function createPlayCanvasMock() {
             material,
             node,
             // Mock setInstancing method for GPU instancing
-            setInstancing: jest.fn((vertexBuffer: any) => {}),
+            setInstancing: jest.fn((_vertexBuffer: any) => {}),
         })),
         math: {
             lerp: (a: number, b: number, t: number) => {

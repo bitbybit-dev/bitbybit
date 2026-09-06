@@ -5,6 +5,10 @@
  */
 import { Base as CoreBase } from "@bitbybit-dev/core";
 
+/**
+ * The BabylonJS build's re-export of the shared primitive types, so engine-specific code sees Point3,
+ * Vector3, colours and the shared enumerations from one place.
+ */
 export namespace Base {
     // Re-export all types from core package (which includes base types)
     export type Color = CoreBase.Color;
@@ -53,18 +57,32 @@ export namespace Base {
     /** Texture type for BabylonJS materials */
     export type Texture = any;
 
+    /**
+     * Which built-in skybox environment to use as the scene's background and image-based lighting:
+     * default, clear sky, city or a plain grey gradient. The skybox lights the model as well as
+     * filling the background, so changing it changes how materials look.
+     */
     export enum skyboxEnum {
         default = "default",
         clearSky = "clearSky",
         city = "city",
         greyGradient = "greyGradient",
     }
+    /**
+     * How distance fog thickens: not at all, linearly between a start and an end distance, or
+     * exponentially - squared exponential being the densest. Linear is the predictable one because you
+     * set exactly where fog begins and ends.
+     */
     export enum fogModeEnum {
         none = "none",
         exponential = "exponential",
         exponentialSquared = "exponentialSquared",
         linear = "linear",
     }
+    /**
+     * The direction a linear gradient runs, given either as a named direction such as to bottom right
+     * or as an angle in degrees. The values match the CSS gradient syntax.
+     */
     export enum gradientDirectionEnum {
         toTop = "to top",
         toTopRight = "to top right",
@@ -83,6 +101,10 @@ export namespace Base {
         deg270 = "270deg",
         deg315 = "315deg",
     }
+    /**
+     * Where the centre of a radial gradient sits, as a named position or a percentage pair. The values
+     * match the CSS gradient syntax.
+     */
     export enum gradientPositionEnum {
         center = "center",
         top = "top",
@@ -98,10 +120,18 @@ export namespace Base {
         leftCenter = "0% 50%",
         rightCenter = "100% 50%",
     }
+    /**
+     * The shape of a radial gradient: a circle, or an ellipse that stretches to its container.
+     */
     export enum gradientShapeEnum {
         circle = "circle",
         ellipse = "ellipse",
     }
+    /**
+     * How a background image tiles: repeating in both directions, in one direction only, not at all,
+     * or with space or round adjusting the tiles so they fit the area exactly. The values match the
+     * CSS background-repeat syntax.
+     */
     export enum backgroundRepeatEnum {
         repeat = "repeat",
         repeatX = "repeat-x",
@@ -110,16 +140,29 @@ export namespace Base {
         space = "space",
         round = "round",
     }
+    /**
+     * How a background image is scaled to its area: at its natural size, covering the area and
+     * cropping the overflow, or contained entirely within it with empty space around. The values match
+     * the CSS background-size syntax.
+     */
     export enum backgroundSizeEnum {
         auto = "auto",
         cover = "cover",
         contain = "contain",
     }
+    /**
+     * Whether a background image scrolls with its content, stays fixed to the viewport, or scrolls
+     * within its own element. The values match the CSS background-attachment syntax.
+     */
     export enum backgroundAttachmentEnum {
         scroll = "scroll",
         fixed = "fixed",
         local = "local",
     }
+    /**
+     * Which box a background image is positioned and clipped against - the padding, border or content
+     * box. The values match the CSS background-origin and background-clip syntax.
+     */
     export enum backgroundOriginClipEnum {
         paddingBox = "padding-box",
         borderBox = "border-box",

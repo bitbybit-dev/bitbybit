@@ -70,7 +70,7 @@ export const initializationComplete = (
         openCascade.plugins = plugins;
         // Add any pending dependencies that were registered before initialization
         Object.entries(pendingDependencies).forEach(([key, value]) => {
-            openCascade.plugins.dependencies[key] = value;
+            plugins.dependencies[key] = value;
         });
     }
     

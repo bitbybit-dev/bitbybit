@@ -2,6 +2,11 @@
 import { Base } from "./base-inputs";
 import { Math } from "./math-inputs";
 
+/**
+ * Parameters for vector arithmetic: the operands for addition, subtraction, scaling, dot and cross
+ * products, normalisation, angle and distance measurement, projection and interpolation. Vectors are
+ * number arrays, so these DTOs mostly carry one or two of them plus a scalar.
+ */
 export namespace Vector {
 
     export class TwoVectorsDto {
@@ -13,12 +18,12 @@ export namespace Vector {
          * First vector
          * @default undefined
          */
-        first: number[];
+        first!: number[];
         /**
          * Second vector
          * @default undefined
          */
-        second: number[];
+        second!: number[];
     }
     export class VectorBoolDto {
         constructor(vector?: boolean[]) {
@@ -28,7 +33,7 @@ export namespace Vector {
          * Vector of booleans
          * @default undefined
          */
-        vector: boolean[];
+        vector!: boolean[];
     }
     export class RemoveAllDuplicateVectorsDto {
         constructor(vectors?: number[][], tolerance?: number) {
@@ -39,7 +44,7 @@ export namespace Vector {
          * Vectors array
          * @default undefined
          */
-        vectors: number[][];
+        vectors!: number[][];
         /**
          * Tolerance value
          * @default 1e-7
@@ -58,7 +63,7 @@ export namespace Vector {
          * Vectors array
          * @default undefined
          */
-        vectors: number[][];
+        vectors!: number[][];
         /**
          * Check first and last vectors
          * @default false
@@ -82,12 +87,12 @@ export namespace Vector {
          * First vector
          * @default undefined
          */
-        vec1: number[];
+        vec1!: number[];
         /**
          * Second vector
          * @default undefined
          */
-        vec2: number[];
+        vec2!: number[];
         /**
          * Tolerance value
          * @default 1e-7
@@ -104,7 +109,7 @@ export namespace Vector {
          * Vector array of numbers
          * @default undefined
          */
-        vector: number[];
+        vector!: number[];
     }
     export class VectorStringDto {
         constructor(vector?: string[]) {
@@ -114,7 +119,7 @@ export namespace Vector {
          * Vector array of stringified numbers
          * @default undefined
          */
-        vector: string[];
+        vector!: string[];
     }
     export class Vector3Dto {
         constructor(vector?: Base.Vector3) {
@@ -124,7 +129,7 @@ export namespace Vector {
          * Vector array of 3 numbers
          * @default undefined
          */
-        vector: Base.Vector3;
+        vector!: Base.Vector3;
     }
     export class RangeMaxDto {
         constructor(max?: number) {
@@ -137,7 +142,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        max: number;
+        max: number = 10;
     }
     export class VectorXYZDto {
         constructor(x?: number, y?: number, z?: number) {
@@ -152,7 +157,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        x: number;
+        x: number = 0;
         /**
          * Y value of vector
          * @default 0
@@ -160,7 +165,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        y: number;
+        y: number = 0;
         /**
          * Z value of vector
          * @default 0
@@ -168,7 +173,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        z: number;
+        z: number = 0;
     }
     export class VectorXYDto {
         constructor(x?: number, y?: number) {
@@ -182,7 +187,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        x: number;
+        x: number = 0;
         /**
          * Y value of vector
          * @default 0
@@ -190,7 +195,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        y: number;
+        y: number = 0;
     }
     export class SpanDto {
         constructor(step?: number, min?: number, max?: number) {
@@ -306,7 +311,7 @@ export namespace Vector {
          * Origin location of the ray
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * Distance to the point on the ray
          * @default 1
@@ -314,12 +319,12 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        distance: number;
+        distance: number = 1;
         /**
          * Vector array of numbers
          * @default undefined
          */
-        vector: number[];
+        vector!: number[];
     }
     export class VectorsDto {
         constructor(vectors?: number[][]) {
@@ -329,7 +334,7 @@ export namespace Vector {
          * Vectors array
          * @default undefined
          */
-        vectors: number[][];
+        vectors!: number[][];
     }
     export class FractionTwoVectorsDto {
         constructor(fraction?: number, first?: Base.Vector3, second?: Base.Vector3) {
@@ -349,12 +354,12 @@ export namespace Vector {
          * First vector
          * @default undefined
          */
-        first: Base.Vector3;
+        first!: Base.Vector3;
         /**
          * Second vector
          * @default undefined
          */
-        second: Base.Vector3;
+        second!: Base.Vector3;
     }
     export class VectorScalarDto {
         constructor(scalar?: number, vector?: number[]) {
@@ -368,12 +373,12 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.1
          */
-        scalar: number;
+        scalar: number = 1;
         /**
          * Vector array of numbers
          * @default undefined
          */
-        vector: number[];
+        vector!: number[];
     }
     export class TwoVectorsReferenceDto {
         constructor(reference?: number[], first?: Base.Vector3, second?: Base.Vector3) {
@@ -385,16 +390,16 @@ export namespace Vector {
          * Reference vector
          * @default undefined
          */
-        reference: number[];
+        reference!: number[];
         /**
          * First vector
          * @default undefined
          */
-        first: Base.Vector3;
+        first!: Base.Vector3;
         /**
          * Second vector
          * @default undefined
          */
-        second: Base.Vector3;
+        second!: Base.Vector3;
     }
 }

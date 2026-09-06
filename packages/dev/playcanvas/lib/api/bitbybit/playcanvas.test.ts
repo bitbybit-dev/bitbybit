@@ -29,10 +29,6 @@ describe("PlayCanvas unit tests", () => {
         it("should have context reference", () => {
             expect((playcanvas as any).context).toBe(mockContext);
         });
-
-        it("should have drawHelper reference", () => {
-            expect((playcanvas as any).drawHelper).toBe(mockDrawHelper);
-        });
     });
 
     describe("Service integration", () => {

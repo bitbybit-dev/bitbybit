@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
 
+/**
+ * Parameters for building transformation matrices: translations, rotations around an axis or a centre,
+ * uniform and non-uniform scaling, and the composition of several transforms into one. The result is a
+ * matrix that any geometry API will accept, so the same transform can be applied to points, curves and
+ * solids alike.
+ */
 export namespace Transforms {
 
     export class RotationCenterAxisDto {
@@ -103,18 +109,18 @@ export namespace Transforms {
         /** The center point around which to stretch.
          * @default [0, 0, 0]
          */
-        center?: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /** The direction vector along which to stretch. Does not need to be normalized initially.
          * @default [0, 0, 1]
         */
-        direction?: Base.Vector3 = [0, 0, 1];
+        direction?: Base.Vector3 | undefined = [0, 0, 1];
         /** The scale factor to apply along the direction vector. 1.0 means no change. 
          * @default 2
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
         */
-        scale? = 2;
+        scale?: number | undefined = 2;
     }
     export class ScaleCenterXYZDto {
         constructor(center?: Base.Point3, scaleXyz?: Base.Vector3) {
@@ -182,6 +188,6 @@ export namespace Transforms {
          * Translation vectors with [x, y, z] distances
          * @default undefined
          */
-        translations: Base.Vector3[];
+        translations!: Base.Vector3[];
     }
 }

@@ -26,19 +26,19 @@ describe("Transforms unit tests", () => {
         const centerPoint: Inputs.Base.Point3 = [10, 20, 30];
 
         const identityMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix;
-        const translationMatrix = (x, y, z) => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1] as Inputs.Base.TransformMatrix;
-        const scalingMatrix = (x, y, z) => [x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix;
-        const rotationXMatrix = (angleRad) => {
+        const translationMatrix = (x: number, y: number, z: number) => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1] as Inputs.Base.TransformMatrix;
+        const scalingMatrix = (x: number, y: number, z: number) => [x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix;
+        const rotationXMatrix = (angleRad: number) => {
             const c = Math.cos(angleRad);
             const s = Math.sin(angleRad);
             return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix;
         };
-        const rotationYMatrix = (angleRad) => {
+        const rotationYMatrix = (angleRad: number) => {
             const c = Math.cos(angleRad);
             const s = Math.sin(angleRad);
             return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix;
         };
-        const rotationZMatrix = (angleRad) => {
+        const rotationZMatrix = (angleRad: number) => {
             const c = Math.cos(angleRad);
             const s = Math.sin(angleRad);
             return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix;
@@ -71,8 +71,8 @@ describe("Transforms unit tests", () => {
                 expect(result[0]).toHaveLength(1);
                 expect(result[1]).toBeInstanceOf(Array);
                 expect(result[1]).toHaveLength(1);
-                uh.expectMatrixCloseTo(result[0][0], translationMatrix(1, 2, 3));
-                uh.expectMatrixCloseTo(result[1][0], translationMatrix(4, 5, 6));
+                uh.expectMatrixCloseTo(result[0]![0], translationMatrix(1, 2, 3));
+                uh.expectMatrixCloseTo(result[1]![0], translationMatrix(4, 5, 6));
             });
 
             it("should return an empty array for empty input", () => {

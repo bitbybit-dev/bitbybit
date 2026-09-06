@@ -3,7 +3,7 @@
     "link": {
         "type": "generated-index",
         "title": "Vector Algorithms in Bitbybit",
-        "description": "Introduction to vector algorithms in Bitbybit, including vector addition, subtraction and other operations. Learn how to use these algorithms to manipulate and analyze vector data.",
+        "description": "Create and manipulate 2D and 3D vectors in Bitbybit - add, subtract, scale, normalize, and take dot and cross products. Vectors describe direction and magnitude, which is how you point an extrusion, orient a face, find a surface normal, or move a shape a measured distance along an axis. These pages cover the arithmetic operators, length and normalization, the dot and cross products used for angles and perpendiculars, and the span and easing helpers that distribute values smoothly across a range. Shown in Rete, Blockly and TypeScript.",
         "slug": "/code/common/base/vector"
     }
 }

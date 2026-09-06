@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "OCCT Operations",
-        "description": "There are quite a few operations that can be performed on OCCT shapes. This section will cover the most common ones, such as extrusions, lofts, and more.",
+        "description": "The OCCT operations that turn flat profiles into three-dimensional solids in Bitbybit - extruding, lofting, offsetting and thickening. This is where a sketch becomes a shape: extrude a wire along a direction, loft through a series of profiles to get a smoothly changing form, revolve a profile around an axis, or offset a face outward to give it wall thickness. These pages cover each operation and its inputs, simple and advanced lofting, rotated extrusions, offsetting single and multiple wires, and building thick solids from complex faces.",
         "slug": "/code/common/occt/operations"
     }
 }

@@ -1,6 +1,7 @@
 ---
 slug: playcanvas-support
 title: "ANNOUNCING PlayCanvas Support: High-Performance 3D CAD for Game Developers"
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/playcanvas-support/playcanvas-and-bitbybit-dev.webp
 authors: [ubarevicius]
 tags: [bitbybit, cad, playcanvas]
 description: "Introducing @bitbybit-dev/playcanvas NPM package and PlayCanvas Runner - bringing professional CAD capabilities to one of the web's most powerful game engines."

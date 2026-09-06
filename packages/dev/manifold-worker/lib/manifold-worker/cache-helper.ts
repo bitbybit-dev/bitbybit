@@ -10,9 +10,10 @@ export declare class ObjectDefinition<M, U> {
 
 export class CacheHelper {
 
-    hashesFromPreviousRun = {};
-    usedHashes = {};
-    argCache = {};
+    hashesFromPreviousRun: Record<string, string | number> = {};
+    usedHashes: Record<string, string | number> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    argCache: Record<string, any> = {};
     manifoldObjectHashes = new Set<string | number>(); // Track which hashes contain Manifold objects
 
     cleanAllCache(): void {
@@ -51,7 +52,7 @@ export class CacheHelper {
         this.manifoldObjectHashes.clear();
     }
 
-    cleanCacheForHash(hash: string): void {
+    cleanCacheForHash(hash: string | number): void {
         if (this.argCache[hash]) {
             try {
                 const cachedItem = this.argCache[hash];
@@ -178,7 +179,7 @@ export class CacheHelper {
                     // Track compound hash
                     this.usedHashes[compoundHash] = compoundHash;
                     this.hashesFromPreviousRun[compoundHash] = compoundHash;
-                    objDef.manifolds.forEach((s, index) => {
+                    objDef.manifolds!.forEach((s, index) => {
                         const itemHash = this.computeHash({ ...args, index });
                         s.manifold.hash = itemHash;
                         this.addToCache(itemHash, s.manifold);

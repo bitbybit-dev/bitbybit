@@ -1,4 +1,4 @@
-import { BitbybitOcctModule, TopoDS_Face } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, Geom_Surface, TopoDS_Face } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "./api/vector-helper.service";
 import * as Inputs from "./api/inputs";
 import { ShapesHelperService } from "./api/shapes-helper.service";
@@ -39,14 +39,14 @@ export class OccHelper {
     public readonly enumService: EnumService;
 
     public readonly verticesService: VerticesService;
-    public readonly booleansService: BooleansService;
+    public readonly booleansService!: BooleansService;
     public readonly edgesService: EdgesService;
-    public readonly wiresService: WiresService;
+    public readonly wiresService!: WiresService;
     public readonly facesService: FacesService;
     public readonly shellsService: ShellsService;
     public readonly solidsService: SolidsService;
-    public readonly operationsService: OperationsService;
-    public readonly filletsService: FilletsService;
+    public readonly operationsService!: OperationsService;
+    public readonly filletsService!: FilletsService;
     public readonly meshingService: MeshingService;
 
     public readonly dimensionsService: DimensionsService;
@@ -108,10 +108,13 @@ export class OccHelper {
 
     }
 
-    surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>) {
+    surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Geom_Surface {
         const face = inputs.shape;
         const surface = this.occ.BRep_Tool_Surface(face);
         const srf = surface.get();
+        if (!srf) {
+            throw new Error("Face has no surface");
+        }
         return srf;
     }
 

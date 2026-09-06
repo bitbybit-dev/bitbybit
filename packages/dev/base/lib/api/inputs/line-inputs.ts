@@ -2,6 +2,11 @@ import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 
+/**
+ * Parameters for straight line segments: the start and end points that define one, the options for
+ * creating many at once from point lists, and the settings for measuring, reversing, transforming and
+ * converting them into polylines or kernel edges.
+ */
 export namespace Line {
     export class LinePointsDto {
         /**
@@ -15,12 +20,12 @@ export namespace Line {
          * Start point
          * @default undefined
          */
-        start?: Base.Point3;
+        start!: Base.Point3;
         /**
          * End point
          * @default undefined
          */
-        end?: Base.Point3;
+        end!: Base.Point3;
     }
     export class LineStartEndPointsDto {
         /**
@@ -34,12 +39,12 @@ export namespace Line {
          * Start points
          * @default undefined
          */
-        startPoints: Base.Point3[];
+        startPoints!: Base.Point3[];
         /**
          * End points
          * @default undefined
          */
-        endPoints: Base.Point3[];
+        endPoints!: Base.Point3[];
     }
     export class DrawLineDto<T> {
         /**
@@ -57,7 +62,7 @@ export namespace Line {
          * Line
          * @default undefined
          */
-        line?: LinePointsDto;
+        line!: LinePointsDto;
         /**
          * Value between 0 and 1
          * @default 1
@@ -65,12 +70,12 @@ export namespace Line {
          * @maximum 1
          * @step 0.1
          */
-        opacity? = 1;
+        opacity?: number | undefined = 1;
         /**
          * Hex colour string
          * @default #444444
          */
-        colours?: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * Width of the line
          * @default 3
@@ -78,17 +83,17 @@ export namespace Line {
          * @maximum Infinity
          * @step 0.1
          */
-        size? = 3;
+        size?: number | undefined = 3;
         /**
          * Indicates wether the position of this line will change in time
          * @default false
          */
-        updatable? = false;
+        updatable?: boolean | undefined = false;
         /**
          * Line mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        lineMesh?: T;
+        lineMesh?: T | undefined;
     }
     export class DrawLinesDto<T> {
 
@@ -107,7 +112,7 @@ export namespace Line {
          * Lines
          * @default undefined
          */
-        lines?: LinePointsDto[];
+        lines!: LinePointsDto[];
         /**
          * Value between 0 and 1
          * @default 1
@@ -115,12 +120,12 @@ export namespace Line {
          * @maximum 1
          * @step 0.1
          */
-        opacity? = 1;
+        opacity?: number | undefined = 1;
         /**
          * Hex colour string
          * @default #444444
          */
-        colours?: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * Width of the line
          * @default 3
@@ -128,17 +133,17 @@ export namespace Line {
          * @maximum Infinity
          * @step 0.1
          */
-        size? = 3;
+        size?: number | undefined = 3;
         /**
          * Indicates wether the position of these lines will change in time
          * @default false
          */
-        updatable? = false;
+        updatable?: boolean | undefined = false;
         /**
          * Line mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        linesMesh?: T;
+        linesMesh?: T | undefined;
     }
     export class PointsLinesDto {
         constructor(points?: Base.Point3[]) {
@@ -148,7 +153,7 @@ export namespace Line {
          * Points
          * @default undefined
          */
-        points?: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class LineDto {
         constructor(line?: LinePointsDto) {
@@ -158,7 +163,7 @@ export namespace Line {
          * Line to convert
          * @default undefined
          */
-        line?: LinePointsDto;
+        line!: LinePointsDto;
     }
     export class SegmentDto {
         constructor(segment?: Base.Segment3) {
@@ -168,7 +173,7 @@ export namespace Line {
          * Segment
          * @default undefined
          */
-        segment?: Base.Segment3;
+        segment!: Base.Segment3;
     }
     export class SegmentsDto {
         constructor(segments?: Base.Segment3[]) {
@@ -178,7 +183,7 @@ export namespace Line {
          * Segments
          * @default undefined
          */
-        segments?: Base.Segment3[];
+        segments!: Base.Segment3[];
     }
     export class LinesDto {
         constructor(lines?: LinePointsDto[]) {
@@ -188,7 +193,7 @@ export namespace Line {
          * Lines to convert
          * @default undefined
          */
-        lines?: LinePointsDto[];
+        lines!: LinePointsDto[];
     }
     export class LineLineIntersectionDto {
         constructor(line1?: LinePointsDto, line2?: LinePointsDto, tolerance?: number) {
@@ -200,17 +205,17 @@ export namespace Line {
          * First line
          * @default undefined
          */
-        line1?: LinePointsDto;
+        line1!: LinePointsDto;
         /**
          * Second line
          * @default undefined
          */
-        line2?: LinePointsDto;
+        line2!: LinePointsDto;
         /**
          * Set to false if you want to check for infinite lines
          * @default true
          */ 
-        checkSegmentsOnly? = true;
+        checkSegmentsOnly?: boolean | undefined = true;
         /**
          * Tolerance for intersection
          * @default 0.01
@@ -218,7 +223,7 @@ export namespace Line {
          * @maximum Infinity
          * @step 0.1
          */
-        tolerance?: number;
+        tolerance?: number | undefined = 0.01;
     }
     export class PointOnLineDto {
         constructor(line?: LinePointsDto, param?: number) {
@@ -229,7 +234,7 @@ export namespace Line {
          * Line to get point on
          * @default undefined
          */
-        line?: LinePointsDto;
+        line!: LinePointsDto;
         /**
          * Param to use for point on line
          * @default 0.5
@@ -237,7 +242,7 @@ export namespace Line {
          * @maximum Infinity
          * @step 0.1
          */
-        param? = 0.5;
+        param?: number | undefined = 0.5;
     }
     export class TransformLineDto {
         constructor(line?: LinePointsDto, transformation?: Base.TransformMatrixes) {
@@ -248,12 +253,12 @@ export namespace Line {
          * Line to transform
          * @default undefined
          */
-        line?: LinePointsDto;
+        line!: LinePointsDto;
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation?: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class TransformsLinesDto {
         constructor(lines?: LinePointsDto[], transformation?: Base.TransformMatrixes[]) {
@@ -264,12 +269,12 @@ export namespace Line {
          * Lines to transform
          * @default undefined
          */
-        lines?: LinePointsDto[];
+        lines!: LinePointsDto[];
         /**
          * Transformations matrix or a list of transformations matrixes
          * @default undefined
          */
-        transformation?: Base.TransformMatrixes[];
+        transformation!: Base.TransformMatrixes[];
     }
     export class TransformLinesDto {
         constructor(lines?: LinePointsDto[], transformation?: Base.TransformMatrixes) {
@@ -280,11 +285,11 @@ export namespace Line {
          * Lines to transform
          * @default undefined
          */
-        lines?: LinePointsDto[];
+        lines!: LinePointsDto[];
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation?: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
 }

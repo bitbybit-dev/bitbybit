@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for date and time values: the date to act on, the unit and amount for arithmetic, and the
+ * format and locale used when parsing or printing one.
+ */
 export namespace Dates {
     export class DateDto {
         constructor(date?: Date) {
@@ -10,7 +14,7 @@ export namespace Dates {
          * The date
          * @default undefined
          */
-        date: Date;
+        date!: Date;
     }
 
     export class DateStringDto {
@@ -21,7 +25,7 @@ export namespace Dates {
          * The date string
          * @default undefined
          */
-        dateString: string;
+        dateString!: string;
     }
 
     export class DateSecondsDto {
@@ -33,7 +37,7 @@ export namespace Dates {
          * The date to update the seconds for
          * @default undefined
          */
-        date: Date;
+        date!: Date;
         /**
          * The seconds of the date
          * @default 30
@@ -53,7 +57,7 @@ export namespace Dates {
          * The date
          * @default undefined
          */
-        date: Date;
+        date!: Date;
         /**
          * The day of the date
          * @default 1
@@ -73,7 +77,7 @@ export namespace Dates {
          * The date
          * @default undefined
          */
-        date: Date;
+        date!: Date;
         /**
          * The year of the date
          * @default 1
@@ -93,7 +97,7 @@ export namespace Dates {
          * The date
          * @default undefined
          */
-        date: Date;
+        date!: Date;
         /**
          * The month of the date
          * @default 1
@@ -113,7 +117,7 @@ export namespace Dates {
          * The date
          * @default undefined
          */
-        date: Date;
+        date!: Date;
         /**
          * The hours of the date
          * @default 1
@@ -133,7 +137,7 @@ export namespace Dates {
          * The date
          * @default undefined
          */
-        date: Date;
+        date!: Date;
         /**
          * The minutes of the date
          * @default 1
@@ -153,7 +157,7 @@ export namespace Dates {
          * The date
          * @default undefined
          */
-        date: Date;
+        date!: Date;
         /**
          * The milliseconds of the date
          * @default 1
@@ -173,7 +177,7 @@ export namespace Dates {
          * The date
          * @default undefined
          */
-        date: Date;
+        date!: Date;
         /**
          * The time of the date
          * @default 1

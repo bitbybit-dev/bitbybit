@@ -54,18 +54,23 @@ describe("BitbybitClient", () => {
     });
 
     describe("request", () => {
-        it("sends x-api-key and Content-Type headers", async () => {
+        it("sends x-api-key on every request and Content-Type only with a body", async () => {
             // Arrange
             const client = new BitbybitClient({ apiKey: "bbk_mykey" });
-            fetchMock.mockResolvedValueOnce(new Response("{}", { status: 200 }));
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
 
             // Act
             await client.request("GET", "/api/v1/tasks");
+            await client.request("POST", "/api/v1/tasks", { kind: "probe" });
 
             // Assert
-            const callArgs = fetchMock.mock.calls[0];
-            expect(callArgs[1].headers["x-api-key"]).toBe("bbk_mykey");
-            expect(callArgs[1].headers["Content-Type"]).toBe("application/json");
+            const [getArgs, postArgs] = fetchMock.mock.calls;
+            expect(getArgs[1].headers["x-api-key"]).toBe("bbk_mykey");
+            expect(getArgs[1].headers["Content-Type"]).toBeUndefined();
+            expect(getArgs[1].body).toBeUndefined();
+            expect(postArgs[1].headers["x-api-key"]).toBe("bbk_mykey");
+            expect(postArgs[1].headers["Content-Type"]).toBe("application/json");
+            expect(postArgs[1].body).toBe(JSON.stringify({ kind: "probe" }));
         });
 
         it("sends JSON body for POST requests", async () => {

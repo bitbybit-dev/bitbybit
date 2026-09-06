@@ -1,9 +1,13 @@
 import { Inputs, Models } from "@bitbybit-dev/occt";
 
 export class ShapeParser {
-    static parse(obj, partShapes: Models.OCCT.ShapeWithId<Inputs.OCCT.TopoDSShapePointer>[]) {
-        const stack = [obj];
-        const visited = new Set();
+    // The result has the shape of `obj` with every shape id replaced by its pointer. The data classes
+    // use one type parameter for their shape positions and plain strings alike, so no mapped type can
+    // name the result; callers assign it to the pointer flavour of their data type.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static parse(obj: unknown, partShapes: Models.OCCT.ShapeWithId<Inputs.OCCT.TopoDSShapePointer>[]): any {
+        const stack: unknown[] = [obj];
+        const visited = new Set<unknown>();
 
         while (stack.length > 0) {
             const current = stack.pop();
@@ -20,20 +24,20 @@ export class ShapeParser {
                 const keys = Object.keys(current);
 
                 if (keys.includes("shapes")) {
-                    const shapes = current.shapes;
+                    const shapes = (current as { shapes?: unknown }).shapes;
 
                     if (typeof shapes === "object" && shapes !== null) {
                         for (const key in shapes) {
-                            const sh = current.shapes[key];
+                            const sh = (current as { shapes: Record<string, unknown> }).shapes[key];
                             if (sh) {
-                                current.shapes[key] = partShapes.find(s => s.id === current.shapes[key])?.shape;
+                                (current as { shapes: Record<string, unknown> }).shapes[key] = partShapes.find(s => s.id === (current as { shapes: Record<string, unknown> }).shapes[key])?.shape;
                             }
                         }
                     }
                 }
 
                 for (const key in current) {
-                    stack.push(current[key]); // Push object properties onto the stack
+                    stack.push((current as Record<string, unknown>)[key]); // Push object properties onto the stack
                 }
             }
         }

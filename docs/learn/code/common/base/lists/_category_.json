@@ -3,7 +3,7 @@
     "link": {
         "type": "generated-index",
         "title": "Lists in Bitbybit",
-        "description": "Introduction to lists in Bitbybit.",
+        "description": "Build, query and reshape lists in Bitbybit - the data structure almost every parametric script is really built on. Geometry work is list work: a row of points becomes a wire, a list of wires becomes a loft, and a list of solids becomes an assembly. These pages cover creating lists, getting and setting items by index, slicing, flipping and flattening nested structures, grouping into sublists, and the sorting and filtering used to pick out the shapes you want. Each example is shown in Rete, Blockly and TypeScript.",
         "slug": "/code/common/base/lists"
     }
 }

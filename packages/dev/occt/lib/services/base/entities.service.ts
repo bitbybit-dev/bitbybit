@@ -13,7 +13,7 @@ export class EntitiesService {
         public readonly occ: BitbybitOcctModule,
     ) { }
 
-    createCircle(radius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum) {
+    createCircle(radius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum): TopoDS_Edge | TopoDS_Wire | TopoDS_Face {
         const ax = this.gpAx2(center, direction);
         if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
             const edge = this.occ.MakeCircleEdge(ax, radius);
@@ -36,7 +36,7 @@ export class EntitiesService {
         return wire;
     }
 
-    createEllipse(minorRadius: number, majorRadius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum) {
+    createEllipse(minorRadius: number, majorRadius: number, center: Base.Point3, direction: Base.Vector3, type: Inputs.OCCT.typeSpecificityEnum): TopoDS_Edge | TopoDS_Wire | TopoDS_Face {
         const ax = this.gpAx2(center, direction);
         if (type === Inputs.OCCT.typeSpecificityEnum.edge) {
             const edge = this.occ.MakeEllipseEdge(ax, majorRadius, minorRadius);
@@ -108,7 +108,7 @@ export class EntitiesService {
         const faces: TopoDS_Face[] = [];
         wires.forEach(currentWire => {
             if (faces.length > 0) {
-                const faceBuilder = new this.occ.BRepBuilderAPI_MakeFace(faces[faces.length - 1], currentWire);
+                const faceBuilder = new this.occ.BRepBuilderAPI_MakeFace(faces[faces.length - 1]!, currentWire);
                 faces.push(faceBuilder.Face());
                 faceBuilder.delete();
             } else {
@@ -146,6 +146,10 @@ export class EntitiesService {
     bRepPrimAPIMakeSphere(center: Base.Point3, direction: Base.Vector3, radius: number): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
         const sphereMaker = this.occ.MakeSphereFromAx2(ax, radius);
+        if (!sphereMaker) {
+            ax.delete();
+            throw new Error("Failed to create the sphere");
+        }
         const sphere = sphereMaker.Shape();
         sphereMaker.delete();
         ax.delete();
@@ -242,9 +246,9 @@ export class EntitiesService {
 
     bRepPrimAPIMakeBox(width: number, length: number, height: number, center: number[]): TopoDS_Shape {
         const pt = this.gpPnt([
-            -width / 2 + center[0],
-            -height / 2 + center[1],
-            -length / 2 + center[2]
+            -width / 2 + center[0]!,
+            -height / 2 + center[1]!,
+            -length / 2 + center[2]!
         ]);
         const box = this.occ.MakeBoxFromPntAndDims(pt, width, height, length);
         pt.delete();

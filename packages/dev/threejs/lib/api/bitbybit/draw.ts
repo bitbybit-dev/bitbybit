@@ -5,6 +5,9 @@ import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 
+/** What drawAny hands back: a group for geometry, the tag or tags for tags, nothing for an empty entity. */
+export type DrawnEntity = THREEJS.Group | Inputs.Tag.TagDto | Inputs.Tag.TagDto[] | undefined;
+
 export class Draw extends DrawCore {
     private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     private defaultPolylineOptions: Inputs.Draw.DrawBasicGeometryOptions = {
@@ -21,7 +24,7 @@ export class Draw extends DrawCore {
         super();
     }
 
-    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<DrawnEntity> {
         const entity = inputs.entity;
         if (entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
             return Promise.resolve(undefined);
@@ -82,7 +85,7 @@ export class Draw extends DrawCore {
      * @group draw sync
      * @shortname draw sync
      */
-    drawAny(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
+    drawAny(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): DrawnEntity {
         let result;
         const entity = inputs.entity;
         if (!inputs.group && !(inputs.entity instanceof THREEJS.Group)) {
@@ -279,7 +282,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.jscadMeshes);
     }
 
-    private handleManifoldShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+    private handleManifoldShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group | undefined> {
         return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
             return this.drawHelper.drawManifoldOrCrossSection({
                 manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer,
@@ -323,7 +326,7 @@ export class Draw extends DrawCore {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             const line = inputs.entity as Inputs.Base.Line3 | Inputs.Base.Segment3;
             const pts: Inputs.Base.Point3[] = [];
-            if (line && line["start"]) {
+            if (line && "start" in line) {
                 pts.push((line as Inputs.Base.Line3).start, (line as Inputs.Base.Line3).end);
             } else {
                 pts.push(...line as Inputs.Base.Segment3);
@@ -350,7 +353,7 @@ export class Draw extends DrawCore {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylineClose({
                 polylineMesh: inputs.group,
-                polyline: inputs.entity,
+                polyline: inputs.entity as Inputs.Polyline.PolylinePropertiesDto,
                 ...options
             });
         }, Inputs.Draw.drawingTypes.polyline);
@@ -390,8 +393,8 @@ export class Draw extends DrawCore {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             const lines = inputs.entity as Inputs.Base.Line3[] | Inputs.Base.Segment3[];
             const pts: Inputs.Base.Point3[][] = [];
-            if (lines && lines[0] && lines[0]["start"]) {
-                lines.forEach(e => {
+            if (lines && lines[0] && "start" in lines[0]) {
+                (lines as Inputs.Base.Line3[]).forEach(e => {
                     pts.push([e.start, e.end]);
                 });
             } else {
@@ -464,10 +467,10 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private updateAny(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
+    private updateAny(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): DrawnEntity {
         let result;
         if (inputs.group && inputs.group.userData) {
-            const type = inputs.group.userData.type as Inputs.Draw.drawingTypes;
+            const type = inputs.group.userData["type"] as Inputs.Draw.drawingTypes;
             switch (type) {
                 case Inputs.Draw.drawingTypes.point:
                     result = this.handlePoint(inputs);
@@ -512,20 +515,20 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handle(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (inputs) => THREEJS.Group, type: Inputs.Draw.drawingTypes): THREEJS.Group {
+    private handle(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (options: Inputs.Draw.DrawOptions) => THREEJS.Group, type: Inputs.Draw.drawingTypes): THREEJS.Group {
         let options = inputs.options ? inputs.options : defaultOptions;
-        if (!inputs.options && inputs.group && inputs.group.userData.options) {
-            options = inputs.group.userData.options;
+        if (!inputs.options && inputs.group && inputs.group.userData["options"]) {
+            options = inputs.group.userData["options"];
         }
         const result = action(options);
         this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
         return result;
     }
 
-    private async handleAsync(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (inputs) => Promise<THREEJS.Group>, type: Inputs.Draw.drawingTypes): Promise<THREEJS.Group> {
+    private async handleAsync<T extends THREEJS.Group | undefined>(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (options: Inputs.Draw.DrawOptions) => Promise<T>, type: Inputs.Draw.drawingTypes): Promise<T> {
         let options = inputs.options ? inputs.options : defaultOptions;
-        if (!inputs.options && inputs.group && inputs.group.userData.options) {
-            options = inputs.group.userData.options;
+        if (!inputs.options && inputs.group && inputs.group.userData["options"]) {
+            options = inputs.group.userData["options"];
         }
         const result = action(options);
         return result.then(r => {

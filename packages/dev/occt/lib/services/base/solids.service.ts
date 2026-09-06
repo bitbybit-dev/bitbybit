@@ -14,7 +14,7 @@ export class SolidsService {
         private readonly occ: BitbybitOcctModule,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly facesService: FacesService,
-        private readonly enumService: EnumService,
+        _enumService: EnumService,
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
         private readonly transformsService: TransformsService,
@@ -36,7 +36,7 @@ export class SolidsService {
             inputs.originOnCenter = true;
         }
         if (!inputs.originOnCenter) {
-            center = [center[0], center[1] + inputs.height / 2, center[2]];
+            center = [center[0]!, center[1]! + inputs.height / 2, center[2]!];
         }
         return this.entitiesService.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, center);
     }
@@ -47,7 +47,7 @@ export class SolidsService {
             inputs.originOnCenter = true;
         }
         if (!inputs.originOnCenter) {
-            center = [center[0], center[1] + inputs.size / 2, center[2]];
+            center = [center[0]!, center[1]! + inputs.size / 2, center[2]!];
         }
         return this.entitiesService.bRepPrimAPIMakeBox(inputs.size, inputs.size, inputs.size, center);
     }
@@ -78,7 +78,7 @@ export class SolidsService {
         if (inputs.originOnCenter) {
             const halfHeight = -(inputs.height / 2);
             const normDir = this.vectorHelperService.normalize(dir);
-            result = this.transformsService.translate({ shape: cyl, translation: [normDir[0] * halfHeight, normDir[1] * halfHeight, normDir[2] * halfHeight] });
+            result = this.transformsService.translate({ shape: cyl, translation: [normDir[0]! * halfHeight, normDir[1]! * halfHeight, normDir[2]! * halfHeight] });
             cyl.delete();
         }
         else {
@@ -98,11 +98,11 @@ export class SolidsService {
         return cylinders;
     }
 
-    createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Shape {
+    createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Solid {
         return this.entitiesService.bRepPrimAPIMakeSphere(inputs.center, [0., 0., 1.], inputs.radius);
     }
 
-    createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Shape {
+    createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Solid {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
         const angle = inputs.angle === undefined ? Math.PI * 2 : this.vectorHelperService.degToRad(inputs.angle);
         const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, angle);
@@ -112,7 +112,7 @@ export class SolidsService {
         return coneShape;
     }
 
-    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Shape {
+    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Solid {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
         const angle = inputs.angle === undefined || inputs.angle === null
             ? 2 * Math.PI
@@ -136,7 +136,7 @@ export class SolidsService {
     }
 
     filterSolidPoints(inputs: Inputs.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {
-        const points = [];
+        const points: Base.Point3[] = [];
         if (inputs.points.length > 0) {
             inputs.points.forEach(pt => {
                 const gpPnt = this.entitiesService.gpPnt(pt);

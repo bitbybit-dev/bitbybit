@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Festive Decor",
-        "description": "Learn how to model festive 3D printable decorations using OCCT.",
+        "description": "Parametric festive decorations modelled with OCCT in Bitbybit - snowflakes, stars, gems, ornaments and a Christmas tree. Each one is a complete worked example rather than a single operation, and each is genuinely parametric: change the point count, the radius or the twist and you get a new variant that is still manufacturable. They are a good way to practise combining wires, lofts, booleans and fillets on something small enough to hold in your head, and they export cleanly to STL for 3D printing or DXF for laser cutting if you want the physical object.",
         "slug": "/code/common/occt/modeling/festive-decor"
     }
 }

@@ -48,10 +48,10 @@ export class SvgFaceBuilder {
         try {
             const samples = wires.map((w) => this.sample(w));
             const areas = samples.map((pts) => this.signedAreaXY(pts));
-            const centroids = samples.map((pts, i) => this.centroidXY(pts, areas[i]));
+            const centroids = samples.map((pts, i) => this.centroidXY(pts, areas[i]!));
             const sign = areas.map((a) => (a >= 0 ? 1 : -1));
             // CCW version of each wire (positive area) - used both for inside-tests and as face outers.
-            const ccw = wires.map((w, i) => (sign[i] < 0 ? track(this.och.wiresService.reversedWire({ shape: w })) : w));
+            const ccw = wires.map((w, i) => (sign[i]! < 0 ? track(this.och.wiresService.reversedWire({ shape: w })) : w));
             const classFaces = ccw.map((w) => track(this.och.facesService.createFaceFromWire({ shape: w, planar: true })));
 
             const faces = rule === "perSubpath"
@@ -62,7 +62,7 @@ export class SvgFaceBuilder {
                 warnings.push("Could not build SVG faces for an element; returning its outline wires.");
                 return { shape: this.och.converterService.makeCompound({ shapes: wires }), isFace: false };
             }
-            if (faces.length === 1) { return { shape: faces[0], isFace: true }; }
+            if (faces.length === 1) { return { shape: faces[0]!, isFace: true }; }
 
             const compound = this.och.converterService.makeCompound({ shapes: faces });
             faces.forEach((f) => { try { f.delete(); } catch { /* shared into compound */ } });
@@ -104,38 +104,38 @@ export class SvgFaceBuilder {
             for (let j = 0; j < n; j++) {
                 // A wire can only be contained by a strictly larger one - the area guard also
                 // disambiguates concentric wires whose centroids coincide.
-                if (j !== i && Math.abs(areas[j]) > Math.abs(areas[i]) && this.isInside(classFaces[j], centroids[i])) {
+                if (j !== i && Math.abs(areas[j]!) > Math.abs(areas[i]!) && this.isInside(classFaces[j]!, centroids[i]!)) {
                     enclosing.push(j);
                 }
             }
             ancestors.push(enclosing);
         }
         const depth = ancestors.map((a) => a.length);
-        const parent = ancestors.map((a) => a.reduce((best, j) => (best === -1 || depth[j] > depth[best] ? j : best), -1));
+        const parent = ancestors.map((a) => a.reduce((best, j) => (best === -1 || depth[j]! > depth[best]! ? j : best), -1));
 
         const filled = (i: number): boolean => {
-            if (rule === "evenOdd") { return depth[i] % 2 === 0; }
-            const winding = sign[i] + ancestors[i].reduce((sum, j) => sum + sign[j], 0);
+            if (rule === "evenOdd") { return depth[i]! % 2 === 0; }
+            const winding = sign[i]! + ancestors[i]!.reduce((sum, j) => sum + sign[j]!, 0);
             return winding !== 0;
         };
 
         const faces: TopoDS_Face[] = [];
         for (let i = 0; i < n; i++) {
             if (!filled(i)) { continue; }
-            if (parent[i] !== -1 && filled(parent[i])) { continue; } // interior of solid material, not a boundary
+            if (parent[i] !== -1 && filled(parent[i]!)) { continue; } // interior of solid material, not a boundary
             const holeWires: TopoDS_Wire[] = [];
             const createdHoles: TopoDS_Wire[] = [];
             for (let j = 0; j < n; j++) {
                 if (parent[j] === i && !filled(j)) {
-                    const holeCw = this.och.wiresService.reversedWire({ shape: ccw[j] });
+                    const holeCw = this.och.wiresService.reversedWire({ shape: ccw[j]! });
                     createdHoles.push(holeCw);
                     holeWires.push(holeCw);
                 }
             }
             try {
                 const face = holeWires.length > 0
-                    ? this.och.facesService.createFaceFromWires({ shapes: [ccw[i], ...holeWires], planar: true })
-                    : this.och.facesService.createFaceFromWire({ shape: ccw[i], planar: true });
+                    ? this.och.facesService.createFaceFromWires({ shapes: [ccw[i]!, ...holeWires], planar: true })
+                    : this.och.facesService.createFaceFromWire({ shape: ccw[i]!, planar: true });
                 faces.push(face);
             } catch { /* skip this region */ }
             createdHoles.forEach((w) => { try { w.delete(); } catch { /* noop */ } });
@@ -156,8 +156,8 @@ export class SvgFaceBuilder {
     private signedAreaXY(pts: Inputs.Base.Point3[]): number {
         let area = 0;
         for (let i = 0; i < pts.length; i++) {
-            const a = pts[i];
-            const b = pts[(i + 1) % pts.length];
+            const a = pts[i]!;
+            const b = pts[(i + 1) % pts.length]!;
             area += a[0] * b[1] - b[0] * a[1];
         }
         return area / 2;
@@ -165,17 +165,17 @@ export class SvgFaceBuilder {
 
     /** Polygon centroid in XY (strictly interior for simple loops); falls back to the mean. */
     private centroidXY(pts: Inputs.Base.Point3[], area: number): Inputs.Base.Point3 {
-        const z = pts.length > 0 ? pts[0][2] : 0;
+        const z = pts.length > 0 ? pts[0]![2] : 0;
         if (Math.abs(area) < 1e-12 || pts.length === 0) {
-            const mean = pts.reduce((acc, p) => [acc[0] + p[0], acc[1] + p[1]], [0, 0]);
+            const mean = pts.reduce((acc, p) => [acc[0]! + p[0], acc[1]! + p[1]], [0, 0]);
             const k = Math.max(pts.length, 1);
-            return [mean[0] / k, mean[1] / k, z];
+            return [mean[0]! / k, mean[1]! / k, z];
         }
         let cx = 0;
         let cy = 0;
         for (let i = 0; i < pts.length; i++) {
-            const a = pts[i];
-            const b = pts[(i + 1) % pts.length];
+            const a = pts[i]!;
+            const b = pts[(i + 1) % pts.length]!;
             const cross = a[0] * b[1] - b[0] * a[1];
             cx += (a[0] + b[0]) * cross;
             cy += (a[1] + b[1]) * cross;

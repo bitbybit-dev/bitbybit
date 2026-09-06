@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Managing Local Assets",
-        "description": "Learn how to manage local assets in Bitbybit, including uploading, downloading, and organizing your files.",
+        "description": "Local assets are loaded straight from the machine running the script, either picked by the user or held in browser storage. This is the right route when the file belongs to the person using the script rather than to your project: a customer's own STEP file to inspect, a model someone wants to convert, or a texture they are trying out. These pages cover importing local glTF and STEP files, uploading files into browser storage so they survive a reload, and referencing local assets from your script.",
         "slug": "/getting-started/basics/assets/local"
     }
 }

@@ -25,7 +25,7 @@ Colors are essential for visualizing and differentiating objects in your 3D scen
 
 We'll explore this using Rete (visual nodes), Blockly (visual blocks), and TypeScript (code). All examples will draw a cube and allow you to dynamically change its face color while keeping its edge color fixed.
 
-For detailed information on each color function, please refer to the [Color API Documentation](https://docs.bitbybit.dev/classes/Bit.Color.html).
+For detailed information on each color function, please refer to the [Color API Documentation](https://docs.bitbybit.dev/classes/Bit.Color).
 
 ## The Core Idea: Defining and Using Colors
 

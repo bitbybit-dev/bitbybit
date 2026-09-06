@@ -12,8 +12,6 @@ import {
     enableGUI,
     hideSpinner,
     showSpinner,
-    downloadGLB,
-    downloadSTL,
     downloadStep,
 } from "./helpers";
 
@@ -39,8 +37,6 @@ async function start() {
     const shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = [];
 
     model.downloadStep = () => downloadStep(bitbybit, finalShape);
-    model.downloadGLB = () => downloadGLB(scene);
-    model.downloadSTL = () => downloadSTL(scene);
 
     createGui(current, model, updateShape);
 

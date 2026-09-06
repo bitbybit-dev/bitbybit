@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+ 
 // Mock for @bitbybit-dev/manifold-worker
 // This mock is needed because the real package uses Workers which Jest can't handle
 
@@ -7,7 +7,7 @@ export class ManifoldWorkerManager {
     
     constructor() {}
     
-    setManifoldWorker(worker: any) {}
+    setManifoldWorker(_worker: any) {}
     
     genericCallToWorkerPromise = jest.fn().mockResolvedValue({});
     
@@ -19,5 +19,5 @@ export class ManifoldWorkerManager {
 }
 
 export class ManifoldBitByBit {
-    constructor(context?: any, manifoldWorkerManager?: any) {}
+    constructor(_context?: any, _manifoldWorkerManager?: any) {}
 }

@@ -3,6 +3,8 @@ import * as Models from "../models";
 import { defaultsVectorParams } from "../models/simplex";
 import { Point } from "./point";
 
+type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
+
 /**
  * Contains various text methods.
  */
@@ -71,7 +73,7 @@ export class TextBitByBit {
     * @drawable false
     */
     toString<T>(inputs: Inputs.Text.ToStringDto<T>): string {
-        return inputs.item.toString();
+        return (inputs.item as { toString(): string }).toString();
     }
 
     /**
@@ -83,7 +85,7 @@ export class TextBitByBit {
     * @drawable false
     */
     toStringEach<T>(inputs: Inputs.Text.ToStringEachDto<T>): string[] {
-        return inputs.list.map(i => i.toString());
+        return inputs.list.map(i => (i as { toString(): string }).toString());
     }
 
     /**
@@ -478,25 +480,25 @@ export class TextBitByBit {
         if (!code || !font[code]) {
             code = 63;
         }
-        const glyph = [].concat(font[code]);
+        const glyph = ([] as (number | undefined)[]).concat(font[code]);
         const ratio = (height - extrudeOffset) / font.height;
         const extrudeYOffset = (extrudeOffset / 2);
-        const width = glyph.shift() * ratio;
+        const width = (glyph.shift() as number) * ratio;
         const paths: Inputs.Base.Point3[][] = [];
-        let polyline = [];
+        let polyline: Inputs.Base.Point3[] = [];
         for (let i = 0, il = glyph.length; i < il; i += 2) {
-            const gx = ratio * glyph[i] + xOffset;
-            const gy = ratio * glyph[i + 1] + yOffset + extrudeYOffset;
+            const gx = ratio * (glyph[i] as number) + xOffset;
+            const gy = ratio * (glyph[i + 1] as number) + yOffset + extrudeYOffset;
             if (glyph[i] !== undefined) {
                 polyline.push([gx, 0, gy]);
                 continue;
             }
-            paths.push(polyline as Inputs.Base.Point3[]);
+            paths.push(polyline);
             polyline = [];
             i--;
         }
         if (polyline.length) {
-            paths.push(polyline as Inputs.Base.Point3[]);
+            paths.push(polyline);
         }
         return { width, height, paths };
     }
@@ -524,7 +526,6 @@ export class TextBitByBit {
 
         // manage the list of lines
         let maxWidth = 0; // keep track of max width for final alignment
-        type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
         let line: Line = { width: 0, height: 0, chars: [] };
         let lines: Line[] = [];
 
@@ -541,7 +542,7 @@ export class TextBitByBit {
         let vchar;
         const il = text.length;
         for (let i = 0; i < il; i++) {
-            const character = text[i];
+            const character = text[i]!;
             if (character === "\n") {
                 pushLine();
 
@@ -591,7 +592,7 @@ export class TextBitByBit {
 
             const bbox = this.point.boundingBoxOfPoints({
                 points: pointsFlat,
-            });
+            }) as Required<Inputs.Base.BoundingBox>;
 
             lines.forEach((line) => {
                 line.chars.forEach((vchar) => {
@@ -620,7 +621,7 @@ export class TextBitByBit {
         return params;
     }
 
-    private translateLine(options, line) {
+    private translateLine(options: { x?: number, y?: number }, line: Line): Line {
         const { x, y } = Object.assign({ x: 0, y: 0 }, options);
         line.chars = line.chars.map((vchar) => {
             vchar.paths = vchar.paths.map((path) => {

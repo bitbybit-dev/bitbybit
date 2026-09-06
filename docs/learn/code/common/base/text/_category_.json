@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Text Algorithms in Bitbybit",
-        "description": "Introduction to text algorithms in Bitbybit.",
+        "description": "Work with text in Bitbybit - split, join, replace and format strings, and turn them into 3D geometry. Text does real work in a configurator: engraving a customer's name onto a laser-cut part, labelling a dimension, building a file name for an export, or assembling a description from the options someone picked. These pages cover the string manipulation helpers, number-to-text formatting, and the text-to-geometry components that render a typeface into wires and solids you can extrude. Each example is shown in Rete, Blockly and TypeScript.",
         "slug": "/code/common/base/text"
     }
 }

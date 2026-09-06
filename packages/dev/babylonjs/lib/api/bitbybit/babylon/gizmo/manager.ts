@@ -40,7 +40,7 @@ export class BabylonGizmoManager {
      * @shortname get position gizmo
      */
     getPositionGizmo(inputs: Inputs.BabylonGizmo.GizmoManagerDto): BABYLON.IPositionGizmo {
-        return inputs.gizmoManager.gizmos.positionGizmo;
+        return inputs.gizmoManager.gizmos.positionGizmo!;
     }
 
     /**
@@ -51,7 +51,7 @@ export class BabylonGizmoManager {
      * @shortname get rotation gizmo
      */
     getRotationGizmo(inputs: Inputs.BabylonGizmo.GizmoManagerDto): BABYLON.IRotationGizmo {
-        return inputs.gizmoManager.gizmos.rotationGizmo;
+        return inputs.gizmoManager.gizmos.rotationGizmo!;
     }
 
     /**
@@ -62,7 +62,7 @@ export class BabylonGizmoManager {
      * @shortname get scale gizmo
      */
     getScaleGizmo(inputs: Inputs.BabylonGizmo.GizmoManagerDto): BABYLON.IScaleGizmo {
-        return inputs.gizmoManager.gizmos.scaleGizmo;
+        return inputs.gizmoManager.gizmos.scaleGizmo!;
     }
 
     /**
@@ -73,7 +73,7 @@ export class BabylonGizmoManager {
      * @shortname get bounding box gizmo
      */
     getBoundingBoxGizmo(inputs: Inputs.BabylonGizmo.GizmoManagerDto): BABYLON.IBoundingBoxGizmo {
-        return inputs.gizmoManager.gizmos.boundingBoxGizmo;
+        return inputs.gizmoManager.gizmos.boundingBoxGizmo!;
     }
 
     /**

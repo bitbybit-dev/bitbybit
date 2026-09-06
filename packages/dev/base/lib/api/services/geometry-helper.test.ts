@@ -417,12 +417,12 @@ describe("GeometryHelper unit tests", () => {
 
     describe("getFlatTransformations", () => {
         it("should return same array for depth 2 transformation", () => {
-            const transform = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
+            const transform: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
             expect(geometryHelper.getFlatTransformations(transform)).toEqual(transform);
         });
 
         it("should flatten depth 3 transformation", () => {
-            const transform = [[[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1]]];
+            const transform: Inputs.Base.TransformMatrixes[] = [[[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1]]];
             const result = geometryHelper.getFlatTransformations(transform);
             expect(result).toHaveLength(2);
             expect(result[0]).toEqual([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
@@ -432,26 +432,26 @@ describe("GeometryHelper unit tests", () => {
 
     describe("transformControlPoints", () => {
         it("should transform points using identity matrix", () => {
-            const identity = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
+            const identity: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
             const points: Inputs.Base.Point3[] = [[1, 2, 3]];
             const result = geometryHelper.transformControlPoints(identity, points);
-            expect(result[0][0]).toBeCloseTo(1, 10);
-            expect(result[0][1]).toBeCloseTo(2, 10);
-            expect(result[0][2]).toBeCloseTo(3, 10);
+            expect(result[0]![0]).toBeCloseTo(1, 10);
+            expect(result[0]![1]).toBeCloseTo(2, 10);
+            expect(result[0]![2]).toBeCloseTo(3, 10);
         });
 
         it("should transform points using translation matrix", () => {
             // Translation by (10, 20, 30)
-            const translation = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 20, 30, 1]];
+            const translation: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 20, 30, 1]];
             const points: Inputs.Base.Point3[] = [[0, 0, 0]];
             const result = geometryHelper.transformControlPoints(translation, points);
-            expect(result[0][0]).toBeCloseTo(10, 10);
-            expect(result[0][1]).toBeCloseTo(20, 10);
-            expect(result[0][2]).toBeCloseTo(30, 10);
+            expect(result[0]![0]).toBeCloseTo(10, 10);
+            expect(result[0]![1]).toBeCloseTo(20, 10);
+            expect(result[0]![2]).toBeCloseTo(30, 10);
         });
 
         it("should transform multiple points", () => {
-            const identity = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
+            const identity: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
             const points: Inputs.Base.Point3[] = [[1, 2, 3], [4, 5, 6]];
             const result = geometryHelper.transformControlPoints(identity, points);
             expect(result).toHaveLength(2);
@@ -459,19 +459,19 @@ describe("GeometryHelper unit tests", () => {
 
         it("should apply multiple transformations in sequence", () => {
             // Two translations: first by (1, 0, 0), then by (0, 1, 0)
-            const transforms = [
+            const transforms: Inputs.Base.TransformMatrixes = [
                 [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1],
                 [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1]
             ];
             const points: Inputs.Base.Point3[] = [[0, 0, 0]];
             const result = geometryHelper.transformControlPoints(transforms, points);
-            expect(result[0][0]).toBeCloseTo(1, 10);
-            expect(result[0][1]).toBeCloseTo(1, 10);
-            expect(result[0][2]).toBeCloseTo(0, 10);
+            expect(result[0]![0]).toBeCloseTo(1, 10);
+            expect(result[0]![1]).toBeCloseTo(1, 10);
+            expect(result[0]![2]).toBeCloseTo(0, 10);
         });
 
         it("should handle empty points array", () => {
-            const identity = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
+            const identity: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
             const points: Inputs.Base.Point3[] = [];
             const result = geometryHelper.transformControlPoints(identity, points);
             expect(result).toEqual([]);
@@ -479,12 +479,12 @@ describe("GeometryHelper unit tests", () => {
 
         it("should apply uniform scale transformation", () => {
             // Scale by 2
-            const scale = [[2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1]];
+            const scale: Inputs.Base.TransformMatrixes = [[2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1]];
             const points: Inputs.Base.Point3[] = [[1, 1, 1]];
             const result = geometryHelper.transformControlPoints(scale, points);
-            expect(result[0][0]).toBeCloseTo(2, 10);
-            expect(result[0][1]).toBeCloseTo(2, 10);
-            expect(result[0][2]).toBeCloseTo(2, 10);
+            expect(result[0]![0]).toBeCloseTo(2, 10);
+            expect(result[0]![1]).toBeCloseTo(2, 10);
+            expect(result[0]![2]).toBeCloseTo(2, 10);
         });
     });
 });

@@ -5,6 +5,11 @@ import { Base } from "./base-inputs";
 import * as pc from "playcanvas";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Options for drawing geometry into a PlayCanvas scene: colour, opacity, size, and the per-kind
+ * settings that control how points, lines, polylines, meshes, surfaces and kernel shapes become
+ * renderer entities. Passing an existing drawn entity back in updates it in place.
+ */
 export namespace Draw {
 
     export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
@@ -23,7 +28,7 @@ export namespace Draw {
      * Extended pc.Entity with BitByBit metadata for type-safe access to drawing metadata
      */
     export interface BitByBitEntity extends pc.Entity {
-        bitbybitMeta?: BitByBitMeta;
+        bitbybitMeta?: BitByBitMeta | undefined;
     }
 
     /**
@@ -37,7 +42,7 @@ export namespace Draw {
      * Extended pc.Entity with user data for polyline tracking
      */
     export interface PolylineEntity extends pc.Entity {
-        bitbybitMeta?: PolylineUserData;
+        bitbybitMeta?: PolylineUserData | undefined;
     }
 
     export class DrawAny<U> {
@@ -49,17 +54,17 @@ export namespace Draw {
          * Entity to be drawn - can be a single or multiple points, lines, polylines, verb curves, verb surfaces, jscad meshes, jscad polygons, jscad paths, occt shapes, tags, nodes
          * @default undefined
          */
-        entity: Entity;
+        entity!: Entity;
         /**
          * Options that help you control how your drawn objects look like. This property is optional. In order to pick the right option you need to know which entity you are going to draw. For example if you draw points, lines, polylines or jscad meshes you can use basic geometry options, but if you want to draw OCCT shapes, use OCCT options.
          * @default undefined
          * @optional true
          */
-        options?: DrawOptions;
+        options?: DrawOptions | undefined;
         /**
          * Group to indicate if geometry should be updated
          */
-        group?: U;
+        group?: U | undefined;
     }
     export class DrawManifoldOrCrossSectionOptions {
         /**
@@ -95,7 +100,7 @@ export namespace Draw {
          * @default undefined
          * @optional true
          */
-        faceMaterial?: Base.Material;
+        faceMaterial?: Base.Material | undefined;
         /**
          * Hex colour string for cross section drawing
          * @default #ff00ff
@@ -113,7 +118,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        crossSectionOpacity: number;
+        crossSectionOpacity: number = 1;
         /**
          * Compute normals for the shape
          * @default false
@@ -206,7 +211,7 @@ export namespace Draw {
          * @default undefined
          * @optional true
          */
-        faceMaterial?: Base.Material;
+        faceMaterial?: Base.Material | undefined;
         /**
          * Edge width
          * @default 2
@@ -468,7 +473,7 @@ export namespace Draw {
          * URL of the texture image. Can be a local path or remote URL.
          * @default undefined
          */
-        url: string;
+        url!: string;
         /**
          * Name identifier for the texture
          * @default Texture
@@ -655,31 +660,31 @@ export namespace Draw {
          * @default undefined
          * @optional true
          */
-        baseColorTexture?: Base.Texture;
+        baseColorTexture?: Base.Texture | undefined;
         /**
          * Combined metallic-roughness texture (metallic in B channel, roughness in G channel)
          * @default undefined
          * @optional true
          */
-        metallicRoughnessTexture?: Base.Texture;
+        metallicRoughnessTexture?: Base.Texture | undefined;
         /**
          * Normal/bump map texture for surface detail
          * @default undefined
          * @optional true
          */
-        normalTexture?: Base.Texture;
+        normalTexture?: Base.Texture | undefined;
         /**
          * Texture for emissive/glow areas
          * @default undefined
          * @optional true
          */
-        emissiveTexture?: Base.Texture;
+        emissiveTexture?: Base.Texture | undefined;
         /**
          * Ambient occlusion texture for soft shadows in crevices
          * @default undefined
          * @optional true
          */
-        occlusionTexture?: Base.Texture;
+        occlusionTexture?: Base.Texture | undefined;
         /**
          * Alpha/transparency mode: opaque, mask (cutout), or blend (translucent)
          * @default opaque

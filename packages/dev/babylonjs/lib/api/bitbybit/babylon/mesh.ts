@@ -43,12 +43,12 @@ export class BabylonMesh {
         if (meshChildren && meshChildren.length > 0) {
             if (areColorsArray && inputs.colours.length === meshChildren.length) {
                 meshChildren.forEach((child, index) => {
-                    const color = BABYLON.Color3.FromHexString(inputs.colours[index]);
+                    const color = BABYLON.Color3.FromHexString(inputs.colours[index]!);
                     this.assignColorToMesh(child, color);
                 });
             } else if (areColorsArray) {
                 meshChildren.forEach((child) => {
-                    const color = BABYLON.Color3.FromHexString(inputs.colours[0]);
+                    const color = BABYLON.Color3.FromHexString(inputs.colours[0]!);
                     this.assignColorToMesh(child, color);
                 });
             } else {
@@ -58,12 +58,12 @@ export class BabylonMesh {
                 });
             }
         } else {
-            const color = areColorsArray ? BABYLON.Color3.FromHexString(inputs.colours[0]) : BABYLON.Color3.FromHexString(inputs.colours as string);
+            const color = areColorsArray ? BABYLON.Color3.FromHexString(inputs.colours[0]!) : BABYLON.Color3.FromHexString(inputs.colours as string);
             this.assignColorToMesh(inputs.babylonMesh, color);
         }
 
         if (inputs.babylonMesh.edgesRenderer !== null) {
-            const color = areColorsArray ? BABYLON.Color3.FromHexString(inputs.colours[0]) : BABYLON.Color3.FromHexString(inputs.colours as string);
+            const color = areColorsArray ? BABYLON.Color3.FromHexString(inputs.colours[0]!) : BABYLON.Color3.FromHexString(inputs.colours as string);
             inputs.babylonMesh.edgesColor = BABYLON.Color4.FromColor3(color);
         }
         if ([
@@ -73,18 +73,18 @@ export class BabylonMesh {
             Inputs.Draw.drawingTypes.lines,
             Inputs.Draw.drawingTypes.polyline,
             Inputs.Draw.drawingTypes.polylines].includes(type)) {
-            const colors = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
+            const colors = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.ColorKind)!;
             const length = colors.length / 4;
 
             const c = [];
 
             if (areColorsArray && length === inputs.colours.length) {
                 for (let i = 0; i < length; i++) {
-                    const col = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colours[i]));
+                    const col = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colours[i]!));
                     c.push(col.r, col.g, col.b, col.a);
                 }
             } else if (areColorsArray) {
-                const col = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colours[0]));
+                const col = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colours[0]!));
                 for (let i = 0; i < length; i++) {
                     c.push(col.r, col.g, col.b, col.a);
                 }
@@ -165,8 +165,8 @@ export class BabylonMesh {
      * @group get
      * @shortname parent
      */
-    getParent(inputs: Inputs.BabylonMesh.SetParentDto) {
-        return inputs.babylonMesh.parent;
+    getParent(inputs: Inputs.BabylonMesh.SetParentDto): BABYLON.Node {
+        return inputs.babylonMesh.parent!;
     }
 
     /**
@@ -290,7 +290,7 @@ export class BabylonMesh {
      * @shortname mesh by id
      */
     getMeshOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): BABYLON.AbstractMesh {
-        return this.context.scene.getMeshById(inputs.id);
+        return this.context.scene.getMeshById(inputs.id)!;
     }
 
     /**
@@ -300,7 +300,7 @@ export class BabylonMesh {
      * @shortname mesh by unique id
      */
     getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): BABYLON.AbstractMesh {
-        return this.context.scene.getMeshByUniqueId(inputs.uniqueId);
+        return this.context.scene.getMeshByUniqueId(inputs.uniqueId)!;
     }
 
     /**
@@ -319,7 +319,7 @@ export class BabylonMesh {
             inputs.subdivideWithSubMeshes,
             inputs.multiMultiMaterials
         );
-        return newMesh;
+        return newMesh!;
     }
 
     /** Convers mesh to flat shaded mesh
@@ -368,7 +368,7 @@ export class BabylonMesh {
      * @drawable true
      */
     cloneToPositions(inputs: Inputs.BabylonMesh.CloneToPositionsDto): BABYLON.Mesh[] {
-        const clones = [];
+        const clones: BABYLON.Mesh[] = [];
         inputs.positions.forEach((position) => {
             const clone = inputs.babylonMesh.clone();
             clone.position = new BABYLON.Vector3(position[0], position[1], position[2]);
@@ -432,18 +432,18 @@ export class BabylonMesh {
      * @shortname vertices as polygon points
      */
     getVerticesAsPolygonPoints(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3[][] {
-        const vertices = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-        const indices = inputs.babylonMesh.getIndices();
+        const vertices = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.PositionKind)!;
+        const indices = inputs.babylonMesh.getIndices()!;
         // this method implies that mesh is triangulated
-        const res = [];
+        const res: Base.Point3[][] = [];
         for (let i = 0; i < indices.length; i += 3) {
-            const p1 = indices[i];
-            const p2 = indices[i + 1];
-            const p3 = indices[i + 2];
+            const p1 = indices[i]!;
+            const p2 = indices[i + 1]!;
+            const p3 = indices[i + 2]!;
             res.push([
-                [vertices[p1 * 3], vertices[p1 * 3 + 1], vertices[p1 * 3 + 2]],
-                [vertices[p2 * 3], vertices[p2 * 3 + 1], vertices[p2 * 3 + 2]],
-                [vertices[p3 * 3], vertices[p3 * 3 + 1], vertices[p3 * 3 + 2]],
+                [vertices[p1 * 3]!, vertices[p1 * 3 + 1]!, vertices[p1 * 3 + 2]!],
+                [vertices[p2 * 3]!, vertices[p2 * 3 + 1]!, vertices[p2 * 3 + 2]!],
+                [vertices[p3 * 3]!, vertices[p3 * 3 + 1]!, vertices[p3 * 3 + 2]!],
             ]);
         }
         return res;
@@ -482,7 +482,7 @@ export class BabylonMesh {
      * @shortname material
      */
     getMaterial(inputs: Inputs.BabylonMesh.BabylonMeshDto): BABYLON.Material {
-        return inputs.babylonMesh.material;
+        return inputs.babylonMesh.material!;
     }
 
     /**
@@ -737,7 +737,7 @@ export class BabylonMesh {
         const parent = new BABYLON.Mesh("instanceContainer" + Math.random(), this.context.scene);
         const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
-            inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
+            (inputs.mesh.getChildMeshes(false) as BABYLON.Mesh[]).forEach((child: BABYLON.Mesh) => {
                 const vertices = child.getTotalVertices();
                 if (child.createInstance && vertices > 0) {
                     child.disableEdgesRendering();
@@ -793,11 +793,11 @@ export class BabylonMesh {
      * @disposableOutput true
      */
     createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): BABYLON.Mesh {
-        let result: BABYLON.Mesh;
+        let result!: BABYLON.Mesh;
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
             inputs.mesh.setParent(null);
             const container = new BABYLON.Mesh("meshCloneContainer" + Math.random());
-            inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
+            (inputs.mesh.getChildMeshes(false) as BABYLON.Mesh[]).forEach((child: BABYLON.Mesh) => {
                 if (child.createInstance && child.getTotalVertices() > 0 && child.getTotalIndices() > 0) {
                     const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
                     newInstance.parent = container;
@@ -846,7 +846,7 @@ export class BabylonMesh {
     }
 
 
-    private assignColorToMesh(mesh, color: BABYLON.Color3) {
+    private assignColorToMesh(mesh: BABYLON.AbstractMesh, color: BABYLON.Color3) {
         const mat = (mesh.material);
         if (mat instanceof BABYLON.PBRMetallicRoughnessMaterial) {
             mat.baseColor = color;

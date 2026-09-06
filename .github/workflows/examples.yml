@@ -1,0 +1,60 @@
+# The examples install from the registry the way a user does, so they are the post-publish smoke
+# of the published packages and of the create-app templates. Weekly, on every published version
+# (its tag), and by hand. Not a pull-request gate: nothing here builds from this checkout's
+# sources, so a pull request cannot break it - a publish can.
+name: Examples
+
+on:
+  schedule:
+    - cron: "41 4 * * 1"
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      heavy:
+        description: Also build the Angular, Next.js and Nuxt examples
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  examples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+
+      # Every example on its own: npm ci (npm install where it has no lockfile), then its build
+      # script; the Angular, Next.js and Nuxt builds only when asked. The step summary lists them.
+      - name: Install and build every example
+        working-directory: examples
+        run: node scripts/examples.mjs verify ${{ (inputs.heavy || github.event_name == 'push') && '--heavy' || '' }}
+
+      # The lockfiles are what Dependabot reads for this repository: a high or critical advisory
+      # in any of them fails here, and `npm run refresh-lockfiles` in examples/ is the fix.
+      - name: No high or critical advisories in the example lockfiles
+        if: always()
+        working-directory: examples
+        run: node scripts/examples.mjs audit
+
+  create-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # Scaffold every template the CLI offers and install each result from the registry.
+      - name: Every template scaffolds and installs
+        run: pnpm --filter @bitbybit-dev/create-app run build && pnpm --filter @bitbybit-dev/create-app run smoke

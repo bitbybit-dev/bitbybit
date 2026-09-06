@@ -1,1 +1,7 @@
 node_modules
+
+# Agent tooling - never publish local session logs or settings
+.claude/
+
+# Per-suite JSON results the runners write for scripts/test-report.mjs
+test-results/

@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Video tutorials for 3D Bits",
-        "description": "These tutorials provide video explanations of many of the features of 3D Bits.",
+        "description": "Video walkthroughs of building real configurators with 3D Bits, from an empty store to a product a customer can buy. Watching someone build one end to end is often faster than reading through each feature separately, particularly for the parts that are hard to describe in text: how the Composer feels to use, how an option connects to geometry, and how a change propagates to the price. These tutorials cover material, colour and texture switching, working with 3D scanned products, and using the preview and viewer blocks in a live theme.",
         "slug": "/3d-bits/tutorials/video-tutorials"
     }
 }

@@ -153,7 +153,7 @@ describe("DrawHelper unit tests", () => {
                 const mesh = child as THREEJS.InstancedMesh;
                 expect(mesh.count).toBe(1); // Each color has 1 point
                 const material = getMaterialFromMesh(mesh) as THREEJS.MeshBasicMaterial;
-                expect(colorsAreEqual(material.color, hexToRgb(expectedColors[index]))).toBe(true);
+                expect(colorsAreEqual(material.color, hexToRgb(expectedColors[index]!))).toBe(true);
             });
         });
 
@@ -1068,7 +1068,7 @@ describe("DrawHelper unit tests", () => {
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
@@ -1089,7 +1089,7 @@ describe("DrawHelper unit tests", () => {
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto() as any;
             inputs.manifoldOrCrossSection = { hash: "mf123", type: "manifold" };
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
 
             expect(result).toBeUndefined();
         });
@@ -1107,7 +1107,7 @@ describe("DrawHelper unit tests", () => {
             inputs.crossSectionOpacity = 1;
             inputs.crossSectionWidth = 2;
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
@@ -1369,7 +1369,7 @@ describe("DrawHelper unit tests", () => {
             
             // Should have polyline segments + 4 arrow lines (2 per arrow head)
             // 3 polyline segments (4 points) + 4 arrow segments = 7 segments total = 14 vertices
-            const positions = lineSegments.geometry.attributes.position;
+            const positions = lineSegments.geometry.attributes["position"]!;
             expect(positions.count).toBe(14);
         });
 
@@ -1399,11 +1399,11 @@ describe("DrawHelper unit tests", () => {
             // 3 polylines with 2 segments each = 6 segments
             // 3 polylines with 4 arrow lines each = 12 arrow segments
             // Total = 18 segments = 36 vertices
-            const positions = lineSegments.geometry.attributes.position;
+            const positions = lineSegments.geometry.attributes["position"]!;
             expect(positions.count).toBe(36);
             
             // Verify colors are set
-            const colors = lineSegments.geometry.attributes.color;
+            const colors = lineSegments.geometry.attributes["color"]!;
             expect(colors).toBeDefined();
             expect(colors.count).toBe(36);
         });
@@ -1425,7 +1425,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const lineSegments = result.children[0] as THREEJS.LineSegments;
-            const positions = lineSegments.geometry.attributes.position;
+            const positions = lineSegments.geometry.attributes["position"]!;
             // Only polyline segments, no arrows: 2 segments = 4 vertices
             expect(positions.count).toBe(4);
         });
@@ -1447,7 +1447,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const lineSegments = result.children[0] as THREEJS.LineSegments;
-            const positions = lineSegments.geometry.attributes.position;
+            const positions = lineSegments.geometry.attributes["position"]!;
             // 1 polyline segment + 4 arrow segments = 5 segments = 10 vertices
             expect(positions.count).toBe(10);
         });
@@ -1470,7 +1470,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const lineSegments = result.children[0] as THREEJS.LineSegments;
-            const colors = lineSegments.geometry.attributes.color as THREEJS.BufferAttribute;
+            const colors = lineSegments.geometry.attributes["color"] as THREEJS.BufferAttribute;
             
             // First polyline + arrows should be red
             const red = new THREEJS.Color("#ff0000");
@@ -1502,7 +1502,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const lineSegments = result.children[0] as THREEJS.LineSegments;
-            const positions = lineSegments.geometry.attributes.position;
+            const positions = lineSegments.geometry.attributes["position"]!;
             // No segments can be drawn from a single point
             expect(positions.count).toBe(0);
         });
@@ -1541,7 +1541,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(secondResult).toBe(firstResult);
             const lineSegments = secondResult.children[0] as THREEJS.LineSegments;
-            const positions = lineSegments.geometry.attributes.position;
+            const positions = lineSegments.geometry.attributes["position"]!;
             // 1 segment + 4 arrow segments = 5 segments = 10 vertices
             expect(positions.count).toBe(10);
         });
@@ -1799,7 +1799,7 @@ describe("DrawHelper unit tests", () => {
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
             expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
         });
@@ -1868,6 +1868,7 @@ describe("DrawHelper unit tests", () => {
                 points: [[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]],
                 opacity: 1,
                 size: 0.3,
+                updatable: false,
                 colours: ["#ff0000", "#00ff00"],
                 colorMapStrategy: Inputs.Base.colorMapStrategyEnum.repeatColors
             };
@@ -2051,7 +2052,7 @@ describe("DrawHelper unit tests", () => {
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
             expect(result).toBeUndefined();
         });
 

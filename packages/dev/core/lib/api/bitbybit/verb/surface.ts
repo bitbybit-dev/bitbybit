@@ -26,7 +26,7 @@ export class VerbSurface {
     constructor(
         private readonly context: ContextBase,
         private readonly geometryHelper: GeometryHelper,
-        private readonly math: MathBitByBit,
+        math: MathBitByBit,
     ) {
         this.cone = new VerbSurfaceConical(context);
         this.cylinder = new VerbSurfaceCylindrical(context);
@@ -183,7 +183,7 @@ export class VerbSurface {
         if (!inputs.includeFirst) {
             params.shift();
         }
-        return params.map(parameter => {
+        return params.map((parameter: number) => {
             return inputs.surface.isocurve(parameter, inputs.useV);
         });
     }
@@ -261,8 +261,8 @@ export class VerbSurface {
     transformSurface(inputs: Inputs.Verb.SurfaceTransformDto): any {
         const points = inputs.surface.controlPoints();
         const transformation = inputs.transformation;
-        const twoDimensionalPoints = [];
-        points.forEach(ptCollection => {
+        const twoDimensionalPoints: Inputs.Base.Point3[][] = [];
+        points.forEach((ptCollection: Inputs.Base.Point3[]) => {
             let transformedControlPoints = ptCollection;
             transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
             twoDimensionalPoints.push(transformedControlPoints);

@@ -3,6 +3,8 @@
   "position": 3,
   "link": {
     "type": "generated-index",
-    "description": "Learn how to use Bitbybit runners with different 3D engines - PlayCanvas, Three.js, and Babylon.js."
+    "title": "Bitbybit Runners for 3D Engines",
+    "description": "Run a Bitbybit script inside the 3D engine you already use. The runner takes a script authored in Rete, Blockly or TypeScript and executes it against Three.js, Babylon.js or PlayCanvas, so the geometry your configurator produces lands directly in your own scene graph. These guides cover installing the runner for each engine, passing inputs in and reading geometry out, wiring the result to your own cameras, lights and materials, and keeping the CAD kernel off the main thread. Start with the engine you are already building on - the runner API is the same in all three.",
+    "slug": "/runners/engines"
   }
 }

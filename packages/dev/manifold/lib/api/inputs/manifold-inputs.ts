@@ -2,34 +2,74 @@
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Every parameter object the Manifold kernel accepts. Manifold specialises in fast, reliably
+ * watertight mesh booleans, so its DTOs carry manifold handles and the settings that keep results
+ * valid - segment counts, precision and the operands of a boolean.
+ * 
+ * It also models in 2D: cross sections can be built, offset and booleaned in the plane, then extruded
+ * or revolved into solids, which is often the cheapest route to a profile-driven part. Names repeat
+ * across kernels: the CircleDto here is not the one in Inputs.OCCT.
+ */
 export namespace Manifold {
+    /**
+     * A handle to a solid living inside the Manifold kernel, not the geometry itself. The kernel runs
+     * as WebAssembly with its own memory, so what crosses back into JavaScript is this small
+     * reference. Pass it into the next operation to keep building, and dispose it when finished to
+     * release the kernel memory behind it.
+     */
     export type ManifoldPointer = { hash: number, type: string };
+    /**
+     * A handle to a 2D cross section inside the Manifold kernel. Cross sections are built, offset and
+     * booleaned in the plane, then extruded or revolved into solids - often the cheapest route to a
+     * profile-driven part.
+     */
     export type CrossSectionPointer = { hash: number, type: string };
+    /**
+     * A handle to raw mesh data inside the Manifold kernel, used when importing an existing mesh into
+     * the kernel or reading one back out.
+     */
     export type MeshPointer = { hash: number, type: string };
 
+    /**
+     * How overlapping and self-intersecting outlines decide what is inside. evenOdd alternates with
+     * each crossing, so a shape inside a shape becomes a hole; nonZero counts winding direction, so
+     * overlaps stay filled; positive and negative keep only regions with winding of that sign. If an
+     * imported outline fills wrongly, this is the setting to change first.
+     */
     export enum fillRuleEnum {
         evenOdd = "EvenOdd",
         nonZero = "NonZero",
         positive = "Positive",
         negative = "Negative"
     }
+    /**
+     * How an offset fills the outside of a corner: square cuts it off flat, round arcs around it,
+     * miter extends both sides to a sharp point, bevel cuts a chamfer. Miter can produce very long
+     * spikes at tight angles, which is why square or round is the safer default.
+     */
     export enum manifoldJoinTypeEnum {
         square = "Square",
         round = "Round",
         miter = "Miter",
         bevel = "Bevel"
     }
+    /**
+     * A Manifold solid taken apart into plain arrays - vertex properties, triangle indices and the
+     * run structure that groups them. The form the kernel hands back when geometry has to cross out of
+     * WebAssembly for rendering or export.
+     */
     export class DecomposedManifoldMeshDto {
-        numProp: number;
-        vertProperties: Float32Array;
-        triVerts: Uint32Array;
-        mergeFromVert?: Uint32Array;
-        mergeToVert?: Uint32Array;
-        runIndex?: Uint32Array;
-        runOriginalID?: Uint32Array;
-        runTransform?: Float32Array;
-        faceID?: Uint32Array;
-        halfedgeTangent?: Float32Array;
+        numProp!: number;
+        vertProperties!: Float32Array;
+        triVerts!: Uint32Array;
+        mergeFromVert?: Uint32Array | undefined;
+        mergeToVert?: Uint32Array | undefined;
+        runIndex?: Uint32Array | undefined;
+        runOriginalID?: Uint32Array | undefined;
+        runTransform?: Float32Array | undefined;
+        faceID?: Uint32Array | undefined;
+        halfedgeTangent?: Float32Array | undefined;
     }
     export class DrawManifoldOrCrossSectionDto<T, M> {
         /**
@@ -52,7 +92,7 @@ export namespace Manifold {
          * Manifold geometry
          * @default undefined
          */
-        manifoldOrCrossSection?: T;
+        manifoldOrCrossSection?: T | undefined;
         /**
          * Face opacity value between 0 and 1
          * @default 1
@@ -66,7 +106,7 @@ export namespace Manifold {
          * @default undefined
          * @optional true
          */
-        faceMaterial?: M;
+        faceMaterial?: M | undefined;
         /**
          * Hex colour string for face colour
          * @default #ff0000
@@ -135,13 +175,13 @@ export namespace Manifold {
          * Manifold geometry
          * @default undefined
          */
-        manifoldsOrCrossSections?: T[];
+        manifoldsOrCrossSections?: T[] | undefined;
         /**
          * Face material
          * @default undefined
          * @optional true
          */
-        faceMaterial?: M;
+        faceMaterial?: M | undefined;
         /**
          * Hex colour string for face colour
          * @default #ff0000
@@ -204,7 +244,7 @@ export namespace Manifold {
         /**
          * Mesh definition
          */
-        mesh: DecomposedManifoldMeshDto;
+        mesh!: DecomposedManifoldMeshDto;
     }
     export class FromPolygonPointsDto {
         constructor(polygonPoints?: Base.Point3[][]) {
@@ -213,7 +253,7 @@ export namespace Manifold {
         /**
          * Points describing polygons
          */
-        polygonPoints?: Base.Point3[][];
+        polygonPoints!: Base.Point3[][];
     }
     export class CrossSectionFromPolygonPointsDto {
         constructor(points?: Base.Point3[], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number) {
@@ -225,22 +265,22 @@ export namespace Manifold {
         /**
          * Points describing a single polygon
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Fill rule for polygon interpretation
          * @default positive
          */
-        fillRule?: fillRuleEnum = fillRuleEnum.positive;
+        fillRule?: fillRuleEnum | undefined = fillRuleEnum.positive;
         /**
          * Remove consecutive duplicate points before creating polygon
          * @default false
          */
-        removeDuplicates?: boolean = false;
+        removeDuplicates?: boolean | undefined = false;
         /**
          * Tolerance for duplicate removal
          * @default 1e-7
          */
-        tolerance?: number = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     export class CrossSectionFromPolygonsPointsDto {
         constructor(polygonPoints?: Base.Point3[][], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number) {
@@ -252,22 +292,22 @@ export namespace Manifold {
         /**
          * Points describing multiple polygons
          */
-        polygonPoints: Base.Point3[][];
+        polygonPoints!: Base.Point3[][];
         /**
          * Fill rule for polygon interpretation
          * @default positive
          */
-        fillRule?: fillRuleEnum = fillRuleEnum.positive;
+        fillRule?: fillRuleEnum | undefined = fillRuleEnum.positive;
         /**
          * Remove consecutive duplicate points before creating polygons
          * @default false
          */
-        removeDuplicates?: boolean = false;
+        removeDuplicates?: boolean | undefined = false;
         /**
          * Tolerance for duplicate removal
          * @default 1e-7
          */
-        tolerance?: number = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     export class CubeDto {
         constructor(center?: boolean, size?: number) {
@@ -297,7 +337,7 @@ export namespace Manifold {
          * Polygons to use for the contour section
          * @default undefined
          */
-        polygons: Base.Vector2[][];
+        polygons!: Base.Vector2[][];
         /**
          * Fill rule for the contour section
          * @default EvenOdd
@@ -343,7 +383,7 @@ export namespace Manifold {
           * @maximum Infinity
           * @step 1
           */
-        circularSegments: number;
+        circularSegments: number = 32;
     }
     export class CylinderDto {
         constructor(height?: number, radiusLow?: number, radiusHigh?: number, circularSegments?: number, center?: boolean) {
@@ -448,7 +488,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
     }
     export class CalculateNormalsDto<T> {
         constructor(manifold?: T, normalIdx?: number, minSharpAngle?: number) {
@@ -459,7 +499,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The property channel in which to store the X
         * values of the normals. The X, Y, and Z channels will be sequential. The
@@ -492,7 +532,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The property channel index in which to store the
          * Gaussian curvature. An index < 0 will be ignored (stores nothing). The
@@ -503,7 +543,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        gaussianIdx: number;
+        gaussianIdx: number = 0;
         /**
          * The property channel index in which to store the mean
          * curvature. An index < 0 will be ignored (stores nothing). The property
@@ -514,7 +554,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        meanIdx: number;
+        meanIdx: number = 1;
     }
     export class CountDto {
         constructor(count?: number) {
@@ -523,7 +563,7 @@ export namespace Manifold {
         /**
          * Nr to count
          */
-        count: number;
+        count!: number;
     }
     export class ManifoldsMinGapDto<T> {
         constructor(manifold1?: T, manifold2?: T, searchLength?: number) {
@@ -534,11 +574,11 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold1: T;
+        manifold1!: T;
         /**
          * Manifold shape
          */
-        manifold2: T;
+        manifold2!: T;
         /**
          * Length of the search gap
          * @default 100
@@ -556,7 +596,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The desired maximum distance between the faceted mesh
          * produced and the exact smoothly curving surface. All vertices are exactly
@@ -576,7 +616,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * Length of the manifold
          * @default 0.1
@@ -594,7 +634,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The number of pieces to split every edge into. Must be > 1.
          * @default 1
@@ -612,7 +652,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The first property channel of the normals. NumProp must be
          * at least normalIdx + 3. Any vertex where multiple normals exist and don't
@@ -632,7 +672,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The maximum distance between the original and simplified meshes. 
          * If not given or is less than the current tolerance, the current tolerance is used.
@@ -642,7 +682,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.001
          */
-        tolerance?: number;
+        tolerance?: number | undefined;
     }
     export class ManifoldSetPropertiesDto<T> {
         constructor(manifold?: T, numProp?: number, propFunc?: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void) {
@@ -653,7 +693,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The new number of properties per vertex
          * @default 3
@@ -667,7 +707,7 @@ export namespace Manifold {
          * Note: undefined behavior will result if you read past the number of input properties or write past the number of output properties.
          * @default undefined
          */
-        propFunc: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void;
+        propFunc!: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void;
     }
     export class ManifoldSmoothOutDto<T> {
         constructor(manifold?: T, minSharpAngle?: number, minSmoothness?: number) {
@@ -678,7 +718,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * Any edges with angles greater
          * than this value will remain sharp. The rest will be smoothed to G1
@@ -710,7 +750,7 @@ export namespace Manifold {
         /**
          * Points to hull
          */
-        points: T;
+        points!: T;
     }
     export class SliceDto<T> {
         constructor(manifold?: T) {
@@ -719,7 +759,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * Height of the slice
          * @default 0.5
@@ -736,7 +776,7 @@ export namespace Manifold {
         /**
          * Mesh
          */
-        mesh: T;
+        mesh!: T;
     }
 
     export class MeshVertexIndexDto<T> {
@@ -747,7 +787,7 @@ export namespace Manifold {
         /**
          * Mesh
          */
-        mesh: T;
+        mesh!: T;
         /**
          * Vertex index
          * @default 0
@@ -755,7 +795,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        vertexIndex: number;
+        vertexIndex: number = 0;
     }
     export class MeshTriangleRunIndexDto<T> {
         constructor(mesh?: T, triangleRunIndex?: number) {
@@ -765,7 +805,7 @@ export namespace Manifold {
         /**
          * Mesh
          */
-        mesh: T;
+        mesh!: T;
         /**
          * Triangle run index
          * @default 0
@@ -773,7 +813,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        triangleRunIndex: number;
+        triangleRunIndex: number = 0;
     }
     export class MeshHalfEdgeIndexDto<T> {
         constructor(mesh?: T, halfEdgeIndex?: number) {
@@ -783,7 +823,7 @@ export namespace Manifold {
         /**
          * Mesh
          */
-        mesh: T;
+        mesh!: T;
         /**
          * Half edge index
          * @default 0
@@ -791,7 +831,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        halfEdgeIndex: number;
+        halfEdgeIndex: number = 0;
     }
     export class MeshTriangleIndexDto<T> {
         constructor(mesh?: T, triangleIndex?: number) {
@@ -801,7 +841,7 @@ export namespace Manifold {
         /**
          * Mesh
          */
-        mesh: T;
+        mesh!: T;
         /**
          * Triangle index
          * @default 0
@@ -809,7 +849,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        triangleIndex: number;
+        triangleIndex: number = 0;
     }
     export class CrossSectionDto<T> {
         constructor(crossSection?: T) {
@@ -818,7 +858,7 @@ export namespace Manifold {
         /**
          * Cross section
          */
-        crossSection: T;
+        crossSection!: T;
     }
     export class CrossSectionsDto<T> {
         constructor(crossSections?: T[]) {
@@ -827,7 +867,7 @@ export namespace Manifold {
         /**
          * Cross sections
          */
-        crossSections: T[];
+        crossSections!: T[];
     }
     export class ExtrudeDto<T> {
         constructor(crossSection?: T) {
@@ -836,7 +876,7 @@ export namespace Manifold {
         /**
          * Extrude cross section shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * Height of the extrusion
          * @default 1
@@ -894,7 +934,7 @@ export namespace Manifold {
         /**
          * Revolve cross section shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * Extrude cross section shape
          * @default 360
@@ -902,7 +942,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        revolveDegrees: number;
+        revolveDegrees: number = 360;
         /**
          * Default manifold library will adjust profile when generating revolved shape. We prefer it to be matching the profile by default. Set to false to use default manifold library behavior.
          * @default true
@@ -928,7 +968,7 @@ export namespace Manifold {
         /**
          * Revolve cross section shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * Positive deltas will cause the expansion of outlining contours
          * to expand, and retraction of inner (hole) contours. Negative deltas will
@@ -938,7 +978,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        delta: number;
+        delta: number = 1;
         /**
          * The join type specifying the treatment of contour joins
          * (corners).
@@ -979,7 +1019,7 @@ export namespace Manifold {
         /**
          * Revolve cross section shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * Extrude cross section shape
          * @default 1e-6
@@ -997,7 +1037,7 @@ export namespace Manifold {
         /**
          * Polygons to compose
          */
-        polygons: T;
+        polygons!: T;
     }
     export class MirrorCrossSectionDto<T> {
         constructor(crossSection?: T, normal?: Base.Vector2) {
@@ -1007,7 +1047,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default [1,0]
@@ -1022,7 +1062,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default [2,2]
@@ -1037,12 +1077,12 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * The translation vector
          * @default undefined
          */
-        vector: Base.Vector2;
+        vector!: Base.Vector2;
     }
     export class RotateCrossSectionDto<T> {
         constructor(crossSection?: T, degrees?: number) {
@@ -1052,7 +1092,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * The rotation vector in eulers
          * @default 45
@@ -1060,7 +1100,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        degrees: number;
+        degrees: number = 45;
     }
     export class ScaleCrossSectionDto<T> {
         constructor(crossSection?: T, factor?: number) {
@@ -1070,7 +1110,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default 2
@@ -1086,7 +1126,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * The translation X axis
          * @default 0
@@ -1113,12 +1153,12 @@ export namespace Manifold {
         /**
          * Cross section
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * The transform matrix to apply
          * @default undefined
          */
-        transform: Base.TransformMatrix3x3;
+        transform!: Base.TransformMatrix3x3;
     }
     export class CrossSectionWarpDto<T> {
         constructor(crossSection?: T, warpFunc?: (vert: Base.Vector2) => void) {
@@ -1128,12 +1168,12 @@ export namespace Manifold {
         /**
          * Cross section
          */
-        crossSection: T;
+        crossSection!: T;
         /**
          * A function that modifies a given vertex position
          * @default undefined
          */
-        warpFunc: (vert: Base.Vector2) => void;
+        warpFunc!: (vert: Base.Vector2) => void;
     }
     export class MirrorDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3) {
@@ -1143,7 +1183,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default [1,0,0]
@@ -1158,7 +1198,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default [2,2,2]
@@ -1173,12 +1213,12 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The translation vector
          * @default undefined
          */
-        vector: Base.Vector3;
+        vector!: Base.Vector3;
     }
 
     export class TranslateByVectorsDto<T> {
@@ -1189,12 +1229,12 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The translation vector
          * @default undefined
          */
-        vectors: Base.Vector3[];
+        vectors!: Base.Vector3[];
     }
     export class RotateDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3) {
@@ -1204,12 +1244,12 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The rotation vector in eulers
          * @default undefined
          */
-        vector: Base.Vector3;
+        vector!: Base.Vector3;
     }
     export class RotateXYZDto<T> {
         constructor(manifold?: T, x?: number, y?: number, z?: number) {
@@ -1221,7 +1261,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The rotation vector in eulers on X axis
          * @default 0
@@ -1255,7 +1295,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default 2
@@ -1272,7 +1312,7 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The translation X axis
          * @default 0
@@ -1306,12 +1346,12 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The transform matrix to apply
          * @default undefined
          */
-        transform: Base.TransformMatrix;
+        transform!: Base.TransformMatrix;
     }
     export class TransformsDto<T> {
         constructor(manifold?: T, transforms?: Base.TransformMatrixes) {
@@ -1321,12 +1361,12 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The transform matrixes to apply
          * @default undefined
          */
-        transforms: Base.TransformMatrixes;
+        transforms!: Base.TransformMatrixes;
     }
     export class ManifoldWarpDto<T> {
         constructor(manifold?: T, warpFunc?: (vert: Base.Vector3) => void) {
@@ -1336,12 +1376,12 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * A function that modifies a given vertex position
          * @default undefined
          */
-        warpFunc: (vert: Base.Vector3) => void;
+        warpFunc!: (vert: Base.Vector3) => void;
     }
     export class TwoCrossSectionsDto<T> {
         constructor(crossSection1?: T, crossSection2?: T) {
@@ -1351,11 +1391,11 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        crossSection1: T;
+        crossSection1!: T;
         /**
          * Manifold shape
          */
-        crossSection2: T;
+        crossSection2!: T;
     }
     export class TwoManifoldsDto<T> {
         constructor(manifold1?: T, manifold2?: T) {
@@ -1365,11 +1405,11 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold1: T;
+        manifold1!: T;
         /**
          * Manifold shape
          */
-        manifold2: T;
+        manifold2!: T;
     }
     export class SplitManifoldsDto<T> {
         constructor(manifoldToSplit?: T, manifoldCutter?: T) {
@@ -1379,11 +1419,11 @@ export namespace Manifold {
         /**
          * Manifold that will be split
          */
-        manifoldToSplit: T;
+        manifoldToSplit!: T;
         /**
          * Manifold cutter
          */
-        manifoldCutter: T;
+        manifoldCutter!: T;
     }
     export class TrimByPlaneDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number) {
@@ -1394,7 +1434,7 @@ export namespace Manifold {
         /**
          * Manifold that will be trimmed
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default [1,0,0]
@@ -1418,7 +1458,7 @@ export namespace Manifold {
         /**
          * Manifold that will be split
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default [1,0,0]
@@ -1442,7 +1482,7 @@ export namespace Manifold {
         /**
          * Manifold that will be split
          */
-        manifold: T;
+        manifold!: T;
         /**
          * The normal vector of the plane to be mirrored over
          * @default [1,0,0]
@@ -1461,7 +1501,7 @@ export namespace Manifold {
         /**
          * Manifolds
          */
-        manifolds: T[];
+        manifolds!: T[];
     }
 
     export class ManifoldToMeshDto<T> {
@@ -1472,11 +1512,11 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifold: T;
+        manifold!: T;
         /**
          * Optional normal index
          */
-        normalIdx?: number;
+        normalIdx?: number | undefined;
     }
     export class ManifoldsToMeshesDto<T> {
         constructor(manifolds?: T[], normalIdx?: number[]) {
@@ -1486,11 +1526,11 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifolds: T[];
+        manifolds!: T[];
         /**
          * Optional normal indexes
          */
-        normalIdx?: number[];
+        normalIdx?: number[] | undefined;
     }
     export class DecomposeManifoldOrCrossSectionDto<T> {
         constructor(manifoldOrCrossSection?: T, normalIdx?: number) {
@@ -1500,11 +1540,11 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifoldOrCrossSection: T;
+        manifoldOrCrossSection!: T;
         /**
          * Optional normal index
          */
-        normalIdx?: number;
+        normalIdx?: number | undefined;
     }
     export class ManifoldOrCrossSectionDto<T> {
         constructor(manifoldOrCrossSection?: T) {
@@ -1513,7 +1553,7 @@ export namespace Manifold {
         /**
          * Manifold or cross section
          */
-        manifoldOrCrossSection: T;
+        manifoldOrCrossSection!: T;
     }
     export class ManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[]) {
@@ -1522,7 +1562,7 @@ export namespace Manifold {
         /**
          * Manifolds or cross sections
          */
-        manifoldsOrCrossSections: T[];
+        manifoldsOrCrossSections!: T[];
     }
     export class DecomposeManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]) {
@@ -1532,10 +1572,10 @@ export namespace Manifold {
         /**
          * Manifold shape
          */
-        manifoldsOrCrossSections: T[];
+        manifoldsOrCrossSections!: T[];
         /**
          * Optional normal indexes
          */
-        normalIdx?: number[];
+        normalIdx?: number[] | undefined;
     }
 }

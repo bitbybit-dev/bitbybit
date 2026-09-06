@@ -243,9 +243,9 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (result) {
         return {
-            r: parseInt(result[1], 16) / 255,
-            g: parseInt(result[2], 16) / 255,
-            b: parseInt(result[3], 16) / 255
+            r: parseInt(result[1]!, 16) / 255,
+            g: parseInt(result[2]!, 16) / 255,
+            b: parseInt(result[3]!, 16) / 255
         };
     }
     return { r: 0.1, g: 0.1, b: 0.1 };
@@ -403,14 +403,14 @@ function createOrbitCameraInstance(entity: pc.Entity, config: OrbitCameraConfig)
 
     const buildAabb = (entityToBuild: pc.Entity | pc.GraphNode, modelsAdded: number): number => {
         let count = modelsAdded;
-        if (entityToBuild instanceof pc.Entity && entityToBuild.model) {
+        if (entityToBuild instanceof pc.Entity && entityToBuild.model && entityToBuild.model.meshInstances) {
             const mi = entityToBuild.model.meshInstances;
             for (let i = 0; i < mi.length; i++) {
-                if (mi[i].visible) {
+                if (mi[i]!.visible) {
                     if (count === 0) {
-                        state._modelsAabb.copy(mi[i].aabb);
+                        state._modelsAabb.copy(mi[i]!.aabb);
                     } else {
-                        state._modelsAabb.add(mi[i].aabb);
+                        state._modelsAabb.add(mi[i]!.aabb);
                     }
                     count += 1;
                 }
@@ -419,7 +419,7 @@ function createOrbitCameraInstance(entity: pc.Entity, config: OrbitCameraConfig)
 
         const children = entityToBuild.children;
         for (let i = 0; i < children.length; i++) {
-            count = buildAabb(children[i], count);
+            count = buildAabb(children[i]!, count);
         }
 
         return count;
@@ -661,10 +661,10 @@ function createTouchInput(
     const onTouchStartEndCancel = (event: pc.TouchEvent): void => {
         const touches = event.touches;
         if (touches.length === 1) {
-            lastTouchPoint.set(touches[0].x, touches[0].y);
+            lastTouchPoint.set(touches[0]!.x, touches[0]!.y);
         } else if (touches.length === 2) {
-            lastPinchDistance = getPinchDistance(touches[0], touches[1]);
-            calcMidPoint(touches[0], touches[1], lastPinchMidPoint);
+            lastPinchDistance = getPinchDistance(touches[0]!, touches[1]!);
+            calcMidPoint(touches[0]!, touches[1]!, lastPinchMidPoint);
         }
     };
 
@@ -672,18 +672,18 @@ function createTouchInput(
         const touches = event.touches;
 
         if (touches.length === 1) {
-            const touchPoint = touches[0];
+            const touchPoint = touches[0]!;
             orbitCamera.pitch += (touchPoint.y - lastTouchPoint.y) * options.orbitSensitivity;
             orbitCamera.yaw -= (touchPoint.x - lastTouchPoint.x) * options.orbitSensitivity;
             lastTouchPoint.set(touchPoint.x, touchPoint.y);
         } else if (touches.length === 2) {
-            const currentPinchDistance = getPinchDistance(touches[0], touches[1]);
+            const currentPinchDistance = getPinchDistance(touches[0]!, touches[1]!);
             const diffInPinchDistance = currentPinchDistance - lastPinchDistance;
             lastPinchDistance = currentPinchDistance;
 
             orbitCamera.distance += (diffInPinchDistance * options.distanceSensitivity * 0.1) * (orbitCamera.distance * 0.1);
 
-            calcMidPoint(touches[0], touches[1], pinchMidPoint);
+            calcMidPoint(touches[0]!, touches[1]!, pinchMidPoint);
             pan(pinchMidPoint);
             lastPinchMidPoint.copy(pinchMidPoint);
         }

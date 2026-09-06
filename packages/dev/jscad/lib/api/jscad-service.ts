@@ -15,6 +15,10 @@ import * as JSCAD from "@jscad/modeling";
 
 
 // Worker make an instance of this class itself
+/**
+ * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
+ * Thanks JSCAD community for developing this kernel
+ */
 export class Jscad {
 
     private jscad: typeof JSCAD;
@@ -49,6 +53,14 @@ export class Jscad {
         this.jscad = jscad;
     }
 
+    /**
+     * Converts the Jscad mesh to polygon points representing triangles of the mesh.
+     * @param inputs Jscad mesh
+     * @returns polygon points
+     * @group conversions
+     * @shortname to polygon points
+     * @drawable false
+     */
     toPolygonPoints(inputs: Inputs.JSCAD.MeshDto): Base.Mesh3 {
 
         const meshData = this.shapeToMesh({ mesh: inputs.mesh });
@@ -80,9 +92,9 @@ export class Jscad {
 
         // --- Triangle Reconstruction ---
         for (let i = 0; i < indices.length; i += 3) {
-            const index1 = indices[i];
-            const index2 = indices[i + 1];
-            const index3 = indices[i + 2];
+            const index1 = indices[i]!;
+            const index2 = indices[i + 1]!;
+            const index3 = indices[i + 2]!;
 
             if (index1 >= numVertices || index2 >= numVertices || index3 >= numVertices ||
                 index1 < 0 || index2 < 0 || index3 < 0) {
@@ -94,21 +106,21 @@ export class Jscad {
             const offset2 = index2 * 3;
             const offset3 = index3 * 3;
 
-            const point1: Base.Point3 = [positions[offset1], positions[offset1 + 1], positions[offset1 + 2]];
-            const point2: Base.Point3 = [positions[offset2], positions[offset2 + 1], positions[offset2 + 2]];
-            const point3: Base.Point3 = [positions[offset3], positions[offset3 + 1], positions[offset3 + 2]];
+            const point1: Base.Point3 = [positions[offset1]!, positions[offset1 + 1]!, positions[offset1 + 2]!];
+            const point2: Base.Point3 = [positions[offset2]!, positions[offset2 + 1]!, positions[offset2 + 2]!];
+            const point3: Base.Point3 = [positions[offset3]!, positions[offset3 + 1]!, positions[offset3 + 2]!];
 
             // We must bake the transformations as JSCAD uses those extensively
             const transformation = inputs.mesh.transforms;
             let transformedPoints = [point1, point2, point3];
             if (this.getArrayDepth(transformation) === 2) {
-                transformation.forEach(transform => {
+                transformation.forEach((transform: Base.TransformMatrix) => {
                     transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [transform] });
                 });
             }
             else if (this.getArrayDepth(transformation) === 3) {
-                transformation.forEach(transforms => {
-                    transforms.forEach(mat => {
+                transformation.forEach((transforms: Base.TransformMatrixes) => {
+                    transforms.forEach((mat: Base.TransformMatrix) => {
                         transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [mat] });
                     });
                 });
@@ -147,14 +159,14 @@ export class Jscad {
             }
         }
 
-        const positions = [];
-        const normals = [];
-        const indices = [];
+        const positions: number[] = [];
+        const normals: number[] = [];
+        const indices: number[] = [];
         let countIndices = 0;
 
         for (const polygon of polygons) {
             if (polygon.vertices.length === 3) {
-                polygon.vertices.forEach(vert => {
+                polygon.vertices.forEach((vert: Base.Point3) => {
                     positions.push(vert[0], vert[1], vert[2]);
                     indices.push(countIndices);
                     countIndices++;
@@ -171,7 +183,7 @@ export class Jscad {
                             reversedVertices[i + 2],
                         ]);
                 }
-                triangles.forEach((triangle, index) => {
+                triangles.forEach((triangle, _index) => {
                     triangle.forEach(vert => {
                         positions.push(vert[0], vert[1], vert[2]);
                         indices.push(countIndices);
@@ -186,24 +198,40 @@ export class Jscad {
         };
     }
 
-    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): any {
+    /**
+     * Transforms the Jscad solid meshes with a given list of transformations.
+     * @param inputs Solids with the transformation matrixes
+     * @returns Solids with a transformation
+     * @group transforms
+     * @shortname transform solids
+     * @drawable true
+     */
+    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Inputs.JSCAD.JSCADEntity[] {
         const solidsToTransform = inputs.meshes;
         return solidsToTransform.map(mesh => {
             return this.transformSolid({ mesh, transformation: inputs.transformation });
         });
     }
 
-    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): any {
+    /**
+     * Transforms the Jscad solid mesh with a given list of transformations.
+     * @param inputs Solid with the transformation matrixes
+     * @returns Solid with a transformation
+     * @group transforms
+     * @shortname transform solid
+     * @drawable true
+     */
+    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Inputs.JSCAD.JSCADEntity {
         const transformation = inputs.transformation;
         let transformedMesh = this.jscad.geometries.geom3.clone(inputs.mesh);
         if (this.getArrayDepth(transformation) === 2) {
-            transformation.forEach(transform => {
+            transformation.forEach((transform: Base.TransformMatrix) => {
                 transformedMesh = this.jscad.transforms.transform(transform, transformedMesh);
             });
         }
         else if (this.getArrayDepth(transformation) === 3) {
-            transformation.forEach(transforms => {
-                transforms.forEach(mat => {
+            (transformation as unknown as Base.TransformMatrixes[]).forEach((transforms) => {
+                transforms.forEach((mat: Base.TransformMatrix) => {
                     transformedMesh = this.jscad.transforms.transform(mat as any, transformedMesh);
                 });
             });
@@ -214,6 +242,12 @@ export class Jscad {
         return transformedMesh;
     }
 
+    /**
+     * Downloads the binary STL file from a 3D solid
+     * @param inputs 3D Solid
+     * @group io
+     * @shortname solid to stl
+     */
     downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): { blob: Blob } {
         const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
             inputs.mesh
@@ -222,6 +256,25 @@ export class Jscad {
         return { blob: madeBlob };
     }
 
+    /**
+     * Downloads the binary STL file from a 3D solids
+     * @param inputs 3D Solid
+     * @group io
+     * @shortname solids to stl
+     */
+    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): { blob: Blob } {
+        const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
+            ...inputs.meshes);
+        const madeBlob = new Blob(rawData, { type: "application/sla" });
+        return { blob: madeBlob };
+    }
+
+    /**
+     * Downloads the dxf file from jscad geometry. Supports paths and meshes in array.
+     * @param inputs 3D geometry
+     * @group io
+     * @shortname geometry to dxf
+     */
     downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const options = inputs.options ? inputs.options : {};
         const rawData = (this.jscad as any).DXFSERIALIZER.serialize(options,
@@ -231,6 +284,12 @@ export class Jscad {
         return { blob: madeBlob };
     }
 
+    /**
+     * Downloads the 3MF file from jscad geometry.
+     * @param inputs 3D geometry
+     * @group io
+     * @shortname geometry to 3mf
+     */
     downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const options = inputs.options ? inputs.options : {};
         const rawData = (this.jscad as any).THREEMFSERIALIZER.serialize(options,
@@ -240,14 +299,7 @@ export class Jscad {
         return { blob: madeBlob };
     }
 
-    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): { blob: Blob } {
-        const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
-            ...inputs.meshes);
-        const madeBlob = new Blob(rawData, { type: "application/sla" });
-        return { blob: madeBlob };
-    }
-
-    private getArrayDepth = (value): number => {
+    private getArrayDepth = (value: unknown): number => {
         return Array.isArray(value) ?
             1 + Math.max(...value.map(this.getArrayDepth)) :
             0;

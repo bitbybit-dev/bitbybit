@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Solids",
-        "description": "Solids are three-dimensional shapes that have a definite volume and shape. These tutorials will help you understand how to create and manipulate solid shapes in your 3D models.",
+        "description": "Solids are the fully enclosed, watertight shapes at the top of the OCCT hierarchy, and the only ones that can be reliably 3D printed or handed to a manufacturer. A solid has a defined inside and outside, which is what makes boolean operations, volume calculations and wall thickness meaningful. These pages cover the solid primitives - boxes, spheres, cylinders, cones - creating solids from closed shells, and measuring properties such as volume and centre of mass. They also cover the checks that tell you whether a shape is genuinely a valid solid before you export it.",
         "slug": "/code/common/occt/shapes/solids"
     }
 }

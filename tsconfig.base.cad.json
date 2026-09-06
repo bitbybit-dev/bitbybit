@@ -1,0 +1,39 @@
+{
+    // The compiler options every published CAD package shares, the whole strict set included. Each
+    // package's tsconfig.json (the editor and test view) and tsconfig.bitbybit.json (what build-p
+    // compiles) extends this and keeps only what differs there: outDir, paths into the sibling dists,
+    // exclusions, and for the occt NodeNext build its module settings. The strict flags arrived one
+    // package at a time, held by a per-package baseline until each reached zero; when the last package
+    // was through, the flags moved here from the leaves with a zero-change proof (`tsc --showConfig`
+    // compared before and after for every config), so the packages compile exactly as they did.
+    //
+    // `include`, `exclude` and `files` are replaced by a leaf rather than merged, and relative paths
+    // resolve against the defining file, so those stay in the leaves. This file is self-contained on
+    // purpose: the repository must build from a bare clone with nothing above it.
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "es2020",
+        "moduleResolution": "node",
+        "lib": ["es2020", "dom"],
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true,
+        "useUnknownInCatchVariables": true,
+        "strictFunctionTypes": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": false,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "sourceMap": false,
+        "skipLibCheck": true
+    }
+}

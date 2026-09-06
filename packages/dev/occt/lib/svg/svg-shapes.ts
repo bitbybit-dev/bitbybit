@@ -10,7 +10,7 @@ import { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
 type Attrs = { [k: string]: string };
 
 const num = (attrs: Attrs, name: string, def = 0): number => {
-    const v = parseFloat(attrs[name]);
+    const v = parseFloat(attrs[name]!);
     return Number.isNaN(v) ? def : v;
 };
 
@@ -34,15 +34,15 @@ function parsePoints(value: string | undefined): Base.Point2[] {
     if (!value) { return []; }
     const nums = value.split(/[\s,]+/).map(parseFloat).filter((x) => !Number.isNaN(x));
     const pts: Base.Point2[] = [];
-    for (let i = 0; i + 1 < nums.length; i += 2) { pts.push([nums[i], nums[i + 1]]); }
+    for (let i = 0; i + 1 < nums.length; i += 2) { pts.push([nums[i]!, nums[i + 1]!]); }
     return pts;
 }
 
 function polySubpath(pts: Base.Point2[], closed: boolean): SvgSubpath[] {
     if (pts.length < 2) { return []; }
     const segments: SvgSegment[] = [];
-    for (let i = 1; i < pts.length; i++) { segments.push({ type: "line", to: pts[i] }); }
-    return [{ start: pts[0], segments, closed }];
+    for (let i = 1; i < pts.length; i++) { segments.push({ type: "line", to: pts[i]! }); }
+    return [{ start: pts[0]!, segments, closed }];
 }
 
 /** Rounded-rectangle subpath honoring SVG rx/ry corner rules. */
@@ -77,8 +77,8 @@ function rectSubpath(x: number, y: number, w: number, h: number, rxIn: number, r
 export function shapeToSubpaths(tag: string, attrs: Attrs): SvgSubpath[] {
     switch (tag) {
         case "rect": {
-            const hasRx = attrs.rx !== undefined;
-            const hasRy = attrs.ry !== undefined;
+            const hasRx = attrs["rx"] !== undefined;
+            const hasRy = attrs["ry"] !== undefined;
             const rx = hasRx ? num(attrs, "rx") : (hasRy ? num(attrs, "ry") : 0);
             const ry = hasRy ? num(attrs, "ry") : (hasRx ? num(attrs, "rx") : 0);
             return rectSubpath(num(attrs, "x"), num(attrs, "y"), num(attrs, "width"), num(attrs, "height"), rx, ry);
@@ -95,9 +95,9 @@ export function shapeToSubpaths(tag: string, attrs: Attrs): SvgSubpath[] {
             return [{ start: [x1, y1], segments: [{ type: "line", to: [x2, y2] }], closed: false }];
         }
         case "polyline":
-            return polySubpath(parsePoints(attrs.points), false);
+            return polySubpath(parsePoints(attrs["points"]), false);
         case "polygon":
-            return polySubpath(parsePoints(attrs.points), true);
+            return polySubpath(parsePoints(attrs["points"]), true);
         default:
             return [];
     }

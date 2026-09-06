@@ -3,6 +3,9 @@ import { JscadInfo } from "./jscad-info";
 import { JscadStateEnum } from "./jscad-state.enum";
 import { JSCADWorkerMock } from "./jscad-worker-mock";
 
+type WorkerResponse = "jscad-initialised" | "busy" | { uid: string, result?: unknown, error?: string };
+type PendingCall = { promise?: Promise<unknown>, uid: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
+
 /**
  * This is a manager of JSCAD worker. Promisified API allows to deal with the worker in a more natural way
  * and because all those CAD algorithms are quite heavy this does make a lot of sense at this time.
@@ -11,9 +14,9 @@ import { JSCADWorkerMock } from "./jscad-worker-mock";
 export class JSCADWorkerManager {
 
     jscadWorkerState$: Subject<JscadInfo> = new Subject();
-    errorCallback: (err: string) => void;
-    private jscadWorker: Worker | JSCADWorkerMock;
-    private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
+    errorCallback!: (err: string) => void;
+    private jscadWorker!: Worker | JSCADWorkerMock;
+    private promisesMade: PendingCall[] = [];
 
     jscadWorkerAlreadyInitialised(): boolean {
         return this.jscadWorker ? true : false;
@@ -21,7 +24,7 @@ export class JSCADWorkerManager {
 
     setJscadWorker(worker: Worker | JSCADWorkerMock): void {
         this.jscadWorker = worker;
-        this.jscadWorker.onmessage = ({ data }) => {
+        this.jscadWorker.onmessage = ({ data }: { data: WorkerResponse }) => {
             if (data === "jscad-initialised") {
                 this.jscadWorkerState$.next({
                     state: JscadStateEnum.initialised,
@@ -34,12 +37,14 @@ export class JSCADWorkerManager {
             else {
                 const promise = this.promisesMade.find(made => made.uid === data.uid);
                 if (promise && data.result && !data.error) {
-                    promise.resolve(data.result);
+                    promise.resolve!(data.result);
                 } else if (data.error) {
                     if (this.errorCallback) {
                         this.errorCallback(data.error);
                     }
-                    promise.reject(data.error);
+                    if (promise) {
+                        promise.reject!(data.error);
+                    }
                 }
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
 
@@ -62,7 +67,7 @@ export class JSCADWorkerManager {
 
     genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any> {
         const uid = `call${Math.random()}${Date.now()}`;
-        const obj: { promise?: Promise<any>, uid: string, resolve?, reject?} = { uid };
+        const obj: PendingCall = { uid };
         const prom = new Promise((resolve, reject) => {
             obj.resolve = resolve;
             obj.reject = reject;

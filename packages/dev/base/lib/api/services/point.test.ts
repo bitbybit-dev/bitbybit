@@ -283,7 +283,7 @@ describe("Point unit tests", () => {
         describe("boundingBoxOfPoints", () => {
             it("should calculate the correct bounding box for multiple points", () => {
                 const points: Inputs.Base.Point3[] = [[1, 2, 3], [4, -1, 6], [0, 5, -2]];
-                const expectedBBox: Inputs.Base.BoundingBox = {
+                const expectedBBox: Required<Inputs.Base.BoundingBox> = {
                     min: [0, -1, -2],
                     max: [4, 5, 6],
                     center: [2, 2, 2],
@@ -291,7 +291,7 @@ describe("Point unit tests", () => {
                     height: 6,
                     length: 8,
                 };
-                const result = point.boundingBoxOfPoints({ points });
+                const result = point.boundingBoxOfPoints({ points }) as Required<Inputs.Base.BoundingBox>;
                 expect(result.min).toEqual(expectedBBox.min);
                 expect(result.max).toEqual(expectedBBox.max);
                 uh.expectPointCloseTo(result.center, expectedBBox.center);
@@ -302,7 +302,7 @@ describe("Point unit tests", () => {
 
             it("should return a zero-dimension bounding box for a single point", () => {
                 const points: Inputs.Base.Point3[] = [[5, 5, 5]];
-                const expectedBBox: Inputs.Base.BoundingBox = {
+                const expectedBBox: Required<Inputs.Base.BoundingBox> = {
                     min: [5, 5, 5],
                     max: [5, 5, 5],
                     center: [5, 5, 5],
@@ -502,8 +502,8 @@ describe("Point unit tests", () => {
                 const result = point.spiral({ phi: 1.618, widening: 9, radius: 1, factor: 1, numberPoints: 2 });
                 expect(result.length).toBe(2);
                 expect(result[0]).toEqual([0, 0, 0]);
-                expect(result[1][0]).not.toBeNaN();
-                expect(result[1][1]).not.toBeNaN();
+                expect(result[1]![0]).not.toBeNaN();
+                expect(result[1]![1]).not.toBeNaN();
             });
         });
 
@@ -524,9 +524,9 @@ describe("Point unit tests", () => {
                 const result = point.hexGrid({ radiusHexagon: 1, nrHexagonsX: 2, nrHexagonsY: 2, pointsOnGround: true, orientOnCenter: false });
                 expect(result.length).toBe(4);
                 result.forEach(p => expect(p[1]).toBe(0));
-                expect(result[0][2]).toBe(0);
+                expect(result[0]![2]).toBe(0);
                 if (result.length > 1) {
-                    expect(result[1][2]).not.toBe(0);
+                    expect(result[1]![2]).not.toBe(0);
                 }
             });
 
@@ -1313,8 +1313,8 @@ describe("Point unit tests", () => {
 
             // But the vertex positions should be different (rotated 90 degrees)
             // Check that the first hexagon vertices are different
-            const flatFirst = resultFlat.hexagons[0];
-            const pointyFirst = resultPointy.hexagons[0];
+            const flatFirst = resultFlat.hexagons[0]!;
+            const pointyFirst = resultPointy.hexagons[0]!;
 
             expect(resultFlat.hexagons).toEqual([
                 [
@@ -1389,8 +1389,8 @@ describe("Point unit tests", () => {
             // They should not be identical
             let allSame = true;
             for (let i = 0; i < 6; i++) {
-                if (Math.abs(flatFirst[i][0] - pointyFirst[i][0]) > 1e-6 ||
-                    Math.abs(flatFirst[i][1] - pointyFirst[i][1]) > 1e-6) {
+                if (Math.abs(flatFirst[i]![0] - pointyFirst[i]![0]) > 1e-6 ||
+                    Math.abs(flatFirst[i]![1] - pointyFirst[i]![1]) > 1e-6) {
                     allSame = false;
                     break;
                 }
@@ -1412,7 +1412,7 @@ describe("Point unit tests", () => {
             });
 
             expect(result.hexagons).toHaveLength(1);
-            const hex = result.hexagons[0];
+            const hex = result.hexagons[0]!;
             expect(hex).toHaveLength(6);
 
             // The hexagon should have vertices at regular intervals
@@ -1423,7 +1423,7 @@ describe("Point unit tests", () => {
             });
 
             // The center of the hexagon vertices should match the center
-            const center = result.centers[0];
+            const center = result.centers[0]!;
             let avgX = 0, avgY = 0;
             hex.forEach(v => {
                 avgX += v[0];
@@ -1444,15 +1444,15 @@ describe("Point unit tests", () => {
                 nrHexagonsInHeight: 1
             });
 
-            const hex = result.hexagons[0];
+            const hex = result.hexagons[0]!;
 
             // For each vertex, calculate the angle formed by the two adjacent edges
             // Due to non-uniform scaling, angles won't be exactly 120 degrees
             // but should be valid convex polygon angles (between 60 and 180 degrees)
             for (let i = 0; i < 6; i++) {
-                const prev = hex[(i + 5) % 6];
-                const curr = hex[i];
-                const next = hex[(i + 1) % 6];
+                const prev = hex[(i + 5) % 6]!;
+                const curr = hex[i]!;
+                const next = hex[(i + 1) % 6]!;
 
                 // Vectors from current to prev and next
                 const v1: Inputs.Base.Vector3 = [prev[0] - curr[0], prev[1] - curr[1], 0];
@@ -1818,15 +1818,15 @@ describe("Point unit tests", () => {
                 nrHexagonsInHeight: 1
             });
 
-            const hex = result.hexagons[0];
+            const hex = result.hexagons[0]!;
             expect(hex).toHaveLength(6);
 
             // Verify consistent winding order using signed area (shoelace formula)
             // A non-zero signed area confirms consistent winding direction
             let signedArea = 0;
             for (let i = 0; i < 6; i++) {
-                const curr = hex[i];
-                const next = hex[(i + 1) % 6];
+                const curr = hex[i]!;
+                const next = hex[(i + 1) % 6]!;
                 // Shoelace formula: sum of (x_i * y_{i+1} - x_{i+1} * y_i)
                 signedArea += curr[0] * next[1] - next[0] * curr[1];
             }
@@ -1849,7 +1849,7 @@ describe("Point unit tests", () => {
 
             // All centers have Z=0, so all vertices should have Z=0
             result.hexagons.forEach((hex, idx) => {
-                const centerZ = result.centers[idx][2];
+                const centerZ = result.centers[idx]![2];
                 hex.forEach(v => {
                     expect(v[2]).toBe(centerZ);
                 });
@@ -1864,8 +1864,8 @@ describe("Point unit tests", () => {
                 nrHexagonsInHeight: 1
             });
 
-            const hex = result.hexagons[0];
-            const center = result.centers[0];
+            const hex = result.hexagons[0]!;
+            const center = result.centers[0]!;
 
             // Calculate distance from center to each vertex
             const distances = hex.map(v => {
@@ -1894,12 +1894,12 @@ describe("Point unit tests", () => {
                 nrHexagonsInHeight: 1
             });
 
-            const hex = result.hexagons[0];
+            const hex = result.hexagons[0]!;
             const edgeLengths: number[] = [];
 
             for (let i = 0; i < 6; i++) {
-                const curr = hex[i];
-                const next = hex[(i + 1) % 6];
+                const curr = hex[i]!;
+                const next = hex[(i + 1) % 6]!;
                 const dx = next[0] - curr[0];
                 const dy = next[1] - curr[1];
                 edgeLengths.push(Math.sqrt(dx * dx + dy * dy));
@@ -1923,8 +1923,8 @@ describe("Point unit tests", () => {
                 nrHexagonsInHeight: 1
             });
 
-            const hex = result.hexagons[0];
-            const center = result.centers[0];
+            const hex = result.hexagons[0]!;
+            const center = result.centers[0]!;
 
             // Calculate angles from center to each vertex
             const angles = hex.map(v => {
@@ -1938,7 +1938,7 @@ describe("Point unit tests", () => {
 
             // The angles should be spaced roughly 60 degrees apart (allowing for scaling distortion)
             for (let i = 0; i < 5; i++) {
-                const diff = sortedAngles[i + 1] - sortedAngles[i];
+                const diff = sortedAngles[i + 1]! - sortedAngles[i]!;
                 expect(diff).toBeGreaterThan(30); // At least 30 degrees apart
                 expect(diff).toBeLessThan(90); // No more than 90 degrees apart
             }

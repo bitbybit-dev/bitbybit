@@ -1,6 +1,7 @@
 ---
 slug: introducing-bitbybit-runner
 title: "INTRODUCING BITBYBIT-RUNNER.JS"
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/introducing-bitbybit-runner/introducing-bitbybit-runner.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Containment has failed! Run your Bitbybit.dev scripts wherever you are on the internet with the new BITBYBIT-RUNNER.JS."

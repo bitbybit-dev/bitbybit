@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
+ 
+ 
 import { PlayCanvasOrbitCamera } from "./orbit-camera";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
@@ -54,7 +54,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             pitchAngleMax: 90,
             pitchAngleMin: -90,
             inertiaFactor: 0.2,
-            focusEntity: null,
+            focusEntity: undefined,
             frameOnStart: true,
             pivotPoint: [0, 0, 0],
             distance: 10,
@@ -65,7 +65,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
         };
 
         it("should throw error if app is not initialized", () => {
-            mockContext.app = null;
+            mockContext.app = null as unknown as pc.AppBase;
             expect(() => orbitCamera.create(defaultInputs)).toThrow();
         });
 
@@ -188,7 +188,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -221,7 +221,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [1, 2, 3],
                 distance: 10,
@@ -250,7 +250,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -283,7 +283,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -317,7 +317,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -342,7 +342,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -368,7 +368,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -410,7 +410,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -439,7 +439,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -468,7 +468,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -478,7 +478,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             expect(mockApp.mouse.on).toHaveBeenCalledWith(pc.EVENT_MOUSEDOWN, expect.any(Function));
         });
@@ -491,7 +491,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -501,7 +501,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             expect(mockApp.mouse.on).toHaveBeenCalledWith(pc.EVENT_MOUSEUP, expect.any(Function));
         });
@@ -514,7 +514,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -524,7 +524,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             expect(mockApp.mouse.on).toHaveBeenCalledWith(pc.EVENT_MOUSEMOVE, expect.any(Function));
         });
@@ -537,7 +537,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -547,7 +547,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             expect(mockApp.mouse.on).toHaveBeenCalledWith(pc.EVENT_MOUSEWHEEL, expect.any(Function));
         });
@@ -560,7 +560,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -589,7 +589,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -599,7 +599,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             expect(mockApp.touch.on).toHaveBeenCalledWith("touchstart", expect.any(Function));
         });
@@ -612,7 +612,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -622,7 +622,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             expect(mockApp.touch.on).toHaveBeenCalledWith("touchend", expect.any(Function));
         });
@@ -635,7 +635,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -645,7 +645,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             expect(mockApp.touch.on).toHaveBeenCalledWith("touchcancel", expect.any(Function));
         });
@@ -658,7 +658,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -668,7 +668,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             expect(mockApp.touch.on).toHaveBeenCalledWith("touchmove", expect.any(Function));
         });
@@ -681,7 +681,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -710,7 +710,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -720,7 +720,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             // Get the touchstart handler
             const touchStartCall = mockApp.touch.on.mock.calls.find(
@@ -746,7 +746,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -756,7 +756,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             // Get the touchstart handler
             const touchStartCall = mockApp.touch.on.mock.calls.find(
@@ -783,7 +783,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -828,7 +828,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -888,7 +888,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -898,7 +898,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             const touchEndCall = mockApp.touch.on.mock.calls.find(
                 (call: any[]) => call[0] === "touchend"
@@ -917,7 +917,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -927,7 +927,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             const touchCancelCall = mockApp.touch.on.mock.calls.find(
                 (call: any[]) => call[0] === "touchcancel"
@@ -948,7 +948,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -958,7 +958,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             const mouseDownCall = mockApp.mouse.on.mock.calls.find(
                 (call: any[]) => call[0] === pc.EVENT_MOUSEDOWN
@@ -978,7 +978,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -988,7 +988,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             const mouseDownCall = mockApp.mouse.on.mock.calls.find(
                 (call: any[]) => call[0] === pc.EVENT_MOUSEDOWN
@@ -1008,7 +1008,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -1018,7 +1018,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             const mouseDownCall = mockApp.mouse.on.mock.calls.find(
                 (call: any[]) => call[0] === pc.EVENT_MOUSEDOWN
@@ -1038,7 +1038,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -1048,7 +1048,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distanceSensitivity: 0.15,
             };
 
-            const controller = orbitCamera.create(defaultInputs);
+            orbitCamera.create(defaultInputs);
             
             const mouseUpCall = mockApp.mouse.on.mock.calls.find(
                 (call: any[]) => call[0] === pc.EVENT_MOUSEUP
@@ -1068,7 +1068,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -1112,7 +1112,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -1160,7 +1160,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -1201,7 +1201,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,
@@ -1226,7 +1226,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 pitchAngleMax: 90,
                 pitchAngleMin: -90,
                 inertiaFactor: 0.2,
-                focusEntity: null,
+                focusEntity: undefined,
                 frameOnStart: true,
                 pivotPoint: [0, 0, 0],
                 distance: 10,

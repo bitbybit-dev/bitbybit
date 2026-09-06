@@ -13,7 +13,7 @@ import {
  */
 export interface InitBitByBitOptions extends WorkerOptions {
     /** Pre-created worker instances. If not provided, workers will be created from CDN. */
-    workers?: WorkerInstances;
+    workers?: WorkerInstances | undefined;
 }
 
 // Re-export types for convenience

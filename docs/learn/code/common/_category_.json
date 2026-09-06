@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Common Code Tutorials",
-        "description": "Learn how to use common code libraries and tools in Bitbybit, including our base algorithms, OCCT, Monaco, JSCAD geometry kernels and more.",
+        "description": "The core Bitbybit programming tutorials, covering the algorithms that work the same way in every editor and on every 3D engine. This is the material that carries across the whole platform: the base library of points, vectors, lines, lists, maths and text; the drawing layer that puts geometry on screen; and the OCCT kernel that does real solid modelling with booleans, fillets, lofts and STEP export. Every page shows the same idea in Rete, Blockly and TypeScript, so you can start in whichever editor suits you and move between them later without relearning the concepts.",
         "slug": "/code/common"
     }
 }

@@ -257,8 +257,8 @@ describe("OCCTAssemblyManager unit tests", () => {
             // Assert
             expect(structure.parts).toHaveLength(1);
             expect(structure.nodes).toHaveLength(1);
-            expect(structure.parts[0].id).toBe("box");
-            expect(structure.nodes[0].id).toBe("inst");
+            expect(structure.parts[0]!.id).toBe("box");
+            expect(structure.nodes[0]!.id).toBe("inst");
             // clearDocument defaults to undefined or false
             expect(structure.clearDocument).toBeFalsy();
 
@@ -305,7 +305,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Assert
             expect(structure.partUpdates).toHaveLength(1);
-            expect(structure.partUpdates![0].label).toBe("0:1:1:1");
+            expect(structure.partUpdates![0]!.label).toBe("0:1:1:1");
         });
 
         it("should set clearDocument flag correctly", () => {
@@ -450,9 +450,9 @@ describe("OCCTAssemblyManager unit tests", () => {
                 expect(subNode.isAssembly).toBe(true);
             }
             
-            // Verify instances exist - they might be at depth 1 or 2 depending on OCCT structure
-            const box1Node = hierarchy.nodes.find(n => n.name === "Box1");
-            const box2Node = hierarchy.nodes.find(n => n.name === "Box2");
+            // Instances might be at depth 1 or 2 depending on OCCT structure
+
+
             
             // Verify we have nodes at multiple depths (hierarchical structure)
             const depths = [...new Set(hierarchy.nodes.map(n => n.depth))];
@@ -666,7 +666,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             const parts = query.getDocumentParts({ document: document! });
-            const label = parts[0].label;
+            const label = parts[0]!.label;
 
             // Act
             const result = manager.setLabelColor({
@@ -872,9 +872,7 @@ describe("OCCTAssemblyManager unit tests", () => {
                 compress: false,
                 tryDownload: false
             });
-            // Either it's gzip compressed (starts with 0x1f 0x8b) or it's deflate compressed
-            // Just verify it's valid data
-            expect(stepZData.length).toBeGreaterThan(0);
+            expect(uncompressedData).not.toEqual(stepZData);
         });
     });
 
@@ -908,6 +906,8 @@ describe("OCCTAssemblyManager unit tests", () => {
                 meshAngle: 0.5,
                 mergeFaces: false,
                 forceUVExport: false,
+                internalVerticesMode: false,
+                controlSurfaceDeflection: false,
                 fileName: "test.glb",
                 tryDownload: false
             });
@@ -941,6 +941,8 @@ describe("OCCTAssemblyManager unit tests", () => {
                 meshAngle: 0.1,
                 mergeFaces: false,
                 forceUVExport: false,
+                internalVerticesMode: false,
+                controlSurfaceDeflection: false,
                 fileName: "fine.glb",
                 tryDownload: false
             });
@@ -952,6 +954,8 @@ describe("OCCTAssemblyManager unit tests", () => {
                 meshAngle: 1.0,
                 mergeFaces: false,
                 forceUVExport: false,
+                internalVerticesMode: false,
+                controlSurfaceDeflection: false,
                 fileName: "coarse.glb",
                 tryDownload: false
             });
@@ -1042,9 +1046,9 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(depths.length).toEqual(4); // 4 level
             
             // Verify named nodes that exist - OCCT may not expose all assembly nodes
-            const level0 = hierarchy.nodes.find(n => n.name === "Level0");
-            const level1 = hierarchy.nodes.find(n => n.name === "Level1");
-            const level2 = hierarchy.nodes.find(n => n.name === "Level2");
+
+
+
             const leaf = hierarchy.nodes.find(n => n.name === "LeafPart");
             
             // At minimum, verify leaf part or Cylinder exists in hierarchy
@@ -1178,7 +1182,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             // column-major translation [7, 8, 9]
             const matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 7, 8, 9, 1] as Inputs.Base.TransformMatrix;
             const inst = manager.createInstanceNode({ id: "i", partId: "p", name: "I", matrix });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             const document = manager.buildAssemblyDocument({ structure });
 
             const hierarchy = query.getAssemblyHierarchy({ document });
@@ -1196,7 +1200,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             const t1 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 0, 0, 1] as Inputs.Base.TransformMatrix;
             const t2 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 5, 0, 1] as Inputs.Base.TransformMatrix;
             const inst = manager.createInstanceNode({ id: "i", partId: "p", name: "I", matrix: [t1, t2] });
-            const structure = manager.combineStructure({ parts: [part], nodes: [inst] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             const document = manager.buildAssemblyDocument({ structure });
 
             const hierarchy = query.getAssemblyHierarchy({ document });

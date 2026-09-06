@@ -66,5 +66,34 @@ Returns a download URL for the requested output format (e.g. glb, step, stpz).
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/tasks/{taskId}/result/{format}`
+
+Returns a download URL for the requested output format (e.g. glb, step, stpz).
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `taskId` | path | string | yes | Task ID |
+| `format` | path | string | yes | Result format (e.g. glb, step, stpz, metadata, decomposed-mesh) |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Result download link |
+| `404` | Not found |
+| `409` | Task is not yet completed |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/tasks/{taskId}/result/{format}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

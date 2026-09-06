@@ -1,7 +1,7 @@
 import type { BitByBitBase, Inputs } from "@bitbybit-dev/threejs";
 import type { Scene } from "three";
-import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
-import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
+import { STLExporter } from "three/addons/exporters/STLExporter.js";
+import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
 
 export const downloadStep = async (
   bitbybit: BitByBitBase,
@@ -44,8 +44,8 @@ export const downloadGLB = (scene: Scene) => {
     var exporter = new GLTFExporter();
     exporter.parse(
       scene,
-      function (gltf: ArrayBuffer) {
-        var blob = new Blob([gltf], { type: "application/octet-stream" });
+      function (gltf: ArrayBuffer | { [key: string]: unknown }) {
+        var blob = new Blob([gltf instanceof ArrayBuffer ? gltf : JSON.stringify(gltf)], { type: "application/octet-stream" });
         var link = document.createElement("a");
         link.style.display = "none";
         document.body.appendChild(link);
@@ -53,7 +53,7 @@ export const downloadGLB = (scene: Scene) => {
         link.download = "Scene.glb";
         link.click();
       },
-      function (error: string) {
+      function (error: ErrorEvent) {
         console.error("An error happened", error);
       },
       { trs: false, onlyVisible: true, binary: true }

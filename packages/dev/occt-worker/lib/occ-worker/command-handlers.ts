@@ -59,7 +59,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
      * Resolves all shapes from cache and converts them to mesh data.
      */
     [ReservedFunctions.SHAPES_TO_MESHES]: (inputs, context): CommandResult => {
-        const shapesInput = inputs.shapes as unknown[];
+        const shapesInput = inputs["shapes"] as unknown[];
         if (!shapesInput || !Array.isArray(shapesInput) || shapesInput.length === 0) {
             throw new Error("No shapes detected");
         }
@@ -95,7 +95,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
      * Handles single shape deletion from cache.
      */
     [ReservedFunctions.DELETE_SHAPE]: (inputs, context): CommandResult => {
-        const shapeRef = inputs.shape as { hash: number | string };
+        const shapeRef = inputs["shape"] as { hash: number | string };
         context.cacheHelper.cleanCacheForHash(shapeRef.hash as string);
         return { handled: true, result: {} };
     },
@@ -104,8 +104,19 @@ export const CommandHandlers: Record<string, CommandHandler> = {
      * Handles multiple shapes deletion from cache.
      */
     [ReservedFunctions.DELETE_SHAPES]: (inputs, context): CommandResult => {
-        const shapesInput = inputs.shapes as Array<{ hash: number | string }>;
+        const shapesInput = inputs["shapes"] as Array<{ hash: number | string }>;
         shapesInput.forEach(shape => context.cacheHelper.cleanCacheForHash(shape.hash as string));
+        return { handled: true, result: {} };
+    },
+
+    /**
+     * Handles assembly document deletion from cache. A document handle lives in the same cache
+     * as shapes; releasing it here frees the OCCT object and forgets the reference, exactly as
+     * shape deletion does. Previously this was dispatched to a kernel method that does not exist.
+     */
+    [ReservedFunctions.DELETE_DOCUMENT]: (inputs, context): CommandResult => {
+        const documentRef = inputs["document"] as { hash: number | string };
+        context.cacheHelper.cleanCacheForHash(documentRef.hash as string);
         return { handled: true, result: {} };
     },
 
@@ -134,8 +145,9 @@ export const CommandHandlers: Record<string, CommandHandler> = {
      */
     [ReservedFunctions.ADD_OC]: (inputs, context): CommandResult => {
         if (context.openCascade?.plugins) {
+            const plugins = context.openCascade.plugins;
             Object.keys(inputs).forEach(key => {
-                context.openCascade.plugins.dependencies[key] = inputs[key];
+                plugins.dependencies[key] = inputs[key];
             });
         } else {
             Object.keys(inputs).forEach(key => {

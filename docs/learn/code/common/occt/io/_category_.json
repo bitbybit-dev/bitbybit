@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Inputs & Outputs",
-        "description": "Learn how to export and import various file formats, such as STEP, IGES, DXF & STL through OCCT kernel.",
+        "description": "Get geometry in and out of Bitbybit through OCCT's import and export formats. A configurator is only useful if the result leaves the browser in a form someone downstream can open: STEP for CAD, STL for 3D printing, DXF for laser cutting and CNC, GLTF for the web and for real-time viewers. These pages cover writing each format, the options that control tessellation quality and units, importing existing files back into a script, and the practical differences between exact boundary representation formats and the tessellated mesh formats used for rendering.",
         "slug": "/code/common/occt/io"
     }
 }

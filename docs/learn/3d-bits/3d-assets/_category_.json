@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "3D Assets",
-        "description": "Learn how to use and prepare various assets to make your product configurators pop.",
+        "description": "Prepare and manage the 3D assets behind a 3D Bits configurator. The model is the part customers actually judge, and it is also the part most likely to make a storefront feel slow, so getting the format, size and material setup right matters more than any other single choice. These pages cover exporting clean GLTF and GLB files, the size and polygon budgets a storefront can carry, how textures and materials survive the export, and what asset security and public access mean when your model is served from a shop customers can reach.",
         "slug": "/3d-bits/3d-assets"
     }
 }

@@ -22,7 +22,7 @@ Text in Bitbybit is simply a standard JavaScript string, like `"Hello, World!"`.
 
 ## Core Capabilities of the Text Class
 
-Here's a high-level look at what the `Text` class can do. For the exact input parameters (like DTOs) and detailed behavior, please refer to the [full Text API documentation](https://docs.bitbybit.dev/classes/Bit.TextBitByBit.html) or the GitHub source linked above.
+Here's a high-level look at what the `Text` class can do. For the exact input parameters (like DTOs) and detailed behavior, please refer to the [full Text API documentation](https://docs.bitbybit.dev/classes/Bit.TextBitByBit) or the GitHub source linked above.
 
 ### 1. Creating and Representing Text
 

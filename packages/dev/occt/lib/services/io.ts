@@ -1,4 +1,4 @@
-import { Handle_TDocStd_Document, IGESControl_Reader, BitbybitOcctModule, STEPControl_Reader, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { IGESControl_Reader, BitbybitOcctModule, STEPControl_Reader, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import * as Models from "../api/models";
@@ -12,6 +12,13 @@ export class OCCTIO {
     ) {
     }
 
+    /**
+     * Saves the step file and returns the text value
+     * @param inputs STEP filename and shape to be saved
+     * @group io
+     * @shortname save step and return
+     * @drawable false
+     */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<TopoDS_Shape>): string {
         const shapeToUse = inputs.shape;
         let adjustedShape;
@@ -69,6 +76,13 @@ export class OCCTIO {
         return result;
     }
 
+    /**
+     * Saves the stl file and returns
+     * @param inputs STL filename and shape to be saved
+     * @group io
+     * @shortname save stl return
+     * @drawable false
+     */
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string {
         const shapeToUse = inputs.shape;
 
@@ -210,14 +224,38 @@ export class OCCTIO {
         return stepShape;
     }
     
+    /**
+     * Creates DXF paths from an OCCT shape
+     * Important - shapes containing wires must lie on XZ plane (Y=0) for correct 2D DXF export.
+     * @param inputs Shape to convert to DXF paths
+     * @group dxf
+     * @shortname shape to dxf paths
+     * @drawable false
+     */
     shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>): IO.DxfPathDto[] {
         return this.och.dxfService.shapeToDxfPaths(inputs);
     }
 
+    /**
+     * Adds layer and color information to DXF paths
+     * Important - shapes containing wires must lie on XZ plane (Y=0) for correct 2D DXF export.
+     * @param inputs DXF paths, layer name, and color
+     * @group dxf
+     * @shortname dxf paths with layer
+     * @drawable false
+     */
     dxfPathsWithLayer(inputs: Inputs.OCCT.DxfPathsWithLayerDto): IO.DxfPathsPartDto {
         return this.och.dxfService.dxfPathsWithLayer(inputs);
     }
 
+    /**
+     * Assembles multiple path parts into a complete DXF file.
+     * Important - shapes containing wires must lie on XZ plane (Y=0) for correct 2D DXF export.
+     * @param inputs Multiple DXF paths parts
+     * @group dxf
+     * @shortname dxf create
+     * @drawable false
+     */
     dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): string {
         return this.och.dxfService.dxfCreate(inputs);
     }
@@ -233,11 +271,11 @@ export class OCCTIO {
      * 
      * The coordinate system is automatically converted from OCCT (Z-up) to glTF (Y-up).
      * 
-     * Note: File/Blob inputs must be converted to ArrayBuffer before calling this method.
-     * The worker layer handles this conversion automatically.
-     * 
-     * @param inputs - STEP file content and mesh precision settings. Accepts string, ArrayBuffer, or Uint8Array.
+     * @param inputs - STEP file content and mesh precision settings. Accepts File, Blob, string, ArrayBuffer, or Uint8Array.
      * @returns GLB binary data as Uint8Array (can be used directly with Three.js, Babylon.js, etc.)
+     * @group assembly
+     * @shortname step to gltf
+     * @drawable false
      */
     convertStepToGltf(inputs: Inputs.OCCT.ConvertStepToGltfDto): Uint8Array {
         try {
@@ -311,6 +349,25 @@ export class OCCTIO {
      * 
      * @param inputs - Advanced options including STEP data, mesh settings, and glTF export settings.
      * @returns GLB binary data as Uint8Array
+     * @group assembly
+     * @shortname step to gltf advanced
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * // Fast conversion - only colors, no names (for large files)
+     * const glbData = await occt.io.convertStepToGltfAdvanced({
+     *     stepData: stepContent,
+     *     readColors: true,
+     *     readNames: false,      // Skip name parsing for speed
+     *     readMaterials: true,
+     *     readLayers: false,
+     *     readProps: false,
+     *     meshDeflection: 0.1,
+     *     meshParallel: true,
+     *     mergeFaces: true
+     * });
+     * ```
      */
     convertStepToGltfAdvanced(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedDto): Uint8Array {
         try {
@@ -422,14 +479,16 @@ export class OCCTIO {
     }
 
     /**
-     * Convert a STEP file to glTF format (binary GLB) with explicit Draco
-     * geometry compression settings.
-     *
-     * Same conversion path as `convertStepToGltf` but exposes the Draco knobs
-     * supported by the underlying native function.
-     *
-     * @param inputs - STEP file content, mesh precision settings, and Draco knobs.
+     * Convert a STEP file to glTF format (binary GLB) with explicit Draco geometry
+     * compression settings.
+     * Same fast path as `convertStepToGltf` but exposes the Draco knobs of the
+     * underlying native function.
+     * @param inputs - STEP file content, mesh precision settings and Draco knobs.
+     *                 Accepts File, Blob, string, ArrayBuffer, or Uint8Array.
      * @returns GLB binary data as Uint8Array
+     * @group assembly
+     * @shortname step to gltf with draco
+     * @drawable false
      */
     convertStepToGltfWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfWithDracoDto): Uint8Array {
         try {
@@ -476,15 +535,19 @@ export class OCCTIO {
     }
 
     /**
-     * Convert a STEP file to glTF format with full control over all reading, meshing
-     * and writer options, plus explicit Draco geometry compression settings.
+     * Convert a STEP file to glTF format with full control over all reading,
+     * meshing and writer options, plus explicit Draco geometry compression
+     * settings.
      *
-     * Same conversion path as `convertStepToGltfAdvanced` but exposes the 8 Draco
+     * Same fast path as `convertStepToGltfAdvanced` but exposes the 8 Draco
      * knobs.
      *
      * @param inputs - Advanced options including STEP data, mesh settings, glTF
      *                 export settings and Draco knobs.
      * @returns GLB binary data as Uint8Array
+     * @group assembly
+     * @shortname step to gltf advanced with draco
+     * @drawable false
      */
     convertStepToGltfAdvancedWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto): Uint8Array {
         try {
@@ -556,19 +619,19 @@ export class OCCTIO {
      * Uses OCCT's native XCAFPrs_DocumentExplorer for efficient traversal.
      * Runs entirely in C++ for maximum performance.
      * 
-     * Note: File/Blob inputs must be converted to ArrayBuffer before calling this method.
-     * The worker layer handles this conversion automatically.
-     * 
      * Returns an object containing an array of nodes with:
      * - id: Unique path identifier for each node
      * - name: Part or assembly name
      * - isAssembly: Whether this is an assembly node (has children)
      * - visible: Visibility flag
-     * - colorRgba: Surface colorRgba (if set) with r, g, b, a components
+     * - colorRgba: Surface color (if set) with r, g, b, a components
      * - transform: 4x4 transformation matrix in column-major order (if not identity)
      * 
-     * @param inputs - STEP file content. Accepts string, ArrayBuffer, or Uint8Array.
+     * @param inputs - STEP file content. Accepts File, Blob, string, ArrayBuffer, or Uint8Array.
      * @returns Parsed assembly structure
+     * @group assembly
+     * @shortname parse step to json
+     * @drawable false
      */
     parseStepToJson(inputs: Inputs.OCCT.ParseStepAssemblyToJsonDto): Models.OCCT.AssemblyJsonResult {
         try {

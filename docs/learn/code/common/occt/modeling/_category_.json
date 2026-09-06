@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Common OCCT Modeling Techniques",
-        "description": "This category goes beyond basic operations and discusses some common challenges in parametric 3D modeling.",
+        "description": "Worked OCCT modelling techniques in Bitbybit, built end to end rather than shown one function at a time. Knowing what each operation does is not the same as knowing how to combine them, so these walkthroughs take a finished object and show the full chain: the profile wires, the boolean sequence, the fillets, and the parameters that make the result configurable. The sections cover hollow shapes and perforated panels, festive decorations built from repeating patterns, and parametric art. They are the best place to go once the individual OCCT pages make sense on their own.",
         "slug": "/code/common/occt/modeling"
     }
 }

@@ -66,5 +66,38 @@ Runs a single CAD operation by its fully-qualified identifier.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/cad/execute`
+
+Runs a single CAD operation by its fully-qualified identifier.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `operation` | string | yes | Fully-qualified CAD operation identifier (e.g. 'occt.shapes.solid.createBox', 'manifold.primitives.cube', 'jscad.booleans.union'). Supports OCCT, Manifold, JSCAD, and vector/math operations. |
+| `params` | object | no | Operation-specific parameters - varies by operation. See model definitions for available parameters. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Task accepted |
+| `400` | Validation error |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/cad/execute" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

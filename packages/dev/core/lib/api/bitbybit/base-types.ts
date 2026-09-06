@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Shared result and helper types used across the core API - the small structural types that are
+ * neither parameters nor kernel shapes, but the plain data passed between them.
+ */
 export namespace BaseTypes {
     /**
      * Interval represents an object that has two properties - min and max.
@@ -34,19 +38,19 @@ export namespace BaseTypes {
         /**
          * Point of intersection on the first curve
          */
-        point0: number[];
+        point0!: number[];
         /**
          * Point of intersection on the second curve
          */
-        point1: number[];
+        point1!: number[];
         /**
          * Parameter of intersection on the first curve
          */
-        u0: number;
+        u0!: number;
         /**
          * Parameter of intersection on the second curve
          */
-        u1: number;
+        u1!: number;
     }
 
     /**
@@ -56,19 +60,19 @@ export namespace BaseTypes {
         /**
          * Parameter of intersection on the curve
          */
-        u: number;
+        u!: number;
         /**
          * UV Parameters of intersection on the surface
          */
-        uv: UVDto;
+        uv!: UVDto;
         /**
          * Point of intersection on the curve
          */
-        curvePoint: number[];
+        curvePoint!: number[];
         /**
          * Point of intersection on the surface
          */
-        surfacePoint: number[];
+        surfacePoint!: number[];
     }
 
     /**
@@ -78,18 +82,18 @@ export namespace BaseTypes {
         /**
          * UV parameters of intersection on first surface
          */
-        uv0: UVDto;
+        uv0!: UVDto;
         /**
          * UV parameters of intersection on second surface
          */
-        uv1: UVDto;
+        uv1!: UVDto;
         /**
          * Point of intersection
          */
-        point: number[];
+        point!: number[];
         /**
          * Distance
          */
-        dist: number;
+        dist!: number;
     }
 }

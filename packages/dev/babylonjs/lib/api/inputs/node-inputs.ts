@@ -1,6 +1,10 @@
 import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for transform nodes: the invisible parents used to group and move several objects
+ * together, and the queries that walk a node hierarchy.
+ */
 export namespace BabylonNode {
 
     export class NodeDto {
@@ -10,7 +14,7 @@ export namespace BabylonNode {
         /**
          * Transformation node
          */
-        node: BABYLON.TransformNode;
+        node!: BABYLON.TransformNode;
     }
 
     export class NodeTranslationDto {
@@ -22,15 +26,15 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: BABYLON.TransformNode;
+        node!: BABYLON.TransformNode;
         /**
          * Direction vector expressed in [x, y, z] vector array
          */
-        direction: Base.Vector3;
+        direction!: Base.Vector3;
         /**
          * Distance to translate
          */
-        distance: number;
+        distance!: number;
     }
 
     export class NodeParentDto {
@@ -41,11 +45,11 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: BABYLON.TransformNode;
+        node!: BABYLON.TransformNode;
         /**
          * Parent node
          */
-        parentNode: BABYLON.TransformNode;
+        parentNode!: BABYLON.TransformNode;
     }
 
     export class NodeDirectionDto {
@@ -56,11 +60,11 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: BABYLON.TransformNode;
+        node!: BABYLON.TransformNode;
         /**
          * Direction vector expressed in [x, y, z] vector array
          */
-        direction: number[];
+        direction!: number[];
     }
 
     export class NodePositionDto {
@@ -71,11 +75,11 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: BABYLON.TransformNode;
+        node!: BABYLON.TransformNode;
         /**
          * Position vector expressed in [x, y, z] vector array
          */
-        position: Base.Point3;
+        position!: Base.Point3;
     }
 
     export class RotateNodeDto {
@@ -87,7 +91,7 @@ export namespace BabylonNode {
         /**
        * Transformation node
        */
-        node: BABYLON.TransformNode;
+        node!: BABYLON.TransformNode;
         /**
          * Rotate around the axis expressed in [x, y, z] vector array
          */
@@ -108,7 +112,7 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: BABYLON.TransformNode;
+        node!: BABYLON.TransformNode;
         /**
          * Position vector expressed in [x, y, z] vector array
          */
@@ -132,7 +136,7 @@ export namespace BabylonNode {
         /**
          * Optional parent node
          */
-        parent: BABYLON.TransformNode | null;
+        parent!: BABYLON.TransformNode | null;
         /**
          * Oirigin of the node
          */
@@ -154,7 +158,7 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: BABYLON.TransformNode;
+        node!: BABYLON.TransformNode;
         /**
          * Hex encoded color string for X axis
          */
@@ -184,7 +188,7 @@ export namespace BabylonNode {
         /**
          * Nodes that will be drawn
          */
-        nodes: BABYLON.TransformNode[];
+        nodes!: BABYLON.TransformNode[];
         /**
          * Hex encoded color string for X axis
          */

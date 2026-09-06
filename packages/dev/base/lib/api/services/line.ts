@@ -4,8 +4,8 @@ import { Point } from "./point";
 import { Vector } from "./vector";
 
 /**
- * Contains various methods for lines and segments. Line in bitbybit is a simple object that has start and end point properties.
- * { start: [ x, y, z ], end: [ x, y, z ] }
+ * Contains various methods for lines and segments. Line in bitbybit is a simple object that has start and
+ * end point properties. { start: [ x, y, z ], end: [ x, y, z ] }
  */
 export class Line {
 
@@ -77,8 +77,8 @@ export class Line {
         let transformedControlPoints = [inputs.line.start, inputs.line.end];
         transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
         return {
-            start: transformedControlPoints[0],
-            end: transformedControlPoints[1]
+            start: transformedControlPoints[0]!,
+            end: transformedControlPoints[1]!
         };
     }
 
@@ -93,12 +93,12 @@ export class Line {
      */
     transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Base.Line3[] {
         return inputs.lines.map((line, index) => {
-            const transformation = inputs.transformation[index];
+            const transformation = inputs.transformation[index]!;
             let transformedControlPoints = [line.start, line.end];
             transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
             return {
-                start: transformedControlPoints[0],
-                end: transformedControlPoints[1]
+                start: transformedControlPoints[0]!,
+                end: transformedControlPoints[1]!
             };
         });
     }
@@ -148,12 +148,12 @@ export class Line {
         // Calculate direction vector of line segment
         const point1 = inputs.line.start;
         const point2 = inputs.line.end;
-        const parameter = inputs.param;
+        const parameter = inputs.param ?? 0.5;
 
         const direction = [point2[0] - point1[0], point2[1] - point1[1], point2[2] - point1[2]];
 
         // Calculate point on line segment corresponding to parameter value
-        const point = [point1[0] + parameter * direction[0], point1[1] + parameter * direction[1], point1[2] + parameter * direction[2]] as Inputs.Base.Point3;
+        const point = [point1[0] + parameter * direction[0]!, point1[1] + parameter * direction[1]!, point1[2] + parameter * direction[2]!] as Inputs.Base.Point3;
         return point;
     }
 
@@ -169,8 +169,8 @@ export class Line {
     linesBetweenPoints(inputs: Inputs.Line.PointsLinesDto): Inputs.Base.Line3[] {
         const lines = [];
         for (let i = 1; i < inputs.points.length; i++) {
-            const previousPoint = inputs.points[i - 1];
-            const currentPoint = inputs.points[i];
+            const previousPoint = inputs.points[i - 1]!;
+            const currentPoint = inputs.points[i]!;
             lines.push({ start: previousPoint, end: currentPoint });
         }
         return lines;
@@ -188,7 +188,7 @@ export class Line {
      */
     linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Base.Line3[] {
         return inputs.startPoints
-            .map((s, index) => ({ start: s, end: inputs.endPoints[index] }))
+            .map((s, index) => ({ start: s, end: inputs.endPoints[index]! }))
             .filter(line => this.point.distance({ startPoint: line.start, endPoint: line.end }) !== 0);
     }
 
@@ -311,8 +311,8 @@ export class Line {
                     const vec_e2_p1 = this.vector.sub({ first: line2.end, second: p1 });
                     const t_e2 = this.vector.dot({ first: d1, second: vec_e2_p1 }) / safe_d1d1; // Param for e2
     
-                    const interval2_t = [Math.min(t_p2, t_e2), Math.max(t_p2, t_e2)];
-                    const interval1_t = [0, 1]; // Line1 segment parameter range
+                    const interval2_t: [number, number] = [Math.min(t_p2, t_e2), Math.max(t_p2, t_e2)];
+                    const interval1_t: [number, number] = [0, 1]; // Line1 segment parameter range
     
                     const overlap_start = Math.max(interval1_t[0], interval2_t[0]);
                     const overlap_end = Math.min(interval1_t[1], interval2_t[1]);

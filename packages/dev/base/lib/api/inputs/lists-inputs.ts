@@ -2,8 +2,16 @@
 
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for array handling: the list to act on plus the index, count, depth, comparison or
+ * grouping key an operation needs. Geometry calls take and return lists constantly, so these turn up
+ * between almost every pair of geometry operations.
+ */
 export namespace Lists {
 
+    /**
+     * Which end of a list to act on: the first item or the last.
+     */
     export enum firstLastEnum {
         first = "first",
         last = "last",
@@ -19,7 +27,7 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Index of the item in the list - 0 means first.
          * @default 0
@@ -32,7 +40,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class SubListDto<T> {
         constructor(list?: T[], indexStart?: number, indexEnd?: number, clone?: boolean) {
@@ -45,7 +53,7 @@ export namespace Lists {
          * The list to split into a sublist
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Index from which to start the sublist - 0 means first.
          * @default 0
@@ -66,7 +74,7 @@ export namespace Lists {
          * Tries to clone the data in the component, sometimes it may not be possible if structure is circular
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class ListCloneDto<T> {
         constructor(list?: T[], clone?: boolean) {
@@ -77,12 +85,12 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class RepeatInPatternDto<T> {
         constructor(list?: T[]) {
@@ -92,12 +100,12 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
         /**
          * The limit of the length of the list
          * @default 100
@@ -117,12 +125,12 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
         /**
          * If true, the list will be sorted in ascending order, otherwise in descending order
          * @default true
@@ -139,12 +147,12 @@ export namespace Lists {
          * The list to interrogate
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
         /**
          * If true, the list will be sorted in ascending order, otherwise in descending order
          * @default true
@@ -164,7 +172,7 @@ export namespace Lists {
          * The list
          * @default undefined
          */
-        list: T[];
+        list!: T[];
     }
     export class GroupListDto<T> {
         constructor(list?: T[], nrElements?: number, keepRemainder?: boolean) {
@@ -176,7 +184,7 @@ export namespace Lists {
          * The list of elements to group together
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The number of elements in each group
          * @default 2
@@ -200,7 +208,7 @@ export namespace Lists {
          * The item to multiply
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * Times to multiply
          * @default 10
@@ -208,7 +216,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        times: number;
+        times: number = 10;
     }
     export class AddItemAtIndexDto<T> {
         constructor(list?: T[], item?: T, index?: number, clone?: boolean) {
@@ -221,12 +229,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * The index to add the item at
          * @default 0
@@ -239,7 +247,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class AddItemAtIndexesDto<T> {
         constructor(list?: T[], item?: T, indexes?: number[], clone?: boolean) {
@@ -252,12 +260,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * The index to add the item at
          * @default [0]
@@ -267,7 +275,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
 
     export class AddItemsAtIndexesDto<T> {
@@ -281,12 +289,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        items: T[];
+        items!: T[];
         /**
          * The index to add the item at
          * @default [0]
@@ -296,7 +304,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveItemAtIndexDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean) {
@@ -308,7 +316,7 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The index to on which remove item
          * @default 0
@@ -321,7 +329,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveItemsAtIndexesDto<T> {
         constructor(list?: T[], indexes?: number[], clone?: boolean) {
@@ -333,17 +341,17 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The indexes that should be removed
          * @default undefined
          */
-        indexes: number[];
+        indexes!: number[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean) {
@@ -356,7 +364,7 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The nth item to remove
          * @default 2
@@ -377,7 +385,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class RandomThresholdDto<T> {
         constructor(list?: T[], threshold?: number, clone?: boolean) {
@@ -389,7 +397,7 @@ export namespace Lists {
         * The list from which item needs to be updated
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * Threshold for items
          * @default 0.5
@@ -402,7 +410,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveDuplicatesDto<T> {
         constructor(list?: T[], clone?: boolean) {
@@ -413,12 +421,12 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class RemoveDuplicatesToleranceDto<T> {
         constructor(list?: T[], clone?: boolean, tolerance?: number) {
@@ -430,7 +438,7 @@ export namespace Lists {
         * The list from which item needs to be removed
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The tolerance to apply
          * @default 1e-7
@@ -443,7 +451,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class GetByPatternDto<T> {
         constructor(list?: T[], pattern?: boolean[]) {
@@ -454,7 +462,7 @@ export namespace Lists {
         * The list from which we need to get an item
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The list of booleans to be used as a pattern (true means get, false means skip)
          * @default [true, true, false]
@@ -472,7 +480,7 @@ export namespace Lists {
         * The list from which we need to get an item
         * @default undefined
         */
-        list: T[];
+        list!: T[];
         /**
          * The nth item to get
          * @default 2
@@ -493,7 +501,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class GetLongestListLength<T> {
         constructor(lists?: T[]) {
@@ -503,7 +511,7 @@ export namespace Lists {
          * The list from which we need to get an item
          * @default undefined
          */
-        lists: T[];
+        lists!: T[];
     }
     export class MergeElementsOfLists<T> {
         constructor(lists?: T[], level?: number) {
@@ -514,7 +522,7 @@ export namespace Lists {
         * The list from which we need to get an item
         * @default undefined
         */
-        lists: T[];
+        lists!: T[];
         /**
          * The level on which to merge the elements. 0 means first level
          * @default 0
@@ -534,17 +542,17 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class AddItemFirstLastDto<T> {
         constructor(list?: T[], item?: T, position?: firstLastEnum, clone?: boolean) {
@@ -557,12 +565,12 @@ export namespace Lists {
          * The list to which item needs to be added
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to add
          * @default undefined
          */
-        item: T;
+        item!: T;
         /**
          * The option if the item needs to be added at the beginning or the end of the list
          * @default last
@@ -572,7 +580,7 @@ export namespace Lists {
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class ConcatenateDto<T> {
         constructor(lists?: T[][], clone?: boolean) {
@@ -583,12 +591,12 @@ export namespace Lists {
          * The lists to concatenate
          * @default undefined
          */
-        lists: T[][];
+        lists!: T[][];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
     export class IncludesDto<T> {
         constructor(list?: T[], item?: T) {
@@ -599,12 +607,12 @@ export namespace Lists {
          * The list to check
          * @default undefined
          */
-        list: T[];
+        list!: T[];
         /**
          * The item to look for
          * @default undefined
          */
-        item: T;
+        item!: T;
     }
     export class InterleaveDto<T> {
         constructor(lists?: T[][], clone?: boolean) {
@@ -615,11 +623,11 @@ export namespace Lists {
          * The lists to interleave
          * @default undefined
          */
-        lists: T[][];
+        lists!: T[][];
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true
          */
-        clone? = true;
+        clone?: boolean | undefined = true;
     }
 }

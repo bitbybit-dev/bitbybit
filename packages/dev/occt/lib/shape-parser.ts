@@ -2,10 +2,16 @@ import { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { Inputs, OCCTTransforms } from "./index";
 import * as Models from "./api/models";
 
+/**
+ * What a value looks like after ShapeParser.parse: every shape object in it has been replaced by
+ * the id it was registered under, everything else keeps its type.
+ */
+export type WithShapeIds<T> = T extends TopoDS_Shape ? string : T extends object ? { [K in keyof T]: WithShapeIds<T[K]> } : T;
+
 export class ShapeParser {
 
-    static parse(obj, partShapes: Models.OCCT.ShapeWithId<TopoDS_Shape>[], prefix: string) {
-        const stack = [obj];
+    static parse<T>(obj: T, partShapes: Models.OCCT.ShapeWithId<TopoDS_Shape>[], prefix: string): WithShapeIds<T> {
+        const stack: unknown[] = [obj];
         let index = 0;
         while (stack.length > 0) {
             const current = stack.pop();
@@ -21,21 +27,21 @@ export class ShapeParser {
                 const keys = Object.keys(current);
 
                 if (keys.includes("shapes")) {
-                    const shapes = current.shapes;
+                    const shapes = (current as { shapes?: unknown }).shapes;
 
                     if (typeof shapes === "object" && shapes !== null) {
                         for (const key in shapes) {
-                            const sh = shapes[key];
+                            const sh = (shapes as Record<string, unknown>)[key];
                             if (sh) {
-                                if (typeof shapes[key] !== "string") {
+                                if (typeof (shapes as Record<string, unknown>)[key] !== "string") {
                                     let id;
-                                    if (current.id) {
-                                        id = `${prefix}-${current.id}-${key}-${index}`;
+                                    if ((current as { id?: unknown }).id) {
+                                        id = `${prefix}-${(current as { id?: unknown }).id}-${key}-${index}`;
                                     } else {
                                         id = `${prefix}-${key}-${index}`;
                                     }
-                                    partShapes.push({ id, shape: sh });
-                                    shapes[key] = id;
+                                    partShapes.push({ id, shape: sh as TopoDS_Shape });
+                                    (shapes as Record<string, unknown>)[key] = id;
                                 }
                                 index++;
                             }
@@ -43,11 +49,11 @@ export class ShapeParser {
                     }
                 }
                 for (const key in current) {
-                    stack.push(current[key]); // Push object properties onto the stack
+                    stack.push((current as Record<string, unknown>)[key]); // Push object properties onto the stack
                 }
             }
         }
-        return obj;
+        return obj as unknown as WithShapeIds<T>;
     }
 
     static alignAndTranslateShapesWithChildren<T extends { 
@@ -77,9 +83,9 @@ export class ShapeParser {
         }
 
         Object.keys(partCloned).forEach(key => {
-            const sh = partCloned[key];
+            const sh = (partCloned as Record<string, unknown>)[key];
             if (sh && Array.isArray(sh)) {
-                partCloned[key] = sh.map((s) => {
+                (partCloned as Record<string, unknown>)[key] = sh.map((s) => {
                     if (s && typeof s === "object" && s !== null) {
                         if (s.shapes) {
                             const updatedShape = this.alignAndTranslateShapesWithChildren<T>(s, transforms, rotation, direction, center, scale);
@@ -93,8 +99,8 @@ export class ShapeParser {
                     }
                 });
             } else if (sh && typeof sh === "object" && sh !== null) {
-                if (sh.shapes) {
-                    partCloned[key] = this.alignAndTranslateShapesWithChildren<T>(sh, transforms, rotation, direction, center, scale);
+                if ((sh as { shapes?: unknown }).shapes) {
+                    (partCloned as Record<string, unknown>)[key] = this.alignAndTranslateShapesWithChildren<T>(sh as T, transforms, rotation, direction, center, scale);
                 }
             }
         });
@@ -102,11 +108,14 @@ export class ShapeParser {
     }
 
     static deleteAllShapes<T extends { shapes?: { [x: string]: TopoDS_Shape } }>(part: T) {
-        Object.keys(part.shapes).forEach(key => {
-            part.shapes[key].delete();
-        });
+        const shapes = part.shapes;
+        if (shapes) {
+            Object.keys(shapes).forEach(key => {
+                shapes[key]!.delete();
+            });
+        }
         Object.keys(part).forEach(key => {
-            const sh = part[key];
+            const sh = (part as Record<string, unknown>)[key];
             if (sh && Array.isArray(sh)) {
                 sh.forEach((s) => {
                     if (s && typeof s === "object" && s !== null) {
@@ -116,8 +125,8 @@ export class ShapeParser {
                     }
                 });
             } else if (sh && typeof sh === "object" && sh !== null) {
-                if (sh.shapes) {
-                    this.deleteAllShapes(sh);
+                if ((sh as { shapes?: unknown }).shapes) {
+                    this.deleteAllShapes(sh as T);
                 }
             }
         });
@@ -126,13 +135,13 @@ export class ShapeParser {
     static deepCopy<T extends { shapes?: { [x: string]: TopoDS_Shape } }>(part: T) {
         const clonedPart = { ...part, shapes: { ...part.shapes } };
         Object.keys(part).forEach(key => {
-            const sh = part[key];
+            const sh = (part as Record<string, unknown>)[key];
             if (sh && typeof sh === "object" && sh !== null) {
-                if (sh.shapes) {
-                    clonedPart[key] = this.deepCopy(sh);
+                if ((sh as { shapes?: unknown }).shapes) {
+                    (clonedPart as Record<string, unknown>)[key] = this.deepCopy(sh as T);
                 }
             } else if (sh && Array.isArray(sh)) {
-                clonedPart[key] = sh.map((s) => {
+                (clonedPart as Record<string, unknown>)[key] = sh.map((s) => {
                     if (s && typeof s === "object" && s !== null) {
                         if (s.shapes) {
                             return this.deepCopy(s);

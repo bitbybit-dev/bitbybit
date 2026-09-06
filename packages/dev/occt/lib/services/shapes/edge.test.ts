@@ -1,4 +1,4 @@
-import createBitbybitOcct, { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTGeom } from "../geom/geom";
@@ -141,7 +141,7 @@ describe("OCCT edge unit tests", () => {
 
     it("should not be able to get an edge if shape is not provided", async () => {
         expect(() =>
-            edge.getEdge({ shape: undefined, index: 0 })
+            edge.getEdge({ shape: undefined as unknown as TopoDS_Shape, index: 0 })
         ).toThrow("Edge can not be found for shape that is not provided or is of incorrect type");
     });
 
@@ -277,9 +277,9 @@ describe("OCCT edge unit tests", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: false, removeStartPoint: false });
         expect(points.length).toBe(11);
-        expect(points[0][0]).toBeCloseTo(points[10][0], closeToNr);
-        expect(points[0][1]).toBeCloseTo(points[10][1], closeToNr);
-        expect(points[0][2]).toBeCloseTo(points[10][2], closeToNr);
+        expect(points[0]![0]).toBeCloseTo(points[10]![0], closeToNr);
+        expect(points[0]![1]).toBeCloseTo(points[10]![1], closeToNr);
+        expect(points[0]![2]).toBeCloseTo(points[10]![2], closeToNr);
         e.delete();
     });
 
@@ -325,9 +325,9 @@ describe("OCCT edge unit tests", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: true, removeStartPoint: false });
         expect(points.length).toBe(10);
-        expect(points[0][0]).not.toBeCloseTo(points[9][0], closeToNr);
-        expect(points[0][1]).toBeCloseTo(points[9][1], closeToNr);
-        expect(points[0][2]).not.toBeCloseTo(points[9][2], closeToNr);
+        expect(points[0]![0]).not.toBeCloseTo(points[9]![0], closeToNr);
+        expect(points[0]![1]).toBeCloseTo(points[9]![1], closeToNr);
+        expect(points[0]![2]).not.toBeCloseTo(points[9]![2], closeToNr);
         e.delete();
     });
 
@@ -335,9 +335,9 @@ describe("OCCT edge unit tests", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: false, removeStartPoint: false });
         expect(points.length).toBe(11);
-        expect(points[0][0]).toBeCloseTo(points[10][0], closeToNr);
-        expect(points[0][1]).toBeCloseTo(points[10][1], closeToNr);
-        expect(points[0][2]).toBeCloseTo(points[10][2], closeToNr);
+        expect(points[0]![0]).toBeCloseTo(points[10]![0], closeToNr);
+        expect(points[0]![1]).toBeCloseTo(points[10]![1], closeToNr);
+        expect(points[0]![2]).toBeCloseTo(points[10]![2], closeToNr);
         e.delete();
     });
 
@@ -497,12 +497,12 @@ describe("OCCT edge unit tests", () => {
         const opt = new Inputs.OCCT.EdgesToPointsDto(circle);
         const points = edge.edgesToPoints(opt);
         expect(points.length).toBe(1);
-        expect(points[0].length).toBe(64);
-        const firstPt = points[0][0];
+        expect(points[0]!.length).toBe(64);
+        const firstPt = points[0]![0]!;
         expect(firstPt[0]).toBeCloseTo(1);
         expect(firstPt[1]).toBeCloseTo(0);
         expect(firstPt[2]).toBeCloseTo(0);
-        const secondTestPt = points[0][23];
+        const secondTestPt = points[0]![23]!;
         expect(secondTestPt[0]).toBeCloseTo(-0.6616858375968588);
         expect(secondTestPt[1]).toBeCloseTo(0.7497812029677347);
         expect(secondTestPt[2]).toBeCloseTo(0);
@@ -515,7 +515,7 @@ describe("OCCT edge unit tests", () => {
         opt.angularDeflection = 0.2;
         const points = edge.edgesToPoints(opt);
         expect(points.length).toBe(1);
-        expect(points[0].length).toBe(33);
+        expect(points[0]!.length).toBe(33);
         circle.delete();
     });
 
@@ -525,7 +525,7 @@ describe("OCCT edge unit tests", () => {
         opt.angularDeflection = 0.05;
         const points = edge.edgesToPoints(opt);
         expect(points.length).toBe(1);
-        expect(points[0].length).toBe(127);
+        expect(points[0]!.length).toBe(127);
         circle.delete();
     });
 
@@ -535,7 +535,7 @@ describe("OCCT edge unit tests", () => {
         opt.curvatureDeflection = 0.2;
         const points = edge.edgesToPoints(opt);
         expect(points.length).toBe(1);
-        expect(points[0].length).toBe(64);
+        expect(points[0]!.length).toBe(64);
         circle.delete();
     });
 
@@ -545,7 +545,7 @@ describe("OCCT edge unit tests", () => {
         opt.minimumLength = 0.2;
         const points = edge.edgesToPoints(opt);
         expect(points.length).toBe(1);
-        expect(points[0].length).toBe(33);
+        expect(points[0]!.length).toBe(33);
         circle.delete();
     });
 
@@ -555,7 +555,7 @@ describe("OCCT edge unit tests", () => {
         opt.minimumOfPoints = 100;
         const points = edge.edgesToPoints(opt);
         expect(points.length).toBe(1);
-        expect(points[0].length).toBe(100);
+        expect(points[0]!.length).toBe(100);
         circle.delete();
     });
 
@@ -825,7 +825,7 @@ describe("OCCT edge unit tests", () => {
         });
         expect(edges.length).toBe(lengthExp);
         const lengths = edges.map(e => edge.getEdgeLength({ shape: e }));
-        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i], 10));
+        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i]!, 10));
         circle.delete();
         edges.forEach(e => e.delete());
     };
@@ -896,7 +896,7 @@ describe("OCCT edge unit tests", () => {
         });
         expect(edges.length).toBe(lengthExp);
         const lengths = edges.map(e => edge.getEdgeLength({ shape: e }));
-        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i], 10));
+        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i]!, 10));
         circle.delete();
         edges.forEach(e => e.delete());
     };
@@ -958,7 +958,7 @@ describe("OCCT edge unit tests", () => {
         });
         expect(edges.length).toBe(lengthExp);
         const lengths = edges.map(e => edge.getEdgeLength({ shape: e }));
-        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i], 10));
+        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i]!, 10));
         circle1.delete();
         circle2.delete();
         edges.forEach(e => e.delete());
@@ -1067,7 +1067,7 @@ describe("OCCT edge unit tests", () => {
         });
         expect(edges.length).toBe(lengthExp);
         const lengths = edges.map(e => edge.getEdgeLength({ shape: e }));
-        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i], 10));
+        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i]!, 10));
         circle1.delete();
         circle2.delete();
         edges.forEach(e => e.delete());
@@ -1111,11 +1111,11 @@ describe("OCCT edge unit tests", () => {
         expect(edges.length).toBe(lengthExp);
         const lengths = edges.map(e => edge.getEdgeLength({ shape: e }));
         const centers = edges.map(e => edge.getCircularEdgeCenterPoint({ shape: e }));
-        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i], 10));
+        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i]!, 10));
         centers.forEach((center, i) => {
-            expect(center[0]).toBeCloseTo(centersExp[i][0], 10);
-            expect(center[1]).toBeCloseTo(centersExp[i][1], 10);
-            expect(center[2]).toBeCloseTo(centersExp[i][2], 10);
+            expect(center[0]).toBeCloseTo(centersExp[i]![0], 10);
+            expect(center[1]).toBeCloseTo(centersExp[i]![1], 10);
+            expect(center[2]).toBeCloseTo(centersExp[i]![2], 10);
         });
         circle1.delete();
         circle2.delete();
@@ -1182,11 +1182,11 @@ describe("OCCT edge unit tests", () => {
         expect(edges.length).toBe(lengthExp);
         const lengths = edges.map(e => edge.getEdgeLength({ shape: e }));
         const centers = edges.map(e => edge.getCircularEdgeCenterPoint({ shape: e }));
-        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i], 10));
+        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i]!, 10));
         centers.forEach((center, i) => {
-            expect(center[0]).toBeCloseTo(centersExp[i][0], 10);
-            expect(center[1]).toBeCloseTo(centersExp[i][1], 10);
-            expect(center[2]).toBeCloseTo(centersExp[i][2], 10);
+            expect(center[0]).toBeCloseTo(centersExp[i]![0], 10);
+            expect(center[1]).toBeCloseTo(centersExp[i]![1], 10);
+            expect(center[2]).toBeCloseTo(centersExp[i]![2], 10);
         });
         circle1.delete();
         circle2.delete();
@@ -1214,11 +1214,11 @@ describe("OCCT edge unit tests", () => {
         expect(edges.length).toBe(lengthExp);
         const lengths = edges.map(e => edge.getEdgeLength({ shape: e }));
         const centers = edges.map(e => edge.getCircularEdgeCenterPoint({ shape: e }));
-        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i], 10));
+        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i]!, 10));
         centers.forEach((center, i) => {
-            expect(center[0]).toBeCloseTo(centersExp[i][0], 10);
-            expect(center[1]).toBeCloseTo(centersExp[i][1], 10);
-            expect(center[2]).toBeCloseTo(centersExp[i][2], 10);
+            expect(center[0]).toBeCloseTo(centersExp[i]![0], 10);
+            expect(center[1]).toBeCloseTo(centersExp[i]![1], 10);
+            expect(center[2]).toBeCloseTo(centersExp[i]![2], 10);
         });
         circle1.delete();
         circle2.delete();
@@ -1272,11 +1272,11 @@ describe("OCCT edge unit tests", () => {
         expect(edges.length).toBe(lengthExp);
         const lengths = edges.map(e => edge.getEdgeLength({ shape: e }));
         const centers = edges.map(e => edge.getCircularEdgeCenterPoint({ shape: e }));
-        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i], 10));
+        lengths.forEach((len, i) => expect(len).toBeCloseTo(lengthsExp[i]!, 10));
         centers.forEach((center, i) => {
-            expect(center[0]).toBeCloseTo(centersExp[i][0], 10);
-            expect(center[1]).toBeCloseTo(centersExp[i][1], 10);
-            expect(center[2]).toBeCloseTo(centersExp[i][2], 10);
+            expect(center[0]).toBeCloseTo(centersExp[i]![0], 10);
+            expect(center[1]).toBeCloseTo(centersExp[i]![1], 10);
+            expect(center[2]).toBeCloseTo(centersExp[i]![2], 10);
         });
         circle.delete();
         edges.forEach(e => e.delete());
@@ -1408,9 +1408,9 @@ describe("OCCT edge unit tests", () => {
         const e3 = edge.line({ start: [0, 0, 0], end: [0, 0, 6] });
         const points = edge.pointsOnEdgesAtParam({ shapes: [e1, e2, e3], param: 0.5 });
         expect(points.length).toBe(3);
-        expect(points[0][0]).toBeCloseTo(1, closeToNr);
-        expect(points[1][1]).toBeCloseTo(2, closeToNr);
-        expect(points[2][2]).toBeCloseTo(3, closeToNr);
+        expect(points[0]![0]).toBeCloseTo(1, closeToNr);
+        expect(points[1]![1]).toBeCloseTo(2, closeToNr);
+        expect(points[2]![2]).toBeCloseTo(3, closeToNr);
         e1.delete();
         e2.delete();
         e3.delete();
@@ -1423,12 +1423,12 @@ describe("OCCT edge unit tests", () => {
         const tangents = edge.tangentsOnEdgesAtParam({ shapes: [e1, e2], param: 0.5 });
         expect(tangents.length).toBe(2);
         // Tangent on a line points in direction of the line (normalized unit vectors)
-        expect(tangents[0][0]).toBeCloseTo(1, closeToNr);
-        expect(tangents[0][1]).toBeCloseTo(0, closeToNr);
-        expect(tangents[0][2]).toBeCloseTo(0, closeToNr);
-        expect(tangents[1][0]).toBeCloseTo(0, closeToNr);
-        expect(tangents[1][1]).toBeCloseTo(1, closeToNr);
-        expect(tangents[1][2]).toBeCloseTo(0, closeToNr);
+        expect(tangents[0]![0]).toBeCloseTo(1, closeToNr);
+        expect(tangents[0]![1]).toBeCloseTo(0, closeToNr);
+        expect(tangents[0]![2]).toBeCloseTo(0, closeToNr);
+        expect(tangents[1]![0]).toBeCloseTo(0, closeToNr);
+        expect(tangents[1]![1]).toBeCloseTo(1, closeToNr);
+        expect(tangents[1]![2]).toBeCloseTo(0, closeToNr);
         e1.delete();
         e2.delete();
     });
@@ -1463,10 +1463,10 @@ describe("OCCT edge unit tests", () => {
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
         const points = edge.pointsOnEdgesAtLength({ shapes: [e1, e2], length: 2 });
         expect(points.length).toBe(2);
-        expect(points[0][0]).toBeCloseTo(2, closeToNr);
-        expect(points[0][1]).toBeCloseTo(0, closeToNr);
-        expect(points[1][0]).toBeCloseTo(0, closeToNr);
-        expect(points[1][1]).toBeCloseTo(2, closeToNr);
+        expect(points[0]![0]).toBeCloseTo(2, closeToNr);
+        expect(points[0]![1]).toBeCloseTo(0, closeToNr);
+        expect(points[1]![0]).toBeCloseTo(0, closeToNr);
+        expect(points[1]![1]).toBeCloseTo(2, closeToNr);
         e1.delete();
         e2.delete();
     });
@@ -1477,10 +1477,10 @@ describe("OCCT edge unit tests", () => {
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
         const tangents = edge.tangentsOnEdgesAtLength({ shapes: [e1, e2], length: 1 });
         expect(tangents.length).toBe(2);
-        expect(tangents[0][0]).toBeCloseTo(4, closeToNr);
-        expect(tangents[0][1]).toBeCloseTo(0, closeToNr);
-        expect(tangents[1][0]).toBeCloseTo(0, closeToNr);
-        expect(tangents[1][1]).toBeCloseTo(4, closeToNr);
+        expect(tangents[0]![0]).toBeCloseTo(4, closeToNr);
+        expect(tangents[0]![1]).toBeCloseTo(0, closeToNr);
+        expect(tangents[1]![0]).toBeCloseTo(0, closeToNr);
+        expect(tangents[1]![1]).toBeCloseTo(4, closeToNr);
         e1.delete();
         e2.delete();
     });
@@ -1496,8 +1496,8 @@ describe("OCCT edge unit tests", () => {
             removeStartPoint: false
         });
         expect(pointsArrays.length).toBe(2);
-        expect(pointsArrays[0].length).toBe(5);
-        expect(pointsArrays[1].length).toBe(5);
+        expect(pointsArrays[0]!.length).toBe(5);
+        expect(pointsArrays[1]!.length).toBe(5);
         e1.delete();
         e2.delete();
     });
@@ -1513,8 +1513,8 @@ describe("OCCT edge unit tests", () => {
             removeStartPoint: false
         });
         expect(pointsArrays.length).toBe(2);
-        expect(pointsArrays[0].length).toBe(5);
-        expect(pointsArrays[1].length).toBe(5);
+        expect(pointsArrays[0]!.length).toBe(5);
+        expect(pointsArrays[1]!.length).toBe(5);
         e1.delete();
         e2.delete();
     });

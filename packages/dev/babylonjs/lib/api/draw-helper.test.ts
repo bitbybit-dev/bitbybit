@@ -50,9 +50,9 @@ describe("DrawHelper unit tests", () => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         if (result) {
             return {
-                r: parseInt(result[1], 16) / 255,
-                g: parseInt(result[2], 16) / 255,
-                b: parseInt(result[3], 16) / 255
+                r: parseInt(result[1]!, 16) / 255,
+                g: parseInt(result[2]!, 16) / 255,
+                b: parseInt(result[3]!, 16) / 255
             };
         }
         return { r: 1, g: 0, b: 0 }; // Default to red if parsing fails
@@ -592,7 +592,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
             // 3 polylines + (3 * 4 arrow lines) = 15 total lines
-            expect(result.metadata.linesForRenderLengths).toHaveLength(15);
+            expect(result!.metadata.linesForRenderLengths).toHaveLength(15);
         });
 
         it("should not draw arrows when arrowSize is 0", () => {
@@ -656,7 +656,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             // 2 polylines + (2 * 4 arrows) = 10 lines
-            expect(result.metadata.linesForRenderLengths).toHaveLength(10);
+            expect(result!.metadata.linesForRenderLengths).toHaveLength(10);
         });
 
         it("should handle polylines with insufficient points for arrows", () => {
@@ -1731,7 +1731,7 @@ describe("DrawHelper unit tests", () => {
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = false;
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
@@ -1749,7 +1749,7 @@ describe("DrawHelper unit tests", () => {
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" } as any;
             inputs.drawTwoSided = false;
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeUndefined();
         });
@@ -1766,7 +1766,7 @@ describe("DrawHelper unit tests", () => {
             inputs.crossSectionWidth = 2;
             inputs.drawTwoSided = false;
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
@@ -1785,7 +1785,7 @@ describe("DrawHelper unit tests", () => {
             inputs.faceOpacity = 1;
             // drawTwoSided defaults to true
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
             // With two-sided rendering, there should be child meshes for back face
@@ -1806,7 +1806,7 @@ describe("DrawHelper unit tests", () => {
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = false;
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
             // With two-sided rendering disabled, there should be no child meshes
@@ -1828,7 +1828,7 @@ describe("DrawHelper unit tests", () => {
             inputs.drawTwoSided = true;
             inputs.backFaceColour = "#00ff00";
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
             expect(result.getChildMeshes().length).toBeGreaterThan(0);
@@ -1849,7 +1849,7 @@ describe("DrawHelper unit tests", () => {
             inputs.backFaceColour = "#0000ff";
             inputs.backFaceOpacity = 0.5;
 
-            const result = await drawHelper.drawManifoldOrCrossSection(inputs);
+            const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
             expect(result.getChildMeshes().length).toBeGreaterThan(0);
@@ -2691,7 +2691,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw 1000 points with optimized LOD in reasonable time", () => {
-            const points = Array.from({ length: 1000 }, (_, i) => [
+            const points = Array.from({ length: 1000 }, () => [
                 Math.random() * 100,
                 Math.random() * 100,
                 Math.random() * 100
@@ -2833,7 +2833,7 @@ describe("DrawHelper unit tests", () => {
             expect(colorsAreEqual(mainMaterial.baseColor, hexToRgb("#ff0000"))).toBe(true);
             expect(mainMaterial.alpha).toBe(1);
             // Check back face mesh exists and has correct material
-            const backFaceMesh = children[0];
+            const backFaceMesh = children[0]!;
             expect(backFaceMesh.material).toBeDefined();
             const backMaterial = backFaceMesh.material as BABYLON.PBRMetallicRoughnessMaterial;
             expect(colorsAreEqual(backMaterial.baseColor, hexToRgb("#00ff00"))).toBe(true);
@@ -3985,7 +3985,7 @@ describe("DrawHelper unit tests", () => {
             // Zero normals should remain zero after negation (note: -0 == 0 in JavaScript)
             expect(result.normals.length).toBe(9);
             // All values should be zero (or -0, which is mathematically equal to 0)
-            result.normals.forEach(val => expect(Math.abs(val)).toBe(0));
+            result.normals.forEach((val: number) => expect(Math.abs(val)).toBe(0));
         });
 
         it("should correctly handle very small normal values", () => {

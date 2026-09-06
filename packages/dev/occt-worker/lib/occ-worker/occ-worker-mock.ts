@@ -1,9 +1,10 @@
-import { initializationComplete, onMessageInput } from "./occ-worker";
+import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
 
 export class OCCTWorkerMock {
-    initializationComplete = (occ, plugins: any, doNotPost?: boolean) => { initializationComplete(occ, plugins, doNotPost); };
-    onMessageInput = (inputs) => {
-        onMessageInput(inputs, (res) => {
+    initializationComplete = (occ: BitbybitOcctModule, plugins: any, doNotPost?: boolean) => { initializationComplete(occ, plugins, doNotPost); };
+    onMessageInput = (inputs: DataInput) => {
+        onMessageInput(inputs, (res: unknown) => {
             if (this.onmessage) {
                 this.onmessage({ data: res });
             } else {
@@ -12,11 +13,11 @@ export class OCCTWorkerMock {
         });
     };
 
-    postMessage(data) {
+    postMessage(data: DataInput | "busy") {
         if (data !== "busy") {
             this.onMessageInput(data);
         }
     }
 
-    onmessage: (data) => void;
+    onmessage!: (message: { data: unknown }) => void;
 }

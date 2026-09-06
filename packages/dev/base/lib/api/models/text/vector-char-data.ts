@@ -10,15 +10,15 @@ export class VectorCharData {
      * The width of the char
      * @default undefined
      */
-    width?: number;
+    width!: number;
     /**
      * The height of the char
      * @default undefined
      */
-    height?: number;
+    height!: number;
     /**
      * The segments of the char
      * @default undefined
      */
-    paths?: Base.Point3[][];
+    paths!: Base.Point3[][];
 }

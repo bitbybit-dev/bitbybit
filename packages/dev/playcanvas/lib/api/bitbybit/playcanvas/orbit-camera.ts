@@ -79,7 +79,7 @@ export class PlayCanvasOrbitCamera {
         }
 
         // Find or create camera entity
-        let cameraEntity: pc.Entity;
+        let cameraEntity: pc.Entity | undefined;
         if (inputs.focusEntity) {
             // Use existing camera if found in scene
             cameraEntity = this.context.scene.findOne((node: pc.GraphNode) => 
@@ -204,6 +204,7 @@ export class PlayCanvasOrbitCamera {
     }
 
     private createOrbitCameraInstance(entity: pc.Entity, config: OrbitCameraConfig): OrbitCameraInstance {
+        const context = this.context;
         const state: OrbitCameraState = {
             _modelsAabb: new pc.BoundingBox(),
             _pivotPoint: new pc.Vec3(),
@@ -273,14 +274,14 @@ export class PlayCanvasOrbitCamera {
 
         const buildAabb = (entity: pc.Entity | pc.GraphNode, modelsAdded: number): number => {
             let count = modelsAdded;
-            if (entity instanceof pc.Entity && entity.model) {
+            if (entity instanceof pc.Entity && entity.model && entity.model.meshInstances) {
                 const mi = entity.model.meshInstances;
                 for (let i = 0; i < mi.length; i++) {
-                    if (mi[i].visible) {
+                    if (mi[i]!.visible) {
                         if (count === 0) {
-                            state._modelsAabb.copy(mi[i].aabb);
+                            state._modelsAabb.copy(mi[i]!.aabb);
                         } else {
-                            state._modelsAabb.add(mi[i].aabb);
+                            state._modelsAabb.add(mi[i]!.aabb);
                         }
                         count += 1;
                     }
@@ -289,7 +290,7 @@ export class PlayCanvasOrbitCamera {
             
             const children = entity.children;
             for (let i = 0; i < children.length; i++) {
-                count = buildAabb(children[i], count);
+                count = buildAabb(children[i]!, count);
             }
             
             return count;
@@ -370,8 +371,8 @@ export class PlayCanvasOrbitCamera {
                 removeInertia();
                 updatePosition();
 
-                if (!config.autoRender && this.context.app) {
-                    this.context.app.renderNextFrame = true;
+                if (!config.autoRender && context.app) {
+                    context.app.renderNextFrame = true;
                 }
             },
 
@@ -525,10 +526,10 @@ export class PlayCanvasOrbitCamera {
         const onTouchStartEndCancel = (event: pc.TouchEvent): void => {
             const touches = event.touches;
             if (touches.length === 1) {
-                lastTouchPoint.set(touches[0].x, touches[0].y);
+                lastTouchPoint.set(touches[0]!.x, touches[0]!.y);
             } else if (touches.length === 2) {
-                lastPinchDistance = getPinchDistance(touches[0], touches[1]);
-                calcMidPoint(touches[0], touches[1], lastPinchMidPoint);
+                lastPinchDistance = getPinchDistance(touches[0]!, touches[1]!);
+                calcMidPoint(touches[0]!, touches[1]!, lastPinchMidPoint);
             }
         };
 
@@ -536,18 +537,18 @@ export class PlayCanvasOrbitCamera {
             const touches = event.touches;
             
             if (touches.length === 1) {
-                const touchPoint = touches[0];
+                const touchPoint = touches[0]!;
                 orbitCamera.pitch += (touchPoint.y - lastTouchPoint.y) * options.orbitSensitivity;
                 orbitCamera.yaw -= (touchPoint.x - lastTouchPoint.x) * options.orbitSensitivity;
                 lastTouchPoint.set(touchPoint.x, touchPoint.y);
             } else if (touches.length === 2) {
-                const currentPinchDistance = getPinchDistance(touches[0], touches[1]);
+                const currentPinchDistance = getPinchDistance(touches[0]!, touches[1]!);
                 const diffInPinchDistance = currentPinchDistance - lastPinchDistance;
                 lastPinchDistance = currentPinchDistance;
                 
                 orbitCamera.distance += (diffInPinchDistance * options.distanceSensitivity * 0.1) * (orbitCamera.distance * 0.1);
                 
-                calcMidPoint(touches[0], touches[1], pinchMidPoint);
+                calcMidPoint(touches[0]!, touches[1]!, pinchMidPoint);
                 pan(pinchMidPoint);
                 lastPinchMidPoint.copy(pinchMidPoint);
             }

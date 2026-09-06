@@ -5,6 +5,10 @@
  */
 import { Base as CoreBase } from "@bitbybit-dev/core";
 
+/**
+ * The Three.js build's re-export of the shared primitive types, so engine-specific code sees Point3,
+ * Vector3, colours and the shared enumerations from one place.
+ */
 export namespace Base {
     // Re-export all types from core package (which includes base types)
     export type Color = CoreBase.Color;

@@ -1,6 +1,7 @@
 ---
 slug: the-cloud-of-bit-by-bit-developers
 title: THE CLOUD OF BIT BY BIT DEVELOPERS
+image: https://miro.medium.com/max/1400/1*2RasUKRPQq5BmhSBYNq4IQ.png
 authors: [ubarevicius]
 tags: [bitbybit, cloud]
 ---

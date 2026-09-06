@@ -138,7 +138,7 @@ export class PathBuilder {
 
         if (!compound || compound.IsNull()) {
             opts.warnings.push("Failed to build shapes from the supplied path.");
-            return groups.map(() => undefined);
+            return groups.map((): BuiltElement | undefined => undefined);
         }
 
         // Decode: one child per group, in order. The child's shape type tells wire-vs-face.

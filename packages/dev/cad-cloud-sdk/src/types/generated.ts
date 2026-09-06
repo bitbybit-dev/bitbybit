@@ -11,7 +11,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Health - status check */
+        /**
+         * Health - status check
+         * @description Returns the operational status of the Bitbybit CAD Cloud API, including service health and readiness. Requires no authentication, so it is suitable for uptime monitoring, load balancer probes and deployment smoke tests.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -173,7 +176,7 @@ export interface paths {
         put?: never;
         /**
          * CAD - execute compound (parallel) operations
-         * @description Runs multiple independent operations in parallel.
+         * @description Runs several independent CAD operations in parallel as one compound task. Each sub-operation is executed on its own and produces its own downloadable result, so use this when the operations do not depend on each other - for a sequence where each step consumes the previous one's output, use the chained pipeline endpoint instead. Returns 202 with a compound task id; poll it and download the per-sub-task manifest when it completes.
          */
         post: {
             parameters: {
@@ -230,7 +233,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Models - list available models */
+        /**
+         * Models - list available models
+         * @description Lists every parametric model available for generation, by name. Use the returned names with the definitions and generation endpoints to discover each model's parameter schema and defaults before submitting a job.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -1408,13 +1414,16 @@ export interface paths {
         };
         /**
          * Files - list uploaded files
-         * @description Returns paginated list of uploaded files.
+         * @description Returns a paginated list of the files uploaded under your API key, newest first, with each file's id, original name, size, upload status and expiry. Use it to find the file id to pass to a conversion endpoint, and to check that an upload through a pre-signed URL actually completed before you reference it.
          */
         get: {
             parameters: {
                 query?: {
+                    /** @description 1-based page number. Defaults to the first page. */
                     page?: number;
+                    /** @description How many files to return per page. */
                     limit?: number;
+                    /** @description Return only files in this upload state: pending (a pre-signed URL was issued but the upload has not been confirmed), confirmed (the blob is stored and usable), or expired. */
                     status?: "pending" | "confirmed" | "expired";
                 };
                 header?: never;
@@ -1489,7 +1498,7 @@ export interface paths {
         post?: never;
         /**
          * Files - delete a file
-         * @description Permanently removes a file and its stored blob.
+         * @description Permanently deletes an uploaded file and the stored blob behind it. This cannot be undone, and any task result that still points at the blob stops resolving. Files also expire on their own, so call this only when you need the storage released sooner than that.
          */
         delete: {
             parameters: {
@@ -1588,14 +1597,18 @@ export interface paths {
         };
         /**
          * Tasks - list tasks
-         * @description Returns paginated list of tasks.
+         * @description Returns a paginated list of your tasks, newest first, each with its id, kind, status, creation time and result link when finished. Filter by status to poll only what is still running, or by kind to separate model generation, STEP conversion, pipelines and compound runs. This is the endpoint to build a job dashboard on rather than polling every task id individually.
          */
         get: {
             parameters: {
                 query?: {
+                    /** @description 1-based page number. Defaults to the first page. */
                     page?: number;
+                    /** @description How many tasks to return per page. */
                     limit?: number;
+                    /** @description Return only tasks in this state. waiting and queued are not started yet, processing is running, completed has a downloadable result, failed carries an error, cancelled was stopped by you, and expired means the result has been cleaned up. */
                     status?: "waiting" | "queued" | "processing" | "completed" | "failed" | "cancelled" | "expired";
+                    /** @description Return only tasks of this kind: cad for a single operation, model for a registered parametric model, convert-simple and convert-advanced for STEP conversions, pipeline for a chained run, compound for a parallel run. */
                     kind?: "cad" | "model" | "convert-simple" | "convert-advanced" | "pipeline" | "compound";
                 };
                 header?: never;

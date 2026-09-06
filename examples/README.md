@@ -27,41 +27,42 @@ https://www.npmjs.com/package/@bitbybit-dev/occt
 
 # Example Applications
 
-Visit this page to find short overview of all the configurators built so far  
-https://app-store.bitbybit.dev   
+Visit this page to find a short overview of all the configurators built so far:
+https://app-store.bitbybit.dev
 
-Patterns   
-THREEJS: https://app-store.bitbybit.dev/patterns    
-Github Source Code - https://github.com/bitbybit-dev/app-examples/blob/main/webpack/threejs/src/code/patterns.ts   
+| App | Engine | Live | Source in this repository |
+| --- | --- | --- | --- |
+| Patterns | Three.js | https://app-store.bitbybit.dev/patterns | [webpack/threejs/src/code/patterns.ts](./webpack/threejs/src/code/patterns.ts) |
+| Laptop Holder | BabylonJS | https://app-store.bitbybit.dev/laptop-holder | [angular/babylonjs/laptop-holder](./angular/babylonjs/laptop-holder), [react/babylonjs/laptop-holder](./react/babylonjs/laptop-holder) |
+| 3D Printable Vase | Three.js | https://app-store.bitbybit.dev/bitbybit-threejs | [react/threejs/vase](./react/threejs/vase) |
+| Cup Configurator | BabylonJS | https://app-store.bitbybit.dev/cup | [react/babylonjs/cup](./react/babylonjs/cup) |
+| Cup Configurator | Three.js | https://app-store.bitbybit.dev/cup-three | [vite/threejs/cup](./vite/threejs/cup), [webpack/threejs/src/code/cup.ts](./webpack/threejs/src/code/cup.ts) |
 
-Laptop Holder   
-BABYLONJS: https://app-store.bitbybit.dev/laptop-holder    
-Github Source Code Angular - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder   
-Github Source Code React - https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder   
+<img src="https://app.bitbybit.dev/assets/laptop-holder.png" alt="Laptop Holder Configurator">
 
-<img src="https://app.bitbybit.dev/assets/laptop-holder.png" alt="Laptop Holder Configurator">  
+Other closed-source apps we built: Terrace Furniture (BabylonJS), https://app-store.bitbybit.dev/terrace-furniture
 
-3D Printable Vase    
-THREEJS: https://app-store.bitbybit.dev/bitbybit-threejs  
-Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/bitbybit-threejs   
+# Verifying the examples
 
-<img src="https://app.bitbybit.dev/assets/bitbybit-threejs.png" alt="ThreeJS Vase Configurator">   
+Every example installs the published `@bitbybit-dev` packages from the registry, the way a user
+does, so the examples are the post-publish smoke of the packages. `scripts/examples.mjs` finds
+every directory here with a `package.json` and runs each on its own, reporting per example:
 
-Cup Configurator    
-BABYLONJS: https://app-store.bitbybit.dev/cup  
-Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/cup   
+```
+npm run list               # every example, and any that verify.config.json skips (with the reason)
+npm run verify             # npm ci, then npm run build, in each - Angular, Next.js and Nuxt install only
+npm run verify:heavy       # the same, building those three too
+npm run audit:all          # npm audit at the high level over every lockfile
+npm run refresh-lockfiles  # regenerate every lockfile and apply the audit fixes it can
+```
 
-Cup Configurator    
-THREEJS: https://app-store.bitbybit.dev/cup-three  
-Github Source Code - https://github.com/bitbybit-dev/app-examples/blob/main/webpack/threejs/src/code/cup.ts   
-
-<img src="https://app.bitbybit.dev/assets/cup.png" alt="Cup Configurator">
-
-Other Closed Source Apps We Built   
-Terrace Furniture   
-BABYLONJS: https://app-store.bitbybit.dev/terrace-furniture    
-
-<img src="https://app.bitbybit.dev/assets/terrace.png" alt="Terrace Furniture Configurator">
+`.github/workflows/examples.yml` runs verify and the audit weekly, on every published version and
+by hand, and the create-app templates' scaffold-and-install smoke beside them. It is not a
+pull-request gate: nothing here builds from the repository's sources, so a pull request cannot
+break it - a publish, or a dependency advisory, can. The lockfiles are what Dependabot reads for
+this repository; when it reports an advisory under `examples/`, run `npm run refresh-lockfiles`
+here and commit the result, bumping a direct dependency in the example's `package.json` where the
+fix is outside its range. `api/dotnet-rest` is a .NET project and is outside this lane.
 
 # Media Channels
 Discord: https://discord.gg/GSe3VMe  

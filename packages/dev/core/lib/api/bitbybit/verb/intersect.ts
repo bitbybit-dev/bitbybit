@@ -10,7 +10,7 @@ import { BaseTypes } from "../base-types";
 
 export class VerbIntersect {
 
-    constructor(private readonly context: ContextBase, private readonly geometryHelper: GeometryHelper) { }
+    constructor(private readonly context: ContextBase, _geometryHelper: GeometryHelper) { }
 
     /**
      * Intersects two verb Nurbs curves together and returns intersection results

@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Hollow Shapes",
-        "description": "How to create hollow shapes without using boolean operations while addressing common challenges.",
+        "description": "Model hollow and perforated geometry with OCCT in Bitbybit - hex grids, hole patterns and lattice panels cut into faces and solids. Perforation is a recurring problem in real products: ventilation panels, decorative screens, weight reduction, and acoustic surfaces all come down to generating a pattern of openings and subtracting it reliably. These worked examples cover building a hexagonal hive pattern flat and on a curved face, placing rectangular and circular holes across a surface, and the thickening step that turns a perforated face into a solid you can print or cut.",
         "slug": "/code/common/occt/modeling/hollow-shapes"
     }
 }

@@ -42,7 +42,7 @@ export class DxfService {
             
             let i = 0;
             while (i < edges.length) {
-                const edge = edges[i];
+                const edge = edges[i]!;
                 
                 // Check if edge is a full circle - handle separately
                 if (this.edgesService.isEdgeCircular({ shape: edge })) {
@@ -127,7 +127,7 @@ export class DxfService {
         let j = startIndex;
         
         while (j < edges.length) {
-            const currentEdge = edges[j];
+            const currentEdge = edges[j]!;
             const isLinear = this.edgesService.isEdgeLinear({ shape: currentEdge });
             const isCircular = this.edgesService.isEdgeCircular({ shape: currentEdge });
             
@@ -209,7 +209,7 @@ export class DxfService {
                 // The last point of each edge will be the start point of the next edge
                 // For closed wires, the last edge's last point equals the first edge's first point
                 for (let k = 0; k < points3d.length - 1; k++) {
-                    points.push([points3d[k][0], points3d[k][2]]);
+                    points.push([points3d[k]![0], points3d[k]![2]]);
                     bulges.push(0);
                 }
             }
@@ -219,7 +219,7 @@ export class DxfService {
         
         // Add the final endpoint for open polylines
         if (j > startIndex && !shouldBeClosed) {
-            const lastEdge = edges[j - 1];
+            const lastEdge = edges[j - 1]!;
             const endPt = this.edgesService.endPointOnEdge({ shape: lastEdge });
             points.push([endPt[0], endPt[2]]);
             bulges.push(0);
@@ -228,113 +228,6 @@ export class DxfService {
         // Return null if we didn't process any edges
         if (j <= startIndex || points.length < 2) {
             return null;
-        }
-        
-        const polyline: IO.DxfPolylineSegmentDto = {
-            points: points,
-            closed: shouldBeClosed,
-            bulges: bulges
-        };
-        
-        return {
-            polyline: polyline,
-            nextIndex: j
-        };
-    }
-
-    /**
-     * Try to create a polyline with bulges from consecutive line/arc segments
-     * Returns the polyline and next index, or null if not applicable
-     */
-    private tryCreatePolylineWithBulges(
-        edges: TopoDS_Edge[],
-        startIndex: number,
-        shouldBeClosed: boolean
-    ): { polyline: IO.DxfPolylineSegmentDto, nextIndex: number } | null {
-        const edge = edges[startIndex];
-        
-        // Must start with either a line or an arc (not a full circle)
-        const isLinear = this.edgesService.isEdgeLinear({ shape: edge });
-        const isCircular = this.edgesService.isEdgeCircular({ shape: edge });
-        
-        if (!isLinear && !isCircular) {
-            return null; // Complex edge, can't create polyline with bulges
-        }
-        
-        // Check if it's a full circle
-        if (isCircular) {
-            const bounds = this.edgesService.getEdgeBounds(edge);
-            const angleRange = bounds.uMax - bounds.uMin;
-            const isFullCircle = Math.abs(angleRange - 2 * Math.PI) < 0.01;
-            if (isFullCircle) {
-                return null; // Full circle, handle separately
-            }
-        }
-        
-        // Collect consecutive linear and arc edges
-        const points: Base.Point2[] = [];
-        const bulges: number[] = [];
-        let j = startIndex;
-        
-        while (j < edges.length) {
-            const currentEdge = edges[j];
-            const isCurrentLinear = this.edgesService.isEdgeLinear({ shape: currentEdge });
-            const isCurrentCircular = this.edgesService.isEdgeCircular({ shape: currentEdge });
-            
-            // Stop if we hit a complex edge
-            if (!isCurrentLinear && !isCurrentCircular) {
-                break;
-            }
-            
-            // Stop if we hit a full circle
-            if (isCurrentCircular) {
-                const bounds = this.edgesService.getEdgeBounds(currentEdge);
-                const angleRange = bounds.uMax - bounds.uMin;
-                if (Math.abs(angleRange - 2 * Math.PI) < 0.01) {
-                    break;
-                }
-            }
-            
-            const startPt = this.edgesService.startPointOnEdge({ shape: currentEdge });
-            points.push([startPt[0], startPt[2]]); // XZ plane
-            
-            if (isCurrentLinear) {
-                // Linear segment: bulge = 0
-                bulges.push(0);
-            } else {
-                // Arc segment: calculate bulge
-                const endPt = this.edgesService.endPointOnEdge({ shape: currentEdge });
-                const center = this.edgesService.getCircularEdgeCenterPoint({ shape: currentEdge });
-                
-                // Calculate the included angle using the actual arc geometry
-                const startAngle = Math.atan2(startPt[2] - center[2], startPt[0] - center[0]);
-                const endAngle = Math.atan2(endPt[2] - center[2], endPt[0] - center[0]);
-                
-                let includedAngle = endAngle - startAngle;
-                
-                // Normalize to [-2π, 2π]
-                while (includedAngle > Math.PI) includedAngle -= 2 * Math.PI;
-                while (includedAngle < -Math.PI) includedAngle += 2 * Math.PI;
-                
-                // Bulge = tan(included_angle / 4)
-                const bulge = Math.tan(includedAngle / 4);
-                bulges.push(bulge);
-            }
-            
-            j++;
-        }
-        
-        // Add the end point of the last edge
-        if (j > startIndex) {
-            const lastEdge = edges[j - 1];
-            const endPt = this.edgesService.endPointOnEdge({ shape: lastEdge });
-            points.push([endPt[0], endPt[2]]); // XZ plane
-            bulges.push(0); // Last vertex doesn't need a bulge
-        }
-        
-        // Only create polyline with bulges if we have at least 2 edges or if it's beneficial
-        if (j - startIndex < 2) {
-            return null; // Not enough edges to justify polyline
         }
         
         const polyline: IO.DxfPolylineSegmentDto = {

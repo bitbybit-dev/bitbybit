@@ -1,6 +1,10 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
 
+/**
+ * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
+ * Thanks Manifold community for developing this kernel
+ */
 export class ManifoldShapes {
 
     private manifold: Manifold3D.ManifoldToplevel;
@@ -9,11 +13,35 @@ export class ManifoldShapes {
         this.manifold = wasm;
     }
 
+    /**
+     * Convert a Mesh into a Manifold, retaining its properties and merging only
+     * the positions according to the merge vectors. Will throw an error if the
+     * result is not an oriented 2-manifold. Will collapse degenerate triangles
+     * and unnecessary vertices.
+     *
+     * All fields are read, making this structure suitable for a lossless
+     * round-trip of data from manifoldToMesh(). For multi-material input, use
+     * reserveIDs() to set a unique originalID for each material, and sort the
+     * materials into triangle runs.
+     * @param inputs mesh definition
+     * @returns manifold
+     * @group create
+     * @shortname manifold from mesh
+     * @drawable true
+     */
     manifoldFromMesh(inputs: Inputs.Manifold.CreateFromMeshDto): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
         return new Manifold(inputs.mesh as Manifold3D.Mesh);
     }
 
+    /**
+     * Create a Manifold from a set of polygon points describing triangles.
+     * @param inputs Polygon points
+     * @returns Manifold
+     * @group create
+     * @shortname from polygon points
+     * @drawable true
+     */
     fromPolygonPoints(inputs: Inputs.Manifold.FromPolygonPointsDto): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
         const polygons = inputs.polygonPoints;
@@ -52,7 +80,7 @@ export class ManifoldShapes {
 
                 // Check if this vertex has already been seen
                 if (vertexMap.has(vertexKey)) {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     
                     index = vertexMap.get(vertexKey)!;
                 } else {
                     // It's a new unique vertex
@@ -85,24 +113,55 @@ export class ManifoldShapes {
         return new Manifold(meshDto as Manifold3D.Mesh);
     }
 
+    /**
+     * Create a 3D cube shape
+     * @param inputs Cube parameters
+     * @returns Cube solid
+     * @group primitives
+     * @shortname cube
+     * @drawable true
+     */
     cube(inputs: Inputs.Manifold.CubeDto): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
         const { cube } = Manifold;
         return cube(inputs.size, inputs.center);
     }
 
+    /**
+     * Create a 3D sphere shape
+     * @param inputs Sphere parameters
+     * @returns Sphere solid
+     * @group primitives
+     * @shortname sphere
+     * @drawable true
+     */
     sphere(inputs: Inputs.Manifold.SphereDto): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
         const { sphere } = Manifold;
         return sphere(inputs.radius, inputs.circularSegments);
     }
 
+    /**
+     * Create a 3D tetrahedron shape
+     * @returns Tetrahedron solid
+     * @group primitives
+     * @shortname tetrahedron
+     * @drawable true
+     */
     tetrahedron(): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
         const { tetrahedron } = Manifold;
         return tetrahedron();
     }
 
+    /**
+     * Create a 3D cylinder shape
+     * @param inputs Cylinder parameters
+     * @returns Cylinder solid
+     * @group primitives
+     * @shortname cylinder
+     * @drawable true
+     */
     cylinder(inputs: Inputs.Manifold.CylinderDto): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
         const { cylinder } = Manifold;

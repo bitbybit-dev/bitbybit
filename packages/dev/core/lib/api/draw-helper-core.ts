@@ -9,7 +9,7 @@ export interface MeshData {
     positions: number[];
     indices: number[];
     normals: number[];
-    uvs?: number[];
+    uvs?: number[] | undefined;
 }
 
 /**
@@ -27,27 +27,27 @@ export class DrawHelperCore {
      * @returns Middle point of the edge
      */
     computeEdgeMiddlePos(edge: { edgeIndex: number; vertexCoord: Base.Point3[]; }): Base.Point3 {
-        let pos;
+        let pos: number[];
         if (edge.vertexCoord.length === 2) {
-            const midFloor = edge.vertexCoord[0];
-            const midCeil = edge.vertexCoord[1];
+            const midFloor = edge.vertexCoord[0]!;
+            const midCeil = edge.vertexCoord[1]!;
             pos = this.vector.lerp({
                 first: midFloor,
                 second: midCeil,
                 fraction: 0.5,
             });
         } else if (edge.vertexCoord.length === 3) {
-            pos = edge.vertexCoord[1];
+            pos = edge.vertexCoord[1]!;
         } else {
-            const midFloor = edge.vertexCoord[Math.floor(edge.vertexCoord.length / 2)];
-            const midCeil = edge.vertexCoord[Math.floor(edge.vertexCoord.length / 2 + 1)];
+            const midFloor = edge.vertexCoord[Math.floor(edge.vertexCoord.length / 2)]!;
+            const midCeil = edge.vertexCoord[Math.floor(edge.vertexCoord.length / 2 + 1)]!;
             pos = this.vector.lerp({
                 first: midFloor,
                 second: midCeil,
                 fraction: 0.5,
             });
         }
-        return pos;
+        return pos as Base.Point3;
     }
 
     /**
@@ -62,9 +62,9 @@ export class DrawHelperCore {
 
         let realLength = 0;
         vertexCoordVec.forEach(v => {
-            x += v[0];
-            y += v[1];
-            z += v[2];
+            x += v[0]!;
+            y += v[1]!;
+            z += v[2]!;
             realLength++;
         });
 
@@ -97,44 +97,44 @@ export class DrawHelperCore {
         }
         
         if (colors.length === 1) {
-            return colors[0];
+            return colors[0]!;
         }
         
         // If we have enough colors for all entities, use direct mapping
         if (colors.length >= totalEntities) {
-            return colors[entityIndex];
+            return colors[entityIndex]!;
         }
         
         // Apply strategy when there are more entities than colors
         switch (strategy) {
             case Base.colorMapStrategyEnum.firstColorForAll:
-                return colors[0];
+                return colors[0]!;
                 
             case Base.colorMapStrategyEnum.lastColorRemainder:
                 // Use corresponding color if available, otherwise use last color
-                return entityIndex < colors.length ? colors[entityIndex] : colors[colors.length - 1];
+                return entityIndex < colors.length ? colors[entityIndex]! : colors[colors.length - 1]!;
                 
             case Base.colorMapStrategyEnum.repeatColors:
                 // Cycle through colors in repeating pattern
-                return colors[entityIndex % colors.length];
+                return colors[entityIndex % colors.length]!;
                 
             case Base.colorMapStrategyEnum.reversedColors: {
                 // Ping-pong pattern: 0,1,2,1,0,1,2,1,0...
                 const cycleLength = (colors.length - 1) * 2;
                 if (cycleLength <= 0) {
-                    return colors[0];
+                    return colors[0]!;
                 }
                 const position = entityIndex % cycleLength;
                 if (position < colors.length) {
-                    return colors[position];
+                    return colors[position]!;
                 } else {
-                    return colors[cycleLength - position];
+                    return colors[cycleLength - position]!;
                 }
             }
                 
             default:
                 // Default to lastColorRemainder for safety
-                return entityIndex < colors.length ? colors[entityIndex] : colors[colors.length - 1];
+                return entityIndex < colors.length ? colors[entityIndex]! : colors[colors.length - 1]!;
         }
     }
 
@@ -192,9 +192,9 @@ export class DrawHelperCore {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         if (result) {
             return {
-                r: parseInt(result[1], 16) / 255,
-                g: parseInt(result[2], 16) / 255,
-                b: parseInt(result[3], 16) / 255
+                r: parseInt(result[1]!, 16) / 255,
+                g: parseInt(result[2]!, 16) / 255,
+                b: parseInt(result[3]!, 16) / 255
             };
         }
         return null;
@@ -217,7 +217,7 @@ export class DrawHelperCore {
                 return fallback;
             }
             // Assume values are normalized (0-1)
-            return this.normalizedColorToHex(color[0], color[1], color[2]);
+            return this.normalizedColorToHex(color[0]!, color[1]!, color[2]!);
         }
 
         if (typeof color === "string") {
@@ -285,8 +285,8 @@ export class DrawHelperCore {
         }
 
         // Get the last two points to determine direction
-        const endPoint = polylinePoints[polylinePoints.length - 1];
-        const prevPoint = polylinePoints[polylinePoints.length - 2];
+        const endPoint = polylinePoints[polylinePoints.length - 1]!;
+        const prevPoint = polylinePoints[polylinePoints.length - 2]!;
 
         // Compute direction vector (from prev to end)
         const dx = endPoint[0] - prevPoint[0];
@@ -436,7 +436,7 @@ export class DrawHelperCore {
             const points = polyline.points ? [...polyline.points] : []; // Don't mutate input
             
             if (polyline.isClosed && points.length > 0) {
-                points.push(points[0]);
+                points.push(points[0]!);
             }
             
             return points;
@@ -458,22 +458,22 @@ export class DrawHelperCore {
         
         // For each triangle, compute face normal and accumulate
         for (let i = 0; i < indices.length; i += 3) {
-            const i0 = indices[i];
-            const i1 = indices[i + 1];
-            const i2 = indices[i + 2];
+            const i0 = indices[i]!;
+            const i1 = indices[i + 1]!;
+            const i2 = indices[i + 2]!;
             
             // Get vertices
-            const v0x = positions[i0 * 3];
-            const v0y = positions[i0 * 3 + 1];
-            const v0z = positions[i0 * 3 + 2];
+            const v0x = positions[i0 * 3]!;
+            const v0y = positions[i0 * 3 + 1]!;
+            const v0z = positions[i0 * 3 + 2]!;
             
-            const v1x = positions[i1 * 3];
-            const v1y = positions[i1 * 3 + 1];
-            const v1z = positions[i1 * 3 + 2];
+            const v1x = positions[i1 * 3]!;
+            const v1y = positions[i1 * 3 + 1]!;
+            const v1z = positions[i1 * 3 + 2]!;
             
-            const v2x = positions[i2 * 3];
-            const v2y = positions[i2 * 3 + 1];
-            const v2z = positions[i2 * 3 + 2];
+            const v2x = positions[i2 * 3]!;
+            const v2y = positions[i2 * 3 + 1]!;
+            const v2z = positions[i2 * 3 + 2]!;
             
             // Compute edge vectors
             const e1x = v1x - v0x;
@@ -490,24 +490,24 @@ export class DrawHelperCore {
             const nz = e1x * e2y - e1y * e2x;
             
             // Accumulate normals for each vertex
-            normals[i0 * 3] += nx;
-            normals[i0 * 3 + 1] += ny;
-            normals[i0 * 3 + 2] += nz;
+            normals[i0 * 3]! += nx;
+            normals[i0 * 3 + 1]! += ny;
+            normals[i0 * 3 + 2]! += nz;
             
-            normals[i1 * 3] += nx;
-            normals[i1 * 3 + 1] += ny;
-            normals[i1 * 3 + 2] += nz;
+            normals[i1 * 3]! += nx;
+            normals[i1 * 3 + 1]! += ny;
+            normals[i1 * 3 + 2]! += nz;
             
-            normals[i2 * 3] += nx;
-            normals[i2 * 3 + 1] += ny;
-            normals[i2 * 3 + 2] += nz;
+            normals[i2 * 3]! += nx;
+            normals[i2 * 3 + 1]! += ny;
+            normals[i2 * 3 + 2]! += nz;
         }
         
         // Normalize all normals
         for (let i = 0; i < numVertices; i++) {
-            const x = normals[i * 3];
-            const y = normals[i * 3 + 1];
-            const z = normals[i * 3 + 2];
+            const x = normals[i * 3]!;
+            const y = normals[i * 3 + 1]!;
+            const z = normals[i * 3 + 2]!;
             const len = Math.sqrt(x * x + y * y + z * z);
             if (len > 0) {
                 normals[i * 3] = x / len;
@@ -533,22 +533,22 @@ export class DrawHelperCore {
         
         // For each triangle, create unique vertices with face normals
         for (let i = 0; i < indices.length; i += 3) {
-            const i0 = indices[i];
-            const i1 = indices[i + 1];
-            const i2 = indices[i + 2];
+            const i0 = indices[i]!;
+            const i1 = indices[i + 1]!;
+            const i2 = indices[i + 2]!;
             
             // Get vertices
-            const v0x = positions[i0 * 3];
-            const v0y = positions[i0 * 3 + 1];
-            const v0z = positions[i0 * 3 + 2];
+            const v0x = positions[i0 * 3]!;
+            const v0y = positions[i0 * 3 + 1]!;
+            const v0z = positions[i0 * 3 + 2]!;
             
-            const v1x = positions[i1 * 3];
-            const v1y = positions[i1 * 3 + 1];
-            const v1z = positions[i1 * 3 + 2];
+            const v1x = positions[i1 * 3]!;
+            const v1y = positions[i1 * 3 + 1]!;
+            const v1z = positions[i1 * 3 + 2]!;
             
-            const v2x = positions[i2 * 3];
-            const v2y = positions[i2 * 3 + 1];
-            const v2z = positions[i2 * 3 + 2];
+            const v2x = positions[i2 * 3]!;
+            const v2y = positions[i2 * 3 + 1]!;
+            const v2z = positions[i2 * 3 + 2]!;
             
             // Compute edge vectors
             const e1x = v1x - v0x;
@@ -618,7 +618,7 @@ export class DrawHelperCore {
             // Flip normals for back face
             if (meshItem.normals && meshItem.normals.length > 0) {
                 for (let i = 0; i < meshItem.normals.length; i++) {
-                    totalNormals.push(-meshItem.normals[i]);
+                    totalNormals.push(-meshItem.normals[i]!);
                 }
             }
             
@@ -629,9 +629,9 @@ export class DrawHelperCore {
             // Reverse winding order for back face (swap second and third vertex of each triangle)
             for (let i = 0; i < meshItem.indices.length; i += 3) {
                 totalIndices.push(
-                    meshItem.indices[i] + indexOffset,
-                    meshItem.indices[i + 2] + indexOffset,  // Swapped
-                    meshItem.indices[i + 1] + indexOffset   // Swapped
+                    meshItem.indices[i]! + indexOffset,
+                    meshItem.indices[i + 2]! + indexOffset,  // Swapped
+                    meshItem.indices[i + 1]! + indexOffset   // Swapped
                 );
             }
             indexOffset += meshItem.positions.length / 3;

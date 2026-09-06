@@ -4,35 +4,47 @@ import { OCCTAssemblyManager } from "./manager";
 import { OCCTAssemblyQuery } from "./query";
 
 /**
- * High-level OCCT Assembly service for creating and querying assembly documents.
+ * High-level OCCT Assembly service for creating and managing assembly documents.
  * 
- * The manager provides methods for:
- * - Building assembly documents from structure definitions
- * - Creating parts and nodes for visual programming
- * - Modifying document labels (color, name)
- * - Exporting to STEP and glTF formats
- * - Loading STEP files into documents
+ * This class provides access to:
  * 
- * The query provides methods for:
- * - Querying document parts, hierarchy, colors, and transforms
- * - Getting shapes from labels
+ * **manager** - Document building and modification:
+ * - Part and structure definition helpers for visual programming
+ * - Document building from structure definitions
+ * - Document modification (set color, set name)
+ * - Document export (STEP, glTF)
+ * - Document lifecycle management (delete)
  * 
- * All methods use document handles directly (no global document storage).
- * The caller is responsible for managing document lifetime by calling document.delete() when done.
+ * **query** - Document querying:
+ * - Query document parts, shapes, colors, transforms, hierarchy
+ * - Get shapes from labels
+ * 
+ * All operations use document handles directly. Documents stay in worker memory
+ * until explicitly deleted with deleteDocument().
+ * 
+ * Note: IO operations for shape conversion (convertStepToGltf, parseStepToJson, 
+ * exportToStep) are in the io service.
  * 
  * @example
  * ```typescript
- * // Create assembly document
- * const document = occt.assembly.manager.buildAssemblyDocument({ structure });
+ * // Create parts and structure
+ * const box = await occt.shapes.solid.createBox({ width: 10, length: 10, height: 10 });
+ * const part = await occt.assembly.manager.createPart({ id: "box", shape: box, name: "Box" });
+ * const node = await occt.assembly.manager.createAssemblyNode({ id: "root", name: "Root" });
+ * const inst = await occt.assembly.manager.createInstanceNode({ id: "inst1", partId: "box", name: "Box 1" });
+ * const structure = await occt.assembly.manager.combineStructure({ parts: [part], nodes: [node, inst] });
  * 
- * // Query document parts
- * const parts = occt.assembly.query.getDocumentParts({ document });
+ * // Build document
+ * const document = await occt.assembly.manager.buildAssemblyDocument({ structure });
  * 
- * // Export to STEP
- * const stepData = occt.assembly.manager.exportDocumentToStep({ document });
+ * // Query document
+ * const parts = await occt.assembly.query.getDocumentParts({ document });
  * 
- * // Clean up when done
- * document.delete();
+ * // Export to glTF
+ * const glbData = await occt.assembly.manager.exportDocumentToGltf({ document });
+ * 
+ * // Clean up
+ * await occt.assembly.manager.deleteDocument({ document });
  * ```
  */
 export class OCCTAssembly {

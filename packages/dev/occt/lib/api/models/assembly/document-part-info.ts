@@ -14,7 +14,7 @@ export interface DocumentPartInfo {
     /** Whether this is a free (root-level) shape */
     isFree: boolean;
     /** Color if set */
-    color?: Base.ColorRGBA;
+    color?: Base.ColorRGBA | undefined;
     /** Number of instances that reference this part/assembly */
     instanceCount: number;
 }

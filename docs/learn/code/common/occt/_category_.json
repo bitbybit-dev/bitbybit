@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Bitbybit OCCT Library",
-        "description": "Learn how to use our library, built on the OCCT (Open CASCADE Technology) kernel, for advanced geometric modeling. Our algorithms leverage this powerful foundation to enable the creation and manipulation of a wide range of BRep shapes, including edges, wires, faces, shells, solids, and more.",
+        "description": "OpenCascade (OCCT) is the CAD kernel behind Bitbybit's solid modelling, compiled to WebAssembly and running in your browser. It is what separates real CAD from mesh modelling: exact boundary representation geometry, reliable boolean operations, proper fillets and chamfers, and STEP files an engineer can open. These pages cover the shape hierarchy from vertices up to compounds, boolean operations, fillets and chamfers, lofting, extruding and offsetting, assemblies with colour, dimensions, and import and export through STEP, IGES, DXF and GLTF. Start with the shape types if you are new to boundary representation modelling.",
         "slug": "/code/common/occt"
     }
 }

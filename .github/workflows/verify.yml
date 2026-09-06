@@ -1,0 +1,107 @@
+# This repository must build and test from a bare clone, with nothing else checked out. This
+# workflow is that proof, on every push to the integration branch and every pull request into it or
+# into the release branch. It needs no secrets and must never gain any: fork pull requests run it,
+# and pull_request_target is deliberately not used.
+#
+# The order the packages build in is not written here: each package's manifest declares its
+# siblings, scripts/gen-ts-references.mjs turns that into TypeScript project references, tsc -b
+# compiles in that order and pnpm -r stages in it. check:references fails when the two disagree.
+#
+# nightly.yml runs the same build and tests on every supported Node line, on a schedule.
+name: Verify
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    branches: [develop, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm's version comes from the packageManager field; Node's from .tool-versions, the one pin
+      # mise and asdf read on a developer's machine as well.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The three OCCT kernels are not tracked (35 MB each, a new set per rebuild): kernels.json in
+      # the occt package names them with their SHA-256 and where they are published, and the fetch
+      # verifies what is present and downloads what is not. Cached on the manifest's hash so a
+      # rebuild, and only a rebuild, downloads again.
+      - uses: actions/cache@v4
+        with:
+          key: occt-kernels-${{ hashFiles('packages/dev/occt/kernels.json') }}
+          path: packages/dev/occt/bitbybit-dev-occt*/*.wasm
+      - run: npm run kernels:fetch
+
+      # ESLint 10 with a committed suppression baseline: every finding that existed when the config landed
+      # is recorded in eslint-suppressions.json, a new one fails, and so does a suppression no longer needed.
+      - name: Lint
+        run: npm run lint
+
+      - name: Project references match the manifests
+        run: npm run check:references
+
+      - name: Exports maps and the published manifests they derive
+        run: npm run check:exports
+
+      - name: Build and stage every package in dependency order
+        run: npm run rebuild-all-packages
+
+      # The root aggregate: the kernel/worker parity walker, then every package's jest suite with
+      # coverage, each writing its results to its test-results/ folder for the report below.
+      - name: Test aggregate
+        run: npm test
+
+      # The strict typecheck each package is ratcheting towards, held to its committed baseline in both
+      # directions: a new error fails, and so does a fixed one whose baseline was not re-saved.
+      - name: Strict baselines match the code
+        run: npm run check:strict-baselines
+
+      # The two packages outside the aggregate: the SDK's typecheck, tests with coverage and build,
+      # and the scaffolder's build - their only gate used to be prepublishOnly at publish time.
+      - name: cad-cloud-sdk
+        run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test:coverage && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
+
+      - name: create-app
+        run: pnpm --filter @bitbybit-dev/create-app run build
+
+      # The SDK is generated from the API's OpenAPI document, and the documentation site publishes
+      # that document; both carry the version, and they must agree before either ships.
+      - name: OpenAPI document matches the SDK version
+        run: npm run check:openapi
+
+      # The dotted public API is persisted in users' saved scripts. The committed reports under
+      # etc/ are the surface; a change to it lands only with a deliberate `npm run api:update`.
+      - name: Public API surface matches the committed reports
+        run: npm run api:check
+
+      # Pack every dist and install all the tarballs together into an empty project, as a user
+      # would - a sibling only the workspace could resolve, a forgotten dependency or a shipped
+      # build info file fails here, not on a user's machine.
+      - name: Tarballs install standalone
+        run: npm run check:tarballs
+
+      # Every suite's results in one table on the run's summary page - files, tests, failures with
+      # their messages, skipped tests, coverage - and a suite that left no results is called out.
+      # Runs on a red run too, so the failures are read there rather than in the log.
+      - name: Test report
+        if: always()
+        run: npm run test:report

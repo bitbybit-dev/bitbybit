@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+ 
 // Mock for @bitbybit-dev/occt-worker
 // This mock is needed because the real package uses import.meta.url which Jest can't handle
 
@@ -7,7 +7,7 @@ export class OCCTWorkerManager {
     
     constructor() {}
     
-    setOccWorker(worker: any) {}
+    setOccWorker(_worker: any) {}
     
     shapeToMesh = jest.fn().mockResolvedValue({
         faceList: [],
@@ -16,7 +16,7 @@ export class OCCTWorkerManager {
 }
 
 export class OCCT {
-    constructor(context?: any, occWorkerManager?: any) {}
+    constructor(_context?: any, _occWorkerManager?: any) {}
 }
 
 // Base class for OCCT IO operations - extended by core package

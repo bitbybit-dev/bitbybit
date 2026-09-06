@@ -3,7 +3,7 @@
     "link": {
         "type": "generated-index",
         "title": "Dates in Bitbybit",
-        "description": "Introduction to dates in Bitbybit.",
+        "description": "Work with dates and times inside a Bitbybit script - create them, read their parts, and compare or shift them by an interval. Date handling matters more than it first appears in parametric work: driving a sun-path study, stamping an export with the moment it was generated, or animating a model across a timeline. These pages cover constructing dates from components, extracting the year, month, day and time parts, and doing arithmetic on them. Each example is shown in Rete, Blockly and TypeScript.",
         "slug": "/code/common/base/dates"
     }
 }

@@ -1,0 +1,38 @@
+# The build and the tests of verify.yml on every Node line the packages should keep working on.
+# Node 18 and 20 are end of life and pnpm 11 needs 22.13, so the matrix starts at 22. Nightly on
+# the default branch, or by hand from the Actions tab; the pull-request runs stay on one Node.
+name: Nightly
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    name: Node ${{ matrix.node }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: npm run rebuild-all-packages
+      - run: npm test
+      - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run test:coverage
+
+      - name: Test report
+        if: always()
+        run: npm run test:report -- --title "Test report, Node ${{ matrix.node }}"

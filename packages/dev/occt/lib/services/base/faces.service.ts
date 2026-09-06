@@ -1,4 +1,4 @@
-import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire, Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire, Geom_Surface, Handle_Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import { OCCReferencedReturns } from "../../occ-referenced-returns";
@@ -162,8 +162,8 @@ export class FacesService {
             for (let i = 0; i < circleWires.length; i++) {
                 for (let j = i + 1; j < circleWires.length; j++) {
                     const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: circleWires[i],
-                        circle2: circleWires[j],
+                        circle1: circleWires[i]!,
+                        circle2: circleWires[j]!,
                         keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                         circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                         tolerance: inputs.tolerance,
@@ -175,8 +175,8 @@ export class FacesService {
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrder) {
             for (let i = 0; i < circleWires.length - 1; i++) {
                 const wire = this.wiresService.createWireFromTwoCirclesTan({
-                    circle1: circleWires[i],
-                    circle2: circleWires[i + 1],
+                    circle1: circleWires[i]!,
+                    circle2: circleWires[i + 1]!,
                     keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                     circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                     tolerance: inputs.tolerance,
@@ -187,8 +187,8 @@ export class FacesService {
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
             for (let i = 0; i < circleWires.length; i++) {
                 const wire = this.wiresService.createWireFromTwoCirclesTan({
-                    circle1: circleWires[i],
-                    circle2: circleWires[(i + 1) % circleWires.length],
+                    circle1: circleWires[i]!,
+                    circle2: circleWires[(i + 1) % circleWires.length]!,
                     keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                     circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                     tolerance: inputs.tolerance,
@@ -213,13 +213,13 @@ export class FacesService {
         if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
             for (let i = 0; i < listsOfCircles.length; i++) {
                 // lists of circles is a 2D array of circular wires
-                const currentCirclesList = listsOfCircles[i];
+                const currentCirclesList = listsOfCircles[i]!;
                 const nextCirclesList = listsOfCircles[(i + 1)];
                 if (nextCirclesList) {
                     for (let j = 0; j < currentCirclesList.length; j++) {
                         for (let k = 0; k < nextCirclesList.length; k++) {
-                            const circle1 = currentCirclesList[j];
-                            const circle2 = nextCirclesList[k];
+                            const circle1 = currentCirclesList[j]!;
+                            const circle2 = nextCirclesList[k]!;
                             const wire = this.wiresService.createWireFromTwoCirclesTan({
                                 circle1,
                                 circle2,
@@ -237,15 +237,15 @@ export class FacesService {
             }
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrder) {
             for (let i = 0; i < listsOfCircles.length; i++) {
-                if (listsOfCircles[i].length !== listsOfCircles[0].length) {
+                if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
                     throw new Error("All lists of circles must have the same length in order to use inOrder strategy.");
                 }
             }
             for (let i = 0; i < listsOfCircles.length - 1; i++) {
-                for (let j = 0; j < listsOfCircles[i].length; j++) {
+                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
                     const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i][j],
-                        circle2: listsOfCircles[i + 1][j],
+                        circle1: listsOfCircles[i]![j]!,
+                        circle2: listsOfCircles[i + 1]![j]!,
                         keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                         circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                         tolerance: inputs.tolerance,
@@ -257,15 +257,15 @@ export class FacesService {
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
             // check if all lists are of the same length
             for (let i = 0; i < listsOfCircles.length; i++) {
-                if (listsOfCircles[i].length !== listsOfCircles[0].length) {
+                if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
                     throw new Error("All lists of circles must have the same length in order to use inOrderClosed strategy.");
                 }
             }
             for (let i = 0; i < listsOfCircles.length - 1; i++) {
-                for (let j = 0; j < listsOfCircles[i].length; j++) {
+                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
                     const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i][j],
-                        circle2: listsOfCircles[i + 1][j],
+                        circle1: listsOfCircles[i]![j]!,
+                        circle2: listsOfCircles[i + 1]![j]!,
                         keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                         circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                         tolerance: inputs.tolerance,
@@ -275,10 +275,10 @@ export class FacesService {
                 }
             }
             for (let i = 0; i < listsOfCircles.length; i++) {
-                for (let j = 0; j < listsOfCircles[i].length; j++) {
+                for (let j = 0; j < listsOfCircles[i]!.length; j++) {
                     const wire = this.wiresService.createWireFromTwoCirclesTan({
-                        circle1: listsOfCircles[i][j],
-                        circle2: listsOfCircles[i][(j + 1) % listsOfCircles[i].length],
+                        circle1: listsOfCircles[i]![j]!,
+                        circle2: listsOfCircles[i]![(j + 1) % listsOfCircles[i]!.length]!,
                         keepLines: Inputs.OCCT.twoSidesStrictEnum.outside,
                         circleRemainders: Inputs.OCCT.fourSidesStrictEnum.outside,
                         tolerance: inputs.tolerance,
@@ -303,7 +303,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const u = uMin + (uMax - uMin) * inputs.paramU;
         const v = vMin + (vMax - vMin) * inputs.paramV;
@@ -381,7 +381,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
 
@@ -427,7 +427,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
 
@@ -463,10 +463,10 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
-        const params = [];
+        const params: number[] = [];
         const step = 1 / inputs.nrDivisions;
         for (let i = 0; i <= inputs.nrDivisions; i++) {
             const p = step * i;
@@ -482,14 +482,14 @@ export class FacesService {
 
         if (inputs.shiftHalfStep) {
             const halfStep = step / 2;
-            params.forEach((p, i) => {
-                params[i] = params[i] + halfStep;
+            params.forEach((_p, i) => {
+                params[i] = params[i]! + halfStep;
             });
         }
 
         const wires: TopoDS_Wire[] = [];
         for (let i = 0; i < params.length; i++) {
-            const param = params[i];
+            const param = params[i]!;
             const placedWire = this.placeWireOnParamSurface(inputs.isU, param, uMin, uMax, vMin, vMax, surface);
             wires.push(placedWire);
         }
@@ -504,7 +504,7 @@ export class FacesService {
         const shapesToDelete = [];
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         const paramsU = [];
@@ -558,7 +558,7 @@ export class FacesService {
 
                 let scaleFromPatternU = 1;
                 if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
-                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex];
+                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex] ?? 1;
                     currentScalePatternUIndex++;
                     if (currentScalePatternUIndex >= inputs.scalePatternU.length) {
                         currentScalePatternUIndex = 0;
@@ -567,7 +567,7 @@ export class FacesService {
 
                 let scaleFromPatternV = 1;
                 if (inputs.scalePatternV && inputs.scalePatternV.length > 0) {
-                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex];
+                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex] ?? 1;
                     currentScalePatternVIndex++;
                     if (currentScalePatternVIndex >= inputs.scalePatternV.length) {
                         currentScalePatternVIndex = 0;
@@ -575,7 +575,7 @@ export class FacesService {
                 }
                 let include = true;
                 if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
-                    include = inputs.inclusionPattern[currentInclusionPatternIndex];
+                    include = inputs.inclusionPattern[currentInclusionPatternIndex] ?? true;
                     currentInclusionPatternIndex++;
                     if (currentInclusionPatternIndex >= inputs.inclusionPattern.length) {
                         currentInclusionPatternIndex = 0;
@@ -584,7 +584,7 @@ export class FacesService {
 
                 let fillet = 0;
                 if (inputs.filletPattern && inputs.filletPattern.length > 0) {
-                    fillet = inputs.filletPattern[currentFilletPatternIndex];
+                    fillet = inputs.filletPattern[currentFilletPatternIndex] ?? 0;
                     currentFilletPatternIndex++;
                     if (currentFilletPatternIndex >= inputs.filletPattern.length) {
                         currentFilletPatternIndex = 0;
@@ -603,7 +603,7 @@ export class FacesService {
                     }
 
                     const useRec = cachedRectangles.find(r => r.id === `${width}-${length}-${fillet}`)?.shape;
-                    const translation = [paramsV[j] * scaleV + vMin, 0, paramsU[i] * scaleU + uMin] as Base.Vector3;
+                    const translation = [paramsV[j]! * scaleV + vMin, 0, paramsU[i]! * scaleU + uMin] as Base.Vector3;
 
                     if (useRec) {
                         const translated = this.transformsService.translate({
@@ -688,7 +688,7 @@ export class FacesService {
         const wires = this.subdivideToRectangleWires(inputs);
         const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
         const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
-        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))];
+        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))]!;
 
         const revWires = wires.map(wire => { return this.wiresService.reversedWire({ shape: wire }); });
         const listOfWires = [longestFaceWire, ...revWires];
@@ -704,7 +704,7 @@ export class FacesService {
             newFace.Reverse();
         }
 
-        let faces = [];
+        let faces: TopoDS_Face[] = [];
         if (inputs.holesToFaces) {
             faces = wires.map(wire => {
                 return this.createFaceFromWireOnFace({ wire, face: inputs.shape, inside: true });
@@ -729,7 +729,7 @@ export class FacesService {
         const shapesToDelete: TopoDS_Shape[] = [];
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         // Calculate parametric range
@@ -741,12 +741,14 @@ export class FacesService {
             return [];
         }
 
+        const offsetFromBorderU = inputs.offsetFromBorderU ?? 0;
+        const offsetFromBorderV = inputs.offsetFromBorderV ?? 0;
         // Calculate target parametric dimensions and origin for the grid
-        const gridHeightU = scaleU * (1 - inputs.offsetFromBorderU * 2);
-        const gridWidthV = scaleV * (1 - inputs.offsetFromBorderV * 2);
+        const gridHeightU = scaleU * (1 - offsetFromBorderU * 2);
+        const gridWidthV = scaleV * (1 - offsetFromBorderV * 2);
 
-        const gridOriginU = uMin + scaleU * inputs.offsetFromBorderU;
-        const gridOriginV = vMin + scaleV * inputs.offsetFromBorderV;
+        const gridOriginU = uMin + scaleU * offsetFromBorderU;
+        const gridOriginV = vMin + scaleV * offsetFromBorderV;
 
         if (gridHeightU <= 0 || gridWidthV <= 0) {
             console.warn("Grid dimensions are zero or negative after applying offset. Skipping.");
@@ -801,50 +803,52 @@ export class FacesService {
         let currentInclusionPatternIndex = 0;
         let currentFilletPatternIndex = 0;
 
+        const nrHexagonsU = inputs.nrHexagonsU ?? 10;
+        const nrHexagonsV = inputs.nrHexagonsV ?? 10;
         // Ensure we have enough hexagons generated for the loop counts
-        const totalHexagons = inputs.nrHexagonsU * inputs.nrHexagonsV;
+        const totalHexagons = nrHexagonsU * nrHexagonsV;
         if (uvHexWires.length !== totalHexagons || uvHexCenters.length !== totalHexagons) {
             console.error(`Generated ${uvHexWires.length} hexagons, but expected ${totalHexagons}. Check hexGridScaledToFit logic.`);
             return [];
         }
 
         // Process each hexagon (scale, fillet, place)
-        for (let i = 0; i < inputs.nrHexagonsU; i++) {
-            for (let j = 0; j < inputs.nrHexagonsV; j++) {
-                const hexIndex = i * inputs.nrHexagonsV + j;
+        for (let i = 0; i < nrHexagonsU; i++) {
+            for (let j = 0; j < nrHexagonsV; j++) {
+                const hexIndex = i * nrHexagonsV + j;
 
                 // Get scale/inclusion/fillet values from patterns
                 let scaleFromPatternU = 1;
-                if (inputs.scalePatternU?.length > 0) {
-                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length];
+                if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
+                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length]!;
                     currentScalePatternUIndex++;
                 }
 
                 let scaleFromPatternV = 1;
-                if (inputs.scalePatternV?.length > 0) {
-                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex % inputs.scalePatternV.length];
+                if (inputs.scalePatternV && inputs.scalePatternV.length > 0) {
+                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex % inputs.scalePatternV.length]!;
                     currentScalePatternVIndex++;
                 }
 
                 let include = true;
-                if (inputs.inclusionPattern?.length > 0) {
-                    include = inputs.inclusionPattern[currentInclusionPatternIndex % inputs.inclusionPattern.length];
+                if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
+                    include = inputs.inclusionPattern[currentInclusionPatternIndex % inputs.inclusionPattern.length]!;
                     currentInclusionPatternIndex++;
                 }
 
                 let filletFactor = 0;
-                if (inputs.filletPattern?.length > 0) {
-                    filletFactor = inputs.filletPattern[currentFilletPatternIndex % inputs.filletPattern.length];
+                if (inputs.filletPattern && inputs.filletPattern.length > 0) {
+                    filletFactor = inputs.filletPattern[currentFilletPatternIndex % inputs.filletPattern.length]!;
                     currentFilletPatternIndex++;
                 }
 
                 if (include) {
-                    const uvHexagon = uvHexWires[hexIndex];
-                    const uvCenter = uvHexCenters[hexIndex];
+                    const uvHexagon = uvHexWires[hexIndex]!;
+                    const uvCenter = uvHexCenters[hexIndex]!;
 
                     let shapeToScale = uvHexagon;
                     // Apply Fillet (using the factor)
-                    const filletRadius = hex.maxFilletRadius * filletFactor;
+                    const filletRadius = (hex.maxFilletRadius ?? 0) * filletFactor;
                     if (filletRadius > 1e-6) {
                         const filletedHex = this.filletsService.fillet2d({
                             shape: uvHexagon,
@@ -893,7 +897,7 @@ export class FacesService {
         const wires = this.subdivideToHexagonWires(inputs);
         const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
         const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
-        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))];
+        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))]!;
 
         const revWires = wires.map(wire => { return this.wiresService.reversedWire({ shape: wire }); });
         const listOfWires = [longestFaceWire, ...revWires];
@@ -909,7 +913,7 @@ export class FacesService {
             newFace.Reverse();
         }
 
-        let faces = [];
+        let faces: TopoDS_Face[] = [];
         if (inputs.holesToFaces) {
             faces = wires.map(wire => {
                 return this.createFaceFromWireOnFace({ wire, face: inputs.shape, inside: true });
@@ -926,13 +930,13 @@ export class FacesService {
         return [newFace, ...faces];
     }
 
-    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
 
@@ -974,7 +978,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const placedWire = this.placeWireOnParamSurface(inputs.isU, inputs.param, uMin, uMax, vMin, vMax, surface);
         handle.delete();
@@ -1010,12 +1014,12 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         const wires: TopoDS_Wire[] = [];
         for (let i = 0; i < inputs.params.length; i++) {
-            const param = inputs.params[i];
+            const param = inputs.params[i]!;
             const placedWire = this.placeWireOnParamSurface(inputs.isU, param, uMin, uMax, vMin, vMax, surface);
             wires.push(placedWire);
         }
@@ -1029,7 +1033,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
         const removeStart = inputs.removeStartPoint ? 1 : 0;
@@ -1098,7 +1102,7 @@ export class FacesService {
                 const stepsU = stepU * j;
                 p = uMin + (inputs.shiftHalfStep ? halfStepU : 0) + stepsU;
             }
-            let uv;
+            let uv: Inputs.Base.Point2;
             if (inputs.isU) {
                 uv = [param, p];
             } else {
@@ -1157,7 +1161,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const pts: Base.Point3[] = inputs.paramsUV.map(uv => {
             const u = uMin + (uMax - uMin) * uv[0];
@@ -1176,7 +1180,7 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
+        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const nrmls: Base.Vector3[] = inputs.paramsUV.map(uv => {
             const u = uMin + (uMax - uMin) * uv[0];
@@ -1198,19 +1202,15 @@ export class FacesService {
         }
         const face = inputs.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = handle.get();
-        if (surface) {
-            const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-            const u = uMin + (uMax - uMin) * inputs.paramU;
-            const v = vMin + (vMax - vMin) * inputs.paramV;
-            const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
-            const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-            gpPnt.delete();
-            handle.delete();
-            return pt;
-        } else {
-            return undefined;
-        }
+        const surface = this.surfaceOf(handle);
+        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
+        const u = uMin + (uMax - uMin) * inputs.paramU;
+        const v = vMin + (vMax - vMin) * inputs.paramV;
+        const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
+        const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        gpPnt.delete();
+        handle.delete();
+        return pt;
     }
 
     normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
@@ -1224,4 +1224,11 @@ export class FacesService {
         return result;
     }
 
+    private surfaceOf(handle: Handle_Geom_Surface): Geom_Surface {
+        const surface = handle.get();
+        if (!surface) {
+            throw new Error("Face has no surface");
+        }
+        return surface;
+    }
 }

@@ -16,9 +16,9 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
         return { r: 0, g: 0, b: 0 };
     }
     return {
-        r: parseInt(result[1], 16) / 255,
-        g: parseInt(result[2], 16) / 255,
-        b: parseInt(result[3], 16) / 255
+        r: parseInt(result[1]!, 16) / 255,
+        g: parseInt(result[2]!, 16) / 255,
+        b: parseInt(result[3]!, 16) / 255
     };
 }
 

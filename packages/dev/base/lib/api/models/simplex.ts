@@ -3,7 +3,9 @@
 // -- original source form openjscad github repo https://github.com/jscad/OpenJSCAD.org (MIT License)
 // { [ascii code]: [width, x, y, ...] } - undefined value as path separator
 
-export const simplex = {
+export type VectorFont = { height: number } & { [code: number]: (number | undefined)[] };
+
+export const simplex: VectorFont = {
     height: 21,
     32: [16],
     33: [10, 5, 21, 5, 7, undefined, 5, 2, 4, 1, 5, 0, 6, 1, 5, 2],

@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Managing Scripts Within Bitbybit Cloud Projects",
-        "description": "Learn how to create, manage, and run scripts in Bitbybit cloud projects, including script organization and best practices.",
+        "description": "Scripts are the individual programs inside a Bitbybit project, each written in Rete, Blockly or TypeScript. These pages cover the practical mechanics of working with them: creating a script and choosing its editor, how auto save protects your work, finding scripts again across your projects, importing one from somewhere else, and embedding a finished script in your own website so visitors can run it without a Bitbybit account. Read these alongside the projects pages - the two together are most of what you need to know about the platform itself.",
         "slug": "/getting-started/basics/scripts"
     }
 }

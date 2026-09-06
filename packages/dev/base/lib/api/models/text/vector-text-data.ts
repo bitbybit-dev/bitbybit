@@ -11,15 +11,15 @@ export class VectorTextData {
      * The width of the char
      * @default undefined
      */
-    width?: number;
+    width!: number;
     /**
      * The height of the char
      * @default undefined
      */
-    height?: number;
+    height!: number;
     /**
      * The segments of the char
      * @default undefined
      */
-    chars?: VectorCharData[];
+    chars!: VectorCharData[];
 }

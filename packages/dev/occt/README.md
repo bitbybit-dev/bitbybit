@@ -41,7 +41,17 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/occt |
 | **Documentation** | https://learn.bitbybit.dev/learn/code/common/occt/what-is-occt |
+| **API Reference** | https://docs.bitbybit.dev/classes/Bit.OCCT |
 | **Unit Test Coverage** | https://tests.bitbybit.dev/occt |
+
+### API reference
+
+Every class, method and input type in this package is documented in the generated TypeScript API reference:
+
+- [OCCT](https://docs.bitbybit.dev/classes/Bit.OCCT)
+- [OCCT shapes](https://docs.bitbybit.dev/classes/Bit.OCCTShapes)
+- [OCCT booleans](https://docs.bitbybit.dev/classes/Bit.OCCTBooleans)
+- [OCCT input types](https://docs.bitbybit.dev/modules/Bit.Inputs.OCCT)
 
 ## Example Applications
 
@@ -93,8 +103,14 @@ This package is part of the open-source Bitbybit ecosystem. Your subscription he
 
 ## Major Dependencies
 
-[OpenCascade Technology (OCCT)](https://github.com/Open-Cascade-SAS/OCCT)
+[OpenCascade Technology (OCCT)](https://github.com/Open-Cascade-SAS/OCCT), compiled to WebAssembly together with
+[Draco](https://github.com/google/draco) for glTF compression.
 
 ## License
 
-MIT © [Bit By Bit Developers](https://bitbybit.dev)
+The TypeScript and JavaScript in this package: MIT © [Bit By Bit Developers](https://bitbybit.dev).
+
+The WebAssembly kernels it ships embed OCCT (LGPL-2.1 with the Open CASCADE exception) and Draco
+(Apache-2.0). `NOTICE` lists them and `licenses/` reproduces their license texts. The kernel is a
+separately replaceable component: it is loaded at runtime through the emscripten `locateFile` hook, so a
+modified OCCT compiled to WebAssembly can be substituted without relinking this package.

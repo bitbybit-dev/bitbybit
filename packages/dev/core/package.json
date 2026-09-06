@@ -2,10 +2,12 @@
     "name": "@bitbybit-dev/core",
     "version": "1.1.1",
     "description": "Bit By Bit Developers Core CAD API to Program Geometry",
+    "homepage": "https://docs.bitbybit.dev/modules/Bit",
     "main": "index.js",
     "repository": {
         "type": "git",
-        "url": "https://github.com/bitbybit-dev/bitbybit"
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+        "directory": "packages/dev/core"
     },
     "keywords": [
         "Bit By Bit Developers",
@@ -40,14 +42,18 @@
         "lib": "lib"
     },
     "scripts": {
-        "build": "tsc -p tsconfig.bitbybit.json",
+        "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
+        "clean-dist": "shx rm -rf dist",
         "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
-        "copy-package": "shx cp -R ./package.json ./dist",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
         "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
-        "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
-        "test-c": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=false",
-        "test-c-l": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=true"
+        "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
+        "test-c": "mkdir -p test-results && NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false --json --outputFile=test-results/jest.json",
+        "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true",
+        "api:check": "api-extractor run",
+        "api:update": "api-extractor run --local"
     },
     "author": "Bit by bit developers",
     "license": "MIT",
@@ -56,12 +62,73 @@
         "url": "https://bitbybit.dev/auth/pick-plan"
     },
     "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "@bitbybit-dev/source": "./index.ts",
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/api/bitbybit": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/index.ts",
+            "types": "./dist/lib/api/bitbybit/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/index.js"
+        },
+        "./lib/api/bitbybit/occt": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/occt/index.ts",
+            "types": "./dist/lib/api/bitbybit/occt/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/occt/index.js"
+        },
+        "./lib/api/bitbybit/verb": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/verb/index.ts",
+            "types": "./dist/lib/api/bitbybit/verb/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/verb/index.js"
+        },
+        "./lib/api/inputs": {
+            "@bitbybit-dev/source": "./lib/api/inputs/index.ts",
+            "types": "./dist/lib/api/inputs/index.d.ts",
+            "default": "./dist/lib/api/inputs/index.js"
+        },
+        "./lib/api/models": {
+            "@bitbybit-dev/source": "./lib/api/models/index.ts",
+            "types": "./dist/lib/api/models/index.d.ts",
+            "default": "./dist/lib/api/models/index.js"
+        },
+        "./lib/models": {
+            "@bitbybit-dev/source": "./lib/models/index.ts",
+            "types": "./dist/lib/models/index.d.ts",
+            "default": "./dist/lib/models/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
+        "./*": {
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        }
+    },
     "type": "module",
     "dependencies": {
         "@bitbybit-dev/base": "1.1.1",
         "@bitbybit-dev/occt-worker": "1.1.1",
         "@bitbybit-dev/manifold-worker": "1.1.1",
         "@bitbybit-dev/jscad-worker": "1.1.1",
+        "@bitbybit-dev/occt": "1.1.1",
+        "@bitbybit-dev/jscad": "1.1.1",
+        "@bitbybit-dev/manifold": "1.1.1",
         "jsonpath-plus": "10.3.0",
         "verb-nurbs-web": "2.1.3",
         "rxjs": "7.8.2"
@@ -69,7 +136,6 @@
     "devDependencies": {
         "shx": "0.4.0",
         "@testing-library/jest-dom": "6.9.1",
-        "mvdir": "1.0.22",
         "jest": "30.4.2",
         "ts-node": "10.9.2",
         "ts-jest": "29.4.10",
@@ -79,7 +145,9 @@
         "@babel/core": "7.29.0",
         "@babel/preset-env": "7.29.5",
         "@babel/preset-typescript": "7.28.5",
-        "jest-html-reporters": "3.1.7"
+        "jest-html-reporters": "3.1.7",
+        "jest-environment-node": "30.4.1",
+        "@microsoft/api-extractor": "7.59.0"
     },
     "jest": {
         "preset": "ts-jest",
@@ -90,11 +158,23 @@
             ".ts"
         ],
         "transformIgnorePatterns": [
-            "node_modules/(?!@babylonjs|@bitbybit-dev)"
+            "node_modules/(?!\\.pnpm|@babylonjs|@bitbybit-dev)"
         ],
         "collectCoverageFrom": [
             "lib/workers/**/*",
             "lib/api/bitbybit/**/*"
-        ]
+        ],
+        "coverageReporters": [
+            "text",
+            "lcov",
+            "json-summary"
+        ],
+        "testEnvironmentOptions": {
+            "customExportConditions": [
+                "@bitbybit-dev/source",
+                "node",
+                "node-addons"
+            ]
+        }
     }
 }

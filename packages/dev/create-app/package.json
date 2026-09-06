@@ -14,7 +14,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitbybit-dev/bitbybit"
+    "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+    "directory": "packages/dev/create-app"
   },
   "keywords": [
     "Bit By Bit Developers",
@@ -46,7 +47,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "chalk": "5.6.2",

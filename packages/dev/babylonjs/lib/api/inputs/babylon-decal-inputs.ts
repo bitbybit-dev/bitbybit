@@ -3,6 +3,11 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for decals - images projected onto the surface of an existing mesh, following its
+ * curvature. Carries the target mesh, the projection position, direction and size, and the material
+ * used for the projected image.
+ */
 export namespace BabylonDecal {
 
     export class CreateMeshDecalDto {
@@ -21,12 +26,12 @@ export namespace BabylonDecal {
          * Mesh to project the decal onto. The decal is created as a clipped child mesh hugging the surface.
          * @default undefined
          */
-        sourceMesh: BABYLON.AbstractMesh;
+        sourceMesh!: BABYLON.AbstractMesh;
         /**
          * Image texture to project. Create it via texture image, and keep an alpha channel for cutout decals.
          * @default undefined
          */
-        texture: BABYLON.BaseTexture;
+        texture!: BABYLON.BaseTexture;
         /**
          * Position of the decal projector in world coordinates. Often picked from a ray/pick hit on the mesh.
          * @default [0, 0, 0]
@@ -77,12 +82,12 @@ export namespace BabylonDecal {
          * Mesh on which a UV-space decal map should be enabled. The mesh must have proper, non-overlapping UV coordinates.
          * @default undefined
          */
-        mesh: BABYLON.AbstractMesh;
+        mesh!: BABYLON.AbstractMesh;
         /**
          * Material of the mesh on which the decal map plugin should be turned on so projected decals are blended in the shader.
          * @default undefined
          */
-        material: BABYLON.Material;
+        material!: BABYLON.Material;
         /**
          * Width in pixels of the internal decal map render target.
          * @default 1024
@@ -108,12 +113,12 @@ export namespace BabylonDecal {
          * Decal map renderer obtained from enabling a decal map on a mesh. Projected decals accumulate into it.
          * @default undefined
          */
-        decalMap: BABYLON.MeshUVSpaceRenderer;
+        decalMap!: BABYLON.MeshUVSpaceRenderer;
         /**
          * Image texture to project into the mesh UV space.
          * @default undefined
          */
-        texture: BABYLON.BaseTexture;
+        texture!: BABYLON.BaseTexture;
         /**
          * Position of the projector in world coordinates.
          * @default [0, 0, 0]
@@ -145,6 +150,6 @@ export namespace BabylonDecal {
          * Decal map renderer to operate on.
          * @default undefined
          */
-        decalMap: BABYLON.MeshUVSpaceRenderer;
+        decalMap!: BABYLON.MeshUVSpaceRenderer;
     }
 }

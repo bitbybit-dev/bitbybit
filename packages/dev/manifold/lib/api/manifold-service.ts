@@ -6,21 +6,49 @@ import { Mesh } from "./services/mesh/mesh";
 import { BaseBitByBit } from "../base";
 
 // Worker make an instance of this class itself
+/**
+ * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
+ * Thanks Manifold community for developing this kernel
+ */
 export class ManifoldService {
     plugins: any;
+    public manifold: Manifold;
 
     public crossSection: CrossSection;
-    public manifold: Manifold;
     private base: BaseBitByBit;
     mesh: Mesh;
 
     constructor(wasm: Manifold3D.ManifoldToplevel) {
         this.base = new BaseBitByBit();
-        this.crossSection = new CrossSection(wasm, this.base);
         this.manifold = new Manifold(wasm);
+        this.crossSection = new CrossSection(wasm, this.base);
         this.mesh = new Mesh(wasm);
     }
 
+    /**
+     * Decomposes manifold or cross section shape into a mesh or simple polygons
+     * @param inputs Manifold shape or cross section
+     * @returns Decomposed mesh definition or simple polygons
+     * @group decompose
+     * @shortname decompose m or cs
+     * @drawable false
+     */
+    decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
+        if ((inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh) {
+            return (inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh(inputs.normalIdx);
+        } else {
+            return (inputs.manifoldOrCrossSection as Manifold3D.CrossSection).toPolygons();
+        }
+    }
+
+    /**
+     * Turns manifold shape into a collection of polygon points representing the mesh.
+     * @param inputs Manifold shape
+     * @returns polygon points
+     * @group decompose
+     * @shortname to polygon points
+     * @drawable false
+     */
     toPolygonPoints(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Inputs.Base.Mesh3 {
         // Ensure the manifold is decomposed to access the mesh data.
         // The getMesh() method provides the necessary structure.
@@ -50,9 +78,9 @@ export class ManifoldService {
             const numVertices = vertProperties.length / numProp;
 
             for (let i = 0; i < triVerts.length; i += 3) {
-                const index1 = triVerts[i];
-                const index2 = triVerts[i + 1];
-                const index3 = triVerts[i + 2];
+                const index1 = triVerts[i]!;
+                const index2 = triVerts[i + 1]!;
+                const index3 = triVerts[i + 2]!;
 
                 if (index1 >= numVertices || index2 >= numVertices || index3 >= numVertices) {
                     console.error(`Invalid vertex index found in triVerts at offset ${i}. Max index should be ${numVertices - 1}. Indices: ${index1}, ${index2}, ${index3}`);
@@ -66,9 +94,9 @@ export class ManifoldService {
                 const vert3Offset = index3 * numProp;
 
                 // Extract only the first 3 properties (x, y, z) starting from the offset for each vertex.
-                const point1: Inputs.Base.Point3 = [vertProperties[vert1Offset], vertProperties[vert1Offset + 1], vertProperties[vert1Offset + 2]];
-                const point2: Inputs.Base.Point3 = [vertProperties[vert2Offset], vertProperties[vert2Offset + 1], vertProperties[vert2Offset + 2]];
-                const point3: Inputs.Base.Point3 = [vertProperties[vert3Offset], vertProperties[vert3Offset + 1], vertProperties[vert3Offset + 2]];
+                const point1: Inputs.Base.Point3 = [vertProperties[vert1Offset]!, vertProperties[vert1Offset + 1]!, vertProperties[vert1Offset + 2]!];
+                const point2: Inputs.Base.Point3 = [vertProperties[vert2Offset]!, vertProperties[vert2Offset + 1]!, vertProperties[vert2Offset + 2]!];
+                const point3: Inputs.Base.Point3 = [vertProperties[vert3Offset]!, vertProperties[vert3Offset + 1]!, vertProperties[vert3Offset + 2]!];
 
                 const triangle: Inputs.Base.Triangle3 = [point1, point2, point3];
                 polygons.push(triangle);
@@ -76,18 +104,18 @@ export class ManifoldService {
 
             return polygons;
         } else {
-            return undefined;
+            throw new Error("Manifold has no mesh to convert");
         }
     }
 
-    decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
-        if ((inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh) {
-            return (inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh(inputs.normalIdx);
-        } else {
-            return (inputs.manifoldOrCrossSection as Manifold3D.CrossSection).toPolygons();
-        }
-    }
-
+    /**
+     * Decomposes manifold or cross section shape into a mesh or simple polygons
+     * @param inputs Manifold shapes or cross sections
+     * @returns Decomposed mesh definitions or a list of simple polygons
+     * @group decompose
+     * @shortname decompose m's or cs's
+     * @drawable false
+     */
     decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Manifold3D.Manifold | Manifold3D.CrossSection>): (Manifold3D.Mesh | Manifold3D.SimplePolygon[])[] {
         return inputs.manifoldsOrCrossSections.map((manifoldOrCrossSection, index) => {
             const normalIdx = inputs.normalIdx ? inputs.normalIdx[index] : undefined;

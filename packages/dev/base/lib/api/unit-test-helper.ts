@@ -30,7 +30,7 @@ export class UnitTestHelper {
         expected: Inputs.Base.Point3[] | Inputs.Base.Vector3[]
     ) {
         expect(received.length).toEqual(expected.length);
-        received.forEach((p, i) => this.expectPointCloseTo(p, expected[i]));
+        received.forEach((p, i) => this.expectPointCloseTo(p, expected[i]!));
     }
 
     expectLineCloseTo(
@@ -48,7 +48,7 @@ export class UnitTestHelper {
         expected: Inputs.Base.Line3[]
     ) {
         expect(received.length).toEqual(expected.length);
-        received.forEach((l, i) => this.expectLineCloseTo(l, expected[i]));
+        received.forEach((l, i) => this.expectLineCloseTo(l, expected[i]!));
     }
 
     expectSegmentCloseTo(
@@ -87,7 +87,7 @@ export class UnitTestHelper {
         expect(received).toHaveLength(16);
         expect(expected).toHaveLength(16);
         for (let i = 0; i < 16; i++) {
-            expect(received[i]).toBeCloseTo(expected[i], TOLERANCE);
+            expect(received[i]).toBeCloseTo(expected[i]!, TOLERANCE);
         }
     }
 
@@ -95,7 +95,7 @@ export class UnitTestHelper {
         expect(received).toBeDefined();
         if (!received) return;
         expect(received.length).toEqual(expected.length);
-        received.forEach((matrix, i) => this.expectMatrixCloseTo(matrix, expected[i]));
+        received.forEach((matrix, i) => this.expectMatrixCloseTo(matrix, expected[i]!));
     }
 
     /** Helper to compare two arrays of points for near-equality, ignoring order */
@@ -145,8 +145,8 @@ export class UnitTestHelper {
 
     sortPolylinesForComparison(polylines: Inputs.Base.Polyline3[]): Inputs.Base.Polyline3[] {
         return polylines.sort((a, b) => {
-            const pA = a.points[0];
-            const pB = b.points[0];
+            const pA = a.points[0]!;
+            const pB = b.points[0]!;
             if (pA[0] !== pB[0]) return pA[0] - pB[0];
             if (pA[1] !== pB[1]) return pA[1] - pB[1];
             return pA[2] - pB[2];
@@ -156,7 +156,7 @@ export class UnitTestHelper {
     expectFloatArraysClose(actual: number[], expected: number[], precision: number) {
         expect(actual.length).toBe(expected.length);
         actual.forEach((val, index) => {
-            expect(val).toBeCloseTo(expected[index], precision);
+            expect(val).toBeCloseTo(expected[index]!, precision);
         });
     };
 

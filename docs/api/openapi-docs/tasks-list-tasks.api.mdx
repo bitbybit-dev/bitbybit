@@ -1,11 +1,11 @@
 ---
 id: tasks-list-tasks
 title: "Tasks - list tasks"
-description: "Returns paginated list of tasks."
+description: "Returns a paginated list of your tasks, newest first, each with its id, kind, status, creation time and result link when finished. Filter by status to poll only what is still running, or by kind to separate model generation, STEP conversion, pipelines and compound runs. This is the endpoint to build a job dashboard on rather than polling every task id individually."
 sidebar_label: "Tasks - list tasks"
 hide_title: true
 hide_table_of_contents: true
-api: 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
+api: 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
 sidebar_class_name: "get api-method"
 info_path: api/open/bitbybit-cad-cloud-api
 custom_edit_url: null
@@ -38,7 +38,7 @@ import Translate from "@docusaurus/Translate";
 
 
 
-Returns paginated list of tasks.
+Returns a paginated list of your tasks, newest first, each with its id, kind, status, creation time and result link when finished. Filter by status to poll only what is still running, or by kind to separate model generation, STEP conversion, pipelines and compound runs. This is the endpoint to build a job dashboard on rather than polling every task id individually.
 
 <Heading
   id={"request"}
@@ -66,5 +66,34 @@ Returns paginated list of tasks.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/tasks`
+
+Returns a paginated list of your tasks, newest first, each with its id, kind, status, creation time and result link when finished. Filter by status to poll only what is still running, or by kind to separate model generation, STEP conversion, pipelines and compound runs. This is the endpoint to build a job dashboard on rather than polling every task id individually.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `page` | query | integer | no | 1-based page number. Defaults to the first page. |
+| `limit` | query | integer | no | How many tasks to return per page. |
+| `status` | query | `waiting` \| `queued` \| `processing` \| `completed` \| `failed` \| `cancelled` \| `expired` | no | Return only tasks in this state. waiting and queued are not started yet, processing is running, completed has a downloadable result, failed carries an error, cancelled was stopped by you, and expired means the result has been cleaned up. |
+| `kind` | query | `cad` \| `model` \| `convert-simple` \| `convert-advanced` \| `pipeline` \| `compound` | no | Return only tasks of this kind: cad for a single operation, model for a registered parametric model, convert-simple and convert-advanced for STEP conversions, pipeline for a chained run, compound for a parallel run. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Task list |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/tasks" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

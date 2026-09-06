@@ -5,20 +5,26 @@ import { PathBuilder } from "../svg/path-builder";
 
 /**
  * Generic 2D-path builder. Describe a complex path with the
- * line/quadratic/cubic/arc vocabulary and build a wire or face in one call.
- * Used by the SVG importer, but useful on its own for sketch-style workflows.
+ * line/quadratic/cubic/arc vocabulary and build a wire or face in a single call.
+ * SVG-agnostic; also used by the SVG importer.
  */
 export class OCCTPath {
     private readonly builder: PathBuilder;
 
     constructor(
-        private readonly occ: BitbybitOcctModule,
-        private readonly och: OccHelper
+        occ: BitbybitOcctModule,
+        och: OccHelper
     ) {
         this.builder = new PathBuilder(occ, och);
     }
 
-    /** Build a single shape (wire/compound, or face when makeFaces) from subpaths. */
+    /**
+     * Builds a single shape (wire, compound of wires, or a face when makeFaces is set) from path subpaths.
+     * @param inputs Subpaths described with the line/quadratic/cubic/arc vocabulary plus placement options
+     * @group create
+     * @shortname shape from path
+     * @drawable true
+     */
     shapeFromPath(inputs: Inputs.OCCT.ShapeFromPathDto): TopoDS_Shape | undefined {
         return this.builder.shapeFromPath(inputs);
     }

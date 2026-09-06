@@ -7,12 +7,16 @@ import { CrossSectionBooleans } from "./cross-section-booleans";
 import { CrossSectionEvaluate } from "./cross-section-evaluate";
 import { BaseBitByBit } from "../../../base";
 
+/**
+ * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
+ * Thanks Manifold community for developing this kernel
+ */
 export class CrossSection {
 
     shapes: CrossSectionShapes;
     operations: CrossSectionOperations;
-    transforms: CrossSectionTransforms;
     booleans: CrossSectionBooleans;
+    transforms: CrossSectionTransforms;
     evaluate: CrossSectionEvaluate;
 
     private manifold: Manifold3D.ManifoldToplevel;
@@ -23,11 +27,19 @@ export class CrossSection {
         this.base = base;
         this.shapes = new CrossSectionShapes(wasm);
         this.operations = new CrossSectionOperations(wasm);
-        this.transforms = new CrossSectionTransforms(wasm);
         this.booleans = new CrossSectionBooleans(wasm);
+        this.transforms = new CrossSectionTransforms(wasm);
         this.evaluate = new CrossSectionEvaluate(wasm);
     }
 
+    /**
+     * Creates a cross section from a single polygon points
+     * @param inputs polygon points
+     * @returns cross section
+     * @group create
+     * @shortname cross section from points
+     * @drawable true
+     */
     crossSectionFromPoints(inputs: Inputs.Manifold.CrossSectionFromPolygonPointsDto): Manifold3D.CrossSection {
         let points = inputs.points;
         
@@ -45,6 +57,14 @@ export class CrossSection {
         return this.manifold.CrossSection.ofPolygons([polygon], inputs.fillRule as Manifold3D.FillRule);
     }
 
+    /**
+     * Creates a cross section from multiple polygons points
+     * @param inputs polygons points
+     * @returns cross section
+     * @group create
+     * @shortname cross section from polygons
+     * @drawable true
+     */
     crossSectionFromPolygons(inputs: Inputs.Manifold.CrossSectionFromPolygonsPointsDto): Manifold3D.CrossSection {
         let polygonPoints = inputs.polygonPoints;
         
@@ -66,15 +86,39 @@ export class CrossSection {
         return this.manifold.CrossSection.ofPolygons(polygons, inputs.fillRule as Manifold3D.FillRule);
     }
 
+    /**
+     * Turns cross section into polygons
+     * @param inputs cross section
+     * @returns polygons
+     * @group decompose
+     * @shortname cross section to polygons
+     * @drawable false
+     */
     crossSectionToPolygons(inputs: Inputs.Manifold.CrossSectionDto<Manifold3D.CrossSection>): Manifold3D.SimplePolygon[] {
         return inputs.crossSection.toPolygons();
     }
 
+    /**
+     * Extracts points from a cross section
+     * @param inputs cross section
+     * @returns points
+     * @group decompose
+     * @shortname cross section to points
+     * @drawable false
+     */
     crossSectionToPoints(inputs: Inputs.Manifold.CrossSectionDto<Manifold3D.CrossSection>): Inputs.Base.Point3[][] {
         const polygons = inputs.crossSection.toPolygons();
         return polygons.map(polygon => polygon.map(point => [point[0], point[1], 0]));
     }
 
+    /**
+     * Turns cross sections into polygons
+     * @param inputs cross sections
+     * @returns polygons
+     * @group decompose
+     * @shortname cross sections to polygons
+     * @drawable false
+     */
     crossSectionsToPolygons(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.SimplePolygon[][] {
         return inputs.crossSections.map((crossSection) => {
             return this.crossSectionToPolygons({
@@ -83,6 +127,14 @@ export class CrossSection {
         });
     }
 
+    /**
+     * Extracts points from cross sections
+     * @param inputs cross sections
+     * @returns points
+     * @group decompose
+     * @shortname cross sections to points
+     * @drawable false
+     */
     crossSectionsToPoints(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): number[][][][] {
         return inputs.crossSections.map((crossSection) => {
             return this.crossSectionToPoints({

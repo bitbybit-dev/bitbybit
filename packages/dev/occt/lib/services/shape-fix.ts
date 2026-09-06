@@ -10,10 +10,14 @@ export class OCCTShapeFix {
     ) {
     }
 
-    fixEdgeOrientationsAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire {
-        return this.och.edgesService.fixEdgeOrientationsAlongWire(inputs);
-    }
-
+    /**
+     * Performs the basic shape repair
+     * @param inputs the shape to be fixed and some options
+     * @returns OpenCascade fixed shape
+     * @group shape
+     * @shortname basic shape repair
+     * @drawable true
+     */
     basicShapeRepair(inputs: Inputs.OCCT.BasicShapeRepairDto<TopoDS_Shape>): TopoDS_Shape {
         const shapeFix = new this.occ.ShapeFix_Shape();
         shapeFix.Init(inputs.shape);
@@ -26,12 +30,32 @@ export class OCCTShapeFix {
         return result;
     }
 
-    fixSmallEdgeOnWire(inputs: Inputs.OCCT.FixSmallEdgesInWireDto<TopoDS_Wire>) {
+    /**
+     * Fix small edge on wire
+     * @param inputs the wire to be fixed and some options
+     * @returns OpenCascade fixed wire
+     * @group wire
+     * @shortname fix small edge
+     * @drawable true
+     */
+    fixSmallEdgeOnWire(inputs: Inputs.OCCT.FixSmallEdgesInWireDto<TopoDS_Wire>): TopoDS_Wire {
         const wireFix = new this.occ.ShapeFix_Wire();
         wireFix.Load(inputs.shape);
         wireFix.FixSmall(inputs.lockvtx, inputs.precsmall);
         wireFix.Perform();
         const result = wireFix.Wire();
         return result;
+    }
+
+    /**
+     * Fix edge orientations along wire
+     * @param inputs the wire to be fixed and some options
+     * @returns OpenCascade fixed wire
+     * @group wire
+     * @shortname fix edge orientations
+     * @drawable true
+     */
+    fixEdgeOrientationsAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire {
+        return this.och.edgesService.fixEdgeOrientationsAlongWire(inputs);
     }
 }

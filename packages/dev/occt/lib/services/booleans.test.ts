@@ -70,8 +70,8 @@ describe("OCCT booleans unit tests", () => {
         const box2 = solid.createBox({ width: 2, height: 2, length: 2, center: [1, 1, 1] });
         const points = booleans.meshMeshIntersectionPoints({ shape1: box1, shape2: box2, precision1: 0.01, precision2: 0.01 });
         expect(points.length).toBe(1);
-        expect(points[0].length).toBe(7);
-        expect(points[0][0].length).toBe(3);
+        expect(points[0]!.length).toBe(7);
+        expect(points[0]![0]!.length).toBe(3);
         box1.delete();
         box2.delete();
     });
@@ -114,8 +114,8 @@ describe("OCCT booleans unit tests", () => {
         const box3 = solid.createBox({ width: 2, height: 2, length: 2, center: [-1, -1, -1] });
         const points = booleans.meshMeshIntersectionOfShapesPoints({ shape: box1, shapes: [box2, box3], precision: 0.01 });
         expect(points.length).toBe(2);
-        expect(points[0].length).toBe(7);
-        expect(points[0][0].length).toBe(3);
+        expect(points[0]!.length).toBe(7);
+        expect(points[0]![0]!.length).toBe(3);
         box1.delete();
         box2.delete();
         box3.delete();

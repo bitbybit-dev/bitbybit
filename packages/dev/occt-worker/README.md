@@ -41,7 +41,17 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/occt-worker |
 | **Documentation** | https://learn.bitbybit.dev/learn/code/common/occt/what-is-occt |
+| **API Reference** | https://docs.bitbybit.dev/classes/Bit.OCCT |
 | **Unit Test Coverage** | https://tests.bitbybit.dev/occt |
+
+### API reference
+
+Every class, method and input type in this package is documented in the generated TypeScript API reference:
+
+- [OCCT](https://docs.bitbybit.dev/classes/Bit.OCCT)
+- [OCCT shapes](https://docs.bitbybit.dev/classes/Bit.OCCTShapes)
+- [OCCT booleans](https://docs.bitbybit.dev/classes/Bit.OCCTBooleans)
+- [OCCT input types](https://docs.bitbybit.dev/modules/Bit.Inputs.OCCT)
 
 ## Example Applications
 

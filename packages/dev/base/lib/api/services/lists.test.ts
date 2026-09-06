@@ -432,7 +432,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should get longest list length", () => {
-        const result = lists.getLongestListLength({ lists: undefined });
+        const result = lists.getLongestListLength({ lists: undefined as unknown as number[][] });
         expect(result).toEqual(undefined);
     });
 
@@ -503,7 +503,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should not get the elements by following the empty pattern", () => {
-        expect(() => lists.getByPattern({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pattern: undefined })).toThrow("Pattern is empty or does not exist");
+        expect(() => lists.getByPattern({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pattern: undefined as unknown as boolean[] })).toThrow("Pattern is empty or does not exist");
     });
 
     it("should get list length", () => {

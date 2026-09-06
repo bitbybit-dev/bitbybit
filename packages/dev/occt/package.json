@@ -2,10 +2,12 @@
     "name": "@bitbybit-dev/occt",
     "version": "1.1.1",
     "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel. Run in Node and in Browser.",
+    "homepage": "https://docs.bitbybit.dev/classes/Bit.OCCT",
     "main": "index.js",
     "repository": {
         "type": "git",
-        "url": "https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/occt"
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+        "directory": "packages/dev/occt"
     },
     "directories": {
         "lib": "lib"
@@ -38,18 +40,19 @@
         "CAM"
     ],
     "scripts": {
-        "build": "tsc -p tsconfig.bitbybit.json",
-        "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run copy-readme-license && npm run delete-coverage && npm run delete-bak",
-        "copy-package": "shx cp -R ./package.json ./dist/package.json",
+        "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
+        "clean-dist": "shx rm -rf dist",
+        "build-p": "npm run fetch-kernels && npm run build && npm run copy-package && npm run copy-occt && npm run copy-readme-license && npm run delete-coverage && npm run delete-bak",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
         "copy-occt": "shx cp -R ./bitbybit-dev-occt ./dist && shx cp -R ./bitbybit-dev-occt-64-bit ./dist && shx cp -R ./bitbybit-dev-occt-64-bit-mt ./dist",
-        "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
+        "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist && shx cp -R ./NOTICE ./dist && shx cp -R ./licenses ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "delete-bak": "find ./dist -name '*.bak' -delete || true",
         "test": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --watchAll=true",
-        "test-c": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false",
+        "test-c": "mkdir -p test-results && NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false --json --outputFile=test-results/jest.json",
         "test-c-l": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=true",
-        "lint": "eslint . --ext .ts",
-        "lint-fix": "eslint . --ext .ts --fix"
+        "fetch-kernels": "node ../../../scripts/fetch-kernels.mjs"
     },
     "author": "Bit by bit developers",
     "license": "MIT",
@@ -58,6 +61,109 @@
         "url": "https://bitbybit.dev/auth/pick-plan"
     },
     "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "@bitbybit-dev/source": "./index.ts",
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/api/inputs": {
+            "@bitbybit-dev/source": "./lib/api/inputs/index.ts",
+            "types": "./dist/lib/api/inputs/index.d.ts",
+            "default": "./dist/lib/api/inputs/index.js"
+        },
+        "./lib/api/models": {
+            "@bitbybit-dev/source": "./lib/api/models/index.ts",
+            "types": "./dist/lib/api/models/index.d.ts",
+            "default": "./dist/lib/api/models/index.js"
+        },
+        "./lib/services": {
+            "@bitbybit-dev/source": "./lib/services/index.ts",
+            "types": "./dist/lib/services/index.d.ts",
+            "default": "./dist/lib/services/index.js"
+        },
+        "./lib/services/assembly": {
+            "@bitbybit-dev/source": "./lib/services/assembly/index.ts",
+            "types": "./dist/lib/services/assembly/index.d.ts",
+            "default": "./dist/lib/services/assembly/index.js"
+        },
+        "./lib/services/geom": {
+            "@bitbybit-dev/source": "./lib/services/geom/index.ts",
+            "types": "./dist/lib/services/geom/index.d.ts",
+            "default": "./dist/lib/services/geom/index.js"
+        },
+        "./lib/services/shapes": {
+            "@bitbybit-dev/source": "./lib/services/shapes/index.ts",
+            "types": "./dist/lib/services/shapes/index.d.ts",
+            "default": "./dist/lib/services/shapes/index.js"
+        },
+        "./bitbybit-dev-occt/bitbybit-dev-occt": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt/bitbybit-dev-occt.js",
+            "types": "./dist/bitbybit-dev-occt/bitbybit-dev-occt.d.ts",
+            "default": "./dist/bitbybit-dev-occt/bitbybit-dev-occt.js"
+        },
+        "./bitbybit-dev-occt/index": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt/index.js",
+            "types": "./dist/bitbybit-dev-occt/index.d.ts",
+            "default": "./dist/bitbybit-dev-occt/index.js"
+        },
+        "./bitbybit-dev-occt/*": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt/*",
+            "types": "./dist/bitbybit-dev-occt/*",
+            "default": "./dist/bitbybit-dev-occt/*"
+        },
+        "./bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit.js",
+            "types": "./dist/bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit.d.ts",
+            "default": "./dist/bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit.js"
+        },
+        "./bitbybit-dev-occt-64-bit/index": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit/index.js",
+            "types": "./dist/bitbybit-dev-occt-64-bit/index.d.ts",
+            "default": "./dist/bitbybit-dev-occt-64-bit/index.js"
+        },
+        "./bitbybit-dev-occt-64-bit/*": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit/*",
+            "types": "./dist/bitbybit-dev-occt-64-bit/*",
+            "default": "./dist/bitbybit-dev-occt-64-bit/*"
+        },
+        "./bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt.js",
+            "types": "./dist/bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt.d.ts",
+            "default": "./dist/bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt.js"
+        },
+        "./bitbybit-dev-occt-64-bit-mt/index": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit-mt/index.js",
+            "types": "./dist/bitbybit-dev-occt-64-bit-mt/index.d.ts",
+            "default": "./dist/bitbybit-dev-occt-64-bit-mt/index.js"
+        },
+        "./bitbybit-dev-occt-64-bit-mt/*": {
+            "@bitbybit-dev/source": "./bitbybit-dev-occt-64-bit-mt/*",
+            "types": "./dist/bitbybit-dev-occt-64-bit-mt/*",
+            "default": "./dist/bitbybit-dev-occt-64-bit-mt/*"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
+        "./*": {
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        }
+    },
     "type": "module",
     "dependencies": {
         "@bitbybit-dev/base": "1.1.1"
@@ -65,7 +171,6 @@
     "devDependencies": {
         "shx": "0.4.0",
         "@testing-library/jest-dom": "6.9.1",
-        "mvdir": "1.0.22",
         "jest": "30.4.2",
         "ts-node": "10.9.2",
         "ts-jest": "29.4.10",
@@ -76,8 +181,7 @@
         "@babel/preset-env": "7.29.5",
         "@babel/preset-typescript": "7.28.5",
         "jest-html-reporters": "3.1.7",
-        "@typescript-eslint/parser": "8.59.4",
-        "@typescript-eslint/eslint-plugin": "8.59.4"
+        "jest-environment-node": "30.4.1"
     },
     "jest": {
         "preset": "ts-jest",
@@ -98,6 +202,18 @@
             "lib/api/vector-helper.service.ts",
             "!**/index.ts",
             "!**/io-assembly.ts"
-        ]
+        ],
+        "coverageReporters": [
+            "text",
+            "lcov",
+            "json-summary"
+        ],
+        "testEnvironmentOptions": {
+            "customExportConditions": [
+                "@bitbybit-dev/source",
+                "node",
+                "node-addons"
+            ]
+        }
     }
 }

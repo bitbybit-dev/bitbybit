@@ -1,6 +1,7 @@
 ---
 slug: threejs-support
 title: "ANNOUNCING ThreeJS Support: Expanding Bitbybit.dev's CAD Capabilities"
+image: https://ik.imagekit.io/bitbybit/app/assets/blog/threejs-support/bitbybit-two-engines-babylonjs-threejs.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Introducing new open-source NPM packages, @bitbybit-dev/threejs and @bitbybit-dev/babylonjs, to make 3D CAD accessible and adaptable for a broader community, including ThreeJS developers."

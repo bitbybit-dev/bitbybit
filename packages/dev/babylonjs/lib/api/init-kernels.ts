@@ -13,9 +13,9 @@ import {
  */
 export interface InitBitByBitOptions extends WorkerOptions {
     /** Pre-created worker instances. If not provided, workers will be created from CDN. */
-    workers?: WorkerInstances;
+    workers?: WorkerInstances | undefined;
     /** Havok physics plugin instance (optional) */
-    havokPlugin?: BABYLON.HavokPlugin;
+    havokPlugin?: BABYLON.HavokPlugin | undefined;
 }
 
 // Re-export types for convenience

@@ -4,7 +4,7 @@ import { Jscad } from "@bitbybit-dev/jscad";
 let jscad: Jscad;
 let cacheHelper: CacheHelper;
 
-export const initializationComplete = (jcd: any, plugins?: any, doNotPost?: boolean) => {
+export const initializationComplete = (jcd: any, _plugins?: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper();
     jscad = new Jscad(jcd);
     if (!doNotPost) {
@@ -12,7 +12,7 @@ export const initializationComplete = (jcd: any, plugins?: any, doNotPost?: bool
     }
 };
 
-type DataInput = {
+export type DataInput = {
     /**
      * Action data is used for cashing as a hashed number.
      */
@@ -23,7 +23,10 @@ type DataInput = {
     uid: string;
 };
 
-export const onMessageInput = (d: DataInput, postMessage) => {
+type HashedGeometry = { hash: string | number };
+type ServiceTable = Record<string, Record<string, (inputs: unknown) => unknown>>;
+
+export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => void) => {
     postMessage("busy");
 
     let result;
@@ -43,7 +46,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
                 }
                 if (val && Array.isArray(val) && val.length > 0) {
                     if ((val[0].type && val[0].type === "jscad-geometry" && val[0].hash)) {
-                        d.action.inputs[key] = d.action.inputs[key].map(geometry => {
+                        d.action.inputs[key] = d.action.inputs[key].map((geometry: HashedGeometry) => {
                             const cachedGeometry = cacheHelper.checkCache(geometry.hash);
                             if (!cachedGeometry) {
                                 throw new Error(`Geometry with hash ${geometry.hash} not found in cache. The cache may have been cleaned. Please regenerate the geometry.`);
@@ -51,7 +54,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
                             return cachedGeometry;
                         });
                     } else if ((Array.isArray(val[0]) && val[0][0].type && val[0][0].type === "jscad-geometry" && val[0][0].hash)) {
-                        d.action.inputs[key] = d.action.inputs[key].map(geometries => geometries.map(geometry => {
+                        d.action.inputs[key] = d.action.inputs[key].map((geometries: HashedGeometry[]) => geometries.map((geometry: HashedGeometry) => {
                             const cachedGeometry = cacheHelper.checkCache(geometry.hash);
                             if (!cachedGeometry) {
                                 throw new Error(`Geometry with hash ${geometry.hash} not found in cache. The cache may have been cleaned. Please regenerate the geometry.`);
@@ -65,9 +68,9 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             // this is service and path
             const path = d.action.functionName.split(".");
             if (path.length === 2) {
-                result = cacheHelper.cacheOp(d.action, () => jscad[path[0]][path[1]](d.action.inputs));
+                result = cacheHelper.cacheOp(d.action, () => (jscad as unknown as ServiceTable)[path[0]!]![path[1]!]!(d.action.inputs));
             } else {
-                result = cacheHelper.cacheOp(d.action, () => jscad[d.action.functionName](d.action.inputs));
+                result = cacheHelper.cacheOp(d.action, () => (jscad as unknown as Record<string, (inputs: unknown) => unknown>)[d.action.functionName]!(d.action.inputs));
             }
         }
 

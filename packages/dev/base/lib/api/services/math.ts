@@ -28,7 +28,7 @@ export class MathBitByBit {
      * @drawable false
      */
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number {
-        let result;
+        let result!: number;
         switch (inputs.operation) {
             case Inputs.Math.mathTwoNrOperatorEnum.add:
                 result = inputs.first + inputs.second;
@@ -104,7 +104,7 @@ export class MathBitByBit {
      * @drawable false
      */
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number {
-        let result;
+        let result!: number;
         switch (inputs.operation) {
             case Inputs.Math.mathOneNrOperatorEnum.absolute:
                 result = Math.abs(inputs.number);
@@ -724,7 +724,7 @@ export class MathBitByBit {
         const tokens: string[] = [];
         let i = 0;
         while (i < expr.length) {
-            const ch = expr[i];
+            const ch = expr[i]!;
             if (ch === " ") { i++; continue; }
             if (ch === "(" || ch === ")") { tokens.push(ch); i++; continue; }
             if (ch === "+" || ch === "*" || ch === "/") { tokens.push(ch); i++; continue; }
@@ -733,7 +733,7 @@ export class MathBitByBit {
                 if (prev === undefined || prev === "(" || prev === "+" || prev === "-" || prev === "*" || prev === "/") {
                     let num = "-";
                     i++;
-                    while (i < expr.length && (expr[i] >= "0" && expr[i] <= "9" || expr[i] === ".")) {
+                    while (i < expr.length && (expr[i]! >= "0" && expr[i]! <= "9" || expr[i] === ".")) {
                         num += expr[i]; i++;
                     }
                     if (num === "-") { throw new Error("Invalid expression"); }
@@ -744,7 +744,7 @@ export class MathBitByBit {
             }
             if ((ch >= "0" && ch <= "9") || ch === ".") {
                 let num = "";
-                while (i < expr.length && (expr[i] >= "0" && expr[i] <= "9" || expr[i] === ".")) {
+                while (i < expr.length && (expr[i]! >= "0" && expr[i]! <= "9" || expr[i] === ".")) {
                     num += expr[i]; i++;
                 }
                 tokens.push(num);
@@ -777,7 +777,7 @@ export class MathBitByBit {
                 if (ops.length === 0) { throw new Error("Mismatched parentheses"); }
                 ops.pop();
             } else if (tok in prec) {
-                while (ops.length > 0 && ops[ops.length - 1] !== "(" && (prec[ops[ops.length - 1]] ?? 0) >= prec[tok]) {
+                while (ops.length > 0 && ops[ops.length - 1] !== "(" && (prec[ops[ops.length - 1]!] ?? 0) >= prec[tok]!) {
                     applyOp();
                 }
                 ops.push(tok);
@@ -792,7 +792,7 @@ export class MathBitByBit {
             applyOp();
         }
         if (output.length !== 1) { throw new Error("Invalid expression"); }
-        return output[0];
+        return output[0]!;
     }
 
     private easeInSine(x: number): number {

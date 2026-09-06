@@ -1,0 +1,10 @@
+{
+    "label": "Integrations",
+    "position": 10,
+    "link": {
+        "type": "generated-index",
+        "title": "Integrations",
+        "description": "Connect 3D Bits to the rest of your storefront - your own forms, other apps, and custom front-end code. Not every store wants the built-in option panel: some already have a product form they like, some need a third-party options or subscriptions app in the flow, and some want the 3D scene driven entirely by their own JavaScript. These pages cover driving a configurator from your own form, running the configurator logic without a visible panel at all, and what to do when another app needs to coexist with 3D Bits on the same product.",
+        "slug": "/3d-bits/integrations"
+    }
+}

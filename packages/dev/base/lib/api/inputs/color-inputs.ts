@@ -2,6 +2,10 @@
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for colour handling: hex, RGB and HSL values, the components to combine or extract, and
+ * the settings for blending, inverting and generating ranges of colours.
+ */
 export namespace Color {
     export class HexDto {
         constructor(color?: Base.Color) {
@@ -243,7 +247,7 @@ export namespace Color {
          * Red value component
          * @default undefined
          */
-        rgb: Base.ColorRGB;
+        rgb!: Base.ColorRGB;
         /**
          * Min value of the range
          * @default 0
@@ -318,6 +322,6 @@ export namespace Color {
          * Red value component
          * @default undefined
          */
-        rgb: Base.ColorRGB;
+        rgb!: Base.ColorRGB;
     }
 }

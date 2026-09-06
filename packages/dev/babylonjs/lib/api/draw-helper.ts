@@ -111,7 +111,7 @@ export class DrawHelper extends DrawHelperCore {
 
         // Evict oldest if at capacity (simple FIFO)
         if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
-            const firstKey = this.materialCache.keys().next().value;
+            const firstKey = this.materialCache.keys().next().value!;
             const material = this.materialCache.get(firstKey);
             if (material && material.dispose) {
                 material.dispose();
@@ -154,7 +154,7 @@ export class DrawHelper extends DrawHelperCore {
 
         // Evict oldest if at capacity (simple FIFO)
         if (this.unlitMaterialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
-            const firstKey = this.unlitMaterialCache.keys().next().value;
+            const firstKey = this.unlitMaterialCache.keys().next().value!;
             const material = this.unlitMaterialCache.get(firstKey);
             if (material && material.dispose) {
                 material.dispose();
@@ -267,7 +267,7 @@ export class DrawHelper extends DrawHelperCore {
             // Flip normals for back face
             if (meshItem.normals && meshItem.normals.length > 0) {
                 for (let i = 0; i < meshItem.normals.length; i++) {
-                    totalNormals.push(-meshItem.normals[i]);
+                    totalNormals.push(-meshItem.normals[i]!);
                 }
             }
             
@@ -277,7 +277,7 @@ export class DrawHelper extends DrawHelperCore {
             
             // Keep original winding order (don't swap indices)
             for (let i = 0; i < meshItem.indices.length; i++) {
-                totalIndices.push(meshItem.indices[i] + indexOffset);
+                totalIndices.push(meshItem.indices[i]! + indexOffset);
             }
             indexOffset += meshItem.positions.length / 3;
         });
@@ -291,18 +291,20 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
-        mesh: BABYLON.Mesh, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined }[],
+        mesh: BABYLON.Mesh | undefined, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): BABYLON.Mesh {
         const createMesh = () => {
-            const first = meshDataConverted.pop();
+            const first = meshDataConverted.pop()!;
             const vd = new BABYLON.VertexData();
             vd.positions = first.positions;
             vd.indices = first.indices;
             vd.normals = first.normals;
-            vd.uvs = first.uvs;
+            if (first.uvs) {
+                vd.uvs = first.uvs;
+            }
 
-            const v = [];
+            const v: BABYLON.VertexData[] = [];
             meshDataConverted.forEach(meshData => {
                 const vertexData = new BABYLON.VertexData();
                 vertexData.positions = meshData.positions;
@@ -314,7 +316,7 @@ export class DrawHelper extends DrawHelperCore {
                 v.push(vertexData);
             });
             vd.merge(v);
-            vd.applyToMesh(mesh, updatable);
+            vd.applyToMesh(mesh!, updatable);
         };
 
         if (mesh && updatable) {
@@ -347,15 +349,15 @@ export class DrawHelper extends DrawHelperCore {
     edgesRendering(mesh: BABYLON.LinesMesh, size: number, opacity: number, colours: string | string[]): void {
         mesh.enableEdgesRendering();
         mesh.edgesWidth = size;
-        const colour = Array.isArray(colours) ? BABYLON.Color3.FromHexString(colours[0]) : BABYLON.Color3.FromHexString(colours);
+        const colour = Array.isArray(colours) ? BABYLON.Color3.FromHexString(colours[0]!) : BABYLON.Color3.FromHexString(colours);
         const edgeColor = colour;
         mesh.color = edgeColor;
         mesh.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
     }
 
     drawLines(inputs: Inputs.Line.DrawLinesDto<BABYLON.LinesMesh>): BABYLON.LinesMesh {
-        const lines = [];
-        const colors = [];
+        const lines: BABYLON.Vector3[][] = [];
+        const colors: BABYLON.Color4[][] = [];
 
         inputs.lines.forEach((line, index) => {
             lines.push([
@@ -364,11 +366,11 @@ export class DrawHelper extends DrawHelperCore {
             );
             let col;
             if (Array.isArray(inputs.colours) && inputs.colours.length === inputs.lines.length) {
-                col = BABYLON.Color3.FromHexString(inputs.colours[index]);
+                col = BABYLON.Color3.FromHexString(inputs.colours[index]!);
             } else if (Array.isArray(inputs.colours)) {
-                col = BABYLON.Color3.FromHexString(inputs.colours[0]);
+                col = BABYLON.Color3.FromHexString(inputs.colours[0]!);
             } else {
-                col = BABYLON.Color3.FromHexString(inputs.colours);
+                col = BABYLON.Color3.FromHexString(inputs.colours ?? "#444444");
             }
             colors.push([
                 new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity),
@@ -378,7 +380,7 @@ export class DrawHelper extends DrawHelperCore {
 
         if (inputs.linesMesh && inputs.updatable) {
             if (inputs.linesMesh.getTotalVertices() / 2 === lines.length) {
-                inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem(null,
+                inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem(inputs.linesMesh.name,
                     {
                         lines,
                         instance: inputs.linesMesh,
@@ -387,13 +389,13 @@ export class DrawHelper extends DrawHelperCore {
                     }, null);
             } else {
                 inputs.linesMesh.dispose();
-                inputs.linesMesh = this.createLineSystemMesh(inputs.updatable, lines, colors);
+                inputs.linesMesh = this.createLineSystemMesh(inputs.updatable ?? false, lines, colors);
             }
         } else {
-            inputs.linesMesh = this.createLineSystemMesh(inputs.updatable, lines, colors);
+            inputs.linesMesh = this.createLineSystemMesh(inputs.updatable ?? false, lines, colors);
         }
 
-        this.edgesRendering(inputs.linesMesh, inputs.size, inputs.opacity, inputs.colours);
+        this.edgesRendering(inputs.linesMesh, inputs.size ?? 3, inputs.opacity ?? 1, inputs.colours ?? "#444444");
         return inputs.linesMesh;
     }
 
@@ -401,15 +403,15 @@ export class DrawHelper extends DrawHelperCore {
         // handle jscad isClosed case
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
-            points.push(points[0]);
+            points.push(points[0]!);
         }
         return this.drawPolyline(
             inputs.polylineMesh,
             points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours,
+            inputs.updatable ?? false,
+            inputs.size ?? 3,
+            inputs.opacity ?? 1,
+            inputs.colours ?? "#444444",
             inputs.arrowSize,
             inputs.arrowAngle
         );
@@ -437,11 +439,11 @@ export class DrawHelper extends DrawHelperCore {
         };
 
         let countIndices = 0;
-        meshData.faces.forEach((faceIndices) => {
+        meshData.faces.forEach((faceIndices: number[]) => {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        const color = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        const color = (Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours) ?? "#444444";
         const pbr = this.getOrCreateMaterial(color, inputs.opacity, 0, () => {
             const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("surfaceMaterial"), this.context.scene);
             mat.baseColor = BABYLON.Color3.FromHexString(color);
@@ -483,7 +485,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawSurfaces(inputs: Inputs.Verb.DrawSurfacesDto<BABYLON.Mesh>): BABYLON.Mesh {
-        const tessellatedSurfaces = [];
+        const tessellatedSurfaces: { faces: number[][] }[] = [];
         inputs.surfaces.forEach(srf => {
             tessellatedSurfaces.push(srf.tessellate());
         });
@@ -496,12 +498,12 @@ export class DrawHelper extends DrawHelperCore {
 
         let countIndices = 0;
         tessellatedSurfaces.forEach(meshData => {
-            meshData.faces.forEach((faceIndices) => {
+            meshData.faces.forEach((faceIndices: number[]) => {
                 countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
             });
         });
 
-        const color = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        const color = (Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours) ?? "#444444";
         const pbr = this.getOrCreateMaterial(color, inputs.opacity, 0, () => {
             const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("surfacesMaterial"), this.context.scene);
             mat.baseColor = BABYLON.Color3.FromHexString(color);
@@ -554,7 +556,7 @@ export class DrawHelper extends DrawHelperCore {
         inputs.surfaces.forEach((surface, index) => {
             const srf = this.drawSurface({
                 surface,
-                colours: resolvedColours[index],
+                colours: resolvedColours[index]!,
                 updatable: inputs.updatable,
                 opacity: inputs.opacity,
                 hidden: inputs.hidden,
@@ -562,7 +564,7 @@ export class DrawHelper extends DrawHelperCore {
                 backFaceColour: inputs.backFaceColour,
                 backFaceOpacity: inputs.backFaceOpacity,
             });
-            inputs.surfacesMesh.addChild(srf);
+            inputs.surfacesMesh!.addChild(srf);
         });
 
         return inputs.surfacesMesh;
@@ -577,27 +579,26 @@ export class DrawHelper extends DrawHelperCore {
             inputs.size,
             inputs.opacity,
             inputs.colours
-        );
+        )!;
     }
 
-    drawPolyline(mesh: BABYLON.GreasedLineMesh,
+    drawPolyline(mesh: BABYLON.GreasedLineMesh | undefined,
         pointsToDraw: number[][],
         updatable: boolean, size: number, opacity: number, colours: string | string[],
         arrowSize = 0, arrowAngle = 30): BABYLON.GreasedLineMesh {
-        mesh = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours, 1e-7, true,
-            Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle);
-        return mesh;
+        return this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours, 1e-7, true,
+            Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle)!;
     }
 
     drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number }) {
-        let colours = inputs.colours;
+        let colours = inputs.colours ?? "#444444";
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
         const points = inputs.polylines.map((s, index) => {
             const pts = s.points;
             //handle jscad
             if (s.isClosed) {
-                pts.push(pts[0]);
+                pts.push(pts[0]!);
             }
             // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
             if (s.color) {
@@ -616,9 +617,9 @@ export class DrawHelper extends DrawHelperCore {
         return this.drawPolylines(
             inputs.polylinesMesh,
             points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
+            inputs.updatable ?? false,
+            inputs.size ?? 3,
+            inputs.opacity ?? 1,
             colours,
             1e-7,
             true,
@@ -629,7 +630,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawPolylines(
-        mesh: BABYLON.GreasedLineMesh, polylinePoints: number[][][], updatable: boolean,
+        mesh: BABYLON.GreasedLineMesh | undefined, polylinePoints: number[][][], updatable: boolean,
         size: number, opacity: number, colours: string | string[], tolerance = 1e-7, segmentize = false,
         colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
         arrowSize = 0, arrowAngle = 30
@@ -639,7 +640,7 @@ export class DrawHelper extends DrawHelperCore {
         
         if (polylinePoints && polylinePoints.length > 0) {
             polylinePoints.forEach(polyline => {
-                const points = polyline.map(p => p.length === 2 ? [p[0], p[1], 0] : p);
+                const points = polyline.map(p => p.length === 2 ? [p[0]!, p[1]!, 0] : p);
                 if (segmentize) {
                     // This is quite expensive operation, so only do it if requested on certain specific methods where polyline greased lines will render badly without it.
                     const segmentedPoints = this.segmentizePolylinePoints(points, tolerance);
@@ -682,7 +683,7 @@ export class DrawHelper extends DrawHelperCore {
 
             if (mesh && updatable) {
                 // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
-                if (!mesh?.metadata?.linesForRenderLengths.some((s, i) => s !== allLinesForRender[i]?.length)) {
+                if (!mesh?.metadata?.linesForRenderLengths.some((s: number, i: number) => s !== allLinesForRender[i]?.length)) {
                     mesh.setPoints(allLinesForRender);
                     return mesh as BABYLON.GreasedLineMesh;
                 } else {
@@ -706,7 +707,7 @@ export class DrawHelper extends DrawHelperCore {
         // BabylonJS GreasedLine needs one color per point (not per line)
         const expandedColors: BABYLON.Color3[] = [];
         lines.forEach((line, lineIndex) => {
-            const lineColor = colors[lineIndex] || colors[0];
+            const lineColor = colors[lineIndex] || colors[0]!;
             // Each point in the line (line.length / 3 points since it's flat [x,y,z,x,y,z,...])
             const numPoints = line.length / 3;
             for (let i = 0; i < numPoints; i++) {
@@ -717,26 +718,31 @@ export class DrawHelper extends DrawHelperCore {
         // Only enable useColors when we have multiple different colors
         const hasMultipleColors = colors.length > 1 || (colors.length === 1 && lines.length > 1);
         
+        const materialOptions: Parameters<typeof BABYLON.CreateGreasedLine>[2] = {
+            width,
+            materialType: BABYLON.GreasedLineMeshMaterialType.MATERIAL_TYPE_PBR,
+            useColors: hasMultipleColors,
+            colorMode: BABYLON.GreasedLineMeshColorMode.COLOR_MODE_SET,
+            createAndAssignMaterial: true,
+        };
+        if (colors[0]) {
+            materialOptions.color = colors[0];
+        }
+        if (hasMultipleColors) {
+            materialOptions.colors = expandedColors;
+        }
         const result = BABYLON.CreateGreasedLine(
             this.generateEntityId("lineSystem"),
             {
                 points: lines,
                 updatable,
             },
-            {
-                width,
-                materialType: BABYLON.GreasedLineMeshMaterialType.MATERIAL_TYPE_PBR,
-                color: colors[0],
-                colors: hasMultipleColors ? expandedColors : undefined,
-                useColors: hasMultipleColors,
-                colorMode: BABYLON.GreasedLineMeshColorMode.COLOR_MODE_SET,
-                createAndAssignMaterial: true,
-            },
+            materialOptions,
             this.context.scene
         );
-        result.material.alpha = visibility;
+        result.material!.alpha = visibility;
         if (visibility < 1) {
-            result.material.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
+            result.material!.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
         }
         return result as BABYLON.GreasedLineMesh;
     }
@@ -773,8 +779,8 @@ export class DrawHelper extends DrawHelperCore {
         // Each segment needs: [start, end] where end of segment N = start of segment N+1
         const segmentedPoints: number[][] = [];
         for (let i = 0; i < uniquePoints.length - 1; i++) {
-            segmentedPoints.push(uniquePoints[i]);
-            segmentedPoints.push(uniquePoints[i + 1]);
+            segmentedPoints.push(uniquePoints[i]!);
+            segmentedPoints.push(uniquePoints[i + 1]!);
         }
 
         return segmentedPoints;
@@ -791,7 +797,7 @@ export class DrawHelper extends DrawHelperCore {
         // Check if odd-indexed points match even-indexed points that follow
         // e.g., points[1] should equal points[2], points[3] should equal points[4]
         for (let i = 1; i < points.length - 1; i += 2) {
-            if (!this.arePointsEqual(points[i], points[i + 1], tolerance)) {
+            if (!this.arePointsEqual(points[i]!, points[i + 1]!, tolerance)) {
                 return false;
             }
         }
@@ -803,7 +809,7 @@ export class DrawHelper extends DrawHelperCore {
             return false;
         }
         for (let i = 0; i < p1.length; i++) {
-            if (Math.abs(p1[i] - p2[i]) > tolerance) {
+            if (Math.abs(p1[i]! - p2[i]!) > tolerance) {
                 return false;
             }
         }
@@ -1013,7 +1019,7 @@ export class DrawHelper extends DrawHelperCore {
             // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
             colour = BABYLON.Color3.FromArray(inputs.mesh.color).toHexString();
         } else {
-            colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+            colour = Array.isArray(inputs.colours) ? inputs.colours[0]! : inputs.colours;
         }
 
         const s = this.makeMesh({ ...inputs, colour }, meshToUpdate, res);
@@ -1110,11 +1116,11 @@ export class DrawHelper extends DrawHelperCore {
                 if (r.color) {
                     colour = BABYLON.Color3.FromArray(r.color).toHexString();
                 } else if (colourIsArrayAndMatches) {
-                    colour = inputs.colours[index];
+                    colour = inputs.colours[index]!;
                 } else if (colorsAreArrays) {
-                    colour = inputs.colours[0];
+                    colour = inputs.colours[0]!;
                 } else {
-                    colour = inputs.colours;
+                    colour = inputs.colours as string;
                 }
                 const m = this.makeMesh({ ...inputs, colour }, meshToUpdate, r);
                 m.parent = localOrigin;
@@ -1155,13 +1161,13 @@ export class DrawHelper extends DrawHelperCore {
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
         const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, inputs));
         const manifoldMeshContainer = new BABYLON.Mesh(this.generateEntityId("manifoldMeshContainer"), this.context.scene);
-        meshes.filter(s => s !== undefined).forEach(mesh => {
+        meshes.filter((s): s is BABYLON.Mesh => s !== undefined).forEach(mesh => {
             mesh.parent = manifoldMeshContainer;
         });
         return manifoldMeshContainer;
     }
 
-    async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
+    async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh | undefined> {
         const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
         return this.handleDecomposedManifold(decomposedMesh, inputs);
@@ -1243,7 +1249,7 @@ export class DrawHelper extends DrawHelperCore {
             }
         }
         if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
-            const evs = [];
+            const evs: Inputs.Base.Point3[][] = [];
             decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertexCoord.filter(s => s !== undefined);
                 evs.push(ev);
@@ -1260,7 +1266,7 @@ export class DrawHelper extends DrawHelperCore {
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
                 options.edgeArrowSize,
                 options.edgeArrowAngle
-            );
+            )!;
             mesh.parent = shapeMesh;
         }
 
@@ -1301,9 +1307,9 @@ export class DrawHelper extends DrawHelperCore {
                 return texts;
             });
             const textPolylines = await Promise.all(promises);
-            const edgeMesh = this.drawPolylines(null, textPolylines.flat(), false, 2, 1, inputs.edgeIndexColour, 1e-7, true);
+            const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, inputs.edgeIndexColour, 1e-7, true)!;
             edgeMesh.parent = shapeMesh;
-            edgeMesh.material.zOffset = -2;
+            edgeMesh.material!.zOffset = -2;
         }
         if (inputs.drawFaceIndexes) {
             const promises = decomposedMesh.faceList.map(async (face) => {
@@ -1331,10 +1337,10 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
 
-            const faceMesh = this.drawPolylines(null, textPolylines.flat(), false, 2, 1, inputs.faceIndexColour, 1e-7, true);
+            const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, inputs.faceIndexColour, 1e-7, true)!;
             faceMesh.parent = shapeMesh;
             if (inputs.drawEdges) {
-                faceMesh.material.zOffset = -2;
+                faceMesh.material!.zOffset = -2;
             }
         }
         return shapeMesh;
@@ -1431,7 +1437,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private handleDecomposedManifold(
-        decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): BABYLON.Mesh {
+        decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): BABYLON.Mesh | undefined {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             if (decomposedMesh.triVerts.length > 0) {
@@ -1442,9 +1448,9 @@ export class DrawHelper extends DrawHelperCore {
                 vertexData.indices = decomposedMesh.triVerts.length > 65535 ? new Uint32Array(decomposedMesh.triVerts) : new Uint16Array(decomposedMesh.triVerts);
 
                 for (let i = 0; i < decomposedMesh.triVerts.length; i += 3) {
-                    vertexData.indices[i] = decomposedMesh.triVerts[i + 2];
-                    vertexData.indices[i + 1] = decomposedMesh.triVerts[i + 1];
-                    vertexData.indices[i + 2] = decomposedMesh.triVerts[i];
+                    vertexData.indices[i] = decomposedMesh.triVerts[i + 2]!;
+                    vertexData.indices[i + 1] = decomposedMesh.triVerts[i + 1]!;
+                    vertexData.indices[i + 2] = decomposedMesh.triVerts[i]!;
                 }
 
                 const vertexCount = decomposedMesh.vertProperties.length / decomposedMesh.numProp;
@@ -1457,7 +1463,7 @@ export class DrawHelper extends DrawHelperCore {
                     const data = new Float32Array(vertexCount * component.stride);
                     for (let i = 0; i < vertexCount; i++) {
                         for (let strideIndex = 0; strideIndex < component.stride; strideIndex++) {
-                            data[i * component.stride + strideIndex] = decomposedMesh.vertProperties[i * decomposedMesh.numProp + offset + strideIndex];
+                            data[i * component.stride + strideIndex] = decomposedMesh.vertProperties[i * decomposedMesh.numProp + offset + strideIndex]!;
                         }
                     }
                     vertexData.set(data, component.kind);
@@ -1532,7 +1538,7 @@ export class DrawHelper extends DrawHelperCore {
                     opacity: options.crossSectionOpacity,
                     colours: options.crossSectionColour
                 });
-                polylineMesh.parent = mesh;
+                polylineMesh!.parent = mesh;
                 return mesh;
             } else {
                 return undefined;
@@ -1569,7 +1575,7 @@ export class DrawHelper extends DrawHelperCore {
         meshData: any,
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
         countIndices: number): number {
-        faceIndices.forEach((x) => {
+        faceIndices.forEach((x: number) => {
             const vn = meshData.normals[x];
             meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
             const pt = meshData.points[x];
@@ -1582,8 +1588,8 @@ export class DrawHelper extends DrawHelperCore {
 
     // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
     // Workers cannot handle complex circular objects like Babylon.js materials
-    private getSafeWorkerOptions<T extends { faceMaterial?: BABYLON.Material }>(inputs: T): Omit<T, "faceMaterial"> {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    private getSafeWorkerOptions<T extends { faceMaterial?: BABYLON.Material | undefined }>(inputs: T): Omit<T, "faceMaterial"> {
+         
         const { faceMaterial, ...safeOptions } = inputs;
         return safeOptions as Omit<T, "faceMaterial">;
     }

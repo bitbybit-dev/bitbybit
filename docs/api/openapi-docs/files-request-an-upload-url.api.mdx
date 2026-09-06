@@ -66,5 +66,40 @@ Returns a pre-signed URL for uploading a file via PUT.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/files/upload`
+
+Returns a pre-signed URL for uploading a file via PUT.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `filename` | string | yes | Original filename including extension (e.g. 'part.step', 'model.obj'). Used for display and format detection. |
+| `contentType` | string | yes | MIME type of the file (e.g. 'application/step', 'model/gltf-binary'). Must match the actual file content. |
+| `bytes` | integer | yes | Exact file size in bytes. Must match the Content-Length of the subsequent PUT to the upload URL. Maximum: 1 GB. |
+| `sha256` | string | no | SHA-256 hex digest of the file content. When provided, enables server-side deduplication - if an identical file was previously uploaded under this API key, the existing file is reused and no upload is needed. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `201` | Upload URL and file ID |
+| `400` | Validation error |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/files/upload" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

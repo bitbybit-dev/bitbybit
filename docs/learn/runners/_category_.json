@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Bitbybit Runners",
-        "description": "Execute 3D Scripts From Visual Programming Editors Anywhere on the Web. Use runners for straightforward Bitbybit integration inside third-party contexts.",
+        "description": "Runners execute a Bitbybit script outside the Bitbybit editors, in your own website or application. You author the script in Rete, Blockly or TypeScript, publish it, and the runner loads and executes it in the browser, handing the resulting geometry to whichever 3D engine you use. That means a parametric model built visually can drive a production site without being rewritten as code. These pages cover the runner concept, getting a first 3D website working with each editor's output, feeding inputs into a running script, and the engine-specific integration guides.",
         "slug": "/runners"
     }
 }

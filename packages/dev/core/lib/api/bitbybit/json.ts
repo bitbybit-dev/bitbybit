@@ -106,7 +106,7 @@ export class JSONBitByBit {
         if (inputs.json instanceof Object) {
             const clonedJson = { ...structuredClone(inputs.json) };
 
-            const callback = (payload) => {
+            const callback = (payload: Record<string, unknown>) => {
                 payload[inputs.prop] = inputs.value;
                 return payload;
             };
@@ -134,7 +134,7 @@ export class JSONBitByBit {
         // must be an object
         let clonedJson = { ...structuredClone(inputs.json) };
         inputs.paths.forEach((path, index) => {
-            clonedJson = this.setValue({ json: clonedJson, path, value: inputs.values[index], prop: inputs.props[index] });
+            clonedJson = this.setValue({ json: clonedJson, path, value: inputs.values[index], prop: inputs.props[index]! });
         });
         return clonedJson;
     }

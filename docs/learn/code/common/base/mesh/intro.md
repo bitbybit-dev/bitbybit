@@ -24,7 +24,7 @@ For the purposes of this class:
 
 ## Core Capabilities of the MeshBitByBit Class
 
-This class focuses on geometric calculations involving triangles, planes, and their interactions. Here's a high-level look. For precise input parameters (like DTOs) and detailed algorithms, please refer to the [full Mesh Utilities API documentation](https://docs.bitbybit.dev/classes/Bit.MeshBitByBit.html) or the GitHub source linked above.
+This class focuses on geometric calculations involving triangles, planes, and their interactions. Here's a high-level look. For precise input parameters (like DTOs) and detailed algorithms, please refer to the [full Mesh Utilities API documentation](https://docs.bitbybit.dev/classes/Bit.MeshBitByBit) or the GitHub source linked above.
 
 ### 1. Plane and Triangle Geometry
 

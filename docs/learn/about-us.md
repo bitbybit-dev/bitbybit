@@ -33,7 +33,7 @@ This is not a trial or a freemium teaser. The open-source core is production-gra
 Revenue comes from four sources:
 
 1. **CAD Cloud API** - Managed server infrastructure for heavy geometry processing. Customers pay based on usage.
-2. **3D Bits for Shopify** - A subscription-based app that brings 3D configurators to e-commerce storefronts, including the no-code [Viewer Editor](./getting-started/viewer-editor/intro) for building configurators visually.
+2. **3D Bits for Shopify** - A subscription-based app that brings 3D configurators to e-commerce storefronts, including the no-code [Composer](/learn/3d-bits/composer/intro) for building configurators visually.
 3. **Premium features** - Certain advanced algorithms (`bitbybit.advanced`, `bitbybit.things`, `bitbybit.asset`) that go beyond the open-source core.
 4. **Enterprise services** - Custom development, dedicated infrastructure, and bespoke CAD solutions built in close collaboration with B2B clients.
 

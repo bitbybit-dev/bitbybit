@@ -6,7 +6,7 @@ export class BabylonGizmoPositionGizmo {
 
 
     constructor(
-        private readonly context: Context,
+        _context: Context,
     ) {
     }
 
@@ -40,7 +40,7 @@ export class BabylonGizmoPositionGizmo {
     * @shortname get attached mesh
     */
     getAttachedMesh(inputs: Inputs.BabylonGizmo.PositionGizmoDto): BABYLON.AbstractMesh {
-        return inputs.positionGizmo?.attachedMesh;
+        return inputs.positionGizmo?.attachedMesh as BABYLON.AbstractMesh;
     }
 
     /**
@@ -51,7 +51,7 @@ export class BabylonGizmoPositionGizmo {
     * @shortname get attached node
     */
     getAttachedNode(inputs: Inputs.BabylonGizmo.PositionGizmoDto): BABYLON.Node {
-        return inputs.positionGizmo?.attachedNode;
+        return inputs.positionGizmo?.attachedNode as BABYLON.Node;
     }
 
     /**

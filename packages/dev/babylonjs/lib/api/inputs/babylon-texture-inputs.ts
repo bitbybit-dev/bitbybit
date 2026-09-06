@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for textures: the image source, UV scaling and offset, wrapping mode, and the sampling
+ * settings that decide how a texture is filtered.
+ */
 export namespace BabylonTexture {
 
+    /**
+     * How a texture is filtered when magnified or minified - nearest keeps pixels crisp and blocky,
+     * the linear and trilinear modes smooth them, and the mipmap variants trade sharpness for stability
+     * in the distance.
+     */
     export enum samplingModeEnum {
         nearest = "nearest",
         bilinear = "bilinear",
@@ -30,7 +39,7 @@ export namespace BabylonTexture {
          * Url of the texture
          * @default undefined
          */
-        url: string;
+        url!: string;
         /**
          * Invert texture on Y direction
          * @default false
@@ -90,7 +99,7 @@ export namespace BabylonTexture {
          * Url of the image. Use a publicly accessible url, a data url, or an object url created from an uploaded asset file.
          * @default undefined
          */
-        url: string;
+        url!: string;
         /**
          * Treat the image alpha channel as transparency. Recommended true for decal and projection images.
          * @default true

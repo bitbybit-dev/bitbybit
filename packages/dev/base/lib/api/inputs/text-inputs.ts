@@ -3,6 +3,19 @@
 import { Base } from "./base-inputs";
 
 
+/**
+
+
+ * Parameters for string handling: the text to act on plus the separator, index, pattern, replacement,
+
+
+ * padding or format an operation needs. Used for labels, tags, engraved 3D text and for assembling the
+
+
+ * data a script hands back out.
+
+
+ */
 export namespace Text {
 
     export class TextDto {
@@ -63,7 +76,7 @@ export namespace Text {
          * Text to join
          * @default undefined
          */
-        list: string[];
+        list!: string[];
         /**
          * Text to join by
          * @default ,
@@ -78,7 +91,7 @@ export namespace Text {
          * Item to stringify
          * @default undefined
          */
-        item: T;
+        item!: T;
     }
     export class ToStringEachDto<T> {
         constructor(list?: T[]) {
@@ -88,7 +101,7 @@ export namespace Text {
          * Item to stringify
          * @default undefined
          */
-        list: T[];
+        list!: T[];
     }
 
     export class TextFormatDto {
@@ -151,7 +164,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 1
          */
-        end?: number = 5;
+        end?: number | undefined = 5;
     }
 
     export class TextIndexDto {
@@ -303,14 +316,14 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        xOffset? = 0;
+        xOffset?: number | undefined = 0;
         /**
          * The y offset
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
-        yOffset? = 0;
+        yOffset?: number | undefined = 0;
         /**
          * The height of the text
          * @default 1
@@ -318,7 +331,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        height? = 1;
+        height?: number | undefined = 1;
         /**
          * The extrude offset
          * @default 0
@@ -326,7 +339,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        extrudeOffset? = 0;
+        extrudeOffset?: number | undefined = 0;
     }
     
     export class VectorTextDto {
@@ -345,7 +358,7 @@ export namespace Text {
          * The text
          * @default Hello World
          */
-        text?: string;
+        text?: string | undefined;
         /**
          * The x offset
          * @default 0
@@ -353,7 +366,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        xOffset? = 0;
+        xOffset?: number | undefined = 0;
         /**
          * The y offset
          * @default 0
@@ -361,7 +374,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        yOffset? = 0;
+        yOffset?: number | undefined = 0;
         /**
          * The height of the text
          * @default 1
@@ -369,7 +382,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        height? = 1;
+        height?: number | undefined = 1;
         /**
          * The line spacing
          * @default 1.4
@@ -377,7 +390,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        lineSpacing? = 1.4;
+        lineSpacing?: number | undefined = 1.4;
         /**
          * The letter spacing offset
          * @default 0
@@ -385,12 +398,12 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        letterSpacing? = 0;
+        letterSpacing?: number | undefined = 0;
         /**
          * The extrude offset
          * @default left
          */
-        align?: Base.horizontalAlignEnum;
+        align?: Base.horizontalAlignEnum | undefined;
         /**
          * The extrude offset
          * @default 0
@@ -398,12 +411,12 @@ export namespace Text {
          * @maximum Infinity
          * @step 0.1
          */
-        extrudeOffset? = 0;
+        extrudeOffset?: number | undefined = 0;
         /**
          * Will center text on 0, 0, 0
          * @default false
          */
-        centerOnOrigin? = false;
+        centerOnOrigin?: boolean | undefined = false;
     }
 
 }

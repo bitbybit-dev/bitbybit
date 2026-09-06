@@ -27,7 +27,7 @@ The `Line` class provides methods to work with both these representations and co
 
 ## Core Capabilities of the Line Class
 
-The `Line` class allows you to define, analyze, and manipulate these line segments. Here's a high-level look at its features. For the exact input parameters (like DTOs) and detailed behavior, please refer to the [full Line API documentation](https://docs.bitbybit.dev/classes/Bit.Line.html) or the GitHub source linked above.
+The `Line` class allows you to define, analyze, and manipulate these line segments. Here's a high-level look at its features. For the exact input parameters (like DTOs) and detailed behavior, please refer to the [full Line API documentation](https://docs.bitbybit.dev/classes/Bit.Line) or the GitHub source linked above.
 
 ### 1. Creating Lines and Segments
 

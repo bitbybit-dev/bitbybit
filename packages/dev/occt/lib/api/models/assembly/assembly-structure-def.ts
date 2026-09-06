@@ -27,13 +27,13 @@ export interface AssemblyStructureDef<T> {
      * Can be part labels, instance labels, or assembly labels.
      * Ignored when creating a new document.
      */
-    removals?: string[];
+    removals?: string[] | undefined;
     /**
      * Updates to apply to existing parts in the document.
      * Each update can change the shape, name, and/or color of a part.
      * Ignored when creating a new document.
      */
-    partUpdates?: AssemblyPartUpdateDef<T>[];
+    partUpdates?: AssemblyPartUpdateDef<T>[] | undefined;
     /**
      * Parts imported from other documents (typically STEP-loaded).
      * Each entry copies a label tree from a source document into this document,
@@ -41,7 +41,7 @@ export interface AssemblyStructureDef<T> {
      * behaves as a regular part: instance nodes can reference it by `partId` and
      * place it multiple times with different transforms.
      */
-    loadedParts?: AssemblyLoadedPartDef[];
+    loadedParts?: AssemblyLoadedPartDef[] | undefined;
     /**
      * Whether to clear the existing document before adding new content.
      * Only relevant when an existingDocument is provided.

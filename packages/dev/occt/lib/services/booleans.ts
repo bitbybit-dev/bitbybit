@@ -5,37 +5,97 @@ import * as Inputs from "../api/inputs";
 export class OCCTBooleans {
 
     constructor(
-        private readonly occ: BitbybitOcctModule,
+        _occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
 
+    /**
+     * Joins separate objects
+     * @param inputs Objects to join
+     * @returns OpenCascade joined shape
+     * @group booleans
+     * @shortname union
+     * @drawable true
+     */
     union(inputs: Inputs.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
         return this.och.booleansService.union(inputs);
     }
 
+    /**
+     * Does boolean difference operation between a main shape and given shapes
+     * @param inputs Main shape and shapes to differ
+     * @returns OpenCascade difference shape
+     * @group booleans
+     * @shortname difference
+     * @drawable true
+     */
     difference(inputs: Inputs.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
         return this.och.booleansService.difference(inputs);
     }
 
+    /**
+     * Does boolean intersection operation between a main shape and given shapes
+     * @param inputs Main shape and shapes to differ
+     * @returns OpenCascade intersection of shapes
+     * @group booleans
+     * @shortname intersection
+     * @drawable true
+     */
     intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape {
         const int = this.och.booleansService.intersection(inputs);
         const res = this.och.converterService.makeCompound({ shapes: int });
         return res;
     }
 
+    /**
+     * Does mesh mesh intersection operation between two shapes - both shapes can have their own  meshing precision.
+     * This algorithm intersects the meshes and returns the wires of the intersection, which are polylines or polygons.
+     * @param inputs Two shapes to intersect
+     * @returns Wires where shapes intersect
+     * @group mesh based
+     * @shortname mesh mesh intersection as wires
+     * @drawable true
+     */
     meshMeshIntersectionWires(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
         return this.och.meshingService.meshMeshIntersectionWires(inputs);
     }
 
+    /**
+     * Does mesh mesh intersection operation between two shapes - both shapes can have their own  meshing precision.
+     * This algorithm intersects the meshes and returns the points of the intersection, which are polylines or polygons.
+     * @param inputs Two shapes to intersect
+     * @returns Points where shapes intersect
+     * @group mesh based
+     * @shortname mesh mesh intersection as points
+     * @drawable true
+     */
     meshMeshIntersectionPoints(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         return this.och.meshingService.meshMeshIntersectionPoints(inputs);
     }
 
+    /**
+     * Does mesh mesh intersection operation between the shape and multiple other shapes - all shapes can have their own meshing precision.
+     * This algorithm intersects the meshes and returns the wires of the intersection, which are polylines or polygons.
+     * @param inputs Two shapes to intersect
+     * @returns Wires where shapes intersect
+     * @group mesh based
+     * @shortname mesh mesh intersection of shapes as wires
+     * @drawable true
+     */
     meshMeshIntersectionOfShapesWires(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
         return this.och.meshingService.meshMeshIntersectionOfShapesWires(inputs);
     }
 
+    /**
+     * Does mesh mesh intersection operation between the shape and multiple other shapes - all shapes can have their own meshing precision.
+     * This algorithm intersects the meshes and returns the points of the intersection.
+     * @param inputs Two shapes to intersect
+     * @returns Wires where shapes intersect
+     * @group mesh based
+     * @shortname mesh mesh intersection of shapes as points
+     * @drawable true
+     */
     meshMeshIntersectionOfShapesPoints(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         return this.och.meshingService.meshMeshIntersectionOfShapesPoints(inputs);
     }

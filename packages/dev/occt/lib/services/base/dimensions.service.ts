@@ -101,6 +101,9 @@ export class DimensionsService {
         
         // Normalize the direction vector (should point away from tip when not flipped)
         const dir = this.base.vector.normalized({ vector: inputs.direction });
+        if (!dir) {
+            throw new Error("Arrow direction must not be a zero vector");
+        }
         
         // Determine arrow direction based on flip
         const arrowDir = inputs.flipped 
@@ -113,6 +116,9 @@ export class DimensionsService {
             second: inputs.normal
         }) as Inputs.Base.Vector3;
         const perpNorm = this.base.vector.normalized({ vector: perpendicular });
+        if (!perpNorm) {
+            throw new Error("Arrow direction must not be parallel to the dimension normal");
+        }
         
         // Calculate half angle in radians
         const halfAngleRad = (inputs.angle / 2) * Math.PI / 180;
@@ -126,7 +132,7 @@ export class DimensionsService {
         const basePoint = this.base.point.translatePoints({
             points: [inputs.tipPoint],
             translation: baseVec
-        })[0];
+        })[0]!;
         
         // Calculate the two arrow line endpoints
         const sideVec1 = this.base.vector.mul({ vector: perpNorm, scalar: sideOffset }) as Inputs.Base.Vector3;
@@ -135,12 +141,12 @@ export class DimensionsService {
         const endPoint1 = this.base.point.translatePoints({
             points: [basePoint],
             translation: sideVec1
-        })[0];
+        })[0]!;
         
         const endPoint2 = this.base.point.translatePoints({
             points: [basePoint],
             translation: sideVec2
-        })[0];
+        })[0]!;
         
         // Create the two arrow lines
         const line1 = this.wiresService.createLineWireWithExtensions({
@@ -170,8 +176,8 @@ export class DimensionsService {
         const lineBetweenPoints = this.wiresService.createLineWireWithExtensions({
             start: inputs.start,
             end: inputs.end,
-            extensionStart: inputs.crossingSize,
-            extensionEnd: inputs.crossingSize,
+            extensionStart: inputs.crossingSize ?? 0.2,
+            extensionEnd: inputs.crossingSize ?? 0.2,
         });
         shapesToDelete.push(lineBetweenPoints);
 
@@ -185,21 +191,21 @@ export class DimensionsService {
             translation: inputs.direction,
         });
 
-        const translatedStartPt = translatedPts[0];
-        const translatedEndPt = translatedPts[1];
+        const translatedStartPt = translatedPts[0]!;
+        const translatedEndPt = translatedPts[1]!;
 
         const startLineToTranslatedPoint = this.wiresService.createLineWireWithExtensions({
             start: inputs.start,
             end: translatedStartPt,
-            extensionStart: -inputs.offsetFromPoints,
-            extensionEnd: inputs.crossingSize,
+            extensionStart: -(inputs.offsetFromPoints ?? 0),
+            extensionEnd: inputs.crossingSize ?? 0.2,
         });
 
         const endLineToTranslatedPoint = this.wiresService.createLineWireWithExtensions({
             start: inputs.end,
             end: translatedEndPt,
-            extensionStart: -inputs.offsetFromPoints,
-            extensionEnd: inputs.crossingSize,
+            extensionStart: -(inputs.offsetFromPoints ?? 0),
+            extensionEnd: inputs.crossingSize ?? 0.2,
         });
 
         const midPt = this.wiresService.midPointOnWire({ shape: translatedLine });
@@ -211,8 +217,8 @@ export class DimensionsService {
         const labelText = this.formatDimensionLabel(
             length,
             inputs.labelOverwrite,
-            inputs.decimalPlaces,
-            inputs.labelSuffix,
+            inputs.decimalPlaces ?? 2,
+            inputs.labelSuffix ?? "(cm)",
             inputs.removeTrailingZeros
         );
 
@@ -224,6 +230,9 @@ export class DimensionsService {
         txtOpt.centerOnOrigin = true;
 
         const txt = this.wiresService.textWiresWithData(txtOpt);
+        if (!txt.compound || !txt.shapes) {
+            throw new Error("Dimension label could not be created");
+        }
 
         // get the up vector for the dimension plane
         const normalThreePoints = this.base.point.normalFromThreePoints({
@@ -232,6 +241,9 @@ export class DimensionsService {
             point3: midPt,
             reverseNormal: true,
         });
+        if (!normalThreePoints) {
+            throw new Error("Dimension points must not be collinear");
+        }
 
         const dirStartEnd = this.base.vector.sub({
             first: inputs.end,
@@ -282,7 +294,10 @@ export class DimensionsService {
         shapesToDelete.push(previousShape);
 
         const normDir = this.base.vector.normalized({ vector: inputs.direction });
-        const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
+        if (!normDir) {
+            throw new Error("Dimension direction must not be a zero vector");
+        }
+        const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset ?? 0.3 });
 
         const addToDir = this.base.vector.add({
             first: midPt,
@@ -305,8 +320,8 @@ export class DimensionsService {
                 tipPoint: translatedStartPt,
                 direction: dirStartEnd,
                 normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
+                size: inputs.arrowSize ?? 0.3,
+                angle: inputs.arrowAngle ?? 30,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(startArrow);
@@ -317,8 +332,8 @@ export class DimensionsService {
                 tipPoint: translatedEndPt,
                 direction: endArrowDir,
                 normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
+                size: inputs.arrowSize ?? 0.3,
+                angle: inputs.arrowAngle ?? 30,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(endArrow);
@@ -338,11 +353,14 @@ export class DimensionsService {
         const shapesToDelete: TopoDS_Shape[] = [];
 
         const normDir1 = this.base.vector.normalized({ vector: inputs.direction1 });
+        if (!normDir1) {
+            throw new Error("Dimension direction must not be a zero vector");
+        }
         const endVec = this.base.vector.mul({ vector: normDir1, scalar: inputs.radius }) as Inputs.Base.Point3;
         const endPt = this.base.point.translatePoints({
             points: [endVec],
             translation: inputs.center,
-        })[0];
+        })[0]!;
 
         const line1WithExt = this.wiresService.createLineWireWithExtensions({
             start: inputs.center,
@@ -352,11 +370,14 @@ export class DimensionsService {
         });
 
         const normDir2 = this.base.vector.normalized({ vector: inputs.direction2 });
+        if (!normDir2) {
+            throw new Error("Dimension direction must not be a zero vector");
+        }
         const endVec2 = this.base.vector.mul({ vector: normDir2, scalar: inputs.radius }) as Inputs.Base.Point3;
         const endPt2 = this.base.point.translatePoints({
             points: [endVec2],
             translation: inputs.center,
-        })[0];
+        })[0]!;
         const line2WithExt = this.wiresService.createLineWireWithExtensions({
             start: inputs.center,
             end: endPt2,
@@ -370,6 +391,9 @@ export class DimensionsService {
             point3: endPt2,
             reverseNormal: true,
         });
+        if (!normalThreePoints) {
+            throw new Error("Dimension points must not be collinear");
+        }
 
         const normalThreePointsRev = this.base.point.normalFromThreePoints({
             point1: inputs.center,
@@ -377,6 +401,9 @@ export class DimensionsService {
             point3: endPt2,
             reverseNormal: false,
         });
+        if (!normalThreePointsRev) {
+            throw new Error("Dimension points must not be collinear");
+        }
 
         const circ = this.entitiesService.createCircle(inputs.radius, inputs.center, normalThreePointsRev, Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;
         shapesToDelete.push(circ);
@@ -414,6 +441,9 @@ export class DimensionsService {
         txtOpt.height = inputs.labelSize;
         txtOpt.centerOnOrigin = true;
         const txt = this.wiresService.textWiresWithData(txtOpt);
+        if (!txt.compound || !txt.shapes) {
+            throw new Error("Dimension label could not be created");
+        }
 
         const vectorToMid = this.base.vector.sub({
             first: midPt,
@@ -502,8 +532,8 @@ export class DimensionsService {
                 tipPoint: arcStartPoint,
                 direction: arcStartTangent,
                 normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
+                size: inputs.arrowSize ?? 0.3,
+                angle: inputs.arrowAngle ?? 30,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(startArrow);
@@ -519,8 +549,8 @@ export class DimensionsService {
                 tipPoint: arcEndPoint,
                 direction: reversedEndTangent,
                 normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
+                size: inputs.arrowSize ?? 0.3,
+                angle: inputs.arrowAngle ?? 30,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(endArrow);
@@ -537,10 +567,12 @@ export class DimensionsService {
     }
 
     pinWithLabel(inputs: Inputs.OCCT.PinWithLabelDto): TopoDS_Compound {
+        const endPoint = inputs.endPoint ?? [0, 5, 2];
+        const direction = inputs.direction ?? [0, 0, 1];
         const pinLine = this.wiresService.createLineWireWithExtensions({
             start: inputs.startPoint,
-            end: inputs.endPoint,
-            extensionStart: -inputs.offsetFromStart,
+            end: endPoint,
+            extensionStart: -(inputs.offsetFromStart ?? 0),
             extensionEnd: 0,
         });
 
@@ -552,19 +584,25 @@ export class DimensionsService {
         txtOpt.centerOnOrigin = true;
 
         const text = this.wiresService.textWiresWithData(txtOpt);
+        if (!text.compound || !text.shapes || !text.data) {
+            throw new Error("Pin label could not be created");
+        }
 
         const textWidth = text.data.width;
-        const dirNorm = this.base.vector.normalized({ vector: inputs.direction });
-        const offsetLabelVec = this.base.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + inputs.labelOffset });
-        // const translateTxtVec = this.vector.add({ first: inputs.direction, second: offsetLabelVec }) as Inputs.Base.Vector3;
+        const dirNorm = this.base.vector.normalized({ vector: direction });
+        if (!dirNorm) {
+            throw new Error("Pin direction must not be a zero vector");
+        }
+        const offsetLabelVec = this.base.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + (inputs.labelOffset ?? 0.3) });
+        // const translateTxtVec = this.vector.add({ first: direction, second: offsetLabelVec }) as Inputs.Base.Vector3;
 
         const endPtLabelLine = this.base.point.translatePoints({
-            points: [inputs.endPoint],
-            translation: inputs.direction,
-        })[0];
+            points: [endPoint],
+            translation: direction,
+        })[0]!;
 
         const lineBeneathLabel = this.wiresService.createLineWireWithExtensions({
-            start: inputs.endPoint,
+            start: endPoint,
             end: endPtLabelLine,
             extensionStart: 0,
             extensionEnd: 0,
@@ -572,10 +610,13 @@ export class DimensionsService {
 
         const normalThreePoints = this.base.point.normalFromThreePoints({
             point1: inputs.startPoint,
-            point2: inputs.endPoint,
+            point2: endPoint,
             point3: endPtLabelLine,
             reverseNormal: false,
         });
+        if (!normalThreePoints) {
+            throw new Error("Dimension points must not be collinear");
+        }
         let currentShape = this.transformsService.rotate({
             shape: text.compound,
             angle: -90 + (inputs.labelRotation || 0),
@@ -636,7 +677,7 @@ export class DimensionsService {
         if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
             // Calculate the direction from start to end for the pin
             const pinDirection = this.base.vector.sub({
-                first: inputs.endPoint,
+                first: endPoint,
                 second: inputs.startPoint,
             }) as Inputs.Base.Vector3;
 
@@ -645,8 +686,8 @@ export class DimensionsService {
                 tipPoint: inputs.startPoint,
                 direction: pinDirection,
                 normal: normalThreePoints,
-                size: inputs.arrowSize,
-                angle: inputs.arrowAngle,
+                size: inputs.arrowSize ?? 0.3,
+                angle: inputs.arrowAngle ?? 30,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(arrow);

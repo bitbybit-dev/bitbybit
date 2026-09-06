@@ -3,16 +3,19 @@ import { ManifoldInfo } from "./manifold-info";
 import { ManifoldStateEnum } from "./manifold-state.enum";
 import { ManifoldWorkerMock } from "./manifold-worker-mock";
 
+type WorkerResponse = "manifold-initialised" | "busy" | { uid: string, result?: unknown, error?: string };
+type PendingCall = { promise?: Promise<unknown>, uid: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
+
 /**
- * This is a manager of Manifold worker. Promisified API allows to deal with the worker in a more natural way
- * and because all those CAD algorithms are quite heavy this does make a lot of sense at this time.
+ * This is a manager of Manifold worker. Promisified API allows to deal with the worker in a more natural
+ * way and because all those CAD algorithms are quite heavy this does make a lot of sense at this time.
  */
 export class ManifoldWorkerManager {
 
     manifoldWorkerState$: Subject<ManifoldInfo> = new Subject();
-    errorCallback: (err: string) => void;
-    private manifoldWorker: Worker | ManifoldWorkerMock;
-    private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
+    errorCallback!: (err: string) => void;
+    private manifoldWorker!: Worker | ManifoldWorkerMock;
+    private promisesMade: PendingCall[] = [];
 
     manifoldWorkerAlreadyInitialised(): boolean {
         return this.manifoldWorker ? true : false;
@@ -20,7 +23,7 @@ export class ManifoldWorkerManager {
 
     setManifoldWorker(worker: Worker | ManifoldWorkerMock): void {
         this.manifoldWorker = worker;
-        this.manifoldWorker.onmessage = ({ data }) => {
+        this.manifoldWorker.onmessage = ({ data }: { data: WorkerResponse }) => {
             if (data === "manifold-initialised") {
                 this.manifoldWorkerState$.next({
                     state: ManifoldStateEnum.initialised,
@@ -33,12 +36,14 @@ export class ManifoldWorkerManager {
             else {
                 const promise = this.promisesMade.find(made => made.uid === data.uid);
                 if (promise && data.result !== undefined && !data.error) {
-                    promise.resolve(data.result);
+                    promise.resolve!(data.result);
                 } else if (data.error) {
                     if (this.errorCallback) {
                         this.errorCallback(data.error);
                     }
-                    promise.reject(data.error);
+                    if (promise) {
+                        promise.reject!(data.error);
+                    }
                 }
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
 
@@ -61,7 +66,7 @@ export class ManifoldWorkerManager {
 
     genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any> {
         const uid = `call${Math.random()}${Date.now()}`;
-        const obj: { promise?: Promise<any>, uid: string, resolve?, reject?} = { uid };
+        const obj: PendingCall = { uid };
         const prom = new Promise((resolve, reject) => {
             obj.resolve = resolve;
             obj.reject = reject;

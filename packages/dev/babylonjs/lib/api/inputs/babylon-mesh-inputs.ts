@@ -3,8 +3,17 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
+/**
+ * Parameters for mesh objects in the scene: visibility, picking, parenting, position, rotation and
+ * scale, material assignment, and the options for cloning, merging and disposing a mesh.
+ */
 export namespace BabylonMesh {
 
+    /**
+     * Which face of a surface is rendered: the front, the back, or both. Meshes are single-sided by
+     * default, so a surface can look missing when viewed from behind - setting this to double-sided is
+     * the usual fix.
+     */
     export enum sideOrientationEnum {
         frontside = "frontside",
         backside = "backside",
@@ -23,27 +32,27 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * Position to place the mesh into
          * @default undefined
          */
-        position: Base.Point3;
+        position!: Base.Point3;
         /**
          * Rotation for the mesh
          * @default undefined
          */
-        rotation: Base.Vector3;
+        rotation!: Base.Vector3;
         /**
          * Scale mesh to certain value
          * @default undefined
          */
-        scaling: Base.Vector3;
+        scaling!: Base.Vector3;
         /**
          * Colours or a single colour to change
          * @default undefined
          */
-        colours: string | string[];
+        colours!: string | string[];
     }
 
     export class SetParentDto {
@@ -55,12 +64,12 @@ export namespace BabylonMesh {
          * BabylonJS Mesh that needs to change it's parent
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh;
+        babylonMesh!: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh;
         /**
          * BabylonJS Mesh to use as a parent
          * @default undefined
          */
-        parentMesh: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh;
+        parentMesh!: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh;
     }
     export class UpdateDrawnBabylonMeshPositionDto {
         constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, position?: Base.Point3) {
@@ -71,12 +80,12 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
+        babylonMesh!: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Position to place the mesh into
          * @default undefined
          */
-        position: Base.Point3;
+        position!: Base.Point3;
     }
     export class UpdateDrawnBabylonMeshRotationDto {
         constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, rotation?: Base.Vector3) {
@@ -87,12 +96,12 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
+        babylonMesh!: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Rotation for the mesh
          * @default undefined
          */
-        rotation: Base.Vector3;
+        rotation!: Base.Vector3;
     }
 
     export class UpdateDrawnBabylonMeshScaleDto {
@@ -104,12 +113,12 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
+        babylonMesh!: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Scale for the mesh
          * @default undefined
          */
-        scale: Base.Vector3;
+        scale!: Base.Vector3;
     }
     export class ScaleInPlaceDto {
         constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, scale?: number) {
@@ -120,7 +129,7 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
+        babylonMesh!: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * factor for the scale
          * @default 1
@@ -138,12 +147,12 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
+        babylonMesh!: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh2: BABYLON.Mesh | BABYLON.InstancedMesh;
+        babylonMesh2!: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Should check precisely
          * @default false
@@ -164,12 +173,12 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
+        babylonMesh!: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * point
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
     }
 
     export class BabylonMeshDto {
@@ -180,7 +189,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
     }
     export class CloneToPositionsDto {
         constructor(babylonMesh?: BABYLON.Mesh, positions?: Base.Point3[]) {
@@ -191,7 +200,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * positions to clone to
          * @default []
@@ -211,7 +220,7 @@ export namespace BabylonMesh {
          * meshes array of meshes with the vertices to merge. Entries cannot be empty meshes.
          * @default undefined
          */
-        arrayOfMeshes: BABYLON.Mesh[];
+        arrayOfMeshes!: BABYLON.Mesh[];
         /**
          * disposeSource when true (default), dispose of the vertices from the source meshes.
          * @default true
@@ -227,7 +236,7 @@ export namespace BabylonMesh {
          * @default undefined
          * @optional true
          */
-        meshSubclass?: BABYLON.Mesh;
+        meshSubclass?: BABYLON.Mesh | undefined;
         /**
          * subdivideWithSubMeshes when true (false default), subdivide mesh into subMeshes.
          * @default false
@@ -247,7 +256,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * Include children when performing action
          * @default true
@@ -264,7 +273,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * Include children when showing hiding
          * @default true
@@ -279,7 +288,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
     }
     export class ChildMeshesBabylonMeshDto {
         constructor(babylonMesh?: BABYLON.Mesh, directDescendantsOnly?: boolean) {
@@ -290,7 +299,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * Include only direct descendants
          * @default false
@@ -306,7 +315,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * distance to translate
          * @default 0
@@ -328,17 +337,17 @@ export namespace BabylonMesh {
          * @default undefined
          * 
          */
-        babylonMesh?: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * name of the mesh
          * @default undefined
          */
-        name: string;
+        name!: string;
         /**
          * Set name also on children
          * @default false
          */
-        includeChildren? = false;
+        includeChildren?: boolean | undefined = false;
     }
     export class ByNameBabylonMeshDto {
         constructor(name?: string) {
@@ -348,7 +357,7 @@ export namespace BabylonMesh {
          * name of the mesh
          * @default undefined
          */
-        name: string;
+        name!: string;
     }
     export class MaterialBabylonMeshDto {
         constructor(babylonMesh?: BABYLON.Mesh, material?: BABYLON.Material, includeChildren?: boolean) {
@@ -360,12 +369,12 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh?: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * material of the mesh
          * @default undefined
          */
-        material: BABYLON.Material;
+        material!: BABYLON.Material;
         /**
          * Set material on children also
          * @default false
@@ -381,12 +390,12 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh?: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * id of the mesh
          * @default undefined
          */
-        id: string;
+        id!: string;
     }
     export class ByIdBabylonMeshDto {
         constructor(id?: string) {
@@ -396,7 +405,7 @@ export namespace BabylonMesh {
          * id of the mesh
          * @default undefined
          */
-        id: string;
+        id!: string;
     }
 
     export class UniqueIdBabylonMeshDto {
@@ -410,7 +419,7 @@ export namespace BabylonMesh {
          * @maximum Infinity
          * @step 1
          */
-        uniqueId: number;
+        uniqueId: number = 0;
     }
     export class PickableBabylonMeshDto {
         constructor(babylonMesh?: BABYLON.Mesh, pickable?: boolean, includeChildren?: boolean) {
@@ -422,7 +431,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * Pickable
          * @default false
@@ -445,7 +454,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * Check collisions
          * @default false
@@ -466,7 +475,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * rotate to translate
          * @default 0
@@ -474,7 +483,7 @@ export namespace BabylonMesh {
          * @maximum Infinity
          * @step 1
          */
-        rotate: number;
+        rotate: number = 0;
     }
     export class SetMeshVisibilityDto {
         constructor(babylonMesh?: BABYLON.Mesh, visibility?: number, includeChildren?: boolean) {
@@ -486,7 +495,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: BABYLON.Mesh;
+        babylonMesh!: BABYLON.Mesh;
         /**
          * Shows mesh if 0 and shows if 1
          * @default 0
@@ -512,22 +521,22 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        mesh: BABYLON.Mesh;
+        mesh!: BABYLON.Mesh;
         /**
          * Position
          * @default undefined
          */
-        position: Base.Point3;
+        position!: Base.Point3;
         /**
          * Rotation
          * @default undefined
          */
-        rotation: Base.Vector3;
+        rotation!: Base.Vector3;
         /**
          * Scaling
          * @default undefined
          */
-        scaling: Base.Vector3;
+        scaling!: Base.Vector3;
     }
     export class MeshInstanceDto {
         constructor(mesh?: BABYLON.Mesh) {
@@ -537,7 +546,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        mesh: BABYLON.Mesh;
+        mesh!: BABYLON.Mesh;
     }
     export class RotateAroundAxisNodeDto {
         constructor(mesh?: BABYLON.Mesh, position?: Base.Point3, axis?: Base.Vector3, angle?: number) {
@@ -550,7 +559,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        mesh: BABYLON.Mesh;
+        mesh!: BABYLON.Mesh;
         /**
          * Position vector expressed in [x, y, z] vector array
          */

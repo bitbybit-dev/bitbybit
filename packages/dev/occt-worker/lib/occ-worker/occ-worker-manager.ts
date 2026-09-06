@@ -3,17 +3,20 @@ import { OccInfo } from "./occ-info";
 import { OccStateEnum } from "./occ-state.enum";
 import { OCCTWorkerMock } from "./occ-worker-mock";
 
+type WorkerResponse = "occ-initialised" | "busy" | { uid: string, result?: unknown, error?: string };
+type PendingCall = { promise?: Promise<unknown>, uid: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
+
 /**
- * This is a manager of OpenCascade worker. Promisified API allows to deal with the worker in a more natural way
- * and because all those CAD algorithms are quite heavy this does make a lot of sense at this time.
+ * This is a manager of OpenCascade worker. Promisified API allows to deal with the worker in a more natural
+ * way and because all those CAD algorithms are quite heavy this does make a lot of sense at this time.
  */
 
 export class OCCTWorkerManager {
 
     occWorkerState$: Subject<OccInfo> = new Subject();
-    errorCallback: (err: string) => void;
-    private occWorker: Worker | OCCTWorkerMock;
-    private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
+    errorCallback!: (err: string) => void;
+    private occWorker!: Worker | OCCTWorkerMock;
+    private promisesMade: PendingCall[] = [];
 
     occWorkerAlreadyInitialised(): boolean {
         return this.occWorker ? true : false;
@@ -39,7 +42,7 @@ export class OCCTWorkerManager {
 
     setOccWorker(worker: Worker | OCCTWorkerMock): void {
         this.occWorker = worker;
-        this.occWorker.onmessage = ({ data }) => {
+        this.occWorker.onmessage = ({ data }: { data: WorkerResponse }) => {
             if (data === "occ-initialised") {
                 this.occWorkerState$.next({
                     state: OccStateEnum.initialised,
@@ -52,7 +55,7 @@ export class OCCTWorkerManager {
             else {
                 const promise = this.promisesMade.find(made => made.uid === data.uid);
                 if (promise && data.result !== undefined && !data.error) {
-                    promise.resolve(data.result);
+                    promise.resolve!(data.result);
                 } else if (data.error) {
                     if (this.errorCallback) {
                         try {
@@ -62,7 +65,7 @@ export class OCCTWorkerManager {
                         }
                     }
                     if (promise) {
-                        promise.reject(data.error);
+                        promise.reject!(data.error);
                     }
                 }
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
@@ -85,7 +88,7 @@ export class OCCTWorkerManager {
 
     genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any> {
         const uid = `call${Math.random()}${Date.now()}`;
-        const obj: { promise?: Promise<any>, uid: string, resolve?, reject?} = { uid };
+        const obj: PendingCall = { uid };
         const prom = new Promise((resolve, reject) => {
             obj.resolve = resolve;
             obj.reject = reject;

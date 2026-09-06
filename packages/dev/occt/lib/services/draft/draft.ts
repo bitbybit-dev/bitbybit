@@ -9,6 +9,14 @@ export class OCCTDraft {
         private readonly och: OccHelper
     ) { }
 
+    /**
+     * Tapers the selected faces of a shape by a draft angle about a neutral plane
+     * @param inputs Shape, faces, pull direction, angle and neutral plane
+     * @returns OpenCascade shape with drafted faces
+     * @group draft
+     * @shortname draft angle
+     * @drawable true
+     */
     draftAngle(inputs: Inputs.OCCT.DraftAngleDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
         const draft = new this.occ.BRepOffsetAPI_DraftAngle(inputs.shape);
         const direction = this.och.entitiesService.gpDir(inputs.direction);
@@ -31,6 +39,14 @@ export class OCCTDraft {
         return shape;
     }
 
+    /**
+     * Builds a draft from a shape along a direction up to a maximum corner edge length
+     * @param inputs Shape, direction, angle and maximum length
+     * @returns OpenCascade drafted shape
+     * @group draft
+     * @shortname make draft
+     * @drawable true
+     */
     makeDraft(inputs: Inputs.OCCT.MakeDraftDto<TopoDS_Shape>): TopoDS_Shape {
         const direction = this.och.entitiesService.gpDir(inputs.direction);
         const angle = this.och.vecHelper.degToRad(inputs.angle);
@@ -49,6 +65,14 @@ export class OCCTDraft {
         return shape;
     }
 
+    /**
+     * Builds a draft from a shape along a direction up to a stop shape
+     * @param inputs Shape, direction, angle, stop shape and keep-out flag
+     * @returns OpenCascade drafted shape
+     * @group draft
+     * @shortname make draft to shape
+     * @drawable true
+     */
     makeDraftToShape(inputs: Inputs.OCCT.MakeDraftToShapeDto<TopoDS_Shape>): TopoDS_Shape {
         const direction = this.och.entitiesService.gpDir(inputs.direction);
         const angle = this.och.vecHelper.degToRad(inputs.angle);

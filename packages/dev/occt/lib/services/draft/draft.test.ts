@@ -35,7 +35,7 @@ describe("OCCT draft unit tests", () => {
         const sideFace = faces.find(f => {
             const n = occHelper.facesService.faceNormalOnUV({ shape: f, paramU: 0.5, paramV: 0.5 });
             return Math.abs(n[0]) > 0.9;
-        }) ?? faces[0];
+        }) ?? faces[0]!;
         const drafted = draft.draftAngle({
             shape: b,
             faces: [sideFace],

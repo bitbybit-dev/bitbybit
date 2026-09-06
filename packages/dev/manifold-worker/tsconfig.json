@@ -1,31 +1,19 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
+// The editor and test view of this package: the shared CAD base (tsconfig.base.cad.json, the whole strict
+// set) plus this package's own paths. The build config, tsconfig.bitbybit.json, is generated from the
+// package manifests by scripts/gen-ts-references.mjs and carries the same base.
 {
+    "extends": "../../../tsconfig.base.cad.json",
     "compileOnSave": false,
     "compilerOptions": {
         "outDir": "./dist/bitbybit-dev",
         "baseUrl": "./",
-        "sourceMap": false,
-        "declaration": true,
-        "downlevelIteration": true,
-        "experimentalDecorators": true,
-        "moduleResolution": "node",
-        "skipLibCheck": true,
-        "target": "es2015",
-        "module": "es2020",
-        "strict": false,
-        "allowJs": true,
-        "emitDeclarationOnly": false,
         "paths": {
             "@bitbybit-dev/manifold": [
                 "../manifold/dist"
             ],
             "@bitbybit-dev/manifold/*": [
                 "../manifold/dist/*"
-            ],
-        },
-        "lib": [
-            "es2020",
-            "dom"
-        ],
+            ]
+        }
     }
 }

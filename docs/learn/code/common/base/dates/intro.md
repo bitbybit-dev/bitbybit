@@ -22,7 +22,7 @@ A "Date" in Bitbybit refers to a standard JavaScript `Date` object. This object 
 
 ## Core Capabilities of the Dates Class
 
-The `Dates` class simplifies common date and time operations. Here's a high-level look at its features. For the exact input parameters (like DTOs) and detailed behavior (e.g., how months are 0-indexed), please consult the [full Dates API documentation](https://docs.bitbybit.dev/classes/Bit.Dates.html) or the GitHub source linked above.
+The `Dates` class simplifies common date and time operations. Here's a high-level look at its features. For the exact input parameters (like DTOs) and detailed behavior (e.g., how months are 0-indexed), please consult the [full Dates API documentation](https://docs.bitbybit.dev/classes/Bit.Dates) or the GitHub source linked above.
 
 ### 1. Creating Dates
 

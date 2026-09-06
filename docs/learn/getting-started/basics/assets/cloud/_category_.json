@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Managing Cloud Assets",
-        "description": "Learn how to manage cloud assets in Bitbybit, including uploading, downloading, and organizing your files.",
+        "description": "Cloud assets live in your Bitbybit project and are available to every script in it, which makes them the right choice for anything you want to reuse or share. Upload a model, a texture or a data file once and reference it from as many scripts as you like, without asking a visitor to provide it. These pages cover uploading assets to a project, referencing them from a script, using images as textures on your geometry, and the practical differences between cloud storage and loading a file from the local machine.",
         "slug": "/getting-started/basics/assets/cloud"
     }
 }

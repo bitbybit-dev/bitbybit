@@ -80,7 +80,7 @@ export class Asset {
     async fetchFile(inputs: Inputs.Asset.FetchDto): Promise<File> {
         const res = await fetch(inputs.url);
         const blob = await res.blob();
-        return new File([blob], inputs.url.split("/").pop().split("?")[0]);
+        return new File([blob], inputs.url.split("/").pop()!.split("?")[0]!);
     }
 
     /**

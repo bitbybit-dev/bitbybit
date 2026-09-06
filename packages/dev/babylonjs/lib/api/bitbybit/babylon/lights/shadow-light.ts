@@ -5,7 +5,7 @@ import * as Inputs from "../../../inputs";
 
 export class BabylonShadowLight {
 
-    constructor(private readonly context: Context) { }
+    constructor(_context: Context) { }
 
     /**
      * Sets the direction of the shadow light

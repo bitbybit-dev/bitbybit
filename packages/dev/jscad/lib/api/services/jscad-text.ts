@@ -1,3 +1,4 @@
+import { Base } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
 
@@ -9,6 +10,14 @@ export class JSCADText {
 
     constructor(private readonly jscad: typeof JSCAD) { }
 
+    /**
+     * Creates a text that is based on chain hulling cylinders
+     * @param inputs Cylindrical text parameters
+     * @returns List of solids for text
+     * @group text
+     * @shortname cylindrical
+     * @drawable true
+     */
     cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Inputs.JSCAD.JSCADEntity[] {
         const text = this.createVectorText(inputs);
         this.adjustTextToBeOnCenter(text);
@@ -25,6 +34,14 @@ export class JSCADText {
         });
     }
 
+    /**
+     * Creates a text that is based on chain hulling spheres
+     * @param inputs Spherical text parameters
+     * @returns List of solids for text
+     * @group text
+     * @shortname spherical
+     * @drawable true
+     */
     sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Inputs.JSCAD.JSCADEntity[] {
         const text = this.createVectorText(inputs);
         this.adjustTextToBeOnCenter(text);
@@ -43,7 +60,7 @@ export class JSCADText {
     private adjustTextToBeOnCenter(text: any[]): void {
         let maxX = 0;
         text.forEach(txt => {
-            txt.forEach(center => {
+            txt.forEach((center: Base.Point3) => {
                 if (center[0] > maxX) {
                     maxX = center[0];
                 }
@@ -51,7 +68,7 @@ export class JSCADText {
         });
         const compensate = maxX / 2;
         text.forEach(txt => {
-            txt.forEach(center => {
+            txt.forEach((center: Base.Point3) => {
                 let z = center[0];
                 z = z - compensate;
                 center[0] = z;
@@ -59,7 +76,15 @@ export class JSCADText {
         });
     }
 
-    createVectorText(inputs: Inputs.JSCAD.TextDto): JSCAD.text.VectorText {
+    /**
+     * Creates a vector text
+     * @param inputs Vector text parameters
+     * @returns List of polygons
+     * @group text
+     * @shortname vector
+     * @drawable false
+     */
+    createVectorText(inputs: Inputs.JSCAD.TextDto): Base.Point2[][] {
         return this.jscad.text.vectorText({
             input: inputs.text,
             xOffset: inputs.xOffset,

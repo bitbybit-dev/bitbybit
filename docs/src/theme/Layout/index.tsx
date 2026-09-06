@@ -4,12 +4,32 @@ import type LayoutType from "@theme/Layout";
 import type { WrapperProps } from "@docusaurus/types";
 import CookieConsent, { Cookies } from "react-cookie-consent";
 import ExecutionEnvironment from "@docusaurus/ExecutionEnvironment";
+import Head from "@docusaurus/Head";
+import { useLocation } from "@docusaurus/router";
 
 type Props = WrapperProps<typeof LayoutType>;
 const GA_MEASUREMENT_ID = "G-VQHYSMBCKM";
+
+// Listing pages that exist for navigation but carry almost no content of their own.
+// Google crawls them and declines to index them, and while they sit in the sitemap they
+// dilute the crawl budget for the pages that can actually rank.
+//
+// "follow" is deliberate: these pages still pass link equity to the docs they list.
+// The sitemap plugin drops any route whose head carries a noindex robots meta
+// (plugin-sitemap/lib/createSitemap.js), so this one list also shrinks sitemap.xml
+// and the two can never drift apart.
+const NOINDEX_PATTERNS = [
+    /^\/learn\/tags(\/|$)/,
+    /^\/blog\/tags(\/|$)/,
+    /^\/api\/tags(\/|$)/,
+    /^\/blog\/page\//,
+    /^\/blog\/authors(\/|$)/,
+];
 export default function LayoutWrapper(props: Props): ReactNode {
 
     const [trackingInitialized, setTrackingInitialized] = useState(false);
+    const { pathname } = useLocation();
+    const isNoIndex = NOINDEX_PATTERNS.some((pattern) => pattern.test(pathname));
 
     // Check if running in iframe
     const isInIframe = ExecutionEnvironment.canUseDOM && window.parent !== window;
@@ -54,6 +74,11 @@ export default function LayoutWrapper(props: Props): ReactNode {
 
     return (
         <>
+            {isNoIndex && (
+                <Head>
+                    <meta name="robots" content="noindex, follow" />
+                </Head>
+            )}
             <Layout {...props} />
             {!isCookieDisabled && !cookieConsent && (
                 <CookieConsent

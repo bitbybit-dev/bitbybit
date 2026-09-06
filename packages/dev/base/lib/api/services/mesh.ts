@@ -3,7 +3,8 @@ import { Polyline } from "./polyline";
 import { Vector } from "./vector";
 
 /**
- * Contains various mesh helper methods that are not necessarily present in higher level CAD kernels that bitbybit is using.
+ * Contains various mesh helper methods that are not necessarily present in higher level CAD kernels that
+ * bitbybit is using.
  */
 export class MeshBitByBit {
     constructor(private readonly vector: Vector, private readonly polyline: Polyline) { }
@@ -70,7 +71,7 @@ export class MeshBitByBit {
 
         if (!plane1 || !plane2) return undefined;
 
-        const distQ_Plane1 = [
+        const distQ_Plane1: [number, number, number] = [
             this.signedDistanceToPlane({ point: q1, plane: plane1 }),
             this.signedDistanceToPlane({ point: q2, plane: plane1 }),
             this.signedDistanceToPlane({ point: q3, plane: plane1 }),
@@ -81,7 +82,7 @@ export class MeshBitByBit {
             return undefined;
         }
 
-        const distP_Plane2 = [
+        const distP_Plane2: [number, number, number] = [
             this.signedDistanceToPlane({ point: p1, plane: plane2 }),
             this.signedDistanceToPlane({ point: p2, plane: plane2 }),
             this.signedDistanceToPlane({ point: p3, plane: plane2 }),
@@ -115,10 +116,10 @@ export class MeshBitByBit {
         const edges1: Inputs.Base.Segment3[] = [[p1, p2], [p2, p3], [p3, p1]];
         const dists1 = distP_Plane2;
         for (let i = 0; i < 3; ++i) {
-            const u = edges1[i][0];
-            const v = edges1[i][1];
-            const du = dists1[i];
-            const dv = dists1[(i + 1) % 3];
+            const u = edges1[i]![0];
+            const v = edges1[i]![1];
+            const du = dists1[i]!;
+            const dv = dists1[(i + 1) % 3]!;
 
             if (Math.abs(du) < EPSILON) t1_intersection_points_3d.push(u); // Start vertex is on plane2
             // Removed the redundant check for dv here, handled by next edge start
@@ -132,10 +133,10 @@ export class MeshBitByBit {
         const edges2: Inputs.Base.Segment3[] = [[q1, q2], [q2, q3], [q3, q1]];
         const dists2 = distQ_Plane1;
         for (let i = 0; i < 3; ++i) {
-            const u = edges2[i][0];
-            const v = edges2[i][1];
-            const du = dists2[i];
-            const dv = dists2[(i + 1) % 3];
+            const u = edges2[i]![0];
+            const v = edges2[i]![1];
+            const du = dists2[i]!;
+            const dv = dists2[(i + 1) % 3]!;
 
             if (Math.abs(du) < EPSILON) t2_intersection_points_3d.push(u); // Start vertex is on plane1
             // Removed redundant check for dv
@@ -177,8 +178,8 @@ export class MeshBitByBit {
         );
 
         // Find the intervals
-        const t1Interval = [Math.min(...t1_params), Math.max(...t1_params)];
-        const t2Interval = [Math.min(...t2_params), Math.max(...t2_params)];
+        const t1Interval: [number, number] = [Math.min(...t1_params), Math.max(...t1_params)];
+        const t2Interval: [number, number] = [Math.min(...t2_params), Math.max(...t2_params)];
 
         // Find the overlap of the two intervals
         const intersectionMinParam = Math.max(t1Interval[0], t2Interval[0]);
@@ -220,8 +221,8 @@ export class MeshBitByBit {
 
         for (let i = 0; i < mesh1.length; ++i) {
             for (let j = 0; j < mesh2.length; ++j) {
-                const triangle1 = mesh1[i];
-                const triangle2 = mesh2[j];
+                const triangle1 = mesh1[i]!;
+                const triangle2 = mesh2[j]!;
 
                 const segment = this.triangleTriangleIntersection({ triangle1, triangle2, tolerance: inputs.tolerance });
 
@@ -263,7 +264,7 @@ export class MeshBitByBit {
         const polylines = this.meshMeshIntersectionPolylines(inputs);
         return polylines.map(polyline => {
             if(polyline.isClosed){
-                return [...polyline.points, polyline.points[0]];
+                return [...polyline.points, polyline.points[0]!];
             } else {
                 return polyline.points;
             }

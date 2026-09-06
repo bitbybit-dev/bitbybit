@@ -18,9 +18,9 @@ export interface AssemblyLoadedPartDef {
      * (e.g. "0:1:1:1"). If omitted, all free shapes of the source document
      * are imported (wrapped in a new assembly compound when there are multiple).
      */
-    sourceLabel?: string;
+    sourceLabel?: string | undefined;
     /** Optional name override applied to the imported root label */
-    name?: string;
+    name?: string | undefined;
     /** Optional color override applied to the imported root label */
-    colorRgba?: Base.ColorRGBA;
+    colorRgba?: Base.ColorRGBA | undefined;
 }

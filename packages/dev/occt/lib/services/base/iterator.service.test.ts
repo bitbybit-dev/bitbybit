@@ -30,7 +30,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should iterate over wires in a face", () => {
             const f = faceService.createSquareFace({ size: 1, center: [0, 0, 0], direction: [0, 1, 0] });
             const wires: TopoDS_Wire[] = [];
-            iteratorService.forEachWire(f, (index, wire) => {
+            iteratorService.forEachWire(f, (_index, wire) => {
                 wires.push(wire);
             });
             expect(wires.length).toBe(1);
@@ -44,7 +44,7 @@ describe("OCCT iterator service unit tests", () => {
             const f = faceService.createFaceFromWires({ shapes: [outerWire, innerWire], planar: true });
 
             const wires: TopoDS_Wire[] = [];
-            iteratorService.forEachWire(f, (index, wire) => {
+            iteratorService.forEachWire(f, (_index, wire) => {
                 wires.push(wire);
             });
             expect(wires.length).toBe(2);
@@ -60,7 +60,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should iterate over edges in a wire", () => {
             const wire = occHelper.wiresService.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]] });
             const edges: TopoDS_Edge[] = [];
-            iteratorService.forEachEdge(wire, (index, edge) => {
+            iteratorService.forEachEdge(wire, (_index, edge) => {
                 edges.push(edge);
             });
             expect(edges.length).toBe(4);
@@ -74,7 +74,7 @@ describe("OCCT iterator service unit tests", () => {
             const wire = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge1, edge2] });
 
             const edges: TopoDS_Edge[] = [];
-            iteratorService.forEachEdge(wire, (index, edge) => {
+            iteratorService.forEachEdge(wire, (_index, edge) => {
                 edges.push(edge);
             });
             expect(edges.length).toBe(2);
@@ -94,15 +94,15 @@ describe("OCCT iterator service unit tests", () => {
             const wire = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge1, edge2] });
             
             const edges: TopoDS_Edge[] = [];
-            iteratorService.forEachEdgeAlongWire(wire, (index, edge) => {
+            iteratorService.forEachEdgeAlongWire(wire, (_index, edge) => {
                 edges.push(edge);
             });
             expect(edges.length).toBe(2);
 
             // Check that edges are in correct order
-            const edge1Start = occHelper.edgesService.startPointOnEdge({ shape: edges[0] });
-            const edge1End = occHelper.edgesService.endPointOnEdge({ shape: edges[0] });
-            const edge2Start = occHelper.edgesService.startPointOnEdge({ shape: edges[1] });
+            const edge1Start = occHelper.edgesService.startPointOnEdge({ shape: edges[0]! });
+            const edge1End = occHelper.edgesService.endPointOnEdge({ shape: edges[0]! });
+            const edge2Start = occHelper.edgesService.startPointOnEdge({ shape: edges[1]! });
 
             expect(edge1Start[0]).toBeCloseTo(0, 5);
             expect(edge1End[0]).toBeCloseTo(1, 5);
@@ -119,7 +119,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should iterate over faces in a solid", () => {
             const box = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
             const faces: TopoDS_Face[] = [];
-            iteratorService.forEachFace(box, (index, f) => {
+            iteratorService.forEachFace(box, (_index, f) => {
                 faces.push(f);
             });
             expect(faces.length).toBe(6);
@@ -130,7 +130,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should iterate over a single face", () => {
             const f = faceService.createSquareFace({ size: 1, center: [0, 0, 0], direction: [0, 1, 0] });
             const faces: TopoDS_Face[] = [];
-            iteratorService.forEachFace(f, (index, face) => {
+            iteratorService.forEachFace(f, (_index, face) => {
                 faces.push(face);
             });
             expect(faces.length).toBe(1);
@@ -143,7 +143,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should iterate over shells in a solid", () => {
             const box = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
             const shells: TopoDS_Shell[] = [];
-            iteratorService.forEachShell(box, (index, shell) => {
+            iteratorService.forEachShell(box, (_index, shell) => {
                 shells.push(shell);
             });
             expect(shells.length).toBe(1);
@@ -157,7 +157,7 @@ describe("OCCT iterator service unit tests", () => {
             const comp = compoundService.makeCompound({ shapes: [box1, box2] });
 
             const shells: TopoDS_Shell[] = [];
-            iteratorService.forEachShell(comp, (index, shell) => {
+            iteratorService.forEachShell(comp, (_index, shell) => {
                 shells.push(shell);
             });
             expect(shells.length).toBe(2);
@@ -171,7 +171,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should return no shells for a wire shape", () => {
             const wire = occHelper.wiresService.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] });
             const shells: TopoDS_Shell[] = [];
-            iteratorService.forEachShell(wire, (index, shell) => {
+            iteratorService.forEachShell(wire, (_index, shell) => {
                 shells.push(shell);
             });
             expect(shells.length).toBe(0);
@@ -183,7 +183,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should iterate over vertices in an edge", () => {
             const edge = occHelper.edgesService.lineEdge({ start: [0, 0, 0], end: [1, 0, 0] });
             const vertices: TopoDS_Vertex[] = [];
-            iteratorService.forEachVertex(edge, (index, vertex) => {
+            iteratorService.forEachVertex(edge, (_index, vertex) => {
                 vertices.push(vertex);
             });
             expect(vertices.length).toBe(2);
@@ -195,7 +195,7 @@ describe("OCCT iterator service unit tests", () => {
             // A closed triangle has 3 edges but TopExp_Explorer finds all vertices including shared ones
             const wire = occHelper.wiresService.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] });
             const vertices: TopoDS_Vertex[] = [];
-            iteratorService.forEachVertex(wire, (index, vertex) => {
+            iteratorService.forEachVertex(wire, (_index, vertex) => {
                 vertices.push(vertex);
             });
             // Each edge has 2 vertices, 3 edges = 6 vertices found (vertices are shared at corners)
@@ -209,7 +209,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should iterate over a single solid", () => {
             const box = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
             const solids: TopoDS_Solid[] = [];
-            iteratorService.forEachSolid(box, (index, s) => {
+            iteratorService.forEachSolid(box, (_index, s) => {
                 solids.push(s);
             });
             expect(solids.length).toBe(1);
@@ -224,7 +224,7 @@ describe("OCCT iterator service unit tests", () => {
             const comp = compoundService.makeCompound({ shapes: [box1, box2, sphere] });
 
             const solids: TopoDS_Solid[] = [];
-            iteratorService.forEachSolid(comp, (index, s) => {
+            iteratorService.forEachSolid(comp, (_index, s) => {
                 solids.push(s);
             });
             expect(solids.length).toBe(3);
@@ -239,7 +239,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should return no solids for a face shape", () => {
             const f = faceService.createSquareFace({ size: 1, center: [0, 0, 0], direction: [0, 1, 0] });
             const solids: TopoDS_Solid[] = [];
-            iteratorService.forEachSolid(f, (index, s) => {
+            iteratorService.forEachSolid(f, (_index, s) => {
                 solids.push(s);
             });
             expect(solids.length).toBe(0);
@@ -254,7 +254,7 @@ describe("OCCT iterator service unit tests", () => {
             const comp = compoundService.makeCompound({ shapes: [box1, box2] });
 
             const compounds: TopoDS_Shape[] = [];
-            iteratorService.forEachCompound(comp, (index, shape) => {
+            iteratorService.forEachCompound(comp, (_index, shape) => {
                 compounds.push(shape);
             });
             expect(compounds.length).toBe(1);
@@ -274,7 +274,7 @@ describe("OCCT iterator service unit tests", () => {
             const outerCompound = compoundService.makeCompound({ shapes: [innerCompound, box3] });
 
             const compounds: TopoDS_Shape[] = [];
-            iteratorService.forEachCompound(outerCompound, (index, shape) => {
+            iteratorService.forEachCompound(outerCompound, (_index, shape) => {
                 compounds.push(shape);
             });
             // TopExp_Explorer finds the outer compound itself when iterating for COMPOUND type
@@ -292,7 +292,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should return no compounds for a solid shape", () => {
             const box = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
             const compounds: TopoDS_Shape[] = [];
-            iteratorService.forEachCompound(box, (index, shape) => {
+            iteratorService.forEachCompound(box, (_index, shape) => {
                 compounds.push(shape);
             });
             expect(compounds.length).toBe(0);
@@ -304,7 +304,7 @@ describe("OCCT iterator service unit tests", () => {
         it("should return no compsolids for a regular solid", () => {
             const box = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
             const compSolids: TopoDS_Shape[] = [];
-            iteratorService.forEachCompSolid(box, (index, shape) => {
+            iteratorService.forEachCompSolid(box, (_index, shape) => {
                 compSolids.push(shape);
             });
             expect(compSolids.length).toBe(0);
@@ -318,7 +318,7 @@ describe("OCCT iterator service unit tests", () => {
             const comp = compoundService.makeCompound({ shapes: [box1, box2] });
 
             const compSolids: TopoDS_Shape[] = [];
-            iteratorService.forEachCompSolid(comp, (index, shape) => {
+            iteratorService.forEachCompSolid(comp, (_index, shape) => {
                 compSolids.push(shape);
             });
             expect(compSolids.length).toBe(0);
@@ -336,7 +336,7 @@ describe("OCCT iterator service unit tests", () => {
             const comp = compoundService.makeCompound({ shapes: [box1, box2] });
 
             const shapes: TopoDS_Shape[] = [];
-            iteratorService.forEachShapeInCompound(comp, (index, shape) => {
+            iteratorService.forEachShapeInCompound(comp, (_index, shape) => {
                 shapes.push(shape);
             });
             expect(shapes.length).toBe(2);
@@ -354,7 +354,7 @@ describe("OCCT iterator service unit tests", () => {
             const comp = compoundService.makeCompound({ shapes: [box, f, wire] });
 
             const shapes: TopoDS_Shape[] = [];
-            iteratorService.forEachShapeInCompound(comp, (index, shape) => {
+            iteratorService.forEachShapeInCompound(comp, (_index, shape) => {
                 shapes.push(shape);
             });
             expect(shapes.length).toBe(3);
@@ -375,7 +375,7 @@ describe("OCCT iterator service unit tests", () => {
             const outerCompound = compoundService.makeCompound({ shapes: [innerCompound, box3] });
 
             const shapes: TopoDS_Shape[] = [];
-            iteratorService.forEachShapeInCompound(outerCompound, (index, shape) => {
+            iteratorService.forEachShapeInCompound(outerCompound, (_index, shape) => {
                 shapes.push(shape);
             });
             // Should only find the direct children: innerCompound and box3

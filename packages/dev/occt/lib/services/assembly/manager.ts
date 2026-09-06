@@ -7,18 +7,18 @@ import * as Models from "../../api/models";
 export type { Handle_TDocStd_Document };
 
 /**
- * OCCT Assembly Manager for creating assembly documents with parts, instances, and colors.
+ * OCCT Assembly Manager for creating and managing assembly documents.
  * 
- * This class provides methods for:
+ * This class provides a document-based API for:
+ * - Creating parts and structure definitions (helper methods for visual programming)
  * - Building assembly documents from structure definitions
- * - Creating parts and nodes for visual programming
- * - Querying document parts, hierarchy, colors, and transforms
+ * - Querying document parts, shapes, colors, and transforms
  * - Modifying document labels (color, name)
  * - Exporting to STEP and glTF formats
- * - Loading STEP files into documents
+ * - Document lifecycle management
  * 
- * All methods use document handles directly (no global document storage).
- * The caller is responsible for managing document lifetime by calling document.delete() when done.
+ * Note: All methods work with document handles directly. The document stays
+ * in worker memory until explicitly deleted with deleteDocument().
  */
 export class OCCTAssemblyManager {
 
@@ -33,12 +33,15 @@ export class OCCTAssemblyManager {
      * 
      * @param inputs - Part details including id, shape, name, and optional colorRgba
      * @returns Part definition that can be added to an assembly structure
+     * @group assembly
+     * @shortname create part
+     * @drawable false
      * 
      * @example
-     * \`\`\`typescript
-     * const box = occt.shapes.solid.createBox({ width: 10, length: 10, height: 10 });
-     * const part = occt.assembly.manager.createPart({ id: "box", shape: box, name: "Box", colorRgba: { r: 1, g: 0, b: 0, a: 1 } });
-     * \`\`\`
+     * ```typescript
+     * const box = await occt.shapes.solid.createBox({ width: 10, length: 10, height: 10 });
+     * const part = await occt.assembly.manager.createPart({ id: "box", shape: box, name: "Box", colorRgba: { r: 1, g: 0, b: 0, a: 1 } });
+     * ```
      */
     createPart(inputs: Inputs.OCCT.CreateAssemblyPartDto<TopoDS_Shape>): Models.OCCT.AssemblyPartDef<TopoDS_Shape> {
         return {
@@ -55,6 +58,15 @@ export class OCCTAssemblyManager {
      * 
      * @param inputs - Assembly node details including id, name, and optional parent
      * @returns Node definition that can be added to an assembly structure
+     * @group assembly
+     * @shortname create assembly node
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * const rootAsm = await occt.assembly.manager.createAssemblyNode({ id: "root", name: "Root Assembly" });
+     * const subAsm = await occt.assembly.manager.createAssemblyNode({ id: "sub", name: "Sub Assembly", parentId: "root" });
+     * ```
      */
     createAssemblyNode(inputs: Inputs.OCCT.CreateAssemblyNodeDto): Models.OCCT.AssemblyNodeDef {
         return {
@@ -64,83 +76,6 @@ export class OCCTAssemblyManager {
             parentId: inputs.parentId,
             colorRgba: inputs.colorRgba,
             matrix: inputs.matrix
-        };
-    }
-
-    /**
-     * Create an instance node definition (a reference to a part with transform).
-     * Instance nodes place a part at a specific location with optional translation, rotation, and scale.
-     * 
-     * @param inputs - Instance node details including id, partId, name, and transform
-     * @returns Node definition that can be added to an assembly structure
-     */
-    createInstanceNode(inputs: Inputs.OCCT.CreateInstanceNodeDto): Models.OCCT.AssemblyNodeDef {
-        return {
-            id: inputs.id,
-            type: "instance",
-            name: inputs.name,
-            parentId: inputs.parentId,
-            partId: inputs.partId,
-            translation: inputs.translation,
-            rotation: inputs.rotation,
-            scale: inputs.scale,
-            matrix: inputs.matrix,
-            colorRgba: inputs.colorRgba
-        };
-    }
-
-    /**
-     * Create a part update definition for modifying an existing part in a document.
-     * Part updates can change the shape, name, and/or color of an existing part.
-     * 
-     * @param inputs - Update details including label and optional new shape/name/color
-     * @returns Part update definition that can be added to an assembly structure's partUpdates array
-     * 
-     * @example
-     * ```typescript
-     * // Get existing parts from document
-     * const parts = occt.assembly.query.getDocumentParts({ document });
-     * 
-     * // Create a new shape to replace the old one
-     * const newBox = occt.shapes.solid.createBox({ width: 20, length: 20, height: 20 });
-     * 
-     * // Create an update definition
-     * const update = occt.assembly.manager.createPartUpdate({ 
-     *     label: parts[0].label, 
-     *     shape: newBox,
-     *     name: "Bigger Box",
-     *     colorRgba: { r: 0, g: 1, b: 0, a: 1 }
-     * });
-     * 
-     * // Combine with structure and rebuild
-     * const structure = occt.assembly.manager.combineStructure({ parts: [], nodes: [], partUpdates: [update] });
-     * occt.assembly.manager.buildAssemblyDocument({ structure, existingDocument: document });
-     * ```
-     */
-    createPartUpdate(inputs: Inputs.OCCT.CreatePartUpdateDto<TopoDS_Shape>): Models.OCCT.AssemblyPartUpdateDef<TopoDS_Shape> {
-        return {
-            label: inputs.label,
-            shape: inputs.shape,
-            name: inputs.name,
-            colorRgba: inputs.colorRgba
-        };
-    }
-
-    /**
-     * Combine parts and nodes into a complete assembly structure definition.
-     * This is the final step before calling buildAssemblyDocument.
-     * 
-     * @param inputs - Lists of parts and nodes to combine
-     * @returns Complete assembly structure ready for building
-     */
-    combineStructure(inputs: Inputs.OCCT.CombineAssemblyStructureDto<TopoDS_Shape>): Models.OCCT.AssemblyStructureDef<TopoDS_Shape> {
-        return {
-            parts: inputs.parts ?? [],
-            nodes: inputs.nodes ?? [],
-            removals: inputs.removals,
-            partUpdates: inputs.partUpdates,
-            clearDocument: inputs.clearDocument,
-            loadedParts: inputs.loadedParts
         };
     }
 
@@ -176,9 +111,118 @@ export class OCCTAssemblyManager {
     }
 
     /**
+     * Create an instance node definition (a reference to a part with transform).
+     * Instance nodes place a part at a specific location with optional translation, rotation, and scale.
+     * 
+     * @param inputs - Instance node details including id, partId, name, and transform
+     * @returns Node definition that can be added to an assembly structure
+     * @group assembly
+     * @shortname create instance node
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * const inst1 = await occt.assembly.manager.createInstanceNode({ id: "box1", partId: "box", name: "Box 1" });
+     * const inst2 = await occt.assembly.manager.createInstanceNode({ 
+     *     id: "box2", partId: "box", name: "Box 2", 
+     *     translation: [20, 0, 0], rotation: [0, 0, 45] 
+     * });
+     * ```
+     */
+    createInstanceNode(inputs: Inputs.OCCT.CreateInstanceNodeDto): Models.OCCT.AssemblyNodeDef {
+        return {
+            id: inputs.id,
+            type: "instance",
+            name: inputs.name,
+            parentId: inputs.parentId,
+            partId: inputs.partId,
+            translation: inputs.translation,
+            rotation: inputs.rotation,
+            scale: inputs.scale,
+            matrix: inputs.matrix,
+            colorRgba: inputs.colorRgba
+        };
+    }
+
+    /**
+     * Create a part update definition for modifying an existing part in a document.
+     * Part updates can change the shape, name, and/or color of an existing part.
+     * 
+     * @param inputs - Update details including label and optional new shape/name/color
+     * @returns Part update definition that can be added to an assembly structure's partUpdates array
+     * @group assembly
+     * @shortname create part update
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * // Get existing parts from document
+     * const parts = await occt.assembly.query.getDocumentParts({ document });
+     * 
+     * // Create a new shape to replace the old one
+     * const newBox = await occt.shapes.solid.createBox({ width: 20, length: 20, height: 20 });
+     * 
+     * // Create an update definition
+     * const update = await occt.assembly.manager.createPartUpdate({ 
+     *     label: parts[0].label, 
+     *     shape: newBox,
+     *     name: "Bigger Box",
+     *     colorRgba: { r: 0, g: 1, b: 0, a: 1 }
+     * });
+     * 
+     * // Combine with structure and rebuild
+     * const structure = await occt.assembly.manager.combineStructure({ parts: [], nodes: [], partUpdates: [update] });
+     * await occt.assembly.manager.buildAssemblyDocument({ structure, existingDocument: document });
+     * ```
+     */
+    createPartUpdate(inputs: Inputs.OCCT.CreatePartUpdateDto<TopoDS_Shape>): Models.OCCT.AssemblyPartUpdateDef<TopoDS_Shape> {
+        return {
+            label: inputs.label,
+            shape: inputs.shape,
+            name: inputs.name,
+            colorRgba: inputs.colorRgba
+        };
+    }
+
+    /**
+     * Combine parts and nodes into a complete assembly structure definition.
+     * This is the final step before calling buildAssemblyDocument.
+     * 
+     * @param inputs - Lists of parts and nodes to combine
+     * @returns Complete assembly structure ready for building
+     * @group assembly
+     * @shortname combine structure
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * const parts = [part1, part2];
+     * const nodes = [rootAsm, inst1, inst2];
+     * const structure = await occt.assembly.manager.combineStructure({ parts, nodes });
+     * const result = await occt.assembly.manager.buildAssemblyDocument({ structure });
+     * ```
+     */
+    combineStructure(inputs: Inputs.OCCT.CombineAssemblyStructureDto<TopoDS_Shape>): Models.OCCT.AssemblyStructureDef<TopoDS_Shape> {
+        return {
+            parts: inputs.parts ?? [],
+            nodes: inputs.nodes ?? [],
+            removals: inputs.removals,
+            partUpdates: inputs.partUpdates,
+            clearDocument: inputs.clearDocument,
+            loadedParts: inputs.loadedParts
+        };
+    }
+
+    /**
      * Build an assembly document from a structure definition.
-     * Returns the document handle directly - caller manages lifetime.
-     * Call document.delete() when done to free memory.
+     * Returns the document handle directly - document stays in worker memory.
+     * 
+     * This is the recommended approach for creating assemblies:
+     * 1. Define parts with shapes, names, and optional colors
+     * 2. Define nodes (assemblies and instances) with hierarchy and transforms
+     * 3. Call this method to create the document
+     * 4. Query the document or export to STEP/glTF
+     * 5. Call deleteDocument() to release memory when done
      * 
      * If existingDocument is provided and valid, the document will be cleared and 
      * updated instead of creating a new one. This is useful for updating an assembly
@@ -192,14 +236,31 @@ export class OCCTAssemblyManager {
      * - Use `clearDocument: false` in structure to preserve existing content while adding new parts/nodes
      * 
      * @param inputs - Assembly structure definition and optional existing document
-     * @returns The document handle (new or updated)
+     * @returns The document handle (reference to worker-side document, new or updated)
      * @throws Error if assembly building fails
+     * @group assembly
+     * @shortname build document
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * // Create new document
+     * const structure = await occt.assembly.manager.combineStructure({ parts, nodes });
+     * const document = await occt.assembly.manager.buildAssemblyDocument({ structure });
+     * 
+     * // Update existing document (reuses same handle)
+     * const updatedStructure = await occt.assembly.manager.combineStructure({ parts: newParts, nodes: newNodes });
+     * await occt.assembly.manager.buildAssemblyDocument({ structure: updatedStructure, existingDocument: document });
+     * 
+     * // Cleanup
+     * await occt.assembly.manager.deleteDocument({ document });
+     * ```
      */
     buildAssemblyDocument(inputs: Inputs.OCCT.BuildAssemblyDocumentDto<TopoDS_Shape, Handle_TDocStd_Document>): Handle_TDocStd_Document {
         const { structure, existingDocument, sourceDocuments } = inputs;
         
         const shapes: TopoDS_Shape[] = [];
-        const partsJson: { id: string; shapeIndex: number; name: string; colorRgba?: Inputs.Base.ColorRGBA }[] = [];
+        const partsJson: { id: string; shapeIndex: number; name: string; colorRgba?: Inputs.Base.ColorRGBA | undefined }[] = [];
         
         // Add new parts to shapes array
         for (const part of structure.parts) {
@@ -213,10 +274,10 @@ export class OCCTAssemblyManager {
         }
         
         // Process partUpdates - add their shapes to the shapes array and reference by index
-        const partUpdatesJson: { label: string; shapeIndex?: number; name?: string; colorRgba?: Inputs.Base.ColorRGBA }[] = [];
+        const partUpdatesJson: { label: string; shapeIndex?: number | undefined; name?: string | undefined; colorRgba?: Inputs.Base.ColorRGBA | undefined }[] = [];
         if (structure.partUpdates) {
             for (const update of structure.partUpdates) {
-                const updateJson: { label: string; shapeIndex?: number; name?: string; colorRgba?: Inputs.Base.ColorRGBA } = {
+                const updateJson: { label: string; shapeIndex?: number | undefined; name?: string | undefined; colorRgba?: Inputs.Base.ColorRGBA | undefined } = {
                     label: update.label
                 };
                 if (update.shape) {
@@ -279,13 +340,23 @@ export class OCCTAssemblyManager {
     }
 
     /**
-     * Load STEP data and return document handle directly.
+     * Load a STEP file into a new assembly document.
      * Supports both regular STEP and gzip-compressed STEP-Z.
-     * Call document.delete() when done to free memory.
      * 
-     * @param inputs - STEP file data
-     * @returns The document handle
+     * @param inputs - STEP file data (as string, ArrayBuffer, Uint8Array, File, or Blob)
+     * @returns The document handle (reference to worker-side document)
      * @throws Error if STEP loading fails
+     * @group assembly
+     * @shortname load STEP to document
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * const stepData = await fetch("model.step").then(r => r.text());
+     * const document = await occt.assembly.manager.loadStepToDoc({ stepData });
+     * const parts = await occt.assembly.query.getDocumentParts({ document });
+     * console.log("Found parts:", parts);
+     * ```
      */
     loadStepToDoc(inputs: Inputs.OCCT.LoadStepToDocDto): Handle_TDocStd_Document {
         const document = this.occ.LoadStepToDoc(inputs.stepData as Uint8Array);
@@ -298,20 +369,45 @@ export class OCCTAssemblyManager {
     }
 
     /**
-     * Set the color of a label in a document.
+     * Set the color of a label in the document.
+     * Colors are preserved when exporting to STEP and other formats.
      * 
-     * @param inputs - Document handle, label, and color
+     * @param inputs - Document, label, and RGBA color values
      * @returns true on success, false on failure
+     * @group modify
+     * @shortname set label color
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * const success = await occt.assembly.manager.setDocLabelColor({ 
+     *     document, 
+     *     label: "0:1:1:1",
+     *     r: 255, g: 0, b: 0, a: 255
+     * });
+     * ```
      */
     setLabelColor(inputs: Inputs.OCCT.SetDocLabelColorDto<Handle_TDocStd_Document>): boolean {
         return this.occ.SetDocLabelColor(inputs.document, inputs.label, inputs.r, inputs.g, inputs.b, inputs.a);
     }
 
     /**
-     * Set or change the name of a label.
+     * Set or change the name of a label (part, instance, or assembly).
      * 
-     * @param inputs - Document handle, label, and new name
+     * @param inputs - Document, label, and new name
      * @returns true on success, false on failure
+     * @group modify
+     * @shortname set label name
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * const success = await occt.assembly.manager.setDocLabelName({ 
+     *     document, 
+     *     label: "0:1:1:1",
+     *     name: "Updated Part Name"
+     * });
+     * ```
      */
     setLabelName(inputs: Inputs.OCCT.SetDocLabelNameDto<Handle_TDocStd_Document>): boolean {
         return this.occ.SetDocLabelName(inputs.document, inputs.label, inputs.name);
@@ -322,6 +418,20 @@ export class OCCTAssemblyManager {
      * 
      * @param inputs - Export options including document, fileName, author, organization
      * @returns STEP file content as Uint8Array
+     * @group export
+     * @shortname export document STEP
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * const document = await occt.assembly.manager.buildAssemblyDocument({ structure });
+     * const stepData = await occt.assembly.manager.exportDocumentToStep({
+     *     document,
+     *     fileName: "my-assembly.step",
+     *     author: "John Doe",
+     *     tryDownload: true
+     * });
+     * ```
      */
     exportDocumentToStep(inputs: Inputs.OCCT.ExportDocumentToStepDto<Handle_TDocStd_Document>): Uint8Array {
         const result = inputs.compress
@@ -339,6 +449,19 @@ export class OCCTAssemblyManager {
      * 
      * @param inputs - Export options including document and mesh settings
      * @returns GLB content as Uint8Array
+     * @group export
+     * @shortname export document glTF
+     * @drawable false
+     * 
+     * @example
+     * ```typescript
+     * const document = await occt.assembly.manager.buildAssemblyDocument({ structure });
+     * const glbData = await occt.assembly.manager.exportDocumentToGltf({
+     *     document,
+     *     meshDeflection: 0.1,
+     *     tryDownload: true
+     * });
+     * ```
      */
     exportDocumentToGltf(inputs: Inputs.OCCT.ExportDocumentToGltfDto<Handle_TDocStd_Document>): Uint8Array {
         const result = this.occ.ExportDocumentToGltf(
@@ -358,10 +481,26 @@ export class OCCTAssemblyManager {
     }
 
     /**
-     * Export an assembly document to glTF binary (GLB) format with explicit Draco
-     * geometry compression settings.
+     * Export an assembly document to glTF binary (GLB) format with explicit
+     * Draco geometry compression settings.
+     *
      * @param inputs - Export options including document, mesh settings and Draco knobs
      * @returns GLB content as Uint8Array
+     * @group export
+     * @shortname export document glTF with draco
+     * @drawable false
+     *
+     * @example
+     * ```typescript
+     * const document = await occt.assembly.manager.buildAssemblyDocument({ structure });
+     * const glbData = await occt.assembly.manager.exportDocumentToGltfWithDraco({
+     *     document,
+     *     meshDeflection: 0.1,
+     *     useDraco: true,
+     *     dracoCompressionLevel: 7,
+     *     tryDownload: true
+     * });
+     * ```
      */
     exportDocumentToGltfWithDraco(inputs: Inputs.OCCT.ExportDocumentToGltfWithDracoDto<Handle_TDocStd_Document>): Uint8Array {
         const result = this.occ.ExportDocumentToGltfWithDraco(

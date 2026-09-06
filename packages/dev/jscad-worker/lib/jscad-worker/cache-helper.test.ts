@@ -179,7 +179,7 @@ describe("CacheHelper unit tests", () => {
             cacheHelper.addToCache(hash, obj);
             
             // Simulate deletion by removing delete property
-            delete obj.delete;
+            delete (obj as Partial<typeof obj>).delete;
             
             // Should return null because object is invalid
             const cached = cacheHelper.checkCache(hash);
@@ -196,7 +196,7 @@ describe("CacheHelper unit tests", () => {
             cacheHelper.addToCache(hash, objects);
             
             // Simulate deletion by removing delete property from one object
-            delete obj1.delete;
+            delete (obj1 as Partial<typeof obj1>).delete;
             
             // Should return null because one object is invalid
             const cached = cacheHelper.checkCache(hash);
@@ -300,7 +300,7 @@ describe("CacheHelper unit tests", () => {
             expect(cacheMiss1CallCount).toBe(1);
             
             // Simulate deletion
-            delete obj1.delete;
+            delete (obj1 as Partial<typeof obj1>).delete;
             
             // Second call - should detect invalid object and call cacheMiss again
             const obj2 = { delete: () => {}, data: "test2" };

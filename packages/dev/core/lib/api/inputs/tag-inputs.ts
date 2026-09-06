@@ -1,6 +1,11 @@
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
+/**
+ * Parameters for 3D text labels: the text, its position in the scene, colour, size, offset and whether
+ * it stays screen-facing. Used for dimensions, part numbers, debugging output and any annotation that
+ * should follow the geometry as the camera moves.
+ */
 export namespace Tag {
     export class DrawTagDto {
         constructor(tag?: TagDto, updatable?: boolean, tagVariable?: TagDto) {
@@ -11,7 +16,7 @@ export namespace Tag {
         /**
          * Text tag to draw
          */
-        tag: TagDto;
+        tag!: TagDto;
         /**
          * Indicates that it is updatable tag
          */
@@ -19,7 +24,7 @@ export namespace Tag {
         /**
          * Optional existing tag in case it needs updating
          */
-        tagVariable?: TagDto;
+        tagVariable?: TagDto | undefined;
     }
     export class DrawTagsDto {
         constructor(tags?: TagDto[], updatable?: boolean, tagsVariable?: TagDto[]) {
@@ -30,7 +35,7 @@ export namespace Tag {
         /**
          * Text tag to draw
          */
-        tags: TagDto[];
+        tags!: TagDto[];
         /**
          * Indicates that it is updatable tag
          */
@@ -38,7 +43,7 @@ export namespace Tag {
         /**
          * Optional existing tag in case it needs updating
          */
-        tagsVariable?: TagDto[];
+        tagsVariable?: TagDto[] | undefined;
     }
     /**
      * Class representing a tag
@@ -58,7 +63,7 @@ export namespace Tag {
         /**
          * Text of the tag
          */
-        text: string;
+        text!: string;
         /**
          * Position of the tag
          */
@@ -78,11 +83,11 @@ export namespace Tag {
         /**
          * Indicates if tag needs updating
          */
-        needsUpdate?: boolean;
+        needsUpdate?: boolean | undefined;
         /**
          * Unique id of the tag
          */
-        id?: string;
+        id?: string | undefined;
     }
 }
 

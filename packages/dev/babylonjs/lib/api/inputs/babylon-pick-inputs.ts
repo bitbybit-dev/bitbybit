@@ -2,6 +2,10 @@ import * as BABYLON from "@babylonjs/core";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 
+/**
+ * Parameters for picking: turning a pointer position into the object, face and point under it, with
+ * control over which objects are pickable and what the result reports.
+ */
 export namespace BabylonPick {
     export class RayDto {
         constructor(ray?: BABYLON.Ray) {
@@ -10,7 +14,7 @@ export namespace BabylonPick {
         /**
          * Ray
          */
-        ray: BABYLON.Ray;
+        ray!: BABYLON.Ray;
     }
     export class PickInfo {
         constructor(pickInfo?: BABYLON.PickingInfo) {
@@ -19,6 +23,6 @@ export namespace BabylonPick {
         /**
          * Information about picking result
          */
-        pickInfo: BABYLON.PickingInfo;
+        pickInfo!: BABYLON.PickingInfo;
     }
 }

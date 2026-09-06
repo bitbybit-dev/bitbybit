@@ -65,8 +65,8 @@ describe("OCCT face unit tests", () => {
         const w1 = wire.createCircleWire({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const w2 = wire.createCircleWire({ radius: 2, center: [0, 0, 1], direction: [0, 0, 1] });
         const f = face.createFacesFromWires({ shapes: [w1, w2], planar: true });
-        const area1 = face.getFaceArea({ shape: f[0] });
-        const area2 = face.getFaceArea({ shape: f[1] });
+        const area1 = face.getFaceArea({ shape: f[0]! });
+        const area2 = face.getFaceArea({ shape: f[1]! });
         expect(area1).toBeCloseTo(28.274333882308138);
         expect(area2).toBeCloseTo(12.566370614359167);
         w1.delete();
@@ -1659,7 +1659,7 @@ describe("OCCT face unit tests", () => {
             const dto = new OCCT.MeshBaseDto([[[0, 0, 0], [2, 0, 0], [1, 2, 0]]]);
             const faces = face.fromBaseMesh(dto);
             expect(faces.length).toBe(1);
-            const area = face.getFaceArea({ shape: faces[0] });
+            const area = face.getFaceArea({ shape: faces[0]! });
             expect(area).toBeCloseTo(2);
             faces.forEach(f => f.delete());
         });
@@ -1672,9 +1672,9 @@ describe("OCCT face unit tests", () => {
             ]);
             const faces = face.fromBaseMesh(dto);
             expect(faces.length).toBe(3);
-            const area1 = face.getFaceArea({ shape: faces[0] });
-            const area2 = face.getFaceArea({ shape: faces[1] });
-            const area3 = face.getFaceArea({ shape: faces[2] });
+            const area1 = face.getFaceArea({ shape: faces[0]! });
+            const area2 = face.getFaceArea({ shape: faces[1]! });
+            const area3 = face.getFaceArea({ shape: faces[2]! });
             expect(area1).toBeCloseTo(2);
             expect(area2).toBeCloseTo(2);
             expect(area3).toBeCloseTo(3);
@@ -1703,8 +1703,8 @@ describe("OCCT face unit tests", () => {
             const dto = new OCCT.FacesFromWiresOnFaceDto([circleWire1, circleWire2], baseFace, true);
             const faces = face.createFacesFromWiresOnFace(dto);
             expect(faces.length).toBe(2);
-            const area1 = face.getFaceArea({ shape: faces[0] });
-            const area2 = face.getFaceArea({ shape: faces[1] });
+            const area1 = face.getFaceArea({ shape: faces[0]! });
+            const area2 = face.getFaceArea({ shape: faces[1]! });
             expect(area1).toBeCloseTo(Math.PI);
             expect(area2).toBeCloseTo(Math.PI * 2.25);
             baseFace.delete();
@@ -1870,7 +1870,7 @@ describe("OCCT face unit tests", () => {
             const dto = new OCCT.FaceSubdivideToHexagonHolesDto(f, 2, 2);
             const faces = face.subdivideToHexagonHoles(dto);
             expect(faces.length).toBe(1);
-            const area = face.getFaceArea({ shape: faces[0] });
+            const area = face.getFaceArea({ shape: faces[0]! });
             expect(area).toBeCloseTo(79.59183673469393);
             faces.forEach(fc => fc.delete());
             f.delete();

@@ -1,6 +1,6 @@
 import GUI from "lil-gui";
 import type { Current, Model } from "../models";
-import { Color, Entity, StandardMaterial } from "playcanvas";
+import { Color, Entity, StandardMaterial, type MeshInstance } from "playcanvas";
 
 export const createGui = (
     current: Current,
@@ -74,9 +74,10 @@ export const createGui = (
 
     const updateEntityMaterial = (entity: Entity | undefined, color: Color) => {
         if (!entity) return;
-        entity.children.forEach((child) => {
+        entity.children.forEach((node) => {
+            const child = node as Entity;
             if (child.render) {
-                child.render.meshInstances.forEach((mi) => {
+                child.render.meshInstances.forEach((mi: MeshInstance) => {
                     const mat = mi.material as StandardMaterial;
                     if (mat && mat.diffuse) {
                         mat.diffuse = color;

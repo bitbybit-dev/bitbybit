@@ -14,15 +14,15 @@ export interface AssemblyPartUpdateDef<T> {
      * New shape to replace the existing shape.
      * If undefined, the shape is not changed.
      */
-    shape?: T;
+    shape?: T | undefined;
     /** 
      * New name for the part.
      * If undefined, the name is not changed.
      */
-    name?: string;
+    name?: string | undefined;
     /** 
      * New color for the part.
      * If undefined, the color is not changed.
      */
-    colorRgba?: Base.ColorRGBA;
+    colorRgba?: Base.ColorRGBA | undefined;
 }

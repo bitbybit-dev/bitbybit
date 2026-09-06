@@ -106,7 +106,7 @@ describe("OCCT io unit tests", () => {
         });
         
         // Load it back (adjustZtoY should reverse the rotation)
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true })!;
         
         const volumeOriginal = solid.getSolidVolume({ shape: cylinder });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -121,7 +121,7 @@ describe("OCCT io unit tests", () => {
     it("should load cube shape from step file", () => {
         const cube = solid.createCube({ size: 10, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: cube, adjustYtoZ: false, fileName: "cube.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube1.step", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube1.step", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: cube });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -134,7 +134,7 @@ describe("OCCT io unit tests", () => {
         const c = solid.createCylinder({ radius: 10, height: 20, direction: [0, 1, 0], center: [0, 0, 0] });
 
         const stepText = io.saveShapeSTEP({ shape: c, adjustYtoZ: false, fileName: "cone.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cone1.step", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cone1.step", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: c });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -158,8 +158,8 @@ describe("OCCT io unit tests", () => {
         
         // Verify edge connectivity
         for (let i = 1; i < edges.length; i++) {
-            const prevEnd = occHelper.edgesService.endPointOnEdge({ shape: edges[i - 1] });
-            const currStart = occHelper.edgesService.startPointOnEdge({ shape: edges[i] });
+            const prevEnd = occHelper.edgesService.endPointOnEdge({ shape: edges[i - 1]! });
+            const currStart = occHelper.edgesService.startPointOnEdge({ shape: edges[i]! });
             const distance = Math.sqrt(
                 Math.pow(currStart[0] - prevEnd[0], 2) +
                 Math.pow(currStart[1] - prevEnd[1], 2) +
@@ -172,10 +172,10 @@ describe("OCCT io unit tests", () => {
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);
-        expect(dxfPaths[0].segments.length).toBe(1);
+        expect(dxfPaths[0]!.segments.length).toBe(1);
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
         expect(polyline.points).toBeDefined();
         expect(polyline.bulges).toBeDefined();
         expect(polyline.closed).toBe(true);
@@ -199,10 +199,10 @@ describe("OCCT io unit tests", () => {
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);
-        expect(dxfPaths[0].segments.length).toBe(1);
+        expect(dxfPaths[0]!.segments.length).toBe(1);
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
         expect(polyline.points).toBeDefined();
         expect(polyline.closed).toBe(true);
         expect(polyline.points.length).toBe(4); // 4 corners, no duplicate for closed
@@ -224,11 +224,11 @@ describe("OCCT io unit tests", () => {
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);
-        expect(dxfPaths[0].segments.length).toBe(1);
+        expect(dxfPaths[0]!.segments.length).toBe(1);
         
         // A full circle is represented as a CIRCLE entity in DXF, not a polyline
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const circleSegment = dxfPaths[0].segments[0] as any;
+        const circleSegment = dxfPaths[0]!.segments[0] as any;
         
         // Check it's a circle entity with center and radius
         expect(circleSegment.center).toBeDefined();
@@ -254,10 +254,10 @@ describe("OCCT io unit tests", () => {
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);
-        expect(dxfPaths[0].segments.length).toBe(1);
+        expect(dxfPaths[0]!.segments.length).toBe(1);
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
         expect(polyline.points).toBeDefined();
         expect(polyline.closed).toBe(true);
         expect(polyline.bulges).toBeDefined();
@@ -277,10 +277,10 @@ describe("OCCT io unit tests", () => {
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);
-        expect(dxfPaths[0].segments.length).toBe(1);
+        expect(dxfPaths[0]!.segments.length).toBe(1);
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
         expect(polyline.points).toBeDefined();
         expect(polyline.closed).toBe(false);
         expect(polyline.points.length).toBeGreaterThan(4); // Should tessellate
@@ -358,8 +358,8 @@ describe("OCCT io unit tests", () => {
         
         // Verify all edges connect properly
         for (let i = 1; i < edges.length; i++) {
-            const prevEnd = occHelper.edgesService.endPointOnEdge({ shape: edges[i - 1] });
-            const currStart = occHelper.edgesService.startPointOnEdge({ shape: edges[i] });
+            const prevEnd = occHelper.edgesService.endPointOnEdge({ shape: edges[i - 1]! });
+            const currStart = occHelper.edgesService.startPointOnEdge({ shape: edges[i]! });
             const distance = Math.sqrt(
                 Math.pow(currStart[0] - prevEnd[0], 2) +
                 Math.pow(currStart[1] - prevEnd[1], 2) +
@@ -374,7 +374,7 @@ describe("OCCT io unit tests", () => {
         expect(dxfPaths.length).toBe(1);
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
         expect(polyline.closed).toBe(true);
         expect(polyline.points.length).toBeGreaterThan(3);
     });
@@ -423,10 +423,10 @@ describe("OCCT io unit tests", () => {
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
         expect(dxfPaths.length).toBe(1);
-        expect(dxfPaths[0].segments.length).toBe(1);
+        expect(dxfPaths[0]!.segments.length).toBe(1);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
         expect(polyline.points).toBeDefined();
         expect(polyline.bulges).toBeDefined();
         expect(polyline.closed).toBe(true);
@@ -448,8 +448,8 @@ describe("OCCT io unit tests", () => {
         expect(bulgeIndices.length).toBe(2);
         
         // Both bulges should be negative based on the actual arc traversal
-        const bulge1 = bulges[bulgeIndices[0]];
-        const bulge2 = bulges[bulgeIndices[1]];
+        const bulge1 = bulges[bulgeIndices[0]!];
+        const bulge2 = bulges[bulgeIndices[1]!];
         expect(bulge1).toBeLessThan(-0.9);
         expect(bulge2).toBeLessThan(-0.9);
 
@@ -486,7 +486,7 @@ describe("OCCT io unit tests", () => {
 
         expect(dxfPaths.length).toBe(1);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
 
         // For a semicircular arc, the bulge should be close to ±1
         expect(polyline.bulges[0]).toBeLessThan(-0.9); // Semicircle ≈ -1
@@ -521,7 +521,7 @@ describe("OCCT io unit tests", () => {
 
         expect(dxfPaths.length).toBe(1);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
 
         // For a semicircular arc, the bulge should be close to ±1
         expect(polyline.bulges[0]).toBeLessThan(-0.9); // Semicircle ≈ -1
@@ -556,7 +556,7 @@ describe("OCCT io unit tests", () => {
 
         expect(dxfPaths.length).toBe(1);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
 
         // For a semicircular arc curving right (when traveling up), bulge should be positive
         expect(polyline.bulges[0]).toBeGreaterThan(0.9); // Semicircle ≈ 1
@@ -596,7 +596,7 @@ describe("OCCT io unit tests", () => {
 
         expect(dxfPaths.length).toBe(1);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
 
         // Verify center is actually above the chord
         expect(center[2]).toBeGreaterThan(chordZ);
@@ -638,7 +638,7 @@ describe("OCCT io unit tests", () => {
 
         expect(dxfPaths.length).toBe(1);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const polyline = dxfPaths[0].segments[0] as any;
+        const polyline = dxfPaths[0]!.segments[0] as any;
 
         // Verify center is actually below the chord
         expect(center[2]).toBeLessThan(chordZ);
@@ -732,7 +732,7 @@ describe("OCCT io unit tests", () => {
     it("should load shape from STEP file with .stp extension", () => {
         const cube = solid.createCube({ size: 5, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: cube, adjustYtoZ: false, fileName: "cube.stp" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube.stp", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube.stp", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: cube });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -745,7 +745,7 @@ describe("OCCT io unit tests", () => {
     it("should load shape from STEP file with adjustZtoY enabled", () => {
         const cylinder = solid.createCylinder({ radius: 3, height: 10, direction: [0, 1, 0], center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: cylinder, adjustYtoZ: true, fileName: "cylinder.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: cylinder });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -758,7 +758,7 @@ describe("OCCT io unit tests", () => {
     it("should load sphere shape from STEP file and preserve volume", () => {
         const sphere = solid.createSphere({ radius: 7, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: sphere, adjustYtoZ: false, fileName: "sphere.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "sphere.step", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "sphere.step", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: sphere });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
@@ -771,7 +771,7 @@ describe("OCCT io unit tests", () => {
     it("should load box shape from STEP file and preserve volume", () => {
         const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
-        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "box.step", adjustZtoY: false });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "box.step", adjustZtoY: false })!;
 
         const volumeOriginal = solid.getSolidVolume({ shape: box });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });

@@ -11,21 +11,21 @@ export interface AssemblyNodeDef {
     /** Display name for this node */
     name: string;
     /** Parent node ID (undefined = root level) */
-    parentId?: string;
+    parentId?: string | undefined;
     /** Part ID to instance (required for type='instance') */
-    partId?: string;
+    partId?: string | undefined;
     /** Translation as [x, y, z] */
-    translation?: Base.Point3;
+    translation?: Base.Point3 | undefined;
     /** Rotation as [rx, ry, rz] Euler angles in degrees (applied Rx * Ry * Rz) */
-    rotation?: Base.Vector3;
+    rotation?: Base.Vector3 | undefined;
     /** Uniform scale factor (1.0 = no scale) */
-    scale?: number;
+    scale?: number | undefined;
     /**
      * Optional placement matrix (column-major, 16 numbers) or an ordered list of
      * matrices applied first-to-last. When set, it fully defines the node's placement
      * and takes precedence over translation/rotation/scale.
      */
-    matrix?: Base.TransformMatrix | Base.TransformMatrixes;
+    matrix?: Base.TransformMatrix | Base.TransformMatrixes | undefined;
     /** Optional color override for this instance */
-    colorRgba?: Base.ColorRGBA;
+    colorRgba?: Base.ColorRGBA | undefined;
 }

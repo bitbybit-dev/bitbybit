@@ -3,22 +3,22 @@ import { PrintSaveInterface } from "../models/print-save.model";
 
 export interface PreviewDataInterface {
     data: any;
-    viewMode?: "data" | "schema" | "metadata";
-    hidden?: boolean;
+    viewMode?: "data" | "schema" | "metadata" | undefined;
+    hidden?: boolean | undefined;
 }
 
 export interface PreviewCSVInterface {
     data: string | any[][];
-    columnSeparator?: string;
-    rowSeparator?: string;
-    startRow?: number;
-    maxRows?: number;
-    hidden?: boolean;
+    columnSeparator?: string | undefined;
+    rowSeparator?: string | undefined;
+    startRow?: number | undefined;
+    maxRows?: number | undefined;
+    hidden?: boolean | undefined;
 }
 
 export interface PreviewAssemblyHierarchyInterface {
     data: any;
-    hidden?: boolean;
+    hidden?: boolean | undefined;
 }
 
 export class ContextBase {
@@ -28,13 +28,13 @@ export class ContextBase {
     jsonpath: any;
     canvasZoneClass = "canvasZone";
 
-    promptPrintSave: (prompt: PrintSaveInterface) => void;
-    promptPrint: (prompt: PrintSaveInterface) => void;
-    promptPreviewData: (data: PreviewDataInterface) => void;
-    promptPreviewCSV: (data: PreviewCSVInterface) => void;
-    promptPreviewAssemblyHierarchy: (data: PreviewAssemblyHierarchyInterface) => void;
+    promptPrintSave!: (prompt: PrintSaveInterface) => void;
+    promptPrint!: (prompt: PrintSaveInterface) => void;
+    promptPreviewData!: (data: PreviewDataInterface) => void;
+    promptPreviewCSV!: (data: PreviewCSVInterface) => void;
+    promptPreviewAssemblyHierarchy!: (data: PreviewAssemblyHierarchyInterface) => void;
 
-    rerenderScene: () => void;
+    rerenderScene!: () => void;
     tolerance = 0.00001;
     snapTolerance = 0.00001;
     tagBag: any[] = [];
@@ -53,7 +53,7 @@ export class ContextBase {
         key: string,
         fn: () => void
     })[] = [];
-    currentlyPressedKeys = [];
+    currentlyPressedKeys: string[] = [];
 
     getFile(file: File): Promise<string | ArrayBuffer> {
         return new Promise((resolve, reject) => {
@@ -64,7 +64,7 @@ export class ContextBase {
                     const text = (evt as any).target.result;
                     resolve(text);
                 };
-                reader.onerror = (evt) => {
+                reader.onerror = (_evt) => {
                     reject();
                 };
             } else {

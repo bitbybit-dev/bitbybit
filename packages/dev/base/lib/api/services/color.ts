@@ -102,11 +102,14 @@ export class Color {
      */
     hexToRgb(inputs: Inputs.Color.HexDto): Inputs.Base.ColorRGB {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(inputs.color);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : undefined;
+        if (!result) {
+            throw new Error(`Invalid hex color: ${inputs.color}`);
+        }
+        return {
+            r: parseInt(result[1]!, 16),
+            g: parseInt(result[2]!, 16),
+            b: parseInt(result[3]!, 16)
+        };
     }
 
     /**

@@ -43,7 +43,17 @@ This scaffolds a complete Vite + TypeScript project with all CAD kernels pre-con
 | **Monorepo** | https://github.com/bitbybit-dev/bitbybit |
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/base |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/intro |
+| **API Reference** | https://docs.bitbybit.dev/modules/Bit |
 | **Unit Test Coverage** | https://tests.bitbybit.dev/base |
+
+### API reference
+
+Every class, method and input type in this package is documented in the generated TypeScript API reference:
+
+- [Vector](https://docs.bitbybit.dev/classes/Bit.Vector)
+- [Math](https://docs.bitbybit.dev/classes/Bit.MathBitByBit)
+- [Lists](https://docs.bitbybit.dev/classes/Bit.Lists)
+- [Base input types](https://docs.bitbybit.dev/modules/Bit.Inputs.Base)
 
 ## Example Applications
 

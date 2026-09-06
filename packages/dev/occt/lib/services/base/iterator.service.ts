@@ -27,7 +27,7 @@ export class IteratorService {
 
 
     forEachEdge(shape: TopoDS_Shape, callback: (index: number, edge: TopoDS_Edge) => void) {
-        const edgeHashes = {};
+        const edgeHashes: Record<number, number> = {};
         let edgeIndex = 0;
         const anExplorer = new this.occ.TopExp_Explorer(
             shape,
@@ -50,7 +50,7 @@ export class IteratorService {
     }
 
     forEachEdgeAlongWire(shape: TopoDS_Wire, callback: (index: number, edge: TopoDS_Edge) => void) {
-        const edgeHashes = {};
+        const edgeHashes: Record<number, number> = {};
         let edgeIndex = 0;
         const anExplorer = new this.occ.BRepTools_WireExplorer(shape);
         for (/* initialized in constructor */; anExplorer.More(); anExplorer.Next()) {

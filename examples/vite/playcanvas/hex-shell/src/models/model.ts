@@ -1,5 +1,4 @@
 import type { BitByBitBase, Inputs } from "@bitbybit-dev/playcanvas";
-import type { Entity } from "playcanvas";
 
 export type Model = {
     uHex: number;
@@ -20,12 +19,10 @@ export type Model = {
     color2: string;
     finalPrecision: number;
     rotationEnabled: boolean;
-    downloadSTL?: (scene: Entity) => void;
     downloadStep?: (
         bitbybit: BitByBitBase,
         finalShape: Inputs.OCCT.TopoDSShapePointer | undefined
     ) => void;
-    downloadGLB?: (scene: Entity) => void;
     update?: () => void;
 };
 

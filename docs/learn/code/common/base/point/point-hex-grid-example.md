@@ -27,7 +27,7 @@ Hexagonal grids are a common and visually appealing pattern found in nature and 
 
 We'll explore this using Rete (visual nodes), Blockly (visual blocks), and TypeScript (code). All examples will generate a hexagonal grid, draw its center points, and draw the outlines of each hexagon.
 
-For detailed information on the hex grid functions, please refer to the [Point API Documentation](https://docs.bitbybit.dev/classes/Bit.Point.html).
+For detailed information on the hex grid functions, please refer to the [Point API Documentation](https://docs.bitbybit.dev/classes/Bit.Point).
 
 ## The Core Idea: Scaled Hexagonal Grids
 

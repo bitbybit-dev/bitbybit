@@ -5,7 +5,7 @@ import * as Inputs from "../../../inputs";
 
 export class BabylonGuiControl {
 
-    constructor(private readonly context: Context) { }
+    constructor(_context: Context) { }
 
     /**
      * Change the padding for the control
@@ -100,7 +100,7 @@ export class BabylonGuiControl {
      * @shortname get control by name
      */
     getControlByName(inputs: Inputs.BabylonGui.GetControlByNameDto): BABYLON.GUI.Control {
-        return inputs.container.children.find(c => c.name === inputs.name);
+        return inputs.container.children.find(c => c.name === inputs.name)!;
     }
 
     /** 

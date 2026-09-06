@@ -1,0 +1,9 @@
+{
+  "$comment": "Read by scripts/examples.mjs. `skip` names examples the verification lane leaves out, each with the reason; an example listed here is unmaintained until someone removes it from this list and makes it pass. `buildOnlyWithHeavy` names the framework directories whose builds run only with --heavy - they still install and audit on every run. Only directories with a package.json are examples to this lane; api/dotnet-rest is a .NET project and is not covered.",
+  "skip": [],
+  "buildOnlyWithHeavy": [
+    "angular",
+    "nextjs",
+    "nuxt"
+  ]
+}

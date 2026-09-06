@@ -2,7 +2,7 @@
 sidebar_position: 4
 title: Wire Bezier Weights
 sidebar_label: Wire Bezier Weights
-description: Learn how to create bezier wire with weights
+description: Create Bezier wires in OCCT with per-control-point weights, so you can pull the curve towards individual points without moving them and model conic sections exactly.
 tags: [code, occt, rete, blockly, typescript]
 ---
 

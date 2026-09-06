@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
 
+/**
+ * Parameters for creating and working with points: single points, points spread along a line or a
+ * curve, points in rectangular and hexagonal grids, spirals and other structured sets, plus the
+ * options for transforming, sorting, closest-point queries and distance measurement. Structured point
+ * sets are where most parametric models begin.
+ */
 export namespace Point {
     export class PointDto {
         constructor(point?: Base.Point3) {
@@ -10,7 +16,7 @@ export namespace Point {
          * Point
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
     }
     export class PointXYZDto {
         constructor(x?: number, y?: number, z?: number) {
@@ -73,7 +79,7 @@ export namespace Point {
          * Points
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
     }
     export class TwoPointsDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3) {
@@ -84,12 +90,12 @@ export namespace Point {
          * Point 1
          * @default undefined
          */
-        point1: Base.Point3;
+        point1!: Base.Point3;
         /**
          * Point 2
          * @default undefined
          */
-        point2: Base.Point3;
+        point2!: Base.Point3;
     }
     export class DrawPointDto<T> {
         /**
@@ -107,7 +113,7 @@ export namespace Point {
          * Point
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * Value between 0 and 1
          * @default 1
@@ -138,7 +144,7 @@ export namespace Point {
          * Point mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        pointMesh?: T;
+        pointMesh?: T | undefined;
     }
     export class DrawPointsDto<T> {
         /**
@@ -156,7 +162,7 @@ export namespace Point {
          * Point
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Value between 0 and 1
          * @default 1
@@ -187,7 +193,7 @@ export namespace Point {
          * Points mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        pointsMesh?: T;
+        pointsMesh?: T | undefined;
     }
     export class TransformPointDto {
         constructor(point?: Base.Point3, transformation?: Base.TransformMatrixes) {
@@ -198,12 +204,12 @@ export namespace Point {
          * Point to transform
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class TransformPointsDto {
         constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes) {
@@ -214,12 +220,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class TranslatePointsWithVectorsDto {
         constructor(points?: Base.Point3[], translations?: Base.Vector3[]) {
@@ -230,12 +236,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Translation vectors for each point
          * @default undefined
          */
-        translations: Base.Vector3[];
+        translations!: Base.Vector3[];
     }
     export class TranslatePointsDto {
         constructor(points?: Base.Point3[], translation?: Base.Vector3) {
@@ -246,12 +252,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Translation vector with x, y and z values
          * @default undefined
          */
-        translation: Base.Vector3;
+        translation!: Base.Vector3;
     }
     export class TranslateXYZPointsDto {
         constructor(points?: Base.Point3[], x?: number, y?: number, z?: number) {
@@ -264,7 +270,7 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * X vector value
          * @default 0
@@ -292,7 +298,7 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * The center from which the scaling is applied
          * @default [0, 0, 0]
@@ -316,17 +322,17 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points?: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * The center from which the scaling is applied
          * @default [0, 0, 0]
          */
-        center?: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Stretch direction vector
          * @default [0, 0, 1]
          */
-        direction?: Base.Vector3 = [0, 0, 1];
+        direction?: Base.Vector3 | undefined = [0, 0, 1];
         /**
          * The scale factor to apply along the direction vector. 1.0 means no change.
          * @default 2
@@ -334,7 +340,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        scale? = 2;
+        scale?: number | undefined = 2;
     }
     export class RotatePointsCenterAxisDto {
         constructor(points?: Base.Point3[], angle?: number, axis?: Base.Vector3, center?: Base.Point3) {
@@ -347,7 +353,7 @@ export namespace Point {
         * Points to transform
         * @default undefined
         */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Angle of rotation in degrees
          * @default 90
@@ -376,12 +382,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Transformations that have to match nr of points
          * @default undefined
          */
-        transformation: Base.TransformMatrixes[];
+        transformation!: Base.TransformMatrixes[];
     }
     export class ThreePointsNormalDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3, reverseNormal?: boolean) {
@@ -394,17 +400,17 @@ export namespace Point {
          * Point 1
          * @default undefined
          */
-        point1: Base.Point3;
+        point1!: Base.Point3;
         /**
          * Point 2
          * @default undefined
          */
-        point2: Base.Point3;
+        point2!: Base.Point3;
         /**
          * Point 3
          * @default undefined
          */
-        point3: Base.Point3;
+        point3!: Base.Point3;
         /**
          * Reverse normal direction
          * @default false
@@ -422,17 +428,17 @@ export namespace Point {
          * Start point
          * @default undefined
          */
-        start?: Base.Point3;
+        start!: Base.Point3;
         /**
          * Center point
          * @default undefined
          */
-        center?: Base.Point3;
+        center!: Base.Point3;
         /**
          * End point
          * @default undefined
          */
-        end?: Base.Point3;
+        end!: Base.Point3;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -452,12 +458,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points?: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Check first and last point for duplicates
          * @default false
          */
-        checkLastWithFirst? = false;
+        checkLastWithFirst?: boolean | undefined = false;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -465,7 +471,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance? = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     export class RemoveConsecutiveDuplicatesDto {
         constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean) {
@@ -477,7 +483,7 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Tolerance for removing duplicates
          * @default 1e-7
@@ -485,7 +491,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * Check first and last point for duplicates
          */
@@ -500,12 +506,12 @@ export namespace Point {
          * Points to transform
          * @default undefined
          */
-        points: Base.Point3[];
+        points!: Base.Point3[];
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
     }
     export class TwoPointsToleranceDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, tolerance?: number) {
@@ -517,12 +523,12 @@ export namespace Point {
          * First point to compare
          * @default undefined
          */
-        point1?: Base.Point3;
+        point1!: Base.Point3;
         /**
          * Second point to compare
          * @default undefined
          */
-        point2?: Base.Point3;
+        point2!: Base.Point3;
         /**
          * Tolerance for the calculation
          * @default 1e-7
@@ -530,7 +536,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance? = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     export class StartEndPointsDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3) {
@@ -541,12 +547,12 @@ export namespace Point {
          * Start point
          * @default undefined
          */
-        startPoint: Base.Point3;
+        startPoint!: Base.Point3;
         /**
          * End point
          * @default undefined
          */
-        endPoint: Base.Point3;
+        endPoint!: Base.Point3;
     }
     export class StartEndPointsListDto {
         constructor(startPoint?: Base.Point3, endPoints?: Base.Point3[]) {
@@ -557,12 +563,12 @@ export namespace Point {
          * Start point
          * @default undefined
          */
-        startPoint: Base.Point3;
+        startPoint!: Base.Point3;
         /**
          * End point
          * @default undefined
          */
-        endPoints: Base.Point3[];
+        endPoints!: Base.Point3[];
     }
 
     export class MultiplyPointDto {
@@ -574,12 +580,12 @@ export namespace Point {
          * Point for multiplication
          * @default undefined
          */
-        point: Base.Point3;
+        point!: Base.Point3;
         /**
          * Number of points to create in the list
          * @default undefined
          */
-        amountOfPoints: number;
+        amountOfPoints!: number;
     }
 
     export class SpiralDto {
@@ -646,56 +652,56 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        width? = 10;
+        width?: number | undefined = 10;
         /** Total desired height for the grid area. Note: due to hexagon geometry, the actual grid height might differ slightly if maintaining regular hexagons based on width.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
         */
-        height? = 10;
+        height?: number | undefined = 10;
         /** Number of hexagons desired in width.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsInWidth? = 10;
+        nrHexagonsInWidth?: number | undefined = 10;
         /** Number of hexagons desired in height.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsInHeight? = 10;
+        nrHexagonsInHeight?: number | undefined = 10;
         /** If true, the hexagons will be oriented with their flat sides facing up and down. 
          * @default false
          */
-        flatTop? = false;
+        flatTop?: boolean | undefined = false;
         /** If true, shift the entire grid up by half hex height. 
          * @default false
         */
-        extendTop? = false;
+        extendTop?: boolean | undefined = false;
         /** If true, shift the entire grid down by half hex height. 
          * @default false
         */
-        extendBottom? = false;
+        extendBottom?: boolean | undefined = false;
         /** If true, shift the entire grid left by half hex width. 
          * @default false
         */
-        extendLeft? = false;
+        extendLeft?: boolean | undefined = false;
         /** If true, shift the entire grid right by half hex width. 
          * @default false
         */
-        extendRight? = false;
+        extendRight?: boolean | undefined = false;
         /** If true, the grid center (based on totalWidth/totalHeight) will be at [0,0,0].
          * @default false
          */
-        centerGrid? = false;
+        centerGrid?: boolean | undefined = false;
         /** If true, swaps Y and Z coordinates and sets Y to 0, placing points on the XZ ground plane.
          * @default false
          */
-        pointsOnGround? = false;
+        pointsOnGround?: boolean | undefined = false;
     }
     export class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean) {
@@ -728,7 +734,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusHexagon: number;
+        radiusHexagon: number = 0.2;
         /**
          * Orient hexagon points grid on center
          * @default false

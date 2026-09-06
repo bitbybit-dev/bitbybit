@@ -94,7 +94,7 @@ To support the development and hosting of the Bitbybit platform, certain compone
 
 4.  **[3D Bits](/learn/3d-bits/intro) app for Shopify:**
     *   This E-Commerce application is fully proprietary and is not shared as open-source project. It is meant to serve commercial B2B customers of Bit by bit developers company. 
-    *   There are no plans to open-source any part of this application such as [Viewer Editor](/learn/getting-started/viewer-editor/intro) or other related tools.
+    *   There are no plans to open-source any part of this application such as [Composer](/learn/3d-bits/composer/intro) or other related tools.
 
 ## Our Commitment to Transparency
 

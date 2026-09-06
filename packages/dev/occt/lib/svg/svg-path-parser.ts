@@ -35,7 +35,7 @@ function tokenize(d: string): Token[] {
     const isCommand = (ch: string): boolean => /[MmLlHhVvCcSsQqTtAaZz]/.test(ch);
 
     const skipSep = (): void => {
-        while (i < n && /[\s,]/.test(d[i])) { i++; }
+        while (i < n && /[\s,]/.test(d[i]!)) { i++; }
     };
 
     // Reads one number; when `isFlag` is set, reads exactly a single 0/1 digit
@@ -51,15 +51,15 @@ function tokenize(d: string): Token[] {
         const start = i;
         if (d[i] === "+" || d[i] === "-") { i++; }
         let sawDigit = false;
-        while (i < n && /[0-9]/.test(d[i])) { i++; sawDigit = true; }
+        while (i < n && /[0-9]/.test(d[i]!)) { i++; sawDigit = true; }
         if (i < n && d[i] === ".") {
             i++;
-            while (i < n && /[0-9]/.test(d[i])) { i++; sawDigit = true; }
+            while (i < n && /[0-9]/.test(d[i]!)) { i++; sawDigit = true; }
         }
         if (sawDigit && i < n && (d[i] === "e" || d[i] === "E")) {
             i++;
             if (i < n && (d[i] === "+" || d[i] === "-")) { i++; }
-            while (i < n && /[0-9]/.test(d[i])) { i++; }
+            while (i < n && /[0-9]/.test(d[i]!)) { i++; }
         }
         if (!sawDigit) { return undefined; }
         return parseFloat(d.slice(start, i));
@@ -68,7 +68,7 @@ function tokenize(d: string): Token[] {
     while (i < n) {
         skipSep();
         if (i >= n) { break; }
-        const ch = d[i];
+        const ch = d[i]!;
         if (!isCommand(ch)) {
             // Malformed — skip the offending character to stay resilient.
             i++;
@@ -76,7 +76,7 @@ function tokenize(d: string): Token[] {
         }
         i++;
         const lower = ch.toLowerCase();
-        const count = ARG_COUNTS[lower];
+        const count = ARG_COUNTS[lower]!;
         if (count === 0) {
             tokens.push({ command: ch, args: [] });
             continue;
@@ -104,7 +104,7 @@ function tokenize(d: string): Token[] {
             first = false;
             // After the first explicit moveto, subsequent implicit pairs are linetos.
             skipSep();
-            if (i >= n || isCommand(d[i])) { break; }
+            if (i >= n || isCommand(d[i]!)) { break; }
         }
     }
     return tokens;
@@ -209,37 +209,37 @@ export function parsePathData(d: string): SvgSubpath[] {
 
         switch (c.toLowerCase()) {
             case "m": {
-                const pt: Base.Point2 = [baseX + a[0], baseY + a[1]];
+                const pt: Base.Point2 = [baseX + a[0]!, baseY + a[1]!];
                 startSubpath(pt);
                 cursor = pt;
                 lastCubicCtrl = lastQuadCtrl = undefined;
                 break;
             }
             case "l": {
-                const pt: Base.Point2 = [baseX + a[0], baseY + a[1]];
+                const pt: Base.Point2 = [baseX + a[0]!, baseY + a[1]!];
                 pushSeg({ type: "line", to: pt });
                 cursor = pt;
                 lastCubicCtrl = lastQuadCtrl = undefined;
                 break;
             }
             case "h": {
-                const pt: Base.Point2 = [(rel ? cursor[0] : 0) + a[0], cursor[1]];
+                const pt: Base.Point2 = [(rel ? cursor[0] : 0) + a[0]!, cursor[1]];
                 pushSeg({ type: "line", to: pt });
                 cursor = pt;
                 lastCubicCtrl = lastQuadCtrl = undefined;
                 break;
             }
             case "v": {
-                const pt: Base.Point2 = [cursor[0], (rel ? cursor[1] : 0) + a[0]];
+                const pt: Base.Point2 = [cursor[0], (rel ? cursor[1] : 0) + a[0]!];
                 pushSeg({ type: "line", to: pt });
                 cursor = pt;
                 lastCubicCtrl = lastQuadCtrl = undefined;
                 break;
             }
             case "c": {
-                const c1: Base.Point2 = [baseX + a[0], baseY + a[1]];
-                const c2: Base.Point2 = [baseX + a[2], baseY + a[3]];
-                const pt: Base.Point2 = [baseX + a[4], baseY + a[5]];
+                const c1: Base.Point2 = [baseX + a[0]!, baseY + a[1]!];
+                const c2: Base.Point2 = [baseX + a[2]!, baseY + a[3]!];
+                const pt: Base.Point2 = [baseX + a[4]!, baseY + a[5]!];
                 pushSeg({ type: "cubic", c1, c2, to: pt });
                 cursor = pt;
                 lastCubicCtrl = c2;
@@ -250,8 +250,8 @@ export function parsePathData(d: string): SvgSubpath[] {
                 const reflect: Base.Point2 = lastCubicCtrl
                     ? [2 * cursor[0] - lastCubicCtrl[0], 2 * cursor[1] - lastCubicCtrl[1]]
                     : [cursor[0], cursor[1]];
-                const c2: Base.Point2 = [baseX + a[0], baseY + a[1]];
-                const pt: Base.Point2 = [baseX + a[2], baseY + a[3]];
+                const c2: Base.Point2 = [baseX + a[0]!, baseY + a[1]!];
+                const pt: Base.Point2 = [baseX + a[2]!, baseY + a[3]!];
                 pushSeg({ type: "cubic", c1: reflect, c2, to: pt });
                 cursor = pt;
                 lastCubicCtrl = c2;
@@ -259,8 +259,8 @@ export function parsePathData(d: string): SvgSubpath[] {
                 break;
             }
             case "q": {
-                const cc: Base.Point2 = [baseX + a[0], baseY + a[1]];
-                const pt: Base.Point2 = [baseX + a[2], baseY + a[3]];
+                const cc: Base.Point2 = [baseX + a[0]!, baseY + a[1]!];
+                const pt: Base.Point2 = [baseX + a[2]!, baseY + a[3]!];
                 pushSeg({ type: "quad", c: cc, to: pt });
                 cursor = pt;
                 lastQuadCtrl = cc;
@@ -271,7 +271,7 @@ export function parsePathData(d: string): SvgSubpath[] {
                 const reflect: Base.Point2 = lastQuadCtrl
                     ? [2 * cursor[0] - lastQuadCtrl[0], 2 * cursor[1] - lastQuadCtrl[1]]
                     : [cursor[0], cursor[1]];
-                const pt: Base.Point2 = [baseX + a[0], baseY + a[1]];
+                const pt: Base.Point2 = [baseX + a[0]!, baseY + a[1]!];
                 pushSeg({ type: "quad", c: reflect, to: pt });
                 cursor = pt;
                 lastQuadCtrl = reflect;
@@ -279,9 +279,9 @@ export function parsePathData(d: string): SvgSubpath[] {
                 break;
             }
             case "a": {
-                const pt: Base.Point2 = [baseX + a[5], baseY + a[6]];
+                const pt: Base.Point2 = [baseX + a[5]!, baseY + a[6]!];
                 const seg = endpointToCenterArc(
-                    cursor, pt, a[0], a[1], a[2], a[3] === 1, a[4] === 1
+                    cursor, pt, a[0]!, a[1]!, a[2]!, a[3] === 1, a[4] === 1
                 );
                 pushSeg(seg);
                 cursor = pt;

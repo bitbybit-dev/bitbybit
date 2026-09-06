@@ -241,6 +241,8 @@ describe("OCCTAssembly unit tests", () => {
                 meshAngle: 0.5,
                 mergeFaces: false,
                 forceUVExport: false,
+                internalVerticesMode: false,
+                controlSurfaceDeflection: false,
                 fileName: "test.glb",
                 tryDownload: false
             });

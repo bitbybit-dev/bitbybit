@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Getting Started With Bitbybit Rete Editor",
-        "description": "Learn how to use the Bitbybit Rete Editor to create & wire scripts. This guide will help you understand the basics of Rete - how to connect components in order to create 3D objects & how to manage your scripts effectively.",
+        "description": "Rete is Bitbybit's node editor, where you build a program by dragging components onto a canvas and wiring their outputs into other components' inputs. The graph makes data flow visible: you can see exactly what feeds a shape, change one input and watch the whole downstream chain update. It is the editor most Bitbybit users reach for, and the one best suited to parametric modelling. These pages cover the interface, a first 3D Hello World, building a parametric cube, and the embedded TypeScript component for the moments a graph gets awkward.",
         "slug": "/getting-started/rete"
     }
 }

@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "3D Bits Shopify App",
-        "description": "Learn how to use the 3D Bits Shopify App to create and manage 3D products for your store.",
+        "description": "3D Bits is the Bitbybit app for Shopify, turning a parametric 3D model into a product customers configure and buy. Instead of a static image gallery, the shopper adjusts real options in a live 3D scene and the price, the variant and the manufacturing files follow along. These pages cover the whole path a merchant takes: installing the app, preparing 3D assets, building a configurator in the Composer, laying out the option panel, setting up pricing that survives checkout, placing the theme blocks in a storefront, and reviewing what arrives on the order.",
         "slug": "/3d-bits"
     }
 }
