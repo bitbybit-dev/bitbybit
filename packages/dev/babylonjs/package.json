@@ -61,11 +61,11 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "@bitbybit-dev/core": "1.1.1",
     "@bitbybit-dev/base": "1.1.1",
-    "@bitbybit-dev/occt-worker": "1.1.1",
+    "@bitbybit-dev/core": "1.1.1",
     "@bitbybit-dev/jscad-worker": "1.1.1",
     "@bitbybit-dev/manifold-worker": "1.1.1",
+    "@bitbybit-dev/occt-worker": "1.1.1",
     "jsonpath-plus": "10.3.0",
     "verb-nurbs-web": "2.1.3"
   },
@@ -83,6 +83,7 @@
     "@babel/preset-env": "7.29.5",
     "@babel/preset-typescript": "7.28.5",
     "@testing-library/jest-dom": "6.9.1",
+    "@types/earcut": "3.0.0",
     "@types/jest": "30.0.0",
     "babel-jest": "30.4.1",
     "jest": "30.4.2",
