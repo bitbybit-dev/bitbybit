@@ -9,9 +9,13 @@
 # manifests, skips versions the registry already has (a failed run is re-run, never repaired by
 # hand) and waits for the registry to resolve a tier before publishing its dependents.
 #
-# The rehearsal is the default: the `next` dist-tag makes the versions installable by exact version
-# without changing what `npm install` picks. Run the install smoke, then dispatch again with
-# `latest` (versions already published are skipped; the promotion is the dist-tag step below).
+# The rehearsal is `dry_run`: everything is built, tested and checked, and nothing is published, so
+# it can be run at any version any number of times. A release version is published straight to
+# `latest`. It is never staged under `next` first, because a published version is immutable and the
+# OIDC token signs `npm publish` and `npm stage publish` only - `npm dist-tag add` needs a granular
+# token or an interactive login, so a version parked on `next` could not be promoted from here, and
+# its number would be spent. `next` and `rc` carry prerelease versions (1.2.0-rc.1 and the like),
+# which is the way to make something installable before a release.
 #
 # Before the first release from here, each of the thirteen packages needs a trusted publisher on
 # npmjs.com pointing at bitbybit-dev/bitbybit and this file, publish.yml. A package's first ever
@@ -94,4 +98,4 @@ jobs:
 
       - name: Promotion reminder
         if: ${{ !inputs.dry_run && inputs.tag == 'next' }}
-        run: echo "Rehearsal published under the next tag. To release, dispatch again with tag = latest (already-published versions are skipped) or promote each package with npm dist-tag add <pkg>@<version> latest."
+        run: echo "Published under the next tag: installable by exact version, while npm install still picks latest. This cannot be promoted from a workflow - OIDC signs publishes, not dist-tags - so a release version is published directly with tag = latest, and next is for prereleases."
