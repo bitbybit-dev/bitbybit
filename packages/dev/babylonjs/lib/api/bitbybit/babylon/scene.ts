@@ -39,7 +39,7 @@ export class BabylonScene {
      * @shortname activate
      */
     activateCamera(inputs: Inputs.BabylonScene.ActiveCameraDto): void {
-        this.context.scene.activeCamera.detachControl();
+        this.context.scene.activeCamera!.detachControl();
         this.context.scene.activeCamera = inputs.camera;
     }
 
@@ -51,8 +51,8 @@ export class BabylonScene {
      */
     useRightHandedSystem(inputs: Inputs.BabylonScene.UseRightHandedSystemDto): void {
         this.context.scene.useRightHandedSystem = inputs.use;
-        this.context.scene.activeCamera.getViewMatrix(true);
-        this.context.scene.activeCamera.getProjectionMatrix(true);
+        this.context.scene.activeCamera!.getViewMatrix(true);
+        this.context.scene.activeCamera!.getProjectionMatrix(true);
     }
 
     /**
@@ -97,8 +97,8 @@ export class BabylonScene {
         );
         if (inputs.enableShadows) {
             light.shadowEnabled = true;
-            const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize, light);
-            shadowGenerator.darkness = inputs.shadowDarkness;
+            const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize ?? 1024, light);
+            shadowGenerator.darkness = inputs.shadowDarkness ?? 0;
             shadowGenerator.usePercentageCloserFiltering = inputs.shadowUsePercentageCloserFiltering;
             shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
             shadowGenerator.bias = inputs.shadowBias;
@@ -107,7 +107,7 @@ export class BabylonScene {
                 shadowGenerator.setTransparencyShadow(true);
             }
             if (inputs.shadowRefreshRate !== undefined) {
-                shadowGenerator.getShadowMap().refreshRate = inputs.shadowRefreshRate;
+                shadowGenerator.getShadowMap()!.refreshRate = inputs.shadowRefreshRate;
             }
             light.shadowMaxZ = inputs.shadowMaxZ;
             light.shadowMinZ = inputs.shadowMinZ;
@@ -180,8 +180,8 @@ export class BabylonScene {
 
         if (inputs.enableShadows) {
             light.shadowEnabled = true;
-            const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize, light);
-            shadowGenerator.darkness = inputs.shadowDarkness;
+            const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize ?? 1024, light);
+            shadowGenerator.darkness = inputs.shadowDarkness ?? 0;
 
             shadowGenerator.usePercentageCloserFiltering = inputs.shadowUsePercentageCloserFiltering;
             shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
@@ -191,7 +191,7 @@ export class BabylonScene {
                 shadowGenerator.setTransparencyShadow(true);
             }
             if (inputs.shadowRefreshRate !== undefined) {
-                shadowGenerator.getShadowMap().refreshRate = inputs.shadowRefreshRate;
+                shadowGenerator.getShadowMap()!.refreshRate = inputs.shadowRefreshRate;
             }
 
             light.shadowMaxZ = inputs.shadowMaxZ;
@@ -228,7 +228,7 @@ export class BabylonScene {
      * @shortname get active camera
      */
     getActiveCamera(): BABYLON.Camera {
-        return this.context.scene.activeCamera;
+        return this.context.scene.activeCamera!;
     }
 
     /**
@@ -335,7 +335,7 @@ export class BabylonScene {
                     (scene.metadata.guiManager as GUI.GUI3DManager).dispose();
                 }
             }
-            scene.transformNodes = [scene.getTransformNodeByName("root")];
+            scene.transformNodes = [scene.getTransformNodeByName("root")!];
 
             if (scene.activeCamera && scene.activeCamera.name !== "Camera") {
                 scene.cameras.forEach(cam => cam.dispose());
@@ -358,7 +358,7 @@ export class BabylonScene {
      */
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
 
-        let texture: BABYLON.CubeTexture | BABYLON.HDRCubeTexture;
+        let texture: BABYLON.CubeTexture | BABYLON.HDRCubeTexture | undefined;
 
         if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
             texture = new BABYLON.CubeTexture(GlobalCDNProvider.BITBYBIT_CDN_URL + "/textures/skybox/default_skybox/skybox", this.context.scene);
@@ -372,7 +372,7 @@ export class BabylonScene {
                 this.context.scene, false, false);
         }
 
-        this.createSkyboxMesh(texture, inputs.size, inputs.blur, inputs.hideSkybox, inputs.environmentIntensity);
+        this.createSkyboxMesh(texture, inputs.size, inputs.blur, inputs.hideSkybox ?? false, inputs.environmentIntensity);
     }
 
     /**
@@ -388,7 +388,7 @@ export class BabylonScene {
             const textureSize = inputs.textureSize || 512; // Default size
 
             // Better URL parsing to handle query strings
-            const urlPath = textureUrl.split("?")[0].toLowerCase();
+            const urlPath = textureUrl.split("?")[0]!.toLowerCase();
 
             if (urlPath.endsWith(".hdr")) {
                 // Use HDRCubeTexture for .hdr files
@@ -401,7 +401,7 @@ export class BabylonScene {
                 texture = new BABYLON.CubeTexture(textureUrl, this.context.scene);
             }
 
-            this.createSkyboxMesh(texture, inputs.size, inputs.blur, inputs.hideSkybox, inputs.environmentIntensity);
+            this.createSkyboxMesh(texture, inputs.size, inputs.blur, inputs.hideSkybox ?? false, inputs.environmentIntensity);
         }
     }
 
@@ -634,9 +634,9 @@ export class BabylonScene {
         return angle;
     }
 
-    private createSkyboxMesh(texture: BABYLON.BaseTexture, size: number, blur: number, hideSkybox: boolean, environmentIntensity: number) {
+    private createSkyboxMesh(texture: BABYLON.BaseTexture | undefined, size: number, blur: number, hideSkybox: boolean, environmentIntensity: number) {
         this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
-        const skybox = this.context.scene.createDefaultSkybox(texture, true, size, blur, true);
+        const skybox = this.context.scene.createDefaultSkybox(texture, true, size, blur, true)!;
         skybox.name = "bitbybit-hdrSkyBox";
         if (hideSkybox) {
             skybox.isVisible = false;

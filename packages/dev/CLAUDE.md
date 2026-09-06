@@ -15,8 +15,7 @@ in the root CLAUDE.md; `npm run build-packages` at the repo root runs it.
 npm run build       # tsc -b tsconfig.bitbybit.json - builds the siblings it references first
 npm run build-p     # build, then stage dist/ for publishing (package.json, README, LICENSE, assets)
 npm run api:update  # base and core only: rewrite etc/<pkg>.api.md after a deliberate public-surface change
-npm run typecheck:strict       # strict typecheck (tsconfig.strict.json); prints only errors not in .tsc-baseline.json
-npm run typecheck:strict:save  # after fixing strict errors: re-record the baseline (it may only shrink)
+npm run typecheck:strict       # the strict typecheck (tsconfig.strict.json, generated with the build's references); must stay at zero
 npm test            # jest, watch mode
 npm run test-c      # jest with coverage, single run; writes test-results/jest.json and coverage/coverage-summary.json for the root test:report
 npm run lint

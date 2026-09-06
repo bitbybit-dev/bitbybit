@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
+ 
+ 
 
 /**
  * Centralized BabylonJS mocks for testing
@@ -85,9 +85,9 @@ export class MockColor3 {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         if (result) {
             return new MockColor3(
-                parseInt(result[1], 16) / 255,
-                parseInt(result[2], 16) / 255,
-                parseInt(result[3], 16) / 255
+                parseInt(result[1]!, 16) / 255,
+                parseInt(result[2]!, 16) / 255,
+                parseInt(result[3]!, 16) / 255
             );
         }
         return new MockColor3(1, 0, 0); // Default to red if parsing fails
@@ -139,7 +139,7 @@ export class MockMatrix {
     static FromArray(array: number[]) {
         const m = new MockMatrix();
         for (let i = 0; i < 16 && i < array.length; i++) {
-            m._m[i] = array[i];
+            m._m[i] = array[i]!;
         }
         return m;
     }
@@ -158,7 +158,7 @@ export class MockMatrix {
     
     copyToArray(target: Float32Array, offset = 0) {
         for (let i = 0; i < 16; i++) {
-            target[offset + i] = this._m[i];
+            target[offset + i] = this._m[i]!;
         }
     }
 }
@@ -177,7 +177,7 @@ export class MockVertexData {
         }
     }
     
-    applyToMesh(mesh: MockMesh, updatable?: boolean) {
+    applyToMesh(mesh: MockMesh, _updatable?: boolean) {
         mesh._vertexData = this;
     }
     
@@ -199,7 +199,7 @@ export class MockVertexData {
         });
     }
     
-    static ComputeNormals(positions: number[], indices: number[] | Uint16Array | Uint32Array, normals: number[], options?: { useRightHandedSystem?: boolean }) {
+    static ComputeNormals(positions: number[], _indices: number[] | Uint16Array | Uint32Array, normals: number[], _options?: { useRightHandedSystem?: boolean }) {
         // Simple mock - fill normals with 0, 0, 1 for each vertex
         normals.length = 0;
         const vertexCount = positions.length / 3;
@@ -219,7 +219,7 @@ export class MockMaterial {
     sideOrientation = 0;
     onDispose: (() => void) | null = null;
     
-    constructor(name: string, scene?: MockScene) {
+    constructor(name: string, _scene?: MockScene) {
         this.name = name;
     }
     
@@ -255,7 +255,7 @@ export class MockTexture {
     static CLAMP_ADDRESSMODE = 0;
     static MIRROR_ADDRESSMODE = 2;
 
-    constructor(url: string, scene?: MockScene, noMipmap?: boolean, invertY?: boolean, samplingMode?: number) {
+    constructor(url: string, _scene?: MockScene, _noMipmap?: boolean, _invertY?: boolean, _samplingMode?: number) {
         this.url = url;
         this.name = url;
     }
@@ -308,13 +308,13 @@ export class MockMesh {
     constructor(name: string, scene?: MockScene | null) {
         this.name = name;
         // Make _parent and _scene non-enumerable to avoid circular reference in JSON serialization
-        Object.defineProperty(this, '_parent', {
+        Object.defineProperty(this, "_parent", {
             value: null,
             writable: true,
             enumerable: false,
             configurable: true
         });
-        Object.defineProperty(this, '_scene', {
+        Object.defineProperty(this, "_scene", {
             value: scene || null,
             writable: true,
             enumerable: false,
@@ -390,11 +390,11 @@ export class MockMesh {
         return this._vertexData ? this._vertexData.positions.length / 3 : 0;
     }
     
-    flipFaces(flipNormals: boolean) {
+    flipFaces(_flipNormals: boolean) {
         // Mock implementation
     }
     
-    setPreTransformMatrix(matrix: MockMatrix) {
+    setPreTransformMatrix(_matrix: MockMatrix) {
         // Mock implementation
     }
     
@@ -415,7 +415,7 @@ export class MockMesh {
         }
     }
     
-    thinInstanceSetBuffer(kind: string, buffer: Float32Array, stride: number, staticBuffer: boolean) {
+    thinInstanceSetBuffer(_kind: string, buffer: Float32Array, _stride: number, _staticBuffer: boolean) {
         // Mock implementation for thin instances
         if (!this.metadata) {
             this.metadata = {};
@@ -434,7 +434,7 @@ export class MockInstancedMesh extends MockMesh {
 }
 
 export class MockLinesMesh extends MockMesh {
-    enableEdgesRendering() {
+    override enableEdgesRendering() {
         this._edgesRendering = true;
     }
 }
@@ -464,28 +464,28 @@ export class MockScene {
 }
 
 export class MockMeshBuilder {
-    static CreateSphere(name: string, options: any, scene?: MockScene | null) {
+    static CreateSphere(name: string, _options: any, scene?: MockScene | null) {
         const mesh = new MockMesh(name, scene);
         return mesh;
     }
     
-    static CreateBox(name: string, options: any, scene?: MockScene | null) {
+    static CreateBox(name: string, _options: any, scene?: MockScene | null) {
         const mesh = new MockMesh(name, scene);
         return mesh;
     }
     
-    static CreateLines(name: string, options: { points: MockVector3[] }, scene?: MockScene | null) {
+    static CreateLines(name: string, _options: { points: MockVector3[] }, scene?: MockScene | null) {
         const mesh = new MockLinesMesh(name, scene);
         return mesh;
     }
     
-    static CreateLineSystem(name: string | null, options: any, scene?: MockScene | null) {
+    static CreateLineSystem(name: string | null, _options: any, scene?: MockScene | null) {
         const mesh = new MockLinesMesh(name || "lineSystem", scene);
         return mesh;
     }
 }
 
-export function CreateGreasedLine(name: string, lineOptions: any, materialOptions: any, scene?: MockScene) {
+export function CreateGreasedLine(name: string, lineOptions: any, _materialOptions: any, scene?: MockScene) {
     const mesh = new MockGreasedLineMesh(name, scene);
     mesh._points = lineOptions.points || [];
     mesh.material = new MockPBRMetallicRoughnessMaterial(name + "-material");

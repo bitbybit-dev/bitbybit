@@ -59,7 +59,7 @@ export class BabylonGuiColorPicker {
      * @shortname set color picker size
      */
     setColorPickerSize(inputs: Inputs.BabylonGui.SetColorPickerSizeDto): BABYLON.GUI.ColorPicker {
-        inputs.colorPicker.size = inputs.size;
+        inputs.colorPicker.size = inputs.size ?? "300px";
         return inputs.colorPicker;
     }
 

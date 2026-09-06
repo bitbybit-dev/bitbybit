@@ -17,7 +17,7 @@ export namespace BabylonGaussianSplatting {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        url: string;
+        url!: string;
     }
     export class GaussianSplattingMeshDto {
         constructor(babylonMesh?: BABYLON.GaussianSplattingMesh) {
@@ -26,6 +26,6 @@ export namespace BabylonGaussianSplatting {
         /**
          * Gaussian Splatting Mesh that needs to be updated
          */
-        babylonMesh: BABYLON.GaussianSplattingMesh;
+        babylonMesh!: BABYLON.GaussianSplattingMesh;
     }
 }

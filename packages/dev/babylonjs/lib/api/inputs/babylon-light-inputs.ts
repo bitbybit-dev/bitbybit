@@ -17,12 +17,12 @@ export namespace BabylonLight {
          * Shadow light to update
          * @default undefined
          */
-        shadowLight: BABYLON.ShadowLight;
+        shadowLight!: BABYLON.ShadowLight;
         /**
          * The direction target
          * @default undefined
          */
-        target?: Base.Vector3;
+        target!: Base.Vector3;
     }
 
     export class ShadowLightPositionDto {
@@ -34,12 +34,12 @@ export namespace BabylonLight {
          * Shadow light to update
          * @default undefined
          */
-        shadowLight: BABYLON.ShadowLight;
+        shadowLight!: BABYLON.ShadowLight;
         /**
          * The position
          * @default undefined
          */
-        position?: Base.Vector3;
+        position!: Base.Vector3;
     }
 
 }

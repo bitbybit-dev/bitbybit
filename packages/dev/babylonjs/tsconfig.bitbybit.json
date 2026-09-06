@@ -15,6 +15,14 @@
     "compilerOptions": {
         "composite": true,
         "tsBuildInfoFile": "./dist/tsconfig.bitbybit.tsbuildinfo",
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true,
         "outDir": "./dist",
         "baseUrl": "./",
         "paths": {

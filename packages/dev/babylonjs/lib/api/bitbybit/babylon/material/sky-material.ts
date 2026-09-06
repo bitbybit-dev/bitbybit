@@ -19,34 +19,34 @@ export class BabylonMaterialSky {
         const name = "bitbybit-skyMaterial";
         const mat = new SkyMaterial(name, this.context.scene);
         if (inputs.luminance !== undefined) {
-            mat.luminance = inputs.luminance;
+            mat.luminance = inputs.luminance ?? 1;
         }
         if (inputs.turbidity !== undefined) {
-            mat.turbidity = inputs.turbidity;
+            mat.turbidity = inputs.turbidity ?? 10;
         }
         if (inputs.rayleigh !== undefined) {
-            mat.rayleigh = inputs.rayleigh;
+            mat.rayleigh = inputs.rayleigh ?? 2;
         }
         if (inputs.mieCoefficient !== undefined) {
-            mat.mieCoefficient = inputs.mieCoefficient;
+            mat.mieCoefficient = inputs.mieCoefficient ?? 0.005;
         }
         if (inputs.mieDirectionalG !== undefined) {
-            mat.mieDirectionalG = inputs.mieDirectionalG;
+            mat.mieDirectionalG = inputs.mieDirectionalG ?? 0.8;
         }
         if (inputs.distance !== undefined) {
-            mat.distance = inputs.distance;
+            mat.distance = inputs.distance ?? 500;
         }
         if (inputs.inclination !== undefined) {
-            mat.inclination = inputs.inclination;
+            mat.inclination = inputs.inclination ?? 0.49;
         }
         if (inputs.azimuth !== undefined) {
-            mat.azimuth = inputs.azimuth;
+            mat.azimuth = inputs.azimuth ?? 0.25;
         }
         if (inputs.sunPosition !== undefined) {
             mat.sunPosition = new BABYLON.Vector3(inputs.sunPosition[0], inputs.sunPosition[1], inputs.sunPosition[2]);
         }
         if (inputs.useSunPosition !== undefined) {
-            mat.useSunPosition = inputs.useSunPosition;
+            mat.useSunPosition = inputs.useSunPosition ?? false;
         }
         if (inputs.cameraOffset !== undefined) {
             mat.cameraOffset = new BABYLON.Vector3(inputs.cameraOffset[0], inputs.cameraOffset[1], inputs.cameraOffset[2]);
@@ -55,7 +55,7 @@ export class BabylonMaterialSky {
             mat.up = new BABYLON.Vector3(inputs.up[0], inputs.up[1], inputs.up[2]);
         }
         if (inputs.dithering !== undefined) {
-            mat.dithering = inputs.dithering;
+            mat.dithering = inputs.dithering ?? false;
         }
 
         return mat;
@@ -69,7 +69,7 @@ export class BabylonMaterialSky {
      */
     setLuminance(inputs: Inputs.BabylonMaterial.LuminanceDto): void {
         const mat = inputs.material;
-        mat.luminance = inputs.luminance;
+        mat.luminance = inputs.luminance ?? 1;
     }
 
     /**
@@ -80,7 +80,7 @@ export class BabylonMaterialSky {
      */
     setTurbidity(inputs: Inputs.BabylonMaterial.TurbidityDto): void {
         const mat = inputs.material;
-        mat.turbidity = inputs.turbidity;
+        mat.turbidity = inputs.turbidity ?? 10;
     }
 
     /**
@@ -91,7 +91,7 @@ export class BabylonMaterialSky {
      */
     setRayleigh(inputs: Inputs.BabylonMaterial.RayleighDto): void {
         const mat = inputs.material;
-        mat.rayleigh = inputs.rayleigh;
+        mat.rayleigh = inputs.rayleigh ?? 2;
     }
 
     /**
@@ -102,7 +102,7 @@ export class BabylonMaterialSky {
      */
     setMieCoefficient(inputs: Inputs.BabylonMaterial.MieCoefficientDto): void {
         const mat = inputs.material;
-        mat.mieCoefficient = inputs.mieCoefficient;
+        mat.mieCoefficient = inputs.mieCoefficient ?? 0.005;
     }
 
     /**
@@ -113,7 +113,7 @@ export class BabylonMaterialSky {
      */
     setMieDirectionalG(inputs: Inputs.BabylonMaterial.MieDirectionalGDto): void {
         const mat = inputs.material;
-        mat.mieDirectionalG = inputs.mieDirectionalG;
+        mat.mieDirectionalG = inputs.mieDirectionalG ?? 0.8;
     }
 
     /**
@@ -124,7 +124,7 @@ export class BabylonMaterialSky {
      */
     setDistance(inputs: Inputs.BabylonMaterial.DistanceDto): void {
         const mat = inputs.material;
-        mat.distance = inputs.distance;
+        mat.distance = inputs.distance ?? 500;
     }
 
     /**
@@ -135,7 +135,7 @@ export class BabylonMaterialSky {
      */
     setInclination(inputs: Inputs.BabylonMaterial.InclinationDto): void {
         const mat = inputs.material;
-        mat.inclination = inputs.inclination;
+        mat.inclination = inputs.inclination ?? 0.49;
     }
 
     /**
@@ -146,7 +146,7 @@ export class BabylonMaterialSky {
      */
     setAzimuth(inputs: Inputs.BabylonMaterial.AzimuthDto): void {
         const mat = inputs.material;
-        mat.azimuth = inputs.azimuth;
+        mat.azimuth = inputs.azimuth ?? 0.25;
     }
 
     /**
@@ -168,7 +168,7 @@ export class BabylonMaterialSky {
      */
     setUseSunPosition(inputs: Inputs.BabylonMaterial.UseSunPositionDto): void {
         const mat = inputs.material;
-        mat.useSunPosition = inputs.useSunPosition;
+        mat.useSunPosition = inputs.useSunPosition ?? false;
     }
 
     /**
@@ -201,7 +201,7 @@ export class BabylonMaterialSky {
      */
     setDithering(inputs: Inputs.BabylonMaterial.DitheringDto): void {
         const mat = inputs.material;
-        mat.dithering = inputs.dithering;
+        mat.dithering = inputs.dithering ?? false;
     }
 
     /**

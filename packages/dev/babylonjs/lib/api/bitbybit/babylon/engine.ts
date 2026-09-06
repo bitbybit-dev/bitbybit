@@ -28,7 +28,7 @@ export class BabylonEngine {
      * @shortname get rendering canvas
      */
     getRenderingCanvas(): HTMLCanvasElement {
-        return this.context.engine.getRenderingCanvas();
+        return this.context.engine.getRenderingCanvas()!;
     }
 
 }

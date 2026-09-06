@@ -22,7 +22,7 @@ export namespace BabylonIO {
          * @default false
          * @optional true
          */
-        discardSkyboxAndGrid? = false;
+        discardSkyboxAndGrid?: boolean | undefined = false;
     }
     export class ExportSceneDto {
         constructor(fileName?: string) {
@@ -42,12 +42,12 @@ export namespace BabylonIO {
         /**
          * Mesh to export
          */
-        mesh: BABYLON.Mesh;
+        mesh!: BABYLON.Mesh;
         /**
          * File name that should be used for the scene.
          * @default bitbybit-mesh
          */
-        fileName: string;
+        fileName = "bitbybit-mesh";
     }
     export class ExportMeshesToStlDto {
         constructor(meshes?: BABYLON.Mesh[], fileName?: string) {
@@ -57,11 +57,11 @@ export namespace BabylonIO {
         /**
          * Meshes to export
          */
-        meshes: BABYLON.Mesh[];
+        meshes!: BABYLON.Mesh[];
         /**
          * File name that should be used for the scene.
          * @default bitbybit-mesh
          */
-        fileName: string;
+        fileName = "bitbybit-mesh";
     }
 }

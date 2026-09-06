@@ -20,7 +20,7 @@ export namespace BabylonTools {
          * Camera to be used. If not set, active camera will be used
          * @default undefined
          */
-        camera: BABYLON.Camera;
+        camera!: BABYLON.Camera;
         /**
          * width of the screenshot
          * @default 1920
@@ -41,7 +41,7 @@ export namespace BabylonTools {
          * The mime type
          * @default image/png
          */
-        mimeType: string;
+        mimeType = "image/png";
         /**
          * quality of the screenshot
          * @default 1

@@ -17,7 +17,7 @@ export class BabylonPick {
      */
     pickWithRay(inputs: Inputs.BabylonPick.RayDto): BABYLON.PickingInfo {
         const scene = this.context.scene;
-        return scene.pickWithRay(inputs.ray);
+        return scene.pickWithRay(inputs.ray)!;
     }
 
     /**
@@ -29,7 +29,7 @@ export class BabylonPick {
     pickWithPickingRay(): BABYLON.PickingInfo {
         const scene = this.context.scene;
         const ray = scene.createPickingRay(scene.pointerX, scene.pointerY, BABYLON.Matrix.Identity(), this.context.scene.activeCamera, false);
-        return scene.pickWithRay(ray);
+        return scene.pickWithRay(ray)!;
     }
 
     /**
@@ -51,7 +51,7 @@ export class BabylonPick {
      * @returns Picked mesh
      */
     getPickedMesh(inputs: Inputs.BabylonPick.PickInfo): BABYLON.AbstractMesh {
-        return inputs.pickInfo.pickedMesh;
+        return inputs.pickInfo.pickedMesh!;
     }
 
     /**
@@ -62,7 +62,7 @@ export class BabylonPick {
      * @returns Picked point
      */
     getPickedPoint(inputs: Inputs.BabylonPick.PickInfo): Base.Point3 {
-        const pt = inputs.pickInfo.pickedPoint;
+        const pt = inputs.pickInfo.pickedPoint!;
         return [pt.x, pt.y, pt.z];
     }
 
@@ -129,6 +129,6 @@ export class BabylonPick {
      * @returns Picked sprite
      */
     getPickedSprite(inputs: Inputs.BabylonPick.PickInfo): BABYLON.Sprite {
-        return inputs.pickInfo.pickedSprite;
+        return inputs.pickInfo.pickedSprite!;
     }
 }

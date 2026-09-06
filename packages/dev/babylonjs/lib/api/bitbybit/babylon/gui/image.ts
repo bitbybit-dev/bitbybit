@@ -53,7 +53,7 @@ export class BabylonGuiImage {
      * @shortname get image source url
      */
     getSourceUrl(inputs: Inputs.BabylonGui.ImageDto): string {
-        return inputs.image.source;
+        return inputs.image.source!;
     }
 
 }

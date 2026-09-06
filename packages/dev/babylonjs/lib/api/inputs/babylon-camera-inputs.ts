@@ -61,7 +61,7 @@ export namespace BabylonCamera {
          * @step 1
          * @optional true
          */
-        lowerRadiusLimit;
+        lowerRadiusLimit?: number | undefined;
         /**
          * Upper radius limit - how far can the camera be from the target
          * @default undefined
@@ -70,7 +70,7 @@ export namespace BabylonCamera {
          * @step 1
          * @optional true
          */
-        upperRadiusLimit;
+        upperRadiusLimit?: number | undefined;
         /**
          * Lower alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
          * @default undefined
@@ -79,7 +79,7 @@ export namespace BabylonCamera {
          * @step 1
          * @optional true
          */
-        lowerAlphaLimit;
+        lowerAlphaLimit?: number | undefined;
         /**
          * Upper alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
          * @default undefined
@@ -88,7 +88,7 @@ export namespace BabylonCamera {
          * @step 1
          * @optional true
          */
-        upperAlphaLimit;
+        upperAlphaLimit?: number | undefined;
         /**
          * Lower beta limit - camera rotation along the latitudinal (vertical) axis in degrees. This is counted from the top down, where 0 is looking from top straight down.
          * @default 1
@@ -186,7 +186,7 @@ export namespace BabylonCamera {
         /**
          * Target camera
          */
-        camera: BABYLON.TargetCamera;
+        camera!: BABYLON.TargetCamera;
         /**
          * Position of the free camera
          * @default [20, 20, 20]
@@ -201,7 +201,7 @@ export namespace BabylonCamera {
         /**
          * Target camera
          */
-        camera: BABYLON.TargetCamera;
+        camera!: BABYLON.TargetCamera;
         /**
          * speed of the camera
          * @default 1
@@ -219,7 +219,7 @@ export namespace BabylonCamera {
         /**
          * Target camera
          */
-        camera: BABYLON.TargetCamera;
+        camera!: BABYLON.TargetCamera;
         /**
          * target of the camera
          * @default [0, 0, 0]
@@ -234,7 +234,7 @@ export namespace BabylonCamera {
         /**
          * Free camera
          */
-        camera: BABYLON.Camera;
+        camera!: BABYLON.Camera;
         /**
          * minZ of the camera
          * @default 0
@@ -252,7 +252,7 @@ export namespace BabylonCamera {
         /**
          * Free camera
          */
-        camera: BABYLON.Camera;
+        camera!: BABYLON.Camera;
         /**
          * maxZ of the camera
          * @default 1000
@@ -274,7 +274,7 @@ export namespace BabylonCamera {
         /**
          * Camera to adjust
          */
-        camera: BABYLON.Camera;
+        camera!: BABYLON.Camera;
         /**
          * Left side limit of the orthographic camera
          * @default -1
@@ -316,6 +316,6 @@ export namespace BabylonCamera {
         /**
          * Camera
          */
-        camera: BABYLON.Camera;
+        camera!: BABYLON.Camera;
     }
 }

@@ -147,12 +147,12 @@ export namespace BabylonGui {
          * Foreground
          * @default true
          */
-        foreground?: boolean;
+        foreground?: boolean | undefined;
         /**
          * Adaptive scaling
          * @default false
          */
-        adaptiveScaling?: boolean;
+        adaptiveScaling?: boolean | undefined;
     }
 
     export class CreateForMeshDto {
@@ -169,19 +169,19 @@ export namespace BabylonGui {
          * Mesh
          * @default undefined
          */
-        mesh: BABYLON.AbstractMesh;
+        mesh!: BABYLON.AbstractMesh;
         /**
          * Width
          * @default undefined
          * @optional true
          */
-        width?: number;
+        width?: number | undefined;
         /**
          * Height
          * @default undefined
          * @optional true
          */
-        height?: number;
+        height?: number | undefined;
         /**
          * Support pointer move
          * @default true
@@ -234,13 +234,13 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width: number | string;
+        width!: number | string;
         /**
          * Height of the stack panel. This value should not be set when in vertical mode as it will be computed automatically.
          * @default undefined
          * @optional true
          */
-        height: number | string;
+        height!: number | string;
         /**
         * Color of the stack panel
         * @default #00000000
@@ -261,7 +261,7 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: BABYLON.GUI.StackPanel;
+        stackPanel!: BABYLON.GUI.StackPanel;
         /**
          * Is vertical
          * @default true
@@ -277,7 +277,7 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: BABYLON.GUI.StackPanel;
+        stackPanel!: BABYLON.GUI.StackPanel;
         /**
          * Spacing between each child in pixels
          * @default 0
@@ -293,13 +293,13 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: BABYLON.GUI.StackPanel;
+        stackPanel!: BABYLON.GUI.StackPanel;
         /**
          * Width of the stack panel
          * @default undefined
          * @optional true
          */
-        width: number | string;
+        width!: number | string;
     }
     export class SetStackPanelHeightDto {
         constructor(stackPanel?: BABYLON.GUI.StackPanel, height?: number | string) {
@@ -310,13 +310,13 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: BABYLON.GUI.StackPanel;
+        stackPanel!: BABYLON.GUI.StackPanel;
         /**
          * Height of the stack panel.
          * @default undefined
          * @optional true
          */
-        height: number | string;
+        height!: number | string;
     }
     export class StackPanelDto {
         constructor(stackPanel?: BABYLON.GUI.StackPanel) {
@@ -326,7 +326,7 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: BABYLON.GUI.StackPanel;
+        stackPanel!: BABYLON.GUI.StackPanel;
     }
     export class SliderObservableSelectorDto {
         constructor(selector: sliderObservableSelectorEnum) {
@@ -408,7 +408,7 @@ export namespace BabylonGui {
          * Container to update
          * @default undefined
          */
-        container: BABYLON.GUI.Container;
+        container!: BABYLON.GUI.Container;
     }
     export class AddControlsToContainerDto {
         constructor(container?: BABYLON.GUI.StackPanel, controls?: BABYLON.GUI.Control[], clearControlsFirst?: boolean) {
@@ -420,12 +420,12 @@ export namespace BabylonGui {
          * Container to add control to
          * @default undefined
          */
-        container: BABYLON.GUI.Container;
+        container!: BABYLON.GUI.Container;
         /**
          * Controls to add
          * @default undefined
          */
-        controls: BABYLON.GUI.Control[];
+        controls!: BABYLON.GUI.Control[];
         /**
          * Clear controls first. That will preserve the order of the controls.
          * @default true
@@ -441,7 +441,7 @@ export namespace BabylonGui {
          * Container to get control from
          * @default undefined
          */
-        container: BABYLON.GUI.Container;
+        container!: BABYLON.GUI.Container;
         /**
          * Name of the control
          * @default controlName
@@ -457,7 +457,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Is visible
          * @default true
@@ -473,7 +473,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Is readonly
          * @default false
@@ -489,7 +489,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Is enabled
          * @default true
@@ -513,7 +513,7 @@ export namespace BabylonGui {
          * Link to the image
          * @default undefined
          */
-        url: string;
+        url!: string;
         /**
          * Color of the image
          * @default black
@@ -524,13 +524,13 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width?: number | string;
+        width?: number | string | undefined;
         /**
          * Height of the image
          * @default undefined
          * @optional true
          */
-        height?: number | string;
+        height?: number | string | undefined;
     }
     export class SetImageUrlDto {
         constructor(image?: BABYLON.GUI.Image, url?: string) {
@@ -541,12 +541,12 @@ export namespace BabylonGui {
          * Image to update
          * @default undefined
          */
-        image: BABYLON.GUI.Image;
+        image!: BABYLON.GUI.Image;
         /**
          * Link to the image
          * @default undefined
          */
-        url: string;
+        url!: string;
     }
     export class ImageDto {
         constructor(image?: BABYLON.GUI.Image) {
@@ -556,7 +556,7 @@ export namespace BabylonGui {
          * Image to update
          * @default undefined
          */
-        image: BABYLON.GUI.Image;
+        image!: BABYLON.GUI.Image;
     }
     export class CreateButtonDto {
         constructor(name?: string, label?: string, color?: string, background?: string, width?: number | string, height?: number | string, fontSize?: number) {
@@ -593,13 +593,13 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width?: number | string;
+        width?: number | string | undefined;
         /**
          * Height of the button
          * @default undefined
          * @optional true
          */
-        height?: number | string;
+        height?: number | string | undefined;
         /**
          * Font size of the button
          * @default 24
@@ -615,7 +615,7 @@ export namespace BabylonGui {
          * Button to update
          * @default undefined
          */
-        button: BABYLON.GUI.Button;
+        button!: BABYLON.GUI.Button;
         /**
          * Text of the button
          * @default Click me!
@@ -630,13 +630,13 @@ export namespace BabylonGui {
          * Button to update
          * @default undefined
          */
-        button: BABYLON.GUI.Button;
+        button!: BABYLON.GUI.Button;
     }
 
     export class CreateColorPickerDto {
         constructor(name?: string, defaultColor?: string, color?: string, width?: number | string, height?: number | string, size?: number | string) {
             if (name !== undefined) { this.name = name; }
-            if (this.defaultColor !== undefined) { this.defaultColor = defaultColor; }
+            if (defaultColor !== undefined) { this.defaultColor = defaultColor; }
             if (color !== undefined) { this.color = color; }
             if (width !== undefined) { this.width = width; }
             if (height !== undefined) { this.height = height; }
@@ -662,19 +662,19 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width?: number | string;
+        width?: number | string | undefined;
         /**
          * Height of the color picker
          * @default undefined
          * @optional true
          */
-        height?: number | string;
+        height?: number | string | undefined;
         /**
          * Size of the color picker
          * @default 300px
          * @optional true
          */
-        size?: number | string;
+        size?: number | string | undefined;
     }
     export class SetColorPickerValueDto {
         constructor(colorPicker?: BABYLON.GUI.ColorPicker, color?: string) {
@@ -685,12 +685,12 @@ export namespace BabylonGui {
          * Color picker to update
          * @default undefined
          */
-        colorPicker: BABYLON.GUI.ColorPicker;
+        colorPicker!: BABYLON.GUI.ColorPicker;
         /**
          * Value of the color picker
          * @default undefined
          */
-        color: string;
+        color!: string;
     }
     export class SetColorPickerSizeDto {
         constructor(colorPicker?: BABYLON.GUI.ColorPicker, size?: number | string) {
@@ -701,13 +701,13 @@ export namespace BabylonGui {
          * Color picker to update
          * @default undefined
          */
-        colorPicker: BABYLON.GUI.ColorPicker;
+        colorPicker!: BABYLON.GUI.ColorPicker;
         /**
          * Size of the color picker
          * @default 300px
          * @optional true
          */
-        size?: number | string;
+        size?: number | string | undefined;
     }
     export class ColorPickerDto {
         constructor(colorPicker?: BABYLON.GUI.ColorPicker) {
@@ -717,7 +717,7 @@ export namespace BabylonGui {
          * Color picker to update
          * @default undefined
          */
-        colorPicker: BABYLON.GUI.ColorPicker;
+        colorPicker!: BABYLON.GUI.ColorPicker;
     }
     export class CreateCheckboxDto {
         constructor(name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
@@ -762,13 +762,13 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width?: number | string;
+        width?: number | string | undefined;
         /**
          * Height of the checkbox
          * @default undefined
          * @optional true
          */
-        height?: number | string;
+        height?: number | string | undefined;
     }
 
     export class SetControlFontSizeDto {
@@ -780,7 +780,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Font size of the button
          * @default 24
@@ -796,12 +796,12 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Height of the checkbox
          * @default undefined
          */
-        height: number | string;
+        height!: number | string;
     }
     export class SetControlWidthDto {
         constructor(control?: BABYLON.GUI.Control, width?: number | string) {
@@ -812,12 +812,12 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Width of the checkbox
          * @default undefined
          */
-        width: number | string;
+        width!: number | string;
     }
     export class SetControlColorDto {
         constructor(control?: BABYLON.GUI.Control, color?: string) {
@@ -828,7 +828,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Color of the checkbox
          * @default #f0cebb
@@ -844,7 +844,7 @@ export namespace BabylonGui {
          * Container to update
          * @default undefined
          */
-        container: BABYLON.GUI.Container;
+        container!: BABYLON.GUI.Container;
         /**
          * Background of the checkbox
          * @default black
@@ -860,7 +860,7 @@ export namespace BabylonGui {
          * Container to update
          * @default undefined
          */
-        container: BABYLON.GUI.Container;
+        container!: BABYLON.GUI.Container;
         /**
          * Is readonly
          * @default false
@@ -876,7 +876,7 @@ export namespace BabylonGui {
          * Checkbox to update
          * @default undefined
          */
-        checkbox: BABYLON.GUI.Checkbox;
+        checkbox!: BABYLON.GUI.Checkbox;
         /**
          * Background of the checkbox
          * @default black
@@ -892,7 +892,7 @@ export namespace BabylonGui {
          * Checkbox to update
          * @default undefined
          */
-        checkbox: BABYLON.GUI.Checkbox;
+        checkbox!: BABYLON.GUI.Checkbox;
         /**
          * Check size ratio
          * @default 0.8
@@ -911,7 +911,7 @@ export namespace BabylonGui {
          * Checkbox to update
          * @default undefined
          */
-        checkbox: BABYLON.GUI.Checkbox;
+        checkbox!: BABYLON.GUI.Checkbox;
     }
 
     export class ControlDto {
@@ -922,7 +922,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
     }
 
     export class SetCheckboxIsCheckedDto {
@@ -934,7 +934,7 @@ export namespace BabylonGui {
          * Checkbox to update
          * @default undefined
          */
-        checkbox: BABYLON.GUI.Checkbox;
+        checkbox!: BABYLON.GUI.Checkbox;
         /**
          * Is checked
          * @default false
@@ -959,12 +959,12 @@ export namespace BabylonGui {
          * Text of the input
          * @default
          */
-        text: string;
+        text!: string;
         /**
          * Placeholder of the input
          * @default
          */
-        placeholder: string;
+        placeholder!: string;
         /**
          * Color of the button
          * @default #f0cebb
@@ -980,13 +980,13 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width?: number | string;
+        width?: number | string | undefined;
         /**
          * Height of the button
          * @default undefined
          * @optional true
          */
-        height?: number | string;
+        height?: number | string | undefined;
     }
     export class SetInputTextBackgroundDto {
         constructor(inputText?: BABYLON.GUI.InputText, background?: string) {
@@ -997,7 +997,7 @@ export namespace BabylonGui {
          * Input text to update
          * @default undefined
          */
-        inputText: BABYLON.GUI.InputText;
+        inputText!: BABYLON.GUI.InputText;
         /**
          * Background of the input text
          * @default black
@@ -1013,12 +1013,12 @@ export namespace BabylonGui {
          * Input text to update
          * @default undefined
          */
-        inputText: BABYLON.GUI.InputText;
+        inputText!: BABYLON.GUI.InputText;
         /**
          * Text of the input text
          * @default
          */
-        text: string;
+        text!: string;
     }
     export class SetInputTextPlaceholderDto {
         constructor(inputText?: BABYLON.GUI.InputText, placeholder?: string) {
@@ -1029,12 +1029,12 @@ export namespace BabylonGui {
          * Input text to update
          * @default undefined
          */
-        inputText: BABYLON.GUI.InputText;
+        inputText!: BABYLON.GUI.InputText;
         /**
          * Placeholder of the input text
          * @default
          */
-        placeholder: string;
+        placeholder!: string;
     }
     export class InputTextDto {
         constructor(inputText?: BABYLON.GUI.InputText) {
@@ -1044,7 +1044,7 @@ export namespace BabylonGui {
          * Input text to update
          * @default undefined
          */
-        inputText: BABYLON.GUI.InputText;
+        inputText!: BABYLON.GUI.InputText;
     }
 
     export class CreateRadioButtonDto {
@@ -1068,7 +1068,7 @@ export namespace BabylonGui {
          * @default
          * @optional true
          */
-        group: string;
+        group!: string;
         /**
          * Is checked
          * @default false
@@ -1097,13 +1097,13 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width?: number | string;
+        width?: number | string | undefined;
         /**
          * Height of the button
          * @default undefined
          * @optional true
          */
-        height?: number | string;
+        height?: number | string | undefined;
     }
     export class SetRadioButtonCheckSizeRatioDto {
         constructor(radioButton?: BABYLON.GUI.RadioButton, checkSizeRatio?: number) {
@@ -1114,7 +1114,7 @@ export namespace BabylonGui {
          * Radio button to update
          * @default undefined
          */
-        radioButton: BABYLON.GUI.RadioButton;
+        radioButton!: BABYLON.GUI.RadioButton;
         /**
          * Check size ratio
          * @default 0.8
@@ -1133,12 +1133,12 @@ export namespace BabylonGui {
          * Radio button to update
          * @default undefined
          */
-        radioButton: BABYLON.GUI.RadioButton;
+        radioButton!: BABYLON.GUI.RadioButton;
         /**
          * Group of the radio button
          * @default
          */
-        group: string;
+        group!: string;
     }
     export class SetRadioButtonBackgroundDto {
         constructor(radioButton?: BABYLON.GUI.RadioButton, background?: string) {
@@ -1149,7 +1149,7 @@ export namespace BabylonGui {
          * Radio button to update
          * @default undefined
          */
-        radioButton: BABYLON.GUI.RadioButton;
+        radioButton!: BABYLON.GUI.RadioButton;
         /**
          * Background of the radio button
          * @default black
@@ -1164,7 +1164,7 @@ export namespace BabylonGui {
          * Radio button to update
          * @default undefined
          */
-        radioButton: BABYLON.GUI.RadioButton;
+        radioButton!: BABYLON.GUI.RadioButton;
     }
     export class CreateSliderDto {
         constructor(name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean) {
@@ -1237,13 +1237,13 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width?: number | string;
+        width?: number | string | undefined;
         /**
          * Height of the button
          * @default undefined
          * @optional true
          */
-        height?: number | string;
+        height?: number | string | undefined;
         /**
          * Should display thumb
          * @default true
@@ -1278,13 +1278,13 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width?: number | string;
+        width?: number | string | undefined;
         /**
          * Height of the  text block
          * @default undefined
          * @optional true
          */
-        height?: number | string;
+        height?: number | string | undefined;
         /**
          * Font size of the text block
          * @default 24
@@ -1301,12 +1301,12 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: BABYLON.GUI.TextBlock;
+        textBlock!: BABYLON.GUI.TextBlock;
         /**
          * Text of the block
          * @default undefined
          */
-        text: string;
+        text!: string;
     }
 
     export class SetTextBlockResizeToFitDto {
@@ -1318,7 +1318,7 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: BABYLON.GUI.TextBlock;
+        textBlock!: BABYLON.GUI.TextBlock;
         /**
          * Resize to fit
          * @default false
@@ -1334,12 +1334,12 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: BABYLON.GUI.TextBlock;
+        textBlock!: BABYLON.GUI.TextBlock;
         /**
          * Text wrapping
          * @default undefined
          */
-        textWrapping: boolean | BABYLON.GUI.TextWrapping;
+        textWrapping!: boolean | BABYLON.GUI.TextWrapping;
     }
     export class SetTextBlockLineSpacingDto {
         constructor(textBlock?: BABYLON.GUI.TextBlock, lineSpacing?: string | number) {
@@ -1350,12 +1350,12 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: BABYLON.GUI.TextBlock;
+        textBlock!: BABYLON.GUI.TextBlock;
         /**
          * Line spacing of the text
          * @default undefined
          */
-        lineSpacing: string | number;
+        lineSpacing!: string | number;
     }
     export class TextBlockDto {
         constructor(textBlock?: BABYLON.GUI.TextBlock) {
@@ -1365,7 +1365,7 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: BABYLON.GUI.TextBlock;
+        textBlock!: BABYLON.GUI.TextBlock;
     }
 
     export class SliderThumbDto {
@@ -1381,7 +1381,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: BABYLON.GUI.Slider;
+        slider!: BABYLON.GUI.Slider;
         /**
          * Is thumb circle
          * @default false
@@ -1397,7 +1397,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        thumbWidth?: string | number;
+        thumbWidth?: string | number | undefined;
         /**
          * Is thumb clamped
          * @default false
@@ -1417,7 +1417,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: BABYLON.GUI.Slider;
+        slider!: BABYLON.GUI.Slider;
     }
     export class SliderBorderColorDto {
         constructor(slider?: BABYLON.GUI.Slider, borderColor?: string) {
@@ -1428,7 +1428,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: BABYLON.GUI.Slider;
+        slider!: BABYLON.GUI.Slider;
         /**
          * Border color of the slider
          * @default white
@@ -1444,7 +1444,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: BABYLON.GUI.Slider;
+        slider!: BABYLON.GUI.Slider;
         /**
          * Background color of the slider
          * @default black
@@ -1460,7 +1460,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: BABYLON.GUI.Slider;
+        slider!: BABYLON.GUI.Slider;
         /**
          * Value of the slider
          * @default 5
@@ -1468,7 +1468,7 @@ export namespace BabylonGui {
          * @maximum Infinity
          * @step 0.1
          */
-        value: number;
+        value: number = 5;
     }
     export class PaddingLeftRightTopBottomDto {
         constructor(control?: BABYLON.GUI.Control, paddingLeft?: number | string, paddingRight?: number | string, paddingTop?: number | string, paddingBottom?: number | string) {
@@ -1482,31 +1482,31 @@ export namespace BabylonGui {
          * Control to change the padding
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Padding left of the stack panel
          * @default undefined
          * @optional true
          */
-        paddingLeft: number | string;
+        paddingLeft!: number | string;
         /**
          * Padding right of the stack panel
          * @default undefined
          * @optional true
          */
-        paddingRight: number | string;
+        paddingRight!: number | string;
         /**
          * Padding top of the stack panel
          * @default undefined
          * @optional true
          */
-        paddingTop: number | string;
+        paddingTop!: number | string;
         /**
          * Padding bottom of the stack panel
          * @default undefined
          * @optional true
          */
-        paddingBottom: number | string;
+        paddingBottom!: number | string;
     }
     export class CloneControlDto {
         constructor(control?: BABYLON.GUI.Control, container?: BABYLON.GUI.Container, name?: string, host?: BABYLON.GUI.AdvancedDynamicTexture) {
@@ -1519,13 +1519,13 @@ export namespace BabylonGui {
          * Control to clone
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        control!: BABYLON.GUI.Control;
         /**
          * Use container to which the cloned control will be added
          * @default undefined
          * @optional true
          */
-        container?: BABYLON.GUI.Container;
+        container?: BABYLON.GUI.Container | undefined;
         /**
          * Name of the cloned control
          * @default clonedControl
@@ -1536,7 +1536,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        host?: BABYLON.GUI.AdvancedDynamicTexture;
+        host?: BABYLON.GUI.AdvancedDynamicTexture | undefined;
     }
     export class AlignmentDto<T> {
         constructor(control?: T, horizontalAlignment?: horizontalAlignmentEnum, verticalAlignment?: verticalAlignmentEnum) {
@@ -1548,17 +1548,17 @@ export namespace BabylonGui {
          * Control to change the padding
          * @default undefined
          */
-        control: T;
+        control!: T;
         /**
          * Alignment horizontal
          * @default center
          */
-        horizontalAlignment: horizontalAlignmentEnum;
+        horizontalAlignment: horizontalAlignmentEnum = horizontalAlignmentEnum.center;
         /**
          * Alignment horizontal
          * @default center
          */
-        verticalAlignment: verticalAlignmentEnum;
+        verticalAlignment: verticalAlignmentEnum = verticalAlignmentEnum.center;
     }
 
     export class SetTextBlockTextOutlineDto {
@@ -1571,7 +1571,7 @@ export namespace BabylonGui {
          * Control to change the padding
          * @default undefined
          */
-        textBlock: BABYLON.GUI.TextBlock;
+        textBlock!: BABYLON.GUI.TextBlock;
         /**
          * Alignment horizontal
          * @default 0
@@ -1579,11 +1579,11 @@ export namespace BabylonGui {
          * @maximum Infinity
          * @step 0.1
          */
-        outlineWidth: number;
+        outlineWidth: number = 0;
         /**
          * Outline color
          * @default white
          */
-        outlineColor: string;
+        outlineColor = "white";
     }
 }

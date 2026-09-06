@@ -14,7 +14,7 @@ export namespace BabylonPick {
         /**
          * Ray
          */
-        ray: BABYLON.Ray;
+        ray!: BABYLON.Ray;
     }
     export class PickInfo {
         constructor(pickInfo?: BABYLON.PickingInfo) {
@@ -23,6 +23,6 @@ export namespace BabylonPick {
         /**
          * Information about picking result
          */
-        pickInfo: BABYLON.PickingInfo;
+        pickInfo!: BABYLON.PickingInfo;
     }
 }

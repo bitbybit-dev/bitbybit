@@ -1,8 +1,20 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
+// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces the whole
+// strict set of tsconfig.base.cad-strict.json, ahead of the shared loose base, the way base and occt
+// did. It carries no strict baseline any more. The flags are repeated here so the editor and the tests
+// hold the same line; the build config cannot carry this note because the references generator
+// rewrites it without comments.
 {
     "extends": "../../../tsconfig.base.cad-loose.json",
     "compileOnSave": false,
     "compilerOptions": {
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true,
         "outDir": "./dist/bitbybit-dev",
         "baseUrl": "./",
         "paths": {

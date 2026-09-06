@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 /**
  * Test helper functions for creating mock contexts and objects for BabylonJS

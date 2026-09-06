@@ -70,22 +70,22 @@ export namespace BabylonGizmo {
          * Enable position gizmo
          * @default true
          */
-        positionGizmoEnabled: boolean;
+        positionGizmoEnabled: boolean = true;
         /**
          * Enable rotation gizmo
          * @default false
          */
-        rotationGizmoEnabled: boolean;
+        rotationGizmoEnabled: boolean = false;
         /**
          * Enable scale gizmo
          * @default false
          */
-        scaleGizmoEnabled: boolean;
+        scaleGizmoEnabled: boolean = false;
         /**
          * Enable bounding box gizmo
          * @default false
          */
-        boundingBoxGizmoEnabled: boolean;
+        boundingBoxGizmoEnabled: boolean = false;
         /**
          * Use pointer to attach gizmos
          * @default true
@@ -108,7 +108,7 @@ export namespace BabylonGizmo {
          * Attachable meshes
          * @default undefined
          */
-        attachableMeshes: BABYLON.AbstractMesh[];
+        attachableMeshes!: BABYLON.AbstractMesh[];
     }
     export class GizmoDto {
         constructor(gizmo?: BABYLON.IGizmo) {
@@ -118,7 +118,7 @@ export namespace BabylonGizmo {
          * Gizmo to use
          * @default undefined
          */
-        gizmo: BABYLON.IGizmo;
+        gizmo!: BABYLON.IGizmo;
     }
     export class SetGizmoScaleRatioDto {
         constructor(gizmo?: BABYLON.IGizmo, scaleRatio?: number) {
@@ -129,7 +129,7 @@ export namespace BabylonGizmo {
          * gizmo
          * @default undefined
          */
-        gizmo: BABYLON.IGizmo;
+        gizmo!: BABYLON.IGizmo;
         /**
          * Scale ratio
          * @default 1
@@ -147,7 +147,7 @@ export namespace BabylonGizmo {
          * Gizmo manager to use
          * @default undefined
          */
-        gizmoManager: BABYLON.GizmoManager;
+        gizmoManager!: BABYLON.GizmoManager;
     }
 
     export class PositionGizmoDto {
@@ -158,7 +158,7 @@ export namespace BabylonGizmo {
          * Gizmo manager to use
          * @default undefined
          */
-        positionGizmo: BABYLON.IPositionGizmo;
+        positionGizmo!: BABYLON.IPositionGizmo;
     }
     export class SetPlanarGizmoEnabled {
         constructor(positionGizmo?: BABYLON.IPositionGizmo, planarGizmoEnabled?: boolean) {
@@ -169,7 +169,7 @@ export namespace BabylonGizmo {
          * Position gizmo
          * @default undefined
          */
-        positionGizmo: BABYLON.IPositionGizmo;
+        positionGizmo!: BABYLON.IPositionGizmo;
         /**
          * Planar gizmo enabled
          * @default true
@@ -185,7 +185,7 @@ export namespace BabylonGizmo {
          * Scale gizmo
          * @default undefined
          */
-        scaleGizmo: BABYLON.IScaleGizmo;
+        scaleGizmo!: BABYLON.IScaleGizmo;
         /**
          * Snap distance
          * @default 0
@@ -204,7 +204,7 @@ export namespace BabylonGizmo {
          * Scale gizmo
          * @default undefined
          */
-        scaleGizmo: BABYLON.IScaleGizmo;
+        scaleGizmo!: BABYLON.IScaleGizmo;
         /**
          * Incremental snap
          * @default false
@@ -220,7 +220,7 @@ export namespace BabylonGizmo {
          * Scale gizmo
          * @default undefined
          */
-        scaleGizmo: BABYLON.IScaleGizmo;
+        scaleGizmo!: BABYLON.IScaleGizmo;
         /**
          * Sensitivity
          * @default 1
@@ -238,7 +238,7 @@ export namespace BabylonGizmo {
          * Scale gizmo
          * @default undefined
          */
-        scaleGizmo: BABYLON.IScaleGizmo;
+        scaleGizmo!: BABYLON.IScaleGizmo;
     }
     export class BoundingBoxGizmoDto {
         constructor(boundingBoxGizmo?: BABYLON.BoundingBoxGizmo) {
@@ -248,7 +248,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
     }
     export class SetBoundingBoxGizmoRotationSphereSizeDto {
         constructor(boundingBoxGizmo?: BABYLON.BoundingBoxGizmo, rotationSphereSize?: number) {
@@ -259,7 +259,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * The size of the rotation anchors attached to the bounding box (Default: 0.1)
          * @default 0.1
@@ -278,7 +278,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * fiex drag mesh screen size
          * @default false
@@ -294,7 +294,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * fixed drag mesh bounds size
          * @default false
@@ -310,7 +310,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * fixed drag mesh screen size distance factor
          * @default 10
@@ -329,7 +329,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * Scaling snap distance
          * @default 0
@@ -348,7 +348,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * Rotation snap distance
          * @default 0
@@ -367,7 +367,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * The size of the scale boxes attached to the bounding box (Default: 0.1)
          * @default 0.1
@@ -386,7 +386,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * Incremental snap
          * @default false
@@ -402,12 +402,12 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * Scale pivot
          * @default undefined
          */
-        scalePivot: Base.Vector3;
+        scalePivot!: Base.Vector3;
     }
     export class SetBoundingBoxGizmoAxisFactorDto {
         constructor(boundingBoxGizmo?: BABYLON.BoundingBoxGizmo, axisFactor?: Base.Vector3) {
@@ -418,12 +418,12 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * Axis factor
          * @default undefined
          */
-        axisFactor: Base.Vector3;
+        axisFactor!: Base.Vector3;
     }
     export class SetBoundingBoxGizmoScaleDragSpeedDto {
         constructor(boundingBoxGizmo?: BABYLON.BoundingBoxGizmo, scaleDragSpeed?: number) {
@@ -434,7 +434,7 @@ export namespace BabylonGizmo {
          * Bounding box gizmo
          * @default undefined
          */
-        boundingBoxGizmo: BABYLON.BoundingBoxGizmo;
+        boundingBoxGizmo!: BABYLON.BoundingBoxGizmo;
         /**
          * Scale drag speed
          * @default 1
@@ -453,7 +453,7 @@ export namespace BabylonGizmo {
          * Position gizmo
          * @default undefined
          */
-        positionGizmo: BABYLON.IPositionGizmo;
+        positionGizmo!: BABYLON.IPositionGizmo;
         /**
          * Snap distance
          * @default 0
@@ -472,7 +472,7 @@ export namespace BabylonGizmo {
          * Position gizmo
          * @default undefined
          */
-        rotationGizmo: BABYLON.IRotationGizmo;
+        rotationGizmo!: BABYLON.IRotationGizmo;
         /**
          * Snap distance
          * @default 0
@@ -491,7 +491,7 @@ export namespace BabylonGizmo {
          * Position gizmo
          * @default undefined
          */
-        rotationGizmo: BABYLON.IRotationGizmo;
+        rotationGizmo!: BABYLON.IRotationGizmo;
         /**
          * Sensitivity
          * @default 1
@@ -509,7 +509,7 @@ export namespace BabylonGizmo {
          * Rotation gizmo
          * @default undefined
          */
-        rotationGizmo: BABYLON.IRotationGizmo;
+        rotationGizmo!: BABYLON.IRotationGizmo;
     }
     export class AxisScaleGizmoDto {
         constructor(axisScaleGizmo?: BABYLON.IAxisScaleGizmo) {
@@ -519,7 +519,7 @@ export namespace BabylonGizmo {
          * axis scale gizmo
          * @default undefined
          */
-        axisScaleGizmo: BABYLON.IAxisScaleGizmo;
+        axisScaleGizmo!: BABYLON.IAxisScaleGizmo;
     }
     export class SetIsEnabledAxisScaleGizmoDto {
         constructor(gizmoManager?: BABYLON.IAxisScaleGizmo, isEnabled?: boolean) {
@@ -530,7 +530,7 @@ export namespace BabylonGizmo {
          * axis scale gizmo
          * @default undefined
          */
-        axisScaleGizmo: BABYLON.IAxisScaleGizmo;
+        axisScaleGizmo!: BABYLON.IAxisScaleGizmo;
         /**
          * Is enabled
          * @default true
@@ -546,7 +546,7 @@ export namespace BabylonGizmo {
          * axis drag gizmo
          * @default undefined
          */
-        axisDragGizmo: BABYLON.IAxisDragGizmo;
+        axisDragGizmo!: BABYLON.IAxisDragGizmo;
     }
     export class SetIsEnabledAxisDragGizmoDto {
         constructor(gizmoManager?: BABYLON.IAxisDragGizmo, isEnabled?: boolean) {
@@ -557,7 +557,7 @@ export namespace BabylonGizmo {
          * axis drag gizmo
          * @default undefined
          */
-        axisDragGizmo: BABYLON.IAxisDragGizmo;
+        axisDragGizmo!: BABYLON.IAxisDragGizmo;
         /**
          * Is enabled
          * @default true
@@ -573,7 +573,7 @@ export namespace BabylonGizmo {
          * plane drag gizmo
          * @default undefined
          */
-        planeRotationGizmo: BABYLON.IPlaneRotationGizmo;
+        planeRotationGizmo!: BABYLON.IPlaneRotationGizmo;
         /**
          * Is enabled
          * @default true
@@ -589,7 +589,7 @@ export namespace BabylonGizmo {
          * plane drag gizmo
          * @default undefined
          */
-        planeDragGizmo: BABYLON.IPlaneDragGizmo;
+        planeDragGizmo!: BABYLON.IPlaneDragGizmo;
         /**
          * Is enabled
          * @default true
@@ -604,7 +604,7 @@ export namespace BabylonGizmo {
          * plane drag gizmo
          * @default undefined
          */
-        planeDragGizmo: BABYLON.IPlaneDragGizmo;
+        planeDragGizmo!: BABYLON.IPlaneDragGizmo;
     }
     export class PlaneRotationGizmoDto {
         constructor(planeRotationGizmo?: BABYLON.IPlaneRotationGizmo) {
@@ -614,7 +614,7 @@ export namespace BabylonGizmo {
          * plane drag gizmo
          * @default undefined
          */
-        planeRotationGizmo: BABYLON.IPlaneRotationGizmo;
+        planeRotationGizmo!: BABYLON.IPlaneRotationGizmo;
     }
     export class AttachToMeshDto {
         constructor(mesh: BABYLON.AbstractMesh, gizmoManager: BABYLON.GizmoManager) {

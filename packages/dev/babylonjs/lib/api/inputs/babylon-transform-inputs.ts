@@ -42,12 +42,12 @@ export namespace BabylonTransforms {
          * Mesh to transform
          * @default undefined
          */
-        mesh: BABYLON.Mesh;
+        mesh!: BABYLON.Mesh;
         /**
          * Transformation(s) to apply
          * @default undefined
          */
-        transformation: Base.TransformMatrixes;
+        transformation!: Base.TransformMatrixes;
     }
     export class RotationCenterDto {
         constructor(angle?: number, center?: Base.Point3) {
@@ -181,6 +181,6 @@ export namespace BabylonTransforms {
          * Translation vectors with [x, y, z] distances
          * @default undefined
          */
-        translations: Base.Vector3[];
+        translations!: Base.Vector3[];
     }
 }

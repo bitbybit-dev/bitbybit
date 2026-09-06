@@ -15,7 +15,7 @@ export class BabylonGaussianSplatting {
      * @shortname gaussian splatting mesh
      * @disposableOutput true
      */
-    async create(inputs: Inputs.BabylonGaussianSplatting.CreateGaussianSplattingMeshDto): Promise<BABYLON.GaussianSplattingMesh> {
+    async create(inputs: Inputs.BabylonGaussianSplatting.CreateGaussianSplattingMeshDto): Promise<BABYLON.GaussianSplattingMesh | undefined> {
         if (inputs.url) {
             const gs = BABYLON.SceneLoader.ImportMeshAsync(null, inputs.url, undefined, this.context.scene, undefined, ".ply").then((result) => {
                 const gaussianSplattingMesh = result.meshes[0] as BABYLON.GaussianSplattingMesh;

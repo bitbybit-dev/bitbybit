@@ -67,25 +67,19 @@ that is no longer needed, so the count only goes down. Never load `eslint-plugin
 JSDoc on the public API is a functional input to the component generator behind the visual editors,
 and that rule's auto-fix would delete it.
 
-The packages build loose and typecheck strict. Each CAD package has a `tsconfig.strict.json` - its build
-config plus the flags in `tsconfig.base.cad-strict.json`, the full strict set, with `noEmit`; the same
-generator writes it, because a project's references are not inherited through `extends`, and an overlay
-without them followed a sibling's declarations into another package's source - and a
-committed `.tsc-baseline.json` that records today's errors as a count
-per file and error code (tsc-baseline, `--ignoreMessages`, because a message can embed an absolute path
-into the pnpm store). `npm run typecheck:strict` in a package prints the errors that are NOT in its
-baseline; `npm run check:strict-baselines` at the root, which CI runs, holds every baseline to the code
-in both directions, so a fix lands together with `npm run typecheck:strict:save` in that package and the
-baseline only shrinks. When a package's baseline is empty, its build config goes strict and the baseline
-is deleted; when a flag reaches zero errors in every package, it moves from `tsconfig.base.cad-strict.json`
-into `tsconfig.base.cad-loose.json` and the build enforces it - five have already (the three catch-variable,
-function-type and switch-fallthrough flags and the two unused checks). Ten packages are through -
-`base`, `occt`, `occt-worker`, `jscad`, `jscad-worker`, `manifold`, `manifold-worker`, `core`, `threejs`
-and `playcanvas`: their build configs carry the whole strict set, they have no baseline, and their
-`typecheck:strict` is tsc alone; `babylonjs` still carries one. Test support under `__mocks__` is excluded from the build configs: jest compiles it
-itself, so dist ships no mocks. Dominant error in that baseline: TS2564, property initializers in the
-`*-inputs.ts` classes whose JSDoc `@default` already states the value; `packages/dev/CLAUDE.md` records
-the shape each kind of property takes.
+Every CAD package builds and typechecks under the whole strict set. Each build config
+(`tsconfig.bitbybit.json`) carries the flags of `tsconfig.base.cad-strict.json` ahead of the shared loose
+base, and its `tsconfig.json` repeats them so the editor and the tests hold the same line. Each package
+also has a generated `tsconfig.strict.json` - the build config plus that flag set, with `noEmit`, and with
+the build's references, because references are not inherited through `extends` and an overlay without
+them once followed a sibling's declarations into another package's source; `npm run typecheck:strict`
+runs it and must print nothing. `npm run check:strict-baselines` at the root, which CI runs, holds the
+line: no package has a `.tsc-baseline.json` any more, so any strict error anywhere fails it. The ratchet
+that got here - per-package baselines recorded by tsc-baseline with `--ignoreMessages`, shrunk with a
+save script, a flag moving into `tsconfig.base.cad-loose.json` once it reached zero everywhere (the
+catch-variable, function-type, switch-fallthrough and unused checks did) - is finished and its save
+scripts are gone. Test support under `__mocks__` is excluded from the build configs: jest compiles it
+itself, so dist ships no mocks. `packages/dev/CLAUDE.md` records the shape each kind of DTO property takes.
 
 ## Continuous integration
 

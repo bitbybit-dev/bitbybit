@@ -93,7 +93,7 @@ export class BabylonGltf {
      * @shortname get selected material variant
      */
     getSelectedMaterialVariant(inputs: Inputs.BabylonGltf.GltfRootNodeDto): string | string[] {
-        return KHR_materials_variants.GetLastSelectedVariant(inputs.rootNode);
+        return KHR_materials_variants.GetLastSelectedVariant(inputs.rootNode)!;
     }
 
     /**

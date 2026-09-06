@@ -16,7 +16,7 @@ export namespace BabylonGltf {
          * Asset container produced when loading a glTF or glb file. Holds the meshes, materials, animations and the root node.
          * @default undefined
          */
-        assetContainer: BABYLON.AssetContainer;
+        assetContainer!: BABYLON.AssetContainer;
     }
 
     export class GltfRootNodeDto {
@@ -27,7 +27,7 @@ export namespace BabylonGltf {
          * Root transform node of a loaded glTF asset. Material variants and other glTF level operations work on this node.
          * @default undefined
          */
-        rootNode: BABYLON.TransformNode;
+        rootNode!: BABYLON.TransformNode;
     }
 
     export class SelectVariantDto {
@@ -39,12 +39,12 @@ export namespace BabylonGltf {
          * Root transform node of a loaded glTF asset that declares KHR_materials_variants.
          * @default undefined
          */
-        rootNode: BABYLON.TransformNode;
+        rootNode!: BABYLON.TransformNode;
         /**
          * Name of the material variant to activate. Use list material variants to discover the available names.
          * @default undefined
          */
-        variantName: string;
+        variantName!: string;
     }
 
     export class PlayAnimationGroupDto {
@@ -57,7 +57,7 @@ export namespace BabylonGltf {
          * Animation group to play.
          * @default undefined
          */
-        animationGroup: BABYLON.AnimationGroup;
+        animationGroup!: BABYLON.AnimationGroup;
         /**
          * Loop the animation.
          * @default true
@@ -79,6 +79,6 @@ export namespace BabylonGltf {
          * Animation group to operate on.
          * @default undefined
          */
-        animationGroup: BABYLON.AnimationGroup;
+        animationGroup!: BABYLON.AnimationGroup;
     }
 }

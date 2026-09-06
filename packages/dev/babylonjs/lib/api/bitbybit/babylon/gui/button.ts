@@ -44,7 +44,7 @@ export class BabylonGuiButton {
      * @shortname set button text
      */
     setButtonText(inputs: Inputs.BabylonGui.SetButtonTextDto): BABYLON.GUI.Button {
-        inputs.button.textBlock.text = inputs.text;
+        inputs.button.textBlock!.text = inputs.text;
         return inputs.button;
     }
 
@@ -56,7 +56,7 @@ export class BabylonGuiButton {
      * @shortname get button text
      */
     getButtonText(inputs: Inputs.BabylonGui.ButtonDto): string {
-        return inputs.button.textBlock.text;
+        return inputs.button.textBlock!.text;
     }
 
 }

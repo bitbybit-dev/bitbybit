@@ -72,7 +72,7 @@ export class BabylonWebXRSimple {
         } else {
             this.context.scene.metadata = { xr };
         }
-        const meshes = [];
+        const meshes: BABYLON.AbstractMesh[] = [];
         inputs.groundMeshes.forEach(m => {
             if (m.getChildMeshes) {
                 m?.getChildMeshes().forEach(cm => {

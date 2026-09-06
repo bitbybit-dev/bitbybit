@@ -259,7 +259,7 @@ describe("Draw unit tests", () => {
 
     describe("drawAnyAsync", () => {
         it("should resolve undefined for undefined entity", async () => {
-            const result = await draw.drawAnyAsync({ entity: undefined });
+            const result = await draw.drawAnyAsync({ entity: undefined } as unknown as Inputs.Draw.DrawAny);
             expect(result).toBeUndefined();
         });
 
@@ -368,7 +368,7 @@ describe("Draw unit tests", () => {
 
     describe("drawAnyAsyncNoReturn", () => {
         it("should call drawAnyAsync without returning value", async () => {
-            jest.spyOn(draw, "drawAnyAsync").mockResolvedValue(undefined);
+            jest.spyOn(draw, "drawAnyAsync").mockResolvedValue(undefined as unknown as BABYLON.Mesh);
             
             const result = await draw.drawAnyAsyncNoReturn({ entity: [1, 2, 3] });
             
@@ -687,7 +687,7 @@ describe("Draw unit tests", () => {
 
     describe("drawAnyNoReturn", () => {
         it("should call drawAny without returning value", () => {
-            jest.spyOn(draw, "drawAny").mockReturnValue(undefined);
+            jest.spyOn(draw, "drawAny").mockReturnValue(undefined as unknown as BABYLON.Mesh);
             
             const result = draw.drawAnyNoReturn({ entity: [1, 2, 3] });
             
@@ -897,7 +897,7 @@ describe("Draw unit tests", () => {
             
             expect(mockTag.drawTags).toHaveBeenCalled();
             expect(result).toBeDefined();
-            expect(result.metadata.type).toBe(Inputs.Draw.drawingTypes.tags);
+            expect(result!.metadata.type).toBe(Inputs.Draw.drawingTypes.tags);
         });
 
         it("handleTags should use provided options when options are passed", () => {
@@ -913,7 +913,7 @@ describe("Draw unit tests", () => {
                 size: 22
             }));
             expect(result).toBeDefined();
-            expect(result.metadata.type).toBe(Inputs.Draw.drawingTypes.tags);
+            expect(result!.metadata.type).toBe(Inputs.Draw.drawingTypes.tags);
         });
 
         it("handleTags should use provided options when options are passed", () => {
@@ -929,7 +929,7 @@ describe("Draw unit tests", () => {
                 size: 22
             }));
             expect(result).toBeDefined();
-            expect(result.metadata.type).toBe(Inputs.Draw.drawingTypes.tags);
+            expect(result!.metadata.type).toBe(Inputs.Draw.drawingTypes.tags);
         });
 
         it("handleTag should call tag.drawTag", () => {
@@ -942,7 +942,7 @@ describe("Draw unit tests", () => {
             
             expect(draw.tag.drawTag).toHaveBeenCalled();
             expect(result).toBeDefined();
-            expect(result.metadata.type).toBe(Inputs.Draw.drawingTypes.tag);
+            expect(result!.metadata.type).toBe(Inputs.Draw.drawingTypes.tag);
         });
 
         it("handleVerbSurfaces should call drawHelper.drawSurfacesMultiColour", () => {

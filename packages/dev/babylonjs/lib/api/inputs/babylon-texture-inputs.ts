@@ -39,7 +39,7 @@ export namespace BabylonTexture {
          * Url of the texture
          * @default undefined
          */
-        url: string;
+        url!: string;
         /**
          * Invert texture on Y direction
          * @default false
@@ -99,7 +99,7 @@ export namespace BabylonTexture {
          * Url of the image. Use a publicly accessible url, a data url, or an object url created from an uploaded asset file.
          * @default undefined
          */
-        url: string;
+        url!: string;
         /**
          * Treat the image alpha channel as transparency. Recommended true for decal and projection images.
          * @default true

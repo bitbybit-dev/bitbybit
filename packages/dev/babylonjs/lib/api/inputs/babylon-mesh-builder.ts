@@ -221,7 +221,7 @@ export namespace BabylonMeshBuilder {
          * @maximum 1
          * @step 0.1
          */
-        arc: number;
+        arc: number = 1;
         /**
          * Side orientation of the mesh
          * @default frontside
@@ -246,7 +246,7 @@ export namespace BabylonMeshBuilder {
         /**
          * Path array of the ribbon
          */
-        pathArray: Base.Vector3[][];
+        pathArray!: Base.Vector3[][];
         /**
          * Close array of the ribbon
          * @default false
@@ -406,12 +406,12 @@ export namespace BabylonMeshBuilder {
         /**
          * Shape of the polygon
          */
-        shape: Base.Vector3[];
+        shape!: Base.Vector3[];
         /**
          * Holes of the polygon
          * @optional true
          */
-        holes?: Base.Vector3[][];
+        holes?: Base.Vector3[][] | undefined;
         /**
          * Depth of the polygon
          * @default 0
@@ -456,12 +456,12 @@ export namespace BabylonMeshBuilder {
         /**
          * Shape of the extrude
          */
-        shape: Base.Vector3[];
+        shape!: Base.Vector3[];
         /**
          * Holes of the extrude
          * @optional true
          */
-        holes?: Base.Vector3[][];
+        holes?: Base.Vector3[][] | undefined;
         /**
          * Depth of the extrude
          * @default 1
@@ -542,7 +542,7 @@ export namespace BabylonMeshBuilder {
          * Custom polyhedron
          * @optional true
          */
-        custom?: number[];
+        custom?: number[] | undefined;
         /**
          * Flat polyhedron
          * @default false
@@ -663,7 +663,7 @@ export namespace BabylonMeshBuilder {
         /**
          * Orientation of the capsule
          */
-        orientation: Base.Vector3;
+        orientation!: Base.Vector3;
         /**
          * Subdivisions of the capsule
          * @default 2
@@ -831,7 +831,7 @@ export namespace BabylonMeshBuilder {
          * Path of the tube
          * @default undefined
          */
-        path: Base.Vector3[];
+        path!: Base.Vector3[];
         /**
          * Radius of the tube
          * @default 1
@@ -888,11 +888,11 @@ export namespace BabylonMeshBuilder {
         /**
          * Shape of the extrude
          */
-        shape: Base.Vector3[];
+        shape!: Base.Vector3[];
         /**
          * Path of the extrude
          */
-        path: Base.Vector3[];
+        path!: Base.Vector3[];
         /**
          * Scale of the extrude
          * @default 1
@@ -1012,7 +1012,7 @@ export namespace BabylonMeshBuilder {
         /**
          * Shape of the lathe
          */
-        shape: Base.Vector3[];
+        shape!: Base.Vector3[];
         /**
          * Radius of the lathe
          * @default 1

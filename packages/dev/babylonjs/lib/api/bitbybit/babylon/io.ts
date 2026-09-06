@@ -8,7 +8,7 @@ export class BabylonIO {
     private supportedFileFormats = [
         "glb", "gltf", "stl", "obj",
     ];
-    private objectUrl: string;
+    private objectUrl!: string;
 
     constructor(private readonly context: Context) { }
 
@@ -21,7 +21,7 @@ export class BabylonIO {
      * @drawable true
      */
     async loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<BABYLON.Mesh> {
-        const type = inputs.assetFile.name.split(".").pop();
+        const type = inputs.assetFile.name.split(".").pop()!;
 
         if (this.supportedFileFormats.includes(type.toLocaleLowerCase())) {
             try {
@@ -55,7 +55,7 @@ export class BabylonIO {
      * @drawable true
      */
     async loadAssetIntoSceneFromRootUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<BABYLON.Mesh> {
-        const type = inputs.assetFile.split(".").pop();
+        const type = inputs.assetFile.split(".").pop()!;
 
         if (this.supportedFileFormats.includes(type.toLocaleLowerCase())) {
             try {
@@ -177,9 +177,9 @@ export class BabylonIO {
      */
     async exportMeshToStl(inputs: Inputs.BabylonIO.ExportMeshToStlDto): Promise<any> {
         const allChildren = inputs.mesh.getChildMeshes();
-        let childrenMeshes = [];
+        let childrenMeshes: BABYLON.Mesh[] = [];
         if (allChildren && allChildren.length > 0) {
-            childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh || s instanceof BABYLON.GreasedLineMesh));
+            childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh || s instanceof BABYLON.GreasedLineMesh)) as BABYLON.Mesh[];
         }
         let meshes: BABYLON.Mesh[] = [inputs.mesh, ...childrenMeshes];
         meshes = meshes.filter(m => m.isVisible);
@@ -194,12 +194,12 @@ export class BabylonIO {
    * @shortname babylon meshes to stl
    */
     async exportMeshesToStl(inputs: Inputs.BabylonIO.ExportMeshesToStlDto): Promise<any> {
-        let meshes: BABYLON.Mesh[];
+        const meshes: BABYLON.Mesh[] = [];
         inputs.meshes.forEach((mesh) => {
             const allChildren = mesh.getChildMeshes();
-            let childrenMeshes = [];
+            let childrenMeshes: BABYLON.Mesh[] = [];
             if (allChildren && allChildren.length > 0) {
-                childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh || s instanceof BABYLON.GreasedLineMesh));
+                childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh || s instanceof BABYLON.GreasedLineMesh)) as BABYLON.Mesh[];
             }
             meshes.push(mesh);
             if (childrenMeshes.length > 0) {
@@ -247,7 +247,7 @@ export class BabylonIO {
                 }
             });
         }
-        const root = res.meshes.find(m => m.name === "__root__");
+        const root = res.meshes.find(m => m.name === "__root__")!;
         root.parent = container;
         return container;
     }

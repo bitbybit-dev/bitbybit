@@ -53,7 +53,7 @@ export class BabylonGizmoRotationGizmo {
     * @shortname get attached node
     */
     getAttachedNode(inputs: Inputs.BabylonGizmo.RotationGizmoDto): BABYLON.Node {
-        return inputs.rotationGizmo?.attachedNode;
+        return inputs.rotationGizmo?.attachedNode as BABYLON.Node;
     }
 
     /**

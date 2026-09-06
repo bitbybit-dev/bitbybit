@@ -605,9 +605,7 @@ describe("initBabylonJS unit tests", () => {
             // Act
             result.startRenderLoop(onRenderMock);
             // Simulate one frame
-            if (renderCallback) {
-                renderCallback();
-            }
+            (renderCallback as (() => void) | null)?.();
 
             // Assert
             expect(onRenderMock).toHaveBeenCalled();

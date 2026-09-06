@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-namespace */
+ 
 
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";

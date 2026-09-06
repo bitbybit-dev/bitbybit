@@ -100,7 +100,7 @@ export class BabylonGuiControl {
      * @shortname get control by name
      */
     getControlByName(inputs: Inputs.BabylonGui.GetControlByNameDto): BABYLON.GUI.Control {
-        return inputs.container.children.find(c => c.name === inputs.name);
+        return inputs.container.children.find(c => c.name === inputs.name)!;
     }
 
     /** 

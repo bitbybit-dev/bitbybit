@@ -123,7 +123,7 @@ export class BabylonNode {
      */
     getRotationTransformation(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const rotationMatrix = new BABYLON.Matrix();
-        inputs.node.rotationQuaternion.toRotationMatrix(rotationMatrix);
+        inputs.node.rotationQuaternion!.toRotationMatrix(rotationMatrix);
         return [...rotationMatrix.toArray()];
     }
 
@@ -142,7 +142,7 @@ export class BabylonNode {
      * @returns Parent node
      */
     getParent(inputs: Inputs.BabylonNode.NodeDto): BABYLON.Node {
-        return inputs.node.parent;
+        return inputs.node.parent!;
     }
 
     /**
@@ -160,7 +160,7 @@ export class BabylonNode {
      * @returns Root node
      */
     getRootNode(): BABYLON.TransformNode {
-        return this.context.scene.getTransformNodeByID("root");
+        return this.context.scene.getTransformNodeByID("root")!;
     }
 
     /**

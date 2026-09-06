@@ -32,7 +32,7 @@ export namespace BabylonScene {
          * The babylonjs scene
          * @default undefined
          */
-        scene: BABYLON.Scene;
+        scene!: BABYLON.Scene;
     }
     export class EnablePhysicsDto {
         constructor(vector?: Base.Vector3) {
@@ -101,12 +101,12 @@ export namespace BabylonScene {
          * @maximum Infinity
          * @step 1
          */
-        shadowGeneratorMapSize? = 1024;
+        shadowGeneratorMapSize?: number | undefined = 1024;
         /**
          * Enables shadows
          * @default true
          */
-        enableShadows? = true;
+        enableShadows?: boolean | undefined = true;
         /**
          * Shadow darkness
          * @default 0
@@ -114,7 +114,7 @@ export namespace BabylonScene {
          * @maximum 1
          * @step 0.1
          */
-        shadowDarkness? = 0;
+        shadowDarkness?: number | undefined = 0;
         /**
          * Sets the ability to have transparent shadow (useful for Gaussian Splatting Meshes)
          * @default false
@@ -182,7 +182,7 @@ export namespace BabylonScene {
          * Camera to activate
          * @default undefined
          */
-        camera: BABYLON.Camera;
+        camera!: BABYLON.Camera;
     }
     export class UseRightHandedSystemDto {
         constructor(use?: boolean) {
@@ -240,12 +240,12 @@ export namespace BabylonScene {
          * @maximum Infinity
          * @step 1
          */
-        shadowGeneratorMapSize? = 1024;
+        shadowGeneratorMapSize?: number | undefined = 1024;
         /**
          * Enables shadows
          * @default true
          */
-        enableShadows? = true;
+        enableShadows?: boolean | undefined = true;
         /**
          * Shadow darkness
          * @default 0
@@ -253,7 +253,7 @@ export namespace BabylonScene {
          * @maximum 1
          * @step 0.1
          */
-        shadowDarkness? = 0;
+        shadowDarkness?: number | undefined = 0;
         /**
          * Use percentage closer filtering
          * @default true
@@ -347,7 +347,7 @@ export namespace BabylonScene {
          * @step 1
          * @optional true
          */
-        lowerRadiusLimit;
+        lowerRadiusLimit?: number | undefined;
         /**
          * Upper radius limit - how far can the camera be from the target
          * @default undefined
@@ -356,7 +356,7 @@ export namespace BabylonScene {
          * @step 1
          * @optional true
          */
-        upperRadiusLimit;
+        upperRadiusLimit?: number | undefined;
         /**
          * Lower alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
          * @default undefined
@@ -365,7 +365,7 @@ export namespace BabylonScene {
          * @step 1
          * @optional true
          */
-        lowerAlphaLimit;
+        lowerAlphaLimit?: number | undefined;
         /**
          * Upper alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
          * @default undefined
@@ -374,7 +374,7 @@ export namespace BabylonScene {
          * @step 1
          * @optional true
          */
-        upperAlphaLimit;
+        upperAlphaLimit?: number | undefined;
         /**
          * Lower beta limit - camera rotation along the latitudinal (vertical) axis in degrees. This is counted from the top down, where 0 is looking from top straight down.
          * @default 1
@@ -473,7 +473,7 @@ export namespace BabylonScene {
          * Hides the skybox mesh but keeps the environment texture
          * @default false
          */
-        hideSkybox?: boolean = false;
+        hideSkybox?: boolean | undefined = false;
     }
 
     export class SkyboxCustomTextureDto {
@@ -490,13 +490,13 @@ export namespace BabylonScene {
          * @default undefined
          * @optional true
          */
-        textureUrl?: string;
+        textureUrl?: string | undefined;
         /**
          * Skybox texture size (only applies to custom URL texture)
          * @default 512
          * @optional true
          */
-        textureSize?: number = 512;
+        textureSize?: number | undefined = 512;
         /**
          * Skybox size
          * @default 1000
@@ -525,7 +525,7 @@ export namespace BabylonScene {
          * Hides the skybox mesh but keeps the environment texture
          * @default false
          */
-        hideSkybox?: boolean = false;
+        hideSkybox?: boolean | undefined = false;
     }
 
     /**
@@ -533,7 +533,7 @@ export namespace BabylonScene {
      * input side of picking, as opposed to the geometric result the pick returns.
      */
     export class PointerDto {
-        statement_update: () => void;
+        statement_update!: () => void;
     }
     export class FogDto {
         constructor(mode?: Base.fogModeEnum, color?: Base.Color, density?: number, start?: number, end?: number) {
@@ -547,7 +547,7 @@ export namespace BabylonScene {
          * Fog mode
          * @default none
          */
-        mode: Base.fogModeEnum;
+        mode: Base.fogModeEnum = Base.fogModeEnum.none;
         /**
          * Fog color
          * @default #ffffff
@@ -568,7 +568,7 @@ export namespace BabylonScene {
          * @maximum Infinity
          * @step 1
          */
-        start: number;
+        start: number = 0;
         /**
          * Fog end
          * @default 1000
@@ -576,7 +576,7 @@ export namespace BabylonScene {
          * @maximum Infinity
          * @step 1
          */
-        end: number;
+        end: number = 1000;
     }
     export class SceneCanvasCSSBackgroundImageDto {
         /**
@@ -746,7 +746,7 @@ export namespace BabylonScene {
          * URL of the background image
          * @default undefined
          */
-        imageUrl?: string;
+        imageUrl?: string | undefined;
         /**
          * How the background image should repeat
          * @default noRepeat

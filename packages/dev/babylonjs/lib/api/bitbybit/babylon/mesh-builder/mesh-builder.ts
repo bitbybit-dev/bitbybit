@@ -215,7 +215,7 @@ export class BabylonMeshBuilder {
     createPolygon(inputs: Inputs.BabylonMeshBuilder.CreatePolygonDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreatePolygon("BabylonMesh" + Math.random(), {
             shape: inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
-            holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))),
+            holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],
             depth: inputs.depth,
             smoothingThreshold: inputs.smoothingThreshold,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
@@ -243,7 +243,7 @@ export class BabylonMeshBuilder {
         console.log(earcut);
         const mesh = BABYLON.MeshBuilder.ExtrudePolygon("BabylonMesh" + Math.random(), {
             shape: inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
-            holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))),
+            holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],
             depth: inputs.depth,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
             wrap: inputs.wrap,

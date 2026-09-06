@@ -16,15 +16,15 @@ export namespace BabylonRay {
         /**
          * Origin of the ray
          */
-        origin: Base.Point3;
+        origin!: Base.Point3;
         /**
          * Direction of the ray
          */
-        direction: Base.Vector3;
+        direction!: Base.Vector3;
         /**
          * Length of the ray
          */
-        length?: number;
+        length?: number | undefined;
     }
     export class RayDto {
         constructor(ray?: BABYLON.Ray) {
@@ -33,7 +33,7 @@ export namespace BabylonRay {
         /**
          * ray to analyze
          */
-        ray: BABYLON.Ray;
+        ray!: BABYLON.Ray;
     }
     export class FromToDto {
         constructor(from?: Base.Point3, to?: Base.Point3) {
@@ -43,10 +43,10 @@ export namespace BabylonRay {
         /**
          * From point
          */
-        from: Base.Point3;
+        from!: Base.Point3;
         /**
          * To point
          */
-        to: Base.Point3;
+        to!: Base.Point3;
     }
 }
