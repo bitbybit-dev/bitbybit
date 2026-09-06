@@ -6,6 +6,7 @@
     "extends": "../../../tsconfig.base.cad.json",
     "compileOnSave": false,
     "exclude": [
+        "lib/api-hand/**/*",
         "coverage",
         "dist",
         "**/__mocks__/**",

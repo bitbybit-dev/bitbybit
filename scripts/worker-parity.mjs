@@ -19,7 +19,10 @@
  *      (indentation aside). The docs are authored on the kernel and describe the public API the
  *      worker exposes; the worker's copy is what the declarations bundle and the visual editors
  *      read, so a doc that drifts on either side fails here. Structural exceptions (one kernel
- *      method behind several worker methods) are allow-listed under "docs" with a reason.
+ *      method behind several worker methods) are allow-listed under "docs" with a reason;
+ *   5. every reserved command the worker API sends (a workerOnly allow-list entry) is declared in the
+ *      worker thread's ReservedFunctions (occt-worker's constants.ts), so the thread handles it itself
+ *      instead of walking the kernel for a path that does not exist there.
  * Plus a signature comparison: where both sides declare a return type, they must agree once the
  * worker's Promise wrapper and the pointer/handle type aliases are normalised; disagreements are
  * listed and fail unless allow-listed with a reason.
@@ -38,7 +41,7 @@ const ALLOW = path.join(ROOT, "scripts/worker-parity.allow.json");
 const update = process.argv.includes("--update");
 
 const PAIRS = [
-    { name: "occt", kernelDir: "packages/dev/occt/lib", kernelRoot: "OCCTService", workerDir: "packages/dev/occt-worker/lib/api", workerRoot: "OCCT" },
+    { name: "occt", kernelDir: "packages/dev/occt/lib", kernelRoot: "OCCTService", workerDir: "packages/dev/occt-worker/lib/api", workerRoot: "OCCT", reservedConstants: "packages/dev/occt-worker/lib/occ-worker/constants.ts" },
     { name: "jscad", kernelDir: "packages/dev/jscad/lib", kernelRoot: "Jscad", workerDir: "packages/dev/jscad-worker/lib/api", workerRoot: "JSCAD" },
     { name: "manifold", kernelDir: "packages/dev/manifold/lib", kernelRoot: "ManifoldService", workerDir: "packages/dev/manifold-worker/lib/api", workerRoot: "ManifoldBitByBit" },
 ];
@@ -248,6 +251,20 @@ for (const pair of PAIRS) {
     for (const p of docsAllowedButAgreeing) problem(pair.name, "docs allow-list entry no longer needed (both sides read the same)", p);
     for (const d of docDrifts) problem(pair.name, "method doc differs between kernel and worker", d);
     for (const d of classDocDrifts) problem(pair.name, "class doc differs between kernel and worker", d);
+    if (pair.reservedConstants) {
+        const sf = parse(path.join(ROOT, pair.reservedConstants));
+        const reserved = new Set();
+        const visit = (node) => {
+            if (ts.isVariableDeclaration(node) && nameOf(node) === "ReservedFunctions" && node.initializer) {
+                const literal = ts.isAsExpression(node.initializer) ? node.initializer.expression : node.initializer;
+                if (ts.isObjectLiteralExpression(literal)) for (const p of literal.properties) if (ts.isPropertyAssignment(p) && ts.isStringLiteral(p.initializer)) reserved.add(p.initializer.text);
+            }
+            ts.forEachChild(node, visit);
+        };
+        visit(sf);
+        if (!reserved.size) problem(pair.name, "ReservedFunctions not found", pair.reservedConstants);
+        for (const p of workerOnlyAllowed) if (!reserved.has(p)) problem(pair.name, "reserved command sent by the worker API is not declared in ReservedFunctions (the worker thread would look for it in the kernel)", `${p}  (${pair.reservedConstants})`);
+    }
 
     nextSnapshot[pair.name] = [...worker.keys()].sort();
     if (!update) {

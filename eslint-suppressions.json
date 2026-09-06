@@ -261,7 +261,7 @@
   },
   "packages/dev/jscad/lib/api/jscad-service.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 8
+      "count": 6
     }
   },
   "packages/dev/jscad/lib/api/services/jscad-extrusions.ts": {

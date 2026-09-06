@@ -1,0 +1,25 @@
+{
+  "occt": {
+    "geom.curves.geomCircleCurve": { "returns": "Inputs.OCCT.GeomCurvePointer", "reason": "the kernel builds a wire; the worker has always declared a geometric curve pointer and changing the public type is a separate decision" },
+    "geom.curves.geomEllipseCurve": { "returns": "Inputs.OCCT.GeomCurvePointer", "reason": "the kernel builds a wire; the worker has always declared a geometric curve pointer and changing the public type is a separate decision" },
+    "fillets.fillet3DWire": { "params": ["Inputs.OCCT.Fillet3DWireDto<Inputs.OCCT.TopoDSShapePointer>"], "reason": "the worker accepts any shape pointer; narrowing the public input to wires would change the node's socket" },
+    "fillets.fillet3DWires": { "params": ["Inputs.OCCT.Fillet3DWiresDto<Inputs.OCCT.TopoDSShapePointer>"], "reason": "the worker accepts any shape pointer; narrowing the public input to wires would change the node's socket" },
+    "fillets.fillet2d": { "returns": "Inputs.OCCT.TopoDSShapePointer", "reason": "the kernel narrows the result to face | wire; the worker exposes the general shape pointer" },
+    "fillets.fillet2dShapes": { "returns": "Inputs.OCCT.TopoDSShapePointer[]", "reason": "the kernel narrows the result to face[] | wire[]; the worker exposes shape pointers" },
+    "operations.loft": { "params": ["Inputs.OCCT.LoftDto<Inputs.OCCT.TopoDSWirePointer>"], "reason": "the kernel also accepts edges; the worker exposes the wire input the editor offers" },
+    "operations.loftAdvanced": { "params": ["Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>"], "reason": "the kernel also accepts edges; the worker exposes the wire input the editor offers" },
+    "operations.closestPointsBetweenTwoShapes": { "returns": "Inputs.Base.Point3[]", "reason": "the kernel returns a two-point tuple; the worker exposes it as a point list" },
+    "operations.offset3DWire": { "returns": "Inputs.OCCT.TopoDSWirePointer", "reason": "the kernel returns the loose edges when no wire can be built; the worker exposes the wire" },
+    "path.shapeFromPath": { "returns": "Inputs.OCCT.TopoDSShapePointer", "reason": "the kernel may return undefined for an empty path; the worker exposes the shape" }
+  },
+  "jscad": {
+    "polygon.createFromPoints": { "params": ["Inputs.JSCAD.PointsDto"], "reason": "Inputs.JSCAD.PointsDto and Inputs.Point.PointsDto carry the same points field; the node is generated from the JSCAD one" }
+  },
+  "manifold": {
+    "decomposeManifoldOrCrossSection": { "returns": "Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][]", "reason": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying" },
+    "decomposeManifoldsOrCrossSections": { "returns": "(Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][])[]", "reason": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying" },
+    "manifold.manifoldToMesh": { "returns": "Inputs.Manifold.DecomposedManifoldMeshDto", "reason": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying" },
+    "manifold.manifoldsToMeshes": { "returns": "Inputs.Manifold.DecomposedManifoldMeshDto[]", "reason": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying" },
+    "crossSection.operations.compose": { "params": ["Inputs.Manifold.ComposeDto<(Inputs.Manifold.CrossSectionPointer | Inputs.Base.Vector2[])[]>"], "reason": "the kernel accepts several polygons per entry; the worker exposes one polygon per entry" }
+  }
+}

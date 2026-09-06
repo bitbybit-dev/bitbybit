@@ -102,13 +102,30 @@ packs every built dist and installs all the tarballs together into an empty proj
 probe that imports each package as a consumer would, so a sibling only the workspace could resolve, a
 dependency a manifest forgot, or a shipped build info file fails there and not on a user's machine.
 
-`npm test` at the root runs every package suite, after `npm run check:worker-parity`: each worker
-package mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends
-a path the kernel lacks, when a kernel method has no mirror outside the allow-list, when signatures
-disagree, when the JSDoc on a mirrored method or class reads differently on the two sides, or when
-the worker's path set differs from the committed snapshot (those paths are persisted in users' saved
-scripts). A deliberate surface change is accepted with `--update`; a doc change is made on the
-kernel and copied to the worker (see `packages/dev/CLAUDE.md`).
+## The generated worker layer
+
+The API classes of the three worker packages (`occt-worker/lib/api/occt/**`, `jscad-worker/lib/api/*.ts`
+except the barrel and the init class, `manifold-worker/lib/api/**` likewise) are generated from the
+kernel by `scripts/gen-worker-api.mjs`: the class tree, the member order, the docs and the signatures
+come from the kernel classes, kernel object types become the worker's pointer types, and every body
+is one call that sends the method's dotted path to the worker thread. `npm run gen:worker-api`
+rewrites them; `npm run check:worker-api`, the second step of `npm test`, fails when what the kernel
+generates differs from what is committed. Never edit a generated file - change the kernel, or the
+hand-written part: what cannot be generated (browser downloads, File/Blob preparation, a result the
+main thread re-hydrates, the worker's own reserved commands) lives in `lib/api-hand/<same path>.ts` as
+a class of the same name whose members carry a marker line saying where they land (`// replaces
+<path>`, `// after <path>`, `// first`, `// last`); the generator merges them in. Where the worker
+deliberately declares a type other than the mechanical mapping, `scripts/worker-api.overrides.json`
+holds the type and the reason; kernel methods the worker does not expose are the `kernelOnly` entries
+of `scripts/worker-parity.allow.json`, one list for the generator and the parity check.
+
+`npm test` at the root runs every package suite, after `check:worker-api` and `npm run check:worker-parity`:
+each worker package mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a
+worker sends a path the kernel lacks, when a kernel method has no mirror outside the allow-list, when
+signatures disagree, when the JSDoc on a mirrored method or class reads differently on the two sides,
+or when the worker's path set differs from the committed snapshot (those paths are persisted in users'
+saved scripts). A deliberate surface change is accepted with `--update`; a doc change is made on the
+kernel and regenerated into the worker (see `packages/dev/CLAUDE.md`).
 
 Every runner writes its results as JSON into a `test-results/` folder next to the code it tested
 (`test-c` in the jest packages, the SDK's vitest config), and coverage leaves

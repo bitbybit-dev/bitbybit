@@ -54,7 +54,6 @@
       "crossSection.deleteCrossSections": "the worker frees cross sections through its reserved delete commands"
     },
     "signature": {
-      "crossSection.crossSectionToPoints": "number[][][] and Point3[][] are the same shape",
       "crossSection.operations.compose": "kernel accepts several polygons per entry; the worker exposes one polygon per entry",
       "decomposeManifoldOrCrossSection": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying",
       "decomposeManifoldsOrCrossSections": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying",

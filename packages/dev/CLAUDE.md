@@ -39,14 +39,22 @@ npm run lint
   (`inputs.tolerance ?? 1e-7`), because only `new Dto()` runs the initializer; an object literal from a
   script does not. Index reads inside a bounds-checked loop, after a length check, or of a regex group
   the pattern guarantees carry a non-null assertion; everything else narrows.
-- **Method and class JSDoc is authored on the kernel and mirrored verbatim on the worker.** The
-  worker's copy is what the declarations bundle, the visual editors and the docs read, so the two
-  must not drift: `check:worker-parity` compares every mirrored method's and class's doc and fails on
-  any difference. Write the doc for the API as users reach it - the asynchronous, worker-backed one
-  (`await` in examples, File/Blob accepted where the worker converts them, `deleteDocument()` for
-  document lifetime) - and the generator tags (`@group`, `@shortname`, `@drawable`) with it, then
-  paste the same block onto the worker method. A kernel method the worker splits into several public
-  methods is allow-listed in `scripts/worker-parity.allow.json` under `docs`, with the reason.
+- **The worker API classes are generated from the kernel; do not edit them.** Every file under
+  `occt-worker/lib/api/occt`, `manifold-worker/lib/api/{manifold,cross-section,mesh}` and the class
+  files of `jscad-worker/lib/api` carries a GENERATED header. Change the kernel method (its doc, its
+  signature, its position in the class) and run `npm run gen:worker-api` at the repository root;
+  `check:worker-api` in `npm test` fails on a stale file. A new kernel API method appears in the
+  worker on the next generation - and in the parity snapshot, which then needs `--update`, because a
+  new dotted path is a public API addition. Hand-written members (downloads, File/Blob preparation,
+  re-hydration, reserved commands) go into `lib/api-hand/<same path>.ts` with a marker line each; a
+  `// replaces <path>` member without a JSDoc receives the kernel's. Every public kernel API method
+  needs an explicit return type - the generator refuses an inferred one.
+- **Method and class JSDoc is authored on the kernel and describes the API as users reach it** - the
+  asynchronous, worker-backed one (`await` in examples, File/Blob accepted where the worker converts
+  them, `deleteDocument()` for document lifetime) - with the generator tags (`@group`, `@shortname`,
+  `@drawable`) that the visual editors are built from. The worker's copy is generated; `check:worker-parity`
+  still compares the two and fails on any difference. A kernel method the worker splits into several
+  public methods is allow-listed in `scripts/worker-parity.allow.json` under `docs`, with the reason.
 - Kernel suites need the raised heap and ESM VM modules the scripts already set. Dropping
   `NODE_OPTIONS` makes them fail in ways that look like test bugs.
 - `occt` ships prebuilt wasm alongside the JavaScript (`bitbybit-dev-occt`, plus 64-bit and
