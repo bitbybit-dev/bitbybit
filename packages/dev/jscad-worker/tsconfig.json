@@ -1,10 +1,8 @@
-// The editor and test view of this package. The build (tsconfig.bitbybit.json) enforces the whole
-// strict set of tsconfig.base.cad-strict.json, ahead of the shared loose base, the way base and occt
-// did. It carries no strict baseline any more. The flags are repeated here so the editor and the tests
-// hold the same line; the build config cannot carry this note because the references generator
-// rewrites it without comments.
+// The editor and test view of this package: the shared CAD base (tsconfig.base.cad.json, the whole strict
+// set) plus this package's own paths. The build config, tsconfig.bitbybit.json, is generated from the
+// package manifests by scripts/gen-ts-references.mjs and carries the same base.
 {
-    "extends": "../../../tsconfig.base.cad-loose.json",
+    "extends": "../../../tsconfig.base.cad.json",
     "compileOnSave": false,
     "compilerOptions": {
         "outDir": "./dist/bitbybit-dev",
@@ -22,14 +20,6 @@
             "@bitbybit-dev/jscad/*": [
                 "../jscad/dist/*"
             ]
-        },
-        "strict": true,
-        "noUncheckedIndexedAccess": true,
-        "exactOptionalPropertyTypes": true,
-        "noImplicitReturns": true,
-        "noImplicitOverride": true,
-        "noPropertyAccessFromIndexSignature": true,
-        "isolatedModules": true,
-        "forceConsistentCasingInFileNames": true
+        }
     }
 }

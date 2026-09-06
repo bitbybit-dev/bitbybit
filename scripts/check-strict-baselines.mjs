@@ -1,13 +1,12 @@
 #!/usr/bin/env node
-// Holds every package's strict baseline to what its code produces today, in both directions. Each
-// package typechecks with tsconfig.strict.json - its build config plus the flags in
-// tsconfig.base.cad-strict.json - and tsc-baseline records the errors in .tsc-baseline.json as a count
-// per file and error code (`--ignoreMessages`: a message can embed an absolute path into the pnpm
-// store, which would tie the hash to one machine), so the count can only go down: one more error of a
-// code a file already has is new and fails, and an error that was fixed without
-// `npm run typecheck:strict:save` leaves a stale entry, which fails here too, so every fix lands with
-// the baseline that documents it. Saving is deterministic, which is what makes a byte comparison of a
-// fresh save against the committed file the check.
+// Holds every package at zero strict errors. Each package typechecks with tsconfig.strict.json - its build
+// config, whose shared base carries the whole strict set, with nothing emitted. While the packages were
+// being ratcheted, each carried a .tsc-baseline.json recorded by tsc-baseline (`--ignoreMessages`: a
+// message can embed an absolute path into the pnpm store, which would tie the hash to one machine), and
+// this script held that baseline to the code in both directions: a fresh save had to match the committed
+// file byte for byte, so the count could only go down. No package has a baseline any more, so the check
+// reduces to "no errors": a package with errors and no baseline fails, and a baseline that reappears is
+// still held to the code the same way, so the ratchet can restart for a single package if it ever must.
 import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
