@@ -15,7 +15,7 @@ export class BabylonGaussianSplatting {
      * @shortname gaussian splatting mesh
      * @disposableOutput true
      */
-    async create(inputs: Inputs.BabylonGaussianSplatting.CreateGaussianSplattingMeshDto): Promise<BABYLON.GaussianSplattingMesh | undefined> {
+    async create(inputs: Inputs.BabylonGaussianSplatting.CreateGaussianSplattingMeshDto): Promise<BABYLON.GaussianSplattingMesh> {
         if (inputs.url) {
             const gs = BABYLON.SceneLoader.ImportMeshAsync(null, inputs.url, undefined, this.context.scene, undefined, ".ply").then((result) => {
                 const gaussianSplattingMesh = result.meshes[0] as BABYLON.GaussianSplattingMesh;
@@ -26,7 +26,8 @@ export class BabylonGaussianSplatting {
             return gs;
         }
         else {
-            return undefined;
+            // No url, nothing to load. The declared mesh type is the contract scripts are typed against.
+            return undefined as unknown as BABYLON.GaussianSplattingMesh;
         }
     }
 

@@ -165,8 +165,8 @@ export class BabylonMesh {
      * @group get
      * @shortname parent
      */
-    getParent(inputs: Inputs.BabylonMesh.SetParentDto) {
-        return inputs.babylonMesh.parent;
+    getParent(inputs: Inputs.BabylonMesh.SetParentDto): BABYLON.Node {
+        return inputs.babylonMesh.parent!;
     }
 
     /**
