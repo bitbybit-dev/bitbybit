@@ -1,0 +1,25 @@
+{
+    "kernels": [
+        {
+            "dir": "bitbybit-dev-occt",
+            "file": "bitbybit-dev-occt.a4a6ec2a.wasm",
+            "bytes": 34524750,
+            "sha256": "1b6a8fc7b83d222854f73b66af8d0e45ad4fdee025904b447e885d4e18ae8656",
+            "url": "https://raw.githubusercontent.com/bitbybit-dev/bitbybit-assets/fbb093343770e3c387014dc1fd4a6634e09b5be8/wasm/bitbybit-dev-occt.a4a6ec2a.wasm"
+        },
+        {
+            "dir": "bitbybit-dev-occt-64-bit",
+            "file": "bitbybit-dev-occt-64-bit.2e707000.wasm",
+            "bytes": 35460172,
+            "sha256": "e0fb685bf0c6234bc48886de4d9446c90cfeb67239bc2a49299cf43a7f17bde6",
+            "url": "https://raw.githubusercontent.com/bitbybit-dev/bitbybit-assets/fbb093343770e3c387014dc1fd4a6634e09b5be8/wasm/bitbybit-dev-occt-64-bit.2e707000.wasm"
+        },
+        {
+            "dir": "bitbybit-dev-occt-64-bit-mt",
+            "file": "bitbybit-dev-occt-64-bit-mt.6990df75.wasm",
+            "bytes": 32963728,
+            "sha256": "693eb9d6245e0a52b2497cae296549221cfef468bf67928f58338494ccc16ea2",
+            "url": "https://raw.githubusercontent.com/bitbybit-dev/bitbybit-assets/fbb093343770e3c387014dc1fd4a6634e09b5be8/wasm/bitbybit-dev-occt-64-bit-mt.6990df75.wasm"
+        }
+    ]
+}

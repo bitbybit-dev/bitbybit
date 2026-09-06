@@ -103,8 +103,14 @@ This package is part of the open-source Bitbybit ecosystem. Your subscription he
 
 ## Major Dependencies
 
-[OpenCascade Technology (OCCT)](https://github.com/Open-Cascade-SAS/OCCT)
+[OpenCascade Technology (OCCT)](https://github.com/Open-Cascade-SAS/OCCT), compiled to WebAssembly together with
+[Draco](https://github.com/google/draco) for glTF compression.
 
 ## License
 
-MIT © [Bit By Bit Developers](https://bitbybit.dev)
+The TypeScript and JavaScript in this package: MIT © [Bit By Bit Developers](https://bitbybit.dev).
+
+The WebAssembly kernels it ships embed OCCT (LGPL-2.1 with the Open CASCADE exception) and Draco
+(Apache-2.0). `NOTICE` lists them and `licenses/` reproduces their license texts. The kernel is a
+separately replaceable component: it is loaded at runtime through the emscripten `locateFile` hook, so a
+modified OCCT compiled to WebAssembly can be substituted without relinking this package.

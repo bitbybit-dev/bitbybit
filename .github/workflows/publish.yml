@@ -58,6 +58,16 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # The three OCCT kernels are not tracked (35 MB each, a new set per rebuild): kernels.json in
+      # the occt package names them with their SHA-256 and where they are published, and the fetch
+      # verifies what is present and downloads what is not. Cached on the manifest's hash so a
+      # rebuild, and only a rebuild, downloads again.
+      - uses: actions/cache@v4
+        with:
+          key: occt-kernels-${{ hashFiles('packages/dev/occt/kernels.json') }}
+          path: packages/dev/occt/bitbybit-dev-occt*/*.wasm
+      - run: npm run kernels:fetch
+
       # the same gates verify.yml runs, because a publish must never depend on a green run somewhere else
       - run: npm run check:references
       - run: npm run rebuild-all-packages

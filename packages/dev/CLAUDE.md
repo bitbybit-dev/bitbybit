@@ -64,8 +64,11 @@ npm run lint
 - Kernel suites need the raised heap and ESM VM modules the scripts already set. Dropping
   `NODE_OPTIONS` makes them fail in ways that look like test bugs.
 - `occt` ships prebuilt wasm alongside the JavaScript (`bitbybit-dev-occt`, plus 64-bit and
-  64-bit-mt variants), copied into `dist/` by `copy-occt`. A build that skips it produces a package
-  that resolves but cannot run.
+  64-bit-mt variants), copied into `dist/` by `copy-occt`. The wasm is not tracked: `kernels.json`
+  names each kernel with its SHA-256 and url, and `build-p` starts by fetching what is missing and
+  verifying what is present (`npm run kernels:fetch` at the root does the same). A build that skips
+  it produces a package that resolves but cannot run. The tarball also carries `NOTICE` and the
+  OCCT and Draco license texts.
 - `cad-cloud-sdk` is different from its siblings: it uses **Vitest**, and part of its `src/types/`
   is **generated** by the API-3D platform rather than hand-written. Do not edit those by hand.
 - `create-app` is the `npx @bitbybit-dev/create-app` scaffolder, not a library.

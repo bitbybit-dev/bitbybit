@@ -8,7 +8,14 @@ ts-api-docs
 csg-generated.js
 *.d.ts
 !bitbybit-dev-occt.d.ts
+!/bitbybit-dev-occt-64-bit/bitbybit-dev-occt-64-bit.d.ts
+!/bitbybit-dev-occt-64-bit-mt/bitbybit-dev-occt-64-bit-mt.d.ts
+!/bitbybit-dev-occt*/index.d.ts
 ts-doc-theme
 coverage
 bitbybit-dev-occt/new
 *.bak
+# The kernels are fetched by scripts/fetch-kernels.mjs from the urls in kernels.json, or written by the
+# kernel build; they are never tracked here (35 MB each, a new set per rebuild).
+/bitbybit-dev-occt*/*.wasm
+/bitbybit-dev-occt*/*.wasm.part

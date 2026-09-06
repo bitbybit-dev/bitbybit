@@ -1,0 +1,34 @@
+NOTICE - third-party components in @bitbybit-dev/occt
+=====================================================
+
+The TypeScript and JavaScript in this package are MIT-licensed (see LICENSE). The WebAssembly
+kernels it ships (bitbybit-dev-occt/*.wasm, bitbybit-dev-occt-64-bit/*.wasm,
+bitbybit-dev-occt-64-bit-mt/*.wasm, with their emscripten glue) are compiled from the following
+open-source software. Each component is governed by its own license, reproduced in licenses/;
+your rights under those licenses are not restricted by this package's license.
+
+1. Open CASCADE Technology (OCCT)
+   License: GNU Lesser General Public License v2.1 with the Open CASCADE exception (version 1.0)
+   Source:  https://dev.opencascade.org/ (the exact sources are the OCCT fork at
+            https://github.com/bitbybit-dev/OCCT plus the bindings layer compiled with it)
+   Text:    licenses/LGPL-2.1.txt, licenses/OCCT-LGPL-exception.txt
+   Usage:   compiled to WebAssembly and shipped as the three kernel binaries above.
+
+   LGPL-2.1 compliance: the kernel is a separately replaceable component. It is loaded at
+   runtime through the emscripten glue's locateFile hook (and, in the worker packages and the
+   runners, as a separate Web Worker plus wasm file), so a modified OCCT can be substituted by
+   compiling it to WebAssembly and pointing locateFile - or the cdn.js entry's url - at the
+   replacement, without relinking anything in this package.
+
+2. Draco 3D data compression
+   License: Apache License 2.0
+   Source:  https://github.com/google/draco
+   Text:    licenses/Draco-Apache-2.0.txt
+   Usage:   linked into the kernels for glTF geometry compression.
+
+3. Emscripten runtime support code
+   License: MIT / University of Illinois-NCSA (https://github.com/emscripten-core/emscripten)
+   Usage:   the JavaScript glue files bitbybit-dev-occt*/bitbybit-dev-occt*.js are emscripten
+            output; the compiler's runtime library is embedded in them and in the wasm.
+
+For questions about third-party licensing, contact info@bitbybit.dev.

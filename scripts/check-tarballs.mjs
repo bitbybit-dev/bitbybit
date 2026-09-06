@@ -40,6 +40,17 @@ for (const dir of projects) {
     const leaked = shipped.filter((f) => f.endsWith(".tsbuildinfo") || f.endsWith(".npmignore") || f.startsWith("coverage/"));
     if (leaked.length) fail(`${manifest.name} ships build-only files: ${leaked.join(", ")}`);
     packages.push({ name: manifest.name, version: manifest.version, tarball: join(packDir, packed.filename), files: shipped.length });
+    if (manifest.name === "@bitbybit-dev/occt") {
+        const kernels = JSON.parse(readFileSync(join(dir, "kernels.json"), "utf8")).kernels;
+        const required = [
+            "NOTICE", "licenses/LGPL-2.1.txt", "licenses/OCCT-LGPL-exception.txt", "licenses/Draco-Apache-2.0.txt",
+            ...kernels.flatMap((k) => [`${k.dir}/${k.file}`, `${k.dir}/${k.dir}.js`, `${k.dir}/${k.dir}.d.ts`, `${k.dir}/index.js`, `${k.dir}/index.d.ts`, `${k.dir}/cdn.js`]),
+        ];
+        const missing = required.filter((f) => !shipped.includes(f));
+        if (missing.length) fail(`${manifest.name} tarball lacks ${missing.join(", ")} - the kernels, their typings and the license notices must ship`);
+        const stray = shipped.filter((f) => /\.wasm$/.test(f) && !kernels.some((k) => f === `${k.dir}/${k.file}`));
+        if (stray.length) fail(`${manifest.name} tarball ships kernels kernels.json does not list: ${stray.join(", ")}`);
+    }
 }
 console.log(`packed ${packages.length} tarballs: ${packages.map((p) => `${p.name.replace("@bitbybit-dev/", "")} (${p.files} files)`).join(", ")}`);
 

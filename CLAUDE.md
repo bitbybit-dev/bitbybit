@@ -104,6 +104,12 @@ its dependents publish. The default dispatch publishes under the `next` dist-tag
 second dispatch with `latest` releases. Each package needs a trusted publisher configured on
 npmjs.com for this repository and `publish.yml`.
 
+The OCCT kernels the `occt` package ships are not tracked: `packages/dev/occt/kernels.json` names
+the three content-hashed wasm files with their SHA-256 and the url each is published at, and
+`npm run kernels:fetch` (run by both workflows after the install, and by the package's `build-p`)
+downloads what is missing and verifies what is present. A kernel rebuild writes the manifest; a
+kernel on disk that disagrees with it is an error, never overwritten.
+
 Two of those checks carry committed state. `api:check` runs api-extractor in `base` and `core`
 against their built `dist/index.d.ts` and fails when the public surface differs from the report in
 each package's `etc/`: the dotted API is persisted in users' saved scripts, so a change to it lands

@@ -41,6 +41,16 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # The three OCCT kernels are not tracked (35 MB each, a new set per rebuild): kernels.json in
+      # the occt package names them with their SHA-256 and where they are published, and the fetch
+      # verifies what is present and downloads what is not. Cached on the manifest's hash so a
+      # rebuild, and only a rebuild, downloads again.
+      - uses: actions/cache@v4
+        with:
+          key: occt-kernels-${{ hashFiles('packages/dev/occt/kernels.json') }}
+          path: packages/dev/occt/bitbybit-dev-occt*/*.wasm
+      - run: npm run kernels:fetch
+
       # ESLint 10 with a committed suppression baseline: every finding that existed when the config landed
       # is recorded in eslint-suppressions.json, a new one fails, and so does a suppression no longer needed.
       - name: Lint
