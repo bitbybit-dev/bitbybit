@@ -49,6 +49,12 @@ npm run lint
   re-hydration, reserved commands) go into `lib/api-hand/<same path>.ts` with a marker line each; a
   `// replaces <path>` member without a JSDoc receives the kernel's. Every public kernel API method
   needs an explicit return type - the generator refuses an inferred one.
+- **`occt/lib/api/inputs/occ-inputs.ts` is assembled from `occt/lib/api/inputs/occt/*.ts`; do not edit it.**
+  Add or change a DTO in the fragment whose name fits (they are slices of the namespace in a fixed
+  order, so a new DTO lands where its fragment sits), import a sibling fragment's DTO when a property
+  refers to it, and run `npm run gen:occ-inputs` at the repository root; `check:occ-inputs` in `npm test`
+  fails on a stale file. The fragments are excluded from the build - the assembled namespace is what
+  compiles - but they type-check in the editor as modules.
 - **Method and class JSDoc is authored on the kernel and describes the API as users reach it** - the
   asynchronous, worker-backed one (`await` in examples, File/Blob accepted where the worker converts
   them, `deleteDocument()` for document lifetime) - with the generator tags (`@group`, `@shortname`,

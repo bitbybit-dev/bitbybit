@@ -370,9 +370,6 @@
     }
   },
   "packages/dev/occt/lib/api/inputs/occ-inputs.ts": {
-    "@typescript-eslint/prefer-as-const": {
-      "count": 4
-    },
     "semi": {
       "count": 1
     }

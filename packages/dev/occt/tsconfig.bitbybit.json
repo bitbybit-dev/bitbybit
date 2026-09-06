@@ -6,6 +6,7 @@
     "extends": "../../../tsconfig.base.cad.json",
     "compileOnSave": false,
     "exclude": [
+        "lib/api/inputs/occt/**/*",
         "coverage",
         "dist",
         "lib/workers/occ/services/advanced/**/*",

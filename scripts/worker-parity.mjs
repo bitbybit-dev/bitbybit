@@ -52,6 +52,8 @@ function sourceFiles(dir) {
         for (const entry of readdirSync(d, { withFileTypes: true })) {
             if (entry.name === "node_modules" || entry.name === "dist" || entry.name.startsWith(".")) continue;
             const p = path.join(d, entry.name);
+            // the OCCT inputs fragments duplicate the DTO classes of the assembled occ-inputs.ts (scripts/gen-occ-inputs.mjs)
+            if (entry.isDirectory() && p.endsWith(path.join("lib", "api", "inputs", "occt"))) continue;
             if (entry.isDirectory()) walk(p);
             else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".d.ts")) out.push(p);
         }
