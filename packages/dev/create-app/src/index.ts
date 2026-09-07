@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Command } from "commander";
 import inquirer from "inquirer";
@@ -41,8 +40,6 @@ interface CloudProjectOptions {
 type AppType = "frontend" | "cloud";
 
 type EngineType = "threejs" | "babylonjs" | "playcanvas";
-type BundlerType = "vite";
-type LanguageType = "typescript";
 type OcctArchitectureType = "32" | "64" | "64-mt";
 type BackendType = "hono-sdk" | "hono-rest" | "nodejs-sdk" | "nodejs-rest" | "dotnet-rest";
 
@@ -71,9 +68,9 @@ const OCCT_ARCHITECTURE_DISPLAY_NAMES: Record<OcctArchitectureType, string> = {
 };
 
 const OCCT_ARCHITECTURE_DESCRIPTIONS: Record<OcctArchitectureType, string> = {
-    "32": "Supported on all browsers",
+    "32": "Supported on all browsers (recommended)",
     "64": "May not be supported on all browsers",
-    "64-mt": "Requires special server configuration (COOP/COEP headers)"
+    "64-mt": "Requires COOP/COEP server headers"
 };
 
 const BACKEND_DISPLAY_NAMES: Record<BackendType, string> = {
@@ -89,7 +86,7 @@ const BACKEND_DESCRIPTIONS: Record<BackendType, string> = {
     "hono-rest": "Raw fetch calls on Cloudflare Workers edge runtime",
     "nodejs-sdk": "Type-safe SDK on Node.js with Express 5",
     "nodejs-rest": "Raw fetch calls on Node.js with Express 5",
-    "dotnet-rest": "HttpClient calls on ASP.NET Core minimal API",
+    "dotnet-rest": "HttpClient calls on ASP.NET Core minimal API (.NET 10)",
 };
 
 const BACKEND_COLORS: Record<BackendType, (text: string) => string> = {
@@ -156,27 +153,27 @@ async function promptCloudProjectOptions(projectNameArg?: string): Promise<Cloud
 
     const backendChoices = [
         {
-            name: `${BACKEND_COLORS["hono-sdk"]("● Hono + SDK")}        ${chalk.gray("- Type-safe SDK on Cloudflare Workers edge runtime")}`,
+            name: `${BACKEND_COLORS["hono-sdk"]("● Hono + SDK")}        ${chalk.gray(`- ${BACKEND_DESCRIPTIONS["hono-sdk"]}`)}`,
             value: "hono-sdk" as BackendType,
             short: "Hono + SDK"
         },
         {
-            name: `${BACKEND_COLORS["hono-rest"]("● Hono + REST")}       ${chalk.gray("- Raw fetch calls on Cloudflare Workers edge runtime")}`,
+            name: `${BACKEND_COLORS["hono-rest"]("● Hono + REST")}       ${chalk.gray(`- ${BACKEND_DESCRIPTIONS["hono-rest"]}`)}`,
             value: "hono-rest" as BackendType,
             short: "Hono + REST"
         },
         {
-            name: `${BACKEND_COLORS["nodejs-sdk"]("● Node.js + SDK")}     ${chalk.gray("- Type-safe SDK on Node.js with Express 5")}`,
+            name: `${BACKEND_COLORS["nodejs-sdk"]("● Node.js + SDK")}     ${chalk.gray(`- ${BACKEND_DESCRIPTIONS["nodejs-sdk"]}`)}`,
             value: "nodejs-sdk" as BackendType,
             short: "Node.js + SDK"
         },
         {
-            name: `${BACKEND_COLORS["nodejs-rest"]("● Node.js + REST")}    ${chalk.gray("- Raw fetch calls on Node.js with Express 5")}`,
+            name: `${BACKEND_COLORS["nodejs-rest"]("● Node.js + REST")}    ${chalk.gray(`- ${BACKEND_DESCRIPTIONS["nodejs-rest"]}`)}`,
             value: "nodejs-rest" as BackendType,
             short: "Node.js + REST"
         },
         {
-            name: `${BACKEND_COLORS["dotnet-rest"]("● .NET + REST")}       ${chalk.gray("- HttpClient calls on ASP.NET Core minimal API (.NET 10)")}`,
+            name: `${BACKEND_COLORS["dotnet-rest"]("● .NET + REST")}       ${chalk.gray(`- ${BACKEND_DESCRIPTIONS["dotnet-rest"]}`)}`,
             value: "dotnet-rest" as BackendType,
             short: ".NET + REST"
         },
@@ -232,17 +229,17 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
 
     const occtArchitectureChoices = [
         {
-            name: `${chalk.green("● 32-bit")}          ${chalk.gray("- Supported on all browsers (recommended)")}`,
+            name: `${chalk.green("● 32-bit")}          ${chalk.gray(`- ${OCCT_ARCHITECTURE_DESCRIPTIONS["32"]}`)}`,
             value: "32" as OcctArchitectureType,
             short: "32-bit"
         },
         {
-            name: `${chalk.yellow("● 64-bit")}          ${chalk.gray("- May not be supported on all browsers")}`,
+            name: `${chalk.yellow("● 64-bit")}          ${chalk.gray(`- ${OCCT_ARCHITECTURE_DESCRIPTIONS["64"]}`)}`,
             value: "64" as OcctArchitectureType,
             short: "64-bit"
         },
         {
-            name: `${chalk.magenta("● 64-bit MT")}       ${chalk.gray("- Requires COOP/COEP server headers")}`,
+            name: `${chalk.magenta("● 64-bit MT")}       ${chalk.gray(`- ${OCCT_ARCHITECTURE_DESCRIPTIONS["64-mt"]}`)}`,
             value: "64-mt" as OcctArchitectureType,
             short: "64-bit MT"
         }
@@ -274,17 +271,17 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
                 message: chalk.cyan("🎮 Which 3D engine would you like to use?"),
                 choices: [
                     {
-                        name: `${ENGINE_COLORS["threejs"]("● Three.js")}    ${chalk.gray("- Lightweight and popular 3D library")}`,
+                        name: `${ENGINE_COLORS["threejs"]("● Three.js")}    ${chalk.gray(`- ${ENGINE_DESCRIPTIONS["threejs"]}`)}`,
                         value: "threejs",
                         short: "Three.js"
                     },
                     {
-                        name: `${ENGINE_COLORS["babylonjs"]("● Babylon.js")}  ${chalk.gray("- Powerful and feature-rich game engine")}`,
+                        name: `${ENGINE_COLORS["babylonjs"]("● Babylon.js")}  ${chalk.gray(`- ${ENGINE_DESCRIPTIONS["babylonjs"]}`)}`,
                         value: "babylonjs",
                         short: "Babylon.js"
                     },
                     {
-                        name: `${ENGINE_COLORS["playcanvas"]("● PlayCanvas")}  ${chalk.gray("- Fast and lightweight WebGL game engine")}`,
+                        name: `${ENGINE_COLORS["playcanvas"]("● PlayCanvas")}  ${chalk.gray(`- ${ENGINE_DESCRIPTIONS["playcanvas"]}`)}`,
                         value: "playcanvas",
                         short: "PlayCanvas"
                     }
@@ -307,17 +304,17 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
                 message: chalk.cyan("🎮 Which 3D engine would you like to use?"),
                 choices: [
                     {
-                        name: `${ENGINE_COLORS["threejs"]("● Three.js")}    ${chalk.gray("- Lightweight and flexible 3D library")}`,
+                        name: `${ENGINE_COLORS["threejs"]("● Three.js")}    ${chalk.gray(`- ${ENGINE_DESCRIPTIONS["threejs"]}`)}`,
                         value: "threejs",
                         short: "Three.js"
                     },
                     {
-                        name: `${ENGINE_COLORS["babylonjs"]("● Babylon.js")}  ${chalk.gray("- Powerful and feature-rich game engine")}`,
+                        name: `${ENGINE_COLORS["babylonjs"]("● Babylon.js")}  ${chalk.gray(`- ${ENGINE_DESCRIPTIONS["babylonjs"]}`)}`,
                         value: "babylonjs",
                         short: "Babylon.js"
                     },
                     {
-                        name: `${ENGINE_COLORS["playcanvas"]("● PlayCanvas")}  ${chalk.gray("- Fast and lightweight WebGL game engine")}`,
+                        name: `${ENGINE_COLORS["playcanvas"]("● PlayCanvas")}  ${chalk.gray(`- ${ENGINE_DESCRIPTIONS["playcanvas"]}`)}`,
                         value: "playcanvas",
                         short: "PlayCanvas"
                     }

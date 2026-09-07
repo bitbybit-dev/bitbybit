@@ -15,9 +15,9 @@ describe("ConvertEndpoint", () => {
             const result = await convert.stepToGltf(body as never);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/convert/step-to-gltf");
-            expect(calls[0].body).toStrictEqual(body);
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/convert/step-to-gltf");
+            expect(calls[0]!.body).toStrictEqual(body);
             expect(result).toStrictEqual(taskResult);
         });
     });
@@ -34,8 +34,8 @@ describe("ConvertEndpoint", () => {
             const result = await convert.stepToGltfAdvanced(body as never);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/convert/step-to-gltf-advanced");
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/convert/step-to-gltf-advanced");
             expect(result).toStrictEqual(taskResult);
         });
     });

@@ -15,9 +15,9 @@ describe("CadEndpoint", () => {
             const result = await cad.execute(body as never);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/cad/execute");
-            expect(calls[0].body).toStrictEqual(body);
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/cad/execute");
+            expect(calls[0]!.body).toStrictEqual(body);
             expect(result).toStrictEqual(taskResult);
         });
     });
@@ -34,8 +34,8 @@ describe("CadEndpoint", () => {
             const result = await cad.pipeline(body as never);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/cad/pipeline");
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/cad/pipeline");
             expect(result).toStrictEqual(taskResult);
         });
     });
@@ -51,8 +51,8 @@ describe("CadEndpoint", () => {
             const result = await cad.compound({ operations: [] } as never);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/cad/compound");
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/cad/compound");
             expect(result).toStrictEqual(compoundResult);
         });
     });

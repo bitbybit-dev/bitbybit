@@ -65,12 +65,12 @@ describe("BitbybitClient", () => {
 
             // Assert
             const [getArgs, postArgs] = fetchMock.mock.calls;
-            expect(getArgs[1].headers["x-api-key"]).toBe("bbk_mykey");
-            expect(getArgs[1].headers["Content-Type"]).toBeUndefined();
-            expect(getArgs[1].body).toBeUndefined();
-            expect(postArgs[1].headers["x-api-key"]).toBe("bbk_mykey");
-            expect(postArgs[1].headers["Content-Type"]).toBe("application/json");
-            expect(postArgs[1].body).toBe(JSON.stringify({ kind: "probe" }));
+            expect(getArgs![1].headers["x-api-key"]).toBe("bbk_mykey");
+            expect(getArgs![1].headers["Content-Type"]).toBeUndefined();
+            expect(getArgs![1].body).toBeUndefined();
+            expect(postArgs![1].headers["x-api-key"]).toBe("bbk_mykey");
+            expect(postArgs![1].headers["Content-Type"]).toBe("application/json");
+            expect(postArgs![1].body).toBe(JSON.stringify({ kind: "probe" }));
         });
 
         it("sends JSON body for POST requests", async () => {
@@ -83,7 +83,7 @@ describe("BitbybitClient", () => {
             await client.request("POST", "/api/v1/cad/execute", body);
 
             // Assert
-            expect(fetchMock.mock.calls[0][1].body).toBe(JSON.stringify(body));
+            expect(fetchMock.mock.calls[0]![1].body).toBe(JSON.stringify(body));
         });
 
         it("does not send body for GET requests", async () => {
@@ -95,7 +95,7 @@ describe("BitbybitClient", () => {
             await client.request("GET", "/api/v1/tasks");
 
             // Assert
-            expect(fetchMock.mock.calls[0][1].body).toBe(undefined);
+            expect(fetchMock.mock.calls[0]![1].body).toBe(undefined);
         });
 
         it("uses default base URL when none provided", async () => {
@@ -107,7 +107,7 @@ describe("BitbybitClient", () => {
             await client.request("GET", "/api/v1/tasks");
 
             // Assert
-            expect(fetchMock.mock.calls[0][0]).toBe("https://api.bitbybit.dev/api/v1/tasks");
+            expect(fetchMock.mock.calls[0]![0]).toBe("https://api.bitbybit.dev/api/v1/tasks");
         });
 
         it("skips validation when validate is false", async () => {
@@ -143,7 +143,7 @@ describe("BitbybitClient", () => {
             const result = await client.health();
 
             // Assert
-            expect(fetchMock.mock.calls[0][0]).toBe("https://api.bitbybit.dev/health");
+            expect(fetchMock.mock.calls[0]![0]).toBe("https://api.bitbybit.dev/health");
             expect(result).toStrictEqual(healthData);
         });
     });

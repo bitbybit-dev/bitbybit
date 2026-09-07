@@ -94,14 +94,14 @@ describe("Command Handlers Unit Tests", () => {
                 },
             } as any;
 
-            const result = CommandHandlers[ReservedFunctions.DELETE_SHAPE](
+            const result = CommandHandlers[ReservedFunctions.DELETE_SHAPE]!(
                 { shape: { hash: 12345 } },
                 mockContext
             );
 
             expect(result.handled).toBe(true);
             expect(result.result).toEqual({});
-            expect(mockCleanCacheForHash.calls[0][0]).toBe(12345);
+            expect(mockCleanCacheForHash.calls[0]![0]).toBe(12345);
         });
     });
 
@@ -116,7 +116,7 @@ describe("Command Handlers Unit Tests", () => {
                 },
             } as any;
 
-            const result = CommandHandlers[ReservedFunctions.DELETE_SHAPES](
+            const result = CommandHandlers[ReservedFunctions.DELETE_SHAPES]!(
                 { shapes: [{ hash: 111 }, { hash: 222 }, { hash: 333 }] },
                 mockContext
             );
@@ -124,9 +124,9 @@ describe("Command Handlers Unit Tests", () => {
             expect(result.handled).toBe(true);
             expect(result.result).toEqual({});
             expect(mockCleanCacheForHash.calls.length).toBe(3);
-            expect(mockCleanCacheForHash.calls[0][0]).toBe(111);
-            expect(mockCleanCacheForHash.calls[1][0]).toBe(222);
-            expect(mockCleanCacheForHash.calls[2][0]).toBe(333);
+            expect(mockCleanCacheForHash.calls[0]![0]).toBe(111);
+            expect(mockCleanCacheForHash.calls[1]![0]).toBe(222);
+            expect(mockCleanCacheForHash.calls[2]![0]).toBe(333);
         });
     });
 
@@ -141,7 +141,7 @@ describe("Command Handlers Unit Tests", () => {
                 },
             } as any;
 
-            const result = CommandHandlers[ReservedFunctions.CLEAN_ALL_CACHE]({}, mockContext);
+            const result = CommandHandlers[ReservedFunctions.CLEAN_ALL_CACHE]!({}, mockContext);
 
             expect(result.handled).toBe(true);
             expect(result.result).toEqual({});
@@ -161,7 +161,7 @@ describe("Command Handlers Unit Tests", () => {
                 },
             } as any;
 
-            const result = CommandHandlers[ReservedFunctions.STARTED_THE_RUN]({}, mockContext);
+            const result = CommandHandlers[ReservedFunctions.STARTED_THE_RUN]!({}, mockContext);
 
             expect(result.handled).toBe(true);
             expect(result.result).toEqual({});
@@ -185,7 +185,7 @@ describe("Command Handlers Unit Tests", () => {
                 },
             } as any;
 
-            const result = CommandHandlers[ReservedFunctions.STARTED_THE_RUN]({}, mockContext);
+            const result = CommandHandlers[ReservedFunctions.STARTED_THE_RUN]!({}, mockContext);
 
             expect(result.handled).toBe(true);
             expect(result.result).toEqual({});
@@ -206,7 +206,7 @@ describe("Command Handlers Unit Tests", () => {
                 addPendingDependency: createTrackingFn().fn,
             } as any;
 
-            const result = CommandHandlers[ReservedFunctions.ADD_OC](
+            const result = CommandHandlers[ReservedFunctions.ADD_OC]!(
                 { dep1: "value1", dep2: "value2" },
                 mockContext
             );
@@ -225,7 +225,7 @@ describe("Command Handlers Unit Tests", () => {
                 addPendingDependency: mockAddPending.fn,
             } as any;
 
-            const result = CommandHandlers[ReservedFunctions.ADD_OC](
+            const result = CommandHandlers[ReservedFunctions.ADD_OC]!(
                 { dep1: "value1" },
                 mockContext
             );
@@ -242,11 +242,11 @@ describe("Command Handlers Unit Tests", () => {
             const mockContext = {} as any;
 
             expect(() => {
-                CommandHandlers[ReservedFunctions.SHAPES_TO_MESHES]({ shapes: [] }, mockContext);
+                CommandHandlers[ReservedFunctions.SHAPES_TO_MESHES]!({ shapes: [] }, mockContext);
             }).toThrow("No shapes detected");
 
             expect(() => {
-                CommandHandlers[ReservedFunctions.SHAPES_TO_MESHES]({}, mockContext);
+                CommandHandlers[ReservedFunctions.SHAPES_TO_MESHES]!({}, mockContext);
             }).toThrow("No shapes detected");
         });
     });

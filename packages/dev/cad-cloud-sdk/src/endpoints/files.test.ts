@@ -15,9 +15,9 @@ describe("FilesEndpoint", () => {
             const result = await files.upload(body as never);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/files/upload");
-            expect(calls[0].body).toStrictEqual(body);
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/files/upload");
+            expect(calls[0]!.body).toStrictEqual(body);
             expect(result).toStrictEqual(uploadResult);
         });
     });
@@ -33,8 +33,8 @@ describe("FilesEndpoint", () => {
             const result = await files.confirm("f-1");
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/files/f-1/confirm");
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/files/f-1/confirm");
             expect(result).toStrictEqual(confirmResult);
         });
     });
@@ -50,8 +50,8 @@ describe("FilesEndpoint", () => {
             const result = await files.get("f-1");
 
             // Assert
-            expect(calls[0].method).toBe("GET");
-            expect(calls[0].path).toBe("/api/v1/files/f-1");
+            expect(calls[0]!.method).toBe("GET");
+            expect(calls[0]!.path).toBe("/api/v1/files/f-1");
             expect(result).toStrictEqual(fileDetail);
         });
     });
@@ -67,8 +67,8 @@ describe("FilesEndpoint", () => {
             const result = await files.list();
 
             // Assert
-            expect(calls[0].method).toBe("GET");
-            expect(calls[0].path).toBe("/api/v1/files");
+            expect(calls[0]!.method).toBe("GET");
+            expect(calls[0]!.path).toBe("/api/v1/files");
             expect(result).toStrictEqual(fileList);
         });
 
@@ -81,9 +81,9 @@ describe("FilesEndpoint", () => {
             await files.list({ page: 1, limit: 5, status: "confirmed" });
 
             // Assert
-            expect(calls[0].path).toContain("page=1");
-            expect(calls[0].path).toContain("limit=5");
-            expect(calls[0].path).toContain("status=confirmed");
+            expect(calls[0]!.path).toContain("page=1");
+            expect(calls[0]!.path).toContain("limit=5");
+            expect(calls[0]!.path).toContain("status=confirmed");
         });
     });
 
@@ -97,8 +97,8 @@ describe("FilesEndpoint", () => {
             const result = await files.delete("f-1");
 
             // Assert
-            expect(calls[0].method).toBe("DELETE");
-            expect(calls[0].path).toBe("/api/v1/files/f-1");
+            expect(calls[0]!.method).toBe("DELETE");
+            expect(calls[0]!.path).toBe("/api/v1/files/f-1");
             expect(result).toStrictEqual({ deleted: true });
         });
     });

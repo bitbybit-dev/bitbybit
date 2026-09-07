@@ -94,7 +94,7 @@ describe("Shape Resolver Unit Tests", () => {
             const result = shapeResolver.resolveShapeReferences(input);
             
             expect(mockCheckCache.calls.length).toBeGreaterThan(0);
-            expect(mockCheckCache.calls[0][0]).toBe(123);
+            expect(mockCheckCache.calls[0]![0]).toBe(123);
             expect(result).toEqual({ ...mockShape, hash: 123 });
         });
 
@@ -244,7 +244,7 @@ describe("Result Serializer Unit Tests", () => {
                     return false;
                 }
                 const o = obj as Record<string, unknown>;
-                return "$$" in o && typeof o.ShapeType === "function";
+                return "$$" in o && typeof o["ShapeType"] === "function";
             });
             
             // Default: isEntityHandle checks for $$ but NOT ShapeType
@@ -253,7 +253,7 @@ describe("Result Serializer Unit Tests", () => {
                     return false;
                 }
                 const o = obj as Record<string, unknown>;
-                return "$$" in o && typeof o.ShapeType !== "function";
+                return "$$" in o && typeof o["ShapeType"] !== "function";
             });
             
             mockCacheHelper = {

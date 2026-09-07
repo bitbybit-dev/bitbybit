@@ -74,7 +74,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             const dataInput = {
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0])
+                    inputs: { ...new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]) }
                 },
                 uid: "test-uid"
             };
@@ -91,7 +91,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             const dataInput = {
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0])
+                    inputs: { ...new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]) }
                 },
                 uid: "test-uid-123"
             };
@@ -117,7 +117,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.solid.createBox",
-                    inputs: boxDto
+                    inputs: { ...boxDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {
@@ -134,7 +134,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: circleDto
+                    inputs: { ...circleDto }
                 },
                 uid: "uid-2"
             }, (data: any) => {
@@ -227,7 +227,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: circleDto
+                    inputs: { ...circleDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {
@@ -260,7 +260,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.solid.createBox",
-                    inputs: boxDto
+                    inputs: { ...boxDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {
@@ -317,7 +317,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.solid.createBox",
-                    inputs: box1
+                    inputs: { ...box1 }
                 },
                 uid: "uid-1"
             }, (data1: any) => {
@@ -327,7 +327,7 @@ describe("OCC Worker Functions Unit Tests", () => {
                     onMessageInput({
                         action: {
                             functionName: "shapes.solid.createBox",
-                            inputs: box2
+                            inputs: { ...box2 }
                         },
                         uid: "uid-2"
                     }, (data2: any) => {
@@ -411,7 +411,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: circleDto
+                    inputs: { ...circleDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {
@@ -449,7 +449,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: circle1
+                    inputs: { ...circle1 }
                 },
                 uid: "uid-1"
             }, (data1: any) => {
@@ -459,7 +459,7 @@ describe("OCC Worker Functions Unit Tests", () => {
                     onMessageInput({
                         action: {
                             functionName: "shapes.wire.createCircleWire",
-                            inputs: circle2
+                            inputs: { ...circle2 }
                         },
                         uid: "uid-2"
                     }, (data2: any) => {
@@ -501,7 +501,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.solid.createBox",
-                    inputs: boxDto
+                    inputs: { ...boxDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {
@@ -554,7 +554,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: circleDto
+                    inputs: { ...circleDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {
@@ -590,7 +590,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: circleDto
+                    inputs: { ...circleDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {
@@ -694,7 +694,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.solid.createBox",
-                    inputs: boxDto
+                    inputs: { ...boxDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {
@@ -741,7 +741,7 @@ describe("OCC Worker Functions Unit Tests", () => {
             onMessageInput({
                 action: {
                     functionName: "shapes.wire.createCircleWire",
-                    inputs: circleDto
+                    inputs: { ...circleDto }
                 },
                 uid: "uid-1"
             }, (data: any) => {

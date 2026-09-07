@@ -38,8 +38,8 @@ describe("the generated worker API", () => {
 
         // Assert
         expect(posted).toHaveLength(1);
-        expect(posted[0].action.functionName).toBe("shapes.solid.createSphere");
-        expect(posted[0].action.inputs).toBe(inputs);
+        expect(posted[0]!.action.functionName).toBe("shapes.solid.createSphere");
+        expect(posted[0]!.action.inputs).toBe(inputs);
     });
 
     it("should keep each nested service on its own path", () => {
@@ -62,7 +62,7 @@ describe("the generated worker API", () => {
         void occt.shapes.wire.createCircleWire(new Inputs.OCCT.CircleDto(2, [0, 0, 0], [0, 1, 0]));
 
         // Assert
-        expect(posted[0].uid).not.toBe(posted[1].uid);
+        expect(posted[0]!.uid).not.toBe(posted[1]!.uid);
     });
 
     it("should settle the call when the worker answers with its identity", async () => {
@@ -71,7 +71,7 @@ describe("the generated worker API", () => {
         const pending = occt.shapes.solid.createSphere(new Inputs.OCCT.SphereDto(SPHERE_RADIUS, [0, 0, 0]));
 
         // Act
-        manager["occWorker"].onmessage?.({ data: { uid: posted[0].uid, result: expected } } as MessageEvent);
+        (manager["occWorker"] as Worker).onmessage?.({ data: { uid: posted[0]!.uid, result: expected } } as MessageEvent);
 
         // Assert
         await expect(pending).resolves.toBe(expected);
@@ -84,7 +84,7 @@ describe("the generated worker API", () => {
         const pending = occt.shapes.solid.createSphere(new Inputs.OCCT.SphereDto(SPHERE_RADIUS, [0, 0, 0]));
 
         // Act
-        manager["occWorker"].onmessage?.({ data: { uid: posted[0].uid, error: message } } as MessageEvent);
+        (manager["occWorker"] as Worker).onmessage?.({ data: { uid: posted[0]!.uid, error: message } } as MessageEvent);
 
         // Assert
         await expect(pending).rejects.toThrow(message);

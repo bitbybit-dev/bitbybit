@@ -14,8 +14,8 @@ describe("ModelsEndpoint", () => {
             const result = await models.list();
 
             // Assert
-            expect(calls[0].method).toBe("GET");
-            expect(calls[0].path).toBe("/api/v1/models");
+            expect(calls[0]!.method).toBe("GET");
+            expect(calls[0]!.path).toBe("/api/v1/models");
             expect(result).toStrictEqual(modelList);
         });
     });
@@ -31,8 +31,8 @@ describe("ModelsEndpoint", () => {
             const result = await models.getParams("dragon-cup");
 
             // Assert
-            expect(calls[0].method).toBe("GET");
-            expect(calls[0].path).toBe("/api/v1/models/dragon-cup/params");
+            expect(calls[0]!.method).toBe("GET");
+            expect(calls[0]!.path).toBe("/api/v1/models/dragon-cup/params");
             expect(result).toStrictEqual(paramDef);
         });
 
@@ -45,7 +45,7 @@ describe("ModelsEndpoint", () => {
             await models.getParams("my model");
 
             // Assert
-            expect(calls[0].path).toBe("/api/v1/models/my%20model/params");
+            expect(calls[0]!.path).toBe("/api/v1/models/my%20model/params");
         });
     });
 
@@ -60,9 +60,9 @@ describe("ModelsEndpoint", () => {
             const result = await models.getDefinitions(["dragon-cup", "phone-nest"]);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/models/definitions");
-            expect(calls[0].body).toStrictEqual({ names: ["dragon-cup", "phone-nest"] });
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/models/definitions");
+            expect(calls[0]!.body).toStrictEqual({ names: ["dragon-cup", "phone-nest"] });
             expect(result).toStrictEqual(defs);
         });
     });
@@ -79,9 +79,9 @@ describe("ModelsEndpoint", () => {
             const result = await models.submit("dragon-cup", body as never);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/models/dragon-cup");
-            expect(calls[0].body).toStrictEqual(body);
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/models/dragon-cup");
+            expect(calls[0]!.body).toStrictEqual(body);
             expect(result).toStrictEqual(taskResult);
         });
     });
@@ -98,8 +98,8 @@ describe("ModelsEndpoint", () => {
             const result = await models.batchSubmit("dragon-cup", body as never);
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/models/dragon-cup/batch");
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/models/dragon-cup/batch");
             expect(result).toStrictEqual(compoundResult);
         });
     });

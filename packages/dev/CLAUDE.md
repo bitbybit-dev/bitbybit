@@ -76,8 +76,9 @@ npm run lint
   verifying what is present (`npm run kernels:fetch` at the root does the same). A build that skips
   it produces a package that resolves but cannot run. The tarball also carries `NOTICE` and the
   OCCT and Draco license texts.
-- `cad-cloud-sdk` is different from its siblings: it uses **Vitest**, and part of its `src/types/`
-  is **generated** from the CAD Cloud API's schemas rather than hand-written. Do not edit those by hand.
+- `cad-cloud-sdk` and `create-app` compile as **NodeNext at ES2022** where their siblings target a
+  browser bundle - the only compiler settings either states on top of the shared base. Part of the
+  SDK's `src/types/` is **generated** from the CAD Cloud API's schemas; do not edit those by hand.
 - `create-app` is the `npx @bitbybit-dev/create-app` scaffolder, not a library.
 - **The `repository` field is load-bearing.** npm's provenance check compares the published manifest's
   `repository.url` with the repository the publish workflow runs in, so every package declares
@@ -94,5 +95,5 @@ npm run lint
   `delete-mocks` step during packaging.
 
 Four packages carry their own `CLAUDE.md` because they genuinely differ: `occt` (ships wasm),
-`babylonjs` (peer-dependency engine), `cad-cloud-sdk` (Vitest, generated types) and
+`babylonjs` (peer-dependency engine), `cad-cloud-sdk` (generated types) and
 `create-app` (a CLI). The rest follow this file.

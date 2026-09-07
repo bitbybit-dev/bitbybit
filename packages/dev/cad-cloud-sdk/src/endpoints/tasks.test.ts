@@ -14,8 +14,8 @@ describe("TasksEndpoint", () => {
             const result = await tasks.get("t-1");
 
             // Assert
-            expect(calls[0].method).toBe("GET");
-            expect(calls[0].path).toBe("/api/v1/tasks/t-1");
+            expect(calls[0]!.method).toBe("GET");
+            expect(calls[0]!.path).toBe("/api/v1/tasks/t-1");
             expect(result).toStrictEqual(task);
         });
 
@@ -28,7 +28,7 @@ describe("TasksEndpoint", () => {
             await tasks.get("task/special");
 
             // Assert
-            expect(calls[0].path).toBe("/api/v1/tasks/task%2Fspecial");
+            expect(calls[0]!.path).toBe("/api/v1/tasks/task%2Fspecial");
         });
     });
 
@@ -43,8 +43,8 @@ describe("TasksEndpoint", () => {
             const result = await tasks.list();
 
             // Assert
-            expect(calls[0].method).toBe("GET");
-            expect(calls[0].path).toBe("/api/v1/tasks");
+            expect(calls[0]!.method).toBe("GET");
+            expect(calls[0]!.path).toBe("/api/v1/tasks");
             expect(result).toStrictEqual(taskList);
         });
 
@@ -57,10 +57,10 @@ describe("TasksEndpoint", () => {
             await tasks.list({ page: 2, limit: 10, status: "completed", kind: "model" });
 
             // Assert
-            expect(calls[0].path).toContain("page=2");
-            expect(calls[0].path).toContain("limit=10");
-            expect(calls[0].path).toContain("status=completed");
-            expect(calls[0].path).toContain("kind=model");
+            expect(calls[0]!.path).toContain("page=2");
+            expect(calls[0]!.path).toContain("limit=10");
+            expect(calls[0]!.path).toContain("status=completed");
+            expect(calls[0]!.path).toContain("kind=model");
         });
     });
 
@@ -74,7 +74,7 @@ describe("TasksEndpoint", () => {
             await tasks.getResult("t-1");
 
             // Assert
-            expect(calls[0].path).toBe("/api/v1/tasks/t-1/result");
+            expect(calls[0]!.path).toBe("/api/v1/tasks/t-1/result");
         });
 
         it("appends format to path when provided", async () => {
@@ -86,7 +86,7 @@ describe("TasksEndpoint", () => {
             await tasks.getResult("t-1", "glb" as never);
 
             // Assert
-            expect(calls[0].path).toBe("/api/v1/tasks/t-1/result/glb");
+            expect(calls[0]!.path).toBe("/api/v1/tasks/t-1/result/glb");
         });
     });
 
@@ -101,7 +101,7 @@ describe("TasksEndpoint", () => {
             const result = await tasks.getResults("t-1");
 
             // Assert
-            expect(calls[0].path).toBe("/api/v1/tasks/t-1/results");
+            expect(calls[0]!.path).toBe("/api/v1/tasks/t-1/results");
             expect(result).toStrictEqual(downloads);
         });
     });
@@ -116,8 +116,8 @@ describe("TasksEndpoint", () => {
             const result = await tasks.cancel("t-1");
 
             // Assert
-            expect(calls[0].method).toBe("DELETE");
-            expect(calls[0].path).toBe("/api/v1/tasks/t-1");
+            expect(calls[0]!.method).toBe("DELETE");
+            expect(calls[0]!.path).toBe("/api/v1/tasks/t-1");
             expect(result).toStrictEqual({ cancelled: true });
         });
     });
@@ -133,8 +133,8 @@ describe("TasksEndpoint", () => {
             const result = await tasks.retry("t-1");
 
             // Assert
-            expect(calls[0].method).toBe("POST");
-            expect(calls[0].path).toBe("/api/v1/tasks/t-1/retry");
+            expect(calls[0]!.method).toBe("POST");
+            expect(calls[0]!.path).toBe("/api/v1/tasks/t-1/retry");
             expect(result).toStrictEqual(taskResult);
         });
     });
@@ -150,7 +150,7 @@ describe("TasksEndpoint", () => {
             const result = await tasks.getCompoundResult("c-1");
 
             // Assert
-            expect(calls[0].path).toBe("/api/v1/tasks/c-1/result");
+            expect(calls[0]!.path).toBe("/api/v1/tasks/c-1/result");
             expect(result).toStrictEqual(manifest);
         });
     });

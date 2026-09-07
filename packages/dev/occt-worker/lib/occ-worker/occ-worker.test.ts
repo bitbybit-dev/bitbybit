@@ -130,7 +130,7 @@ describe("OCCT wire unit tests", () => {
         expect(edgesAfterCache).toEqual(expectedEdgesResultBeforeCache);
 
         const points = await Promise.all(
-            edgesAfterCache.map(edge => {
+            edgesAfterCache.map((edge: Inputs.OCCT.TopoDSEdgePointer) => {
                 const divDto = new Inputs.OCCT.DivideDto(edge, 4);
                 return callAction<Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSWirePointer>>("shapes.edge.divideEdgeByParamsToPoints", divDto);
             })
@@ -227,13 +227,16 @@ describe("OCCT wire unit tests", () => {
         return new Promise((resolve, reject) => {
             try {
                 onMessageInput({
+                    // What the worker receives has been through a structured clone, which flattens a
+                    // DTO instance into a plain record; the spread is what stands in for that here.
                     action: {
                         functionName,
-                        inputs
+                        inputs: { ...inputs } as Record<string, unknown>
                     },
                     uid: "sdadwa",
-                }, (data) => {
-                    if (data !== "busy") {
+                }, (message) => {
+                    const data = message as { result?: unknown; error?: unknown };
+                    if (message !== "busy") {
                         resolve(data.result);
                     }
                     if (data.error) {

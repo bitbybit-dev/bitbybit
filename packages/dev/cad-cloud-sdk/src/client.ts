@@ -114,11 +114,12 @@ export class BitbybitClient {
             serializedBody = JSON.stringify(body);
         }
 
-        const res = await fetch(url, {
-            method,
-            headers,
-            body: serializedBody,
-        });
+        const init: RequestInit = { method, headers };
+        if (serializedBody !== undefined) {
+            init.body = serializedBody;
+        }
+
+        const res = await fetch(url, init);
 
         return res;
     }
