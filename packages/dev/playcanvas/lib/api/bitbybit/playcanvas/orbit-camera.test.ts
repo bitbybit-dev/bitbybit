@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
  
  
 import { PlayCanvasOrbitCamera } from "./orbit-camera";
@@ -7,9 +8,9 @@ import * as pc from "playcanvas";
 import { createOrbitCameraMocks } from "../../__mocks__/test-helpers";
 
 // Mock the entire playcanvas module
-jest.mock("playcanvas", () => {
-    const { createPlayCanvasMock } = jest.requireActual("../../__mocks__/playcanvas.mock");
-    return createPlayCanvasMock();
+vi.mock("playcanvas", async () => {
+    const { createPlayCanvasMock } = await vi.importActual<typeof import("../../__mocks__/playcanvas.mock")>("../../__mocks__/playcanvas.mock");
+    return await createPlayCanvasMock();
 });
 
 describe("PlayCanvasOrbitCamera unit tests", () => {
@@ -31,7 +32,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         delete (global as any).window;
     });
 
@@ -263,7 +264,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             const controller = orbitCamera.create(defaultInputs);
             const mockEntity = new pc.Entity() as any;
             
-            controller.orbitCamera.focus = jest.fn();
+            controller.orbitCamera.focus = vi.fn();
 
             orbitCamera.focusOnEntity({
                 orbitCamera: controller,
@@ -295,7 +296,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
             
-            controller.orbitCamera.reset = jest.fn();
+            controller.orbitCamera.reset = vi.fn();
 
             orbitCamera.resetCamera({
                 orbitCamera: controller,
@@ -842,7 +843,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             
             // Add mock screenToWorld to camera
             if (controller.cameraEntity.camera) {
-                controller.cameraEntity.camera.screenToWorld = jest.fn((x: number, y: number, distance: number, result: any) => {
+                controller.cameraEntity.camera.screenToWorld = vi.fn((x: number, y: number, distance: number, result: any) => {
                     result.set(x / 100, y / 100, distance);
                     return result;
                 });
@@ -1126,7 +1127,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             
             // Add mock screenToWorld to camera
             if (controller.cameraEntity.camera) {
-                controller.cameraEntity.camera.screenToWorld = jest.fn((x: number, y: number, distance: number, result: any) => {
+                controller.cameraEntity.camera.screenToWorld = vi.fn((x: number, y: number, distance: number, result: any) => {
                     result.set(x / 100, y / 100, distance);
                     return result;
                 });
@@ -1180,7 +1181,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             const initialDistance = controller.orbitCamera.distance;
 
             // Simulate mouse wheel scroll
-            const mockPreventDefault = jest.fn();
+            const mockPreventDefault = vi.fn();
             onMouseWheel({ 
                 wheelDelta: -1, 
                 event: { preventDefault: mockPreventDefault } 

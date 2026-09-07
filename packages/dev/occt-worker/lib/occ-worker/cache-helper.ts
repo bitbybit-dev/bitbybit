@@ -30,7 +30,7 @@ export class CacheHelper {
                                         this.occ.BRepTools_CleanGeometry(item);
                                     }
                                     item.delete();
-                                } catch (error) {
+                                } catch {
                                     // Ignore errors for already deleted objects
                                 }
                             });
@@ -44,7 +44,7 @@ export class CacheHelper {
                         }
                     }
                 }
-                catch (error) {
+                catch {
                     // Ignore errors when cleaning objects that may already be deleted
                 }
             }
@@ -71,7 +71,7 @@ export class CacheHelper {
                                     this.occ.BRepTools_CleanGeometry(item);
                                 }
                                 item.delete();
-                            } catch (error) {
+                            } catch {
                                 // Ignore errors for already deleted objects
                             }
                         });
@@ -85,7 +85,7 @@ export class CacheHelper {
                     }
                 }
             }
-            catch (error) {
+            catch {
                 // Ignore errors when cleaning objects that may already be deleted
             }
         }
@@ -311,7 +311,7 @@ export class CacheHelper {
                             delete this.argCache[hash];
                             return null;
                         }
-                    } catch (e) {
+                    } catch {
                         // If calling IsNull() throws an error, the object has been deleted
                         delete this.argCache[hash];
                         return null;
@@ -327,7 +327,7 @@ export class CacheHelper {
                         delete this.argCache[hash];
                         return null;
                     }
-                } catch (e) {
+                } catch {
                     // If calling IsNull() throws an error, the object has been deleted
                     // Remove from cache and return null
                     delete this.argCache[hash];

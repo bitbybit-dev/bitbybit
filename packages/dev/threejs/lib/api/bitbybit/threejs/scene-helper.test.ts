@@ -1,20 +1,18 @@
-/**
- * @jest-environment jsdom
- */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
 import { ThreeJSScene } from "../../inputs/threejs-scene-inputs";
 import { hexToRgb } from "../../__mocks__/test-helpers";
 // Mock three module using centralized mocks
-jest.mock("three", () => {
-    const { createThreeJSMock } = jest.requireActual("../../__mocks__/threejs.mock");
+vi.mock("three", async () => {
+    const { createThreeJSMock } = await vi.importActual<typeof import("../../__mocks__/threejs.mock")>("../../__mocks__/threejs.mock");
     return createThreeJSMock();
 });
 
 // Mock the orbit-camera module using centralized mock factory
-jest.mock("./orbit-camera", () => {
-    const { createMockOrbitCameraResult } = jest.requireActual("../../__mocks__/threejs.mock");
+vi.mock("./orbit-camera", async () => {
+    const { createMockOrbitCameraResult } = await vi.importActual<typeof import("../../__mocks__/threejs.mock")>("../../__mocks__/threejs.mock");
     return {
-        createOrbitCamera: jest.fn().mockReturnValue(createMockOrbitCameraResult()),
+        createOrbitCamera: vi.fn().mockReturnValue(createMockOrbitCameraResult()),
     };
 });
 
@@ -47,7 +45,7 @@ describe("initThreeJS unit tests", () => {
                 canvas.parentNode.removeChild(canvas);
             }
         });
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe("initialization with defaults", () => {
@@ -524,7 +522,7 @@ describe("initThreeJS unit tests", () => {
     describe("dispose method", () => {
         it("should remove window resize event listener on dispose", () => {
             // Arrange
-            const removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
+            const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
             const result = initThreeJS();
 
             // Act
@@ -540,7 +538,7 @@ describe("initThreeJS unit tests", () => {
         it("should stop animation loop on dispose", () => {
             // Arrange
             const result = initThreeJS();
-            const setAnimationLoopSpy = jest.spyOn(result.renderer, "setAnimationLoop");
+            const setAnimationLoopSpy = vi.spyOn(result.renderer, "setAnimationLoop");
 
             // Act
             result.dispose();
@@ -552,7 +550,7 @@ describe("initThreeJS unit tests", () => {
         it("should dispose renderer on cleanup", () => {
             // Arrange
             const result = initThreeJS();
-            const disposeSpy = jest.spyOn(result.renderer, "dispose");
+            const disposeSpy = vi.spyOn(result.renderer, "dispose");
 
             // Act
             result.dispose();
@@ -567,8 +565,8 @@ describe("initThreeJS unit tests", () => {
             config.enableGround = true;
             const result = initThreeJS(config);
             const ground = result.ground as { geometry: { dispose: () => void }; material: { dispose: () => void } };
-            const geometryDisposeSpy = jest.spyOn(ground.geometry, "dispose");
-            const materialDisposeSpy = jest.spyOn(ground.material, "dispose");
+            const geometryDisposeSpy = vi.spyOn(ground.geometry, "dispose");
+            const materialDisposeSpy = vi.spyOn(ground.material, "dispose");
 
             // Act
             result.dispose();
@@ -581,7 +579,7 @@ describe("initThreeJS unit tests", () => {
         it("should remove lights from scene on dispose", () => {
             // Arrange
             const result = initThreeJS();
-            const sceneRemoveSpy = jest.spyOn(result.scene, "remove");
+            const sceneRemoveSpy = vi.spyOn(result.scene, "remove");
 
             // Act
             result.dispose();
@@ -636,7 +634,7 @@ describe("initThreeJS unit tests", () => {
         it("should set animation loop on renderer", () => {
             // Arrange
             const result = initThreeJS();
-            const setAnimationLoopSpy = jest.spyOn(result.renderer, "setAnimationLoop");
+            const setAnimationLoopSpy = vi.spyOn(result.renderer, "setAnimationLoop");
 
             // Act
             result.startAnimationLoop();
@@ -651,10 +649,10 @@ describe("initThreeJS unit tests", () => {
         it("should call onRender callback when provided", () => {
             // Arrange
             const result = initThreeJS();
-            const onRenderMock = jest.fn();
+            const onRenderMock = vi.fn();
             let animateCallback: XRFrameRequestCallback | null = null;
-            
-            jest.spyOn(result.renderer, "setAnimationLoop").mockImplementation((callback) => {
+
+            vi.spyOn(result.renderer, "setAnimationLoop").mockImplementation((callback) => {
                 animateCallback = callback;
             });
 

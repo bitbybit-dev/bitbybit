@@ -1,5 +1,7 @@
-jest.mock("@babylonjs/core", () => {
-    const { createBabylonJSMock } = jest.requireActual("./__mocks__/babylonjs.mock");
+import { MockScene } from "./__mocks__/babylonjs.mock";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+vi.mock("@babylonjs/core", async () => {
+    const { createBabylonJSMock } = await vi.importActual<typeof import("./__mocks__/babylonjs.mock")>("./__mocks__/babylonjs.mock");
     return createBabylonJSMock();
 });
 
@@ -22,7 +24,6 @@ describe("Context unit tests", () => {
 
         it("should be able to have scene property assigned", () => {
             // Properties are not initialized in constructor, but can be assigned
-            const MockScene = jest.requireActual("./__mocks__/babylonjs.mock").MockScene;
             const mockScene = new MockScene() as unknown as BABYLON.Scene;
             context.scene = mockScene;
             expect(context.scene).toBe(mockScene);
@@ -30,8 +31,8 @@ describe("Context unit tests", () => {
 
         it("should be able to have engine property assigned", () => {
             const mockEngine = {
-                dispose: jest.fn(),
-                runRenderLoop: jest.fn()
+                dispose: vi.fn(),
+                runRenderLoop: vi.fn()
             } as unknown as BABYLON.Engine;
             context.engine = mockEngine;
             expect(context.engine).toBe(mockEngine);
@@ -40,7 +41,7 @@ describe("Context unit tests", () => {
         it("should be able to have havokPlugin property assigned", () => {
             const mockHavokPlugin = {
                 name: "havok",
-                setGravity: jest.fn()
+                setGravity: vi.fn()
             } as unknown as BABYLON.HavokPlugin;
             context.havokPlugin = mockHavokPlugin;
             expect(context.havokPlugin).toBe(mockHavokPlugin);
@@ -50,7 +51,6 @@ describe("Context unit tests", () => {
     describe("getSamplingMode", () => {
         beforeEach(() => {
             // Initialize scene for testing
-            const MockScene = jest.requireActual("./__mocks__/babylonjs.mock").MockScene;
             context.scene = new MockScene() as unknown as BABYLON.Scene;
         });
 
@@ -92,7 +92,6 @@ describe("Context unit tests", () => {
 
     describe("Property assignment", () => {
         it("should allow setting scene property", () => {
-            const MockScene = jest.requireActual("./__mocks__/babylonjs.mock").MockScene;
             const mockScene = new MockScene() as unknown as BABYLON.Scene;
             context.scene = mockScene;
             expect(context.scene).toBe(mockScene);
@@ -100,8 +99,8 @@ describe("Context unit tests", () => {
 
         it("should allow setting engine property", () => {
             const mockEngine = {
-                dispose: jest.fn(),
-                runRenderLoop: jest.fn()
+                dispose: vi.fn(),
+                runRenderLoop: vi.fn()
             } as unknown as BABYLON.Engine;
             context.engine = mockEngine;
             expect(context.engine).toBe(mockEngine);
@@ -110,7 +109,7 @@ describe("Context unit tests", () => {
         it("should allow setting havokPlugin property", () => {
             const mockHavokPlugin = {
                 name: "havok",
-                setGravity: jest.fn()
+                setGravity: vi.fn()
             } as unknown as BABYLON.HavokPlugin;
             context.havokPlugin = mockHavokPlugin;
             expect(context.havokPlugin).toBe(mockHavokPlugin);
@@ -129,7 +128,6 @@ describe("Context unit tests", () => {
             const context1 = new Context();
             const context2 = new Context();
             
-            const MockScene = jest.requireActual("./__mocks__/babylonjs.mock").MockScene;
             const scene1 = new MockScene() as unknown as BABYLON.Scene;
             const scene2 = new MockScene() as unknown as BABYLON.Scene;
             
@@ -145,7 +143,6 @@ describe("Context unit tests", () => {
             // ContextBase properties should be accessible
             expect(context).toBeDefined();
             // Context should be able to have additional properties assigned
-            const MockScene = jest.requireActual("./__mocks__/babylonjs.mock").MockScene;
             const mockScene = new MockScene() as unknown as BABYLON.Scene;
             context.scene = mockScene;
             expect(context.scene).toBe(mockScene);
@@ -155,9 +152,9 @@ describe("Context unit tests", () => {
     describe("WebGPU Engine support", () => {
         it("should support WebGPU Engine type", () => {
             const mockWebGPUEngine = {
-                dispose: jest.fn(),
-                runRenderLoop: jest.fn(),
-                initAsync: jest.fn()
+                dispose: vi.fn(),
+                runRenderLoop: vi.fn(),
+                initAsync: vi.fn()
             } as unknown as BABYLON.WebGPUEngine;
             
             context.engine = mockWebGPUEngine;

@@ -8,6 +8,12 @@
         "outDir": "./dist/bitbybit-dev",
         "baseUrl": "./",
         "paths": {
+            "@bitbybit-dev/base": [
+                "../base/dist"
+            ],
+            "@bitbybit-dev/base/*": [
+                "../base/dist/*"
+            ],
             "@bitbybit-dev/manifold": [
                 "../manifold/dist"
             ],

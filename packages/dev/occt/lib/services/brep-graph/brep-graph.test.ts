@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -26,7 +27,7 @@ describe("OCCT brep graph unit tests", () => {
         compound = new OCCTCompound(occt, occHelper);
         hasBindings = typeof (occt as unknown as { BRepGraphAnalyze?: unknown }).BRepGraphAnalyze === "function";
         if (!hasBindings) {
-            // eslint-disable-next-line no-console
+
             console.warn("BRepGraph wasm bindings are not present in this build; skipping runtime brep graph assertions.");
         }
     });

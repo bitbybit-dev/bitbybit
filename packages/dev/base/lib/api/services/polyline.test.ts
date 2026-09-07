@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 import { Point } from "./point";

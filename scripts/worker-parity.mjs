@@ -34,8 +34,10 @@ import ts from "typescript";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { targets } from "./inputs.config.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const FRAGMENT_DIRS = new Set(targets.map((t) => path.join(ROOT, t.dir)));
 const SNAPSHOT = path.join(ROOT, "scripts/worker-parity.snapshot.json");
 const ALLOW = path.join(ROOT, "scripts/worker-parity.allow.json");
 const update = process.argv.includes("--update");
@@ -52,8 +54,8 @@ function sourceFiles(dir) {
         for (const entry of readdirSync(d, { withFileTypes: true })) {
             if (entry.name === "node_modules" || entry.name === "dist" || entry.name.startsWith(".")) continue;
             const p = path.join(d, entry.name);
-            // the OCCT inputs fragments duplicate the DTO classes of the assembled occ-inputs.ts (scripts/gen-occ-inputs.mjs)
-            if (entry.isDirectory() && p.endsWith(path.join("lib", "api", "inputs", "occt"))) continue;
+            // the inputs fragments duplicate the DTO classes of the assembled inputs files (scripts/gen-inputs.mjs)
+            if (entry.isDirectory() && FRAGMENT_DIRS.has(p)) continue;
             if (entry.isDirectory()) walk(p);
             else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".d.ts")) out.push(p);
         }

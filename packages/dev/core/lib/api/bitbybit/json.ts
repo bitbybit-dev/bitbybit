@@ -88,7 +88,7 @@ export class JSONBitByBit {
         try {
             const clonedJson = { ...structuredClone(inputs.json) };
             return clonedJson[inputs.property];
-        } catch (e) {
+        } catch {
             return inputs.json[inputs.property];
         }
     }

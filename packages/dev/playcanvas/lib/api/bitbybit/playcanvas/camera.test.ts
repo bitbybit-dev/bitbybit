@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { PlayCanvasCamera } from "./camera";
 import { Context } from "../../context";
 import { createSimpleMockContext } from "../../__mocks__/test-helpers";

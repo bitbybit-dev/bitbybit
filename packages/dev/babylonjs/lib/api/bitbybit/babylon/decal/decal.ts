@@ -1,4 +1,5 @@
 
+import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
@@ -20,7 +21,7 @@ export class BabylonDecal {
      * @drawable true
      */
     createMeshDecal(inputs: Inputs.BabylonDecal.CreateMeshDecalDto): BABYLON.Mesh {
-        const decal = BABYLON.MeshBuilder.CreateDecal("Decal" + Math.random(), inputs.sourceMesh, {
+        const decal = BABYLON.MeshBuilder.CreateDecal(uniqueName("Decal"), inputs.sourceMesh, {
             position: new BABYLON.Vector3(...inputs.position),
             normal: new BABYLON.Vector3(...inputs.normal),
             size: new BABYLON.Vector3(...inputs.size),
@@ -29,7 +30,7 @@ export class BabylonDecal {
             localMode: inputs.localMode,
         });
 
-        const material = new BABYLON.StandardMaterial("DecalMaterial" + Math.random(), this.context.scene);
+        const material = new BABYLON.StandardMaterial(uniqueName("DecalMaterial"), this.context.scene);
         material.diffuseTexture = inputs.texture as BABYLON.Texture;
         material.diffuseTexture.hasAlpha = true;
         material.useAlphaFromDiffuseTexture = true;

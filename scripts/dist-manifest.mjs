@@ -5,9 +5,9 @@
 //
 //   - `exports`. Every source manifest carries the map scripts/gen-exports.mjs derives from the
 //     package's tree, with the `@bitbybit-dev/source` condition first in each entry: a consumer that
-//     declares the condition resolves the TypeScript sources (each package's jest does, through
-//     `customExportConditions`, so a test sees a sibling's edit without a rebuild; a linked
-//     application can), and one that does not resolves dist/. TypeScript, esbuild and Vite resolve an
+//     declares the condition resolves the TypeScript sources (each package's test configuration
+//     does, so a suite sees a sibling's edit without a rebuild; a linked application can), and one
+//     that does not resolves dist/. TypeScript, esbuild and Vite resolve an
 //     exports target as the exact file it names, so the map spells out every subpath a sibling or a
 //     consumer imports without an extension - each directory index under lib, each kernel module -
 //     and maps the rest by pattern: an extensionless request to the .ts source, a .js request to the
@@ -15,8 +15,8 @@
 //     version so far has: an exports map in the tarball would refuse the extensionless deep imports
 //     the examples and users' projects make, and scripts/check-tarballs.mjs imports the packed
 //     packages exactly that way. The condition name never leaves this repository.
-//   - `devDependencies`, `jest` and `scripts`: they describe building and testing this tree, not
-//     using the package.
+//   - `devDependencies` and `scripts`: they describe building and testing this tree, not using
+//     the package.
 //
 // The manifests link as siblings through exact pins, never through the workspace: protocol, so a
 // link:, file: or workspace: specifier reaching a published manifest is a mistake, and pnpm would
@@ -35,8 +35,7 @@ import { basename, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const SOURCE_CONDITION = "@bitbybit-dev/source";
-export const DROPPED_FIELDS = ["exports", "devDependencies", "jest", "scripts"];
-export const JEST_CONDITIONS = [SOURCE_CONDITION, "node", "node-addons"];
+export const DROPPED_FIELDS = ["exports", "devDependencies", "scripts"];
 // The map a package's tree implies. Exact entries first (they win over patterns): the root, every
 // directory index under lib/, every JavaScript module with typings beside it (the kernels, the
 // generated jscad module), then the patterns for everything else.
@@ -80,9 +79,6 @@ export function manifestProblems(manifest, dir) {
     }
     if (JSON.stringify(manifest.exports) !== JSON.stringify(expectedExports(dir))) problems.push("exports is not the map the package's tree implies - run `npm run gen:exports`");
     if (!existsSync(join(dir, "index.ts"))) problems.push("index.ts must exist at the package root - the exports map names it as the source entry");
-    if (manifest.jest && JSON.stringify(manifest.jest.testEnvironmentOptions?.customExportConditions) !== JSON.stringify(JEST_CONDITIONS)) {
-        problems.push(`jest.testEnvironmentOptions.customExportConditions must be ${JSON.stringify(JEST_CONDITIONS)} so the tests resolve sibling sources through the exports map`);
-    }
     return problems;
 }
 

@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
 import { VectorHelperService } from "./api/vector-helper.service";

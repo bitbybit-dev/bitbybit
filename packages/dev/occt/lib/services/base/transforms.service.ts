@@ -47,7 +47,7 @@ export class TransformsService {
             gtrans.delete();
             scaledShape.delete();
         } catch (ex) {
-            throw new Error("Could not scale the shape");
+            throw new Error("Could not scale the shape", { cause: ex });
         }
         shapeTranslated.delete();
         transformation.delete();
@@ -184,7 +184,7 @@ export class TransformsService {
             gtrans.delete();
         } catch (ex) {
             gtrsf.delete();
-            throw new Error("Could not apply the transformation matrix to the shape.");
+            throw new Error("Could not apply the transformation matrix to the shape.", { cause: ex });
         }
         gtrsf.delete();
         return shp;

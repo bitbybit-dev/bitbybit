@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "@bitbybit-dev/occt/lib/api/inputs";
@@ -69,7 +70,7 @@ describe("OCC Worker Functions Unit Tests", () => {
     });
 
     describe("onMessageInput - basic operations", () => {
-        it("should post busy message on input", (done) => {
+        it("should post busy message on input", () => new Promise<void>((done) => {
             const dataInput = {
                 action: {
                     functionName: "shapes.wire.createCircleWire",
@@ -84,9 +85,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should return result with uid", (done) => {
+        it("should return result with uid", () => new Promise<void>((done) => {
             const dataInput = {
                 action: {
                     functionName: "shapes.wire.createCircleWire",
@@ -108,9 +109,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should handle nested function calls with 3 levels", (done) => {
+        it("should handle nested function calls with 3 levels", () => new Promise<void>((done) => {
             // First create a shape
             const boxDto = new Inputs.OCCT.BoxDto(1, 1, 1);
             onMessageInput({
@@ -126,9 +127,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should handle function calls with 2 levels", (done) => {
+        it("should handle function calls with 2 levels", () => new Promise<void>((done) => {
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
             onMessageInput({
                 action: {
@@ -143,11 +144,11 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
     });
 
     describe("onMessageInput - cache validation", () => {
-        it("should throw error when shape not found in cache", (done) => {
+        it("should throw error when shape not found in cache", () => new Promise<void>((done) => {
             const dataInput = {
                 action: {
                     functionName: "transforms.mirrorAlongNormal",
@@ -168,9 +169,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should throw error for array of shapes when one not found in cache", (done) => {
+        it("should throw error for array of shapes when one not found in cache", () => new Promise<void>((done) => {
             const dataInput = {
                 action: {
                     functionName: "shapes.edge.getEdgesLengths",
@@ -191,9 +192,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should throw error for nested array of shapes when not found", (done) => {
+        it("should throw error for nested array of shapes when not found", () => new Promise<void>((done) => {
             const dataInput = {
                 action: {
                     functionName: "someNestedFunction",
@@ -216,9 +217,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should use cached shape when available", (done) => {
+        it("should use cached shape when available", () => new Promise<void>((done) => {
             // First create a shape
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
             let wireHash: number;
@@ -248,11 +249,11 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
     });
 
     describe("onMessageInput - special functions", () => {
-        it("should handle shapeToMesh function", (done) => {
+        it("should handle shapeToMesh function", () => new Promise<void>((done) => {
             // First create a shape
             const boxDto = new Inputs.OCCT.BoxDto(1, 1, 1);
             
@@ -286,9 +287,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
 
-        it("should throw error for shapeToMesh when shape not in cache", (done) => {
+        it("should throw error for shapeToMesh when shape not in cache", () => new Promise<void>((done) => {
             onMessageInput({
                 action: {
                     functionName: "shapeToMesh",
@@ -306,9 +307,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should handle shapesToMeshes function", (done) => {
+        it("should handle shapesToMeshes function", () => new Promise<void>((done) => {
             // Create two shapes
             const box1 = new Inputs.OCCT.BoxDto(1, 1, 1);
             const box2 = new Inputs.OCCT.BoxDto(0.5, 0.5, 0.5);
@@ -359,9 +360,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
 
-        it("should throw error for shapesToMeshes when no shapes provided", (done) => {
+        it("should throw error for shapesToMeshes when no shapes provided", () => new Promise<void>((done) => {
             onMessageInput({
                 action: {
                     functionName: "shapesToMeshes",
@@ -379,9 +380,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should throw error for shapesToMeshes when shape not in cache", (done) => {
+        it("should throw error for shapesToMeshes when shape not in cache", () => new Promise<void>((done) => {
             onMessageInput({
                 action: {
                     functionName: "shapesToMeshes",
@@ -401,9 +402,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should handle deleteShape function", (done) => {
+        it("should handle deleteShape function", () => new Promise<void>((done) => {
             // First create a shape
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
 
@@ -438,9 +439,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
 
-        it("should handle deleteShapes function", (done) => {
+        it("should handle deleteShapes function", () => new Promise<void>((done) => {
             // Create two shapes
             const circle1 = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
             const circle2 = new Inputs.OCCT.CircleDto(2, [0, 0, 0], [0, 1, 0]);
@@ -491,9 +492,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
 
-        it("should handle saveShapeSTEP function", (done) => {
+        it("should handle saveShapeSTEP function", () => new Promise<void>((done) => {
             // First create a shape
             const boxDto = new Inputs.OCCT.BoxDto(1, 1, 1);
 
@@ -525,9 +526,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
 
-        it("should throw error for saveShapeSTEP when shape not in cache", (done) => {
+        it("should throw error for saveShapeSTEP when shape not in cache", () => new Promise<void>((done) => {
             onMessageInput({
                 action: {
                     functionName: "saveShapeSTEP",
@@ -544,9 +545,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should handle cleanAllCache function", (done) => {
+        it("should handle cleanAllCache function", () => new Promise<void>((done) => {
             // First create a shape
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
 
@@ -580,9 +581,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
 
-        it("should handle startedTheRun function without cleaning cache (below threshold)", (done) => {
+        it("should handle startedTheRun function without cleaning cache (below threshold)", () => new Promise<void>((done) => {
             // Create a shape to ensure cache has some entries
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
 
@@ -614,9 +615,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
 
-        it("should handle addOc function with plugins", (done) => {
+        it("should handle addOc function with plugins", () => new Promise<void>((done) => {
             const dependencies = {
                 testDep: "testValue",
                 anotherDep: { key: "value" }
@@ -636,11 +637,11 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
     });
 
     describe("onMessageInput - error handling", () => {
-        it("should handle errors and provide detailed error message", (done) => {
+        it("should handle errors and provide detailed error message", () => new Promise<void>((done) => {
             const dataInput = {
                 action: {
                     functionName: "nonExistentFunction",
@@ -659,9 +660,9 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
 
-        it("should include input values in error message", (done) => {
+        it("should include input values in error message", () => new Promise<void>((done) => {
             const dataInput = {
                 action: {
                     functionName: "transforms.mirrorAlongNormal",
@@ -682,11 +683,11 @@ describe("OCC Worker Functions Unit Tests", () => {
                     done();
                 }
             });
-        });
+        }));
     });
 
     describe("onMessageInput - array results", () => {
-        it("should return array of shape hashes for array results", (done) => {
+        it("should return array of shape hashes for array results", () => new Promise<void>((done) => {
             // Create a box and get its edges
             const boxDto = new Inputs.OCCT.BoxDto(1, 1, 1);
 
@@ -720,20 +721,20 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
     });
 
     describe("onMessageInput - ObjectDefinition results", () => {
-        it("should handle results with compound, data, and shapes", (done) => {
+        it("should handle results with compound, data, and shapes", () => new Promise<void>((done) => {
             // This test would require a function that returns ObjectDefinition
             // For now, we'll just verify the logic path exists
             expect(true).toBe(true);
             done();
-        });
+        }));
     });
 
     describe("onMessageInput - non-OCCT results", () => {
-        it("should return non-OCCT results directly", (done) => {
+        it("should return non-OCCT results directly", () => new Promise<void>((done) => {
             // Create a wire and get its length (returns number)
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
 
@@ -763,6 +764,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                     });
                 }
             });
-        });
+        }));
     });
 });

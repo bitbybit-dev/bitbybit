@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 import { Point } from "./point";
@@ -638,7 +639,7 @@ describe("Point unit tests", () => {
                 const p1: Inputs.Base.Point3 = [0, 0, 0];
                 const p2: Inputs.Base.Point3 = [1, 1, 1];
                 const p3: Inputs.Base.Point3 = [2, 2, 2];
-                const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
+                const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
                 const normal = point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: false });
                 expect(normal).toBeUndefined();
                 expect(consoleWarnSpy).toHaveBeenCalledWith("Points are collinear or coincident; cannot calculate a unique normal.");
@@ -649,7 +650,7 @@ describe("Point unit tests", () => {
                 const p1: Inputs.Base.Point3 = [1, 1, 1];
                 const p2: Inputs.Base.Point3 = [1, 1, 1];
                 const p3: Inputs.Base.Point3 = [2, 3, 4];
-                const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
+                const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
                 const normal = point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: false });
                 expect(normal).toBeUndefined();
                 expect(consoleWarnSpy).toHaveBeenCalledWith("Points are collinear or coincident; cannot calculate a unique normal.");

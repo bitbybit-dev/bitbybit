@@ -77,10 +77,10 @@ Every class, method and input type in this package is documented in the generate
 npm run build-p
 
 # Run unit tests with coverage
-npm run test-c
+npm run test:coverage
 
-# Run live unit tests with coverage on save
-npm run test-c-l
+# Re-run them as you edit
+npm run test:watch
 ```
 
 ## Bitbybit Platform

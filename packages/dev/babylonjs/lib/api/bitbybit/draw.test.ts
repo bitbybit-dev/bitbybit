@@ -1,10 +1,11 @@
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock, type MockInstance } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock("@babylonjs/core", () => {
-    const { createBabylonJSMock } = jest.requireActual("../__mocks__/babylonjs.mock");
+vi.mock("@babylonjs/core", async () => {
+    const { createBabylonJSMock } = await vi.importActual<typeof import("../__mocks__/babylonjs.mock")>("../__mocks__/babylonjs.mock");
     return createBabylonJSMock();
 });
 
-jest.mock("@babylonjs/materials");
+vi.mock("@babylonjs/materials");
 
 import * as BABYLON from "@babylonjs/core";
 import { GridMaterial } from "@babylonjs/materials";
@@ -93,11 +94,11 @@ type DetectorName = "Line" | "Point" | "Polyline" | "Node" | "VerbCurve"
     | "ManifoldShapes";
 
 type SpyManager = {
-    spies: Map<string, jest.SpyInstance>;
+    spies: Map<string, MockInstance>;
     setupDetectors: (activeDetectors?: DetectorName | DetectorName[]) => void;
-    setupHandler: <T = unknown>(handler: string, returnValue: T) => jest.SpyInstance<T>;
-    getDetectorSpy: (detector: DetectorName) => jest.SpyInstance | undefined;
-    getHandlerSpy: (handler: string) => jest.SpyInstance | undefined;
+    setupHandler: <T = unknown>(handler: string, returnValue: T) => MockInstance<() => T>;
+    getDetectorSpy: (detector: DetectorName) => MockInstance | undefined;
+    getHandlerSpy: (handler: string) => MockInstance | undefined;
     reset: () => void;
 };
 
@@ -115,7 +116,7 @@ describe("Draw unit tests", () => {
     function createMockMesh(name: string, withChildren = false): BABYLON.Mesh {
         
         const mesh = new MockMesh(name, mockScene as any) as unknown as BABYLON.Mesh;
-        mesh.getChildMeshes = jest.fn().mockReturnValue(withChildren ? [mesh] : []);
+        mesh.getChildMeshes = vi.fn().mockReturnValue(withChildren ? [mesh] : []);
         return mesh;
     }
 
@@ -135,44 +136,44 @@ describe("Draw unit tests", () => {
         mockScene.metadata = { shadowGenerators: [] };
         
         mockDrawHelper = {
-            drawPoints: jest.fn(),
-            drawPoint: jest.fn(),
-            drawLines: jest.fn(),
-            drawPolylines: jest.fn(),
-            drawPolylineClose: jest.fn(),
-            drawPolylinesWithColours: jest.fn(),
-            drawCurves: jest.fn(),
-            drawCurve: jest.fn(),
-            drawSurfacesMultiColour: jest.fn(),
-            drawSurface: jest.fn(),
-            drawVerbSurface: jest.fn(),
-            drawVerbCurve: jest.fn(),
-            drawJSCADMesh: jest.fn(),
-            drawJSCADMeshes: jest.fn(),
-            drawSolidOrPolygonMesh: jest.fn(),
-            drawSolidOrPolygonMeshes: jest.fn(),
-            drawManifoldMesh: jest.fn(),
-            drawManifoldMeshes: jest.fn(),
-            drawManifoldOrCrossSection: jest.fn(),
-            drawManifoldsOrCrossSections: jest.fn(),
-            drawOcctShapesAsync: jest.fn(),
-            drawOcctShapeAsync: jest.fn(),
-            drawShape: jest.fn(),
-            drawShapes: jest.fn(),
-            dispose: jest.fn(),
+            drawPoints: vi.fn(),
+            drawPoint: vi.fn(),
+            drawLines: vi.fn(),
+            drawPolylines: vi.fn(),
+            drawPolylineClose: vi.fn(),
+            drawPolylinesWithColours: vi.fn(),
+            drawCurves: vi.fn(),
+            drawCurve: vi.fn(),
+            drawSurfacesMultiColour: vi.fn(),
+            drawSurface: vi.fn(),
+            drawVerbSurface: vi.fn(),
+            drawVerbCurve: vi.fn(),
+            drawJSCADMesh: vi.fn(),
+            drawJSCADMeshes: vi.fn(),
+            drawSolidOrPolygonMesh: vi.fn(),
+            drawSolidOrPolygonMeshes: vi.fn(),
+            drawManifoldMesh: vi.fn(),
+            drawManifoldMeshes: vi.fn(),
+            drawManifoldOrCrossSection: vi.fn(),
+            drawManifoldsOrCrossSections: vi.fn(),
+            drawOcctShapesAsync: vi.fn(),
+            drawOcctShapeAsync: vi.fn(),
+            drawShape: vi.fn(),
+            drawShapes: vi.fn(),
+            dispose: vi.fn(),
             
         } as any;
 
         mockNode = {
-            drawNodesWithLabels: jest.fn(),
-            drawNodes: jest.fn(),
-            drawNode: jest.fn(),
+            drawNodesWithLabels: vi.fn(),
+            drawNodes: vi.fn(),
+            drawNode: vi.fn(),
             
         } as any;
 
         mockTag = {
-            drawTag: jest.fn(),
-            drawTags: jest.fn(),
+            drawTag: vi.fn(),
+            drawTags: vi.fn(),
             
         } as any;
 
@@ -203,14 +204,19 @@ describe("Draw unit tests", () => {
                 );
 
                 detectors.forEach(detector => {
-                    const spy = jest.spyOn(drawPrivate, `detect${detector}` as keyof DrawPrivateMethods)
-                        .mockReturnValue(activeSet.has(detector));
+                    // spyOn over the union of every private method's key produces a type too large
+                    // for the compiler to represent, so the spy is named at the shape used here.
+                    const spy = vi.spyOn(drawPrivate, `detect${detector}` as keyof DrawPrivateMethods) as unknown as MockInstance<() => boolean>;
+                    spy.mockReturnValue(activeSet.has(detector));
                     this.spies.set(`detect${detector}`, spy);
                 });
             },
 
-            setupHandler<T = unknown>(handler: string, returnValue: T): jest.SpyInstance<T> {
-                const spy = jest.spyOn(drawPrivate, handler as keyof DrawPrivateMethods).mockReturnValue(returnValue);
+            setupHandler<T = unknown>(handler: string, returnValue: T): MockInstance<() => T> {
+                // spyOn over the union of every private method's key produces a type too large for
+                // the compiler to represent, so the spy is named at the shape this helper hands back.
+                const spy = vi.spyOn(drawPrivate, handler as keyof DrawPrivateMethods) as unknown as MockInstance<() => T>;
+                spy.mockReturnValue(returnValue);
                 this.spies.set(handler, spy);
                 return spy;
             },
@@ -273,7 +279,7 @@ describe("Draw unit tests", () => {
             const mockMesh = createMockMesh("test");
             
             spyManager.setupDetectors();
-            jest.spyOn(draw, "drawAny").mockReturnValue(mockMesh);
+            vi.spyOn(draw, "drawAny").mockReturnValue(mockMesh);
             
             const result = await draw.drawAnyAsync({ entity: mockPoint as any });
             
@@ -368,7 +374,7 @@ describe("Draw unit tests", () => {
 
     describe("drawAnyAsyncNoReturn", () => {
         it("should call drawAnyAsync without returning value", async () => {
-            jest.spyOn(draw, "drawAnyAsync").mockResolvedValue(undefined as unknown as BABYLON.Mesh);
+            vi.spyOn(draw, "drawAnyAsync").mockResolvedValue(undefined as unknown as BABYLON.Mesh);
             
             const result = await draw.drawAnyAsyncNoReturn({ entity: [1, 2, 3] });
             
@@ -381,7 +387,7 @@ describe("Draw unit tests", () => {
         it("should handle point entity", () => {
             const mockPoint = [1, 2, 3];
             const mockMesh = createMockMesh("point");
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupHandler("handlePoint", mockMesh);
             
@@ -418,7 +424,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle line entity", () => {
             const mockLine = { start: [0, 0, 0], end: [1, 1, 1] };
             const mockMesh = createMockMesh("line");
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("Line");
             spyManager.setupHandler("handleLine", mockMesh);
@@ -434,7 +440,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle point entity", () => {
             const mockPoint = [1, 2, 3];
             const mockMesh = createMockMesh("point");
-            mockDrawHelper.drawPoint = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPoint = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("Point");
             spyManager.setupHandler("handlePoint", mockMesh);
@@ -450,7 +456,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle polyline entity", () => {
             const mockPolyline = { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] };
             const mockMesh = createMockMesh("polyline");
-            mockDrawHelper.drawPolylineClose = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPolylineClose = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("Polyline");
             spyManager.setupHandler("handlePolyline", mockMesh);
@@ -480,7 +486,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle verbCurve entity", () => {
             const mockVerbCurve = { degree: 3, controlPoints: [] };
             const mockMesh = createMockMesh("verbCurve");
-            mockDrawHelper.drawCurve = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawCurve = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("VerbCurve");
             spyManager.setupHandler("handleVerbCurve", mockMesh);
@@ -496,7 +502,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle verbSurface entity", () => {
             const mockVerbSurface = { degreeU: 3, degreeV: 3, controlPoints: [] };
             const mockMesh = createMockMesh("verbSurface");
-            mockDrawHelper.drawSurface = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawSurface = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("VerbSurface");
             spyManager.setupHandler("handleVerbSurface", mockMesh);
@@ -515,7 +521,7 @@ describe("Draw unit tests", () => {
                 { points: [[2, 2, 2], [3, 3, 3]] }
             ];
             const mockMesh = createMockMesh("polylines");
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("Polylines");
             spyManager.setupHandler("handlePolylines", mockMesh);
@@ -534,7 +540,7 @@ describe("Draw unit tests", () => {
                 { start: [2, 2, 2], end: [3, 3, 3] }
             ];
             const mockMesh = createMockMesh("lines");
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("Lines");
             spyManager.setupHandler("handleLines", mockMesh);
@@ -550,7 +556,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle points array", () => {
             const mockPoints = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
             const mockMesh = createMockMesh("points");
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("Points");
             spyManager.setupHandler("handlePoints", mockMesh);
@@ -583,7 +589,7 @@ describe("Draw unit tests", () => {
                 { degree: 2, controlPoints: [] }
             ];
             const mockMesh = createMockMesh("verbCurves");
-            mockDrawHelper.drawCurves = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawCurves = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("VerbCurves");
             spyManager.setupHandler("handleVerbCurves", mockMesh);
@@ -602,7 +608,7 @@ describe("Draw unit tests", () => {
                 { degreeU: 2, degreeV: 2, controlPoints: [] }
             ];
             const mockMesh = createMockMesh("verbSurfaces");
-            mockDrawHelper.drawSurfacesMultiColour = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawSurfacesMultiColour = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("VerbSurfaces");
             spyManager.setupHandler("handleVerbSurfaces", mockMesh);
@@ -618,7 +624,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle tag entity", () => {
             const mockTag = { tag: "single" };
             const mockMesh = createMockMeshWithMetadata("tag", "tag");
-            draw.tag.drawTag = jest.fn().mockReturnValue(mockMesh);
+            draw.tag.drawTag = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("Tag");
             spyManager.setupHandler("handleTag", mockMesh);
@@ -634,7 +640,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle tags array", () => {
             const mockTags = [{ tag: "test1" }, { tag: "test2" }];
             const mockMesh = createMockMesh("tags");
-            mockTag.drawTags = jest.fn().mockReturnValue(mockMesh);
+            mockTag.drawTags = vi.fn().mockReturnValue(mockMesh);
             
             spyManager.setupDetectors("Tags");
             spyManager.setupHandler("handleTags", mockMesh);
@@ -687,7 +693,7 @@ describe("Draw unit tests", () => {
 
     describe("drawAnyNoReturn", () => {
         it("should call drawAny without returning value", () => {
-            jest.spyOn(draw, "drawAny").mockReturnValue(undefined as unknown as BABYLON.Mesh);
+            vi.spyOn(draw, "drawAny").mockReturnValue(undefined as unknown as BABYLON.Mesh);
             
             const result = draw.drawAnyNoReturn({ entity: [1, 2, 3] });
             
@@ -707,10 +713,11 @@ describe("Draw unit tests", () => {
                 lineColor: new BABYLON.Color3(0, 0, 0),
                 opacity: 1,
             };
-            (GridMaterial as unknown as jest.Mock).mockImplementation(() => mockGridMaterial);
+            // A function, not an arrow: the code under test reaches this through `new GridMaterial(...)`.
+            (GridMaterial as unknown as Mock).mockImplementation(function () { return mockGridMaterial; });
 
             const mockGroundMesh = createMockMesh("ground");
-            BABYLON.MeshBuilder.CreateGround = jest.fn().mockReturnValue(mockGroundMesh);
+            BABYLON.MeshBuilder.CreateGround = vi.fn().mockReturnValue(mockGroundMesh);
 
             const inputs: Inputs.Draw.SceneDrawGridMeshDto = {
                 width: 100,
@@ -732,15 +739,15 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle errors gracefully", () => {
-            (GridMaterial as unknown as jest.Mock).mockImplementation(() => {
+            (GridMaterial as unknown as Mock).mockImplementation(() => {
                 throw new Error("Grid material error");
             });
 
-            const consoleSpy = jest.spyOn(console, "log").mockImplementation();
+            const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
             
             // Mock CreateGround to still return a mesh in error case
             const errorMesh = createMockMesh("error-ground");
-            BABYLON.MeshBuilder.CreateGround = jest.fn().mockReturnValue(errorMesh);
+            BABYLON.MeshBuilder.CreateGround = vi.fn().mockReturnValue(errorMesh);
             
             const inputs: Inputs.Draw.SceneDrawGridMeshDto = {
                 width: 100,
@@ -773,10 +780,11 @@ describe("Draw unit tests", () => {
                 lineColor: new BABYLON.Color3(0, 0, 0),
                 opacity: 1,
             };
-            (GridMaterial as unknown as jest.Mock).mockImplementation(() => mockGridMaterial);
+            // A function, not an arrow: the code under test reaches this through `new GridMaterial(...)`.
+            (GridMaterial as unknown as Mock).mockImplementation(function () { return mockGridMaterial; });
 
             const mockGroundMesh = createMockMesh("ground");
-            BABYLON.MeshBuilder.CreateGround = jest.fn().mockReturnValue(mockGroundMesh);
+            BABYLON.MeshBuilder.CreateGround = vi.fn().mockReturnValue(mockGroundMesh);
 
             const inputs: Inputs.Draw.SceneDrawGridMeshDto = {
                 width: 50,
@@ -804,7 +812,7 @@ describe("Draw unit tests", () => {
     describe("drawGridMeshNoReturn", () => {
         it("should call drawGridMesh without returning value", () => {
             const mockMesh = createMockMesh("grid");
-            jest.spyOn(draw, "drawGridMesh").mockReturnValue(mockMesh);
+            vi.spyOn(draw, "drawGridMesh").mockReturnValue(mockMesh);
             
             const inputs: Inputs.Draw.SceneDrawGridMeshDto = {
                 width: 100,
@@ -891,7 +899,7 @@ describe("Draw unit tests", () => {
         it("handleTags should call tag.drawTags", () => {
             const mockTags = [{ tag: "test1" }, { tag: "test2" }];
             const mockMesh = createMockMesh("tags");
-            mockTag.drawTags = jest.fn().mockReturnValue(mockMesh);
+            mockTag.drawTags = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleTags({ entity: mockTags });
             
@@ -904,7 +912,7 @@ describe("Draw unit tests", () => {
             const mockTags = [{ tag: "test1" }, { tag: "test2" }];
             const customOptions = { updatable: true, size: 22 };
             const mockMesh = createMockMesh("tags");
-            mockTag.drawTags = jest.fn().mockReturnValue(mockMesh);
+            mockTag.drawTags = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleTags({ entity: mockTags, options: customOptions });
             
@@ -920,7 +928,7 @@ describe("Draw unit tests", () => {
             const mockTags = [{ tag: "test1" }, { tag: "test2" }];
             const customOptions = { updatable: true, size: 22 };
             const mockMesh = createMockMesh("tags");
-            mockTag.drawTags = jest.fn().mockReturnValue(mockMesh);
+            mockTag.drawTags = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleTags({ entity: mockTags, options: customOptions });
             
@@ -936,7 +944,7 @@ describe("Draw unit tests", () => {
             const mockTag = { tag: "single" };
             const mockMesh = createMockMesh("tag");
             mockMesh.metadata = { options: {} };
-            draw.tag.drawTag = jest.fn().mockReturnValue(mockMesh);
+            draw.tag.drawTag = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleTag({ entity: mockTag });
             
@@ -948,8 +956,8 @@ describe("Draw unit tests", () => {
         it("handleVerbSurfaces should call drawHelper.drawSurfacesMultiColour", () => {
             const mockSurfaces = [{ surface: "test" }];
             const mockMesh = createMockMesh("surfaces");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSurfacesMultiColour = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSurfacesMultiColour = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleVerbSurfaces({ entity: mockSurfaces });
             
@@ -960,8 +968,8 @@ describe("Draw unit tests", () => {
         it("handleVerbCurves should call drawHelper.drawCurves", () => {
             const mockCurves = [{ curve: "test" }];
             const mockMesh = createMockMesh("curves");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawCurves = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawCurves = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleVerbCurves({ entity: mockCurves });
             
@@ -971,11 +979,11 @@ describe("Draw unit tests", () => {
 
         it("handleNodes should call node.drawNodes", () => {
             const mockNodes = [[1, 2, 3], [4, 5, 6]];
-            mockNode.drawNodes = jest.fn();
+            mockNode.drawNodes = vi.fn();
             
             // Mock the applyGlobalSettingsAndMetadataAndShadowCasting to avoid getChildMeshes call
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             const result = drawPrivate.handleNodes({ entity: mockNodes });
             
@@ -986,8 +994,8 @@ describe("Draw unit tests", () => {
         it("handlePoints should call drawHelper.drawPoints", () => {
             const mockPoints = [[1, 2, 3], [4, 5, 6]];
             const mockMesh = createMockMesh("points");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handlePoints({ entity: mockPoints });
             
@@ -1001,8 +1009,8 @@ describe("Draw unit tests", () => {
                 { start: [1, 1, 1], end: [2, 2, 2] }
             ];
             const mockMesh = createMockMesh("lines");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleLines({ entity: mockLines });
             
@@ -1016,8 +1024,8 @@ describe("Draw unit tests", () => {
                 [[2, 2, 2], [3, 3, 3]]
             ] as Inputs.Base.Segment3[];
             const mockMesh = createMockMesh("lines");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleLines({ entity: mockLinesAsSegments });
             
@@ -1035,8 +1043,8 @@ describe("Draw unit tests", () => {
                 { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] }
             ];
             const mockMesh = createMockMesh("polylines");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handlePolylines({ entity: mockPolylines });
             
@@ -1049,10 +1057,10 @@ describe("Draw unit tests", () => {
         it("should handle multiple points", () => {
             const mockPoints = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
             const mockMesh = createMockMesh("points");
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(mockMesh);
             
             
-            jest.spyOn(draw as any, "handlePoints").mockReturnValue(mockMesh);
+            vi.spyOn(draw as any, "handlePoints").mockReturnValue(mockMesh);
             
             
             draw.drawAny({ entity: mockPoints as any });
@@ -1066,10 +1074,10 @@ describe("Draw unit tests", () => {
                 { start: [2, 2, 2], end: [3, 3, 3] }
             ];
             const mockMesh = createMockMesh("lines");
-            mockDrawHelper.drawLines = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawLines = vi.fn().mockReturnValue(mockMesh);
             
             
-            jest.spyOn(draw as any, "handleLines").mockReturnValue(mockMesh);
+            vi.spyOn(draw as any, "handleLines").mockReturnValue(mockMesh);
             
             
             draw.drawAny({ entity: mockLines as any });
@@ -1084,10 +1092,10 @@ describe("Draw unit tests", () => {
             options.colours = "#00FF00";
             
             const mockMesh = createMockMesh("point");
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(mockMesh);
             
             
-            jest.spyOn(draw as any, "handlePoint").mockReturnValue(mockMesh);
+            vi.spyOn(draw as any, "handlePoint").mockReturnValue(mockMesh);
             
             
             draw.drawAny({ entity: mockPoint as any, options });
@@ -1101,10 +1109,10 @@ describe("Draw unit tests", () => {
             options.size = 3;
             
             const mockMesh = createMockMesh("polyline");
-            mockDrawHelper.drawPolylines = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPolylines = vi.fn().mockReturnValue(mockMesh);
             
             
-            jest.spyOn(draw as any, "handlePolyline").mockReturnValue(mockMesh);
+            vi.spyOn(draw as any, "handlePolyline").mockReturnValue(mockMesh);
             
             
             draw.drawAny({ entity: mockPolyline as any, options });
@@ -1122,7 +1130,7 @@ describe("Draw unit tests", () => {
             const updatedMesh = createMockMesh("updated");
             
             
-            jest.spyOn(draw as any, "handlePoint").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handlePoint").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: newPoint, babylonMesh: mockMesh });
             
@@ -1137,7 +1145,7 @@ describe("Draw unit tests", () => {
             const updatedMesh = createMockMesh("updated");
             
             
-            jest.spyOn(draw as any, "handleLine").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleLine").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: newLine, babylonMesh: mockMesh });
             
@@ -1152,9 +1160,9 @@ describe("Draw unit tests", () => {
             const newPoints = [[1, 2, 3], [4, 5, 6]];
             const updatedMesh = createMockMesh("updated");
             
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(updatedMesh);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(updatedMesh);
             
-            jest.spyOn(draw as any, "handlePoints").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handlePoints").mockReturnValue(updatedMesh);
             
             drawPrivate.updateAny({ entity: newPoints, babylonMesh: mockMesh });
             
@@ -1176,8 +1184,8 @@ describe("Draw unit tests", () => {
             const mockMesh1 = createMockMesh("mesh1");
             const mockMesh2 = createMockMesh("mesh2");
             
-            jest.spyOn(draw, "drawAny").mockReturnValue(mockMesh1);
-            jest.spyOn(draw2, "drawAny").mockReturnValue(mockMesh2);
+            vi.spyOn(draw, "drawAny").mockReturnValue(mockMesh1);
+            vi.spyOn(draw2, "drawAny").mockReturnValue(mockMesh2);
             
             const result1 = draw.drawAny({ entity: [1, 2, 3] });
             const result2 = draw2.drawAny({ entity: [4, 5, 6] });
@@ -1215,7 +1223,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handlePoint").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handlePoint").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: [1, 2, 3], babylonMesh: mockMesh });
             
@@ -1229,7 +1237,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handlePoints").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handlePoints").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: [[1, 2, 3]], babylonMesh: mockMesh });
             
@@ -1243,7 +1251,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handleLine").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleLine").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: { start: [0, 0, 0], end: [1, 1, 1] }, babylonMesh: mockMesh });
             
@@ -1257,7 +1265,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handleLines").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleLines").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: [], babylonMesh: mockMesh });
             
@@ -1271,7 +1279,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handlePolyline").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handlePolyline").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: { points: [] }, babylonMesh: mockMesh });
             
@@ -1285,7 +1293,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handlePolylines").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handlePolylines").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: [], babylonMesh: mockMesh });
             
@@ -1299,7 +1307,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handleVerbCurve").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleVerbCurve").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: {}, babylonMesh: mockMesh });
             
@@ -1313,7 +1321,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handleVerbCurves").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleVerbCurves").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: [], babylonMesh: mockMesh });
             
@@ -1327,7 +1335,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handleVerbSurface").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleVerbSurface").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: {}, babylonMesh: mockMesh });
             
@@ -1341,7 +1349,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handleVerbSurfaces").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleVerbSurfaces").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: [], babylonMesh: mockMesh });
             
@@ -1355,7 +1363,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handleTag").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleTag").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: {}, babylonMesh: mockMesh });
             
@@ -1369,7 +1377,7 @@ describe("Draw unit tests", () => {
             
             const updatedMesh = createMockMesh("updated");
             
-            jest.spyOn(draw as any, "handleTags").mockReturnValue(updatedMesh);
+            vi.spyOn(draw as any, "handleTags").mockReturnValue(updatedMesh);
             
             const result = drawPrivate.updateAny({ entity: [], babylonMesh: mockMesh });
             
@@ -1382,7 +1390,7 @@ describe("Draw unit tests", () => {
             mockMesh.metadata = { type: Inputs.Draw.drawingTypes.node, options: {} };
             
             
-            jest.spyOn(draw as any, "handleNode").mockReturnValue([1, 2, 3]);
+            vi.spyOn(draw as any, "handleNode").mockReturnValue([1, 2, 3]);
             
             const result = drawPrivate.updateAny({ entity: [1, 2, 3], babylonMesh: mockMesh });
             
@@ -1395,7 +1403,7 @@ describe("Draw unit tests", () => {
             mockMesh.metadata = { type: Inputs.Draw.drawingTypes.nodes, options: {} };
             
             
-            jest.spyOn(draw as any, "handleNodes").mockReturnValue([[1, 2, 3]]);
+            vi.spyOn(draw as any, "handleNodes").mockReturnValue([[1, 2, 3]]);
             
             const result = drawPrivate.updateAny({ entity: [[1, 2, 3]], babylonMesh: mockMesh });
             
@@ -1426,8 +1434,8 @@ describe("Draw unit tests", () => {
         it("handlePoint should call drawHelper.drawPoint", () => {
             const mockPoint = [1, 2, 3];
             const mockMesh = createMockMesh("point");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPoint = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPoint = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handlePoint({ entity: mockPoint });
             
@@ -1441,9 +1449,9 @@ describe("Draw unit tests", () => {
             const mockPoint = [1, 2, 3];
             const mockMesh = createMockMesh("point");
             mockMesh.metadata = { options: { size: 10, colours: "#FF0000" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             
-            mockDrawHelper.drawPoint = jest.fn().mockReturnValue(mockMesh);
+            mockDrawHelper.drawPoint = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePoint({ entity: mockPoint, babylonMesh: mockMesh });
             
@@ -1456,8 +1464,8 @@ describe("Draw unit tests", () => {
         it("handleLine should call drawHelper.drawPolylinesWithColours with line object", () => {
             const mockLine = { start: [0, 0, 0], end: [1, 1, 1] };
             const mockMesh = createMockMesh("line");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleLine({ entity: mockLine });
             
@@ -1470,8 +1478,8 @@ describe("Draw unit tests", () => {
         it("handleLine should handle segment array format", () => {
             const mockLine = [[0, 0, 0], [1, 1, 1]];
             const mockMesh = createMockMesh("line");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleLine({ entity: mockLine });
             
@@ -1484,8 +1492,8 @@ describe("Draw unit tests", () => {
         it("handlePolyline should call drawHelper.drawPolylineClose", () => {
             const mockPolyline = { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] };
             const mockMesh = createMockMesh("polyline");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylineClose = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylineClose = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handlePolyline({ entity: mockPolyline });
             
@@ -1498,8 +1506,8 @@ describe("Draw unit tests", () => {
         it("handleVerbSurface should call drawHelper.drawSurface", () => {
             const mockSurface = { surface: "test" };
             const mockMesh = createMockMesh("surface");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSurface = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSurface = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleVerbSurface({ entity: mockSurface });
             
@@ -1512,8 +1520,8 @@ describe("Draw unit tests", () => {
         it("handleVerbCurve should call drawHelper.drawCurve", () => {
             const mockCurve = { curve: "test" };
             const mockMesh = createMockMesh("curve");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawCurve = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawCurve = vi.fn().mockReturnValue(mockMesh);
             
             const result = drawPrivate.handleVerbCurve({ entity: mockCurve });
             
@@ -1525,10 +1533,10 @@ describe("Draw unit tests", () => {
 
         it("handleNode should call node.drawNode", () => {
             const mockNode = [1, 2, 3];
-            draw.node.drawNode = jest.fn();
+            draw.node.drawNode = vi.fn();
             
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             const result = drawPrivate.handleNode({ entity: mockNode });
             
@@ -1543,8 +1551,8 @@ describe("Draw unit tests", () => {
         it("handleJscadMesh should call drawHelper.drawSolidOrPolygonMesh", async () => {
             const mockJscadMesh = { type: "jscad" };
             const mockMesh = createMockMesh("jscad");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSolidOrPolygonMesh = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSolidOrPolygonMesh = vi.fn().mockResolvedValue(mockMesh);
             
             const result = await drawPrivate.handleJscadMesh({ entity: mockJscadMesh });
             
@@ -1557,8 +1565,8 @@ describe("Draw unit tests", () => {
         it("handleJscadMeshes should call drawHelper.drawSolidOrPolygonMeshes", async () => {
             const mockJscadMeshes = [{ type: "jscad1" }, { type: "jscad2" }];
             const mockMesh = createMockMesh("jscad-meshes");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSolidOrPolygonMeshes = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSolidOrPolygonMeshes = vi.fn().mockResolvedValue(mockMesh);
             
             const result = await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes });
             
@@ -1571,8 +1579,8 @@ describe("Draw unit tests", () => {
         it("handleOcctShape should call drawHelper.drawShape", async () => {
             const mockOcctShape = { type: "occt" };
             const mockMesh = createMockMesh("occt");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawShape = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawShape = vi.fn().mockResolvedValue(mockMesh);
             
             const result = await drawPrivate.handleOcctShape({ entity: mockOcctShape });
             
@@ -1585,8 +1593,8 @@ describe("Draw unit tests", () => {
         it("handleOcctShapes should call drawHelper.drawShapes", async () => {
             const mockOcctShapes = [{ type: "occt1" }, { type: "occt2" }];
             const mockMesh = createMockMesh("occt-shapes");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawShapes = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawShapes = vi.fn().mockResolvedValue(mockMesh);
             
             const result = await drawPrivate.handleOcctShapes({ entity: mockOcctShapes });
             
@@ -1599,8 +1607,8 @@ describe("Draw unit tests", () => {
         it("handleManifoldShape should call drawHelper.drawManifoldOrCrossSection", async () => {
             const mockManifoldShape = { type: "manifold" };
             const mockMesh = createMockMesh("manifold");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawManifoldOrCrossSection = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawManifoldOrCrossSection = vi.fn().mockResolvedValue(mockMesh);
             
             const result = await drawPrivate.handleManifoldShape({ entity: mockManifoldShape });
             
@@ -1613,8 +1621,8 @@ describe("Draw unit tests", () => {
         it("handleManifoldShapes should call drawHelper.drawManifoldsOrCrossSections", async () => {
             const mockManifoldShapes = [{ type: "manifold1" }, { type: "manifold2" }];
             const mockMesh = createMockMesh("manifold-shapes");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawManifoldsOrCrossSections = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawManifoldsOrCrossSections = vi.fn().mockResolvedValue(mockMesh);
             
             const result = await drawPrivate.handleManifoldShapes({ entity: mockManifoldShapes });
             
@@ -1628,8 +1636,8 @@ describe("Draw unit tests", () => {
             const mockJscadMesh = { type: "jscad" };
             const mockMesh = createMockMesh("jscad");
             mockMesh.metadata = { options: { size: 5 } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSolidOrPolygonMesh = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSolidOrPolygonMesh = vi.fn().mockResolvedValue(mockMesh);
             
             await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, babylonMesh: mockMesh });
             
@@ -1642,8 +1650,8 @@ describe("Draw unit tests", () => {
             const mockOcctShape = { type: "occt" };
             const mockMesh = createMockMesh("occt");
             mockMesh.metadata = { options: { drawEdges: true } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawShape = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawShape = vi.fn().mockResolvedValue(mockMesh);
             
             await drawPrivate.handleOcctShape({ entity: mockOcctShape, babylonMesh: mockMesh });
             
@@ -1656,7 +1664,7 @@ describe("Draw unit tests", () => {
     describe("applyGlobalSettingsAndMetadataAndShadowCasting", () => {
         it("should set mesh as not pickable", () => {
             const mockMesh = createMockMesh("test");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             
             drawPrivate.applyGlobalSettingsAndMetadataAndShadowCasting(
                 Inputs.Draw.drawingTypes.point,
@@ -1671,7 +1679,7 @@ describe("Draw unit tests", () => {
             const mockMesh = createMockMesh("test");
             const childMesh1 = createMockMesh("child1");
             const childMesh2 = createMockMesh("child2");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([childMesh1, childMesh2]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([childMesh1, childMesh2]);
             
             drawPrivate.applyGlobalSettingsAndMetadataAndShadowCasting(
                 Inputs.Draw.drawingTypes.point,
@@ -1685,7 +1693,7 @@ describe("Draw unit tests", () => {
 
         it("should set metadata on mesh", () => {
             const mockMesh = createMockMesh("test");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             const options = { size: 5 };
             
             drawPrivate.applyGlobalSettingsAndMetadataAndShadowCasting(
@@ -1702,7 +1710,7 @@ describe("Draw unit tests", () => {
         it("should preserve existing metadata", () => {
             const mockMesh = createMockMesh("test");
             mockMesh.metadata = { existingProp: "value" };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             
             drawPrivate.applyGlobalSettingsAndMetadataAndShadowCasting(
                 Inputs.Draw.drawingTypes.point,
@@ -1716,10 +1724,10 @@ describe("Draw unit tests", () => {
 
         it("should enable shadows by default", () => {
             const mockMesh = createMockMesh("test");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             
             const mockShadowGenerator = {
-                addShadowCaster: jest.fn()
+                addShadowCaster: vi.fn()
             };
             mockScene.metadata.shadowGenerators = [mockShadowGenerator];
             
@@ -1736,10 +1744,10 @@ describe("Draw unit tests", () => {
         it("should disable shadows when metadata.shadows is false", () => {
             const mockMesh = createMockMesh("test");
             mockMesh.metadata = { shadows: false };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             
             const mockShadowGenerator = {
-                addShadowCaster: jest.fn()
+                addShadowCaster: vi.fn()
             };
             mockScene.metadata.shadowGenerators = [mockShadowGenerator];
             
@@ -1756,10 +1764,10 @@ describe("Draw unit tests", () => {
         it("should handle child meshes with shadows", () => {
             const mockMesh = createMockMesh("test");
             const childMesh = createMockMesh("child");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([childMesh]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([childMesh]);
             
             const mockShadowGenerator = {
-                addShadowCaster: jest.fn()
+                addShadowCaster: vi.fn()
             };
             mockScene.metadata.shadowGenerators = [mockShadowGenerator];
             
@@ -1775,10 +1783,10 @@ describe("Draw unit tests", () => {
 
         it("should handle multiple shadow generators", () => {
             const mockMesh = createMockMesh("test");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             
-            const mockShadowGenerator1 = { addShadowCaster: jest.fn() };
-            const mockShadowGenerator2 = { addShadowCaster: jest.fn() };
+            const mockShadowGenerator1 = { addShadowCaster: vi.fn() };
+            const mockShadowGenerator2 = { addShadowCaster: vi.fn() };
             mockScene.metadata.shadowGenerators = [mockShadowGenerator1, mockShadowGenerator2];
             
             drawPrivate.applyGlobalSettingsAndMetadataAndShadowCasting(
@@ -1803,7 +1811,7 @@ describe("Draw unit tests", () => {
 
         it("should handle empty shadow generators array", () => {
             const mockMesh = createMockMesh("test");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             mockScene.metadata.shadowGenerators = [];
             
             drawPrivate.applyGlobalSettingsAndMetadataAndShadowCasting(
@@ -1821,8 +1829,8 @@ describe("Draw unit tests", () => {
             const mockPoints = [[1, 2, 3], [4, 5, 6]];
             const customOptions = { size: 15, colours: "#00FF00" };
             const mockMesh = createMockMesh("points");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePoints({ entity: mockPoints, options: customOptions });
             
@@ -1836,8 +1844,8 @@ describe("Draw unit tests", () => {
             const mockPoints = [[1, 2, 3], [4, 5, 6]];
             const mockMesh = createMockMesh("points");
             mockMesh.metadata = { options: { size: 20, colours: "#FF00FF" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePoints({ entity: mockPoints, babylonMesh: mockMesh });
             
@@ -1850,8 +1858,8 @@ describe("Draw unit tests", () => {
         it("handleLines should use default polyline options when no options provided", () => {
             const mockLines = [{ start: [0, 0, 0], end: [1, 1, 1] }];
             const mockMesh = createMockMesh("lines");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleLines({ entity: mockLines });
             
@@ -1865,8 +1873,8 @@ describe("Draw unit tests", () => {
             const mockLines = [{ start: [0, 0, 0], end: [1, 1, 1] }];
             const mockMesh = createMockMesh("lines");
             mockMesh.metadata = { options: { size: 7, colours: "#00FFFF" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleLines({ entity: mockLines, babylonMesh: mockMesh });
             
@@ -1880,8 +1888,8 @@ describe("Draw unit tests", () => {
             const mockCurves = [{ curve: "test" }];
             const mockMesh = createMockMesh("curves");
             mockMesh.metadata = { options: { size: 8 } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawCurves = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawCurves = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleVerbCurves({ entity: mockCurves, babylonMesh: mockMesh });
             
@@ -1892,9 +1900,9 @@ describe("Draw unit tests", () => {
 
         it("handleNode should use default node options", () => {
             const mockNodeData = [1, 2, 3];
-            draw.node.drawNode = jest.fn();
+            draw.node.drawNode = vi.fn();
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             drawPrivate.handleNode({ entity: mockNodeData });
             
@@ -1910,9 +1918,9 @@ describe("Draw unit tests", () => {
             const mockNodeData = [1, 2, 3];
             const mockMesh = createMockMesh("node");
             mockMesh.metadata = { options: { size: 25, colorX: "#AABBCC", colorY: "#DDEEFF" } };
-            draw.node.drawNode = jest.fn();
+            draw.node.drawNode = vi.fn();
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             drawPrivate.handleNode({ entity: mockNodeData, babylonMesh: mockMesh });
             
@@ -1927,8 +1935,8 @@ describe("Draw unit tests", () => {
             const mockPolyline = { points: [[0, 0, 0], [1, 1, 1]] };
             const mockMesh = createMockMesh("polyline");
             mockMesh.metadata = { options: { size: 10, colours: "#123456" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylineClose = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylineClose = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePolyline({ entity: mockPolyline, babylonMesh: mockMesh });
             
@@ -1942,8 +1950,8 @@ describe("Draw unit tests", () => {
             const mockLine = { start: [0, 0, 0], end: [1, 1, 1] };
             const mockMesh = createMockMesh("line");
             mockMesh.metadata = { options: { size: 5, colours: "#abcdef" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleLine({ entity: mockLine, babylonMesh: mockMesh });
             
@@ -1957,8 +1965,8 @@ describe("Draw unit tests", () => {
             const mockPoint = [1, 2, 3];
             const mockMesh = createMockMesh("point");
             mockMesh.metadata = { options: { size: 12, colours: "#ffffff" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPoint = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPoint = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePoint({ entity: mockPoint, babylonMesh: mockMesh });
             
@@ -1972,8 +1980,8 @@ describe("Draw unit tests", () => {
             const mockPolylines = [{ points: [[0, 0, 0], [1, 1, 1]] }, { points: [[2, 2, 2], [3, 3, 3]] }];
             const mockMesh = createMockMesh("polylines");
             mockMesh.metadata = { options: { size: 3, colours: "#aabbcc" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePolylines({ entity: mockPolylines, babylonMesh: mockMesh });
             
@@ -1987,8 +1995,8 @@ describe("Draw unit tests", () => {
             const mockCurve = { degree: 3, controlPoints: [] };
             const mockMesh = createMockMesh("curve");
             mockMesh.metadata = { options: { size: 6, colours: "#112233" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawCurve = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawCurve = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleVerbCurve({ entity: mockCurve, babylonMesh: mockMesh });
             
@@ -2002,8 +2010,8 @@ describe("Draw unit tests", () => {
             const mockSurface = { degreeU: 3, degreeV: 3, controlPoints: [] };
             const mockMesh = createMockMesh("surface");
             mockMesh.metadata = { options: { size: 7, colours: "#445566" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSurface = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSurface = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleVerbSurface({ entity: mockSurface, babylonMesh: mockMesh });
             
@@ -2020,8 +2028,8 @@ describe("Draw unit tests", () => {
             ];
             const mockMesh = createMockMesh("surfaces");
             mockMesh.metadata = { options: { size: 9, colours: "#778899" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSurfacesMultiColour = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSurfacesMultiColour = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleVerbSurfaces({ entity: mockSurfaces, babylonMesh: mockMesh });
             
@@ -2035,9 +2043,9 @@ describe("Draw unit tests", () => {
             const mockNodes = [[1, 2, 3], [4, 5, 6]];
             const mockMesh = createMockMesh("nodes");
             mockMesh.metadata = { options: { size: 11, colorX: "#111111" } };
-            draw.node.drawNodes = jest.fn();
+            draw.node.drawNodes = vi.fn();
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             drawPrivate.handleNodes({ entity: mockNodes, babylonMesh: mockMesh });
             
@@ -2051,7 +2059,7 @@ describe("Draw unit tests", () => {
             const mockTagEntity = { tag: "test" };
             const mockMesh = createMockMesh("tag");
             mockMesh.metadata = { options: { size: 14, colours: "#fedcba" } };
-            draw.tag.drawTag = jest.fn().mockReturnValue(mockMesh);
+            draw.tag.drawTag = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleTag({ entity: mockTagEntity, babylonMesh: mockMesh });
             
@@ -2065,10 +2073,10 @@ describe("Draw unit tests", () => {
             const mockJscadMesh = { vertices: [] };
             const mockMesh = createMockMesh("jscad");
             mockMesh.metadata = { options: { size: 4, colours: "#abc123" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSolidOrPolygonMesh = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSolidOrPolygonMesh = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, babylonMesh: mockMesh });
             
@@ -2082,10 +2090,10 @@ describe("Draw unit tests", () => {
             const mockJscadMeshes = [{ vertices: [] }, { vertices: [] }];
             const mockMesh = createMockMesh("jscads");
             mockMesh.metadata = { options: { size: 13, colours: "#def456" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSolidOrPolygonMeshes = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSolidOrPolygonMeshes = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes, babylonMesh: mockMesh });
             
@@ -2099,10 +2107,10 @@ describe("Draw unit tests", () => {
             const mockOcctShape = { hash: "shape123" };
             const mockMesh = createMockMesh("occt");
             mockMesh.metadata = { options: { faceMaterial: "#123abc", edgeMaterial: "#456def" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawShape = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawShape = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleOcctShape({ entity: mockOcctShape, babylonMesh: mockMesh });
             
@@ -2116,10 +2124,10 @@ describe("Draw unit tests", () => {
             const mockOcctShapes = [{ hash: "shape1" }, { hash: "shape2" }];
             const mockMesh = createMockMesh("occts");
             mockMesh.metadata = { options: { faceMaterial: "#789ghi", edgeMaterial: "#012jkl" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawShapes = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawShapes = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleOcctShapes({ entity: mockOcctShapes, babylonMesh: mockMesh });
             
@@ -2133,10 +2141,10 @@ describe("Draw unit tests", () => {
             const mockManifoldShape = { hash: "manifold123" };
             const mockMesh = createMockMesh("manifold");
             mockMesh.metadata = { options: { faceMaterial: "#aaa111", edgeMaterial: "#bbb222" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawManifoldOrCrossSection = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawManifoldOrCrossSection = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleManifoldShape({ entity: mockManifoldShape, babylonMesh: mockMesh });
             
@@ -2150,10 +2158,10 @@ describe("Draw unit tests", () => {
             const mockManifoldShapes = [{ hash: "manifold1" }, { hash: "manifold2" }];
             const mockMesh = createMockMesh("manifolds");
             mockMesh.metadata = { options: { faceMaterial: "#ccc333", edgeMaterial: "#ddd444" } };
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawManifoldsOrCrossSections = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawManifoldsOrCrossSections = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleManifoldShapes({ entity: mockManifoldShapes, babylonMesh: mockMesh });
             
@@ -2170,7 +2178,7 @@ describe("Draw unit tests", () => {
             const customOptions = { size: 99, colours: "#990099" };
             const mockMesh = createMockMesh("tag");
             mockMesh.metadata = { options: {} };
-            draw.tag.drawTag = jest.fn().mockReturnValue(mockMesh);
+            draw.tag.drawTag = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleTag({ entity: mockTagEntity, options: customOptions });
             
@@ -2184,8 +2192,8 @@ describe("Draw unit tests", () => {
             const mockSurfaces = [{ degreeU: 3, degreeV: 3, controlPoints: [] }];
             const customOptions = { size: 50, colours: "#505050" };
             const mockMesh = createMockMesh("surfaces");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSurfacesMultiColour = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSurfacesMultiColour = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleVerbSurfaces({ entity: mockSurfaces, options: customOptions });
             
@@ -2199,8 +2207,8 @@ describe("Draw unit tests", () => {
             const mockCurves = [{ degree: 3, controlPoints: [] }];
             const customOptions = { size: 45, colours: "#454545" };
             const mockMesh = createMockMesh("curves");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawCurves = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawCurves = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleVerbCurves({ entity: mockCurves, options: customOptions });
             
@@ -2213,9 +2221,9 @@ describe("Draw unit tests", () => {
         it("handleNodes should use provided options when options are passed", () => {
             const mockNodes = [[1, 2, 3], [4, 5, 6]];
             const customOptions = { size: 30, colorX: "#303030", colorY: "#404040" };
-            draw.node.drawNodes = jest.fn();
+            draw.node.drawNodes = vi.fn();
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             drawPrivate.handleNodes({ entity: mockNodes, options: customOptions });
             
@@ -2230,8 +2238,8 @@ describe("Draw unit tests", () => {
             const mockPoints = [[1, 2, 3], [4, 5, 6]];
             const customOptions = { size: 25, colours: "#252525" };
             const mockMesh = createMockMesh("points");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPoints = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPoints = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePoints({ entity: mockPoints, options: customOptions });
             
@@ -2245,8 +2253,8 @@ describe("Draw unit tests", () => {
             const mockLines = [{ start: [0, 0, 0], end: [1, 1, 1] }];
             const customOptions = { size: 35, colours: "#353535" };
             const mockMesh = createMockMesh("lines");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleLines({ entity: mockLines, options: customOptions });
             
@@ -2260,8 +2268,8 @@ describe("Draw unit tests", () => {
             const mockPolylines = [{ points: [[0, 0, 0], [1, 1, 1]] }];
             const customOptions = { size: 40, colours: "#404040" };
             const mockMesh = createMockMesh("polylines");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePolylines({ entity: mockPolylines, options: customOptions });
             
@@ -2275,8 +2283,8 @@ describe("Draw unit tests", () => {
             const mockSurface = { degreeU: 3, degreeV: 3, controlPoints: [] };
             const customOptions = { size: 55, colours: "#555555" };
             const mockMesh = createMockMesh("surface");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSurface = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSurface = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleVerbSurface({ entity: mockSurface, options: customOptions });
             
@@ -2290,8 +2298,8 @@ describe("Draw unit tests", () => {
             const mockCurve = { degree: 3, controlPoints: [] };
             const customOptions = { size: 60, colours: "#606060" };
             const mockMesh = createMockMesh("curve");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawCurve = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawCurve = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleVerbCurve({ entity: mockCurve, options: customOptions });
             
@@ -2304,9 +2312,9 @@ describe("Draw unit tests", () => {
         it("handleNode should use provided options when options are passed", () => {
             const mockNodeData = [1, 2, 3];
             const customOptions = { size: 65, colorX: "#656565", colorY: "#757575" };
-            draw.node.drawNode = jest.fn();
+            draw.node.drawNode = vi.fn();
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             drawPrivate.handleNode({ entity: mockNodeData, options: customOptions });
             
@@ -2321,8 +2329,8 @@ describe("Draw unit tests", () => {
             const mockPolyline = { points: [[0, 0, 0], [1, 1, 1]] };
             const customOptions = { size: 70, colours: "#707070" };
             const mockMesh = createMockMesh("polyline");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylineClose = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylineClose = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePolyline({ entity: mockPolyline, options: customOptions });
             
@@ -2336,8 +2344,8 @@ describe("Draw unit tests", () => {
             const mockPoint = [1, 2, 3];
             const customOptions = { size: 75, colours: "#757575" };
             const mockMesh = createMockMesh("point");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPoint = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPoint = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handlePoint({ entity: mockPoint, options: customOptions });
             
@@ -2351,8 +2359,8 @@ describe("Draw unit tests", () => {
             const mockLine = { start: [0, 0, 0], end: [1, 1, 1] };
             const customOptions = { size: 80, colours: "#808080" };
             const mockMesh = createMockMesh("line");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawPolylinesWithColours = jest.fn().mockReturnValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
             
             drawPrivate.handleLine({ entity: mockLine, options: customOptions });
             
@@ -2366,9 +2374,9 @@ describe("Draw unit tests", () => {
             const mockJscadMesh = { vertices: [] };
             const customOptions = { size: 85, colours: "#858585" };
             const mockMesh = createMockMesh("jscad");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSolidOrPolygonMesh = jest.fn().mockResolvedValue(mockMesh);
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSolidOrPolygonMesh = vi.fn().mockResolvedValue(mockMesh);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, options: customOptions });
             
@@ -2382,10 +2390,10 @@ describe("Draw unit tests", () => {
             const mockJscadMeshes = [{ vertices: [] }, { vertices: [] }];
             const customOptions = { size: 90, colours: "#909090" };
             const mockMesh = createMockMesh("jscads");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawSolidOrPolygonMeshes = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawSolidOrPolygonMeshes = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes, options: customOptions });
             
@@ -2399,10 +2407,10 @@ describe("Draw unit tests", () => {
             const mockOcctShape = { hash: "shape123" };
             const customOptions = { faceMaterial: "#aaa111", edgeMaterial: "#bbb222" };
             const mockMesh = createMockMesh("occt");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawShape = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawShape = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleOcctShape({ entity: mockOcctShape, options: customOptions });
             
@@ -2416,10 +2424,10 @@ describe("Draw unit tests", () => {
             const mockOcctShapes = [{ hash: "shape1" }, { hash: "shape2" }];
             const customOptions = { faceMaterial: "#ccc111", edgeMaterial: "#ddd222" };
             const mockMesh = createMockMesh("occts");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawShapes = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawShapes = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleOcctShapes({ entity: mockOcctShapes, options: customOptions });
             
@@ -2433,10 +2441,10 @@ describe("Draw unit tests", () => {
             const mockManifoldShape = { hash: "manifold123" };
             const customOptions = { faceMaterial: "#eee111", edgeMaterial: "#fff222" };
             const mockMesh = createMockMesh("manifold");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawManifoldOrCrossSection = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawManifoldOrCrossSection = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleManifoldShape({ entity: mockManifoldShape, options: customOptions });
             
@@ -2450,10 +2458,10 @@ describe("Draw unit tests", () => {
             const mockManifoldShapes = [{ hash: "manifold1" }, { hash: "manifold2" }];
             const customOptions = { faceMaterial: "#111eee", edgeMaterial: "#222fff" };
             const mockMesh = createMockMesh("manifolds");
-            mockMesh.getChildMeshes = jest.fn().mockReturnValue([]);
-            mockDrawHelper.drawManifoldsOrCrossSections = jest.fn().mockResolvedValue(mockMesh);
+            mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawManifoldsOrCrossSections = vi.fn().mockResolvedValue(mockMesh);
             
-            jest.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
+            vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             await drawPrivate.handleManifoldShapes({ entity: mockManifoldShapes, options: customOptions });
             

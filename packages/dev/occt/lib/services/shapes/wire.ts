@@ -190,7 +190,7 @@ export class OCCTWire {
         inputs.mesh.forEach((triangle) => {
             try {
                 wires.push(this.fromBaseTriangle({ triangle }));
-            } catch (e) {
+            } catch {
                 console.warn("Failed to make wire for triangle", triangle);
             }
         });

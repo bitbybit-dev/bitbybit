@@ -1,4 +1,5 @@
 import * as Inputs from "../../inputs";
+import { uniqueName } from "../../unique-name";
 import * as SERIALIZERS from "@babylonjs/serializers";
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
@@ -28,7 +29,7 @@ export class BabylonIO {
                 return await this.loadAsset("", "", inputs.assetFile, inputs.hidden);
             }
             catch (e) {
-                throw Error(String(e));
+                throw new Error(String(e), { cause: e });
             }
         } else {
             throw Error(`Unsupported file format detected: ${type}`);
@@ -62,7 +63,7 @@ export class BabylonIO {
                 return await this.loadAsset("", inputs.rootUrl, inputs.assetFile, inputs.hidden);
             }
             catch (e) {
-                throw Error(String(e));
+                throw new Error(String(e), { cause: e });
             }
         } else {
             throw Error(`Unsupported file format detected: ${type}`);
@@ -214,7 +215,7 @@ export class BabylonIO {
     private async loadAsset(_meshNames: any, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<BABYLON.Mesh> {
         const res = await BABYLON.SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
-        const container = new BABYLON.Mesh("ImportedMeshContainer" + Math.random(), this.context.scene);
+        const container = new BABYLON.Mesh(uniqueName("ImportedMeshContainer"), this.context.scene);
         if (sgs.length > 0) {
             res.meshes.forEach(mesh => {
                 mesh.isPickable = false;
@@ -231,7 +232,10 @@ export class BabylonIO {
                 if (this.context.scene.metadata.shadowGenerators.length > 0) {
                     try {
                         mesh.receiveShadows = true;
-                    } catch { }
+                    } catch {
+                        // A loaded mesh without a material cannot receive shadows; the rest of the
+                        // scene setup should still run.
+                    }
                     sgs.forEach(sg => {
                         sg.addShadowCaster(mesh);
                     });
@@ -239,7 +243,9 @@ export class BabylonIO {
                     children.forEach(child => {
                         try {
                             child.receiveShadows = true;
-                        } catch { }
+                        } catch {
+                            // As above, for a child of the loaded mesh.
+                        }
                         sgs.forEach(sg => {
                             sg.addShadowCaster(child);
                         });

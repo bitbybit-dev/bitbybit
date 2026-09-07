@@ -11,15 +11,18 @@ For more information about our unit testing philosophy and live coverage reports
 ## Tech Stack
 
 - **Language:** TypeScript
-- **Test Framework:** Jest with ts-jest preset
-- **Assertion Style:** Jest's built-in expect assertions
+- **Test Framework:** Vitest
+- **Assertion Style:** Vitest's built-in expect assertions
+- **Imports:** every test API is imported explicitly - `import { describe, it, expect, vi } from "vitest"` - so nothing a test uses is invisible
 
 ## Package Structure
 
 Each folder under `packages/dev/` is an **independent npm package** with its own:
 - `package.json` with dependencies and test scripts
-- Jest configuration
-- Coverage report (generated in package directory when running `npm run test-c`)
+- a `vitest.config.ts` that calls the shared factory in `packages/dev/vitest.shared.ts` and states
+  only what differs: the coverage globs, and where needed a jsdom environment, a process per file,
+  or a module to stand in for another
+- Coverage report (generated in the package directory when running `npm run test:coverage`)
 
 ```
 packages/dev/
@@ -69,10 +72,23 @@ lib/api/
 ### Mock Usage Pattern
 
 ```typescript
-jest.mock("@babylonjs/core", () => {
-    const { createBabylonJSMock } = jest.requireActual("./__mocks__/babylonjs.mock");
+vi.mock("@babylonjs/core", async () => {
+    const { createBabylonJSMock } = await vi.importActual("./__mocks__/babylonjs.mock");
     return createBabylonJSMock();
 });
+```
+
+`vi.mock` is hoisted above the imports, so its factory may not close over anything declared in the
+file; reach for the mock module inside the factory, as above. `vi.importActual` is asynchronous,
+which is why the factory is `async`.
+
+A mock the code under test reaches through `new` must be a **function**, never an arrow: only a
+function can be constructed, and one that returns an object hands that object back to `new`.
+
+```typescript
+MeshInstance: vi.fn(function (mesh, material, node = mockNode) {
+    return { mesh, material, node };
+}),
 ```
 
 ## Running Tests
@@ -89,9 +105,13 @@ jest.mock("@babylonjs/core", () => {
 | `npm run test-playcavnas` | Test PlayCanvas package |
 
 Within individual packages:
-- `npm run test` - Watch mode
-- `npm run test-c` - Coverage mode (CI)
-- `npm run test-c-l` - Coverage with watch mode
+- `npm run test` - one run
+- `npm run test:coverage` - one run with coverage (what CI runs)
+- `npm run test:watch` - re-run as you edit
+
+Coverage is a floor, not a report: `packages/dev/coverage-baseline.json` records what each suite
+reaches, and `npm run check:coverage-baseline` at the root fails a run that reaches less or that
+lost tests. Raise the floor with `npm run coverage-baseline:save` when a suite genuinely improves.
 
 ## AAA Pattern (Arrange-Act-Assert)
 
@@ -417,7 +437,7 @@ describe("StatefulService", () => {
 
     beforeEach(() => {
         service = new StatefulService();
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     afterEach(() => {

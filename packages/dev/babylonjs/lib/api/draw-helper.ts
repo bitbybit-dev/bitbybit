@@ -857,12 +857,7 @@ export class DrawHelper extends DrawHelperCore {
     drawPoint(inputs: Inputs.Point.DrawPointDto<BABYLON.Mesh>): BABYLON.Mesh {
         const vectorPoints = [inputs.point];
 
-        let colorsHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            colorsHex = inputs.colours;
-        } else {
-            colorsHex = [inputs.colours];
-        }
+        const colorsHex: string[] = Array.isArray(inputs.colours) ? inputs.colours : [inputs.colours];
         // const { positions, colors } = this.setUpPositionsAndColours(vectorPoints, colours);
         if (inputs.pointMesh && inputs.updatable) {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
@@ -1193,7 +1188,7 @@ export class DrawHelper extends DrawHelperCore {
     async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
-        let dummy;
+        const dummy = undefined;
 
         if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 

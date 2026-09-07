@@ -1,3 +1,4 @@
+import { vi } from "vitest";
  
 
 /**
@@ -21,7 +22,7 @@ export function createMockContext(): Context {
         scene: mockScene as unknown as BABYLON.Scene,
         engine: null,
         havokPlugin: null,
-        getSamplingMode: jest.fn().mockReturnValue(1)
+        getSamplingMode: vi.fn().mockReturnValue(1)
     } as unknown as Context;
 }
 
@@ -41,7 +42,7 @@ export function createSimpleMockContext(): Context {
  */
 export function createMockWorkerManagers() {
     const mockJscadWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
             normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
             indices: [0, 1, 2],
@@ -50,7 +51,7 @@ export function createMockWorkerManagers() {
     } as unknown as JSCADWorkerManager;
 
     const mockManifoldWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
             triVerts: new Uint32Array([0, 1, 2]),
             numProp: 3
@@ -58,7 +59,7 @@ export function createMockWorkerManagers() {
     } as unknown as ManifoldWorkerManager;
 
     const mockOccWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             faceList: [
                 { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
             ],
@@ -79,7 +80,7 @@ export function createMockWorkerManagers() {
  */
 export function createMockJSCADText(): JSCADText {
     return {
-        createVectorText: jest.fn().mockResolvedValue([])
+        createVectorText: vi.fn().mockResolvedValue([])
     } as unknown as JSCADText;
 }
 
@@ -88,8 +89,8 @@ export function createMockJSCADText(): JSCADText {
  */
 export function createMockVector(): Vector {
     return {
-        add: jest.fn().mockReturnValue([0, 0, 0]),
-        lerp: jest.fn().mockImplementation(({ first, second, fraction }) => {
+        add: vi.fn().mockReturnValue([0, 0, 0]),
+        lerp: vi.fn().mockImplementation(({ first, second, fraction }) => {
             return [
                 first[0] + (second[0] - first[0]) * fraction,
                 first[1] + (second[1] - first[1]) * fraction,

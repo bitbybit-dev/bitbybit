@@ -1,4 +1,5 @@
 
+import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import { DrawHelper } from "../../draw-helper";
@@ -42,7 +43,7 @@ export class BabylonNode {
      * @returns A new node
      */
     createNodeFromRotation(inputs: Inputs.BabylonNode.CreateNodeFromRotationDto): BABYLON.TransformNode {
-        const transformNode = new BABYLON.TransformNode(`node${Math.random()}`, this.context.scene);
+        const transformNode = new BABYLON.TransformNode(uniqueName("node"), this.context.scene);
         if (inputs.parent) {
             transformNode.parent = inputs.parent;
         }
@@ -60,7 +61,7 @@ export class BabylonNode {
      * @returns A new node whos parent is the root node of the scene
      */
     createWorldNode(): BABYLON.TransformNode {
-        const tnode = new BABYLON.TransformNode(`root${Math.random()}`, this.context.scene);
+        const tnode = new BABYLON.TransformNode(uniqueName("root"), this.context.scene);
         tnode.parent = this.context.scene.getTransformNodeByID("root");
         return tnode;
     }

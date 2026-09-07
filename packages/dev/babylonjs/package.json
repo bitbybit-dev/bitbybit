@@ -49,9 +49,11 @@
     "copy-package": "node ../../../scripts/dist-manifest.mjs",
     "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
     "delete-coverage": "shx rm -rf ./dist/coverage || true",
-    "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
-    "test-c": "mkdir -p test-results && NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false --json --outputFile=test-results/jest.json",
-    "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "api:check": "api-extractor run",
+    "api:update": "api-extractor run --local"
   },
   "author": "Bit by bit developers",
   "license": "MIT",
@@ -173,64 +175,12 @@
     "earcut": "3.0.2"
   },
   "devDependencies": {
-    "@babel/core": "7.29.0",
-    "@babel/preset-env": "7.29.5",
-    "@babel/preset-typescript": "7.28.5",
-    "@testing-library/jest-dom": "6.9.1",
+    "@microsoft/api-extractor": "7.59.0",
     "@types/earcut": "3.0.0",
-    "@types/jest": "30.0.0",
-    "babel-jest": "30.4.1",
-    "jest": "30.4.2",
-    "jest-environment-jsdom": "30.4.1",
-    "jest-html-reporters": "3.1.7",
+    "@vitest/coverage-v8": "4.1.7",
+    "jsdom": "29.0.1",
     "shx": "0.4.0",
-    "ts-jest": "29.4.10",
-    "ts-node": "10.9.2",
-    "typescript": "5.9.3"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "transform": {
-      "\\.[jt]sx?$": "babel-jest"
-    },
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!\\.pnpm|@babylonjs|@bitbybit-dev|earcut)"
-    ],
-    "moduleNameMapper": {
-      "^@bitbybit-dev/base$": "<rootDir>/../base/dist/index.js",
-      "^@bitbybit-dev/base/(.*)$": "<rootDir>/../base/dist/$1",
-      "^@bitbybit-dev/core$": "<rootDir>/../core/dist/index.js",
-      "^@bitbybit-dev/core/(.*)$": "<rootDir>/../core/dist/$1",
-      "^@bitbybit-dev/jscad$": "<rootDir>/../jscad/dist/index.js",
-      "^@bitbybit-dev/jscad/(.*)$": "<rootDir>/../jscad/dist/$1",
-      "^@bitbybit-dev/manifold$": "<rootDir>/../manifold/dist/index.js",
-      "^@bitbybit-dev/manifold/(.*)$": "<rootDir>/../manifold/dist/$1",
-      "^@bitbybit-dev/jscad-worker$": "<rootDir>/../jscad-worker/dist/index.js",
-      "^@bitbybit-dev/jscad-worker/(.*)$": "<rootDir>/../jscad-worker/dist/$1",
-      "^@bitbybit-dev/manifold-worker$": "<rootDir>/../manifold-worker/dist/index.js",
-      "^@bitbybit-dev/manifold-worker/(.*)$": "<rootDir>/../manifold-worker/dist/$1",
-      "^@bitbybit-dev/occt-worker$": "<rootDir>/../occt-worker/dist/index.js",
-      "^@bitbybit-dev/occt-worker/(.*)$": "<rootDir>/../occt-worker/dist/$1",
-      "bitbybit-dev-occt/bitbybit-dev-occt(\\.js)?$": "<rootDir>/__mocks__/occt-glue.ts"
-    },
-    "collectCoverageFrom": [
-      "lib/workers/**/*",
-      "lib/api/**/*"
-    ],
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "json-summary"
-    ],
-    "testEnvironmentOptions": {
-      "customExportConditions": [
-        "@bitbybit-dev/source",
-        "node",
-        "node-addons"
-      ]
-    }
+    "typescript": "5.9.3",
+    "vitest": "4.1.7"
   }
 }

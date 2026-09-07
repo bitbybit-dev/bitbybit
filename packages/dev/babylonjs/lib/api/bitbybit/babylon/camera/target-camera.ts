@@ -1,4 +1,5 @@
 import * as BABYLON from "@babylonjs/core";
+import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 
@@ -17,7 +18,7 @@ export class BabylonTargetCamera {
      */
     create(inputs: Inputs.BabylonCamera.TargetCameraDto): BABYLON.TargetCamera {
         const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-        const camera = new BABYLON.TargetCamera(`freeCamera${Math.random()}`,
+        const camera = new BABYLON.TargetCamera(uniqueName("freeCamera"),
             pos,
             this.context.scene
         );

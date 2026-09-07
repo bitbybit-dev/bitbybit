@@ -2,6 +2,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import globals from "globals";
+import { targets } from "./scripts/inputs.config.mjs";
 
 // The lint of this repository, self-contained: it runs from a bare clone with nothing above it.
 //
@@ -40,14 +41,15 @@ export default defineConfig([
         "packages/dev/occt/bitbybit-dev-occt*/",
         "packages/dev/*/etc/",
         "**/*.d.ts",
-    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users, generated and vendored code, and declaration files - every .d.ts here is generated or vendored typings, and a build artifact left in a package root would otherwise be linted and baselined"),
+        ...targets.map((t) => t.out),
+    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users, generated and vendored code, declaration files - every .d.ts here is generated or vendored typings, and a build artifact left in a package root would otherwise be linted and baselined - and the assembled inputs namespaces, whose fragments under lib/api/inputs/ are the linted source"),
     {
         files: ["**/*.{js,mjs,cjs,ts}"],
         extends: [eslint.configs.recommended],
         languageOptions: {
             globals: { ...globals.browser, ...globals.node },
         },
-        rules: HOUSE_STYLE,
+        rules: { ...HOUSE_STYLE, "no-unused-vars": UNDERSCORE_TOLERANT_UNUSED_VARS },
     },
     {
         files: ["**/*.ts"],
@@ -59,7 +61,7 @@ export default defineConfig([
     {
         files: ["**/*.test.ts", "**/__mocks__/**"],
         languageOptions: {
-            globals: { ...globals.jest },
+            globals: { ...globals.vitest },
         },
     },
 ]);

@@ -31,7 +31,7 @@ export class CacheHelper {
                             cachedItem.forEach(manifold => {
                                 try {
                                     manifold.delete();
-                                } catch (error) {
+                                } catch {
                                     // Ignore errors for already deleted manifolds
                                 }
                             });
@@ -40,7 +40,7 @@ export class CacheHelper {
                         }
                     }
                 }
-                catch (error) {
+                catch {
                     // Ignore errors when cleaning manifolds that may already be deleted
                 }
             }
@@ -63,7 +63,7 @@ export class CacheHelper {
                         cachedItem.forEach(manifold => {
                             try {
                                 manifold.delete();
-                            } catch (error) {
+                            } catch {
                                 // Ignore errors for already deleted manifolds
                             }
                         });
@@ -72,7 +72,7 @@ export class CacheHelper {
                     }
                 }
             }
-            catch (error) {
+            catch {
                 // Ignore errors when cleaning manifolds that may already be deleted
             }
         }

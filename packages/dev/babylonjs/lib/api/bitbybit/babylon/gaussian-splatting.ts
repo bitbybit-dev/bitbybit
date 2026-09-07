@@ -1,4 +1,5 @@
 
+import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
@@ -19,7 +20,7 @@ export class BabylonGaussianSplatting {
         if (inputs.url) {
             const gs = BABYLON.SceneLoader.ImportMeshAsync(null, inputs.url, undefined, this.context.scene, undefined, ".ply").then((result) => {
                 const gaussianSplattingMesh = result.meshes[0] as BABYLON.GaussianSplattingMesh;
-                gaussianSplattingMesh.name = `gaussian-splatting-${Math.random()}`;
+                gaussianSplattingMesh.name = uniqueName("gaussian-splatting-");
                 this.enableShadows(gaussianSplattingMesh);
                 return gaussianSplattingMesh;
             });
@@ -38,7 +39,7 @@ export class BabylonGaussianSplatting {
      * @disposableOutput true
      */
     clone(inputs: Inputs.BabylonGaussianSplatting.GaussianSplattingMeshDto): BABYLON.GaussianSplattingMeshBase {
-        return inputs.babylonMesh.clone(`gaussian-splatting-${Math.random()}`);
+        return inputs.babylonMesh.clone(uniqueName("gaussian-splatting-"));
     }
 
     /**

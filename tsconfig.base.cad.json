@@ -14,7 +14,10 @@
         "target": "es2015",
         "module": "es2020",
         "moduleResolution": "node",
-        "lib": ["es2020", "dom"],
+        // es2022.error alone, not all of es2022: it is what types `new Error(message, { cause })`,
+        // and a rethrow that drops the kernel's original error is the thing that makes a CAD failure
+        // hard to diagnose. The target stays es2015, so nothing about the emit changes.
+        "lib": ["es2020", "es2022.error", "dom"],
         "strict": true,
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,

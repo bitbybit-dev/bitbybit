@@ -65,7 +65,7 @@ jobs:
       - name: Build and stage every package in dependency order
         run: npm run rebuild-all-packages
 
-      # The root aggregate: the kernel/worker parity walker, then every package's jest suite with
+      # The root aggregate: the kernel/worker parity walker, then every package's suite with
       # coverage, each writing its results to its test-results/ folder for the report below.
       - name: Test aggregate
         run: npm test
@@ -80,8 +80,11 @@ jobs:
       - name: cad-cloud-sdk
         run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test:coverage && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
 
+      # The scaffolder: built, then run as a user runs it - every template scaffolded into a
+      # temporary directory and the tree it wrote checked, including that the packages it pins are
+      # the ones this release publishes.
       - name: create-app
-        run: pnpm --filter @bitbybit-dev/create-app run build
+        run: pnpm --filter @bitbybit-dev/create-app run build && pnpm --filter @bitbybit-dev/create-app run test
 
       # The SDK is generated from the API's OpenAPI document, and the documentation site publishes
       # that document; both carry the version, and they must agree before either ships.
@@ -98,6 +101,12 @@ jobs:
       # build info file fails here, not on a user's machine.
       - name: Tarballs install standalone
         run: npm run check:tarballs
+
+      # The suites' own numbers, held to what they reached before: a refactor, and above all a change
+      # of test runner, must not quietly lose coverage. It reads the results the runs above left
+      # behind, so it goes after the last of them.
+      - name: No suite lost tests or coverage
+        run: npm run check:coverage-baseline
 
       # Every suite's results in one table on the run's summary page - files, tests, failures with
       # their messages, skipped tests, coverage - and a suite that left no results is called out.

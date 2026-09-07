@@ -1,4 +1,5 @@
 import * as BABYLON from "@babylonjs/core";
+import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 
@@ -19,7 +20,7 @@ export class BabylonArcRotateCamera {
     create(inputs: Inputs.BabylonCamera.ArcRotateCameraDto): BABYLON.ArcRotateCamera {
         const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
         const camera = new BABYLON.ArcRotateCamera(
-            `arcRotateCamera${Math.random()}`,
+            uniqueName("arcRotateCamera"),
             this.getRadians(inputs.alpha),
             this.getRadians(inputs.beta),
             inputs.radius,

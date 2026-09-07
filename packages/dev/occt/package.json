@@ -49,10 +49,12 @@
         "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist && shx cp -R ./NOTICE ./dist && shx cp -R ./licenses ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "delete-bak": "find ./dist -name '*.bak' -delete || true",
-        "test": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --watchAll=true",
-        "test-c": "mkdir -p test-results && NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false --json --outputFile=test-results/jest.json",
-        "test-c-l": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=true",
-        "fetch-kernels": "node ../../../scripts/fetch-kernels.mjs"
+        "test": "NODE_OPTIONS=--max-old-space-size=8192 vitest run",
+        "test:coverage": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
+        "test:watch": "NODE_OPTIONS=--max-old-space-size=8192 vitest",
+        "fetch-kernels": "node ../../../scripts/fetch-kernels.mjs",
+        "api:check": "api-extractor run",
+        "api:update": "api-extractor run --local"
     },
     "author": "Bit by bit developers",
     "license": "MIT",
@@ -169,51 +171,10 @@
         "@bitbybit-dev/base": "1.1.1"
     },
     "devDependencies": {
+        "@microsoft/api-extractor": "7.59.0",
+        "@vitest/coverage-v8": "4.1.7",
         "shx": "0.4.0",
-        "@testing-library/jest-dom": "6.9.1",
-        "jest": "30.4.2",
-        "ts-node": "10.9.2",
-        "ts-jest": "29.4.10",
         "typescript": "5.9.3",
-        "@types/jest": "30.0.0",
-        "babel-jest": "30.4.1",
-        "@babel/core": "7.29.0",
-        "@babel/preset-env": "7.29.5",
-        "@babel/preset-typescript": "7.28.5",
-        "jest-html-reporters": "3.1.7",
-        "jest-environment-node": "30.4.1"
-    },
-    "jest": {
-        "preset": "ts-jest",
-        "transform": {
-            "\\.[jt]sx?$": "babel-jest"
-        },
-        "extensionsToTreatAsEsm": [
-            ".ts"
-        ],
-        "transformIgnorePatterns": [],
-        "testEnvironment": "node",
-        "maxWorkers": 1,
-        "collectCoverageFrom": [
-            "lib/services/**/*.ts",
-            "lib/occ-helper.ts",
-            "lib/occ-service.ts",
-            "lib/api/shapes-helper.service.ts",
-            "lib/api/vector-helper.service.ts",
-            "!**/index.ts",
-            "!**/io-assembly.ts"
-        ],
-        "coverageReporters": [
-            "text",
-            "lcov",
-            "json-summary"
-        ],
-        "testEnvironmentOptions": {
-            "customExportConditions": [
-                "@bitbybit-dev/source",
-                "node",
-                "node-addons"
-            ]
-        }
+        "vitest": "4.1.7"
     }
 }

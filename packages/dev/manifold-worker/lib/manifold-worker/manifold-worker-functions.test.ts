@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { initializationComplete, onMessageInput } from "./manifold-worker";
 
@@ -10,11 +11,11 @@ describe("Manifold Worker Functions Tests", () => {
         const createMockManifold = (): any => {
             const mock = {
                 $$: Math.floor(Math.random() * 10000) + 1,
-                delete: jest.fn(),
-                translate: jest.fn(() => createMockManifold()),
-                scale: jest.fn(() => createMockManifold()),
-                rotate: jest.fn(() => createMockManifold()),
-                getMesh: jest.fn(() => ({ vertProperties: new Float32Array([]), triVerts: new Uint32Array([]), numProp: 3 })),
+                delete: vi.fn(),
+                translate: vi.fn(() => createMockManifold()),
+                scale: vi.fn(() => createMockManifold()),
+                rotate: vi.fn(() => createMockManifold()),
+                getMesh: vi.fn(() => ({ vertProperties: new Float32Array([]), triVerts: new Uint32Array([]), numProp: 3 })),
                 hash: undefined as any // Will be set by cache
             };
             return mock;
@@ -25,8 +26,8 @@ describe("Manifold Worker Functions Tests", () => {
         // which call WASM methods like wasm.Manifold.cube()
         mockManifold = {
             Manifold: {
-                cube: jest.fn(() => createMockManifold()),
-                sphere: jest.fn(() => createMockManifold())
+                cube: vi.fn(() => createMockManifold()),
+                sphere: vi.fn(() => createMockManifold())
             }
         };
         

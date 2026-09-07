@@ -87,7 +87,7 @@ export class OCCTFace {
         inputs.mesh.forEach((triangle) => {
             try {
                 faces.push(this.fromBaseTriangle({ triangle }));
-            } catch (e) {
+            } catch {
                 console.warn("Failed to make face for triangle", triangle);
             }
         });

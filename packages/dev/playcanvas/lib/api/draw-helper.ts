@@ -56,7 +56,7 @@ export class DrawHelper extends DrawHelperCore {
             return manifoldMeshContainer;
         } catch (error) {
             console.error("Error drawing manifolds or cross sections:", error);
-            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -67,7 +67,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedManifold(decomposedMesh, inputs);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
-            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -78,7 +78,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedMesh(inputs, decomposedMesh, inputs);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
-            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -96,7 +96,7 @@ export class DrawHelper extends DrawHelperCore {
             return shapesMeshContainer;
         } catch (error) {
             console.error("Error drawing OCCT shapes:", error);
-            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -137,7 +137,7 @@ export class DrawHelper extends DrawHelperCore {
             return s;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon mesh:", error);
-            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -189,7 +189,7 @@ export class DrawHelper extends DrawHelperCore {
             return localOrigin;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon meshes:", error);
-            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -228,12 +228,7 @@ export class DrawHelper extends DrawHelperCore {
     drawPoint(inputs: Inputs.Point.DrawPointDto<pc.Entity>): pc.Entity {
         const vectorPoints = [inputs.point];
 
-        let colorsHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            colorsHex = inputs.colours;
-        } else {
-            colorsHex = [inputs.colours];
-        }
+        const colorsHex: string[] = Array.isArray(inputs.colours) ? inputs.colours : [inputs.colours];
         if (inputs.pointMesh && inputs.updatable) {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
         } else {

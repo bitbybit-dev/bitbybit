@@ -121,7 +121,14 @@ export class BabylonWebXRSimple {
             near,
             button,
             text,
-            dispose: () => { xr.dispose(), torusMat.dispose(), manager.dispose(), near.dispose(), button.dispose(), text.dispose(); }
+            dispose: () => {
+                xr.dispose();
+                torusMat.dispose();
+                manager.dispose();
+                near.dispose();
+                button.dispose();
+                text.dispose();
+            }
         };
 
     }

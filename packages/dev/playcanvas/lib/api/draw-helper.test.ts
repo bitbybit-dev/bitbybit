@@ -1,6 +1,7 @@
-jest.mock("playcanvas", () => {
-    const { createPlayCanvasMock } = jest.requireActual("./__mocks__/playcanvas.mock");
-    return createPlayCanvasMock();
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
+vi.mock("playcanvas", async () => {
+    const { createPlayCanvasMock } = await vi.importActual<typeof import("./__mocks__/playcanvas.mock")>("./__mocks__/playcanvas.mock");
+    return await createPlayCanvasMock();
 });
 
 import { createDrawHelperMocks } from "./__mocks__/test-helpers";
@@ -46,7 +47,7 @@ describe("DrawHelper unit tests", () => {
     afterEach(() => {
         // Clean up material cache to prevent cross-test contamination
         drawHelper.dispose();
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     // Helper function to extract material from entity's render component or mesh instance
@@ -459,7 +460,7 @@ describe("DrawHelper unit tests", () => {
     describe("drawCurve", () => {
         it("should draw a curve", () => {
             const mockCurve = {
-                tessellate: jest.fn().mockReturnValue([
+                tessellate: vi.fn().mockReturnValue([
                     [0, 0, 0], [0.5, 0.5, 0], [1, 1, 0]
                 ] as Inputs.Base.Point3[])
             };
@@ -485,7 +486,7 @@ describe("DrawHelper unit tests", () => {
             existingMesh.addChild(childEntity);
 
             const mockCurve = {
-                tessellate: jest.fn().mockReturnValue([
+                tessellate: vi.fn().mockReturnValue([
                     [0, 0, 0], [1, 1, 1], [2, 2, 2]
                 ] as Inputs.Base.Point3[])
             };
@@ -685,8 +686,8 @@ describe("DrawHelper unit tests", () => {
     describe("drawCurves", () => {
         it("should draw multiple curves", () => {
             const mockCurves = [
-                { tessellate: jest.fn().mockReturnValue([[0, 0, 0], [1, 1, 1]] as Inputs.Base.Point3[]) },
-                { tessellate: jest.fn().mockReturnValue([[2, 2, 2], [3, 3, 3]] as Inputs.Base.Point3[]) }
+                { tessellate: vi.fn().mockReturnValue([[0, 0, 0], [1, 1, 1]] as Inputs.Base.Point3[]) },
+                { tessellate: vi.fn().mockReturnValue([[2, 2, 2], [3, 3, 3]] as Inputs.Base.Point3[]) }
             ];
             const inputs = new Inputs.Verb.DrawCurvesDto<pc.Entity>(
                 mockCurves,
@@ -705,7 +706,7 @@ describe("DrawHelper unit tests", () => {
     describe("drawSurface", () => {
         it("should draw a surface", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [
                         [0, 1, 2]
                     ],
@@ -746,7 +747,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle hidden surfaces", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -773,7 +774,7 @@ describe("DrawHelper unit tests", () => {
             existingMesh.name = "existingSurface";
 
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -796,7 +797,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle array of colours and use first colour", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -827,7 +828,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should validate custom opacity on surface", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -861,7 +862,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should draw surface with two-sided rendering enabled by default", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -901,7 +902,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should draw surface without back face when drawTwoSided is false", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -927,7 +928,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should draw surface with custom back face colour", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -960,7 +961,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should draw surface with custom back face opacity", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -995,14 +996,14 @@ describe("DrawHelper unit tests", () => {
     describe("drawSurfacesMultiColour", () => {
         it("should draw multiple surfaces with different colours", () => {
             const mockSurface1 = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
                 })
             };
             const mockSurface2 = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[2, 0, 0], [3, 0, 0], [2, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -1043,7 +1044,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should use first colour when more surfaces than colours", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -1068,7 +1069,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should use string colour for all surfaces when not array", () => {
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -1096,7 +1097,7 @@ describe("DrawHelper unit tests", () => {
             existingMesh.name = "existingSurfacesMesh";
 
             const mockSurface = {
-                tessellate: jest.fn().mockReturnValue({
+                tessellate: vi.fn().mockReturnValue({
                     faces: [[0, 1, 2]],
                     points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
@@ -1173,7 +1174,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle hidden mesh", async () => {
-            (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
                 normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
                 indices: [0, 1, 2],
@@ -1386,7 +1387,7 @@ describe("DrawHelper unit tests", () => {
 
     describe("drawSolidOrPolygonMeshes", () => {
         it("should draw multiple JSCAD meshes", async () => {
-            (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { positions: [0, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
                 { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
@@ -1424,7 +1425,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle meshes with baked colours", async () => {
-            (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { positions: [0, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], color: [1, 0, 0] },
                 { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
@@ -1447,7 +1448,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle array of colours matching meshes count", async () => {
-            (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { positions: [0, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
                 { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
@@ -1480,7 +1481,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should update existing mesh when updatable is true", async () => {
-            (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { positions: [0, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
@@ -1507,7 +1508,7 @@ describe("DrawHelper unit tests", () => {
 
     describe("drawShape (OCCT)", () => {
         it("should draw OCCT shape with faces", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 faceList: [
                     { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
@@ -1533,7 +1534,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw OCCT shape with edges", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 faceList: [],
                 edgeList: [
                     { vertexCoord: [0, 0, 0, 1, 0, 0], edgeIndex: 0 }
@@ -1559,7 +1560,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw OCCT shape with vertices", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 faceList: [],
                 edgeList: [],
                 pointsList: [[0, 0, 0], [1, 1, 1]]
@@ -1581,7 +1582,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw OCCT shape with two-sided rendering enabled by default", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 faceList: [
                     { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
@@ -1623,7 +1624,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw OCCT shape without back face when drawTwoSided is false", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 faceList: [
                     { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
@@ -1649,7 +1650,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw OCCT shape with custom back face colour", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 faceList: [
                     { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
@@ -1682,7 +1683,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw OCCT shape with custom back face opacity", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 faceList: [
                     { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
                 ],
@@ -1717,7 +1718,7 @@ describe("DrawHelper unit tests", () => {
 
     describe("drawShapes (OCCT)", () => {
         it("should draw multiple OCCT shapes", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { faceList: [{ vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }], edgeList: [], pointsList: [] },
                 { faceList: [{ vertexCoord: [2, 0, 0, 3, 0, 0, 2, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }], edgeList: [], pointsList: [] }
             ]);
@@ -1745,7 +1746,7 @@ describe("DrawHelper unit tests", () => {
     describe("drawManifoldOrCrossSection", () => {
         it("should draw manifold or cross section", async () => {
             // handleDecomposedManifold expects vertProperties and triVerts
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
             });
@@ -1765,7 +1766,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should return undefined when triVerts is empty", async () => {
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([]),
                 triVerts: new Uint32Array([])
             });
@@ -1781,7 +1782,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle cross section polygons", async () => {
             // When decomposed mesh is 2D polygons instead of 3D mesh
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 [[0, 0], [1, 0], [1, 1], [0, 1]] as Inputs.Base.Vector2[]
             ]);
 
@@ -1799,7 +1800,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw manifold with two-sided rendering enabled by default", async () => {
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
             });
@@ -1835,7 +1836,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw manifold without back face when drawTwoSided is false", async () => {
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
             });
@@ -1855,7 +1856,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw manifold with custom back face colour", async () => {
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
             });
@@ -1882,7 +1883,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw manifold with custom back face opacity", async () => {
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
             });
@@ -1911,7 +1912,7 @@ describe("DrawHelper unit tests", () => {
 
     describe("drawManifoldsOrCrossSections", () => {
         it("should draw multiple manifolds", async () => {
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) },
                 { vertProperties: new Float32Array([1, 0, 0, 2, 0, 0, 1, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) }
             ]);
@@ -1931,7 +1932,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should filter out undefined meshes", async () => {
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue([
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) },
                 { vertProperties: new Float32Array([]), triVerts: new Uint32Array([]) } // This will be filtered out
             ]);
@@ -2112,7 +2113,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should throw descriptive error when JSCAD worker fails", async () => {
             const mockError = new Error("Worker communication failed");
-            (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock)
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock)
                 .mockRejectedValue(mockError);
 
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
@@ -2130,7 +2131,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should throw descriptive error when OCCT worker fails", async () => {
             const mockError = new Error("OCCT decomposition failed");
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock)
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock)
                 .mockRejectedValue(mockError);
 
             const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
@@ -2143,7 +2144,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should throw descriptive error when Manifold worker fails", async () => {
             const mockError = new Error("Manifold mesh extraction failed");
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock)
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock)
                 .mockRejectedValue(mockError);
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, pc.StandardMaterial>();
@@ -2161,8 +2162,8 @@ describe("DrawHelper unit tests", () => {
             const mockMesh = { type: "solid", polygons: [] };
 
             // Reset mock to track new calls
-            (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockClear();
-            (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockClear();
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 positions: [],
                 normals: [],
                 indices: [],
@@ -2181,14 +2182,14 @@ describe("DrawHelper unit tests", () => {
 
             // The implementation calls shapeToMesh not geomToMesh
             expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalled();
-            const callArgs = (mockJscadWorkerManager.genericCallToWorkerPromise as jest.Mock).mock.calls[0];
-            expect(callArgs[1]).toMatchObject({
+            const [[, secondArgument]] = (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mock.calls as [[unknown, unknown]];
+            expect(secondArgument).toMatchObject({
                 mesh: mockMesh
             });
         });
 
         it("should call OCCT worker with correct parameters", async () => {
-            (mockOccWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 faceList: [{
                     vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0],
                     normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
@@ -2213,7 +2214,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should call Manifold worker with correct parameters", async () => {
-            (mockManifoldWorkerManager.genericCallToWorkerPromise as jest.Mock).mockResolvedValue({
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
             });

@@ -1,3 +1,4 @@
+import { expect } from "vitest";
 import * as Inputs from "./inputs";
 import { GeometryHelper, MathBitByBit, Vector } from "./services";
 

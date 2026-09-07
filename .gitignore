@@ -5,3 +5,7 @@ node_modules
 
 # Per-suite JSON results the runners write for scripts/test-report.mjs
 test-results/
+
+# Coverage reports. Each package ignores its own; this catches the whole tree, including a report
+# written at the root by a coverage run started from here rather than from inside a package.
+coverage/

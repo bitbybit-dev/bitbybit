@@ -44,7 +44,7 @@ export type DataInput = {
  * @param doNotPost - If true, skip posting the initialization message (used for testing)
  * @returns The CacheHelper instance for testing purposes
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const initializationComplete = (
     occ: BitbybitOcctModule,
     plugins: any,
@@ -52,19 +52,19 @@ export const initializationComplete = (
 ): CacheHelper => {
     // Initialize cache helper
     cacheHelper = new CacheHelper(occ);
-    
+
     // Initialize helper services
     const vecService = new VectorHelperService();
     const shapesService = new ShapesHelperService();
-    
+
     // Initialize OpenCascade service
     openCascade = new OCCTService(occ, new OccHelper(vecService, shapesService, occ));
-    
+
     // Initialize resolver utilities
     shapeResolver = new ShapeResolver(cacheHelper);
     resultSerializer = new ResultSerializer(cacheHelper);
     functionPathResolver = new FunctionPathResolver();
-    
+
     // Set up plugins if provided
     if (plugins) {
         openCascade.plugins = plugins;
@@ -73,12 +73,12 @@ export const initializationComplete = (
             plugins.dependencies[key] = value;
         });
     }
-    
+
     // Notify that initialization is complete
     if (!doNotPost) {
         postMessage(WorkerMessages.INITIALIZED);
     }
-    
+
     return cacheHelper;
 };
 
@@ -109,12 +109,12 @@ function executeStandardFunction(
 ): unknown {
     // Recursively resolve all shape references in inputs
     const resolvedInputs = shapeResolver.resolveShapeReferences(action.inputs);
-    
+
     // Execute with caching - the cache helper will return cached result if available
     const res = cacheHelper.cacheOp(action, () => {
         return functionPathResolver.callFunction(openCascade, action.functionName, resolvedInputs);
     });
-    
+
     // Serialize the result for transmission back to main thread
     return resultSerializer.serializeResult(res);
 }
@@ -161,9 +161,9 @@ function formatError(error: unknown, action: DataInput["action"]): string {
             .join(", ");
         props = ` Input values were: {${inputDetails}}.`;
     }
-    
+
     const funcName = action?.functionName ? ` while executing function '${action.functionName}'` : "";
-    
+
     return `OCCT computation failed${funcName}: ${errorMessage}.${props}`;
 }
 
@@ -182,15 +182,15 @@ export const onMessageInput = (
 ): void => {
     // Notify that processing has started
     postMessage(WorkerMessages.BUSY);
-    
+
     let result: unknown;
-    
+
     try {
         const { functionName, inputs } = d.action;
-        
+
         // Check if this is a reserved function with special handling
         const commandHandler = getCommandHandler(functionName);
-        
+
         if (commandHandler) {
             // Execute special command handler
             const commandResult = commandHandler(inputs, createCommandContext());
@@ -199,7 +199,7 @@ export const onMessageInput = (
             // Execute standard cacheable function
             result = executeStandardFunction(d.action);
         }
-        
+
         // Send successful response
         postMessage({
             uid: d.uid,

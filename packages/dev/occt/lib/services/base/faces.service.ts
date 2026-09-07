@@ -27,8 +27,16 @@ export class FacesService {
         private readonly transformsService: TransformsService,
         private readonly vectorService: VectorHelperService,
         private readonly base: BaseBitByBit,
-        public filletsService: FilletsService,
+        // Fillets reaches back into faces, so the two cannot both be built before each other. It
+        // arrives as a supplier and is read when a method needs it, rather than being assigned onto
+        // this one afterwards.
+        private readonly fillets: () => FilletsService,
     ) { }
+
+    /** The fillets service, resolved on use because it and this one refer to each other. */
+    get filletsService(): FilletsService {
+        return this.fillets();
+    }
 
     createFaceFromWireOnFace(inputs: Inputs.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWireOnFace(inputs.face, inputs.wire, inputs.inside);
@@ -986,7 +994,7 @@ export class FacesService {
     }
 
     private placeWireOnParamSurface(isU: boolean, param: number, uMin: number, uMax: number, vMin: number, vMax: number, surface: Geom_Surface) {
-        let paramToUse = param;
+        let paramToUse: number;
 
         let wire;
         if (isU) {

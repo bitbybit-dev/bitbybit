@@ -10,60 +10,54 @@ export class EnumService {
     ) { }
 
     getShapeTypeEnum(shape: TopoDS_Shape): Inputs.OCCT.shapeTypeEnum {
-        let result = Inputs.OCCT.shapeTypeEnum.unknown;
         const st = shape.ShapeType();
         if (st === this.occ.TopAbs_ShapeEnum.EDGE) {
-            result = Inputs.OCCT.shapeTypeEnum.edge;
+            return Inputs.OCCT.shapeTypeEnum.edge;
         } else if (st === this.occ.TopAbs_ShapeEnum.WIRE) {
-            result = Inputs.OCCT.shapeTypeEnum.wire;
+            return Inputs.OCCT.shapeTypeEnum.wire;
         } else if (st === this.occ.TopAbs_ShapeEnum.VERTEX) {
-            result = Inputs.OCCT.shapeTypeEnum.vertex;
+            return Inputs.OCCT.shapeTypeEnum.vertex;
         } else if (st === this.occ.TopAbs_ShapeEnum.SOLID) {
-            result = Inputs.OCCT.shapeTypeEnum.solid;
+            return Inputs.OCCT.shapeTypeEnum.solid;
         } else if (st === this.occ.TopAbs_ShapeEnum.SHELL) {
-            result = Inputs.OCCT.shapeTypeEnum.shell;
+            return Inputs.OCCT.shapeTypeEnum.shell;
         } else if (st === this.occ.TopAbs_ShapeEnum.FACE) {
-            result = Inputs.OCCT.shapeTypeEnum.face;
+            return Inputs.OCCT.shapeTypeEnum.face;
         } else if (st === this.occ.TopAbs_ShapeEnum.COMPSOLID) {
-            result = Inputs.OCCT.shapeTypeEnum.compSolid;
+            return Inputs.OCCT.shapeTypeEnum.compSolid;
         } else if (st === this.occ.TopAbs_ShapeEnum.COMPOUND) {
-            result = Inputs.OCCT.shapeTypeEnum.compound;
+            return Inputs.OCCT.shapeTypeEnum.compound;
         } else {
-            result = Inputs.OCCT.shapeTypeEnum.shape;
+            return Inputs.OCCT.shapeTypeEnum.shape;
         }
-        return result;
     }
 
     getGccEntPositionFromEnum(position: Inputs.OCCT.gccEntPositionEnum): EmbindEnumValue {
-        let result = this.occ.GccEnt_Position.noqualifier;
         if (position === Inputs.OCCT.gccEntPositionEnum.unqualified) {
-            result = this.occ.GccEnt_Position.unqualified;
+            return this.occ.GccEnt_Position.unqualified;
         } else if (position === Inputs.OCCT.gccEntPositionEnum.enclosed) {
-            result = this.occ.GccEnt_Position.enclosed;
+            return this.occ.GccEnt_Position.enclosed;
         } else if (position === Inputs.OCCT.gccEntPositionEnum.enclosing) {
-            result = this.occ.GccEnt_Position.enclosing;
+            return this.occ.GccEnt_Position.enclosing;
         } else if (position === Inputs.OCCT.gccEntPositionEnum.outside) {
-            result = this.occ.GccEnt_Position.outside;
+            return this.occ.GccEnt_Position.outside;
         } else if (position === Inputs.OCCT.gccEntPositionEnum.noqualifier) {
-            result = this.occ.GccEnt_Position.noqualifier;
+            return this.occ.GccEnt_Position.noqualifier;
         } else {
-            result = this.occ.GccEnt_Position.noqualifier;
+            return this.occ.GccEnt_Position.noqualifier;
         }
-        return result;
     }
 
     getTopAbsStateEnum(state: EmbindEnumValue): Inputs.OCCT.topAbsStateEnum {
-        let result = Inputs.OCCT.topAbsStateEnum.unknown;
         if (state.value === this.occ.TopAbs_State.IN.value) {
-            result = Inputs.OCCT.topAbsStateEnum.in;
+            return Inputs.OCCT.topAbsStateEnum.in;
         } else if (state.value === this.occ.TopAbs_State.OUT.value) {
-            result = Inputs.OCCT.topAbsStateEnum.out;
+            return Inputs.OCCT.topAbsStateEnum.out;
         } else if (state.value === this.occ.TopAbs_State.ON.value) {
-            result = Inputs.OCCT.topAbsStateEnum.on;
+            return Inputs.OCCT.topAbsStateEnum.on;
         } else {
-            result = Inputs.OCCT.topAbsStateEnum.unknown;
+            return Inputs.OCCT.topAbsStateEnum.unknown;
         }
-        return result;
     }
 
 

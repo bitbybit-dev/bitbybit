@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
+import { vi, type Mock } from "vitest";
+
+
 
 /**
  * Centralized Three.js mocks for testing
@@ -26,7 +27,7 @@ export class MockColor {
     r: number;
     g: number;
     b: number;
-    
+
     constructor(color?: string | number) {
         if (typeof color === "string") {
             const rgb = hexToRgb(color);
@@ -39,14 +40,14 @@ export class MockColor {
             this.b = 0;
         }
     }
-    
+
     set(r: number, g: number, b: number) {
         this.r = r;
         this.g = g;
         this.b = b;
         return this;
     }
-    
+
     clone() {
         const c = new MockColor();
         c.r = this.r;
@@ -60,24 +61,24 @@ export class MockVector3 {
     x: number;
     y: number;
     z: number;
-    
+
     constructor(x = 0, y = 0, z = 0) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
-    
+
     set(x: number, y: number, z: number) {
         this.x = x;
         this.y = y;
         this.z = z;
         return this;
     }
-    
+
     clone() {
         return new MockVector3(this.x, this.y, this.z);
     }
-    
+
     copy(v: MockVector3) {
         this.x = v.x;
         this.y = v.y;
@@ -89,11 +90,11 @@ export class MockVector3 {
 export class MockScene {
     background: MockColor | null = null;
     children: object[] = [];
-    
+
     add(obj: object) {
         this.children.push(obj);
     }
-    
+
     remove(obj: object) {
         const idx = this.children.indexOf(obj);
         if (idx > -1) {
@@ -107,7 +108,7 @@ export class MockHemisphereLight {
     groundColor: MockColor;
     intensity: number;
     position = new MockVector3();
-    
+
     constructor(skyColor?: MockColor, groundColor?: MockColor, intensity?: number) {
         this.color = skyColor || new MockColor();
         this.groundColor = groundColor || new MockColor();
@@ -129,7 +130,7 @@ export class MockDirectionalLight {
         bias: 0,
         normalBias: 0,
     };
-    
+
     constructor(color?: MockColor, intensity?: number) {
         this.color = color || new MockColor();
         this.intensity = intensity || 1;
@@ -138,12 +139,12 @@ export class MockDirectionalLight {
 
 export class MockPlaneGeometry {
     parameters = { width: 10, height: 10 };
-    
+
     constructor(width: number, height: number) {
         this.parameters.width = width;
         this.parameters.height = height;
     }
-    
+
     dispose() { /* mock */ }
 }
 
@@ -154,13 +155,13 @@ export class MockMaterial {
     side = 0;
     roughness = 0.5;
     metalness = 0.5;
-    
+
     constructor(options?: object) {
         if (options) {
             Object.assign(this, options);
         }
     }
-    
+
     dispose() { /* mock */ }
 }
 
@@ -170,7 +171,7 @@ export class MockMesh {
     rotation = { x: 0, y: 0, z: 0 };
     position = new MockVector3();
     receiveShadow = false;
-    
+
     constructor(geometry: MockPlaneGeometry, material: MockMaterial) {
         this.geometry = geometry;
         this.material = material;
@@ -181,11 +182,11 @@ export class MockWebGLRenderer {
     domElement: HTMLCanvasElement | null = null;
     shadowMap = { enabled: false, type: 0 };
     _animationLoop: ((time: number) => void) | null = null;
-    
+
     constructor(options: { antialias?: boolean; canvas?: HTMLCanvasElement }) {
         this.domElement = options.canvas || null;
     }
-    
+
     setSize(_width: number, _height: number) { /* mock */ }
     setPixelRatio(_ratio: number) { /* mock */ }
     setAnimationLoop(callback: ((time: number) => void) | null) {
@@ -200,7 +201,7 @@ export const VSMShadowMap = 2;
 export const DoubleSide = 2;
 
 /**
- * Create Three.js module mock for jest.mock()
+ * Create Three.js module mock for vi.mock()
  */
 export function createThreeJSMock() {
     return {
@@ -218,18 +219,29 @@ export function createThreeJSMock() {
     };
 }
 
+/** What an orbit camera hands back, as this suite stands it in. */
+export type MockOrbitCameraResult = {
+    camera: { aspect: number; updateProjectionMatrix: Mock };
+    orbitCamera: { distance: number; pitch: number; yaw: number; pivotPoint: { x: number; y: number; z: number } };
+    mouseInput: { destroy: Mock };
+    touchInput: { destroy: Mock };
+    keyboardInput: { destroy: Mock };
+    update: Mock;
+    destroy: Mock;
+};
+
 /**
  * Create mock orbit camera result for testing
  */
-export function createMockOrbitCameraResult() {
+export function createMockOrbitCameraResult(): MockOrbitCameraResult {
     return {
-        camera: { aspect: 1, updateProjectionMatrix: jest.fn() },
+        camera: { aspect: 1, updateProjectionMatrix: vi.fn() },
         orbitCamera: { distance: 10, pitch: 0, yaw: 0, pivotPoint: { x: 0, y: 0, z: 0 } },
-        mouseInput: { destroy: jest.fn() },
-        touchInput: { destroy: jest.fn() },
-        keyboardInput: { destroy: jest.fn() },
-        update: jest.fn(),
-        destroy: jest.fn(),
+        mouseInput: { destroy: vi.fn() },
+        touchInput: { destroy: vi.fn() },
+        keyboardInput: { destroy: vi.fn() },
+        update: vi.fn(),
+        destroy: vi.fn(),
     };
 }
 

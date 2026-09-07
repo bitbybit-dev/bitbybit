@@ -66,7 +66,7 @@ function readJsonc(file) {
     try {
         return JSON.parse(stripComments(readFileSync(file, "utf8")));
     } catch (error) {
-        throw new Error(`${relative(ROOT, file)}: ${error.message}`);
+        throw new Error(`${relative(ROOT, file)}: ${error.message}`, { cause: error });
     }
 }
 

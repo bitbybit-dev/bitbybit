@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { CSVBitByBit } from "./csv";
 
 describe("CSV unit tests", () => {

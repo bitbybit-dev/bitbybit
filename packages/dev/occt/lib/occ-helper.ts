@@ -39,14 +39,14 @@ export class OccHelper {
     public readonly enumService: EnumService;
 
     public readonly verticesService: VerticesService;
-    public readonly booleansService!: BooleansService;
+    public readonly booleansService: BooleansService;
     public readonly edgesService: EdgesService;
-    public readonly wiresService!: WiresService;
+    public readonly wiresService: WiresService;
     public readonly facesService: FacesService;
     public readonly shellsService: ShellsService;
     public readonly solidsService: SolidsService;
-    public readonly operationsService!: OperationsService;
-    public readonly filletsService!: FilletsService;
+    public readonly operationsService: OperationsService;
+    public readonly filletsService: FilletsService;
     public readonly meshingService: MeshingService;
 
     public readonly dimensionsService: DimensionsService;
@@ -67,26 +67,31 @@ export class OccHelper {
         this.shapeGettersService = new ShapeGettersService(occ, this.enumService, this.iteratorService);
         this.geomService = new GeomService(occ, this.vecHelper, this.entitiesService);
         this.transformsService = new TransformsService(occ, this.converterService, this.entitiesService, this.vecHelper);
-
-        this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService, this.wiresService, this.booleansService);
+        this.booleansService = new BooleansService(occ, this.shapeGettersService);
 
         this.edgesService = new EdgesService(occ, this.occRefReturns, this.shapeGettersService, this.entitiesService,
             this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
+        // Four services refer to each other in a ring - wires to operations and fillets, operations
+        // back to wires and faces, fillets back to operations and faces, faces back to wires and
+        // fillets - so no order builds them all with their collaborators already in hand. Each edge
+        // that closes a ring is passed as a supplier, read on use rather than at construction, and
+        // everything else is built in dependency order below. Nothing is assigned after the fact.
         this.wiresService = new WiresService(occ, this.occRefReturns, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
-            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper, this.filletsService, this.operationsService);
+            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper,
+            () => this.filletsService, () => this.operationsService);
+
+        this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService, this.wiresService, this.booleansService);
 
         this.dimensionsService = new DimensionsService(this.base, this.transformsService,
             this.converterService, this.entitiesService, this.edgesService, this.wiresService);
 
         this.meshingService = new MeshingService(occ, this.wiresService, this.base);
 
-        this.booleansService = new BooleansService(occ, this.shapeGettersService);
-        this.verticesService.wiresService = this.wiresService;
-        this.verticesService.booleansService = this.booleansService;
-
         this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,
-            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.base, this.filletsService);
+            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.base,
+            () => this.filletsService);
+
         this.shellsService = new ShellsService(occ, this.shapeGettersService, this.converterService, this.facesService);
 
         this.solidsService = new SolidsService(occ, this.shapeGettersService, this.facesService, this.enumService,
@@ -96,16 +101,10 @@ export class OccHelper {
             this.booleansService, this.shapeGettersService, this.edgesService, this.transformsService,
             this.vecHelper, this.wiresService, this.facesService, this.solidsService, this.shellsService);
 
-        this.wiresService.operationsService = this.operationsService;
-
         this.filletsService = new FilletsService(occ, this.vecHelper, this.iteratorService, this.converterService, this.entitiesService,
             this.transformsService, this.shapeGettersService, this.edgesService, this.operationsService, this.facesService);
-        this.wiresService.filletsService = this.filletsService;
-        // cross reference
-        this.facesService.filletsService = this.filletsService;
 
         this.dxfService = new DxfService(this.base, this.shapeGettersService, this.edgesService, this.wiresService);
-
     }
 
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Geom_Surface {

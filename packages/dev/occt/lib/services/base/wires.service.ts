@@ -33,9 +33,22 @@ export class WiresService {
         private readonly geomService: GeomService,
         private readonly edgesService: EdgesService,
         private readonly vecHelper: VectorHelperService,
-        public filletsService: FilletsService,
-        public operationsService: OperationsService,
+        // Fillets and operations both reach back into wires, so the three cannot all be built
+        // before each other. They arrive as suppliers and are read when a method needs one, which
+        // is after every service exists - rather than being assigned onto this one afterwards.
+        private readonly fillets: () => FilletsService,
+        private readonly operations: () => OperationsService,
     ) { }
+
+    /** The fillets service, resolved on use because it and this one refer to each other. */
+    get filletsService(): FilletsService {
+        return this.fillets();
+    }
+
+    /** The operations service, resolved on use because it and this one refer to each other. */
+    get operationsService(): OperationsService {
+        return this.operations();
+    }
 
     getWireLength(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): number {
         const curve = new this.occ.BRepAdaptor_CompCurve(inputs.shape, false);
@@ -795,8 +808,8 @@ export class WiresService {
         const wire1 = inputs.wire1;
         const wire2 = inputs.wire2;
 
-        let points1 = [];
-        let points2 = [];
+        let points1: Base.Point3[][];
+        let points2: Base.Point3[][];
 
         if (inputs.zigZagsPerEdge) {
             const edges1 = this.edgesService.getEdgesAlongWire({ shape: wire1 });

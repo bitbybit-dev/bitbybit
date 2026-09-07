@@ -1,4 +1,5 @@
 
+import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
@@ -734,14 +735,14 @@ export class BabylonMesh {
      * @disposableOutput true
      */
     createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): BABYLON.Mesh {
-        const parent = new BABYLON.Mesh("instanceContainer" + Math.random(), this.context.scene);
+        const parent = new BABYLON.Mesh(uniqueName("instanceContainer"), this.context.scene);
         const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
             (inputs.mesh.getChildMeshes(false) as BABYLON.Mesh[]).forEach((child: BABYLON.Mesh) => {
                 const vertices = child.getTotalVertices();
                 if (child.createInstance && vertices > 0) {
                     child.disableEdgesRendering();
-                    const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
+                    const newInstance = child.createInstance(uniqueName("InstanceMesh"));
                     newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
                     newInstance.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
                     newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
@@ -762,7 +763,7 @@ export class BabylonMesh {
             inputs.mesh.isVisible = false;
         } else if (inputs.mesh) {
             inputs.mesh.isVisible = false;
-            const newInstance = inputs.mesh.createInstance(`InstanceMesh${Math.random()}`);
+            const newInstance = inputs.mesh.createInstance(uniqueName("InstanceMesh"));
 
             newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
             newInstance.rotation = new BABYLON.Vector3(
@@ -796,10 +797,10 @@ export class BabylonMesh {
         let result!: BABYLON.Mesh;
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
             inputs.mesh.setParent(null);
-            const container = new BABYLON.Mesh("meshCloneContainer" + Math.random());
+            const container = new BABYLON.Mesh(uniqueName("meshCloneContainer"));
             (inputs.mesh.getChildMeshes(false) as BABYLON.Mesh[]).forEach((child: BABYLON.Mesh) => {
                 if (child.createInstance && child.getTotalVertices() > 0 && child.getTotalIndices() > 0) {
-                    const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
+                    const newInstance = child.createInstance(uniqueName("InstanceMesh"));
                     newInstance.parent = container;
                 }
             });
@@ -819,8 +820,8 @@ export class BabylonMesh {
             inputs.mesh.setParent(null);
             const vertices = inputs.mesh.getTotalVertices();
             if (vertices > 0) {
-                const container = new BABYLON.Mesh("meshCloneContainer" + Math.random());
-                const mesh = inputs.mesh.createInstance(`InstanceMesh${Math.random()}`);
+                const container = new BABYLON.Mesh(uniqueName("meshCloneContainer"));
+                const mesh = inputs.mesh.createInstance(uniqueName("InstanceMesh"));
                 mesh.parent = container;
                 result = container;
             }

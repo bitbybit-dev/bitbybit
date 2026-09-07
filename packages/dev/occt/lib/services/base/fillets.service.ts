@@ -476,7 +476,7 @@ export class FilletsService {
         // radius list does not need to be adjusted
 
         // Closed shapes start corners differently on the connection of the first corner, so we need to readjust the edges
-        let wireTouse = this.edgesService.fixEdgeOrientationsAlongWire({ shape: inputs.shape });
+        let wireTouse: TopoDS_Wire;
         if (useRadiusList && inputs.shape.Closed()) {
             const edgesOfWire = this.edgesService.getEdgesAlongWire({ shape: inputs.shape });
             const firstEdge = edgesOfWire.shift();

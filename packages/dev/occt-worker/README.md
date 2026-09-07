@@ -68,11 +68,11 @@ Every class, method and input type in this package is documented in the generate
 # Build package
 tsc -p tsconfig.bitbybit.json
 
-# Run live unit tests
+# Run unit tests
 npm run test
 
-# Run live unit tests with coverage
-npm run test-c-l
+# Run them with coverage
+npm run test:coverage
 ```
 
 ## Bitbybit Platform

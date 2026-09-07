@@ -90,7 +90,7 @@ export class DrawHelper extends DrawHelperCore {
             return manifoldMeshContainer;
         } catch (error) {
             console.error("Error drawing manifolds or cross sections:", error);
-            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -104,7 +104,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedManifold(decomposedMesh, inputs);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
-            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -118,7 +118,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedMesh(inputs, decomposedMesh, inputs);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
-            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -136,7 +136,7 @@ export class DrawHelper extends DrawHelperCore {
             return shapesMeshContainer;
         } catch (error) {
             console.error("Error drawing OCCT shapes:", error);
-            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -148,7 +148,7 @@ export class DrawHelper extends DrawHelperCore {
                 indices: number[],
                 transforms: [],
             } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
-            
+
             // Validate worker response
             if (!res || !res.positions || !res.indices || !res.transforms) {
                 console.warn("Corrupted worker response, returning empty mesh");
@@ -157,7 +157,7 @@ export class DrawHelper extends DrawHelperCore {
                 this.context.scene.add(emptyMesh);
                 return emptyMesh;
             }
-            
+
             let meshToUpdate;
             if (inputs.jscadMesh && inputs.updatable) {
                 meshToUpdate = inputs.jscadMesh;
@@ -187,7 +187,7 @@ export class DrawHelper extends DrawHelperCore {
             return s;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon mesh:", error);
-            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -241,14 +241,14 @@ export class DrawHelper extends DrawHelperCore {
             return localOrigin;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon meshes:", error);
-            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
     drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number }) {
         let colours = inputs.colours;
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
-        
+
         const points = inputs.polylines.map((s, index) => {
             const pts = s.points;
             //handle jscad
@@ -306,12 +306,7 @@ export class DrawHelper extends DrawHelperCore {
     drawPoint(inputs: Inputs.Point.DrawPointDto<THREEJS.Group>): THREEJS.Group {
         const vectorPoints = [inputs.point];
 
-        let colorsHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            colorsHex = inputs.colours;
-        } else {
-            colorsHex = [inputs.colours];
-        }
+        const colorsHex: string[] = Array.isArray(inputs.colours) ? inputs.colours : [inputs.colours];
         if (inputs.pointMesh && inputs.updatable) {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
         } else {
@@ -373,10 +368,10 @@ export class DrawHelper extends DrawHelperCore {
     drawPoints(inputs: Inputs.Point.DrawPointsDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): THREEJS.Group {
         const vectorPoints = inputs.points;
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
-        
+
         // Resolve colors for all points using the color mapping strategy
         const coloursHex = this.resolveAllColors(inputs.colours, vectorPoints.length, strategy);
-        
+
         if (inputs.pointsMesh && inputs.updatable) {
             // Calculate the total number of points currently in the mesh
             const currentPointCount = inputs.pointsMesh.children.reduce((sum, child) => {
@@ -385,7 +380,7 @@ export class DrawHelper extends DrawHelperCore {
                 }
                 return sum + 1; // Regular mesh counts as 1 point
             }, 0);
-            
+
             if (currentPointCount === vectorPoints.length) {
                 this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
             } else {
@@ -419,7 +414,7 @@ export class DrawHelper extends DrawHelperCore {
         // The group contains InstancedMesh children, each handling multiple points of the same color
         // We need to update the instance matrices based on the new positions
         const children = group.children as THREEJS.InstancedMesh[];
-        
+
         // Build a map of original index to new position
         const positionMap = new Map<number, THREEJS.Vector3>();
         positions.forEach((pos, index) => {
@@ -700,7 +695,7 @@ export class DrawHelper extends DrawHelperCore {
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
-        let dummy;
+        const dummy = undefined;
 
         if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 
@@ -712,7 +707,7 @@ export class DrawHelper extends DrawHelperCore {
                 const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
                 const alpha = inputs.faceOpacity;
                 const zOffset = inputs.drawEdges ? 2 : 0;
-                
+
                 pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new THREEJS.MeshPhysicalMaterial();
                     pbmat.name = this.generateEntityId("brepMaterial");
@@ -963,7 +958,7 @@ export class DrawHelper extends DrawHelperCore {
                 }
                 polylineSegmentCounts.push(segmentCount);
                 allColors.push(polylineColor);
-                
+
                 // Compute arrow head lines if arrowSize > 0
                 if (arrowSize > 0 && pts.length >= 2) {
                     const arrowLines = this.computeArrowHeadLines(pts as Inputs.Base.Point3[], arrowSize, arrowAngle);
@@ -976,7 +971,7 @@ export class DrawHelper extends DrawHelperCore {
                 }
             });
             let lines: THREEJS.LineSegments;
-            
+
             if (lineSegments && updatable) {
                 if (lineSegments?.userData?.["linesForRenderLengths"] === polylinesPoints.map(l => l.length).toString()) {
                     lineSegments.geometry.clearGroups();
@@ -1014,18 +1009,18 @@ export class DrawHelper extends DrawHelperCore {
     ): number[] {
         const lineColors: number[] = [];
         const totalPolylines = polylineSegmentCounts.length;
-        
+
         polylineSegmentCounts.forEach((segmentCount, polylineIndex) => {
             // Get the color for this polyline using the strategy
             const colorHex = this.resolveColorForEntity(colours, polylineIndex, totalPolylines, colorMapStrategy);
             const color = new THREEJS.Color(colorHex);
-            
+
             // Each segment has 2 vertices, apply the same color to both
             for (let i = 0; i < segmentCount * 2; i++) {
                 lineColors.push(color.r, color.g, color.b);
             }
         });
-        
+
         return lineColors;
     }
 
@@ -1040,17 +1035,17 @@ export class DrawHelper extends DrawHelperCore {
         explicitColors: string[]
     ): number[] {
         const lineColors: number[] = [];
-        
+
         polylineSegmentCounts.forEach((segmentCount, index) => {
             const colorHex = explicitColors[index] || explicitColors[0] || "#ff0000";
             const color = new THREEJS.Color(colorHex);
-            
+
             // Each segment has 2 vertices, apply the same color to both
             for (let i = 0; i < segmentCount * 2; i++) {
                 lineColors.push(color.r, color.g, color.b);
             }
         });
-        
+
         return lineColors;
     }
 
@@ -1132,7 +1127,7 @@ export class DrawHelper extends DrawHelperCore {
                     // Prepare mesh data for back face mesh creation
                     const positions = Array.from(decomposedMesh.vertProperties);
                     const indices = Array.from(decomposedMesh.triVerts);
-                    
+
                     // Get normals from the geometry (they were computed above)
                     const normalAttribute = geometry.getAttribute("normal");
                     const normals = normalAttribute ? Array.from(normalAttribute.array as Float32Array) : [];
@@ -1189,7 +1184,7 @@ export class DrawHelper extends DrawHelperCore {
     // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
     // Workers cannot handle complex circular objects like Three.js materials
     private getSafeWorkerOptions<T extends { faceMaterial?: THREEJS.Material | undefined }>(inputs: T): Omit<T, "faceMaterial"> {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         const { faceMaterial, ...safeOptions } = inputs;
         return safeOptions as Omit<T, "faceMaterial">;
     }
@@ -1365,12 +1360,12 @@ export class DrawHelper extends DrawHelperCore {
         const pointsGroup = new THREEJS.Group();
         pointsGroup.name = meshName;
         this.context.scene.add(pointsGroup);
-        
+
         // Create one InstancedMesh per unique color for efficient rendering
         materialSet.forEach(ms => {
             const pointCount = ms.positions.length;
             if (pointCount === 0) return;
-            
+
             // Use fewer segments for large point counts to improve performance
             const segments = pointCount > 1000 ? 1 : 6;
             const geom = new THREEJS.SphereGeometry(size, segments, segments);
@@ -1378,17 +1373,17 @@ export class DrawHelper extends DrawHelperCore {
             // Create a single InstancedMesh for all points of this color
             const instancedMesh = new THREEJS.InstancedMesh(geom, ms.material, pointCount);
             instancedMesh.name = this.generateEntityId(`points-${ms.hex}`);
-            
+
             // Store the original point indices for updating later
             const pointIndices: number[] = [];
             const matrix = new THREEJS.Matrix4();
-            
+
             ms.positions.forEach((pos, instanceIndex) => {
                 matrix.setPosition(pos.position[0], pos.position[1], pos.position[2]);
                 instancedMesh.setMatrixAt(instanceIndex, matrix);
                 pointIndices.push(pos.posIndex);
             });
-            
+
             instancedMesh.instanceMatrix.needsUpdate = true;
             instancedMesh.userData = { pointIndices };
             pointsGroup.add(instancedMesh);
