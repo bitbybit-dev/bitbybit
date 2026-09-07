@@ -434,6 +434,9 @@ export class MockInstancedMesh extends MockMesh {
 }
 
 export class MockLinesMesh extends MockMesh {
+    /** The per-vertex colours the line system was built with, so a suite can assert them. */
+    _colors: { r: number, g: number, b: number, a: number }[][] = [];
+
     override enableEdgesRendering() {
         this._edgesRendering = true;
     }
@@ -441,6 +444,8 @@ export class MockLinesMesh extends MockMesh {
 
 export class MockGreasedLineMesh extends MockMesh {
     _points: number[][] = [];
+    /** The material options the line was created with, so a suite can assert colour and width. */
+    _materialOptions: { color?: MockColor3, colors?: MockColor3[], width?: number, useColors?: boolean } = {};
     
     setPoints(points: number[][]) {
         this._points = points;
@@ -479,21 +484,45 @@ export class MockMeshBuilder {
         return mesh;
     }
     
-    static CreateLineSystem(name: string | null, _options: any, scene?: MockScene | null) {
-        const mesh = new MockLinesMesh(name || "lineSystem", scene);
+    static CreateLineSystem(
+        name: string | null,
+        options: { lines?: { x: number, y: number, z: number }[][]; colors?: { r: number, g: number, b: number, a: number }[][]; instance?: MockLinesMesh | null; updatable?: boolean },
+        scene?: MockScene | null
+    ) {
+        // Babylon updates and returns the mesh it is handed as `instance`, and a line system carries
+        // its points as vertex data. A mock that always made a fresh mesh and recorded no vertices
+        // reported zero of them, so callers that branch on the vertex count never reached their
+        // update path and the reuse could not be tested at all.
+        const mesh = options.instance ?? new MockLinesMesh(name || "lineSystem", scene);
+        const vertexData = new MockVertexData();
+        vertexData.positions = (options.lines ?? []).flat().flatMap((p) => [p.x, p.y, p.z]);
+        mesh._vertexData = vertexData;
+        mesh._colors = options.colors ?? [];
         return mesh;
     }
 }
 
-export function CreateGreasedLine(name: string, lineOptions: any, _materialOptions: any, scene?: MockScene) {
+export function CreateGreasedLine(
+    name: string,
+    lineOptions: { points?: number[][] },
+    materialOptions: { color?: MockColor3, colors?: MockColor3[], width?: number, useColors?: boolean } | undefined,
+    scene?: MockScene
+) {
     const mesh = new MockGreasedLineMesh(name, scene);
     mesh._points = lineOptions.points || [];
-    mesh.material = new MockPBRMetallicRoughnessMaterial(name + "-material");
+    // The colour and width the line was built with are what a caller is choosing; a mock that dropped
+    // the material options left every colour decision unassertable.
+    mesh._materialOptions = materialOptions ?? {};
+    const material = new MockPBRMetallicRoughnessMaterial(name + "-material");
+    if (materialOptions?.color) {
+        material.baseColor = materialOptions.color;
+    }
+    mesh.material = material;
     return mesh;
 }
 
 /**
- * Create BabylonJS module mock for jest.mock()
+ * Create BabylonJS module mock for vi.mock()
  */
 export function createBabylonJSMock() {
     return {
@@ -655,7 +684,7 @@ export interface MockMeshType {
 }
 
 /**
- * Create scene helper mock for jest.mock("@babylonjs/core")
+ * Create scene helper mock for vi.mock("@babylonjs/core")
  */
 export function createSceneHelperMock() {
     return {

@@ -1,3 +1,4 @@
+import { vi, type Mock } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
@@ -35,7 +36,7 @@ export function createSimpleMockContext(): Context {
  */
 export function createMockWorkerManagers() {
     const mockJscadWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [],
             normals: [],
             indices: [],
@@ -44,7 +45,7 @@ export function createMockWorkerManagers() {
     } as unknown as JSCADWorkerManager;
 
     const mockManifoldWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [],
             normals: [],
             indices: []
@@ -52,7 +53,7 @@ export function createMockWorkerManagers() {
     } as unknown as ManifoldWorkerManager;
 
     const mockOccWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             faceList: [],
             edgeList: [],
             pointsList: []
@@ -71,7 +72,7 @@ export function createMockWorkerManagers() {
  */
 export function createMockJSCADText(): JSCADText {
     return {
-        createVectorText: jest.fn().mockResolvedValue([])
+        createVectorText: vi.fn().mockResolvedValue([])
     } as unknown as JSCADText;
 }
 
@@ -80,8 +81,8 @@ export function createMockJSCADText(): JSCADText {
  */
 export function createMockVector(): Vector {
     return {
-        add: jest.fn().mockReturnValue([0, 0, 0]),
-        lerp: jest.fn().mockImplementation(({ first, second, fraction }) => {
+        add: vi.fn().mockReturnValue([0, 0, 0]),
+        lerp: vi.fn().mockImplementation(({ first, second, fraction }) => {
             return [
                 first[0] + (second[0] - first[0]) * fraction,
                 first[1] + (second[1] - first[1]) * fraction,
@@ -183,7 +184,7 @@ export function createMockOCCTShape(overrides = {}) {
  * Simulates worker error for testing error handling
  */
 export function mockWorkerError(workerManager: any, method: string, error: Error) {
-    (workerManager.genericCallToWorkerPromise as jest.Mock)
+    (workerManager.genericCallToWorkerPromise as Mock)
         .mockImplementation((methodName) => {
             if (methodName === method) {
                 return Promise.reject(error);
@@ -203,8 +204,8 @@ export function mockWorkerError(workerManager: any, method: string, error: Error
  */
 export function mockWindow() {
     (globalThis as any).window = {
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         innerWidth: 1920,
         innerHeight: 1080,
     };
@@ -217,13 +218,13 @@ export function mockWindow() {
 export function createMockDOMElement(): HTMLElement {
     const listeners: { [key: string]: Array<(...args: unknown[]) => void> } = {};
     return {
-        addEventListener: jest.fn((type: string, handler: (...args: unknown[]) => void) => {
+        addEventListener: vi.fn((type: string, handler: (...args: unknown[]) => void) => {
             if (!listeners[type]) {
                 listeners[type] = [];
             }
             listeners[type].push(handler);
         }),
-        removeEventListener: jest.fn((type: string, handler: (...args: unknown[]) => void) => {
+        removeEventListener: vi.fn((type: string, handler: (...args: unknown[]) => void) => {
             if (listeners[type]) {
                 const idx = listeners[type].indexOf(handler);
                 if (idx >= 0) {
@@ -231,13 +232,13 @@ export function createMockDOMElement(): HTMLElement {
                 }
             }
         }),
-        dispatchEvent: jest.fn((event: Event) => {
+        dispatchEvent: vi.fn((event: Event) => {
             const handlers = listeners[event.type];
             if (handlers) {
                 handlers.forEach(h => h(event));
             }
         }),
-        getBoundingClientRect: jest.fn(() => ({
+        getBoundingClientRect: vi.fn(() => ({
             left: 0,
             top: 0,
             width: 1920,

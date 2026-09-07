@@ -320,15 +320,15 @@ export class Polyline {
             const info1: EndpointInfo = { segmentIndex: i, endpointIndex: 1, coords: segment[1] };
 
             if (!endpointMap.has(key0)) endpointMap.set(key0, []);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
             endpointMap.get(key0)!.push(info0);
 
             if (key1 !== key0) {
                 if (!endpointMap.has(key1)) endpointMap.set(key1, []);
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                 endpointMap.get(key1)!.push(info1);
             } else {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                 endpointMap.get(key0)!.push(info1); // Add both endpoints if same key
             }
         }

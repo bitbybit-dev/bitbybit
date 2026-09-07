@@ -34,7 +34,7 @@ for (const dir of projects) {
     total += count(after);
     if (!existsSync(committed)) {
         if (count(after) === 0) continue;
-        stale.push(`${name}: ${count(after)} strict errors and no .tsc-baseline.json - run \`npm run typecheck:strict:save\` there`);
+        stale.push(`${name}: ${count(after)} strict errors and no .tsc-baseline.json - restart its ratchet with \`tsc -p tsconfig.strict.json --pretty false | tsc-baseline --ignoreMessages save\` there`);
         continue;
     }
     const before = JSON.parse(readFileSync(committed, "utf8"));
@@ -42,7 +42,7 @@ for (const dir of projects) {
     if (readFileSync(committed, "utf8") !== readFileSync(fresh, "utf8")) {
         const gone = Object.keys(before.errors).filter((h) => !after.errors[h]).length;
         const added = Object.keys(after.errors).filter((h) => !before.errors[h]).length;
-        stale.push(`${name}: baseline ${count(before)} errors, code ${count(after)} (${added} new hash${added === 1 ? "" : "es"}, ${gone} no longer occurring) - \`npm run typecheck:strict\` there shows the new ones; \`npm run typecheck:strict:save\` records a fix`);
+        stale.push(`${name}: baseline ${count(before)} errors, code ${count(after)} (${added} new hash${added === 1 ? "" : "es"}, ${gone} no longer occurring) - \`npm run typecheck:strict\` there shows the new ones; \`tsc -p tsconfig.strict.json --pretty false | tsc-baseline --ignoreMessages save\` records a fix`);
     }
 }
 if (stale.length) {

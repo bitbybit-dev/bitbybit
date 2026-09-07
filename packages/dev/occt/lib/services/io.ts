@@ -50,7 +50,7 @@ export class OCCTIO {
                 this.occ.STEPControl_StepModelType.AsIs
             );
         } catch (ex) {
-            throw (new Error("Failed when calling writer.Transfer."));
+            throw new Error("Failed when calling writer.Transfer.", { cause: ex });
         }
         let result: string;
         if (transferResult === this.occ.IFSelect_ReturnStatus.RetDone) {
@@ -333,7 +333,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`STEP to glTF conversion failed: ${errorMessage}`);
+            throw new Error(`STEP to glTF conversion failed: ${errorMessage}`, { cause: error });
         }
     }
 
@@ -474,7 +474,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`);
+            throw new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`, { cause: error });
         }
     }
 
@@ -530,7 +530,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`);
+            throw new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`, { cause: error });
         }
     }
 
@@ -609,7 +609,7 @@ export class OCCTIO {
             return result;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`);
+            throw new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`, { cause: error });
         }
     }
 

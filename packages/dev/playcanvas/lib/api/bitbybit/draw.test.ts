@@ -1,9 +1,10 @@
+import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Mock PlayCanvas with GPU instancing support
-jest.mock("playcanvas", () => {
-    const { createPlayCanvasMock } = jest.requireActual("../__mocks__/playcanvas.mock");
-    return createPlayCanvasMock();
+vi.mock("playcanvas", async () => {
+    const { createPlayCanvasMock } = await vi.importActual<typeof import("../__mocks__/playcanvas.mock")>("../__mocks__/playcanvas.mock");
+    return await createPlayCanvasMock();
 });
 
 import { Tag } from "@bitbybit-dev/core";
@@ -48,18 +49,18 @@ describe("Draw unit tests", () => {
 
         // Create a mock graphics device with the required methods and vram tracking
         const mockGraphicsDevice = {
-            createVertexBufferImpl: jest.fn(),
-            createIndexBufferImpl: jest.fn(),
-            createTextureImpl: jest.fn(function () {
+            createVertexBufferImpl: vi.fn(),
+            createIndexBufferImpl: vi.fn(),
+            createTextureImpl: vi.fn(function () {
                 return {
                     id: Math.random(),
-                    propertyChanged: jest.fn(),
-                    destroy: jest.fn()
+                    propertyChanged: vi.fn(),
+                    destroy: vi.fn()
                 };
             }),
-            setVertexBuffer: jest.fn(),
-            setIndexBuffer: jest.fn(),
-            draw: jest.fn(),
+            setVertexBuffer: vi.fn(),
+            setIndexBuffer: vi.fn(),
+            draw: vi.fn(),
             vram: {
                 vb: 0,
                 ib: 0,
@@ -649,7 +650,7 @@ describe("Draw unit tests", () => {
         it("should draw a cube mesh with default options", async () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
             options.drawTwoSided = false;
-            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
 
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occt);
@@ -665,7 +666,7 @@ describe("Draw unit tests", () => {
             customMaterial.diffuse.set(1, 0, 1);
             options.faceMaterial = customMaterial;
 
-            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
 
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occt);
@@ -681,9 +682,9 @@ describe("Draw unit tests", () => {
             options.drawVertices = true;
             options.drawEdgeIndexes = true;
             options.drawFaceIndexes = true;
-            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
-            (solidText.createVectorText as jest.Mock).mockResolvedValue([[[0.5, 0.3, 0.2], [0.5, 0.3, 0.2], [0.5, 0.3, 0.2], [0.5, 0.3, 0.2]]]);
-            vector.add = jest.fn().mockReturnValue([[[1, 2, 3], [1, 2, 3]], [[1, 2, 3], [1, 2, 3]]]);
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            vi.spyOn(solidText, "createVectorText").mockResolvedValue([[[0.5, 0.3], [0.5, 0.3], [0.5, 0.3], [0.5, 0.3]]]);
+            vector.add = vi.fn().mockReturnValue([[[1, 2, 3], [1, 2, 3]], [[1, 2, 3], [1, 2, 3]]]);
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
@@ -694,7 +695,7 @@ describe("Draw unit tests", () => {
 
         it("should draw multiple cubes mesh with default options", async () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
-            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
 
             const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occtShapes);
@@ -708,7 +709,7 @@ describe("Draw unit tests", () => {
             const customMaterial = new pc.StandardMaterial();
             customMaterial.diffuse.set(1, 0, 1);
             options.faceMaterial = customMaterial;
-            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
 
             const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occtShapes);
@@ -725,7 +726,7 @@ describe("Draw unit tests", () => {
         it("should draw a JSCAD mesh with default options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.drawTwoSided = false;
-            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockJSCADBoxDecomposedMesh());
+            jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockJSCADBoxDecomposedMesh());
             const res = await draw.drawAnyAsync({ entity: { polygons: [] }, options } as any) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
@@ -736,7 +737,7 @@ describe("Draw unit tests", () => {
         it("should draw a JSCAD mesh with specified color options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.drawTwoSided = false;
-            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
+            jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
             const res = await draw.drawAnyAsync({ entity: { polygons: [], color: [0, 1, 0] }, options } as any) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
@@ -750,7 +751,7 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.colours = "#00ffff";
             options.drawTwoSided = false;
-            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
+            jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
             const res = await draw.drawAnyAsync({ entity: { polygons: [] }, options } as any) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
@@ -764,7 +765,7 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.colours = "#00ffff";
             options.drawTwoSided = false;
-            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
+            jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
             const res = await draw.drawAnyAsync({ entity: { polygons: [], color: [0, 0, 1] }, options } as any) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
@@ -777,7 +778,7 @@ describe("Draw unit tests", () => {
         it("should draw multiple JSCAD meshes with default options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.drawTwoSided = false;
-            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), mockJSCADBoxDecomposedMesh()]);
+            jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), mockJSCADBoxDecomposedMesh()]);
             const res = await draw.drawAnyAsync({ entity: [{ polygons: [] }, { polygons: [] }], options } as any) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
             expect(res).toBeDefined();
@@ -788,7 +789,7 @@ describe("Draw unit tests", () => {
         it("should draw multiple JSCAD meshes with custom color", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.drawTwoSided = false;
-            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), { ...mockJSCADBoxDecomposedMesh(), color: [0, 0, 1] }]);
+            jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), { ...mockJSCADBoxDecomposedMesh(), color: [0, 0, 1] }]);
             const res = await draw.drawAnyAsync({ entity: [{ polygons: [] }, { polygons: [] }], options } as any) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
             expect(res).toBeDefined();
@@ -981,7 +982,7 @@ describe("Draw unit tests", () => {
 
         it("should throw descriptive error when JSCAD worker fails", async () => {
             const mockError = new Error("JSCAD worker timeout");
-            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockRejectedValue(mockError);
+            jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockRejectedValue(mockError);
 
             const inputs = {
                 entity: { polygons: [] },
@@ -995,7 +996,7 @@ describe("Draw unit tests", () => {
 
         it("should throw descriptive error when OCCT worker fails", async () => {
             const mockError = new Error("OCCT wasm module not initialized");
-            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockRejectedValue(mockError);
+            occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockRejectedValue(mockError);
 
             const inputs = {
                 entity: { type: "occ-shape", hash: 12345 },
@@ -1009,7 +1010,7 @@ describe("Draw unit tests", () => {
 
         it("should throw descriptive error when Manifold worker fails", async () => {
             const mockError = new Error("Manifold worker crashed");
-            manifoldWorkerManager.genericCallToWorkerPromise = jest.fn().mockRejectedValue(mockError);
+            manifoldWorkerManager.genericCallToWorkerPromise = vi.fn().mockRejectedValue(mockError);
 
             const inputs = {
                 entity: { type: "manifold-shape", id: "mf123" },
@@ -1145,7 +1146,7 @@ describe("Draw unit tests", () => {
     describe("Draw Manifold meshes", () => {
 
         it("should draw a manifold shape", async () => {
-            manifoldWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({
+            manifoldWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
             });
@@ -1158,7 +1159,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should draw multiple manifold shapes", async () => {
-            manifoldWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([
+            manifoldWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([
                 {
                     vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                     triVerts: new Uint32Array([0, 1, 2])
@@ -1413,7 +1414,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTag for a single tag entity", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: {} };
-            const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
 
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Test Tag",
@@ -1434,7 +1435,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTag with custom options", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: {} };
-            const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
 
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Hello World",
@@ -1459,7 +1460,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTag when updating a tag with group", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
-            const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
 
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Updated Tag",
@@ -1477,7 +1478,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags for multiple tag entities", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: {} };
-            const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
 
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Tag 1", position: [0, 0, 0], colour: "#ff0000", size: 1, adaptDepth: false },
@@ -1496,7 +1497,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags when updating multiple tags with group", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
-            const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
 
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Tag C", position: [2, 2, 2], colour: "#0000ff", size: 2, adaptDepth: false },
@@ -1511,7 +1512,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags with custom options", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: {} };
-            const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
 
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Custom Tag", position: [5, 5, 5], colour: "#ffffff", size: 3, adaptDepth: false },
@@ -1588,7 +1589,7 @@ describe("Draw unit tests", () => {
         it("should update tag when group has tag type via spy", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
-            const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
 
             const tag2: Inputs.Tag.TagDto = { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false };
 
@@ -1601,7 +1602,7 @@ describe("Draw unit tests", () => {
         it("should update tags when group has tags type via spy", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
-            const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
 
             const tags2: Inputs.Tag.TagDto[] = [{ text: "Tag B", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false }];
 
@@ -1970,7 +1971,7 @@ describe("Draw unit tests", () => {
 
             // Act
             const texture = draw.createTexture(inputs);
-            const setSourceSpy = jest.spyOn(texture, "setSource");
+            const setSourceSpy = vi.spyOn(texture, "setSource");
 
             // Simulate image load
             expect(mockImageInstances.length).toBe(1);

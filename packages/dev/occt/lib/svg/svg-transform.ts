@@ -140,14 +140,13 @@ function transformArc(m: Matrix, arc: SvgArcSegment): SvgArcSegment {
     };
 
     const newStart = toNewAngle(arc.startAngle);
-    let newEnd = toNewAngle(arc.startAngle + arc.deltaAngle);
+    const newEnd = toNewAngle(arc.startAngle + arc.deltaAngle);
     let newDelta = newEnd - newStart;
     // Preserve sweep magnitude/direction; reflection (det<0) flips orientation.
     const sweepSign = det < 0 ? -Math.sign(arc.deltaAngle) : Math.sign(arc.deltaAngle);
     if (sweepSign > 0 && newDelta < 0) { newDelta += 2 * Math.PI; }
     if (sweepSign < 0 && newDelta > 0) { newDelta -= 2 * Math.PI; }
     if (sweepSign === 0) { newDelta = 0; }
-    newEnd = newStart + newDelta;
 
     return {
         type: "arc",

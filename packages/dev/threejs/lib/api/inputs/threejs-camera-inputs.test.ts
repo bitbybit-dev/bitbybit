@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { ThreeJSCamera } from "./threejs-camera-inputs";
 
 describe("ThreeJSCamera DTO unit tests", () => {

@@ -14,10 +14,11 @@ in the root CLAUDE.md; `npm run build-packages` at the repo root runs it.
 ```bash
 npm run build       # tsc -b tsconfig.bitbybit.json - builds the siblings it references first
 npm run build-p     # build, then stage dist/ for publishing (package.json, README, LICENSE, assets)
-npm run api:update  # base and core only: rewrite etc/<pkg>.api.md after a deliberate public-surface change
+npm run api:update  # every package but occt-worker: rewrite etc/<pkg>.api.md after a deliberate public-surface change
 npm run typecheck:strict       # the strict typecheck (tsconfig.strict.json, generated with the build's references); must stay at zero
-npm test            # jest, watch mode
-npm run test-c      # jest with coverage, single run; writes test-results/jest.json and coverage/coverage-summary.json for the root test:report
+npm test            # vitest, single run
+npm run test:coverage          # the same with coverage; writes test-results/vitest.json and coverage/coverage-summary.json for the root test:report
+npm run test:watch  # vitest in watch mode
 npm run lint
 ```
 
@@ -25,8 +26,11 @@ npm run lint
 
 ## Things that catch people out
 
-- **Jest configuration lives in each `package.json` under a `jest` key.** There is no
-  `jest.config.js` to look for.
+- **Test configuration is a `vitest.config.ts` beside the package**, and it says only what differs
+  from `packages/dev/vitest.shared.ts`: the coverage globs, and where needed a jsdom environment, a
+  process per file, or a module to stand in for another. Standing one module in for another goes
+  through the shared `alias` option, not `resolve.alias`: Vite never shows an alias a relative
+  import, and the emscripten glue is reached as a relative path from inside the package that ships it.
 - **The shape of a DTO property is load-bearing for the declarations.** A property the service always
   reads is required, `line!: LinePointsDto;` - the constructors assign conditionally, so that is a
   definite-assignment assertion, not an initializer. A property a caller may omit is optional, spelled
@@ -49,20 +53,23 @@ npm run lint
   re-hydration, reserved commands) go into `lib/api-hand/<same path>.ts` with a marker line each; a
   `// replaces <path>` member without a JSDoc receives the kernel's. Every public kernel API method
   needs an explicit return type - the generator refuses an inferred one.
-- **`occt/lib/api/inputs/occ-inputs.ts` is assembled from `occt/lib/api/inputs/occt/*.ts`; do not edit it.**
-  Add or change a DTO in the fragment whose name fits (they are slices of the namespace in a fixed
-  order, so a new DTO lands where its fragment sits), import a sibling fragment's DTO when a property
-  refers to it, and run `npm run gen:occ-inputs` at the repository root; `check:occ-inputs` in `npm test`
-  fails on a stale file. The fragments are excluded from the build - the assembled namespace is what
-  compiles - but they type-check in the editor as modules.
+- **The four assembled inputs namespaces are generated; do not edit them.** `occt/.../occ-inputs.ts`,
+  `jscad/.../jscad-inputs.ts`, `manifold/.../manifold-inputs.ts` and `core/.../verb-inputs.ts` are each
+  written from the fragments in the sibling directory beside them. Add or change a DTO in the fragment
+  whose name fits (they are slices of the namespace in a fixed order, so a new DTO lands where its
+  fragment sits), import a sibling fragment's DTO when a property refers to it, and run
+  `npm run gen:inputs` at the repository root; `check:inputs` in `npm test` fails on a stale file. A new
+  fragment is added to its namespace's `order` in `scripts/inputs.config.mjs` - the generator fails on a
+  fragment nothing names rather than dropping it. The fragments are excluded from the build - the
+  assembled namespace is what compiles - and they are what lint sees, the assembled file being ignored.
 - **Method and class JSDoc is authored on the kernel and describes the API as users reach it** - the
   asynchronous, worker-backed one (`await` in examples, File/Blob accepted where the worker converts
   them, `deleteDocument()` for document lifetime) - with the generator tags (`@group`, `@shortname`,
   `@drawable`) that the visual editors are built from. The worker's copy is generated; `check:worker-parity`
   still compares the two and fails on any difference. A kernel method the worker splits into several
   public methods is allow-listed in `scripts/worker-parity.allow.json` under `docs`, with the reason.
-- Kernel suites need the raised heap and ESM VM modules the scripts already set. Dropping
-  `NODE_OPTIONS` makes them fail in ways that look like test bugs.
+- Kernel suites need the raised heap the scripts already set, and the process per file their
+  config asks for. Dropping either makes them fail in ways that look like test bugs.
 - `occt` ships prebuilt wasm alongside the JavaScript (`bitbybit-dev-occt`, plus 64-bit and
   64-bit-mt variants), copied into `dist/` by `copy-occt`. The wasm is not tracked: `kernels.json`
   names each kernel with its SHA-256 and url, and `build-p` starts by fetching what is missing and
@@ -77,9 +84,9 @@ npm run lint
   `git+https://github.com/bitbybit-dev/bitbybit.git` with its `directory`; `copy-package` refuses a
   manifest that says anything else, before the tarball exists.
 - **`exports` is for this workspace, not for npm.** Each dist-published manifest carries the map
-  `npm run gen:exports` derives from its tree, with the `@bitbybit-dev/source` condition first; jest
-  declares it and so resolves sibling sources. Added a directory index under `lib/`? Regenerate.
-  `copy-package` drops the map (and `devDependencies`, `jest`, `scripts`) from `dist/package.json`,
+  `npm run gen:exports` derives from its tree, with the `@bitbybit-dev/source` condition first; the
+  shared test configuration declares it and so resolves sibling sources. Added a directory index under `lib/`? Regenerate.
+  `copy-package` drops the map (and `devDependencies`, `scripts`) from `dist/package.json`,
   and `npm run check:exports` holds both sides to the shape `scripts/dist-manifest.mjs` expects.
 - `threejs` and `playcanvas` take their engine as an ordinary **dependency**; `babylonjs` takes
   its engine as a **peer dependency**. The runner tooling reads `peerDependencies` to decide

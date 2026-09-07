@@ -24,7 +24,7 @@ export class CacheHelper {
                                     if (obj.delete) {
                                         obj.delete();
                                     }
-                                } catch (error) {
+                                } catch {
                                     // Ignore errors for already deleted objects
                                 }
                             });
@@ -35,7 +35,7 @@ export class CacheHelper {
                         }
                     }
                 }
-                catch (error) {
+                catch {
                     // Ignore errors when cleaning objects that may already be deleted
                 }
             }
@@ -60,7 +60,7 @@ export class CacheHelper {
                                 if (obj.delete) {
                                     obj.delete();
                                 }
-                            } catch (error) {
+                            } catch {
                                 // Ignore errors for already deleted objects
                             }
                         });
@@ -71,7 +71,7 @@ export class CacheHelper {
                     }
                 }
             }
-            catch (error) {
+            catch {
                 // Ignore errors when cleaning objects that may already be deleted
             }
         }

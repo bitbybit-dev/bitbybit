@@ -1,4 +1,5 @@
 
+import { uniqueName } from "../unique-name";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../inputs";
 import { BabylonNode } from "./babylon/node";
@@ -260,7 +261,7 @@ export class Draw extends DrawCore {
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh {
         try {
-            const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
+            const groundMaterial = new GridMaterial(uniqueName("groundMaterial"), this.context.scene);
             groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
             groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
             groundMaterial.gridRatio = inputs.gridRatio;
@@ -269,7 +270,7 @@ export class Draw extends DrawCore {
             groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
             groundMaterial.opacity = inputs.opacity;
             groundMaterial.linesOnly = true;
-            const ground = BABYLON.MeshBuilder.CreateGround(`bitbybit-ground${Math.random()}`,
+            const ground = BABYLON.MeshBuilder.CreateGround(uniqueName("bitbybit-ground"),
                 {
                     width: inputs.width,
                     height: inputs.height,

@@ -83,7 +83,7 @@ function tokenize(d: string): Token[] {
         }
         // A command may be followed by multiple coordinate sets (implicit repeat).
         let first = true;
-        // eslint-disable-next-line no-constant-condition
+
         while (true) {
             const group: number[] = [];
             let ok = true;

@@ -401,10 +401,10 @@ export class DrawHelper extends DrawHelperCore {
 
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh> & { arrowSize?: number, arrowAngle?: number }): BABYLON.GreasedLineMesh {
         // handle jscad isClosed case
-        const points = inputs.polyline.points;
-        if (inputs.polyline.isClosed) {
-            points.push(points[0]!);
-        }
+        // A copy, not a push: appending here grew the caller's own array on every redraw.
+        const points = inputs.polyline.isClosed
+            ? [...inputs.polyline.points, inputs.polyline.points[0]!]
+            : inputs.polyline.points;
         return this.drawPolyline(
             inputs.polylineMesh,
             points,
@@ -545,14 +545,17 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): BABYLON.Mesh {
-        if (inputs.surfacesMesh && inputs.updatable) {
-            inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
-        }
-
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         const resolvedColours = this.resolveAllColors(inputs.colours, inputs.surfaces.length, strategy);
 
-        inputs.surfacesMesh = new BABYLON.Mesh(this.generateEntityId("colouredSurfaces"), this.context.scene);
+        if (inputs.surfacesMesh && inputs.updatable) {
+            // An update keeps the container the caller already holds and replaces what hangs off it.
+            // Building a new container instead left the old one in the scene on every update, since
+            // only its children were disposed.
+            inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
+        } else {
+            inputs.surfacesMesh = new BABYLON.Mesh(this.generateEntityId("colouredSurfaces"), this.context.scene);
+        }
         inputs.surfaces.forEach((surface, index) => {
             const srf = this.drawSurface({
                 surface,
@@ -595,15 +598,18 @@ export class DrawHelper extends DrawHelperCore {
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
         const points = inputs.polylines.map((s, index) => {
-            const pts = s.points;
-            //handle jscad
-            if (s.isClosed) {
-                pts.push(pts[0]!);
-            }
+            // Closing copies rather than appending to the caller's array: a configurator that holds
+            // its polylines and redraws them grew one duplicate point per redraw, which also defeated
+            // the update fast-path below, since a point count that changes every call never matches.
+            const pts = s.isClosed ? [...s.points, s.points[0]!] : s.points;
             // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
             if (s.color) {
                 if (!Array.isArray(colours)) {
-                    colours = [];
+                    // Seeded with the shared colour rather than empty: starting from an empty array
+                    // dropped it, and the colour resolution then filled every polyline that carried
+                    // no colour of its own with the last one that did.
+                    const shared = colours;
+                    colours = inputs.polylines.map(() => shared);
                 }
                 if (Array.isArray(s.color)) {
                     colours[index] = BABYLON.Color3.FromArray(s.color).toHexString();
@@ -857,12 +863,7 @@ export class DrawHelper extends DrawHelperCore {
     drawPoint(inputs: Inputs.Point.DrawPointDto<BABYLON.Mesh>): BABYLON.Mesh {
         const vectorPoints = [inputs.point];
 
-        let colorsHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            colorsHex = inputs.colours;
-        } else {
-            colorsHex = [inputs.colours];
-        }
+        const colorsHex: string[] = Array.isArray(inputs.colours) ? inputs.colours : [inputs.colours];
         // const { positions, colors } = this.setUpPositionsAndColours(vectorPoints, colours);
         if (inputs.pointMesh && inputs.updatable) {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
@@ -1193,7 +1194,7 @@ export class DrawHelper extends DrawHelperCore {
     async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
-        let dummy;
+        const dummy = undefined;
 
         if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 

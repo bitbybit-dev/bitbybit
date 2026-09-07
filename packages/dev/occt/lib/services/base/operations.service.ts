@@ -248,7 +248,7 @@ export class OperationsService {
                 offset.AddWire(wire);
                 offset.Build();
                 offset.Perform(inputs.distance, 0.0);
-            } catch (ex) {
+            } catch {
                 offset = new this.occ.BRepOffsetAPI_MakeOffsetShape();
                 (offset as BRepOffsetAPI_MakeOffsetShape).PerformByJoin(
                     wire,

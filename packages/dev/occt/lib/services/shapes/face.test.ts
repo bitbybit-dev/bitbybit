@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Face, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";

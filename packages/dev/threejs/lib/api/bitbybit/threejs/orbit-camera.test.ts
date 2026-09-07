@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
 import { ThreeJSOrbitCamera, OrbitCameraController } from "./orbit-camera";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
@@ -19,7 +20,7 @@ describe("ThreeJSOrbitCamera unit tests", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe("Constructor initialization", () => {
@@ -134,7 +135,7 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
         it("should create camera with correct default properties", () => {
             const controller = orbitCamera.create(createDefaultInputs(mockDomElement));
-            
+
             expect(controller.camera.fov).toBe(50);
             expect(controller.camera.near).toBe(0.1);
             expect(controller.camera.far).toBe(10000);
@@ -142,7 +143,7 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
         it("should destroy all input handlers on destroy call", () => {
             const controller = orbitCamera.create(createDefaultInputs(mockDomElement));
-            
+
             // Verify input handlers exist with destroy methods before destruction
             expect(typeof controller.mouseInput!.destroy).toBe("function");
             expect(typeof controller.touchInput!.destroy).toBe("function");
@@ -150,7 +151,7 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
             // Destroy should complete without error
             controller.destroy();
-            
+
             // After destroy, the controller should still be a valid object
             expect(controller.camera).toBeInstanceOf(THREEJS.PerspectiveCamera);
         });
@@ -460,7 +461,7 @@ describe("ThreeJSOrbitCamera unit tests", () => {
             // Should not have reached target yet due to damping
             const currentDistance = (controller.orbitCamera as any)._distance || 
                                    controller.camera.position.length();
-            
+
             // The distance should be somewhere between initial and target
             expect(currentDistance).not.toBe(50);
         });

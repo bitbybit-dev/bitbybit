@@ -694,7 +694,7 @@ export class Draw extends DrawCore {
             
             // Include more context in error message
             const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`Failed to draw ${typeName}: ${errorMessage}`);
+            throw new Error(`Failed to draw ${typeName}: ${errorMessage}`, { cause: error });
         }
     }
 

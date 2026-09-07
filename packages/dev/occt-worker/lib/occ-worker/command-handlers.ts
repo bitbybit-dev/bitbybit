@@ -41,7 +41,7 @@ export type CommandHandler = (
  * These functions have custom logic that differs from the standard
  * cache-and-execute flow used by most OCCT operations.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const CommandHandlers: Record<string, CommandHandler> = {
     /**
      * Handles shape to mesh conversion.

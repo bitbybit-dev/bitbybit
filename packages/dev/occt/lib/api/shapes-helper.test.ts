@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import { ShapesHelperService } from "./shapes-helper.service";
 import * as Inputs from "./inputs";
 

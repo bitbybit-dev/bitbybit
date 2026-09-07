@@ -51,7 +51,7 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/playcanvas |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/playcanvas/start-with-playcanvas |
 | **API Reference** | https://docs.bitbybit.dev/modules/Bit |
-| **Unit Test Coverage** | https://tests.bitbybit.dev/playcanvas |
+| **Unit Test Coverage** | https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml |
 
 ### API reference
 
@@ -77,10 +77,10 @@ Every class, method and input type in this package is documented in the generate
 npm run build-p
 
 # Run unit tests with coverage
-npm run test-c
+npm run test:coverage
 
-# Run live unit tests with coverage on save
-npm run test-c-l
+# Re-run them as you edit
+npm run test:watch
 ```
 
 ## Bitbybit Platform

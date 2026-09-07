@@ -51,9 +51,9 @@
         "copy-readme-license": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
         "docs": "./node_modules/.bin/sass ts-doc-theme/assets/css/main.sass ts-doc-theme/assets/css/main.css && node_modules/.bin/typedoc --out ts-api-docs/ lib/api --theme ./ts-doc-theme --excludePrivate --tsconfig lib/api/tsconfig.bbb.json --media assets/images/blockly-block-images/",
-        "test": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --watchAll=true",
-        "test-c": "mkdir -p test-results && NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=false --json --outputFile=test-results/jest.json",
-        "test-c-l": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=8192' jest --runInBand --coverage --watchAll=true"
+        "test": "NODE_OPTIONS=--max-old-space-size=8192 vitest run",
+        "test:coverage": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
+        "test:watch": "NODE_OPTIONS=--max-old-space-size=8192 vitest"
     },
     "author": "Bit by bit developers",
     "license": "MIT",
@@ -122,46 +122,9 @@
         "rxjs": "7.8.2"
     },
     "devDependencies": {
+        "@vitest/coverage-v8": "4.1.7",
         "shx": "0.4.0",
-        "@testing-library/jest-dom": "6.9.1",
-        "jest": "30.4.2",
-        "ts-node": "10.9.2",
-        "ts-jest": "29.4.10",
         "typescript": "5.9.3",
-        "@types/jest": "30.0.0",
-        "babel-jest": "30.4.1",
-        "@babel/core": "7.28.6",
-        "@babel/preset-env": "7.28.6",
-        "@babel/preset-typescript": "7.28.5",
-        "jest-html-reporters": "3.1.7",
-        "jest-environment-node": "30.4.1"
-    },
-    "jest": {
-        "preset": "ts-jest",
-        "transform": {
-            "\\.[jt]sx?$": "babel-jest"
-        },
-        "extensionsToTreatAsEsm": [
-            ".ts"
-        ],
-        "transformIgnorePatterns": [],
-        "testEnvironment": "node",
-        "maxWorkers": 1,
-        "collectCoverageFrom": [
-            "lib/occ-worker/**/*.ts",
-            "lib/api/**/*.ts"
-        ],
-        "coverageReporters": [
-            "text",
-            "lcov",
-            "json-summary"
-        ],
-        "testEnvironmentOptions": {
-            "customExportConditions": [
-                "@bitbybit-dev/source",
-                "node",
-                "node-addons"
-            ]
-        }
+        "vitest": "4.1.7"
     }
 }

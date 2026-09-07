@@ -16,9 +16,10 @@ import {
     Point,
     Line,
     Polyline, TextBitByBit, Color,
-    MathBitByBit, GeometryHelper,
+    MathBitByBit,
     Lists, Logic, Transforms, Dates, MeshBitByBit
 } from "@bitbybit-dev/base";
+import { createSharedServices } from "@bitbybit-dev/core/lib/api/shared-services";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
@@ -61,35 +62,36 @@ export class BitByBitBase {
 
     constructor() {
         this.context = new Context();
-        this.jscadWorkerManager = new JSCADWorkerManager();
-        this.manifoldWorkerManager = new ManifoldWorkerManager();
-        this.occtWorkerManager = new OCCTWorkerManager();
-        this.jscad = new JSCAD(this.jscadWorkerManager);
-        this.manifold = new ManifoldBitByBit(this.manifoldWorkerManager);
-
-        const geometryHelper = new GeometryHelper();
-        this.lists = new Lists();
-        this.math = new MathBitByBit();
-        this.vector = new Vector(this.math, geometryHelper);
+        // Every service that is not about the renderer is wired in one place, shared by all three
+        // renderer packages; only the engine facade and what draws through it are built here.
+        const shared = createSharedServices(this.context);
+        this.jscadWorkerManager = shared.jscadWorkerManager;
+        this.manifoldWorkerManager = shared.manifoldWorkerManager;
+        this.occtWorkerManager = shared.occtWorkerManager;
+        this.jscad = shared.jscad;
+        this.manifold = shared.manifold;
+        this.lists = shared.lists;
+        this.math = shared.math;
+        this.vector = shared.vector;
+        this.tag = shared.tag;
+        this.color = shared.color;
+        this.transforms = shared.transforms;
+        this.point = shared.point;
+        this.line = shared.line;
+        this.polyline = shared.polyline;
+        this.verb = shared.verb;
+        this.time = shared.time;
+        this.occt = shared.occt;
+        this.asset = shared.asset;
+        this.logic = shared.logic;
+        this.json = shared.json;
+        this.csv = shared.csv;
+        this.text = shared.text;
+        this.dates = shared.dates;
+        this.mesh = shared.mesh;
         const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.manifoldWorkerManager, this.occtWorkerManager);
         this.three = new ThreeJS(this.context, drawHelper);
-        this.tag = new Tag(this.context);
         this.draw = new Draw(drawHelper, this.context, this.tag);
-        this.color = new Color(this.math);
-        this.transforms = new Transforms(this.vector, this.math);
-        this.point = new Point(geometryHelper, this.transforms, this.vector, this.lists);
-        this.line = new Line(this.vector, this.point, geometryHelper);
-        this.polyline = new Polyline(this.vector, this.point, this.line, geometryHelper);
-        this.verb = new Verb(this.context, geometryHelper, this.math);
-        this.time = new Time(this.context);
-        this.occt = new OCCTW(this.context, this.occtWorkerManager);
-        this.asset = new Asset();
-        this.logic = new Logic();
-        this.json = new JSONBitByBit(this.context);
-        this.csv = new CSVBitByBit();
-        this.text = new TextBitByBit(this.point);
-        this.dates = new Dates();
-        this.mesh = new MeshBitByBit(this.vector, this.polyline);
     }
 
     init(scene: THREEJS.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker) {

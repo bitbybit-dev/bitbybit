@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { initializationComplete, onMessageInput } from "./jscad-worker";
 
@@ -9,15 +10,15 @@ describe("JSCAD Worker Functions Tests", () => {
         // The Jscad service expects the raw JSCAD library with primitives, booleans, etc.
         mockJscad = {
             primitives: {
-                circle: jest.fn(() => ({ delete: jest.fn() })),
-                cube: jest.fn(() => ({ delete: jest.fn() })),
-                polygon: jest.fn(() => ({ delete: jest.fn() }))
+                circle: vi.fn(() => ({ delete: vi.fn() })),
+                cube: vi.fn(() => ({ delete: vi.fn() })),
+                polygon: vi.fn(() => ({ delete: vi.fn() }))
             },
             booleans: {
-                union: jest.fn(() => ({ delete: jest.fn() }))
+                union: vi.fn(() => ({ delete: vi.fn() }))
             },
             expansions: {
-                expand: jest.fn(() => ({ delete: jest.fn() }))
+                expand: vi.fn(() => ({ delete: vi.fn() }))
             }
         };
         

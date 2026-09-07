@@ -1,14 +1,12 @@
-/**
- * @jest-environment jsdom
- */
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initPlayCanvas } from "./scene-helper";
 import { PlayCanvasScene } from "../../inputs/playcanvas-scene-helper-inputs";
 import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
 import { MockEntityType, MockAppType } from "../../__mocks__/playcanvas.mock";
 
 // Mock PlayCanvas module using centralized mocks
-jest.mock("playcanvas", () => {
-    const { createSceneHelperMock } = jest.requireActual("../../__mocks__/playcanvas.mock");
+vi.mock("playcanvas", async () => {
+    const { createSceneHelperMock } = await vi.importActual<typeof import("../../__mocks__/playcanvas.mock")>("../../__mocks__/playcanvas.mock");
     return createSceneHelperMock();
 });
 
@@ -38,7 +36,7 @@ describe("initPlayCanvas unit tests", () => {
                 canvas.parentNode.removeChild(canvas);
             }
         });
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe("initialization with defaults", () => {
@@ -433,7 +431,7 @@ describe("initPlayCanvas unit tests", () => {
     describe("dispose method", () => {
         it("should remove window resize event listener on dispose", () => {
             // Arrange
-            const removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
+            const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
             const result = initPlayCanvas();
 
             // Act
@@ -449,7 +447,7 @@ describe("initPlayCanvas unit tests", () => {
         it("should destroy directional light on cleanup", () => {
             // Arrange
             const result = initPlayCanvas();
-            const destroySpy = jest.spyOn(result.directionalLight, "destroy");
+            const destroySpy = vi.spyOn(result.directionalLight, "destroy");
 
             // Act
             result.dispose();
@@ -461,7 +459,7 @@ describe("initPlayCanvas unit tests", () => {
         it("should destroy scene entity on cleanup", () => {
             // Arrange
             const result = initPlayCanvas();
-            const destroySpy = jest.spyOn(result.scene, "destroy");
+            const destroySpy = vi.spyOn(result.scene, "destroy");
 
             // Act
             result.dispose();
@@ -473,7 +471,7 @@ describe("initPlayCanvas unit tests", () => {
         it("should destroy app on cleanup", () => {
             // Arrange
             const result = initPlayCanvas();
-            const destroySpy = jest.spyOn(result.app, "destroy");
+            const destroySpy = vi.spyOn(result.app, "destroy");
 
             // Act
             result.dispose();
@@ -488,7 +486,7 @@ describe("initPlayCanvas unit tests", () => {
             config.enableOrbitCamera = true;
             const result = initPlayCanvas(config);
             expect(result.orbitCamera).not.toBeNull();
-            const destroySpy = jest.spyOn(result.orbitCamera as NonNullable<typeof result.orbitCamera>, "destroy");
+            const destroySpy = vi.spyOn(result.orbitCamera as NonNullable<typeof result.orbitCamera>, "destroy");
 
             // Act
             result.dispose();
@@ -503,7 +501,7 @@ describe("initPlayCanvas unit tests", () => {
             config.enableGround = true;
             const result = initPlayCanvas(config);
             expect(result.ground).not.toBeNull();
-            const destroySpy = jest.spyOn(result.ground as NonNullable<typeof result.ground>, "destroy");
+            const destroySpy = vi.spyOn(result.ground as NonNullable<typeof result.ground>, "destroy");
 
             // Act
             result.dispose();

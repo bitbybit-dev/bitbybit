@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
 import { SHAPE_TYPE_IDENTIFIER, isShapeReference, createShapeReference } from "./constants";
 import { CacheHelper } from "./cache-helper";

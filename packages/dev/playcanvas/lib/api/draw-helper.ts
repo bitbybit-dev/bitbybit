@@ -56,7 +56,7 @@ export class DrawHelper extends DrawHelperCore {
             return manifoldMeshContainer;
         } catch (error) {
             console.error("Error drawing manifolds or cross sections:", error);
-            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -67,7 +67,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedManifold(decomposedMesh, inputs);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
-            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -78,7 +78,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedMesh(inputs, decomposedMesh, inputs);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
-            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -96,7 +96,7 @@ export class DrawHelper extends DrawHelperCore {
             return shapesMeshContainer;
         } catch (error) {
             console.error("Error drawing OCCT shapes:", error);
-            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -137,7 +137,7 @@ export class DrawHelper extends DrawHelperCore {
             return s;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon mesh:", error);
-            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -189,7 +189,7 @@ export class DrawHelper extends DrawHelperCore {
             return localOrigin;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon meshes:", error);
-            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
 
@@ -202,7 +202,21 @@ export class DrawHelper extends DrawHelperCore {
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
         const processedPoints = this.processPolylinePoints(inputs.polylines as Inputs.Base.Polyline3[]);
-        
+
+        // A polyline may carry a colour of its own, which is how JSCAD geometry arrives - baked on
+        // some entities and not others. The shared colour seeds every slot so a polyline without one
+        // keeps it, and an override replaces exactly its own.
+        let colours: string | string[] = inputs.colours ?? "#444444";
+        inputs.polylines.forEach((polyline, index) => {
+            const own = (polyline as Inputs.Base.Polyline3 & { color?: string | [number, number, number] }).color;
+            if (!own) { return; }
+            if (!Array.isArray(colours)) {
+                const shared = colours;
+                colours = inputs.polylines.map(() => shared);
+            }
+            colours[index] = Array.isArray(own) ? this.normalizedColorToHex(own[0], own[1], own[2]) : own;
+        });
+
         // Determine if we should update existing mesh
         const existingMesh = (inputs.updatable && inputs.polylinesMesh) 
             ? inputs.polylinesMesh.children[0] as pc.Entity
@@ -215,7 +229,7 @@ export class DrawHelper extends DrawHelperCore {
             inputs.updatable ?? false,
             inputs.size ?? 3,
             inputs.opacity ?? 1,
-            inputs.colours ?? "#444444",
+            colours,
             strategy,
             inputs.arrowSize,
             inputs.arrowAngle
@@ -228,12 +242,7 @@ export class DrawHelper extends DrawHelperCore {
     drawPoint(inputs: Inputs.Point.DrawPointDto<pc.Entity>): pc.Entity {
         const vectorPoints = [inputs.point];
 
-        let colorsHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            colorsHex = inputs.colours;
-        } else {
-            colorsHex = [inputs.colours];
-        }
+        const colorsHex: string[] = Array.isArray(inputs.colours) ? inputs.colours : [inputs.colours];
         if (inputs.pointMesh && inputs.updatable) {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
         } else {
@@ -245,10 +254,10 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<pc.Entity> & { arrowSize?: number, arrowAngle?: number }): pc.Entity {
-        const points = inputs.polyline.points;
-        if (inputs.polyline.isClosed) {
-            points.push(points[0]!);
-        }
+        // A copy, not a push: appending here grew the caller's own array on every redraw.
+        const points = inputs.polyline.isClosed
+            ? [...inputs.polyline.points, inputs.polyline.points[0]!]
+            : inputs.polyline.points;
         return this.drawPolyline(
             inputs.polylineMesh,
             points,

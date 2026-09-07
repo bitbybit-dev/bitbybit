@@ -1,3 +1,4 @@
+import { vi, type Mock } from "vitest";
  
  
 
@@ -262,26 +263,26 @@ export class MockScene {
 }
 
 export class MockMouse {
-    on = jest.fn();
-    off = jest.fn();
-    disableContextMenu = jest.fn();
+    on: Mock = vi.fn();
+    off: Mock = vi.fn();
+    disableContextMenu: Mock = vi.fn();
 }
 
 export class MockTouch {
-    on = jest.fn();
-    off = jest.fn();
+    on: Mock = vi.fn();
+    off: Mock = vi.fn();
 }
 
 export class MockApp {
     root: any;
     mouse = new MockMouse();
     touch = new MockTouch();
-    on = jest.fn();
-    off = jest.fn();
+    on: Mock = vi.fn();
+    off: Mock = vi.fn();
     graphicsDevice = {
         vram: { vb: 0, ib: 0, tex: 0, total: 0 },
-        createVertexBufferImpl: jest.fn(() => ({})),
-        createIndexBufferImpl: jest.fn(() => ({})),
+        createVertexBufferImpl: vi.fn(() => ({})),
+        createIndexBufferImpl: vi.fn(() => ({})),
     };
     systems = {};
 
@@ -294,8 +295,8 @@ export class MockApp {
 export class MockGraphicsDevice {
     maxPixelRatio = 1;
     vram = { vb: 0, ib: 0, tex: 0, total: 0 };
-    createVertexBufferImpl = jest.fn(() => ({}));
-    createIndexBufferImpl = jest.fn(() => ({}));
+    createVertexBufferImpl = vi.fn(() => ({}));
+    createIndexBufferImpl = vi.fn(() => ({}));
 }
 
 export class MockLightComponent {
@@ -355,8 +356,8 @@ export class MockStandardMaterial {
 }
 
 export class MockTouchDevice {
-    on = jest.fn();
-    off = jest.fn();
+    on: Mock = vi.fn();
+    off: Mock = vi.fn();
 }
 
 // Type definitions for test assertions
@@ -375,7 +376,7 @@ export interface MockAppType {
 }
 
 /**
- * Create scene helper mock for jest.mock("playcanvas")
+ * Create scene helper mock for vi.mock("playcanvas")
  */
 export function createSceneHelperMock() {
     return {
@@ -415,13 +416,13 @@ export function createSceneHelperMock() {
 /**
  * Creates a mock node with scene for mesh instances
  */
-export function createMockNode() {
+export function createMockNode(): Record<string, unknown> {
     return {
         scene: {
             layers: {
-                getLayerById: jest.fn(() => ({
-                    addMeshInstances: jest.fn(),
-                    removeMeshInstances: jest.fn()
+                getLayerById: vi.fn(() => ({
+                    addMeshInstances: vi.fn(),
+                    removeMeshInstances: vi.fn()
                 }))
             }
         }
@@ -429,18 +430,18 @@ export function createMockNode() {
 }
 
 /**
- * Creates PlayCanvas module mock for jest.mock()
+ * Creates PlayCanvas module mock for vi.mock()
  * Includes basic mock and extends with actual PlayCanvas where needed
  */
-export function createPlayCanvasMock() {
-    const actual = jest.requireActual("playcanvas");
+export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
+    const actual = await vi.importActual("playcanvas");
     const mockNode = createMockNode();
     
     // Mock graphics device for instancing
     const mockGraphicsDevice = {
         vram: { vb: 0, ib: 0, tex: 0, total: 0 },
-        createVertexBufferImpl: jest.fn(() => ({})),
-        createIndexBufferImpl: jest.fn(() => ({})),
+        createVertexBufferImpl: vi.fn(() => ({})),
+        createIndexBufferImpl: vi.fn(() => ({})),
     };
     
     return {
@@ -465,10 +466,10 @@ export function createPlayCanvasMock() {
             constructor(graphicsDevice: any, options?: any) {
                 this.device = graphicsDevice;
                 this.name = options?.name || "Texture";
-                this.addressU = options?.addressU ?? actual.ADDRESS_REPEAT;
-                this.addressV = options?.addressV ?? actual.ADDRESS_REPEAT;
-                this.minFilter = actual.FILTER_NEAREST;
-                this.magFilter = actual.FILTER_NEAREST;
+                this.addressU = options?.addressU ?? actual["ADDRESS_REPEAT"];
+                this.addressV = options?.addressV ?? actual["ADDRESS_REPEAT"];
+                this.minFilter = actual["FILTER_NEAREST"] as number;
+                this.magFilter = actual["FILTER_NEAREST"] as number;
             }
             
             setSource(source: any) {
@@ -479,16 +480,16 @@ export function createPlayCanvasMock() {
                 // Mock cleanup
             }
         },
-        Mesh: class MockMesh extends actual.Mesh {
+        Mesh: class MockMesh extends (actual["Mesh"] as typeof import("playcanvas").Mesh) {
             constructor(graphicsDevice?: any) {
                 const mockDevice = graphicsDevice || mockGraphicsDevice;
                 super(mockDevice);
             }
-            update() {
+            override update() {
                 return this;
             }
             // Mock fromGeometry static method for GPU instancing
-            static fromGeometry(graphicsDevice: any, _geometry: any) {
+            static override fromGeometry(graphicsDevice: any, _geometry: any) {
                 return new MockMesh(graphicsDevice);
             }
         },
@@ -523,13 +524,17 @@ export function createPlayCanvasMock() {
                 // Mock cleanup
             }
         },
-        MeshInstance: jest.fn((mesh: any, material: any, node: any = mockNode) => ({
-            mesh,
-            material,
-            node,
-            // Mock setInstancing method for GPU instancing
-            setInstancing: jest.fn((_vertexBuffer: any) => {}),
-        })),
+        // A function expression, not an arrow: the code under test reaches this through
+        // `new pc.MeshInstance(...)`, and only a function can be constructed.
+        MeshInstance: vi.fn(function (mesh: any, material: any, node: any = mockNode) {
+            return {
+                mesh,
+                material,
+                node,
+                // Mock setInstancing method for GPU instancing
+                setInstancing: vi.fn((_vertexBuffer: any) => {}),
+            };
+        }),
         math: {
             lerp: (a: number, b: number, t: number) => {
                 return a + (b - a) * t;

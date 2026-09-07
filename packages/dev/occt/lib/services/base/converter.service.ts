@@ -11,27 +11,25 @@ export class ConverterService {
     ) { }
 
     getActualTypeOfShape(shape: TopoDS_Shape): TopoDS_Edge | TopoDS_Wire | TopoDS_Vertex | TopoDS_Solid | TopoDS_Shell | TopoDS_Face | TopoDS_Compound {
-        let result = shape;
         if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.EDGE) {
-            result = this.occ.CastToEdge(shape);
+            return this.occ.CastToEdge(shape);
         } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
-            result = this.occ.CastToWire(shape);
+            return this.occ.CastToWire(shape);
         } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.VERTEX) {
-            result = this.occ.CastToVertex(shape);
+            return this.occ.CastToVertex(shape);
         } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.SOLID) {
-            result = this.occ.CastToSolid(shape);
+            return this.occ.CastToSolid(shape);
         } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.SHELL) {
-            result = this.occ.CastToShell(shape);
+            return this.occ.CastToShell(shape);
         } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.FACE) {
-            result = this.occ.CastToFace(shape);
+            return this.occ.CastToFace(shape);
         } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.COMPSOLID) {
-            result = this.occ.CastToCompSolid(shape);
+            return this.occ.CastToCompSolid(shape);
         } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.COMPOUND) {
-            result = this.occ.CastToCompound(shape);
+            return this.occ.CastToCompound(shape);
         } else {
-            result = shape;
+            return shape;
         }
-        return result;
     }
 
     combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge | TopoDS_Wire>): TopoDS_Wire {

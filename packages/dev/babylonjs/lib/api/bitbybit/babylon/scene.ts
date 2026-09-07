@@ -1,4 +1,5 @@
 import { Context } from "../../context";
+import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
 import * as Inputs from "../../inputs";
@@ -91,7 +92,7 @@ export class BabylonScene {
      */
     drawPointLight(inputs: Inputs.BabylonScene.PointLightDto): BABYLON.PointLight {
         const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-        const light = new BABYLON.PointLight(`pointLight${Math.random()}`,
+        const light = new BABYLON.PointLight(uniqueName("pointLight"),
             pos,
             this.context.scene
         );
@@ -137,12 +138,12 @@ export class BabylonScene {
         light.intensity = inputs.intensity;
 
         if (inputs.radius > 0) {
-            const sphere = BABYLON.MeshBuilder.CreateSphere(`PointLightSphere${Math.random()}`,
+            const sphere = BABYLON.MeshBuilder.CreateSphere(uniqueName("PointLightSphere"),
                 { diameter: inputs.radius * 2 },
                 this.context.scene
             );
             sphere.metadata = { shadows: false };
-            const lightMaterial = new BABYLON.StandardMaterial(`LightMaterial${Math.random()}`, this.context.scene);
+            const lightMaterial = new BABYLON.StandardMaterial(uniqueName("LightMaterial"), this.context.scene);
             lightMaterial.diffuseColor = light.diffuse;
             lightMaterial.specularColor = light.diffuse;
             lightMaterial.emissiveColor = light.diffuse;
@@ -173,7 +174,7 @@ export class BabylonScene {
      */
     drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): BABYLON.DirectionalLight {
         const dir = new BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
-        const light = new BABYLON.DirectionalLight(`directionalLight${Math.random()}`,
+        const light = new BABYLON.DirectionalLight(uniqueName("directionalLight"),
             dir,
             this.context.scene
         );

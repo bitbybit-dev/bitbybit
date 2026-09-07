@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { DxfGenerator } from "./dxf-generator";
 import * as Inputs from "../../../inputs";
 

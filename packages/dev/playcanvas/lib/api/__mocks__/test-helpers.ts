@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
@@ -22,8 +23,8 @@ export function createMockContext(): Context {
         app: {
             graphicsDevice: {
                 vram: { vb: 0, ib: 0, tex: 0, total: 0 },
-                createVertexBufferImpl: jest.fn(() => ({})),
-                createIndexBufferImpl: jest.fn(() => ({})),
+                createVertexBufferImpl: vi.fn(() => ({})),
+                createIndexBufferImpl: vi.fn(() => ({})),
             },
             systems: {}
         } as unknown as pc.AppBase
@@ -45,8 +46,8 @@ export function createSimpleMockContext(): Context {
  */
 export function mockWindow() {
     (globalThis as any).window = {
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
     };
 }
 
@@ -55,7 +56,7 @@ export function mockWindow() {
  */
 export function createMockWorkerManagers() {
     const mockJscadWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [],
             normals: [],
             indices: [],
@@ -64,7 +65,7 @@ export function createMockWorkerManagers() {
     } as unknown as JSCADWorkerManager;
 
     const mockManifoldWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [],
             normals: [],
             indices: []
@@ -72,7 +73,7 @@ export function createMockWorkerManagers() {
     } as unknown as ManifoldWorkerManager;
 
     const mockOccWorkerManager = {
-        genericCallToWorkerPromise: jest.fn().mockResolvedValue({
+        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             faceList: [],
             edgeList: [],
             pointsList: []
@@ -91,7 +92,7 @@ export function createMockWorkerManagers() {
  */
 export function createMockJSCADText(): JSCADText {
     return {
-        createVectorText: jest.fn().mockResolvedValue([])
+        createVectorText: vi.fn().mockResolvedValue([])
     } as unknown as JSCADText;
 }
 
@@ -100,7 +101,7 @@ export function createMockJSCADText(): JSCADText {
  */
 export function createMockVector(): Vector {
     return {
-        add: jest.fn().mockReturnValue([0, 0, 0])
+        add: vi.fn().mockReturnValue([0, 0, 0])
     } as unknown as Vector;
 }
 

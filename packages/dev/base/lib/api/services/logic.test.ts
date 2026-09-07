@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import { Logic } from "./logic";
 import * as Inputs from "../inputs";
 

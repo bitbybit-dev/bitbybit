@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import { ContextBase } from "../context";
 import { JSONBitByBit } from "./json";
 import { JSONPath } from "jsonpath-plus";
@@ -8,8 +9,8 @@ describe("JSON unit tests", () => {
     beforeAll(() => {
         context = new ContextBase();
         context.jsonpath = JSONPath;
-        context.promptPrintSave = jest.fn();
-        context.promptPrint = jest.fn();
+        context.promptPrintSave = vi.fn();
+        context.promptPrint = vi.fn();
         json = new JSONBitByBit(context);
     });
 

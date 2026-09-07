@@ -9,8 +9,10 @@
         "coverage",
         "dist",
         "**/__mocks__/**",
+        "**/__test__/**",
         "./**/*.test.ts",
-        "babel.config.cjs"
+        "lib/api/unit-test-helper.ts",
+        "vitest.config.ts"
     ],
     "compilerOptions": {
         "composite": true,

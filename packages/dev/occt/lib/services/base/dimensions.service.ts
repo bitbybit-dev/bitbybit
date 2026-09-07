@@ -52,7 +52,7 @@ export class DimensionsService {
             return removeTrailingZeros
                 ? this.base.math.roundAndRemoveTrailingZeros({ number: result, decimalPlaces }).toString()
                 : result.toFixed(decimalPlaces);
-        } catch (error) {
+        } catch {
             // If evaluation fails, return the original value formatted
             return removeTrailingZeros
                 ? this.base.math.roundAndRemoveTrailingZeros({ number: value, decimalPlaces }).toString()

@@ -1,14 +1,12 @@
-/**
- * @jest-environment jsdom
- */
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initBabylonJS } from "./scene-helper";
 import { BabylonJSScene } from "../../inputs/babylon-scene-helper-inputs";
 import { BabylonCamera } from "../../inputs/babylon-camera-inputs";
 import { MockMeshType } from "../../__mocks__/babylonjs.mock";
 
 // Mock BabylonJS core module using centralized mocks
-jest.mock("@babylonjs/core", () => {
-    const { createSceneHelperMock } = jest.requireActual("../../__mocks__/babylonjs.mock");
+vi.mock("@babylonjs/core", async () => {
+    const { createSceneHelperMock } = await vi.importActual<typeof import("../../__mocks__/babylonjs.mock")>("../../__mocks__/babylonjs.mock");
     return createSceneHelperMock();
 });
 
@@ -37,7 +35,7 @@ describe("initBabylonJS unit tests", () => {
                 canvas.parentNode.removeChild(canvas);
             }
         });
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe("initialization with defaults", () => {
@@ -470,7 +468,7 @@ describe("initBabylonJS unit tests", () => {
     describe("dispose method", () => {
         it("should remove window resize event listener on dispose", () => {
             // Arrange
-            const removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
+            const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
             const result = initBabylonJS();
 
             // Act
@@ -486,7 +484,7 @@ describe("initBabylonJS unit tests", () => {
         it("should dispose hemispheric light on cleanup", () => {
             // Arrange
             const result = initBabylonJS();
-            const disposeSpy = jest.spyOn(result.hemisphericLight, "dispose");
+            const disposeSpy = vi.spyOn(result.hemisphericLight, "dispose");
 
             // Act
             result.dispose();
@@ -498,7 +496,7 @@ describe("initBabylonJS unit tests", () => {
         it("should dispose directional light on cleanup", () => {
             // Arrange
             const result = initBabylonJS();
-            const disposeSpy = jest.spyOn(result.directionalLight, "dispose");
+            const disposeSpy = vi.spyOn(result.directionalLight, "dispose");
 
             // Act
             result.dispose();
@@ -510,7 +508,7 @@ describe("initBabylonJS unit tests", () => {
         it("should dispose scene on cleanup", () => {
             // Arrange
             const result = initBabylonJS();
-            const disposeSpy = jest.spyOn(result.scene, "dispose");
+            const disposeSpy = vi.spyOn(result.scene, "dispose");
 
             // Act
             result.dispose();
@@ -522,7 +520,7 @@ describe("initBabylonJS unit tests", () => {
         it("should dispose engine on cleanup", () => {
             // Arrange
             const result = initBabylonJS();
-            const disposeSpy = jest.spyOn(result.engine, "dispose");
+            const disposeSpy = vi.spyOn(result.engine, "dispose");
 
             // Act
             result.dispose();
@@ -537,7 +535,7 @@ describe("initBabylonJS unit tests", () => {
             config.enableArcRotateCamera = true;
             const result = initBabylonJS(config);
             expect(result.arcRotateCamera).not.toBeNull();
-            const disposeSpy = jest.spyOn(result.arcRotateCamera as NonNullable<typeof result.arcRotateCamera>, "dispose");
+            const disposeSpy = vi.spyOn(result.arcRotateCamera as NonNullable<typeof result.arcRotateCamera>, "dispose");
 
             // Act
             result.dispose();
@@ -577,7 +575,7 @@ describe("initBabylonJS unit tests", () => {
         it("should start engine render loop", () => {
             // Arrange
             const result = initBabylonJS();
-            const runRenderLoopSpy = jest.spyOn(result.engine, "runRenderLoop");
+            const runRenderLoopSpy = vi.spyOn(result.engine, "runRenderLoop");
 
             // Act
             result.startRenderLoop();
@@ -595,10 +593,10 @@ describe("initBabylonJS unit tests", () => {
             config.canvasId = "test-canvas";
             config.enableArcRotateCamera = true; // Need active camera for render
             const result = initBabylonJS(config);
-            const onRenderMock = jest.fn();
+            const onRenderMock = vi.fn();
             let renderCallback: (() => void) | null = null;
-            
-            jest.spyOn(result.engine, "runRenderLoop").mockImplementation((callback) => {
+
+            vi.spyOn(result.engine, "runRenderLoop").mockImplementation((callback) => {
                 renderCallback = callback;
             });
 

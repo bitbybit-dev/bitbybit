@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, vi, type Mock } from "vitest";
 import { Asset } from "./asset";
 import { AssetManager } from "../../asset-manager";
 
@@ -7,9 +8,9 @@ describe("Asset unit tests", () => {
 
     beforeAll(async () => {
         assetManager = new AssetManager();
-        assetManager.fetch = jest.fn();
-        assetManager.getAsset = jest.fn();
-        assetManager.getLocalAsset = jest.fn();
+        assetManager.fetch = vi.fn();
+        assetManager.getAsset = vi.fn();
+        assetManager.getLocalAsset = vi.fn();
 
         asset = new Asset();
         asset.assetManager = assetManager;
@@ -26,43 +27,43 @@ describe("Asset unit tests", () => {
     });
 
     it("should fetch blob", async () => {
-        global.fetch = jest.fn(() =>
+        global.fetch = vi.fn(() =>
             Promise.resolve({
                 blob: () => Promise.resolve({ mock: "blob" }),
             })
-        ) as jest.Mock;
+        ) as Mock;
         const res = await asset.fetchBlob({ url: "https://test.com/dada.png" });
         expect(res).toEqual({ mock: "blob" });
     });
 
     it("should fetch file", async () => {
-        global.fetch = jest.fn(() =>
+        global.fetch = vi.fn(() =>
             Promise.resolve({
                 blob: () => Promise.resolve(mockBlob(10, "plain/txt")),
             })
-        ) as jest.Mock;
-        global.File = FileMock as jest.Mock;
+        ) as Mock;
+        global.File = FileMock as Mock;
         const res = await asset.fetchFile({ url: "https://test.com/dada.png" });
         expect(res instanceof File).toBeTruthy();
         expect(res.name).toEqual("dada.png");
     });
 
     it("should fetch json", async () => {
-        global.fetch = jest.fn(() =>
+        global.fetch = vi.fn(() =>
             Promise.resolve({
                 json: () => Promise.resolve({ mock: "json" }),
             })
-        ) as jest.Mock;
+        ) as Mock;
         const res = await asset.fetchJSON({ url: "https://test.com/dada" });
         expect(res).toEqual({ mock: "json" });
     });
 
     it("should fetch text", async () => {
-        global.fetch = jest.fn(() =>
+        global.fetch = vi.fn(() =>
             Promise.resolve({
                 text: () => Promise.resolve({ mock: "text" }),
             })
-        ) as jest.Mock;
+        ) as Mock;
         const res = await asset.fetchText({ url: "https://test.com/dada" });
         expect(res).toEqual({ mock: "text" });
     });

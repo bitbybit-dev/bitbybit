@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { parsePathData } from "./svg-path-parser";
 import { applyToPoint, parseTransform, transformSegment } from "./svg-transform";
 import { shapeToSubpaths } from "./svg-shapes";

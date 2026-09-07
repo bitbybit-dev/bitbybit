@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
 import { Dates } from "./dates"; // Adjust path as needed
 
 let dates: Dates;
@@ -76,15 +77,15 @@ describe("Dates Class Unit Tests", () => {
     describe("Create Methods", () => {
         // For testing 'now', we use fake timers
         beforeEach(() => {
-            jest.useFakeTimers();
+            vi.useFakeTimers();
         });
         afterEach(() => {
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
 
         it("now should return the current date and time", () => {
             const specificTime = 1700000000000; // An arbitrary timestamp
-            jest.setSystemTime(specificTime);
+            vi.setSystemTime(specificTime);
             const result = dates.now();
             expect(result).toBeInstanceOf(Date);
             expect(result.getTime()).toBe(specificTime);

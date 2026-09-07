@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "@bitbybit-dev/occt/lib/api/inputs";
 import { CacheHelper } from "./cache-helper";

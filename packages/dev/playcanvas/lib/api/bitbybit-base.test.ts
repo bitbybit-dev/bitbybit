@@ -1,8 +1,20 @@
-jest.mock("playcanvas", () => {
-    const { createPlayCanvasMock } = jest.requireActual("./__mocks__/playcanvas.mock");
-    return createPlayCanvasMock();
+import { describe, it, expect, beforeEach, vi } from "vitest";
+vi.mock("playcanvas", async () => {
+    const { createPlayCanvasMock } = await vi.importActual<typeof import("./__mocks__/playcanvas.mock")>("./__mocks__/playcanvas.mock");
+    return await createPlayCanvasMock();
 });
 
+import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import { Verb, Tag, Time, OCCTW, Asset, JSONBitByBit, CSVBitByBit } from "@bitbybit-dev/core";
+import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import {
+    Vector, Point, Line, Polyline, TextBitByBit, Color, MathBitByBit,
+    Lists, Logic, Transforms, Dates, MeshBitByBit
+} from "@bitbybit-dev/base";
+import { Context } from "./context";
+import { Draw } from "./bitbybit/draw";
+import { PlayCanvas } from "./bitbybit/playcanvas";
 import { BitByBitBase } from "./bitbybit-base";
 
 import * as pc from "playcanvas";
@@ -16,106 +28,53 @@ describe("BitByBitBase unit tests", () => {
 
     describe("Constructor initialization", () => {
         it("should create a BitByBitBase instance", () => {
-            expect(bitByBit).toBeDefined();
             expect(bitByBit).toBeInstanceOf(BitByBitBase);
         });
 
-        it("should initialize context", () => {
-            expect(bitByBit.context).toBeDefined();
+        // Every service is asserted by its class rather than by being defined: the failure this
+        // guards against is a field wired to the wrong constructor, which any presence check passes.
+        const wiring: [keyof BitByBitBase, new (...args: never[]) => object][] = [
+            ["context", Context],
+            ["jscadWorkerManager", JSCADWorkerManager],
+            ["manifoldWorkerManager", ManifoldWorkerManager],
+            ["occtWorkerManager", OCCTWorkerManager],
+            ["math", MathBitByBit],
+            ["logic", Logic],
+            ["lists", Lists],
+            ["json", JSONBitByBit],
+            ["csv", CSVBitByBit],
+            ["vector", Vector],
+            ["playcanvas", PlayCanvas],
+            ["point", Point],
+            ["line", Line],
+            ["transforms", Transforms],
+            ["polyline", Polyline],
+            ["draw", Draw],
+            ["verb", Verb],
+            ["jscad", JSCAD],
+            ["manifold", ManifoldBitByBit],
+            ["text", TextBitByBit],
+            ["dates", Dates],
+            ["tag", Tag],
+            ["time", Time],
+            ["mesh", MeshBitByBit],
+            ["occt", OCCTW],
+            ["asset", Asset],
+            ["color", Color],
+        ];
+
+        it.each(wiring)("should wire %s to its own service class", (field, constructor) => {
+            expect(bitByBit[field]).toBeInstanceOf(constructor);
         });
 
-        it("should initialize worker managers", () => {
-            expect(bitByBit.jscadWorkerManager).toBeDefined();
-            expect(bitByBit.manifoldWorkerManager).toBeDefined();
-            expect(bitByBit.occtWorkerManager).toBeDefined();
+        it("should give every service the same context instance", () => {
+            expect(bitByBit.draw.context).toBe(bitByBit.context);
         });
 
-        it("should initialize math service", () => {
-            expect(bitByBit.math).toBeDefined();
-        });
+        it("should leave no wired field undefined", () => {
+            const missing = wiring.filter(([field]) => bitByBit[field] === undefined).map(([field]) => field);
 
-        it("should initialize logic service", () => {
-            expect(bitByBit.logic).toBeDefined();
-        });
-
-        it("should initialize lists service", () => {
-            expect(bitByBit.lists).toBeDefined();
-        });
-
-        it("should initialize json service", () => {
-            expect(bitByBit.json).toBeDefined();
-        });
-
-        it("should initialize vector service", () => {
-            expect(bitByBit.vector).toBeDefined();
-        });
-
-        it("should initialize playcanvas service", () => {
-            expect(bitByBit.playcanvas).toBeDefined();
-        });
-
-        it("should initialize point service", () => {
-            expect(bitByBit.point).toBeDefined();
-        });
-
-        it("should initialize line service", () => {
-            expect(bitByBit.line).toBeDefined();
-        });
-
-        it("should initialize transforms service", () => {
-            expect(bitByBit.transforms).toBeDefined();
-        });
-
-        it("should initialize polyline service", () => {
-            expect(bitByBit.polyline).toBeDefined();
-        });
-
-        it("should initialize draw service", () => {
-            expect(bitByBit.draw).toBeDefined();
-        });
-
-        it("should initialize verb service", () => {
-            expect(bitByBit.verb).toBeDefined();
-        });
-
-        it("should initialize jscad service", () => {
-            expect(bitByBit.jscad).toBeDefined();
-        });
-
-        it("should initialize manifold service", () => {
-            expect(bitByBit.manifold).toBeDefined();
-        });
-
-        it("should initialize text service", () => {
-            expect(bitByBit.text).toBeDefined();
-        });
-
-        it("should initialize dates service", () => {
-            expect(bitByBit.dates).toBeDefined();
-        });
-
-        it("should initialize tag service", () => {
-            expect(bitByBit.tag).toBeDefined();
-        });
-
-        it("should initialize time service", () => {
-            expect(bitByBit.time).toBeDefined();
-        });
-
-        it("should initialize occt service", () => {
-            expect(bitByBit.occt).toBeDefined();
-        });
-
-        it("should initialize mesh service", () => {
-            expect(bitByBit.mesh).toBeDefined();
-        });
-
-        it("should initialize asset service", () => {
-            expect(bitByBit.asset).toBeDefined();
-        });
-
-        it("should initialize color service", () => {
-            expect(bitByBit.color).toBeDefined();
+            expect(missing).toEqual([]);
         });
     });
 
@@ -148,14 +107,14 @@ describe("BitByBitBase unit tests", () => {
             const mockApp = {} as pc.AppBase;
             const scene = new pc.Entity("root");
             const mockOcctWorker = {
-                postMessage: jest.fn(),
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn(),
-                terminate: jest.fn(),
+                postMessage: vi.fn(),
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn(),
+                terminate: vi.fn(),
                 onmessage: null,
                 onmessageerror: null,
                 onerror: null,
-                dispatchEvent: jest.fn(),
+                dispatchEvent: vi.fn(),
             } as unknown as Worker;
             
             bitByBit.init(mockApp, scene, mockOcctWorker);
@@ -167,14 +126,14 @@ describe("BitByBitBase unit tests", () => {
             const mockApp = {} as pc.AppBase;
             const scene = new pc.Entity("root");
             const mockJscadWorker = {
-                postMessage: jest.fn(),
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn(),
-                terminate: jest.fn(),
+                postMessage: vi.fn(),
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn(),
+                terminate: vi.fn(),
                 onmessage: null,
                 onmessageerror: null,
                 onerror: null,
-                dispatchEvent: jest.fn(),
+                dispatchEvent: vi.fn(),
             } as unknown as Worker;
             
             bitByBit.init(mockApp, scene, undefined, mockJscadWorker);
@@ -186,14 +145,14 @@ describe("BitByBitBase unit tests", () => {
             const mockApp = {} as pc.AppBase;
             const scene = new pc.Entity("root");
             const mockManifoldWorker = {
-                postMessage: jest.fn(),
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn(),
-                terminate: jest.fn(),
+                postMessage: vi.fn(),
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn(),
+                terminate: vi.fn(),
                 onmessage: null,
                 onmessageerror: null,
                 onerror: null,
-                dispatchEvent: jest.fn(),
+                dispatchEvent: vi.fn(),
             } as unknown as Worker;
             
             bitByBit.init(mockApp, scene, undefined, undefined, mockManifoldWorker);
@@ -205,14 +164,14 @@ describe("BitByBitBase unit tests", () => {
             const mockApp = {} as pc.AppBase;
             const scene = new pc.Entity("root");
             const createMockWorker = () => ({
-                postMessage: jest.fn(),
-                addEventListener: jest.fn(),
-                removeEventListener: jest.fn(),
-                terminate: jest.fn(),
+                postMessage: vi.fn(),
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn(),
+                terminate: vi.fn(),
                 onmessage: null,
                 onmessageerror: null,
                 onerror: null,
-                dispatchEvent: jest.fn(),
+                dispatchEvent: vi.fn(),
             } as unknown as Worker);
             
             const mockOcctWorker = createMockWorker();

@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -145,7 +146,7 @@ describe("OCCT corners unit tests", () => {
             });
         });
 
-        xit("should produce visibly tighter rounding as taperFactor decreases (more material kept)", () => {
+        it.skip("should produce visibly tighter rounding as taperFactor decreases (more material kept)", () => {
             if (!has("FilletCornerByPoint")) { return; }
             const measure = (taperFactor: number): number => {
                 const b = box();

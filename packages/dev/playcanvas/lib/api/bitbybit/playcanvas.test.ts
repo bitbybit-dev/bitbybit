@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { PlayCanvas } from "./playcanvas";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";

@@ -168,7 +168,7 @@ export class OCCTEdge {
         inputs.mesh.forEach((triangle) => {
             try {
                 edges.push(this.fromBaseTriangle({ triangle }));
-            } catch (e) {
+            } catch {
                 console.warn("Failed to make edges for triangle", triangle);
             }
         });

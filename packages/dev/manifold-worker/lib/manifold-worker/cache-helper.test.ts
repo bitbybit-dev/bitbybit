@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CacheHelper, ObjectDefinition } from "./cache-helper";
 
 describe("CacheHelper unit tests", () => {
@@ -32,12 +33,12 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should return true for Manifold objects with $$ property", () => {
-            const mockManifoldObject = { $$: { ptr: 123 }, delete: jest.fn() };
+            const mockManifoldObject = { $$: { ptr: 123 }, delete: vi.fn() };
             expect(cacheHelper.isManifoldObject(mockManifoldObject)).toBe(true);
         });
 
         it("should return true for arrays with Manifold objects", () => {
-            const mockManifoldObject = { $$: { ptr: 123 }, delete: jest.fn() };
+            const mockManifoldObject = { $$: { ptr: 123 }, delete: vi.fn() };
             expect(cacheHelper.isManifoldObject([mockManifoldObject])).toBe(true);
         });
 
@@ -132,7 +133,7 @@ describe("CacheHelper unit tests", () => {
 
     describe("addToCache and checkCache", () => {
         it("should add and retrieve manifold from cache", () => {
-            const mockManifold = { $$: { ptr: 123 }, delete: jest.fn() };
+            const mockManifold = { $$: { ptr: 123 }, delete: vi.fn() };
             const hash = "test-hash-123";
             
             cacheHelper.addToCache(hash, mockManifold);
@@ -158,7 +159,7 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should return null for deleted Manifold object", () => {
-            const mockManifold = { $$: { ptr: 123 }, delete: jest.fn() };
+            const mockManifold = { $$: { ptr: 123 }, delete: vi.fn() };
             const hash = "test-hash-deleted";
             
             cacheHelper.addToCache(hash, mockManifold);
@@ -172,8 +173,8 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle array of Manifold objects in cache", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             
             const manifolds = [manifold1, manifold2];
             const hash = "array-hash";
@@ -187,8 +188,8 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should return null if any manifold in array is deleted", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             
             const manifolds = [manifold1, manifold2];
             const hash = "array-hash-deleted";
@@ -245,7 +246,7 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should cache Manifold objects and return hash reference", () => {
-            const manifold = { $$: { ptr: 123 }, delete: jest.fn() };
+            const manifold = { $$: { ptr: 123 }, delete: vi.fn() };
             const args = { functionName: "createManifold" };
             let cacheMissCallCount = 0;
             const cacheMiss = () => {
@@ -271,8 +272,8 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle array of Manifold objects", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             const manifolds = [manifold1, manifold2];
             
             const args = { functionName: "createManifolds" };
@@ -287,9 +288,9 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle ObjectDefinition with compound and manifolds", () => {
-            const compound = { $$: { ptr: 999 }, delete: jest.fn() };
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const compound = { $$: { ptr: 999 }, delete: vi.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const objDef: ObjectDefinition<any, any> = {
@@ -313,7 +314,7 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should recalculate when cached manifold is deleted", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
             const args = { functionName: "createManifold" };
             let cacheMiss1CallCount = 0;
             const cacheMiss1 = () => {
@@ -329,7 +330,7 @@ describe("CacheHelper unit tests", () => {
             delete (manifold1 as Partial<typeof manifold1>).$$;
             
             // Second call - should detect deleted manifold and call cacheMiss again
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             let cacheMiss2CallCount = 0;
             const cacheMiss2 = () => {
                 cacheMiss2CallCount++;
@@ -356,7 +357,7 @@ describe("CacheHelper unit tests", () => {
 
         it("should clean Manifold object from cache", () => {
             const hash = "test-hash";
-            const manifold = { $$: { ptr: 123 }, delete: jest.fn() };
+            const manifold = { $$: { ptr: 123 }, delete: vi.fn() };
             
             cacheHelper.addToCache(hash, manifold);
             expect(cacheHelper.checkCache(hash)).toBeDefined();
@@ -393,8 +394,8 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should clean up Manifold objects", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             
             cacheHelper.addToCache("hash1", manifold1);
             cacheHelper.addToCache("hash2", manifold2);
@@ -406,7 +407,7 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle mixed cache entries (Manifold and non-Manifold)", () => {
-            const manifold = { $$: { ptr: 123 }, delete: jest.fn() };
+            const manifold = { $$: { ptr: 123 }, delete: vi.fn() };
             const plainObj = { data: "plain" };
             
             cacheHelper.addToCache("manifold-hash", manifold);
@@ -420,8 +421,8 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle arrays of Manifold objects", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             const manifolds = [manifold1, manifold2];
             
             cacheHelper.addToCache("array-hash", manifolds);
@@ -433,7 +434,7 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should clean all entries from argCache not just usedHashes", () => {
-            const manifold = { $$: { ptr: 123 }, delete: jest.fn() };
+            const manifold = { $$: { ptr: 123 }, delete: vi.fn() };
             
             // Add to cache through cacheOp
             cacheHelper.cacheOp({ test: 1 }, () => manifold);
@@ -487,8 +488,8 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should clean up Manifold objects that are no longer used", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             
             const args1 = { test: 1 };
             const args2 = { test: 2 };
@@ -512,8 +513,8 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should handle arrays of Manifold objects during cleanup", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             const manifolds = [manifold1, manifold2];
             
             const args = { test: 1 };
@@ -586,7 +587,7 @@ describe("CacheHelper unit tests", () => {
         it("should handle already deleted manifolds gracefully", () => {
             const manifold = { 
                 $$: { ptr: 123 }, 
-                delete: jest.fn(() => { throw new Error("Already deleted"); }) 
+                delete: vi.fn(() => { throw new Error("Already deleted"); }) 
             };
             const args = { test: 1 };
             
@@ -664,9 +665,9 @@ describe("CacheHelper unit tests", () => {
 
     describe("integration tests", () => {
         it("should handle complex caching scenario with multiple manifolds", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: jest.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: jest.fn() };
-            const manifold3 = { $$: { ptr: 789 }, delete: jest.fn() };
+            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
+            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
+            const manifold3 = { $$: { ptr: 789 }, delete: vi.fn() };
             
             // Cache multiple manifolds with different args
             const result1 = cacheHelper.cacheOp({ op: "create", id: 1 }, () => manifold1);
@@ -696,7 +697,7 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should properly track used hashes across operations", () => {
-            const manifold = { $$: { ptr: 123 }, delete: jest.fn() };
+            const manifold = { $$: { ptr: 123 }, delete: vi.fn() };
             const args = { op: "test" };
             
             cacheHelper.cacheOp(args, () => manifold);

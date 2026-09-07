@@ -1,4 +1,5 @@
 
+import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
@@ -19,7 +20,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createBox(inputs: Inputs.BabylonMeshBuilder.CreateBoxDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateBox("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateBox(uniqueName("BabylonMesh"), {
             width: inputs.width,
             height: inputs.height,
             depth: inputs.depth,
@@ -44,7 +45,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createCube(inputs: Inputs.BabylonMeshBuilder.CreateCubeDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateBox("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateBox(uniqueName("BabylonMesh"), {
             size: inputs.size,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
         }, this.context.scene);
@@ -66,7 +67,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createSquarePlane(inputs: Inputs.BabylonMeshBuilder.CreateSquarePlaneDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreatePlane("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreatePlane(uniqueName("BabylonMesh"), {
             size: inputs.size,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
         }, this.context.scene);
@@ -88,7 +89,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createSphere(inputs: Inputs.BabylonMeshBuilder.CreateSphereDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateSphere("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateSphere(uniqueName("BabylonMesh"), {
             diameter: inputs.diameter,
             segments: inputs.segments,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
@@ -111,7 +112,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createIcoSphere(inputs: Inputs.BabylonMeshBuilder.CreateIcoSphereDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateIcoSphere("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateIcoSphere(uniqueName("BabylonMesh"), {
             radius: inputs.radius,
             radiusX: inputs.radiusX,
             radiusY: inputs.radiusY,
@@ -138,7 +139,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createDisc(inputs: Inputs.BabylonMeshBuilder.CreateDiscDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateDisc("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateDisc(uniqueName("BabylonMesh"), {
             radius: inputs.radius,
             tessellation: inputs.tessellation,
             arc: inputs.arc,
@@ -162,7 +163,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createTorus(inputs: Inputs.BabylonMeshBuilder.CreateTorusDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateTorus("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateTorus(uniqueName("BabylonMesh"), {
             diameter: inputs.diameter,
             thickness: inputs.thickness,
             tessellation: inputs.tessellation,
@@ -186,7 +187,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createTorusKnot(inputs: Inputs.BabylonMeshBuilder.CreateTorusKnotDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateTorusKnot("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateTorusKnot(uniqueName("BabylonMesh"), {
             radius: inputs.radius,
             tube: inputs.tube,
             radialSegments: inputs.radialSegments,
@@ -213,7 +214,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createPolygon(inputs: Inputs.BabylonMeshBuilder.CreatePolygonDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreatePolygon("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreatePolygon(uniqueName("BabylonMesh"), {
             shape: inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
             holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],
             depth: inputs.depth,
@@ -241,7 +242,7 @@ export class BabylonMeshBuilder {
      */
     extrudePolygon(inputs: Inputs.BabylonMeshBuilder.ExtrudePolygonDto): BABYLON.Mesh {
         console.log(earcut);
-        const mesh = BABYLON.MeshBuilder.ExtrudePolygon("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.ExtrudePolygon(uniqueName("BabylonMesh"), {
             shape: inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
             holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],
             depth: inputs.depth,
@@ -268,7 +269,7 @@ export class BabylonMeshBuilder {
      */
     createTube(inputs: Inputs.BabylonMeshBuilder.CreateTubeDto): BABYLON.Mesh {
         const path = inputs.path.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
-        const mesh = BABYLON.MeshBuilder.CreateTube("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateTube(uniqueName("BabylonMesh"), {
             path,
             radius: inputs.radius,
             tessellation: inputs.tessellation,
@@ -294,7 +295,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createPolyhedron(inputs: Inputs.BabylonMeshBuilder.CreatePolyhedronDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreatePolyhedron("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreatePolyhedron(uniqueName("BabylonMesh"), {
             type: inputs.type,
             size: inputs.size,
             sizeX: inputs.sizeX,
@@ -323,7 +324,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createGeodesic(inputs: Inputs.BabylonMeshBuilder.CreateGeodesicDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateGeodesic("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateGeodesic(uniqueName("BabylonMesh"), {
             m: inputs.m,
             n: inputs.n,
             size: inputs.size,
@@ -352,7 +353,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createGoldberg(inputs: Inputs.BabylonMeshBuilder.CreateGoldbergDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateGoldberg("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateGoldberg(uniqueName("BabylonMesh"), {
             n: inputs.n,
             m: inputs.m,
             size: inputs.size,
@@ -380,7 +381,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createCapsule(inputs: Inputs.BabylonMeshBuilder.CreateCapsuleDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateCapsule("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateCapsule(uniqueName("BabylonMesh"), {
             orientation: new BABYLON.Vector3(...inputs.orientation),
             subdivisions: inputs.subdivisions,
             tessellation: inputs.tessellation,
@@ -412,7 +413,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createCylinder(inputs: Inputs.BabylonMeshBuilder.CreateCylinderDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateCylinder("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateCylinder(uniqueName("BabylonMesh"), {
             height: inputs.height,
             diameterTop: inputs.diameterTop,
             diameterBottom: inputs.diameterBottom,
@@ -440,7 +441,7 @@ export class BabylonMeshBuilder {
     createExtrudedSahpe(inputs: Inputs.BabylonMeshBuilder.CreateExtrudedShapeDto): BABYLON.Mesh {
         const shape = inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
         const path = inputs.path.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
-        const mesh = BABYLON.MeshBuilder.ExtrudeShape("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.ExtrudeShape(uniqueName("BabylonMesh"), {
             shape: shape,
             path: path,
             scale: inputs.scale,
@@ -471,7 +472,7 @@ export class BabylonMeshBuilder {
         const pathArray = inputs.pathArray.map(p => {
             return p.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
         });
-        const mesh = BABYLON.MeshBuilder.CreateRibbon("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateRibbon(uniqueName("BabylonMesh"), {
             pathArray: pathArray,
             closeArray: inputs.closeArray,
             closePath: inputs.closePath,
@@ -498,7 +499,7 @@ export class BabylonMeshBuilder {
      */
     createLathe(inputs: Inputs.BabylonMeshBuilder.CreateLatheDto): BABYLON.Mesh {
         const shape = inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
-        const mesh = BABYLON.MeshBuilder.CreateLathe("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateLathe(uniqueName("BabylonMesh"), {
             shape: shape,
             radius: inputs.radius,
             tessellation: inputs.tessellation,
@@ -524,7 +525,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createGround(inputs: Inputs.BabylonMeshBuilder.CreateGroundDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreateGround("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreateGround(uniqueName("BabylonMesh"), {
             width: inputs.width,
             height: inputs.height,
             subdivisionsX: inputs.subdivisionsX,
@@ -539,7 +540,7 @@ export class BabylonMeshBuilder {
         return mesh;
     }
 
-    
+
     /**
      * Creates a rectangle plane mesh
      * @param inputs required to set up basic cube
@@ -550,7 +551,7 @@ export class BabylonMeshBuilder {
      * @drawable true
      */
     createRectanglePlane(inputs: Inputs.BabylonMeshBuilder.CreateRectanglePlaneDto): BABYLON.Mesh {
-        const mesh = BABYLON.MeshBuilder.CreatePlane("BabylonMesh" + Math.random(), {
+        const mesh = BABYLON.MeshBuilder.CreatePlane(uniqueName("BabylonMesh"), {
             width: inputs.width,
             height: inputs.height,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),

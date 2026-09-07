@@ -1,0 +1,129 @@
+{
+    "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers a ratio that sits above 50% even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
+    "measured": "2026-09-07",
+    "history": [
+        {
+            "measured": "2026-09-07",
+            "tests": 3991,
+            "lines": 68.29,
+            "branches": 51.95,
+            "functions": 57.82,
+            "statements": 65.59
+        }
+    ],
+    "packages": {
+        "babylonjs": {
+            "runner": "vitest",
+            "tests": 453,
+            "suites": 7,
+            "lines": 35.11,
+            "branches": 26.64,
+            "functions": 25.42,
+            "statements": 30.96
+        },
+        "base": {
+            "runner": "vitest",
+            "tests": 1081,
+            "suites": 15,
+            "lines": 95.64,
+            "branches": 85.75,
+            "functions": 98.26,
+            "statements": 94.92
+        },
+        "cad-cloud-sdk": {
+            "runner": "vitest",
+            "tests": 78,
+            "suites": 11,
+            "lines": 69.79,
+            "branches": 78.66,
+            "functions": 75,
+            "statements": 70.38
+        },
+        "core": {
+            "runner": "vitest",
+            "tests": 114,
+            "suites": 6,
+            "lines": 58.78,
+            "branches": 71.42,
+            "functions": 38.29,
+            "statements": 55.89
+        },
+        "create-app": {
+            "runner": "vitest",
+            "tests": 11,
+            "suites": 1
+        },
+        "jscad": {
+            "runner": "vitest",
+            "tests": 47,
+            "suites": 9,
+            "lines": 45.95,
+            "branches": 22.66,
+            "functions": 49.45,
+            "statements": 42.52
+        },
+        "jscad-worker": {
+            "runner": "vitest",
+            "tests": 65,
+            "suites": 3,
+            "lines": 63.31,
+            "branches": 72.78,
+            "functions": 36.13,
+            "statements": 63.75
+        },
+        "manifold": {
+            "runner": "vitest",
+            "tests": 39,
+            "suites": 7,
+            "lines": 37.06,
+            "branches": 13.51,
+            "functions": 43.11,
+            "statements": 35.13
+        },
+        "manifold-worker": {
+            "runner": "vitest",
+            "tests": 68,
+            "suites": 3,
+            "lines": 53.95,
+            "branches": 66.83,
+            "functions": 26.34,
+            "statements": 54.04
+        },
+        "occt": {
+            "runner": "vitest",
+            "tests": 1067,
+            "suites": 31,
+            "lines": 88.78,
+            "branches": 62.69,
+            "functions": 92.64,
+            "statements": 88.83
+        },
+        "occt-worker": {
+            "runner": "vitest",
+            "tests": 154,
+            "suites": 6,
+            "lines": 39.12,
+            "branches": 59.33,
+            "functions": 17.69,
+            "statements": 39.65
+        },
+        "playcanvas": {
+            "runner": "vitest",
+            "tests": 461,
+            "suites": 9,
+            "lines": 83.55,
+            "branches": 74.41,
+            "functions": 83.02,
+            "statements": 83.09
+        },
+        "threejs": {
+            "runner": "vitest",
+            "tests": 353,
+            "suites": 8,
+            "lines": 82.46,
+            "branches": 77.18,
+            "functions": 82.84,
+            "statements": 82.8
+        }
+    }
+}

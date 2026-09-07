@@ -49,9 +49,9 @@
         "copy-package": "node ../../../scripts/dist-manifest.mjs",
         "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
         "delete-coverage": "shx rm -rf ./dist/coverage || true",
-        "test": "NODE_OPTIONS=--max-old-space-size=8192 jest --watchAll=true",
-        "test-c": "mkdir -p test-results && NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=false --json --outputFile=test-results/jest.json",
-        "test-c-l": "NODE_OPTIONS=--max-old-space-size=8192 jest --coverage --watchAll=true",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest",
         "api:check": "api-extractor run",
         "api:update": "api-extractor run --local"
     },
@@ -134,47 +134,10 @@
         "rxjs": "7.8.2"
     },
     "devDependencies": {
+        "@microsoft/api-extractor": "7.59.0",
+        "@vitest/coverage-v8": "4.1.7",
         "shx": "0.4.0",
-        "@testing-library/jest-dom": "6.9.1",
-        "jest": "30.4.2",
-        "ts-node": "10.9.2",
-        "ts-jest": "29.4.10",
         "typescript": "5.9.3",
-        "@types/jest": "30.0.0",
-        "babel-jest": "30.4.1",
-        "@babel/core": "7.29.0",
-        "@babel/preset-env": "7.29.5",
-        "@babel/preset-typescript": "7.28.5",
-        "jest-html-reporters": "3.1.7",
-        "jest-environment-node": "30.4.1",
-        "@microsoft/api-extractor": "7.59.0"
-    },
-    "jest": {
-        "preset": "ts-jest",
-        "transform": {
-            "\\.[jt]sx?$": "babel-jest"
-        },
-        "extensionsToTreatAsEsm": [
-            ".ts"
-        ],
-        "transformIgnorePatterns": [
-            "node_modules/(?!\\.pnpm|@babylonjs|@bitbybit-dev)"
-        ],
-        "collectCoverageFrom": [
-            "lib/workers/**/*",
-            "lib/api/bitbybit/**/*"
-        ],
-        "coverageReporters": [
-            "text",
-            "lcov",
-            "json-summary"
-        ],
-        "testEnvironmentOptions": {
-            "customExportConditions": [
-                "@bitbybit-dev/source",
-                "node",
-                "node-addons"
-            ]
-        }
+        "vitest": "4.1.7"
     }
 }

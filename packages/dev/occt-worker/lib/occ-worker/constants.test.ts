@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { WorkerMessages, ReservedFunctions, NON_CACHEABLE_FUNCTIONS, CACHE_THRESHOLD, SHAPE_TYPE_IDENTIFIER } from "./constants";
 
 describe("Constants Unit Tests", () => {
@@ -251,7 +252,7 @@ describe("Command Handlers Unit Tests", () => {
     });
 });
 
-// Helper function to create tracking functions (since we can't use jest.fn() in ESM)
+// A hand-rolled spy: these assertions want the recorded arguments, not a mock's behaviour.
 function createTrackingFn<T = unknown>(): { fn: (...args: unknown[]) => T; calls: unknown[][] } {
     const calls: unknown[][] = [];
     const fn = (...args: unknown[]): T => {

@@ -2,132 +2,77 @@
 sidebar_position: 3
 title: Live Unit Test Coverage Reports
 sidebar_label: Live Coverage Reports
-description: Explore live unit test coverage reports for Bitbybit's core packages, demonstrating our commitment to quality and transparency.
+description: Read the test and coverage report Bitbybit publishes on every CI run - every suite, every number, on the run that produced it.
 tags: [github, unit-tests, coverage, development]
 ---
 
 # Live Unit Test Coverage Reports
 
-We believe in **transparency and accountability** in our development process. To that end, we make our unit test coverage reports publicly available for core packages in the Bitbybit ecosystem.
+Every push and every pull request runs the whole test suite, and the run writes a report of what it
+found. That report is public, and it is the same one the maintainers read.
 
-## Why Share Test Coverage Reports?
+**[Open the latest run →](https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml)**
 
-Making our test coverage reports public serves several important purposes:
+Pick the run at the top of that list; the report is on its summary page, above the job list. Add
+`?query=branch%3Amaster` to the URL to see only the release branch.
 
-### 1. **Transparency & Trust**
-By openly sharing our test coverage, we demonstrate our commitment to quality and allow users to see exactly which parts of the codebase are tested. This builds trust with developers who rely on Bitbybit for their projects.
+## What the report shows
 
-### 2. **Quality Assurance Visibility**
-Coverage reports provide concrete evidence of our testing efforts. While coverage percentage alone doesn't guarantee quality, it shows that we systematically test our code and continuously monitor which areas need more attention.
+- **A headline** - total tests, how many passed, failed and were skipped, how long the run took, and
+  the coverage over every package together, summed rather than averaged so a large package is not
+  hidden behind several small ones. Each percentage is shown with the counts it came from, because a
+  bare percentage invites being read as a share of the whole codebase, which it is not.
+- **The size of the codebase** - hand-written source, generated source and unit tests, counted
+  separately, with how many lines of test there are per line of hand-written source. Coverage
+  measures executable lines inside each package's declared scope; that is a smaller number than the
+  source total, and showing both is the only way to read either honestly.
+- **A pie of what is reached and what is not**, and how the floor has moved over its last recorded
+  values, as a trend per metric.
+- **A row per package** - tests, time, and line, branch and function coverage with a bar beside it.
+- **Movement against the recorded floor.** Coverage in this repository is a floor, not a target: it
+  is recorded per package and may rise, never fall. The report shows what each suite moved against
+  that floor, so a run tells you not only where coverage stands but which way it went.
+- **Other quality signals** - how many lint findings are still suppressed, whether any package still
+  compiles under a relaxed baseline, and how many have their public API surface pinned to a
+  committed report.
+- **Failures in full**, with their messages, on a red run - so a failure is read on the summary page
+  rather than dug out of a log.
+- **Skipped tests and the slowest files**, folded away until you want them.
 
-### 3. **Inviting Community Contributions**
-Public coverage reports help potential contributors identify areas that could benefit from additional tests. If you see untested code paths that you believe should have coverage, we welcome pull requests with additional unit tests.
+## Why the run, rather than a hosted coverage site
 
-### 4. **Accountability**
-Making these reports live and accessible holds us accountable to maintain and improve our testing standards over time. It's a public commitment to quality that we take seriously.
+A published coverage site is a copy: it is built by a separate step, it lives at its own address, and
+it goes stale the moment that step stops running - silently, because a stale page looks exactly like
+a fresh one. The report on a run cannot drift. It is produced by the run it describes, from the
+results that run wrote, and it carries that run's commit. If it is missing, the run is there to
+explain why.
 
-### 5. **Educational Resource**
-For developers learning about testing practices in complex 3D and CAD applications, these reports serve as real-world examples of how testing can be structured and maintained.
+It is also honest about scope. The report says what each suite reached, including the packages where
+that number is low, and a suite that stopped leaving results at all is called out by name and fails
+the step rather than quietly vanishing from the table.
 
-## Understanding the Reports
+## Reading the numbers fairly
 
-The reports below show:
-- **Test suites and individual tests** with pass/fail status
-- **Code coverage metrics** including line, branch, function, and statement coverage
-- **Detailed execution results** for each test case
+Coverage percentages measure which lines a test executed, inside the scope each package declares -
+not every line in the repository, and not whether the assertions around those lines are worth
+anything. We publish them because they are evidence of effort and a useful trend, not because
+a high number proves correctness - a suite can execute every line and assert nothing. The test files
+are open beside the source, which is the better thing to read if you want to judge the testing
+rather than measure it.
 
----
+Where a number is low, it is low because that area is newer or leans on a running kernel rather than
+because the code is untested by design. See [Unit Testing Approach](/learn/github/unit-tests) for how
+we prioritise.
 
-## Core Package Coverage Reports
+## Contributing to test coverage
 
-### 1. Base Utilities and Core Types (`@bitbybit-dev/base`)
+If you would like to help:
 
-This package contains fundamental utilities, type definitions, and helper functions used across the Bitbybit platform. Its tests ensure the stability of these core building blocks.
+1. **Open the latest run** and find a package whose numbers are low.
+2. **Fork the repository** on GitHub.
+3. **Write unit tests** for what is not covered - the existing suites beside the source are the
+   pattern to follow.
+4. **Open a pull request.** Your run publishes the same report, so you can see what your tests moved.
 
-<iframe
-    src="https://tests.bitbybit.dev/base"
-    width="100%"
-    style={{backgroundColor: "white"}}
-    height="600px"
-    frameBorder="0"
-    scrolling="yes"
-    title="Bitbybit - Base Utilities Unit Test Report"
-    allow="fullscreen"
-></iframe>
-
----
-
-### 2. OpenCascade Technology (OCCT) Wrapper (`@bitbybit-dev/occt`)
-
-This is a critical package providing the JavaScript/TypeScript interface to the powerful OpenCascade geometric modeling kernel. Tests here cover a wide range of CAD operations, from creating basic shapes to complex boolean operations, filleting, chamfering, and data import/export.
-
-<iframe
-    src="https://tests.bitbybit.dev/occt"
-    style={{backgroundColor: "white"}}
-    width="100%"
-    height="600px"
-    frameBorder="0"
-    scrolling="yes"
-    title="Bitbybit - OCCT Wrapper Unit Test Report"
-    allow="fullscreen"
-></iframe>
-
----
-
-### 3. Three.js Integration (`@bitbybit-dev/threejs`)
-
-This package facilitates the integration of Bitbybit's algorithmic capabilities with the Three.js 3D graphics library. Tests cover drawing Bitbybit geometries in Three.js, converting between Bitbybit and Three.js data structures, and utility functions specific to the Three.js environment.
-
-<iframe
-    src="https://tests.bitbybit.dev/threejs"
-    style={{backgroundColor: "white"}}
-    width="100%"
-    height="600px"
-    frameBorder="0"
-    scrolling="yes"
-    title="Bitbybit - ThreeJS Integration Unit Test Report"
-    allow="fullscreen"
-></iframe>
-
----
-
-### 4. PlayCanvas Integration (`@bitbybit-dev/playcanvas`)
-
-This package provides the integration layer between Bitbybit and the PlayCanvas game engine. Tests verify the correct rendering of CAD geometries as PlayCanvas entities, material application, camera controls, and other PlayCanvas-specific functionality.
-
-<iframe
-    src="https://tests.bitbybit.dev/playcanvas"
-    style={{backgroundColor: "white"}}
-    width="100%"
-    height="600px"
-    frameBorder="0"
-    scrolling="yes"
-    title="Bitbybit - PlayCanvas Integration Unit Test Report"
-    allow="fullscreen"
-></iframe>
-
----
-
-## Additional Package Reports Coming Soon
-
-We are continuously expanding our test coverage across the Bitbybit ecosystem. Reports for additional packages, including:
-- **BabylonJS Integration** (`@bitbybit-dev/babylonjs`)
-- **JSCAD Wrapper** (`@bitbybit-dev/jscad`)
-- **Manifold Wrapper** (`@bitbybit-dev/manifold`)
-
-...will be added as they become available.
-
----
-
-## Contributing to Test Coverage
-
-If you'd like to help improve our test coverage:
-
-1. **Explore the reports** to identify untested code paths
-2. **Fork our repository** on GitHub
-3. **Write unit tests** for uncovered functionality
-4. **Submit a pull request** with your tests
-
-We welcome contributions that help make Bitbybit more robust and reliable!
-
-For more information about our testing philosophy and approach, see our [Unit Testing Approach](/learn/github/unit-tests) page.
+Contributions that raise a floor are welcome, and so are ones that replace a weak assertion with a
+real one.

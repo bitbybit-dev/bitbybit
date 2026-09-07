@@ -174,7 +174,7 @@ export class EdgesService {
 
     edgesToPoints(inputs: Inputs.OCCT.EdgesToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const shapeType = this.enumService.getShapeTypeEnum(inputs.shape);
-        let edges = [];
+        let edges: TopoDS_Shape[];
         if (shapeType === Inputs.OCCT.shapeTypeEnum.edge) {
             edges = [inputs.shape];
         } else if (shapeType === Inputs.OCCT.shapeTypeEnum.wire) {
@@ -337,7 +337,7 @@ export class EdgesService {
         }
         lin2.delete();
 
-        let resultingSol = [];
+        let resultingSol: TopoDS_Shape[];
         if (inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
             resultingSol = [...solutions1, ...solutions2];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
@@ -421,7 +421,7 @@ export class EdgesService {
         }
         lin.delete();
 
-        let resultingSol = [];
+        let resultingSol: TopoDS_Shape[];
         if (inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
             resultingSol = [...solutions];
         } else if (inputs.positionResult === Inputs.OCCT.positionResultEnum.keepSide1) {
@@ -527,7 +527,7 @@ export class EdgesService {
             locationEnd.delete();
         }
 
-        let resultingSol: TopoDS_Shape[] = [];
+        let resultingSol: TopoDS_Shape[];
 
         if (inputs.positionResult === Inputs.OCCT.positionResultEnum.all) {
             resultingSol = [...solutions];
@@ -798,7 +798,7 @@ export class EdgesService {
             return circle;
         } catch (ex) {
             curve.delete();
-            throw new Error("Edge is not a circular edge.");
+            throw new Error("Edge is not a circular edge.", { cause: ex });
         }
     }
 
@@ -819,7 +819,7 @@ export class EdgesService {
             return circle2d;
         } catch (ex) {
             curve.delete();
-            throw new Error("Edge is not a circular edge.");
+            throw new Error("Edge is not a circular edge.", { cause: ex });
         }
     }
 

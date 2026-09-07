@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as pc from "playcanvas";
 import { PlayCanvasCamera } from "./playcanvas-camera-inputs";
 
