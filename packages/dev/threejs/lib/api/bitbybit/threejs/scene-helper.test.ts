@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-import { ThreeJSScene } from "../../inputs/threejs-scene-inputs";
+import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
 import { hexToRgb } from "../../__mocks__/test-helpers";
 // Mock three module using centralized mocks
 vi.mock("three", async () => {
@@ -665,6 +665,203 @@ describe("initThreeJS unit tests", () => {
 
             // Assert
             expect(onRenderMock).toHaveBeenCalledWith(expect.any(Number));
+
+            // Cleanup
+            result.dispose();
+        });
+    });
+
+    describe("frame delta measurement", () => {
+        const SIXTY_HZ_DELTA = 1 / 60;
+
+        // The loop is driven by hand: setAnimationLoop is replaced with a spy that keeps the frame
+        // callback, which is then called with the timestamps a real display would deliver.
+        const runFrames = (
+            result: InitThreeJSResult,
+            frameTimesMs: number[]
+        ): { onRenderDeltas: number[]; cameraDeltas: number[] } => {
+            const orbitCamera = result.orbitCamera;
+            if (!orbitCamera) {
+                throw new Error("these tests need the orbit camera enabled");
+            }
+            const updateSpy = vi.spyOn(orbitCamera, "update");
+
+            let captured: XRFrameRequestCallback | null = null;
+            vi.spyOn(result.renderer, "setAnimationLoop").mockImplementation((callback) => {
+                captured = callback;
+            });
+
+            const onRenderDeltas: number[] = [];
+            result.startAnimationLoop((delta) => onRenderDeltas.push(delta));
+
+            const animate = captured as ((time: number) => void) | null;
+            if (!animate) {
+                throw new Error("startAnimationLoop registered no frame callback");
+            }
+            frameTimesMs.forEach((timeMs) => animate(timeMs));
+
+            const cameraDeltas = updateSpy.mock.calls.map((call) => call[0]);
+            updateSpy.mockRestore();
+            return { onRenderDeltas, cameraDeltas };
+        };
+
+        // noUncheckedIndexedAccess makes every index read optional, so the read is narrowed here
+        // rather than at each assertion.
+        const deltaAt = (deltas: number[], index: number): number => {
+            const delta = deltas[index];
+            if (delta === undefined) {
+                throw new Error(`no frame delta was recorded at index ${index}`);
+            }
+            return delta;
+        };
+
+        it("should give the first frame a 60Hz delta rather than zero or the raw timestamp", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act
+            const { onRenderDeltas } = runFrames(result, [1234567]);
+
+            // Assert
+            expect(onRenderDeltas).toHaveLength(1);
+            expect(deltaAt(onRenderDeltas, 0)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should measure the real interval of a 120Hz display", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act
+            const { onRenderDeltas } = runFrames(result, [1000, 1008.3333333, 1016.6666666]);
+
+            // Assert
+            expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(0.0083333333, 8);
+            expect(deltaAt(onRenderDeltas, 2)).toBeCloseTo(0.0083333333, 8);
+            expect(deltaAt(onRenderDeltas, 1)).not.toBeCloseTo(0.016, 4);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should measure the real interval of a 30Hz display", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act
+            const { onRenderDeltas } = runFrames(result, [1000, 1033.3333333, 1066.6666666]);
+
+            // Assert
+            expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(0.0333333333, 8);
+            expect(deltaAt(onRenderDeltas, 2)).toBeCloseTo(0.0333333333, 8);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should clamp the gap a backgrounded tab returns with to six 60Hz frames", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act - five seconds away from the tab
+            const { onRenderDeltas } = runFrames(result, [1000, 6000]);
+
+            // Assert
+            expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(6 / 60, 10);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should keep measuring from the real timestamp after a clamped gap", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act
+            const { onRenderDeltas } = runFrames(result, [1000, 6000, 6020]);
+
+            // Assert - the clamp caps what is reported, it does not shift the clock
+            expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(6 / 60, 10);
+            expect(deltaAt(onRenderDeltas, 2)).toBeCloseTo(0.02, 10);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should give a 60Hz delta when two frames carry the same timestamp", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act
+            const { onRenderDeltas } = runFrames(result, [1000, 1000]);
+
+            // Assert
+            expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should never report a negative delta when a timestamp goes backwards", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act
+            const { onRenderDeltas } = runFrames(result, [1000, 900]);
+
+            // Assert
+            expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
+            expect(deltaAt(onRenderDeltas, 1)).toBeGreaterThan(0);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should give a 60Hz delta when a frame carries a non-finite timestamp", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act - a NaN timestamp must not poison this frame nor the one after it
+            const { onRenderDeltas } = runFrames(result, [1000, NaN, 1050]);
+
+            // Assert
+            expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
+            expect(deltaAt(onRenderDeltas, 2)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
+            expect(onRenderDeltas.every((delta) => Number.isFinite(delta))).toBe(true);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should give the orbit camera the same delta the onRender callback receives", () => {
+            // Arrange
+            const result = initThreeJS();
+
+            // Act
+            const { onRenderDeltas, cameraDeltas } = runFrames(result, [1000, 1020, 1045]);
+
+            // Assert
+            expect(cameraDeltas).toEqual(onRenderDeltas);
+            expect(deltaAt(cameraDeltas, 0)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
+            expect(deltaAt(cameraDeltas, 1)).toBeCloseTo(0.02, 10);
+            expect(deltaAt(cameraDeltas, 2)).toBeCloseTo(0.025, 10);
+
+            // Cleanup
+            result.dispose();
+        });
+
+        it("should treat the first frame of a restarted loop as a first frame again", () => {
+            // Arrange
+            const result = initThreeJS();
+            runFrames(result, [1000, 1020]);
+
+            // Act - a second startAnimationLoop, whose first timestamp is far from the previous one
+            const restarted = runFrames(result, [90000]);
+
+            // Assert
+            expect(deltaAt(restarted.onRenderDeltas, 0)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
 
             // Cleanup
             result.dispose();
