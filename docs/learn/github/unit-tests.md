@@ -54,13 +54,16 @@ We choose to share our unit test reports publicly for several key reasons, even 
 
 ## Live Unit Test Coverage Reports
 
-We make our unit test coverage reports publicly available for core packages. These live reports, together with open-sourced test files provide complete transparency into our testing efforts, showing detailed test results, coverage metrics, and execution status.
+Every push and every pull request runs the whole suite, and the run publishes its own report. It is public, it is the same one we read, and it cannot go stale: it is written by the run that produced the numbers.
 
-**[View Live Coverage Reports →](/learn/github/live-unit-test-coverage)**
+**[Open the latest run →](https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml)**
 
-The coverage reports include:
-- Test execution results for core packages (Base, OCCT, Three.js, PlayCanvas, and more)
-- Detailed coverage metrics (line, branch, function, and statement coverage)
-- Clear visibility into tested and untested code paths
+Pick the run at the top; the report is on its summary page, above the job list.
 
-By regularly running and monitoring these tests, we strive to maintain the quality and stability of the platform. We encourage you to explore these reports to get a deeper insight into our development practices and the reliability of our core components.
+It carries:
+- Totals for the run - tests, passes, failures, skips, duration, and the coverage over every package together
+- A row per package, with line, branch and function coverage
+- What each suite moved against its recorded floor, so you see the direction and not only the number
+- Every failure with its message, on a red run
+
+There is more about how to read it, and why we publish the run rather than a hosted coverage site, on the [Live Coverage Reports](/learn/github/live-unit-test-coverage) page. Together with the test files, which are open beside the source, it is the whole picture of what we test and what we do not.

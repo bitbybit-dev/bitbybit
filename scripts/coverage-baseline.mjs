@@ -55,6 +55,7 @@ const measure = () => {
         const entry = {};
         if (counts) Object.assign(entry, counts);
         if (summary?.total) for (const c of COLUMNS) entry[c] = summary.total[c].pct;
+        if (summary?.total) entry.counts = Object.fromEntries(COLUMNS.map((c) => [c, { covered: summary.total[c].covered, total: summary.total[c].total }]));
         // Kept out of the record; only the comparison uses them, to tell a coverage report written
         // by this run from one left behind by an earlier one.
         entry.at = counts?.at;
@@ -66,6 +67,23 @@ const measure = () => {
 
 const current = measure();
 const RECORDED = new Set(["runner", "tests", "suites", ...COLUMNS]);
+const HISTORY_KEPT = 24;
+
+/** Coverage over every package at once, summed rather than averaged, plus the run's test count. */
+const overall = (packages) => {
+    const out = { tests: 0 };
+    for (const entry of Object.values(packages)) out.tests += entry.tests ?? 0;
+    for (const c of COLUMNS) {
+        let covered = 0, total = 0;
+        for (const entry of Object.values(packages)) {
+            const counts = entry.counts?.[c];
+            if (!counts) continue;
+            covered += counts.covered; total += counts.total;
+        }
+        if (total > 0) out[c] = +((covered / total) * 100).toFixed(2);
+    }
+    return out;
+};
 const forRecord = (entry) => Object.fromEntries(Object.entries(entry).filter(([k, v]) => RECORDED.has(k) && v !== undefined));
 
 if (save) {
@@ -82,6 +100,9 @@ if (save) {
     writeFileSync(BASELINE, JSON.stringify({
         note: "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers a ratio that sits above 50% even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
         measured: new Date().toISOString().slice(0, 10),
+        // The floors this one replaced, newest last and bounded, so the report can show which way
+        // coverage has been going without a deep clone or a second file to keep in step.
+        history: [...(previous?.history ?? []), { measured: new Date().toISOString().slice(0, 10), ...overall(current) }].slice(-HISTORY_KEPT),
         packages: Object.fromEntries(Object.entries(current).map(([name, entry]) => [name, forRecord(entry)])),
     }, null, 4) + "\n");
     console.log(`recorded ${Object.keys(current).length} packages`);

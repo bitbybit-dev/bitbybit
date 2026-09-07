@@ -42,7 +42,7 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/occt |
 | **Documentation** | https://learn.bitbybit.dev/learn/code/common/occt/what-is-occt |
 | **API Reference** | https://docs.bitbybit.dev/classes/Bit.OCCT |
-| **Unit Test Coverage** | https://tests.bitbybit.dev/occt |
+| **Unit Test Coverage** | https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml |
 
 ### API reference
 

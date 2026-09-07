@@ -6,7 +6,7 @@ This guide covers unit testing best practices and conventions for the Bitbybit m
 
 For more information about our unit testing philosophy and live coverage reports, visit:
 - [Unit Testing Approach](https://learn.bitbybit.dev/learn/github/unit-tests) - Learn about our pragmatic approach to testing 3D algorithms
-- [Live Coverage Reports](https://learn.bitbybit.dev/learn/github/live-unit-test-coverage) - Explore real-time test coverage for all core packages
+- [The report every CI run publishes](https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml) - every suite's tests and coverage, and what each moved against its floor
 
 ## Tech Stack
 

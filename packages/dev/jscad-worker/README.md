@@ -42,7 +42,7 @@ Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/jscad-worker |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/intro |
 | **API Reference** | https://docs.bitbybit.dev/classes/Bit.JSCAD |
-| **Unit Test Coverage** | https://tests.bitbybit.dev/jscad |
+| **Unit Test Coverage** | https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml |
 
 ### API reference
 

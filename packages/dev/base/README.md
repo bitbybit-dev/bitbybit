@@ -44,7 +44,7 @@ This scaffolds a complete Vite + TypeScript project with all CAD kernels pre-con
 | **NPM** | https://www.npmjs.com/package/@bitbybit-dev/base |
 | **Documentation** | https://learn.bitbybit.dev/learn/npm-packages/intro |
 | **API Reference** | https://docs.bitbybit.dev/modules/Bit |
-| **Unit Test Coverage** | https://tests.bitbybit.dev/base |
+| **Unit Test Coverage** | https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml |
 
 ### API reference
 

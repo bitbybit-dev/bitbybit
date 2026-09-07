@@ -169,14 +169,14 @@ or when the worker's path set differs from the committed snapshot (those paths a
 saved scripts). A deliberate surface change is accepted with `--update`; a doc change is made on the
 kernel and regenerated into the worker (see `packages/dev/CLAUDE.md`).
 
-Every runner writes its results as JSON into a `test-results/` folder next to the code it tested
-(`test:coverage` in every package), and coverage leaves
-`coverage/coverage-summary.json` beside it. `npm run test:report` (`scripts/test-report.mjs`)
-collects them into one markdown report - files, tests, failures with their messages, skipped tests,
-the slowest files, coverage - printed to the terminal and, on GitHub Actions, written to the job
-summary. Every package with a `test` or `test:coverage` script must have left results; one that did not
-is listed and fails the step, so a suite that silently stopped running is noticed. Locally the report
-shows whatever the last runs wrote.
+Every runner writes its results as JSON into `test-results/` next to the code it tested
+(`test:coverage` in every package), and coverage leaves `coverage/coverage-summary.json` beside it.
+`npm run test:report` (`scripts/test-report.mjs`) collects them into one report - totals, a row per
+package, what each moved against the recorded floor, failures, skipped tests, the slowest files -
+printed to the terminal and, on Actions, written to the run's summary. That summary is the public
+coverage report the docs link to, so write it for someone who did not run it. Every package with a
+`test` or `test:coverage` script must have left results; one that did not is listed and fails the
+step, so a suite that silently stopped running is noticed.
 
 ## Docs
 

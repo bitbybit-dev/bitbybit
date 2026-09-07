@@ -36,7 +36,7 @@
         "gen:inputs": "node scripts/gen-inputs.mjs",
         "check:inputs": "node scripts/gen-inputs.mjs --check",
         "test": "npm run check:references && npm run check:exports && npm run check:inputs && npm run check:worker-api && npm run check:worker-parity && npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs && npm run test-playcanvas && npm run test-babylonjs && npm run test-occt-worker && npm run test-jscad-worker && npm run test-manifold-worker",
-        "test:report": "node scripts/test-report.mjs --expect \"packages/dev/*\"",
+        "test:report": "node scripts/test-report.mjs --expect \"packages/dev/*\" --baseline packages/dev/coverage-baseline.json --logo docs/static/img/logo-gold-small.png",
         "check:coverage-baseline": "node scripts/coverage-baseline.mjs",
         "coverage-baseline:save": "node scripts/coverage-baseline.mjs --save",
         "refresh-lockfile": "pnpm install --lockfile-only",

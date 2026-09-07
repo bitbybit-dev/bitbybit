@@ -60,7 +60,7 @@ Your subscription directly funds continued open-source development of these pack
 | 3D Bits for Shopify | https://learn.bitbybit.dev/learn/3d-bits/intro |
 | AI-Assisted Development | https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro |
 | Unit Testing Approach | https://learn.bitbybit.dev/learn/github/unit-tests |
-| Live Unit Test Coverage | https://learn.bitbybit.dev/learn/github/live-unit-test-coverage |
+| Live Unit Test Coverage | https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml |
 | Blog | https://learn.bitbybit.dev/blog |
 
 ## NPM Packages

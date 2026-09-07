@@ -1,6 +1,16 @@
 {
     "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers a ratio that sits above 50% even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
     "measured": "2026-09-07",
+    "history": [
+        {
+            "measured": "2026-09-07",
+            "tests": 3991,
+            "lines": 68.29,
+            "branches": 51.95,
+            "functions": 57.82,
+            "statements": 65.59
+        }
+    ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",

@@ -41,17 +41,15 @@ Here's an example of what one of our unit test files looks like:
 While our approach to testing is practical, we also believe in transparency. To that end, we've decided to share our unit test coverage report with the public. This report provides insights into the current state of our unit tests and the extent of code coverage achieved for the `@bitbybit-dev/occt` package.
 
 You can access the report here:
-*   **Coverage Report:** [tests.bitbybit.dev/occt](https://tests.bitbybit.dev/occt)
+*   **Coverage Report:** [the latest CI run](https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml)
 
-<iframe
-    src="https://tests.bitbybit.dev/occt"
-    width="100%"
-    height="600px"
-    frameBorder="0"
-    scrolling="yes"
-    title="Unit Test Coverage Report for @bitbybit-dev/occt"
-    allowfullscreen
-></iframe>
+:::note Updated since this post
+
+The separate coverage site this post embedded has been retired. The report now lives on the run that
+produces it, which covers every package rather than only `@bitbybit-dev/occt` and cannot go stale.
+See [Live Coverage Reports](/learn/github/live-unit-test-coverage).
+
+:::
 
 Although we have not yet achieved 100% coverage, we are steadily progressing towards that goal. Reaching 100% coverage is a significant milestone, but it's important to acknowledge that the journey of unit testing doesn't stop there. It's an ongoing process of refining, expanding, and improving test coverage to ensure the highest possible quality of the codebase for its users. Our continued progress towards this goal reflects our unwavering dedication to maintaining the integrity and reliability of our codebase, demonstrating our commitment to providing a robust platform experience.
 
@@ -72,8 +70,8 @@ We anticipate that this restructuring will lead to a reduction in the occurrence
 
 OCCT provides an exceptional geometry kernel, and we have ambitious plans to implement numerous new 3D algorithms within this open-source `@bitbybit-dev/occt` layer. Establishing a more robust and well-tested foundation is crucial for this future development.
 
-While OCCT forms the bedrock, we also have higher-level algorithms in other packages (like `@bitbybit-dev/core` and `@bitbybit-dev/occt-worker`) that warrant thorough testing. We will continue to write unit tests for these repositories and plan to share their coverage reports with the public in due course. You will be able to find these reports, alongside the OCCT one, on our dedicated testing site:
-*   **All Test Reports:** [tests.bitbybit.dev](https://tests.bitbybit.dev)
+While OCCT forms the bedrock, we also have higher-level algorithms in other packages (like `@bitbybit-dev/core` and `@bitbybit-dev/occt-worker`) that warrant thorough testing. We will continue to write unit tests for these repositories and plan to share their coverage reports with the public in due course. You will be able to find these reports, alongside the OCCT one, in one place:
+*   **All Test Reports:** [the latest CI run](https://github.com/bitbybit-dev/bitbybit/actions/workflows/verify.yml)
 
 Unit tests are a vital component of ensuring codebase quality, but they are not the only one. We have plans to implement additional quality assurance measures and processes in the future. Stay tuned for further updates on these initiatives.
 
