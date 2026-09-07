@@ -82,11 +82,13 @@ and that rule's auto-fix would delete it.
 Every package builds and typechecks under the whole strict set, and the flags live in one place:
 `tsconfig.base.cad.json`, which every package's `tsconfig.json` (the editor and test view) and
 `tsconfig.bitbybit.json` (the build) extends - the SDK and the scaffolder included, which state only
-their NodeNext module settings on top of it. `tsconfig.strict.json` is the typecheck-only view: the
-build config with nothing emitted, and with the build's references, because references are not
-inherited through `extends` and a view without them once followed a sibling's declarations into
-another package's source; `npm run typecheck:strict` runs it and must print nothing.
-`npm run check:strict-baselines` at the root, which CI runs, holds the line: no package has a
+their NodeNext settings on top. `tsconfig.strict.json` is the typecheck-only view: the build config
+with nothing emitted, and with the build's references, because references are not inherited through
+`extends` and a view without them once followed a sibling's declarations into another package's
+source. `npm run typecheck:strict` runs it and must print nothing; `npm run typecheck:tests` does
+the same over `tsconfig.json`, which keeps the tests and mocks - nothing else compiles those, the
+build configs excluding them and a runner not typechecking what it executes.
+`npm run check:strict-baselines`, which CI runs, holds the line: no package has a
 `.tsc-baseline.json` any more, so any strict error anywhere fails it. That ratchet - a typecheck-only
 overlay, per-package baselines shrunk to zero, each flag then moving into the shared base - is
 finished, the last move proved flag-neutral with `tsc --showConfig` before and after. Test support
@@ -98,11 +100,11 @@ ships no mocks. `packages/dev/CLAUDE.md` records the shape each kind of DTO prop
 `.github/workflows/verify.yml` proves the repository builds and tests from a bare clone with nothing
 above it, on every push to `develop` and every pull request into `develop` or `master`: one frozen
 install, `lint`, `check:references`, `rebuild-all-packages`, `npm test`, `check:strict-baselines`,
-the SDK's typecheck, tests with coverage and build, the scaffolder's build, `check:openapi` (the
-committed OpenAPI document's version equals the SDK's), `api:check`, `check:tarballs`, and last - on
-a red run too - `test:report`, which puts every suite's results on the run's summary page. It needs
-no secrets and must never gain any. `nightly.yml` runs the build and tests on every Node line the
-packages should keep working on, on a schedule and by hand. Neither publishes.
+`typecheck:tests`, the SDK's typecheck, tests with coverage and build, the scaffolder's build,
+`check:openapi`, `api:check`, `check:tarballs`, and last - on a red run too - `test:report`, which
+puts every suite's results on the run's summary page. It needs no secrets and must never gain any.
+`nightly.yml` runs the build and tests on every Node line the packages should keep working on, on a
+schedule and by hand. Neither publishes.
 
 `publish.yml` does, by hand-dispatch only, through npm trusted publishing: the job's OIDC token is
 exchanged for a short-lived publish token per package, so no npm token is stored anywhere and every
@@ -112,8 +114,7 @@ version carries a provenance attestation naming this repository - which is why e
 (`npm run publish:packages`) derives the tiers from the manifests, skips versions the registry has
 (a failed run is re-run, never repaired by hand) and waits for the registry to resolve a tier before
 its dependents publish. The default dispatch publishes under `next` as a rehearsal; a second with
-`latest` releases. Each package needs a trusted publisher configured on npmjs.com for this
-repository and `publish.yml`.
+`latest` releases. Each package needs a trusted publisher configured on npmjs.com.
 
 The OCCT kernels the `occt` package ships are not tracked: `packages/dev/occt/kernels.json` names
 the three content-hashed wasm files with their SHA-256 and the url each is published at, and
@@ -190,8 +191,7 @@ from `docs/static/llms.template.txt` by `docs/scripts/generate-llms.js` on every
 - `UNIT_TESTING_GUIDE.md` at the root is the testing standard for this repository.
 - Kernel-heavy suites need a raised heap; the package scripts already set
   `NODE_OPTIONS=--max-old-space-size=8192`. Keep that when adding one. They also run a process per
-  file (`pool: "forks"`): the kernel holds global state, and two suites sharing one process corrupt
-  each other.
+  file (`pool: "forks"`): the kernel holds global state and two suites sharing one corrupt each other.
 - Every package's tsconfigs extend `tsconfig.base.cad.json` and keep only what differs: outDir, paths
   into sibling dists, exclusions, and for the SDK and the scaffolder their NodeNext module settings.
   Change a flag for every package in the base; for one package in its leaf, and say so there, because

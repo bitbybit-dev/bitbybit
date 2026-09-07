@@ -75,6 +75,13 @@ jobs:
       - name: Strict baselines match the code
         run: npm run check:strict-baselines
 
+      # The same strict flags over the view that keeps the tests and mocks - the one an editor and a
+      # lint run resolve. Nothing else compiles them: the build configs exclude tests, so a change
+      # that broke a test's types stayed green through the build, the strict typecheck and the suite
+      # itself, because a runner does not typecheck what it executes.
+      - name: Tests and mocks typecheck
+        run: npm run typecheck:tests
+
       # The two packages outside the aggregate: the SDK's typecheck, tests with coverage and build,
       # and the scaffolder's build - their only gate used to be prepublishOnly at publish time.
       - name: cad-cloud-sdk

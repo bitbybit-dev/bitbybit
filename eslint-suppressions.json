@@ -1,9 +1,4 @@
 {
-  "packages/dev/babylonjs/lib/api/__mocks__/babylonjs.mock.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 14
-    }
-  },
   "packages/dev/babylonjs/lib/api/bitbybit/babylon/gaussian-splatting.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -342,11 +337,6 @@
   "packages/dev/occt/lib/services/shapes/edge.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
-    }
-  },
-  "packages/dev/playcanvas/lib/api/__mocks__/playcanvas.mock.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 24
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit/playcanvas.test.ts": {

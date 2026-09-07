@@ -16,6 +16,21 @@ import { Vector } from "@bitbybit-dev/base";
 
 import * as pc from "playcanvas";
 
+// A minimal JSCAD geometry. These suites mock the worker manager, so the draw path hands the entity
+// straight through and nothing reads it - but it should still be the shape the API says it is, and
+// `jscadSolid()`, which is what stood here, is not a JSCAD geometry at all.
+const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+];
+const jscadSolid = (color?: Inputs.JSCAD.JSCADColor): Inputs.JSCAD.JSCADGeom3 =>
+    color === undefined
+        ? { polygons: [], transforms: IDENTITY_TRANSFORM }
+        : { polygons: [], transforms: IDENTITY_TRANSFORM, color };
+
+
 describe("DrawHelper unit tests", () => {
     let drawHelper: DrawHelper;
     let mockContext: Context;
@@ -1134,7 +1149,7 @@ describe("DrawHelper unit tests", () => {
 
     describe("drawSolidOrPolygonMesh", () => {
         it("should draw JSCAD solid mesh", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 1,
@@ -1167,7 +1182,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle mesh with baked-in color", async () => {
-            const mockMesh = { type: "solid", color: [1, 0, 0, 1] };
+            const mockMesh = jscadSolid([1, 0, 0, 1]);
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 1,
@@ -1192,7 +1207,7 @@ describe("DrawHelper unit tests", () => {
                 transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
             });
 
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 1,
@@ -1214,7 +1229,7 @@ describe("DrawHelper unit tests", () => {
             const existingMesh = new pc.Entity();
             existingMesh.name = "existingJscadMesh";
 
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 0.5,
@@ -1232,7 +1247,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should use array first colour when colours is array", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 1,
@@ -1258,7 +1273,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should validate custom opacity on JSCAD mesh", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 0.4,
@@ -1288,7 +1303,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw JSCAD mesh with two-sided rendering enabled by default", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 1,
@@ -1322,7 +1337,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw JSCAD mesh without back face when drawTwoSided is false", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 1,
@@ -1342,7 +1357,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw JSCAD mesh with custom back face colour", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 1,
@@ -1369,7 +1384,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw JSCAD mesh with custom back face opacity", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
                 mockMesh,
                 1,
@@ -1403,7 +1418,7 @@ describe("DrawHelper unit tests", () => {
                 { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
-            const mockMeshes = [{ type: "solid" }, { type: "solid" }];
+            const mockMeshes = [jscadSolid(), jscadSolid()];
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<pc.Entity>(
                 mockMeshes,
                 1,
@@ -1441,7 +1456,7 @@ describe("DrawHelper unit tests", () => {
                 { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
-            const mockMeshes = [{ type: "solid" }, { type: "solid" }];
+            const mockMeshes = [jscadSolid(), jscadSolid()];
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<pc.Entity>(
                 mockMeshes,
                 1,
@@ -1464,7 +1479,7 @@ describe("DrawHelper unit tests", () => {
                 { positions: [1, 0, 0], normals: [0, 0, 1], indices: [0], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
-            const mockMeshes = [{ type: "solid" }, { type: "solid" }];
+            const mockMeshes = [jscadSolid(), jscadSolid()];
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<pc.Entity>(
                 mockMeshes,
                 1,
@@ -1499,7 +1514,7 @@ describe("DrawHelper unit tests", () => {
             const existingMesh = new pc.Entity();
             existingMesh.name = "existingMeshes";
 
-            const mockMeshes = [{ type: "solid" }];
+            const mockMeshes = [jscadSolid()];
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<pc.Entity>(
                 mockMeshes,
                 1,
@@ -2128,7 +2143,7 @@ describe("DrawHelper unit tests", () => {
                 .mockRejectedValue(mockError);
 
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>(
-                { type: "solid" },
+                jscadSolid(),
                 1,
                 "#ff0000",
                 false,
@@ -2170,7 +2185,7 @@ describe("DrawHelper unit tests", () => {
     describe("Worker validation", () => {
 
         it("should call JSCAD worker with correct parameters", async () => {
-            const mockMesh = { type: "solid", polygons: [] };
+            const mockMesh = jscadSolid();
 
             // Reset mock to track new calls
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockClear();

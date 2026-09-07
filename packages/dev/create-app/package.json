@@ -1,74 +1,75 @@
 {
-  "name": "@bitbybit-dev/create-app",
-  "version": "1.1.1",
-  "description": "CLI tool to scaffold Bit By Bit Developers 3D/CAD projects with your favorite game engine",
-  "type": "module",
-  "bin": {
-    "create-bitbybit-app": "./dist/index.js",
-    "@bitbybit-dev/create-app": "./dist/index.js"
-  },
-  "main": "./dist/index.js",
-  "files": [
-    "dist",
-    "templates"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
-    "directory": "packages/dev/create-app"
-  },
-  "keywords": [
-    "Bit By Bit Developers",
-    "bitbybit",
-    "bitbybit.dev",
-    "Geometry",
-    "CAD",
-    "3D",
-    "JSCAD",
-    "OCCT",
-    "OpenCascade",
-    "Creative coding",
-    "ThreeJS",
-    "Three.js",
-    "BabylonJS",
-    "Babylon.js",
-    "PlayCanvas",
-    "Vite",
-    "scaffolding",
-    "cli",
-    "create-app"
-  ],
-  "author": "Bit By Bit Developers (https://bitbybit.dev)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/bitbybit-dev/bitbybit/issues"
-  },
-  "homepage": "https://bitbybit.dev",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "smoke": "node scripts/smoke.mjs",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "chalk": "5.6.2",
-    "commander": "14.0.3",
-    "fs-extra": "11.3.5",
-    "gradient-string": "3.0.0",
-    "inquirer": "13.4.3",
-    "ora": "9.4.0"
-  },
-  "devDependencies": {
-    "@types/fs-extra": "11.0.4",
-    "@types/gradient-string": "1.1.6",
-    "@types/inquirer": "9.0.9",
-    "@types/node": "^22.10.2",
-    "typescript": "~5.8.3",
-    "vitest": "4.1.7"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+    "name": "@bitbybit-dev/create-app",
+    "version": "1.1.1",
+    "description": "CLI tool to scaffold Bit By Bit Developers 3D/CAD projects with your favorite game engine",
+    "type": "module",
+    "bin": {
+        "create-bitbybit-app": "./dist/index.js",
+        "@bitbybit-dev/create-app": "./dist/index.js"
+    },
+    "main": "./dist/index.js",
+    "files": [
+        "dist",
+        "templates"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+        "directory": "packages/dev/create-app"
+    },
+    "keywords": [
+        "Bit By Bit Developers",
+        "bitbybit",
+        "bitbybit.dev",
+        "Geometry",
+        "CAD",
+        "3D",
+        "JSCAD",
+        "OCCT",
+        "OpenCascade",
+        "Creative coding",
+        "ThreeJS",
+        "Three.js",
+        "BabylonJS",
+        "Babylon.js",
+        "PlayCanvas",
+        "Vite",
+        "scaffolding",
+        "cli",
+        "create-app"
+    ],
+    "author": "Bit By Bit Developers (https://bitbybit.dev)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/bitbybit-dev/bitbybit/issues"
+    },
+    "homepage": "https://bitbybit.dev",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "prepublishOnly": "npm run build",
+        "smoke": "node scripts/smoke.mjs",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "typecheck:tests": "tsc -p tsconfig.json --noEmit --pretty false"
+    },
+    "dependencies": {
+        "chalk": "5.6.2",
+        "commander": "14.0.3",
+        "fs-extra": "11.3.5",
+        "gradient-string": "3.0.0",
+        "inquirer": "13.4.3",
+        "ora": "9.4.0"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "11.0.4",
+        "@types/gradient-string": "1.1.6",
+        "@types/inquirer": "9.0.9",
+        "@types/node": "^22.10.2",
+        "typescript": "~5.8.3",
+        "vitest": "4.1.7"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
 }

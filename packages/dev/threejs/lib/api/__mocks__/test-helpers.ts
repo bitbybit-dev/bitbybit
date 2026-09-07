@@ -11,6 +11,7 @@ import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Vector } from "@bitbybit-dev/base";
+import * as Inputs from "../inputs";
 
 /**
  * Creates a basic mock context with scene
@@ -161,10 +162,18 @@ export function getMaterialFromMesh(mesh: THREEJS.Mesh | THREEJS.LineSegments | 
 /**
  * Creates mock JSCAD mesh data for testing
  */
-export function createMockJSCADMesh(overrides = {}) {
+export function createMockJSCADMesh(overrides: Partial<Inputs.JSCAD.JSCADGeom3> = {}): Inputs.JSCAD.JSCADGeom3 {
+    // A minimal JSCAD solid. These suites mock the worker manager, so nothing reads the geometry -
+    // but it should be the shape the API says it is. What stood here was `{ type: "occ-shape" }`,
+    // which is an OCCT pointer's shape, not a JSCAD one.
     return {
-        type: "occ-shape" as const,
         polygons: [],
+        transforms: [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        ],
         ...overrides
     };
 }

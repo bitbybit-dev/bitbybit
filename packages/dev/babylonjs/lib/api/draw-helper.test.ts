@@ -15,6 +15,29 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Vector } from "@bitbybit-dev/base";
 import * as BABYLON from "@babylonjs/core";
 
+// A minimal JSCAD solid. These suites mock the worker manager, so the draw path hands the entity
+// straight through and nothing reads it - but it should still be the shape the API says it is, and
+// `jscadSolid()`, which is what stood here, is not a JSCAD geometry at all.
+const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+];
+const jscadSolid = (color?: Inputs.JSCAD.JSCADColor): Inputs.JSCAD.JSCADGeom3 =>
+    color === undefined
+        ? { polygons: [], transforms: IDENTITY_TRANSFORM }
+        : { polygons: [], transforms: IDENTITY_TRANSFORM, color };
+const jscadPath = (
+    points: Inputs.JSCAD.JSCADVec2[],
+    isClosed: boolean,
+    color?: Inputs.JSCAD.JSCADColor,
+): Inputs.JSCAD.JSCADPath2 =>
+    color === undefined
+        ? { points, isClosed, transforms: IDENTITY_TRANSFORM }
+        : { points, isClosed, transforms: IDENTITY_TRANSFORM, color };
+
+
 describe("DrawHelper unit tests", () => {
     let drawHelper: DrawHelper;
     let mockContext: Context;
@@ -1285,7 +1308,7 @@ describe("DrawHelper unit tests", () => {
 
     describe("drawSolidOrPolygonMesh", () => {
         it("should draw JSCAD solid mesh", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1304,7 +1327,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle mesh with baked-in color", async () => {
-            const mockMesh = { type: "solid", color: [1, 0, 0, 1] };
+            const mockMesh = jscadSolid([1, 0, 0, 1]);
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1322,7 +1345,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle hidden mesh", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1340,7 +1363,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should update existing mesh when updatable is true", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const initialInputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1368,7 +1391,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should use array first colour when colours is array", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1386,7 +1409,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw JSCAD mesh with two-sided rendering enabled by default", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1404,7 +1427,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw JSCAD mesh without back face when drawTwoSided is false", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1423,7 +1446,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw JSCAD mesh with custom back face colour", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1442,7 +1465,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should draw JSCAD mesh with custom back face opacity", async () => {
-            const mockMesh = { type: "solid" };
+            const mockMesh = jscadSolid();
             const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 mockMesh,
                 1,
@@ -1469,7 +1492,7 @@ describe("DrawHelper unit tests", () => {
                 { positions: [1, 0, 0, 2, 0, 0, 1, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
-            const mockMeshes = [{ type: "solid" }, { type: "solid" }];
+            const mockMeshes = [jscadSolid(), jscadSolid()];
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<BABYLON.Mesh>(
                 mockMeshes,
                 1,
@@ -1493,7 +1516,7 @@ describe("DrawHelper unit tests", () => {
                 { positions: [1, 0, 0, 2, 0, 0, 1, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
-            const mockMeshes = [{ type: "solid" }, { type: "solid" }];
+            const mockMeshes = [jscadSolid(), jscadSolid()];
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<BABYLON.Mesh>(
                 mockMeshes,
                 1,
@@ -1516,7 +1539,7 @@ describe("DrawHelper unit tests", () => {
                 { positions: [1, 0, 0, 2, 0, 0, 1, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
-            const mockMeshes = [{ type: "solid" }, { type: "solid" }];
+            const mockMeshes = [jscadSolid(), jscadSolid()];
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<BABYLON.Mesh>(
                 mockMeshes,
                 1,
@@ -1538,7 +1561,7 @@ describe("DrawHelper unit tests", () => {
                 { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }
             ]);
 
-            const mockMeshes = [{ type: "solid" }];
+            const mockMeshes = [jscadSolid()];
             const initialInputs = new Inputs.JSCAD.DrawSolidMeshesDto<BABYLON.Mesh>(
                 mockMeshes,
                 1,
@@ -1963,10 +1986,7 @@ describe("DrawHelper unit tests", () => {
 
     describe("drawPath (JSCAD)", () => {
         it("should draw JSCAD path", async () => {
-            const mockPath = {
-                points: [[0, 0], [1, 0], [1, 1], [0, 1]],
-                isClosed: false
-            };
+            const mockPath = jscadPath([[0, 0], [1, 0], [1, 1], [0, 1]], false);
             const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
                 mockPath,
                 "#ff0000", // colour
@@ -1982,10 +2002,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should close JSCAD path when isClosed is true", async () => {
-            const mockPath = {
-                points: [[0, 0], [1, 0], [1, 1]],
-                isClosed: true
-            };
+            const mockPath = jscadPath([[0, 0], [1, 0], [1, 1]], true);
             const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
                 mockPath,
                 "#00ff00", // colour
@@ -2001,11 +2018,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should use baked color from path if available", async () => {
-            const mockPath = {
-                points: [[0, 0], [1, 0]],
-                isClosed: false,
-                color: [1, 0, 0, 1] // Red
-            };
+            const mockPath = jscadPath([[0, 0], [1, 0]], false, [1, 0, 0, 1]);
             const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
                 mockPath,
                 "#0000ff", // colour - Blue, should be overridden by baked color
@@ -2198,7 +2211,7 @@ describe("DrawHelper unit tests", () => {
 
     describe("Worker validation", () => {
         it("should call JSCAD worker with correct parameters", async () => {
-            const mockMesh = { type: "solid", polygons: [] };
+            const mockMesh = jscadSolid();
 
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockClear();
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
@@ -2288,7 +2301,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs1 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
-                { type: "solid" },
+                jscadSolid(),
                 1,
                 "#ff0000",
                 false,
@@ -2297,7 +2310,7 @@ describe("DrawHelper unit tests", () => {
                 false
             );
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
-                { type: "solid" },
+                jscadSolid(),
                 1,
                 "#ff0000", // Same color
                 false,
@@ -2325,7 +2338,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs1 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
-                { type: "solid" },
+                jscadSolid(),
                 1,
                 "#ff0000",
                 false,
@@ -2334,7 +2347,7 @@ describe("DrawHelper unit tests", () => {
                 false
             );
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
-                { type: "solid" },
+                jscadSolid(),
                 1,
                 "#00ff00", // Different color
                 false,
@@ -2359,7 +2372,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs1 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
-                { type: "solid" },
+                jscadSolid(),
                 1.0,
                 "#ff0000",
                 false,
@@ -2368,7 +2381,7 @@ describe("DrawHelper unit tests", () => {
                 false
             );
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
-                { type: "solid" },
+                jscadSolid(),
                 0.5, // Different opacity
                 "#ff0000",
                 false,
@@ -2399,7 +2412,7 @@ describe("DrawHelper unit tests", () => {
             for (let i = 0; i < TEST_MATERIALS_COUNT; i++) {
                 const colorHex = `#${i.toString(16).padStart(6, "0")}`;
                 const inputs = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
-                    { type: "solid" },
+                    jscadSolid(),
                     1,
                     colorHex,
                     false,
