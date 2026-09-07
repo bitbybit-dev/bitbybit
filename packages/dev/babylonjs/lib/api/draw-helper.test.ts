@@ -2737,16 +2737,11 @@ describe("DrawHelper unit tests", () => {
                 false
             );
 
-            const startTime = performance.now();
             const result = drawHelper.drawPoints(inputs);
-            const endTime = performance.now();
 
-            expect(result).toBeDefined();
-            // With thin instances, all 100 points with same color are in 1 child mesh
-            expect(result.getChildMeshes().length).toBe(1);
-
-            const executionTime = endTime - startTime;
-            expect(executionTime).toBeLessThan(500);
+            // One child mesh, not one per point: the 100 points share a colour, so they are thin
+            // instances of a single mesh. A wall clock cannot tell those two apart; this can.
+            expect(result.getChildMeshes()).toHaveLength(1);
         });
 
         it("should draw 1000 points with optimized LOD in reasonable time", () => {
@@ -2763,16 +2758,11 @@ describe("DrawHelper unit tests", () => {
                 false
             );
 
-            const startTime = performance.now();
             const result = drawHelper.drawPoints(inputs);
-            const endTime = performance.now();
 
-            expect(result).toBeDefined();
-            // With thin instances, all 1000 points with same color are in 1 child mesh
-            expect(result.getChildMeshes().length).toBe(1);
-
-            const executionTime = endTime - startTime;
-            expect(executionTime).toBeLessThan(2000);
+            // Still one child mesh at a thousand points - the instancing does not fall back to a
+            // mesh per point as the count grows.
+            expect(result.getChildMeshes()).toHaveLength(1);
         });
 
         it("should handle rapid updates without performance degradation", () => {
@@ -2784,29 +2774,29 @@ describe("DrawHelper unit tests", () => {
                 true
             );
 
-            let result = drawHelper.drawPoint(options);
-            const times: number[] = [];
+            const first = drawHelper.drawPoint(options);
+            const scene = mockContext.scene as unknown as MockScene;
+            const meshesAfterFirstDraw = scene._meshes.length;
+            let result = first;
 
+            // Act
             for (let i = 0; i < 50; i++) {
-                const startTime = performance.now();
                 options.point = [i, i * 2, i * 3];
                 options.pointMesh = result;
                 result = drawHelper.drawPoint(options);
-                const endTime = performance.now();
-                times.push(endTime - startTime);
             }
 
-            const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
-            const lastFiveAvg = times.slice(-5).reduce((a, b) => a + b, 0) / 5;
-
-            expect(lastFiveAvg).toBeLessThan(avgTime * 2);
+            // What "without degradation" means here is that an update moves the mesh it was given
+            // rather than building another one. Timing it measured the machine, not the code.
+            expect(result).toBe(first);
+            expect(scene._meshes).toHaveLength(meshesAfterFirstDraw);
         });
 
         it("should efficiently cache materials across multiple draws", () => {
             const color = "#ff0000";
             const drawCount = 50;
 
-            const startTime = performance.now();
+            const materials = new Set<unknown>();
             for (let i = 0; i < drawCount; i++) {
                 const inputs = new Inputs.Point.DrawPointDto<BABYLON.Mesh>(
                     [i, 0, 0],
@@ -2815,12 +2805,13 @@ describe("DrawHelper unit tests", () => {
                     color,
                     false
                 );
-                drawHelper.drawPoint(inputs);
+                const mesh = drawHelper.drawPoint(inputs);
+                mesh.getChildMeshes().forEach((child) => materials.add(child.material));
             }
-            const endTime = performance.now();
 
-            const executionTime = endTime - startTime;
-            expect(executionTime).toBeLessThan(200);
+            // Fifty draws of one colour share one material. That is what the cache is for, and it
+            // is a fact about the code rather than about how fast this machine happened to run.
+            expect(materials.size).toBe(1);
         });
     });
 

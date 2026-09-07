@@ -26,6 +26,9 @@ const HOUSE_STYLE = {
 const UNDERSCORE_TOLERANT_UNUSED_VARS = ["error", {
     argsIgnorePattern: "^_",
     varsIgnorePattern: "^_",
+    // Caught errors default to "all", and without this the underscore convention stops at the catch
+    // clause: a swallowed error could only satisfy the rule by losing its name entirely.
+    caughtErrorsIgnorePattern: "^_",
     ignoreRestSiblings: true,
 }];
 

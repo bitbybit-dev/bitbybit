@@ -20,7 +20,7 @@ export class BabylonGaussianSplatting {
         if (inputs.url) {
             const gs = BABYLON.SceneLoader.ImportMeshAsync(null, inputs.url, undefined, this.context.scene, undefined, ".ply").then((result) => {
                 const gaussianSplattingMesh = result.meshes[0] as BABYLON.GaussianSplattingMesh;
-                gaussianSplattingMesh.name = uniqueName("gaussian-splatting-");
+                gaussianSplattingMesh.name = uniqueName("gaussian-splatting");
                 this.enableShadows(gaussianSplattingMesh);
                 return gaussianSplattingMesh;
             });
@@ -39,7 +39,7 @@ export class BabylonGaussianSplatting {
      * @disposableOutput true
      */
     clone(inputs: Inputs.BabylonGaussianSplatting.GaussianSplattingMeshDto): BABYLON.GaussianSplattingMeshBase {
-        return inputs.babylonMesh.clone(uniqueName("gaussian-splatting-"));
+        return inputs.babylonMesh.clone(uniqueName("gaussian-splatting"));
     }
 
     /**

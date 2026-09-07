@@ -410,9 +410,20 @@ describe("DrawHelper unit tests", () => {
                 2
             );
 
+            const setColors32 = vi.spyOn(pc.Mesh.prototype, "setColors32");
+
             const result = drawHelper.drawPolylinesWithColours(inputs);
+
+            // The first polyline carries its own colour; the second carries none and keeps the
+            // shared one. Colours are per vertex, as RGBA bytes.
             expect(result.children.length).toBe(1);
-            expect(result).toBeDefined();
+            const vertexColours = setColors32.mock.calls[0]![0] as number[];
+            const asRgb = [];
+            for (let i = 0; i < vertexColours.length; i += 4) {
+                asRgb.push([vertexColours[i], vertexColours[i + 1], vertexColours[i + 2]]);
+            }
+            expect(asRgb).toEqual([[255, 0, 0], [255, 0, 0], [0, 255, 0], [0, 255, 0]]);
+            setColors32.mockRestore();
         });
 
         it("should handle closed polylines", () => {
@@ -2867,17 +2878,11 @@ describe("DrawHelper unit tests", () => {
                 1, 1, "#ff0000", false
             );
 
-            const startTime = performance.now();
             const result = drawHelper.drawPoints(inputs);
-            const endTime = performance.now();
 
-            expect(result).toBeDefined();
-            // With GPU instancing: same color for all points = 1 child entity
-            expect(result.children.length).toBe(1);
-
-            const executionTime = endTime - startTime;
-            // Should complete in under 500ms for 100 points
-            expect(executionTime).toBeLessThan(500);
+            // One child entity, not one per point: the 100 points share a colour, so they are GPU
+            // instances of a single entity. A wall clock cannot tell those two apart; this can.
+            expect(result.children).toHaveLength(1);
         });
 
         it("should draw 1000 points with optimized LOD in reasonable time", () => {
@@ -2891,17 +2896,11 @@ describe("DrawHelper unit tests", () => {
                 1, 1, "#ff0000", false
             );
 
-            const startTime = performance.now();
             const result = drawHelper.drawPoints(inputs);
-            const endTime = performance.now();
 
-            expect(result).toBeDefined();
-            // With GPU instancing: same color for all points = 1 child entity
-            expect(result.children.length).toBe(1);
-
-            const executionTime = endTime - startTime;
-            // Large dataset should still complete in reasonable time (< 2s)
-            expect(executionTime).toBeLessThan(2000);
+            // Still one child entity at a thousand points - the instancing does not fall back to an
+            // entity per point as the count grows.
+            expect(result.children).toHaveLength(1);
         });
 
         it("should handle rapid updates without performance degradation", () => {
@@ -2910,45 +2909,41 @@ describe("DrawHelper unit tests", () => {
                 1, 1, "#ff0000", true
             );
 
-            let result = drawHelper.drawPoint(options);
-            const times: number[] = [];
+            const first = drawHelper.drawPoint(options);
+            let result = first;
 
-            // Perform 50 rapid updates
+            // Act
             for (let i = 0; i < 50; i++) {
-                const startTime = performance.now();
                 options.point = [i, i * 2, i * 3];
                 options.pointMesh = result;
                 result = drawHelper.drawPoint(options);
-                const endTime = performance.now();
-                times.push(endTime - startTime);
             }
 
-            // Average update time should be consistent (no memory leak slowdown)
-            const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
-            const lastFiveAvg = times.slice(-5).reduce((a, b) => a + b, 0) / 5;
-
-            // Last 5 updates shouldn't be significantly slower than average
-            expect(lastFiveAvg).toBeLessThan(avgTime * 2);
+            // What "without degradation" means here is that an update moves the entity it was given
+            // rather than building another one. Timing it measured the machine, not the code.
+            expect(result).toBe(first);
+            expect(first.children).toHaveLength(1);
         });
 
         it("should efficiently cache materials across multiple draws", () => {
             const color = "#ff0000";
             const drawCount = 50;
 
-            const startTime = performance.now();
+            const materials = new Set<unknown>();
             for (let i = 0; i < drawCount; i++) {
                 const inputs = new Inputs.Point.DrawPointDto<pc.Entity>(
                     [i, 0, 0],
                     1, 1, color, false
                 );
-                drawHelper.drawPoint(inputs);
+                const entity = drawHelper.drawPoint(inputs);
+                entity.children.forEach((child) => {
+                    (child as pc.Entity).render?.meshInstances.forEach((mi) => materials.add(mi.material));
+                });
             }
-            const endTime = performance.now();
 
-            const executionTime = endTime - startTime;
-            // With caching, should be much faster than without
-            // Should complete in under 200ms for 50 points with same material
-            expect(executionTime).toBeLessThan(200);
+            // Fifty draws of one colour share one material. That is what the cache is for, and it
+            // is a fact about the code rather than about how fast this machine happened to run.
+            expect(materials.size).toBe(1);
         });
     });
 });

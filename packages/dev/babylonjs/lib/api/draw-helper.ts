@@ -401,10 +401,10 @@ export class DrawHelper extends DrawHelperCore {
 
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh> & { arrowSize?: number, arrowAngle?: number }): BABYLON.GreasedLineMesh {
         // handle jscad isClosed case
-        const points = inputs.polyline.points;
-        if (inputs.polyline.isClosed) {
-            points.push(points[0]!);
-        }
+        // A copy, not a push: appending here grew the caller's own array on every redraw.
+        const points = inputs.polyline.isClosed
+            ? [...inputs.polyline.points, inputs.polyline.points[0]!]
+            : inputs.polyline.points;
         return this.drawPolyline(
             inputs.polylineMesh,
             points,
@@ -598,11 +598,10 @@ export class DrawHelper extends DrawHelperCore {
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
         const points = inputs.polylines.map((s, index) => {
-            const pts = s.points;
-            //handle jscad
-            if (s.isClosed) {
-                pts.push(pts[0]!);
-            }
+            // Closing copies rather than appending to the caller's array: a configurator that holds
+            // its polylines and redraws them grew one duplicate point per redraw, which also defeated
+            // the update fast-path below, since a point count that changes every call never matches.
+            const pts = s.isClosed ? [...s.points, s.points[0]!] : s.points;
             // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
             if (s.color) {
                 if (!Array.isArray(colours)) {

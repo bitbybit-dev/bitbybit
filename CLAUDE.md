@@ -174,7 +174,7 @@ Every runner writes its results as JSON into a `test-results/` folder next to th
 `coverage/coverage-summary.json` beside it. `npm run test:report` (`scripts/test-report.mjs`)
 collects them into one markdown report - files, tests, failures with their messages, skipped tests,
 the slowest files, coverage - printed to the terminal and, on GitHub Actions, written to the job
-summary. Every package with a `test` or `test-c` script must have left results; one that did not
+summary. Every package with a `test` or `test:coverage` script must have left results; one that did not
 is listed and fails the step, so a suite that silently stopped running is noticed. Locally the report
 shows whatever the last runs wrote.
 

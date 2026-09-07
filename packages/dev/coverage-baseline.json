@@ -4,12 +4,12 @@
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 449,
+            "tests": 453,
             "suites": 7,
-            "lines": 35.15,
+            "lines": 35.11,
             "branches": 26.64,
-            "functions": 25.35,
-            "statements": 30.99
+            "functions": 25.42,
+            "statements": 30.96
         },
         "base": {
             "runner": "vitest",
@@ -47,10 +47,10 @@
             "runner": "vitest",
             "tests": 47,
             "suites": 9,
-            "lines": 46.22,
-            "branches": 22.77,
-            "functions": 48.67,
-            "statements": 42.65
+            "lines": 45.95,
+            "branches": 22.66,
+            "functions": 49.45,
+            "statements": 42.52
         },
         "jscad-worker": {
             "runner": "vitest",
@@ -65,10 +65,10 @@
             "runner": "vitest",
             "tests": 39,
             "suites": 7,
-            "lines": 37.6,
-            "branches": 13.69,
-            "functions": 43.36,
-            "statements": 35.56
+            "lines": 37.06,
+            "branches": 13.51,
+            "functions": 43.11,
+            "statements": 35.13
         },
         "manifold-worker": {
             "runner": "vitest",
@@ -101,19 +101,19 @@
             "runner": "vitest",
             "tests": 461,
             "suites": 9,
-            "lines": 83.5,
-            "branches": 74.34,
-            "functions": 82.89,
-            "statements": 83.02
+            "lines": 83.55,
+            "branches": 74.41,
+            "functions": 83.02,
+            "statements": 83.09
         },
         "threejs": {
             "runner": "vitest",
             "tests": 353,
             "suites": 8,
-            "lines": 82.49,
-            "branches": 77.24,
-            "functions": 82.77,
-            "statements": 82.83
+            "lines": 82.46,
+            "branches": 77.18,
+            "functions": 82.84,
+            "statements": 82.8
         }
     }
 }

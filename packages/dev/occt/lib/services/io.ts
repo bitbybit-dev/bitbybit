@@ -50,7 +50,7 @@ export class OCCTIO {
                 this.occ.STEPControl_StepModelType.AsIs
             );
         } catch (ex) {
-            throw (new Error("Failed when calling writer.Transfer."), { cause: ex });
+            throw new Error("Failed when calling writer.Transfer.", { cause: ex });
         }
         let result: string;
         if (transferResult === this.occ.IFSelect_ReturnStatus.RetDone) {

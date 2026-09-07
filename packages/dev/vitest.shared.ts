@@ -63,9 +63,16 @@ export const packageSuite = (options: SuiteOptions) => defineConfig({
         coverage: {
             provider: "v8",
             include: options.coverage,
-            // The inputs fragments are the authoring form of an assembled namespace that is itself
-            // in the denominator, so counting them too would measure the same DTOs twice.
-            exclude: ["**/*.test.ts", "**/__mocks__/**", ...targets.map((t) => `**/${t.dir.split("/").slice(3).join("/")}/**`)],
+            // Naming an exclude replaces vitest's defaults, so everything that is not product code is
+            // spelled out. __test__ holds the kernel boot helpers the suites share; the inputs
+            // fragments are the authoring form of an assembled namespace that is already in the
+            // denominator, so counting them too would measure the same DTOs twice.
+            exclude: [
+                "**/*.test.ts",
+                "**/__mocks__/**",
+                "**/__test__/**",
+                ...targets.map((t) => `**/${t.dir.split("/").slice(3).join("/")}/**`),
+            ],
             reporter: ["text", "lcov", "json-summary"],
             reportsDirectory: "coverage",
         },

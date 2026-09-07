@@ -433,15 +433,15 @@ describe("Draw unit tests", () => {
             const res = draw.drawAny({ entity: [{ points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, { points: [[3, -3, 3], [4, -4, 5], [4, 6, 5]] }], options }) as THREE.Group;
             const res2 = draw.drawAny({ entity: [{ points: [[2, -4, 5], [1, -2, 3], [4, 6, 7], [3, 4, 6]] }, { points: [[9, -4, 2], [3, -3, 5], [6, 4, 3]] }], options, group: res }) as THREE.Group;
 
+            // An update keeps the group the caller passed in and replaces the segments inside it.
+            // Returning a second group instead left the first one in the scene on every redraw whose
+            // point counts changed.
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
-            expect(res.name).not.toEqual(res2.name);
+            expect(res2).toBe(res);
+            expect(res.children).toHaveLength(1);
 
-            const lineSegments1 = res.children[0]! as LineSegments;
-            const lineSegments2 = res2.children[0]! as LineSegments;
-
-            expect(lineSegments1.name).not.toEqual(lineSegments2.name);
-            expect(lineSegments1.geometry.attributes["position"]!.array.toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5,3,-3,3,4,-4,5,4,-4,5,4,6,5");
-            expect(lineSegments2.geometry.attributes["position"]!.array.toString()).toEqual("2,-4,5,1,-2,3,1,-2,3,4,6,7,4,6,7,3,4,6,9,-4,2,3,-3,5,3,-3,5,6,4,3");
+            const lineSegments = res2.children[0]! as LineSegments;
+            expect(lineSegments.geometry.attributes["position"]!.array.toString()).toEqual("2,-4,5,1,-2,3,1,-2,3,4,6,7,4,6,7,3,4,6,9,-4,2,3,-3,5,3,-3,5,6,4,3");
         });
     });
 

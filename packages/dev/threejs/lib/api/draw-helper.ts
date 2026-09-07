@@ -250,11 +250,10 @@ export class DrawHelper extends DrawHelperCore {
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
 
         const points = inputs.polylines.map((s, index) => {
-            const pts = s.points;
-            //handle jscad
-            if (s.isClosed) {
-                pts.push(pts[0]!);
-            }
+            // Closing copies rather than appending to the caller's array: a configurator that holds
+            // its polylines and redraws them grew one duplicate point per redraw, which also defeated
+            // the update fast-path below, since a point count that changes every call never matches.
+            const pts = s.isClosed ? [...s.points, s.points[0]!] : s.points;
             // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
             if (s.color) {
                 if (!Array.isArray(colours)) {
@@ -290,14 +289,20 @@ export class DrawHelper extends DrawHelperCore {
         );
         if (inputs.polylinesMesh && inputs.updatable) {
             if (inputs.polylinesMesh.children[0]!.name !== polylines!.name) {
-                const group = new THREEJS.Group();
-                group.name = this.generateEntityId("polylines");
-                group.add(polylines!);
-                this.context.scene.add(group);
-                return group;
-            } else {
-                return inputs.polylinesMesh;
+                // The line segments were rebuilt, so the group's contents are replaced rather than a
+                // second group being added beside it: building a new one left the caller's group in
+                // the scene on every redraw whose point counts changed. Clearing alone would detach
+                // the old segments without freeing what they hold on the GPU.
+                inputs.polylinesMesh.children.forEach(child => {
+                    if (child instanceof THREEJS.LineSegments) {
+                        child.geometry.dispose();
+                        (child.material as THREEJS.Material).dispose();
+                    }
+                });
+                inputs.polylinesMesh.clear();
+                inputs.polylinesMesh.add(polylines!);
             }
+            return inputs.polylinesMesh;
         } else {
             const group = new THREEJS.Group();
             group.name = this.generateEntityId("polylines");
@@ -322,10 +327,10 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<THREEJS.Group> & { arrowSize?: number, arrowAngle?: number }): THREEJS.Group {
-        const points = inputs.polyline.points;
-        if (inputs.polyline.isClosed) {
-            points.push(points[0]!);
-        }
+        // A copy, not a push: appending here grew the caller's own array on every redraw.
+        const points = inputs.polyline.isClosed
+            ? [...inputs.polyline.points, inputs.polyline.points[0]!]
+            : inputs.polyline.points;
         return this.drawPolyline(
             inputs.polylineMesh,
             points,

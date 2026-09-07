@@ -37,7 +37,7 @@ const testCounts = (dir) => {
     for (const { n } of candidates) {
         const j = readJson(join(d, n));
         if (j && typeof j.numTotalTests === "number") {
-            return { runner: n.replace(/\.json$/, ""), tests: j.numTotalTests, suites: (j.testResults || []).length };
+            return { runner: n.replace(/\.json$/, ""), tests: j.numTotalTests, suites: (j.testResults || []).length, at: statSync(join(d, n)).mtimeMs };
         }
     }
     return null;
@@ -48,24 +48,41 @@ const measure = () => {
     for (const name of readdirSync(DEV).sort()) {
         const dir = join(DEV, name);
         if (!existsSync(join(dir, "package.json"))) continue;
-        const summary = readJson(join(dir, "coverage", "coverage-summary.json"));
+        const summaryPath = join(dir, "coverage", "coverage-summary.json");
+        const summary = readJson(summaryPath);
         const counts = testCounts(dir);
         if (!summary && !counts) continue;
         const entry = {};
         if (counts) Object.assign(entry, counts);
         if (summary?.total) for (const c of COLUMNS) entry[c] = summary.total[c].pct;
+        // Kept out of the record; only the comparison uses them, to tell a coverage report written
+        // by this run from one left behind by an earlier one.
+        entry.at = counts?.at;
+        entry.coverageAt = summary ? statSync(summaryPath).mtimeMs : undefined;
         out[name] = entry;
     }
     return out;
 };
 
 const current = measure();
+const RECORDED = new Set(["runner", "tests", "suites", ...COLUMNS]);
+const forRecord = (entry) => Object.fromEntries(Object.entries(entry).filter(([k, v]) => RECORDED.has(k) && v !== undefined));
 
 if (save) {
+    // A floor may not shrink by omission. A partial run - one suite crashed, or only one package was
+    // run - measures fewer packages than the baseline holds, and writing that would drop the missing
+    // ones out of the gate silently and for good.
+    const previous = readJson(BASELINE);
+    const dropped = previous ? Object.keys(previous.packages).filter((name) => !current[name]) : [];
+    if (dropped.length) {
+        console.error(`refusing to record a baseline that drops ${dropped.join(", ")}: no results for ${dropped.length === 1 ? "it" : "them"} in this run.`);
+        console.error("Run the full suite first. A package that should genuinely leave the floor is removed from coverage-baseline.json by hand, with the reason.");
+        process.exit(1);
+    }
     writeFileSync(BASELINE, JSON.stringify({
         note: "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers a ratio that sits above 50% even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
         measured: new Date().toISOString().slice(0, 10),
-        packages: current,
+        packages: Object.fromEntries(Object.entries(current).map(([name, entry]) => [name, forRecord(entry)])),
     }, null, 4) + "\n");
     console.log(`recorded ${Object.keys(current).length} packages`);
     process.exit(0);
@@ -79,6 +96,13 @@ const rows = [];
 for (const [name, was] of Object.entries(baseline.packages)) {
     const now = current[name];
     if (!now) { problems.push(`${name}: left no results at all`); continue; }
+    // A coverage report much older than the run that sits beside it is the previous run's, and its
+    // numbers say nothing about this one.
+    const STALE_AFTER_MS = 15 * 60 * 1000;
+    if (now.at && now.coverageAt && now.at - now.coverageAt > STALE_AFTER_MS) {
+        problems.push(`${name}: the coverage report predates this run's results by more than 15 minutes - rerun its suite with coverage`);
+        continue;
+    }
     if (was.tests !== undefined && now.tests !== undefined && now.tests < was.tests) {
         problems.push(`${name}: ${was.tests} tests before, ${now.tests} now`);
     }
