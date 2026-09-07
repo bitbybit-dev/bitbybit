@@ -28,6 +28,12 @@ const jscadSolid = (color?: Inputs.JSCAD.JSCADColor): Inputs.JSCAD.JSCADGeom3 =>
     color === undefined
         ? { polygons: [], transforms: IDENTITY_TRANSFORM }
         : { polygons: [], transforms: IDENTITY_TRANSFORM, color };
+
+// A real OCCT shape pointer. These suites mock the worker the pointer is sent to, so nothing
+// dereferences it - but a pointer is `{ hash: number, type: "occ-shape" }`, and what stood here had
+// a string hash and a `type` naming the shape kind, which is not what the kernel hands back.
+let nextShapeHash = 1;
+const occtShape = (): Inputs.OCCT.TopoDSShapePointer => ({ hash: nextShapeHash++, type: "occ-shape" });
 const jscadPath = (
     points: Inputs.JSCAD.JSCADVec2[],
     isClosed: boolean,
@@ -1601,7 +1607,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawVertices = false;
@@ -1626,7 +1632,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "edge" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.drawVertices = false;
@@ -1649,7 +1655,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "vertex" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = false;
             inputs.drawVertices = true;
@@ -1674,7 +1680,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawVertices = false;
@@ -1700,7 +1706,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawVertices = false;
@@ -1726,7 +1732,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawVertices = false;
@@ -1751,7 +1757,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawVertices = false;
@@ -1777,9 +1783,9 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.OCCT.DrawShapesDto();
             inputs.shapes = [
-                { hash: "abc123", type: "solid" },
-                { hash: "def456", type: "solid" }
-            ] as any[];
+                occtShape(),
+                occtShape()
+            ];
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.faceColour = "#ff0000";
@@ -1807,7 +1813,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" } as any;
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = false;
@@ -1827,7 +1833,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" } as any;
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.drawTwoSided = false;
 
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
@@ -1841,7 +1847,7 @@ describe("DrawHelper unit tests", () => {
             ]);
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "crossSection" } as any;
+            inputs.manifoldOrCrossSection = { hash: 123, type: "crossSection" };
             inputs.crossSectionColour = "#00ff00";
             inputs.crossSectionOpacity = 1;
             inputs.crossSectionWidth = 2;
@@ -1861,7 +1867,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" } as any;
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             // drawTwoSided defaults to true
@@ -1882,7 +1888,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" } as any;
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = false;
@@ -1903,7 +1909,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" } as any;
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = true;
@@ -1923,7 +1929,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" } as any;
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = true;
@@ -1948,7 +1954,7 @@ describe("DrawHelper unit tests", () => {
             inputs.manifoldsOrCrossSections = [
                 { hash: 123, type: "manifold" },
                 { hash: 456, type: "manifold" }
-            ] as any[];
+            ];
             inputs.faceColour = "#ff0000";
             inputs.drawTwoSided = false;
 
@@ -1970,7 +1976,7 @@ describe("DrawHelper unit tests", () => {
             inputs.manifoldsOrCrossSections = [
                 { hash: 123, type: "manifold" },
                 { hash: 456, type: "manifold" }
-            ] as any[];
+            ];
             inputs.faceColour = "#ff0000";
             inputs.drawTwoSided = false;
 
@@ -2086,7 +2092,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = true;
             inputs.drawVertices = false;
@@ -2116,7 +2122,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = true;
             inputs.drawVertices = true;
@@ -2144,7 +2150,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "empty", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = true;
             inputs.drawVertices = true;
@@ -2173,7 +2179,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as any,
+                undefined,
                 false,
                 customMaterial,
                 true,
@@ -2196,7 +2202,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as any,
+                undefined,
                 true, // updatable
                 material,
                 true,
@@ -2253,7 +2259,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.OCCT.DrawShapeDto();
-            inputs.shape = { hash: "abc123", type: "solid" } as any;
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawTwoSided = false;
 
@@ -2276,7 +2282,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" } as any;
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.drawTwoSided = false;
 
             await drawHelper.drawManifoldOrCrossSection(inputs);
@@ -2524,7 +2530,7 @@ describe("DrawHelper unit tests", () => {
                 dispose: vi.fn().mockImplementation(() => {
                     throw new Error("Disposal error");
                 })
-            } as any;
+            } as unknown as BABYLON.PBRMetallicRoughnessMaterial;
             
             // Manually add error-prone material to cache
             const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
@@ -3027,8 +3033,8 @@ describe("DrawHelper unit tests", () => {
             // Mock the OCCT worker to return our shape with edges
             (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(mockShape);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any; // Shape pointer (will be sent to worker)
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.edgeColour = "#ff0000";
@@ -3060,8 +3066,10 @@ describe("DrawHelper unit tests", () => {
                 pointsList: []
             };
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = mockShape;
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(mockShape);
+
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.faceColour = "#00ff00";
             inputs.drawEdges = false;
@@ -3105,8 +3113,8 @@ describe("DrawHelper unit tests", () => {
             // Mock the OCCT worker to return our shape with edges and faces
             (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(mockShape);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any; // Shape pointer (will be sent to worker)
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.faceColour = "#00ff00";
             inputs.drawEdges = true;
@@ -3167,8 +3175,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0], [0.1, 0.2], [0, 0.2]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = true;
@@ -3210,8 +3218,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = true;
@@ -3245,8 +3253,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = true;
@@ -3278,8 +3286,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = true;
@@ -3320,8 +3328,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = true;
@@ -3360,8 +3368,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0], [0.1, 0.2], [0, 0.2]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawFaceIndexes = true;
@@ -3414,8 +3422,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false; // Only draw face indexes, not faces
             inputs.drawEdges = false;
             inputs.drawFaceIndexes = true;
@@ -3455,8 +3463,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawFaceIndexes = true;
@@ -3499,8 +3507,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = true;
             inputs.drawFaceIndexes = true;
@@ -3537,8 +3545,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawFaceIndexes = true;
@@ -3591,8 +3599,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0], [0.1, 0.2], [0, 0.2]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = true;
@@ -3633,8 +3641,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawEdgeIndexes = true; // true but edgeList is empty
@@ -3668,8 +3676,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = false; // Only test face indexes
@@ -3702,8 +3710,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = true;
@@ -3738,8 +3746,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [0.1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawFaceIndexes = true;
@@ -3773,8 +3781,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0], [1, 0]]
             ]);
 
-            const inputs = new Inputs.OCCT.DrawShapeDto<any>();
-            inputs.shape = {} as any;
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.drawEdgeIndexes = true;
@@ -3803,21 +3811,21 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
             // Positions should remain the same
             expect(result.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
             
             // Normals should be flipped (negated)
             expect(result.normals.length).toBe(9);
-            expect(Math.abs(result.normals[0])).toBe(0); // Handle -0 vs 0
-            expect(Math.abs(result.normals[1])).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[0]!)).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[1]!)).toBe(0); // Handle -0 vs 0
             expect(result.normals[2]).toBe(-1);
-            expect(Math.abs(result.normals[3])).toBe(0); // Handle -0 vs 0
-            expect(Math.abs(result.normals[4])).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[3]!)).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[4]!)).toBe(0); // Handle -0 vs 0
             expect(result.normals[5]).toBe(-1);
-            expect(Math.abs(result.normals[6])).toBe(0); // Handle -0 vs 0
-            expect(Math.abs(result.normals[7])).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[6]!)).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[7]!)).toBe(0); // Handle -0 vs 0
             expect(result.normals[8]).toBe(-1);
             
             // Indices should NOT be reversed (this is the key difference from prepareBackFaceMeshData)
@@ -3841,7 +3849,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshDataArray);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
 
             // Positions should be combined
             expect(result.positions).toEqual([
@@ -3877,7 +3885,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshDataArray);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
 
             // Second mesh indices should be offset by 3 (first mesh had 3 vertices)
             expect(result.indices).toEqual([
@@ -3895,7 +3903,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
             // All normals should be negated
             expect(result.normals.length).toBe(9);
@@ -3919,7 +3927,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
             // UVs should be undefined when not provided
             expect(result.uvs).toBeUndefined();
@@ -3935,7 +3943,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
             // UVs should be preserved
             expect(result.uvs).toEqual([0, 0, 1, 0, 0.5, 1]);
@@ -3957,7 +3965,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshDataArray);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
 
             // UVs should be combined
             expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0.5, 0.5]);
@@ -3972,7 +3980,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
             // Normals should remain empty (not flipped)
             expect(result.normals.length).toBe(0);
@@ -3998,7 +4006,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
             // Normals should all be flipped
             expect(result.normals.length).toBe(12);
@@ -4028,7 +4036,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshDataArray);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
 
             // Only the first mesh's UVs should be present
             expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1]);
@@ -4043,7 +4051,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
             // Zero normals should remain zero after negation (note: -0 == 0 in JavaScript)
             expect(result.normals.length).toBe(9);
@@ -4060,7 +4068,7 @@ describe("DrawHelper unit tests", () => {
                 }
             ];
 
-            const result = (drawHelper as any).prepareBackFaceMeshDataNoWindingReversal(meshData);
+            const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
             // Small values should be properly negated
             expect(result.normals).toEqual([-0.001, 0.002, -0.003, 0.001, -0.002, 0.003, -0.0001, 0.0002, -0.0003]);

@@ -19,11 +19,6 @@
       "count": 1
     }
   },
-  "packages/dev/babylonjs/lib/api/draw-helper.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 74
-    }
-  },
   "packages/dev/babylonjs/lib/api/draw-helper.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -349,11 +344,6 @@
       "count": 1
     }
   },
-  "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/orbit-camera.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 30
-    }
-  },
   "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/orbit-camera.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -369,11 +359,6 @@
       "count": 6
     }
   },
-  "packages/dev/threejs/lib/api/bitbybit/draw.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 25
-    }
-  },
   "packages/dev/threejs/lib/api/bitbybit/draw.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
@@ -382,11 +367,6 @@
   "packages/dev/threejs/lib/api/bitbybit/threejs/orbit-camera.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    }
-  },
-  "packages/dev/threejs/lib/api/draw-helper.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 12
     }
   },
   "packages/dev/threejs/lib/api/inputs/base-inputs.ts": {

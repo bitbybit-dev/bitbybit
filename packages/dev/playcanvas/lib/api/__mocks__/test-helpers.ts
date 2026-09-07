@@ -132,9 +132,11 @@ export function createOrbitCameraMocks() {
     mockWindow();
     const mockApp = new MockApp();
     const mockScene = new MockScene();
+    // The stand-ins carry the members the camera reaches for, which is where a partial stand-in
+    // meets the engine's full types.
     const mockContext = {
-        app: mockApp as any,
-        scene: mockScene as any,
+        app: mockApp as unknown as Context["app"],
+        scene: mockScene as unknown as Context["scene"],
     } as Context;
 
     return {

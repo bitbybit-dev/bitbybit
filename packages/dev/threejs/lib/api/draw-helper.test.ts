@@ -9,6 +9,14 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Vector } from "@bitbybit-dev/base";
 import * as THREEJS from "three";
 
+// Real kernel pointers. These suites mock the workers the pointers are sent to, so nothing
+// dereferences them - but an OCCT pointer is `{ hash: number, type: "occ-shape" }` and a manifold
+// one carries a numeric hash too, where these carried strings and a `type` naming the shape kind.
+let nextPointerHash = 1;
+const occtShape = (): Inputs.OCCT.TopoDSShapePointer => ({ hash: nextPointerHash++, type: "occ-shape" });
+const manifoldShape = (): Inputs.Manifold.ManifoldPointer => ({ hash: nextPointerHash++, type: "manifold" });
+
+
 // A minimal JSCAD geometry. These suites mock the worker manager, so the draw path hands the entity
 // straight through and nothing reads it - but it should still be the shape the API says it is, and
 // `jscadSolid()`, which is what stood here, is not a JSCAD geometry at all.
@@ -984,10 +992,8 @@ describe("DrawHelper unit tests", () => {
                 edgeList: [],
                 pointsList: []
             });
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.OCCT.DrawShapeDto() as any;
-            inputs.shape = { hash: "abc123", type: "solid" };
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
             inputs.drawVertices = false;
@@ -1017,10 +1023,8 @@ describe("DrawHelper unit tests", () => {
                 ],
                 pointsList: []
             });
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.OCCT.DrawShapeDto() as any;
-            inputs.shape = { hash: "abc123", type: "edge" };
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
             inputs.drawVertices = false;
@@ -1049,10 +1053,8 @@ describe("DrawHelper unit tests", () => {
                 edgeList: [],
                 pointsList: [[0, 0, 0], [1, 1, 1]]
             });
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.OCCT.DrawShapeDto() as any;
-            inputs.shape = { hash: "abc123", type: "vertex" };
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = false;
             inputs.drawVertices = true;
@@ -1080,12 +1082,10 @@ describe("DrawHelper unit tests", () => {
                 { faceList: [{ vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }], edgeList: [], pointsList: [] },
                 { faceList: [{ vertexCoord: [2, 0, 0, 3, 0, 0, 2, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }], edgeList: [], pointsList: [] }
             ]);
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.OCCT.DrawShapesDto() as any;
+            const inputs = new Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>();
             inputs.shapes = [
-                { hash: "abc123", type: "solid" },
-                { hash: "def456", type: "solid" }
+                occtShape(),
+                occtShape()
             ];
             inputs.drawFaces = true;
             inputs.drawEdges = false;
@@ -1114,10 +1114,8 @@ describe("DrawHelper unit tests", () => {
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
             });
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto() as any;
-            inputs.manifoldOrCrossSection = { hash: "mf123", type: "manifold" };
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
+            inputs.manifoldOrCrossSection = manifoldShape();
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
 
@@ -1137,10 +1135,8 @@ describe("DrawHelper unit tests", () => {
                 vertProperties: new Float32Array([]),
                 triVerts: new Uint32Array([])
             });
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto() as any;
-            inputs.manifoldOrCrossSection = { hash: "mf123", type: "manifold" };
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
+            inputs.manifoldOrCrossSection = manifoldShape();
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
 
@@ -1152,10 +1148,8 @@ describe("DrawHelper unit tests", () => {
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 [[0, 0], [1, 0], [1, 1], [0, 1]] as Inputs.Base.Vector2[]
             ]);
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto() as any;
-            inputs.manifoldOrCrossSection = { hash: "cs123", type: "crossSection" };
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
+            inputs.manifoldOrCrossSection = manifoldShape();
             inputs.crossSectionColour = "#00ff00";
             inputs.crossSectionOpacity = 1;
             inputs.crossSectionWidth = 2;
@@ -1173,12 +1167,10 @@ describe("DrawHelper unit tests", () => {
                 { vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) },
                 { vertProperties: new Float32Array([1, 0, 0, 2, 0, 0, 1, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) }
             ]);
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto() as any;
+            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
             inputs.manifoldsOrCrossSections = [
-                { hash: "mf123", type: "manifold" },
-                { hash: "mf456", type: "manifold" }
+                manifoldShape(),
+                manifoldShape()
             ];
             inputs.faceColour = "#ff0000";
 
@@ -1210,12 +1202,10 @@ describe("DrawHelper unit tests", () => {
                 { vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) },
                 { vertProperties: new Float32Array([]), triVerts: new Uint32Array([]) } // This will be filtered out
             ]);
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto() as any;
+            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
             inputs.manifoldsOrCrossSections = [
-                { hash: "mf123", type: "manifold" },
-                { hash: "mf456", type: "manifold" }
+                manifoldShape(),
+                manifoldShape()
             ];
             inputs.faceColour = "#ff0000";
 
@@ -1704,7 +1694,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle null shape input", async () => {
             const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
-            inputs.shape = null as any;
+            inputs.shape = null as unknown as Inputs.OCCT.TopoDSShapePointer;
             inputs.drawFaces = true;
 
             await expect(drawHelper.drawShape(inputs))
@@ -1714,7 +1704,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle undefined manifold input", async () => {
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
-            inputs.manifoldOrCrossSection = undefined as any;
+            inputs.manifoldOrCrossSection = undefined as unknown as Inputs.Manifold.ManifoldPointer;
 
             await expect(drawHelper.drawManifoldOrCrossSection(inputs))
                 .rejects
@@ -1908,7 +1898,7 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0, 0], [1, 1, 1]],
                 1,
                 0.3,
-                ["#ff0000", undefined as any, "#0000ff"]
+                ["#ff0000", undefined as unknown as string, "#0000ff"]
             );
 
             const result = drawHelper.drawPoints(inputs);
@@ -2042,7 +2032,7 @@ describe("DrawHelper unit tests", () => {
                 [0, 0, 0],
                 1,
                 1,
-                "not-a-color" as any
+                "not-a-color" as Inputs.Base.Color
             );
 
             const result = drawHelper.drawPoint(inputs);
@@ -2088,7 +2078,7 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#ff0000",
                 true,
-                undefined as any
+                undefined
             );
 
             const result = drawHelper.drawPoint(inputs);
@@ -2465,7 +2455,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should evict oldest material when cache is full (FIFO)", async () => {
             const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
-            const materialCache = (drawHelper as any).materialCache;
+            const materialCache = drawHelper["materialCache"];
 
             // Clear cache to start fresh
             materialCache.clear();
@@ -2500,7 +2490,7 @@ describe("DrawHelper unit tests", () => {
             expect(materialCache.size).toBe(1000);
 
             // Get the first key before eviction
-            const firstKeyBeforeEviction = materialCache.keys().next().value;
+            const firstKeyBeforeEviction = materialCache.keys().next().value!;
 
             // Create one more material to trigger eviction
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
@@ -2533,7 +2523,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should call dispose on evicted material", async () => {
-            const materialCache = (drawHelper as any).materialCache;
+            const materialCache = drawHelper["materialCache"];
             const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
 
             // Clear cache to start fresh
@@ -2543,7 +2533,7 @@ describe("DrawHelper unit tests", () => {
             const disposeCalls: string[] = [];
             const originalMaterialPrototype = THREEJS.MeshPhysicalMaterial.prototype.dispose;
             THREEJS.MeshPhysicalMaterial.prototype.dispose = function () {
-                disposeCalls.push((this as any).name || "unnamed");
+                disposeCalls.push(this.name || "unnamed");
                 originalMaterialPrototype.call(this);
             };
 
@@ -2597,7 +2587,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle materials without dispose method gracefully", () => {
-            const materialCache = (drawHelper as any).materialCache;
+            const materialCache = drawHelper["materialCache"];
             const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
 
             // Clear and manually add a mock material without dispose method
@@ -2605,7 +2595,7 @@ describe("DrawHelper unit tests", () => {
             const mockMaterialWithoutDispose = {
                 color: new THREEJS.Color("#ff0000"),
                 // No dispose method
-            } as any;
+            } as unknown as THREEJS.MeshPhysicalMaterial;
 
             materialCache.set("test-no-dispose-000000-1-0", mockMaterialWithoutDispose);
 
@@ -2619,7 +2609,7 @@ describe("DrawHelper unit tests", () => {
             expect(materialCache.size).toBe(1000);
 
             // Manually trigger the eviction code path
-            const getOrCreateMaterial = (drawHelper as any).getOrCreateMaterial.bind(drawHelper);
+            const getOrCreateMaterial = drawHelper["getOrCreateMaterial"].bind(drawHelper);
             expect(() => {
                 getOrCreateMaterial("#eeeeee", 1, 0, () => {
                     const mat = new THREEJS.MeshPhysicalMaterial();
@@ -2663,7 +2653,7 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should create new material after previous one with same key was evicted", async () => {
-            const materialCache = (drawHelper as any).materialCache;
+            const materialCache = drawHelper["materialCache"];
             const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
 
             // Clear cache to start fresh

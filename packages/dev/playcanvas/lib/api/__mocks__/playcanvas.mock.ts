@@ -275,8 +275,9 @@ export class MockTouch {
 
 export class MockApp {
     root!: MockEntity;
-    mouse = new MockMouse();
-    touch = new MockTouch();
+    // A device the browser did not give us is absent, and the camera has to cope with that.
+    mouse: MockMouse | null = new MockMouse();
+    touch: MockTouch | null = new MockTouch();
     on: Mock = vi.fn();
     off: Mock = vi.fn();
     graphicsDevice = {

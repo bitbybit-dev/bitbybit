@@ -723,15 +723,19 @@ namespace Draw_2 {
     // (undocumented)
     type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
     // (undocumented)
-    type Entity = number[] | [number, number, number] | Base_3.Point3 | Base_3.Vector3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.Tag.TagDto | {
+    type Entity = number[] | [number, number, number] | Base_3.Point3 | Base_3.Vector3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | {
         type: string;
         name?: string;
         entityName?: string;
-    } | number[][] | Base_3.Point3[] | Base_3.Vector3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.Tag.TagDto[] | {
+    } | number[][] | Base_3.Point3[] | Base_3.Vector3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[] | {
         type: string[];
         name?: string;
         entityName?: string;
-    };
+    } | {
+        type: string;
+        name?: string;
+        entityName?: string;
+    }[];
     class GenericPBRMaterialDto {
         constructor(name?: string, baseColor?: Base_3.Color, metallic?: number, roughness?: number, alpha?: number, emissiveColor?: Base_3.Color, emissiveIntensity?: number, zOffset?: number, zOffsetUnits?: number, baseColorTexture?: Base_3.Texture, metallicRoughnessTexture?: Base_3.Texture, normalTexture?: Base_3.Texture, emissiveTexture?: Base_3.Texture, occlusionTexture?: Base_3.Texture, alphaMode?: alphaModeEnum, alphaCutoff?: number, doubleSided?: boolean, wireframe?: boolean, unlit?: boolean);
         alpha: number;
