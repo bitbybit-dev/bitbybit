@@ -1,3 +1,7 @@
+import { GeometryHelper } from "@bitbybit-dev/base";
+
+const geometryHelper = new GeometryHelper();
+
 export class VectorHelperService {
 
     private readonly tolerance = 0.00001;
@@ -11,19 +15,10 @@ export class VectorHelperService {
         return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
 
-    // Algorithm works with arbitrary length numeric vectors. This algorithm is more costly for longer arrays of vectors
     removeAllDuplicateVectors(vectors: number[][], tolerance = 1e-7): number[][] {
-        const cleanVectors: number[][] = [];
-        vectors.forEach(vector => {
-            // when there are no vectors in cleanVectors array that match the current vector, push it in.
-            if (!cleanVectors.some(s => this.vectorsTheSame(vector, s, tolerance))) {
-                cleanVectors.push(vector);
-            }
-        });
-        return cleanVectors;
+        return geometryHelper.removeAllDuplicateVectors(vectors, tolerance);
     }
 
-    // Algorithm works with arbitrary length numeric vectors. 
     removeConsecutiveDuplicates<T extends number[]>(vectors: T[], checkFirstAndLast = true): T[] {
         const vectorsRemaining: T[] = [];
         if (vectors.length > 1) {

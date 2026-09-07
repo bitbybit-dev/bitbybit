@@ -1,5 +1,103 @@
 import * as Inputs from "../inputs";
 
+type VectorCellRange = { centre: number[]; lowest: number[]; highest: number[] };
+
+const CELL_KEY_DIMENSIONS = 6;
+
+const CELL_SIZE_IN_TOLERANCES = 8;
+
+const CELL_PROBE_MARGIN_IN_TOLERANCES = 1.5;
+
+const CELL_ARITHMETIC_SAFE_MULTIPLE_OF_TOLERANCE = 2 ** 50;
+
+const CELL_HASH_WORD = 4294967296;
+
+const hashCells = (vectorLength: number, cells: number[]): number => {
+    let hash = Math.imul(vectorLength + 1, 0x9E3779B1);
+    for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i]!;
+        const lowWord = cell % CELL_HASH_WORD;
+        const highWord = (cell - lowWord) / CELL_HASH_WORD;
+        hash = Math.imul(hash ^ lowWord, 0x85EBCA6B);
+        hash = Math.imul(hash ^ highWord, 0xC2B2AE35);
+        hash ^= hash >>> 15;
+    }
+    return hash;
+};
+
+const neverMatchesAnyVector = (vector: number[], tolerance: number): boolean => {
+    for (let i = 0; i < vector.length; i++) {
+        if (!Number.isFinite(vector[i])) {
+            return true;
+        }
+    }
+    return vector.length > 0 && !(tolerance > 0);
+};
+
+const vectorCellRange = (vector: number[], tolerance: number): VectorCellRange | undefined => {
+    const keyDimensions = Math.min(vector.length, CELL_KEY_DIMENSIONS);
+    if (keyDimensions > 0 && !Number.isFinite(tolerance)) {
+        return undefined;
+    }
+    const cellSize = tolerance * CELL_SIZE_IN_TOLERANCES;
+    const probeMargin = tolerance * CELL_PROBE_MARGIN_IN_TOLERANCES;
+    const centre: number[] = [];
+    const lowest: number[] = [];
+    const highest: number[] = [];
+    for (let i = 0; i < keyDimensions; i++) {
+        const component = vector[i]!;
+        if (Math.abs(component) / tolerance >= CELL_ARITHMETIC_SAFE_MULTIPLE_OF_TOLERANCE) {
+            return undefined;
+        }
+        const lowestCell = Math.floor((component - probeMargin) / cellSize);
+        const highestCell = Math.floor((component + probeMargin) / cellSize);
+        const cellsToProbe = highestCell - lowestCell + 1;
+        if (!Number.isInteger(lowestCell) || !Number.isInteger(highestCell) || cellsToProbe < 1 || cellsToProbe > 2) {
+            return undefined;
+        }
+        centre.push(Math.floor(component / cellSize));
+        lowest.push(lowestCell);
+        highest.push(highestCell);
+    }
+    return { centre, lowest, highest };
+};
+
+const cellRangeHoldsSameVector = (
+    keptVectorsByCell: Map<number, number[][]>,
+    vector: number[],
+    cellRange: VectorCellRange,
+    isTheSameAsVector: (kept: number[]) => boolean,
+): boolean => {
+    const lowest = cellRange.lowest;
+    const highest = cellRange.highest;
+    const probe = lowest.slice();
+    for (;;) {
+        const cellVectors = keptVectorsByCell.get(hashCells(vector.length, probe));
+        if (cellVectors !== undefined && cellVectors.some(isTheSameAsVector)) {
+            return true;
+        }
+        let dimension = probe.length - 1;
+        while (dimension >= 0 && probe[dimension] === highest[dimension]) {
+            probe[dimension] = lowest[dimension]!;
+            dimension--;
+        }
+        if (dimension < 0) {
+            return false;
+        }
+        probe[dimension] = probe[dimension]! + 1;
+    }
+};
+
+const addVectorToCell = (keptVectorsByCell: Map<number, number[][]>, vector: number[], cellRange: VectorCellRange): void => {
+    const cellKey = hashCells(vector.length, cellRange.centre);
+    const cellVectors = keptVectorsByCell.get(cellKey);
+    if (cellVectors === undefined) {
+        keptVectorsByCell.set(cellKey, [vector]);
+    } else {
+        cellVectors.push(vector);
+    }
+};
+
 export class GeometryHelper {
 
     /**
@@ -73,10 +171,27 @@ export class GeometryHelper {
      */
     removeAllDuplicateVectors(vectors: number[][], tolerance = 1e-7): number[][] {
         const cleanVectors: number[][] = [];
+        const keptVectorsByCell = new Map<number, number[][]>();
+        const keptVectorsOutsideCellIndex: number[][] = [];
         vectors.forEach(vector => {
-            // when there are no vectors in cleanVectors array that match the current vector, push it in.
-            if (!cleanVectors.some(s => this.vectorsTheSame(vector, s, tolerance))) {
+            if (neverMatchesAnyVector(vector, tolerance)) {
                 cleanVectors.push(vector);
+                return;
+            }
+            const isTheSameAsVector = (kept: number[]): boolean => this.vectorsTheSame(vector, kept, tolerance);
+            const cellRange = vectorCellRange(vector, tolerance);
+            if (cellRange === undefined) {
+                if (!cleanVectors.some(isTheSameAsVector)) {
+                    cleanVectors.push(vector);
+                    keptVectorsOutsideCellIndex.push(vector);
+                }
+                return;
+            }
+            const alreadyKept = cellRangeHoldsSameVector(keptVectorsByCell, vector, cellRange, isTheSameAsVector)
+                || keptVectorsOutsideCellIndex.some(isTheSameAsVector);
+            if (!alreadyKept) {
+                cleanVectors.push(vector);
+                addVectorToCell(keptVectorsByCell, vector, cellRange);
             }
         });
         return cleanVectors;
