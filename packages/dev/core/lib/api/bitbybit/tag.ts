@@ -82,8 +82,14 @@ export class Tag {
                 } else {
                     // delete tag
                     this.context.tagBag = this.context.tagBag.filter(tag => tag.id !== tagToUpdate.id);
-                    const element = document.getElementById(tagToUpdate.id)!;
-                    element.parentNode!.removeChild(element);
+                    // Every tag is given an id before it goes into the bag, so this holds; without
+                    // the check an id-less one reached getElementById and the null came back as a
+                    // TypeError on the next line instead of leaving the tag alone.
+                    const id = tagToUpdate.id;
+                    if (id !== undefined) {
+                        const element = document.getElementById(id)!;
+                        element.parentNode!.removeChild(element);
+                    }
                 }
             });
         } else {

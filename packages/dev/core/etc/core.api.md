@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { JSONPath } from 'jsonpath-plus';
 import { Subject } from 'rxjs';
 
 // @public (undocumented)
@@ -336,8 +337,7 @@ namespace Color {
 
 // @public (undocumented)
 export class ContextBase {
-    // (undocumented)
-    blocklyWorkspace: any;
+    blocklyWorkspace: unknown;
     // (undocumented)
     canvasZoneClass: string;
     // (undocumented)
@@ -346,8 +346,7 @@ export class ContextBase {
     getFile(file: File): Promise<string | ArrayBuffer>;
     // (undocumented)
     intervalBag: number[];
-    // (undocumented)
-    jsonpath: any;
+    jsonpath: typeof JSONPath;
     // (undocumented)
     keyDownBag: ({
         key: string;
@@ -363,8 +362,7 @@ export class ContextBase {
         key: string;
         fn: () => void;
     })[];
-    // (undocumented)
-    occ: any;
+    occ: unknown;
     // (undocumented)
     promptPreviewAssemblyHierarchy: (data: PreviewAssemblyHierarchyInterface) => void;
     // (undocumented)
@@ -384,12 +382,12 @@ export class ContextBase {
     // (undocumented)
     snapTolerance: number;
     // (undocumented)
-    tagBag: any[];
+    tagBag: Tag_2.TagDto[];
     // (undocumented)
     timeoutBag: number[];
     // (undocumented)
     tolerance: number;
-    // (undocumented)
+    // @deprecated (undocumented)
     verb: any;
 }
 
@@ -5747,7 +5745,7 @@ namespace Polyline {
 // @public (undocumented)
 export interface PreviewAssemblyHierarchyInterface {
     // (undocumented)
-    data: any;
+    data: unknown;
     // (undocumented)
     hidden?: boolean | undefined;
 }
@@ -5757,7 +5755,7 @@ export interface PreviewCSVInterface {
     // (undocumented)
     columnSeparator?: string | undefined;
     // (undocumented)
-    data: string | any[][];
+    data: string | unknown[][];
     // (undocumented)
     hidden?: boolean | undefined;
     // (undocumented)
@@ -5771,7 +5769,7 @@ export interface PreviewCSVInterface {
 // @public (undocumented)
 export interface PreviewDataInterface {
     // (undocumented)
-    data: any;
+    data: unknown;
     // (undocumented)
     hidden?: boolean | undefined;
     // (undocumented)

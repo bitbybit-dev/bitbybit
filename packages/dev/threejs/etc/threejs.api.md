@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { JSONPath } from 'jsonpath-plus';
 import { Scene } from 'three';
 import { Subject } from 'rxjs';
 import * as THREEJS from 'three';

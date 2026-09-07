@@ -8,6 +8,16 @@ import * as Inputs from "../inputs";
 const isRecord = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null;
 
+// The query engine evaluates any JSON value but has no case for `undefined`, which is what an
+// unconnected input arrives as. It is handed `null`, which the engine does understand.
+const asJsonInput = (value: unknown): null | boolean | number | string | object => {
+    if (value === null || typeof value === "object" || typeof value === "string"
+        || typeof value === "number" || typeof value === "boolean") {
+        return value;
+    }
+    return null;
+};
+
 /**
  * Contains various json path methods.
  * <div>
@@ -51,7 +61,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     query(inputs: Inputs.JSON.QueryDto): any {
-        return this.context.jsonpath({ path: inputs.query, json: inputs.json });
+        return this.context.jsonpath({ path: inputs.query, json: asJsonInput(inputs.json) });
     }
 
     /**
@@ -155,7 +165,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     paths(inputs: Inputs.JSON.PathsDto): any {
-        const paths = this.context.jsonpath({ json: inputs.json, path: inputs.query, resultType: "path" });
+        const paths = this.context.jsonpath({ json: asJsonInput(inputs.json), path: inputs.query, resultType: "path" });
         return paths;
     }
 

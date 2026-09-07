@@ -199,7 +199,7 @@
   },
   "packages/dev/core/lib/api/context.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 9
+      "count": 1
     }
   },
   "packages/dev/core/lib/api/inputs/base-inputs.ts": {

@@ -172,5 +172,21 @@ describe("JSON unit tests", () => {
         };
     };
 
-});
+    it("should query every kind of json value, and hand the engine null for one it has no case for", () => {
+        const queryable: { value: unknown, expected: unknown }[] = [
+            { value: { a: 1 }, expected: [{ a: 1 }] },
+            { value: [1, 2], expected: [[1, 2]] },
+            { value: "abc", expected: ["abc"] },
+            { value: 42, expected: [42] },
+            { value: true, expected: [true] },
+            // The engine answers a null root with undefined rather than a wrapped null, and an
+            // unconnected input reaches it as null, so the two agree - which is the point.
+            { value: null, expected: undefined },
+            { value: undefined, expected: undefined },
+        ];
 
+        queryable.forEach(({ value, expected }) => {
+            expect(json.query({ json: value, query: "$" })).toEqual(expected);
+        });
+    });
+});

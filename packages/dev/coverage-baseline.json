@@ -17,6 +17,14 @@
             "branches": 52.03,
             "functions": 57.92,
             "statements": 65.62
+        },
+        {
+            "measured": "2026-09-07",
+            "tests": 4008,
+            "lines": 68.39,
+            "branches": 52.14,
+            "functions": 58,
+            "statements": 65.69
         }
     ],
     "packages": {
@@ -49,12 +57,12 @@
         },
         "core": {
             "runner": "vitest",
-            "tests": 114,
+            "tests": 118,
             "suites": 6,
-            "lines": 58.78,
-            "branches": 71.42,
-            "functions": 38.29,
-            "statements": 55.89
+            "lines": 61.96,
+            "branches": 77.12,
+            "functions": 40.08,
+            "statements": 59.22
         },
         "create-app": {
             "runner": "vitest",

@@ -1,14 +1,15 @@
-
 import { PrintSaveInterface } from "../models/print-save.model";
+import type { JSONPath } from "jsonpath-plus";
+import type { Tag } from "./inputs/tag-inputs";
 
 export interface PreviewDataInterface {
-    data: any;
+    data: unknown;
     viewMode?: "data" | "schema" | "metadata" | undefined;
     hidden?: boolean | undefined;
 }
 
 export interface PreviewCSVInterface {
-    data: string | any[][];
+    data: string | unknown[][];
     columnSeparator?: string | undefined;
     rowSeparator?: string | undefined;
     startRow?: number | undefined;
@@ -17,15 +18,23 @@ export interface PreviewCSVInterface {
 }
 
 export interface PreviewAssemblyHierarchyInterface {
-    data: any;
+    data: unknown;
     hidden?: boolean | undefined;
 }
 
 export class ContextBase {
-    blocklyWorkspace: any;
+    /** The Blockly workspace, put here by the host. Nothing in these packages reads it. */
+    blocklyWorkspace: unknown;
+    /** @deprecated verbnurbs is unmaintained; this and the API over it come out in the next major. */
     verb: any;
-    occ: any;
-    jsonpath: any;
+    /** The OCCT instance, put here by the host. Nothing in these packages reads it. */
+    occ: unknown;
+    /**
+     * The jsonpath-plus query, put here by the renderer packages. It takes the library's own type:
+     * its callable is a set of overloads, one of which requires an option the others reject, and a
+     * local restatement of the shape this code calls cannot satisfy that set.
+     */
+    jsonpath!: typeof JSONPath;
     canvasZoneClass = "canvasZone";
 
     promptPrintSave!: (prompt: PrintSaveInterface) => void;
@@ -37,7 +46,7 @@ export class ContextBase {
     rerenderScene!: () => void;
     tolerance = 0.00001;
     snapTolerance = 0.00001;
-    tagBag: any[] = [];
+    tagBag: Tag.TagDto[] = [];
     timeoutBag: number[] = [];
     intervalBag: number[] = [];
     renderLoopBag: ((timePassedFromPreviousIteration: number) => void)[] = [];
@@ -61,7 +70,8 @@ export class ContextBase {
                 const reader = new FileReader();
                 reader.readAsText(file, "UTF-8");
                 reader.onload = (evt) => {
-                    const text = (evt as any).target.result;
+                    const text = evt.target?.result;
+                    if (text === null || text === undefined) { reject(); return; }
                     resolve(text);
                 };
                 reader.onerror = (_evt) => {

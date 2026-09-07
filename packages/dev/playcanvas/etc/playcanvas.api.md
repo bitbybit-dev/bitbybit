@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { JSONPath } from 'jsonpath-plus';
 import * as pc_2 from 'playcanvas';
 import { Subject } from 'rxjs';
 
