@@ -1,4 +1,8 @@
-// The editor and test view of this package. It extends the shared CAD base like every other package,
+// The editor and test view of this package - the specs included, which is what `typecheck:tests`
+// and the type-aware lint both read. `tsconfig.build.json` beside this one is what `tsc` emits from,
+// and that is where the specs are excluded: a compiled spec has no business in the published CLI.
+// The two were one file, so excluding the specs from the build also took them out of the only
+// project that named them, and both the gate and the lint were quietly checking source alone. It extends the shared CAD base like every other package,
 // so the whole strict set applies here too, and states only what genuinely differs: this is a Node
 // CLI rather than a browser bundle, so it compiles as NodeNext at ES2022 with no DOM library, and it
 // ships source maps and declaration maps. The scaffold templates are not compiled - they are copied.
@@ -17,5 +21,5 @@
         "sourceMap": true
     },
     "include": ["src/**/*"],
-    "exclude": ["node_modules", "dist", "templates", "src/**/*.test.ts", "vitest.config.ts"]
+    "exclude": ["node_modules", "dist", "templates"]
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,6 +14,42 @@ const ENGINES = ["threejs", "babylonjs", "playcanvas"] as const;
 const CLOUD_BACKENDS = ["hono-sdk", "hono-rest", "nodejs-sdk", "nodejs-rest"] as const;
 const OCCT_BITNESS = "32";
 const FAILURE_EXIT = 1;
+
+const ENGINE_TEMPLATES_DIR = path.join(ROOT, "templates", "vite");
+const TEMPLATE_LANGUAGE = "typescript";
+const CLI_SOURCE = path.join(ROOT, "src", "index.ts");
+const OPTIONS_PATTERN_DECLARATION = /const\s+optionsPattern\s*=\s*\/(.+)\/([dgimsuvy]*);/;
+const LAST_TWO_OPTION_PROPERTIES = /(^[ \t]*\w+:\s*true,\n)(^[ \t]*enableManifold:\s*true,\n)/m;
+
+type EngineTemplate = { engine: string; mainTs: string };
+
+const templateMainTs = (engine: string): string =>
+    path.join(ENGINE_TEMPLATES_DIR, engine, TEMPLATE_LANGUAGE, "src", "main.ts");
+
+// Every engine template the CLI can patch, found on disk rather than listed, so an engine added to
+// the templates directory is covered here the day it lands.
+const engineTemplates = (): EngineTemplate[] =>
+    readdirSync(ENGINE_TEMPLATES_DIR, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => ({ engine: entry.name, mainTs: templateMainTs(entry.name) }))
+        .filter((template) => existsSync(template.mainTs))
+        .sort((left, right) => left.engine.localeCompare(right.engine));
+
+// Read out of src/index.ts rather than copied. A second copy of the regex here could only ever
+// prove itself right, and this suite exists to catch the day the CLI's own regex stops matching.
+const cliOptionsPattern = (): RegExp => {
+    const source = readFileSync(CLI_SOURCE, "utf8");
+    const declaration = OPTIONS_PATTERN_DECLARATION.exec(source);
+    const body = declaration?.[1];
+    if (!body) {
+        throw new Error(
+            `could not read "const optionsPattern = /.../;" out of ${CLI_SOURCE}. That regex is what rewrites a ` +
+            "scaffolded project's src/main.ts when 64-bit OCCT is chosen; if it was renamed or moved, point this " +
+            "test at it again rather than deleting the test. Check src/index.ts.");
+    }
+    // Without g or y, so that testing the same text twice cannot disagree with itself over lastIndex.
+    return new RegExp(body, (declaration?.[2] ?? "").replace(/[gy]/g, ""));
+};
 
 type Manifest = { name: string; dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
 
@@ -126,6 +162,92 @@ describe("create-app", () => {
             // Assert
             expect(status).toBe(FAILURE_EXIT);
             expect(readFileSync(path.join(work, name, "mine.txt"), "utf8")).toBe("do not overwrite me");
+        });
+    });
+
+    // The CLI does not template the OCCT architecture in. 32-bit writes nothing, and for "64" and
+    // "64-mt" it rewrites the scaffolded src/main.ts with one regex that assumes
+    // `enableManifold: true,` is the LAST property of the InitBitByBitOptions literal. String.replace
+    // on a pattern that misses returns the text unchanged, so a template that reorders or renames
+    // that property leaves the CLI reporting success while the user silently gets the 32-bit kernel
+    // they did not choose. These cases pin that coupling for every engine template it can patch.
+    describe("the OCCT architecture patch", () => {
+        const mismatchHint = (engine: string): string =>
+            `templates/vite/${engine}/typescript/src/main.ts no longer matches the regex the CLI rewrites it with. ` +
+            "\"enableManifold: true,\" has to stay the last property of the InitBitByBitOptions object literal, " +
+            "or whoever picks 64-bit OCCT silently gets 32-bit. Check optionsPattern in src/index.ts.";
+
+        it("should ship a patchable template for every engine the CLI offers", () => {
+            // Act
+            const engines = engineTemplates().map((template) => template.engine);
+
+            // Assert
+            expect(engines).toEqual([...ENGINES].sort());
+        });
+
+        it.each(engineTemplates())("should match the options object $engine's main.ts declares", ({ engine, mainTs }) => {
+            // Arrange
+            const template = readFileSync(mainTs, "utf8");
+
+            // Act
+            const matched = cliOptionsPattern().test(template);
+
+            // Assert
+            expect(matched, mismatchHint(engine)).toBe(true);
+        });
+
+        it("should stop matching once that options object is reordered", () => {
+            // Arrange - one template with its last two properties swapped, in memory only.
+            const [first] = engineTemplates();
+            if (!first) throw new Error(`no engine templates under ${ENGINE_TEMPLATES_DIR} - there is nothing left to patch`);
+            const template = readFileSync(first.mainTs, "utf8");
+            const reordered = template.replace(LAST_TWO_OPTION_PROPERTIES, "$2$1");
+
+            // Act
+            const matched = cliOptionsPattern().test(reordered);
+
+            // Assert - the fixture is genuinely broken, and the pattern genuinely notices.
+            expect(reordered, "the swap changed nothing, so this case proves nothing").not.toBe(template);
+            expect(matched).toBe(false);
+        });
+
+        it.each(ENGINES)("should write the chosen 64-bit architecture into a scaffolded %s project", (engine) => {
+            // Arrange
+            const name = `arch-64-${engine}`;
+
+            // Act
+            const { status } = scaffold([name, "-t", "frontend", "-e", engine, "-o", "64"]);
+
+            // Assert
+            expect(status).toBe(0);
+            const generated = readFileSync(path.join(work, name, "src", "main.ts"), "utf8");
+            expect(generated, mismatchHint(engine)).toMatch(/const options: InitBitByBitOptions = \{[\s\S]*?occtArchitecture: "64"\s*\};/);
+        });
+
+        it("should write the multi-threaded architecture the same way", () => {
+            // Arrange
+            const name = "arch-64-mt";
+
+            // Act
+            const { status } = scaffold([name, "-t", "frontend", "-e", "threejs", "-o", "64-mt"]);
+
+            // Assert
+            expect(status).toBe(0);
+            const generated = readFileSync(path.join(work, name, "src", "main.ts"), "utf8");
+            expect(generated, mismatchHint("threejs")).toMatch(/const options: InitBitByBitOptions = \{[\s\S]*?occtArchitecture: "64-mt"\s*\};/);
+        });
+
+        it("should leave main.ts exactly as the template has it for the default 32-bit choice", () => {
+            // Arrange
+            const name = "arch-32";
+
+            // Act
+            const { status } = scaffold([name, "-t", "frontend", "-e", "threejs", "-o", OCCT_BITNESS]);
+
+            // Assert
+            expect(status).toBe(0);
+            const generated = readFileSync(path.join(work, name, "src", "main.ts"), "utf8");
+            expect(generated).toBe(readFileSync(templateMainTs("threejs"), "utf8"));
         });
     });
 });

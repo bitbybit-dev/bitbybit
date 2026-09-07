@@ -12,7 +12,6 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Simplified, cleaner ASCII logo
 const BITBYBIT_LOGO = `
 ╭──────────────────────────────────────────────────────────────────────╮
 │                                                                      │
@@ -56,9 +55,9 @@ const ENGINE_DESCRIPTIONS: Record<EngineType, string> = {
 };
 
 const ENGINE_COLORS: Record<EngineType, (text: string) => string> = {
-    "threejs": chalk.hex("#049EF4"),    // Three.js blue
-    "babylonjs": chalk.hex("#E0684B"),  // Babylon.js red/orange
-    "playcanvas": chalk.hex("#FF6600")  // PlayCanvas orange
+    "threejs": chalk.hex("#049EF4"),
+    "babylonjs": chalk.hex("#E0684B"),
+    "playcanvas": chalk.hex("#FF6600")
 };
 
 const OCCT_ARCHITECTURE_DISPLAY_NAMES: Record<OcctArchitectureType, string> = {
@@ -99,7 +98,6 @@ const BACKEND_COLORS: Record<BackendType, (text: string) => string> = {
 
 async function displayWelcome(): Promise<void> {
     console.clear();
-    // Create a beautiful gold gradient for the logo
     const goldGradient = gradient(["#F0CEBB", "#fff6f3", "#d6b39f", "#F0CEBB"]);
     
     console.log(goldGradient(BITBYBIT_LOGO));
@@ -247,7 +245,6 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
 
     let answers: PromptAnswers;
     
-    // Only ask for project name if not provided as argument
     if (!projectNameArg) {
         answers = await inquirer.prompt<PromptAnswers>([
             {
@@ -364,7 +361,6 @@ async function createProject(options: ProjectOptions): Promise<void> {
     console.log(chalk.gray("─".repeat(72)));
     console.log();
 
-    // Check if directory exists
     if (fs.existsSync(targetDir)) {
         const { overwrite } = await inquirer.prompt([
             {
@@ -385,14 +381,12 @@ async function createProject(options: ProjectOptions): Promise<void> {
         spinner.succeed("Existing directory removed");
     }
 
-    // Create project directory
     const spinner = ora({
         text: "Creating project structure...",
         color: "cyan"
     }).start();
 
     try {
-        // Copy template files
         const templateDir = path.join(__dirname, "..", "templates", bundler, engine, language);
         
         if (!fs.existsSync(templateDir)) {
@@ -405,7 +399,6 @@ async function createProject(options: ProjectOptions): Promise<void> {
         await fs.copy(templateDir, targetDir);
         spinner.succeed("Project structure created");
 
-        // Update package.json with project name
         const packageJsonPath = path.join(targetDir, "package.json");
         if (fs.existsSync(packageJsonPath)) {
             const packageJson = await fs.readJson(packageJsonPath);
@@ -413,13 +406,11 @@ async function createProject(options: ProjectOptions): Promise<void> {
             await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
         }
 
-        // Update main.ts with OCCT architecture if not default (32-bit)
         if (occtArchitecture !== "32") {
             const mainTsPath = path.join(targetDir, "src", "main.ts");
             if (fs.existsSync(mainTsPath)) {
                 let mainTsContent = await fs.readFile(mainTsPath, "utf-8");
                 
-                // Find the options object and add occtArchitecture property
                 const optionsPattern = /(const options:\s*InitBitByBitOptions\s*=\s*\{[\s\S]*?enableManifold:\s*true),(\s*\};)/;
                 const replacement = `$1,\n        occtArchitecture: "${occtArchitecture}"$2`;
                 
@@ -428,7 +419,6 @@ async function createProject(options: ProjectOptions): Promise<void> {
             }
         }
 
-        // Create vite.config.ts with COOP/COEP headers for 64-bit multi-threaded
         if (occtArchitecture === "64-mt") {
             const viteConfigPath = path.join(targetDir, "vite.config.ts");
             const viteConfigContent = `import { defineConfig } from "vite";
@@ -453,7 +443,6 @@ export default defineConfig({
             await fs.writeFile(viteConfigPath, viteConfigContent, "utf-8");
         }
 
-        // Success message
         console.log();
         console.log(chalk.gray("─".repeat(72)));
         console.log();
@@ -482,7 +471,6 @@ export default defineConfig({
         console.log(chalk.cyan("     npm run dev"));
         console.log();
 
-        // Show architecture-specific notes
         if (occtArchitecture === "64") {
             console.log(chalk.yellow("  ⚠️  Note: 64-bit OCCT may not be supported on all browsers."));
             console.log(chalk.gray("     Some older browsers may lack WebAssembly Memory64 support."));
@@ -680,7 +668,6 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
     console.log(chalk.gray("─".repeat(72)));
     console.log();
 
-    // Check if directory exists
     if (fs.existsSync(targetDir)) {
         const { overwrite } = await inquirer.prompt([
             {
@@ -709,12 +696,10 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
     try {
         const cloudTemplatesDir = path.join(__dirname, "..", "templates", "cloud");
 
-        // Copy frontend
         const frontendTemplateDir = path.join(cloudTemplatesDir, "frontend");
         const frontendTargetDir = path.join(targetDir, "frontend");
         await fs.copy(frontendTemplateDir, frontendTargetDir);
 
-        // Update frontend package.json name
         const frontendPackageJsonPath = path.join(frontendTargetDir, "package.json");
         if (fs.existsSync(frontendPackageJsonPath)) {
             const packageJson = await fs.readJson(frontendPackageJsonPath);
@@ -722,12 +707,10 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
             await fs.writeJson(frontendPackageJsonPath, packageJson, { spaces: 4 });
         }
 
-        // Copy backend
         const backendTemplateDir = path.join(cloudTemplatesDir, "backends", backend);
         const backendTargetDir = path.join(targetDir, "backend");
         await fs.copy(backendTemplateDir, backendTargetDir);
 
-        // Update backend package.json name (if applicable — not dotnet)
         const backendPackageJsonPath = path.join(backendTargetDir, "package.json");
         if (fs.existsSync(backendPackageJsonPath)) {
             const packageJson = await fs.readJson(backendPackageJsonPath);
@@ -735,7 +718,6 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
             await fs.writeJson(backendPackageJsonPath, packageJson, { spaces: 4 });
         }
 
-        // For Hono backends, update wrangler.jsonc name
         const wranglerPath = path.join(backendTargetDir, "wrangler.jsonc");
         if (fs.existsSync(wranglerPath)) {
             let wranglerContent = await fs.readFile(wranglerPath, "utf-8");
@@ -743,19 +725,16 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
             await fs.writeFile(wranglerPath, wranglerContent, "utf-8");
         }
 
-        // For nodejs backends, copy .env.example to .env
         const envExamplePath = path.join(backendTargetDir, ".env.example");
         if (fs.existsSync(envExamplePath)) {
             await fs.copy(envExamplePath, path.join(backendTargetDir, ".env"));
         }
 
-        // For Hono backends, create .dev.vars
         if (backend.startsWith("hono")) {
             const devVarsContent = "# Get your API key at https://bitbybit.dev/auth/pick-plan?api-keys=true\nBITBYBIT_API_KEY=\nBITBYBIT_API_URL=https://api.bitbybit.dev\n";
             await fs.writeFile(path.join(backendTargetDir, ".dev.vars"), devVarsContent, "utf-8");
         }
 
-        // For dotnet, create appsettings.Development.json
         if (backend === "dotnet-rest") {
             const devSettings = {
                 Bitbybit: {
@@ -766,12 +745,10 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
             await fs.writeJson(path.join(backendTargetDir, "appsettings.Development.json"), devSettings, { spaces: 2 });
         }
 
-        // Generate README.md
         await fs.writeFile(path.join(targetDir, "README.md"), generateCloudReadme(projectName, backend), "utf-8");
 
         spinner.succeed("Project structure created");
 
-        // Success message
         console.log();
         console.log(chalk.gray("─".repeat(72)));
         console.log();
@@ -848,7 +825,6 @@ async function main(): Promise<void> {
         .action(async (projectName: string | undefined, cmdOptions: { engine?: string; occtArchitecture?: string; type?: string; backend?: string }) => {
             await displayWelcome();
 
-            // Determine app type
             let appType: AppType;
             if (cmdOptions.type) {
                 if (cmdOptions.type !== "frontend" && cmdOptions.type !== "cloud") {
@@ -856,13 +832,12 @@ async function main(): Promise<void> {
                     console.error(chalk.gray(`    Valid options: frontend, cloud`));
                     process.exit(1);
                 }
-                appType = cmdOptions.type as AppType;
+                appType = cmdOptions.type;
             } else {
                 appType = await promptAppType();
             }
 
             if (appType === "cloud") {
-                // Validate backend option if provided
                 if (cmdOptions.backend) {
                     const validBackends = ["hono-sdk", "hono-rest", "nodejs-sdk", "nodejs-rest", "dotnet-rest"];
                     if (!validBackends.includes(cmdOptions.backend)) {
@@ -882,7 +857,6 @@ async function main(): Promise<void> {
             } else {
                 let options: ProjectOptions;
 
-                // If engine is provided via CLI, validate it
                 if (cmdOptions.engine) {
                     const validEngines = ["threejs", "babylonjs", "playcanvas"];
                     if (!validEngines.includes(cmdOptions.engine)) {
@@ -892,7 +866,6 @@ async function main(): Promise<void> {
                     }
                 }
 
-                // If OCCT architecture is provided via CLI, validate it
                 if (cmdOptions.occtArchitecture) {
                     const validArchitectures = ["32", "64", "64-mt"];
                     if (!validArchitectures.includes(cmdOptions.occtArchitecture)) {
@@ -902,7 +875,6 @@ async function main(): Promise<void> {
                     }
                 }
 
-                // If all options are provided via CLI, skip prompts
                 if (projectName && cmdOptions.engine && cmdOptions.occtArchitecture) {
                     options = {
                         projectName,
