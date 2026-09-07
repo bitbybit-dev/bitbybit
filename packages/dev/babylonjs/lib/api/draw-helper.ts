@@ -1089,13 +1089,13 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto<BABYLON.Mesh>): Promise<BABYLON.Mesh> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
+        return this.jscadWorkerManager.genericCallToWorkerPromise<{
             positions: number[],
             normals: number[],
             indices: number[],
             transforms: [],
             color?: number[]
-        }[]) => {
+        }[]>("shapesToMeshes", inputs).then((res) => {
 
             let localOrigin: BABYLON.Mesh;
             if (inputs.jscadMesh && inputs.updatable) {

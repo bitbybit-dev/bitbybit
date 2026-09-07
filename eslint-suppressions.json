@@ -267,11 +267,6 @@
       "count": 1
     }
   },
-  "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker-manager.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 4
-    }
-  },
   "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker-mock.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -343,11 +338,6 @@
       "count": 1
     }
   },
-  "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker-manager.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 4
-    }
-  },
   "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker-mock.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -384,11 +374,6 @@
   "packages/dev/occt-worker/lib/occ-worker/constants.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
-    }
-  },
-  "packages/dev/occt-worker/lib/occ-worker/occ-worker-manager.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 4
     }
   },
   "packages/dev/occt-worker/lib/occ-worker/occ-worker-mock.ts": {

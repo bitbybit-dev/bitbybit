@@ -130,13 +130,12 @@ export class JSCADText {
 
 // @public
 export class JSCADWorkerManager {
-    cleanAllCache(): Promise<any>;
+    cleanAllCache(): Promise<void>;
     // (undocumented)
     cleanPromisesMade(): void;
     // (undocumented)
     errorCallback: (err: string) => void;
-    // (undocumented)
-    genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any>;
+    genericCallToWorkerPromise<T = unknown>(functionName: string, inputs: unknown): Promise<T>;
     // (undocumented)
     jscadWorkerAlreadyInitialised(): boolean;
     // (undocumented)
@@ -145,7 +144,7 @@ export class JSCADWorkerManager {
     //
     // (undocumented)
     setJscadWorker(worker: Worker | JSCADWorkerMock): void;
-    startedTheRun(): Promise<any>;
+    startedTheRun(): Promise<void>;
 }
 
 // @public (undocumented)
