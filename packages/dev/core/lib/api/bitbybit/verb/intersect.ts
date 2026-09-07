@@ -6,6 +6,10 @@ import { BaseTypes } from "../base-types";
 
 /**
  * Functions that allow to intersect various geometric entities and get the results
+ *
+ * @deprecated Verbnurbs is not maintained upstream and this API is removed in the next major
+ * version. Use the OpenCascade (occt) NURBS operations instead. Existing scripts keep working
+ * until the removal.
  */
 
 export class VerbIntersect {

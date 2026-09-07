@@ -33,6 +33,13 @@ export type SharedServices = {
     point: Point;
     line: Line;
     polyline: Polyline;
+    /**
+     * NURBS curves and surfaces.
+     *
+     * @deprecated Verbnurbs is not maintained upstream and this API is removed in the next major
+     * version. Use the OpenCascade (occt) NURBS operations instead. Existing scripts keep working
+     * until the removal.
+     */
     verb: Verb;
     time: Time;
     occt: OCCTW;

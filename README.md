@@ -191,4 +191,5 @@ If you encounter issues during setup:
 3. Delete `node_modules` at the root and under `packages/dev/*`, then run `pnpm install`
 
 ## Major Dependencies
-BabylonJS, ThreeJS, PlayCanvas, OpenCascade, Manifold, JSCAD, Verbnurbs
+BabylonJS, ThreeJS, PlayCanvas, OpenCascade, Manifold, JSCAD, and Verbnurbs - the last of these
+deprecated, no longer maintained upstream, and removed in the next major version.

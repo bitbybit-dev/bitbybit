@@ -79,6 +79,17 @@ npm run lint
 - `cad-cloud-sdk` and `create-app` compile as **NodeNext at ES2022** where their siblings target a
   browser bundle - the only compiler settings either states on top of the shared base. Part of the
   SDK's `src/types/` is **generated** from the CAD Cloud API's schemas; do not edit those by hand.
+- **`bitbybit.verb` is deprecated and comes out in the next major.** Verbnurbs is unmaintained
+  upstream: its last release is from 2022, its own typings are two competing files that disagree, and
+  the successor release ships none at all. It is also not a kernel like OCCT, JSCAD or Manifold -
+  there is no `@bitbybit-dev/verb` package and no worker, just an API class in `core` calling a
+  library the renderer packages inject into `Context`. Its entry points and its eleven API classes
+  carry `@deprecated`, which reaches the TypeScript editor and changes nothing else: the tag is not
+  one the component generators read, so the visual components and every saved script are untouched
+  until the removal. Until then, **do not invest in it** - it holds two thirds of the `any` in the
+  published declarations, and typing those would mint sockets for an area that is going away. Drawing
+  does not depend on the library: `Base.VerbCurve` and `Base.VerbSurface` are `{ tessellate }`
+  structural types, so anything that tessellates still draws.
 - `create-app` is the `npx @bitbybit-dev/create-app` scaffolder, not a library.
 - **The `repository` field is load-bearing.** npm's provenance check compares the published manifest's
   `repository.url` with the repository the publish workflow runs in, so every package declares

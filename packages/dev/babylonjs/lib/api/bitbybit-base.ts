@@ -56,6 +56,13 @@ export class BitByBitBase {
     public transforms: Transforms;
     public polyline: Polyline;
     public draw: Draw;
+    /**
+     * NURBS curves and surfaces.
+     *
+     * @deprecated Verbnurbs is not maintained upstream and this API is removed in the next major
+     * version. Use the OpenCascade (occt) NURBS operations instead. Existing scripts keep working
+     * until the removal.
+     */
     public verb: Verb;
     public jscad: JSCAD;
     public manifold: ManifoldBitByBit;
