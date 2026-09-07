@@ -363,8 +363,45 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
+
+            // The first polyline carries its own colour; the second carries none and must keep the
+            // shared one. Colours are per vertex, so each two-point polyline contributes two.
             expect(result.children.length).toBe(1);
-            expect(result).toBeDefined();
+            const colours = (result.children[0] as THREEJS.LineSegments).geometry.getAttribute("color");
+            expect(Array.from(colours.array)).toEqual([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0]);
+        });
+
+        it("should fall back to the default colour for polylines that carry none", () => {
+            const polylinesData = [
+                { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[], isClosed: false, color: [1, 0, 0] as [number, number, number] },
+                { points: [[2, 0, 0], [3, 0, 0]] as Inputs.Base.Point3[], isClosed: false }
+            ];
+            // No shared colour at all: the second polyline has to reach the default rather than
+            // inherit the first polyline's own colour.
+            const inputs = new Inputs.Polyline.DrawPolylinesDto<THREEJS.Group>(polylinesData, 1, undefined, 2);
+
+            const result = drawHelper.drawPolylinesWithColours(inputs);
+
+            const colours = (result.children[0] as THREEJS.LineSegments).geometry.getAttribute("color");
+            const grey = new THREEJS.Color("#444444");
+            expect(Array.from(colours.array).slice(0, 6)).toEqual([1, 0, 0, 1, 0, 0]);
+            // The buffer holds 32-bit floats, so the grey compares to the tolerance of that format.
+            [grey.r, grey.g, grey.b, grey.r, grey.g, grey.b].forEach((expected, i) => {
+                expect(colours.array[6 + i]).toBeCloseTo(expected, 6);
+            });
+        });
+
+        it("should take a polyline's own colour when it is given as a hex string", () => {
+            const polylinesData = [
+                { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[], isClosed: false, color: "#0000ff" },
+                { points: [[2, 0, 0], [3, 0, 0]] as Inputs.Base.Point3[], isClosed: false }
+            ];
+            const inputs = new Inputs.Polyline.DrawPolylinesDto<THREEJS.Group>(polylinesData, 1, "#00ff00", 2);
+
+            const result = drawHelper.drawPolylinesWithColours(inputs);
+
+            const colours = (result.children[0] as THREEJS.LineSegments).geometry.getAttribute("color");
+            expect(Array.from(colours.array)).toEqual([0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0]);
         });
 
         it("should handle closed polylines", () => {

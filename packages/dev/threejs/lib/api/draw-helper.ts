@@ -258,7 +258,11 @@ export class DrawHelper extends DrawHelperCore {
             // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
             if (s.color) {
                 if (!Array.isArray(colours)) {
-                    colours = [];
+                    // Seeded with the shared colour rather than empty: starting from an empty array
+                    // dropped it, and the colour resolution then filled every polyline that carried
+                    // no colour of its own with the last one that did.
+                    const shared = colours ?? "#444444";
+                    colours = inputs.polylines.map(() => shared);
                 }
                 if (Array.isArray(s.color)) {
                     colours[index] = "#" + new THREEJS.Color(s.color[0]!, s.color[1]!, s.color[2]!).getHexString();

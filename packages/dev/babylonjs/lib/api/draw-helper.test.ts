@@ -5,7 +5,7 @@ vi.mock("@babylonjs/core", async () => {
 });
 
 import { createDrawHelperMocks } from "./__mocks__/test-helpers";
-import type { MockGreasedLineMesh, MockLinesMesh } from "./__mocks__/babylonjs.mock";
+import type { MockGreasedLineMesh, MockLinesMesh, MockScene } from "./__mocks__/babylonjs.mock";
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
@@ -426,7 +426,23 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            expect(result).toBeDefined();
+            // A polyline carrying its own colour takes it; one that carries none keeps the shared
+            // colour. Greased lines colour per point, so each two-point polyline contributes two.
+            const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
+            expect(options.colors!.map((c) => [c.r, c.g, c.b])).toEqual([[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0]]);
+        });
+
+        it("should take a polyline's own colour when it is given as a hex string", () => {
+            const polylinesData = [
+                { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[], isClosed: false, color: "#0000ff" },
+                { points: [[2, 0, 0], [3, 0, 0]] as Inputs.Base.Point3[], isClosed: false }
+            ];
+            const inputs = new Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>(polylinesData, 1, "#00ff00", 2);
+
+            const result = drawHelper.drawPolylinesWithColours(inputs);
+
+            const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
+            expect(options.colors!.map((c) => [c.r, c.g, c.b])).toEqual([[0, 0, 1], [0, 0, 1], [0, 1, 0], [0, 1, 0]]);
         });
 
         it("should handle closed polylines", () => {
@@ -1136,9 +1152,36 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawSurfacesMultiColour(updateInputs);
 
-            expect(result).toBeDefined();
+            // An update keeps the container the caller holds, and replaces what hangs off it.
+            expect(result).toBe(existingMesh);
+            expect((mockContext.scene as unknown as MockScene)._meshes).toContain(existingMesh);
+            expect(result.getChildren()).toHaveLength(1);
         });
 
+        it("should not grow the scene when the same surfaces are redrawn", () => {
+            const mockSurface = {
+                tessellate: vi.fn().mockReturnValue({
+                    faces: [[0, 1, 2]],
+                    points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                    normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
+                })
+            };
+            const scene = mockContext.scene as unknown as MockScene;
+            let mesh = drawHelper.drawSurfacesMultiColour(
+                new Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>([mockSurface], ["#ff0000"], 1, false, false, undefined, false)
+            );
+            const afterFirstDraw = scene._meshes.length;
+
+            // Act - a configurator redraws on every parameter change
+            for (let i = 0; i < 5; i++) {
+                mesh = drawHelper.drawSurfacesMultiColour(
+                    new Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>([mockSurface], ["#00ff00"], 1, true, false, mesh, false)
+                );
+            }
+
+            // Assert - five updates leave the scene the size one draw left it
+            expect(scene._meshes).toHaveLength(afterFirstDraw);
+        });
     });
 
     describe("createOrUpdateSurfacesMesh", () => {
