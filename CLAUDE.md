@@ -73,11 +73,11 @@ undeclared import on your machine and nowhere else, which is how one reached CI.
 
 `npm run lint` is ESLint 10 over the whole repository from one self-contained `eslint.config.mjs`:
 the two recommended sets plus the house style (double quotes, semicolons, underscore-tolerant unused
-variables). Every finding that existed when the config landed is recorded in `eslint-suppressions.json`
-(written by `eslint --suppress-all` from this directory); a new finding fails, and so does a suppression
-that is no longer needed, so the count only goes down. Never load `eslint-plugin-no-comments` here: the
-JSDoc on the public API is a functional input to the visual editors, whose components are generated from it,
-and that rule's auto-fix would delete it.
+variables), plus the local `no-double-assertion` in `eslint-rules/`: `x as unknown as T` widens until
+nothing is checked and then declares the answer - use a type predicate. Findings that predate a rule are
+recorded in `eslint-suppressions.json` (`eslint --suppress-all` here); a new one fails, as does a
+suppression no longer needed, so the count only falls. Never load `eslint-plugin-no-comments`: the JSDoc on
+the public API is a functional input to the editors generated from its tags, and its auto-fix deletes it.
 
 Every package builds and typechecks under the whole strict set, and the flags live in one place:
 `tsconfig.base.cad.json`, which every package's `tsconfig.json` (the editor and test view) and

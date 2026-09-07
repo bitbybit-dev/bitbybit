@@ -3,6 +3,7 @@ import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import globals from "globals";
 import { targets } from "./scripts/inputs.config.mjs";
+import noDoubleAssertion from "./eslint-rules/no-double-assertion.mjs";
 
 // The lint of this repository, self-contained: it runs from a bare clone with nothing above it.
 //
@@ -57,8 +58,13 @@ export default defineConfig([
     {
         files: ["**/*.ts"],
         extends: [...tseslint.configs.recommended],
+        plugins: { bitbybit: { rules: { "no-double-assertion": noDoubleAssertion } } },
         rules: {
             "@typescript-eslint/no-unused-vars": UNDERSCORE_TOLERANT_UNUSED_VARS,
+            // A local rule rather than a no-restricted-syntax selector, so that the suppression file
+            // budgets it under a name of its own: a shared rule id would let a later selector's
+            // findings hide inside a count recorded for this one.
+            "bitbybit/no-double-assertion": "error",
         },
     },
     {
