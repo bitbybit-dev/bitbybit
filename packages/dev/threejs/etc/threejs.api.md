@@ -1514,21 +1514,21 @@ namespace JSCAD {
 namespace JSON_2 {
     // (undocumented)
     class GetJsonFromArrayByFirstPropMatchDto {
-        constructor(jsonArray?: any[], property?: string, match?: any);
-        jsonArray: any[];
-        match: any;
+        constructor(jsonArray?: unknown[], property?: string, match?: unknown);
+        jsonArray: unknown[];
+        match: unknown;
         property: string;
     }
     // (undocumented)
     class GetValueOnPropDto {
-        constructor(json?: any, property?: string);
-        json: any;
+        constructor(json?: unknown, property?: string);
+        json: unknown;
         property: string;
     }
     // (undocumented)
     class JsonDto {
-        constructor(json?: any);
-        json: any;
+        constructor(json?: unknown);
+        json: unknown;
     }
     // (undocumented)
     class ParseDto {
@@ -1537,43 +1537,43 @@ namespace JSON_2 {
     }
     // (undocumented)
     class PathsDto {
-        constructor(json?: any, query?: string);
-        json: any;
+        constructor(json?: unknown, query?: string);
+        json: unknown;
         query: string;
     }
     // (undocumented)
     class QueryDto {
-        constructor(json?: any, query?: string);
-        json: any;
+        constructor(json?: unknown, query?: string);
+        json: unknown;
         query: string;
     }
     // (undocumented)
     class SetValueDto {
-        constructor(json?: any, value?: any, path?: string, prop?: string);
-        json: any;
+        constructor(json?: unknown, value?: unknown, path?: string, prop?: string);
+        json: unknown;
         path: string;
         prop: string;
-        value: any;
+        value: unknown;
     }
     // (undocumented)
     class SetValueOnPropDto {
-        constructor(json?: any, value?: any, property?: string);
-        json: any;
+        constructor(json?: unknown, value?: unknown, property?: string);
+        json: unknown;
         property: string;
-        value: any;
+        value: unknown;
     }
     // (undocumented)
     class SetValuesOnPathsDto {
-        constructor(json?: any, values?: any[], paths?: string[], props?: []);
-        json: any;
+        constructor(json?: unknown, values?: unknown[], paths?: string[], props?: string[]);
+        json: unknown;
         paths: string[];
         props: string[];
-        values: any[];
+        values: unknown[];
     }
     // (undocumented)
     class StringifyDto {
-        constructor(json?: any);
-        json: any;
+        constructor(json?: unknown);
+        json: unknown;
     }
 }
 

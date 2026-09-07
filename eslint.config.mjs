@@ -67,6 +67,16 @@ export default defineConfig([
             "bitbybit/no-double-assertion": "error",
         },
     },
+    // The JSON API is the one place `any` is the answer rather than the debt. Its methods return a
+    // value parsed or queried out of an arbitrary structure, and the caller is the only one who knows
+    // its shape - `parse` is TypeScript's own `JSON.parse` with a path expression, and that returns
+    // `any` for the same reason. Returning `unknown` instead would compile here and break every
+    // script that reads a property off the result. Named and scoped, so it stays a decision: the
+    // inputs of these same methods are `unknown`, and that is where narrowing belongs.
+    {
+        files: ["packages/dev/core/lib/api/bitbybit/json.ts"],
+        rules: { "@typescript-eslint/no-explicit-any": "off" },
+    },
     {
         files: ["**/*.test.ts", "**/__mocks__/**"],
         languageOptions: {

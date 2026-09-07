@@ -1,6 +1,13 @@
 import { ContextBase } from "../context";
 import * as Inputs from "../inputs";
 
+// The JSON API takes arbitrary values, so a property read has to establish there is an object to
+// read from. `jsonArray` is documented as an array of json objects; an entry that is not one cannot
+// match a property and is skipped. The spread clones keep today's behaviour for a non-object -
+// spreading a string yields its indexed characters - rather than starting to throw.
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+    typeof value === "object" && value !== null;
+
 /**
  * Contains various json path methods.
  * <div>
@@ -57,7 +64,7 @@ export class JSONBitByBit {
      */
     setValueOnProp(inputs: Inputs.JSON.SetValueOnPropDto): any {
         // must be an object
-        const clonedJson = { ...structuredClone(inputs.json) };
+        const clonedJson = { ...structuredClone(inputs.json) as Record<string, unknown> };
         clonedJson[inputs.property] = inputs.value;
         return clonedJson;
     }
@@ -72,7 +79,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     getJsonFromArrayByFirstPropMatch(inputs: Inputs.JSON.GetJsonFromArrayByFirstPropMatchDto): any {
-        return inputs.jsonArray.find(j => j[inputs.property] === inputs.match);
+        return inputs.jsonArray.find(j => isRecord(j) && j[inputs.property] === inputs.match);
     }
 
     /**
@@ -86,10 +93,10 @@ export class JSONBitByBit {
     getValueOnProp(inputs: Inputs.JSON.GetValueOnPropDto): any {
         // must be an object
         try {
-            const clonedJson = { ...structuredClone(inputs.json) };
+            const clonedJson = { ...structuredClone(inputs.json) as Record<string, unknown> };
             return clonedJson[inputs.property];
         } catch {
-            return inputs.json[inputs.property];
+            return (inputs.json as Record<string, unknown>)[inputs.property];
         }
     }
 
@@ -132,7 +139,7 @@ export class JSONBitByBit {
      */
     setValuesOnPaths(inputs: Inputs.JSON.SetValuesOnPathsDto): any {
         // must be an object
-        let clonedJson = { ...structuredClone(inputs.json) };
+        let clonedJson = { ...structuredClone(inputs.json) as Record<string, unknown> };
         inputs.paths.forEach((path, index) => {
             clonedJson = this.setValue({ json: clonedJson, path, value: inputs.values[index], prop: inputs.props[index]! });
         });

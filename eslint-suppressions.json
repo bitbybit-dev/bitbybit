@@ -142,11 +142,6 @@
       "count": 1
     }
   },
-  "packages/dev/core/lib/api/bitbybit/json.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 9
-    }
-  },
   "packages/dev/core/lib/api/bitbybit/verb/curve-circle.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -210,11 +205,6 @@
   "packages/dev/core/lib/api/inputs/base-inputs.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
-    }
-  },
-  "packages/dev/core/lib/api/inputs/json-inputs.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 26
     }
   },
   "packages/dev/core/lib/api/inputs/time-inputs.ts": {
