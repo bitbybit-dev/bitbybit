@@ -11,6 +11,9 @@ importers:
       '@eslint/js':
         specifier: 10.0.1
         version: 10.0.1(eslint@10.10.0(supports-color@10.2.2))
+      '@types/node':
+        specifier: 22.20.1
+        version: 22.20.1
       eslint:
         specifier: 10.10.0
         version: 10.10.0(supports-color@10.2.2)

@@ -217,10 +217,12 @@ const BANNER = [
 
 // Every percentage in the report carries the band it falls in, because a column of thirteen of them
 // is scanned rather than read. Below 30% is a suite that has barely begun, below 50% one that covers
-// a fraction of its surface, below 80% one that is genuinely tested with room left, and above that is
-// where a package should end up. A dot rather than coloured text: colour in a run summary would have
-// to be typeset as mathematics, which reads as a formula to a screen reader and is lost in a log.
-const BANDS = [[30, "\u{1F534}"], [50, "\u{1F7E0}"], [80, "\u{1F535}"]];
+// a fraction of its surface, below 70% one that is genuinely tested with room left, and above that is
+// where a package should end up. The third band wants to read as almost-there rather than as its own
+// achievement, and yellow is as close to a lighter green as this alphabet has: there is no pale green
+// dot to reach for. A dot rather than coloured text at all, because colour in a run summary has to be
+// typeset as mathematics, which reads as a formula to a screen reader and is lost entirely in a log.
+const BANDS = [[30, "\u{1F534}"], [50, "\u{1F7E0}"], [70, "\u{1F7E1}"]];
 const band = (pct) => (typeof pct === "number" ? (BANDS.find(([edge]) => pct < edge)?.[1] ?? "\u{1F7E2}") : "");
 const fmtPctBanded = (n) => (typeof n === "number" ? `${band(n)} ${fmtPct(n)}` : "-");
 
