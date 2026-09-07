@@ -376,7 +376,9 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({
                 jscadMesh: inputs.group,
-                mesh: inputs.entity,
+                // The dispatcher has already identified the entity as JSCAD geometry; Draw.Entity is
+                // the union of everything drawable and does not carry that decision.
+                mesh: inputs.entity as unknown as Inputs.JSCAD.JSCADEntity,
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMesh);
@@ -386,7 +388,9 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMeshes({
                 jscadMesh: inputs.group,
-                meshes: inputs.entity as Inputs.JSCAD.JSCADEntity[],
+                // The dispatcher has already identified the entity as JSCAD geometry; Draw.Entity is
+                // the union of everything drawable and does not carry that decision.
+                meshes: inputs.entity as unknown as Inputs.JSCAD.JSCADEntity[],
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMeshes);

@@ -1090,12 +1090,61 @@ namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
-    type JSCADEntity = any;
+    type JSCADColor = [number, number, number] | [number, number, number, number];
+    type JSCADEntity = JSCADGeom2 | JSCADGeom3 | JSCADPath2;
+    type JSCADGeom2 = {
+        sides: [JSCADVec2, JSCADVec2][];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADGeom3 = {
+        polygons: JSCADPoly3[];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADMat4 = [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number
+    ];
+    type JSCADMeshData = {
+        positions: number[];
+        normals: number[];
+        indices: number[];
+        transforms: JSCADMat4;
+    };
+    type JSCADPath2 = {
+        points: JSCADVec2[];
+        isClosed: boolean;
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADPlane = [number, number, number, number];
+    type JSCADPoly3 = {
+        vertices: JSCADVec3[];
+        color?: JSCADColor;
+        plane?: JSCADPlane;
+    };
     enum jscadTextAlignEnum {
         center = "center",
         left = "left",
         right = "right"
     }
+    type JSCADVec2 = [number, number];
+    type JSCADVec3 = [number, number, number];
     // (undocumented)
     class MeshDto {
         constructor(mesh?: JSCADEntity);
@@ -6118,7 +6167,7 @@ namespace Vector {
     }
 }
 
-// @public
+// @public @deprecated
 export class Verb {
     // Warning: (ae-forgotten-export) The symbol "GeometryHelper" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "MathBitByBit" needs to be exported by the entry point index.d.ts
@@ -6548,7 +6597,7 @@ namespace Verb_2 {
     }
 }
 
-// @public
+// @public @deprecated
 export class VerbCurve {
     constructor(context: ContextBase, geometryHelper: GeometryHelper, math: MathBitByBit);
     // (undocumented)
@@ -6596,7 +6645,7 @@ export class VerbCurve {
     weights(inputs: Inputs_3.Verb.CurveDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbCurveCircle {
     constructor(context: ContextBase, math: MathBitByBit);
     center(inputs: Inputs_3.Verb.CircleDto): number[];
@@ -6609,7 +6658,7 @@ export class VerbCurveCircle {
     yAxis(inputs: Inputs_3.Verb.CircleDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbCurveEllipse {
     constructor(context: ContextBase, math: MathBitByBit);
     center(inputs: Inputs_3.Verb.EllipseDto): number[];
@@ -6621,7 +6670,7 @@ export class VerbCurveEllipse {
     yAxis(inputs: Inputs_3.Verb.EllipseDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbIntersect {
     constructor(context: ContextBase, _geometryHelper: GeometryHelper);
     curveAndSurface(inputs: Inputs_3.Verb.CurveSurfaceDto): BaseTypes.CurveSurfaceIntersection[];
@@ -6637,7 +6686,7 @@ export class VerbIntersect {
     surfaces(inputs: Inputs_3.Verb.SurfaceSurfaceDto): any[];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurface {
     constructor(context: ContextBase, geometryHelper: GeometryHelper, math: MathBitByBit);
     boundaries(inputs: Inputs_3.Verb.SurfaceDto): any[];
@@ -6678,7 +6727,7 @@ export class VerbSurface {
     weights(inputs: Inputs_3.Verb.SurfaceDto): number[][];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceConical {
     constructor(context: ContextBase);
     axis(inputs: Inputs_3.Verb.ConeDto): number[];
@@ -6689,7 +6738,7 @@ export class VerbSurfaceConical {
     xAxis(inputs: Inputs_3.Verb.ConeDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceCylindrical {
     constructor(context: ContextBase);
     axis(inputs: Inputs_3.Verb.CylinderDto): number[];
@@ -6700,7 +6749,7 @@ export class VerbSurfaceCylindrical {
     xAxis(inputs: Inputs_3.Verb.CylinderDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceExtrusion {
     constructor(context: ContextBase);
     create(inputs: Inputs_3.Verb.ExtrusionParametersDto): any;
@@ -6708,7 +6757,7 @@ export class VerbSurfaceExtrusion {
     profile(inputs: Inputs_3.Verb.ExtrusionDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceRevolved {
     constructor(context: ContextBase, math: MathBitByBit);
     angle(inputs: Inputs_3.Verb.RevolutionDto): number;
@@ -6718,7 +6767,7 @@ export class VerbSurfaceRevolved {
     profile(inputs: Inputs_3.Verb.RevolutionDto): any;
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceSpherical {
     constructor(context: ContextBase);
     center(inputs: Inputs_3.Verb.SphereDto): number[];
@@ -6726,7 +6775,7 @@ export class VerbSurfaceSpherical {
     radius(inputs: Inputs_3.Verb.SphereDto): number;
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceSweep {
     constructor(context: ContextBase);
     create(inputs: Inputs_3.Verb.SweepParametersDto): any;

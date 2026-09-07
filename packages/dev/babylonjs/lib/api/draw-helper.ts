@@ -1134,21 +1134,25 @@ export class DrawHelper extends DrawHelperCore {
     async drawPath(inputs: Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>): Promise<BABYLON.GreasedLineMesh> {
         return new Promise(resolve => {
 
-            if (inputs.path.points) {
-                if (inputs.path.isClosed) {
-                    const pt = inputs.path.points[0];
-                    inputs.path.points.push([pt[0], 0, pt[1]]);
+            // A path is what this draws; the input type is the entity union, which spans all three
+            // JSCAD shapes and so does not say which one arrived.
+            const path = inputs.path as Inputs.JSCAD.JSCADPath2;
+
+            if (path.points) {
+                if (path.isClosed) {
+                    const pt = path.points[0]!;
+                    path.points.push([pt[0], 0, pt[1]] as unknown as Inputs.JSCAD.JSCADVec2);
                 }
             }
 
             let colour = inputs.colour;
-            if (inputs.path.color) {
-                colour = BABYLON.Color3.FromArray(inputs.path.color).toHexString();
+            if (path.color) {
+                colour = BABYLON.Color3.FromArray(path.color).toHexString();
             }
 
             resolve(this.drawPolyline(
                 inputs.pathMesh,
-                inputs.path.points,
+                path.points,
                 inputs.updatable,
                 inputs.width,
                 inputs.opacity,

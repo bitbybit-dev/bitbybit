@@ -79,6 +79,15 @@ npm run lint
 - `cad-cloud-sdk` and `create-app` compile as **NodeNext at ES2022** where their siblings target a
   browser bundle - the only compiler settings either states on top of the shared base. Part of the
   SDK's `src/types/` is **generated** from the CAD Cloud API's schemas; do not edit those by hand.
+- **A JSCAD entity is one of three unrelated shapes, and the types say so.** `JSCADEntity` is
+  `JSCADGeom2 | JSCADGeom3 | JSCADPath2` - a 2D region held as its edges, a solid held as its
+  polygons, and a path. They share only a transform, so narrow before reading: `"polygons" in x` for
+  a solid, `"isClosed" in x` for a path, `"sides" in x` for a region. Those types are structural
+  mirrors of the library's own rather than imports of them, so the published declarations need
+  nothing from `@jscad/modeling` to be read; `jscad-entity.test.ts` asserts each is assignable to the
+  library's type and back, so a change upstream fails the build instead of rotting. Where an
+  operation needs one kind, `jscad/lib/api/services/entity-narrowing.ts` is what says so - and it is also the one
+  place that bridges to the kernel's per-kind overloads, which refuse a mixed list.
 - **`bitbybit.verb` is deprecated and comes out in the next major.** Verbnurbs is unmaintained
   upstream: its last release is from 2022, its own typings are two competing files that disagree, and
   the successor release ships none at all. It is also not a kernel like OCCT, JSCAD or Manifold -

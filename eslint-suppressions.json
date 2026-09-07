@@ -244,11 +244,6 @@
       "count": 3
     }
   },
-  "packages/dev/jscad/lib/api/inputs/jscad/entities-and-enums.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
   "packages/dev/jscad/lib/api/inputs/jscad/paths.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -391,7 +386,7 @@
   },
   "packages/dev/threejs/lib/api/bitbybit/draw.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 5
+      "count": 4
     }
   },
   "packages/dev/threejs/lib/api/bitbybit/threejs/orbit-camera.test.ts": {

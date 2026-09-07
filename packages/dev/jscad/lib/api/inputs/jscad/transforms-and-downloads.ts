@@ -28,7 +28,7 @@ export class TransformSolidDto {
      * Solid to be transformed
      * @default undefined
      */
-    mesh: JSCADEntity;
+    mesh!: JSCADEntity;
     /**
      * Transformation matrix or a list of transformation matrixes
      * @default undefined
@@ -44,7 +44,7 @@ export class DownloadSolidDto {
      * Solid to be downloaded
      * @default undefined
      */
-    mesh: JSCADEntity;
+    mesh!: JSCADEntity;
     /**
      * File name
      * @default undefined
@@ -61,7 +61,7 @@ export class DownloadGeometryDto {
      * Solid or path to be downloaded, also supports multiple geometries in array
      * @default undefined
      */
-    geometry: JSCADEntity | JSCADEntity[];
+    geometry!: JSCADEntity | JSCADEntity[];
     /**
      * File name
      * @default jscad-geometry
@@ -99,7 +99,7 @@ export class ColorizeDto {
      * Solid to be colorized
      * @default undefined
      */
-    geometry: JSCADEntity | JSCADEntity[];
+    geometry!: JSCADEntity | JSCADEntity[];
     /**
      * Hex color string
      * @default #0000ff

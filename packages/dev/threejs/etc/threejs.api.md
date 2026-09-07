@@ -272,7 +272,7 @@ export class BitByBitBase {
     vector: Vector_2;
     // Warning: (ae-forgotten-export) The symbol "Verb_2" needs to be exported by the entry point index.d.ts
     //
-    // (undocumented)
+    // @deprecated
     verb: Verb_2;
 }
 
@@ -1222,12 +1222,61 @@ namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
-    type JSCADEntity = any;
+    type JSCADColor = [number, number, number] | [number, number, number, number];
+    type JSCADEntity = JSCADGeom2 | JSCADGeom3 | JSCADPath2;
+    type JSCADGeom2 = {
+        sides: [JSCADVec2, JSCADVec2][];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADGeom3 = {
+        polygons: JSCADPoly3[];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADMat4 = [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number
+    ];
+    type JSCADMeshData = {
+        positions: number[];
+        normals: number[];
+        indices: number[];
+        transforms: JSCADMat4;
+    };
+    type JSCADPath2 = {
+        points: JSCADVec2[];
+        isClosed: boolean;
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADPlane = [number, number, number, number];
+    type JSCADPoly3 = {
+        vertices: JSCADVec3[];
+        color?: JSCADColor;
+        plane?: JSCADPlane;
+    };
     enum jscadTextAlignEnum {
         center = "center",
         left = "left",
         right = "right"
     }
+    type JSCADVec2 = [number, number];
+    type JSCADVec3 = [number, number, number];
     // (undocumented)
     class MeshDto {
         constructor(mesh?: JSCADEntity);

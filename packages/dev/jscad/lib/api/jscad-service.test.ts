@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type * as Modeling from "@jscad/modeling";
-import { getJscad } from "./__test__/kernel";
+import { expectSolid, getJscad } from "./__test__/kernel";
 import type { Jscad } from "./jscad-service";
 import * as Inputs from "./inputs";
 
@@ -106,7 +106,7 @@ describe("Jscad", () => {
             const inputs = new Inputs.JSCAD.TransformSolidDto(cube, IDENTITY);
 
             // Act
-            const unmoved = jscad.transformSolid(inputs);
+            const unmoved = expectSolid(jscad.transformSolid(inputs));
 
             // Assert
             expect(kernel.measurements.measureCenter(unmoved)).toEqual(ORIGIN);
@@ -161,8 +161,8 @@ describe("Jscad", () => {
 
             // Assert
             expect(moved).toHaveLength(2);
-            expect(kernel.measurements.measureCenter(moved[0])).toEqual([SHIFT_X, 0, 0]);
-            expect(kernel.measurements.measureCenter(moved[1])).toEqual([SHIFT_X, SHIFT_X, 0]);
+            expect(kernel.measurements.measureCenter(expectSolid(moved[0]!))).toEqual([SHIFT_X, 0, 0]);
+            expect(kernel.measurements.measureCenter(expectSolid(moved[1]!))).toEqual([SHIFT_X, SHIFT_X, 0]);
         });
     });
 });

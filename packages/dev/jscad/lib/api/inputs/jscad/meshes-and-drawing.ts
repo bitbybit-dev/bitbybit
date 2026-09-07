@@ -9,7 +9,7 @@ export class MeshDto {
     /**
     * Solid Jscad mesh
     */
-    mesh: JSCADEntity;
+    mesh!: JSCADEntity;
 }
 
 export class MeshesDto {
@@ -39,7 +39,7 @@ export class DrawSolidMeshDto<T> {
     /**
      * Solid Jscad mesh
      */
-    mesh: JSCADEntity;
+    mesh!: JSCADEntity;
     /**
      * Value between 0 and 1
      * @default 1
@@ -175,7 +175,7 @@ export class DrawPathDto<T> {
      * 2D Path to draw         
      * @default undefined
      */
-    path: JSCADEntity;
+    path!: JSCADEntity;
     /**
      * Colour of the path
      * @default #444444

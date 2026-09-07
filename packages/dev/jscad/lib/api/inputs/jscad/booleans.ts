@@ -21,12 +21,12 @@ export class BooleanTwoObjectsDto {
      * Contains Jscad Solid
      * @default undefined
      */
-    first: JSCADEntity;
+    first!: JSCADEntity;
     /**
      * Contains Jscad Solid
      * @default undefined
      */
-    second: JSCADEntity;
+    second!: JSCADEntity;
 }
 export class BooleanObjectsFromDto {
     constructor(from?: JSCADEntity, meshes?: JSCADEntity[]) {
@@ -37,7 +37,7 @@ export class BooleanObjectsFromDto {
      * Contains Jscad Solid
      * @default undefined
      */
-    from: JSCADEntity;
+    from!: JSCADEntity;
     /**
      * Contains Jscad Solid
      * @default undefined

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type * as Modeling from "@jscad/modeling";
-import { getJscad } from "../__test__/kernel";
+import { expectRegion, getJscad } from "../__test__/kernel";
 import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
@@ -56,7 +56,7 @@ describe("JSCADExpansions", () => {
             const inputs = new Inputs.JSCAD.ExpansionDto(square, DELTA, Inputs.JSCAD.solidCornerTypeEnum.round, SEGMENTS);
 
             // Act
-            const offset = jscad.expansions.offset(inputs);
+            const offset = expectRegion(jscad.expansions.offset(inputs));
 
             // Assert
             const [min, max] = kernel.measurements.measureBoundingBox(offset);

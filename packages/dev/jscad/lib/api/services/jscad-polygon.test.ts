@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type * as Modeling from "@jscad/modeling";
-import { getJscad } from "../__test__/kernel";
+import { expectRegion, getJscad } from "../__test__/kernel";
 import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
@@ -36,7 +36,7 @@ describe("JSCADPolygon", () => {
             const analyticArea = Math.PI * CIRCLE_RADIUS ** 2;
 
             // Act
-            const circle = jscad.polygon.circle(inputs);
+            const circle = expectRegion(jscad.polygon.circle(inputs));
 
             // Assert
             const area = kernel.measurements.measureArea(circle);
@@ -52,7 +52,7 @@ describe("JSCADPolygon", () => {
             const inputs = new Inputs.JSCAD.SquareDto(CENTRE, SQUARE_SIZE);
 
             // Act
-            const square = jscad.polygon.square(inputs);
+            const square = expectRegion(jscad.polygon.square(inputs));
 
             // Assert
             expect(kernel.measurements.measureArea(square)).toBeCloseTo(SQUARE_AREA, 6);
@@ -113,7 +113,7 @@ describe("JSCADPolygon", () => {
             const inputs = new Inputs.JSCAD.StarDto(CENTRE, STAR_POINTS, 2, 3, 1.5);
 
             // Act
-            const star = jscad.polygon.star(inputs);
+            const star = expectRegion(jscad.polygon.star(inputs));
 
             // Assert
             expect(star.sides).toHaveLength(STAR_SIDES);
@@ -126,7 +126,7 @@ describe("JSCADPolygon", () => {
             const inputs = new Inputs.Point.PointsDto(TRIANGLE as unknown as Inputs.Base.Point3[]);
 
             // Act
-            const triangle = jscad.polygon.createFromPoints(inputs);
+            const triangle = expectRegion(jscad.polygon.createFromPoints(inputs));
 
             // Assert
             expect(kernel.measurements.measureArea(triangle)).toBeCloseTo(TRIANGLE_AREA, 6);

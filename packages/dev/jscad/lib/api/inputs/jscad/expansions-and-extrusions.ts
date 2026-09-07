@@ -14,7 +14,7 @@ export class ExpansionDto {
      * Can contain various Jscad entities from Solid category
      * @default undefined
      */
-    geometry: JSCADEntity;
+    geometry!: JSCADEntity;
     /**
      * Delta (+/-) of expansion
      * @default 0.1
@@ -48,7 +48,7 @@ export class OffsetDto {
      * Can contain various Jscad entities from Solid category
      * @default undefined
      */
-    geometry: JSCADEntity;
+    geometry!: JSCADEntity;
     /**
      * Delta (+/-) of offset
      * @default 0.1
@@ -82,7 +82,7 @@ export class ExtrudeLinearDto {
      * Geometry to extrude
      * @default undefined
      */
-    geometry: JSCADEntity;
+    geometry!: JSCADEntity;
     /**
      * Height of linear extrude
      * @default 1
@@ -129,7 +129,7 @@ export class ExtrudeRectangularDto {
      * Geometry to extrude
      * @default undefined
      */
-    geometry: JSCADEntity;
+    geometry!: JSCADEntity;
     /**
      * Height of linear extrude
      * @default 1
@@ -186,7 +186,7 @@ export class ExtrudeRotateDto {
      * Polygon to extrude
      * @default undefined
      */
-    polygon: JSCADEntity;
+    polygon!: JSCADEntity;
     /**
      * Angle in degrees
      * @default 90

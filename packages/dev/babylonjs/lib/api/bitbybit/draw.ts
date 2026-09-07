@@ -784,7 +784,9 @@ export class Draw extends DrawCore {
         }
         return this.drawHelper.drawSolidOrPolygonMesh({
             jscadMesh: inputs.babylonMesh,
-            mesh: inputs.entity,
+            // The dispatcher has already identified the entity as JSCAD geometry; Draw.Entity is
+            // the union of everything drawable and does not carry that decision.
+            mesh: inputs.entity as unknown as Inputs.JSCAD.JSCADEntity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMesh, options, r);

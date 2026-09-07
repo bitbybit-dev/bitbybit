@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type * as Modeling from "@jscad/modeling";
-import { getJscad } from "../__test__/kernel";
+import { expectSolid, getJscad } from "../__test__/kernel";
 import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
@@ -163,8 +163,8 @@ describe("JSCADShapes", () => {
             };
 
             // Act
-            const coarseSphere = jscad.shapes.geodesicSphere(coarse);
-            const fineSphere = jscad.shapes.geodesicSphere(fine);
+            const coarseSphere = expectSolid(jscad.shapes.geodesicSphere(coarse));
+            const fineSphere = expectSolid(jscad.shapes.geodesicSphere(fine));
 
             // Assert
             expect(fineSphere.polygons.length).toBeGreaterThan(coarseSphere.polygons.length);

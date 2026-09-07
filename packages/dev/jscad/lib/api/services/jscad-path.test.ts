@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { getJscad } from "../__test__/kernel";
+import { expectPath, getJscad } from "../__test__/kernel";
 import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
@@ -19,7 +19,7 @@ describe("JSCADPath", () => {
             const inputs = new Inputs.JSCAD.PathFromPointsDto(OPEN_CORNER, false);
 
             // Act
-            const path = jscad.path.createFromPoints(inputs);
+            const path = expectPath(jscad.path.createFromPoints(inputs));
 
             // Assert
             expect(path.isClosed).toBe(false);
@@ -31,7 +31,7 @@ describe("JSCADPath", () => {
             const inputs = new Inputs.JSCAD.PathFromPointsDto(OPEN_CORNER, true);
 
             // Act
-            const path = jscad.path.createFromPoints(inputs);
+            const path = expectPath(jscad.path.createFromPoints(inputs));
 
             // Assert
             expect(path.isClosed).toBe(true);
@@ -42,10 +42,10 @@ describe("JSCADPath", () => {
     describe("close", () => {
         it("should close an open path without adding a point", () => {
             // Arrange
-            const open = jscad.path.createFromPoints(new Inputs.JSCAD.PathFromPointsDto(OPEN_CORNER, false));
+            const open = expectPath(jscad.path.createFromPoints(new Inputs.JSCAD.PathFromPointsDto(OPEN_CORNER, false)));
 
             // Act
-            const closed = jscad.path.close(new Inputs.JSCAD.PathDto(open));
+            const closed = expectPath(jscad.path.close(new Inputs.JSCAD.PathDto(open)));
 
             // Assert
             expect(closed.isClosed).toBe(true);
@@ -56,11 +56,11 @@ describe("JSCADPath", () => {
     describe("appendPoints", () => {
         it("should extend the path by the points given", () => {
             // Arrange
-            const open = jscad.path.createFromPoints(new Inputs.JSCAD.PathFromPointsDto(OPEN_CORNER, false));
+            const open = expectPath(jscad.path.createFromPoints(new Inputs.JSCAD.PathFromPointsDto(OPEN_CORNER, false)));
             const inputs = new Inputs.JSCAD.PathAppendPointsDto(EXTRA_POINTS, open);
 
             // Act
-            const extended = jscad.path.appendPoints(inputs);
+            const extended = expectPath(jscad.path.appendPoints(inputs));
 
             // Assert
             expect(extended.points).toHaveLength(OPEN_CORNER.length + EXTRA_POINTS.length);
@@ -69,7 +69,7 @@ describe("JSCADPath", () => {
 
         it("should leave the original path untouched", () => {
             // Arrange
-            const open = jscad.path.createFromPoints(new Inputs.JSCAD.PathFromPointsDto(OPEN_CORNER, false));
+            const open = expectPath(jscad.path.createFromPoints(new Inputs.JSCAD.PathFromPointsDto(OPEN_CORNER, false)));
             const inputs = new Inputs.JSCAD.PathAppendPointsDto(EXTRA_POINTS, open);
 
             // Act

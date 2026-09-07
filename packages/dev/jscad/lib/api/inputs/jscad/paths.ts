@@ -38,7 +38,7 @@ export class PathDto {
      * 2D path
      * @default undefined
      */
-    path: JSCADEntity;
+    path!: JSCADEntity;
 }
 export class PathFromPointsDto {
     constructor(points?: Base.Point2[], closed?: boolean) {
@@ -91,12 +91,12 @@ export class PathAppendCurveDto {
      * Verb Nurbs curve
      * @default undefined
      */
-    curve: JSCADEntity;
+    curve!: JSCADEntity;
     /**
      * Path to append the curve to
      * @default undefined
      */
-    path: JSCADEntity;
+    path!: JSCADEntity;
 }
 export class PathAppendPointsDto {
     constructor(points?: Base.Point2[], path?: JSCADEntity) {
@@ -112,7 +112,7 @@ export class PathAppendPointsDto {
      * Path to append the points to
      * @default undefined
      */
-    path: JSCADEntity;
+    path!: JSCADEntity;
 }
 export class PathAppendPolylineDto {
     constructor(polyline?: PolylinePropertiesDto, path?: JSCADEntity) {
@@ -128,7 +128,7 @@ export class PathAppendPolylineDto {
      * Path to append the polyline to
      * @default undefined
      */
-    path: JSCADEntity;
+    path!: JSCADEntity;
 }
 export class PathAppendArcDto {
     constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number) {
@@ -145,7 +145,7 @@ export class PathAppendArcDto {
      * Path to append the arc to
      * @default undefined
      */
-    path: JSCADEntity;
+    path!: JSCADEntity;
     /**
      * End point of an arc
      * @default [1, 1]
