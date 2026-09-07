@@ -25,7 +25,6 @@ import { BabylonCamera } from "../../inputs/babylon-camera-inputs";
 export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBabylonJSResult {
     const config = inputs || new BabylonJSScene.InitBabylonJSDto();
 
-    // Get or create canvas
     let canvas: HTMLCanvasElement;
     if (config.canvasId) {
         const existingCanvas = document.getElementById(config.canvasId) as HTMLCanvasElement;
@@ -41,25 +40,20 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
         document.body.appendChild(canvas);
     }
 
-    // Create engine
     const engine = new BABYLON.Engine(canvas, true, {
         preserveDrawingBuffer: true,
         stencil: true,
     });
     engine.setHardwareScalingLevel(0.5);
-    // Create scene
     const scene = new BABYLON.Scene(engine);
-    scene.metadata = { shadowGenerators: [] }; // Important for Bitbybit integration
+    scene.metadata = { shadowGenerators: [] };
     
-    // Parse background color
     const bgColor = BABYLON.Color3.FromHexString(config.backgroundColor);
     scene.clearColor = new BABYLON.Color4(bgColor.r, bgColor.g, bgColor.b, 1);
 
-    // Calculate positions based on scene size
     const lightHeight = config.sceneSize * 0.75;
     const lightOffset = config.sceneSize * 0.5;
 
-    // Create hemispheric light (ambient-like lighting from sky and ground)
     const hemisphericLight = new BABYLON.HemisphericLight(
         "hemisphericLight",
         new BABYLON.Vector3(0, lightHeight, 0),
@@ -69,7 +63,6 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
     hemisphericLight.groundColor = BABYLON.Color3.FromHexString(config.hemisphereLightGroundColor);
     hemisphericLight.intensity = config.hemisphereLightIntensity;
 
-    // Create directional light (sun-like light with shadows)
     const directionalLight = new BABYLON.DirectionalLight(
         "directionalLight",
         new BABYLON.Vector3(-lightOffset, -lightHeight, -lightOffset).normalize(),
@@ -79,18 +72,15 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
     directionalLight.intensity = config.directionalLightIntensity;
     directionalLight.position = new BABYLON.Vector3(lightOffset, lightHeight, lightOffset);
 
-    // Configure shadows
     if (config.enableShadows) {
         const shadowGenerator = new BABYLON.ShadowGenerator(config.shadowMapSize, directionalLight);
         shadowGenerator.useBlurExponentialShadowMap = true;
         shadowGenerator.blurKernel = 32;
         shadowGenerator.darkness = 0.3;
         
-        // Store shadow generator in scene metadata for Bitbybit integration
         scene.metadata.shadowGenerators.push(shadowGenerator);
     }
 
-    // Create ground plane
     let ground: BABYLON.Mesh | null = null;
     if (config.enableGround) {
         const groundSize = config.sceneSize * config.groundScaleFactor;
@@ -113,18 +103,13 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
         ground.receiveShadows = config.enableShadows;
     }
 
-    // Create arc rotate camera if enabled
     let arcRotateCamera: BABYLON.ArcRotateCamera | null = null;
     if (config.enableArcRotateCamera) {
-        // Use provided camera options or create new DTO with defaults as single source of truth
         const camOpts = config.arcRotateCameraOptions ?? new BabylonCamera.ArcRotateCameraDto();
         
-        // Compute scene-aware overrides for values that should scale with scene size
-        // Reference scene size of 20 units is used as baseline for sensitivity calculations
         const referenceSize = 20;
         const sizeRatio = config.sceneSize / referenceSize;
         
-        // Only override these values if user didn't provide custom camera options
         const userProvidedCameraOptions = config.arcRotateCameraOptions !== undefined;
         const effectiveRadius = userProvidedCameraOptions ? camOpts.radius : config.sceneSize * Math.sqrt(2);
         const effectiveLowerRadiusLimit = userProvidedCameraOptions && camOpts.lowerRadiusLimit !== undefined ? camOpts.lowerRadiusLimit : config.sceneSize * 0.1;
@@ -146,7 +131,6 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
             scene
         );
         
-        // Apply all settings from DTO, with scene-aware overrides where applicable
         arcRotateCamera.angularSensibilityX = camOpts.angularSensibilityX;
         arcRotateCamera.angularSensibilityY = camOpts.angularSensibilityY;
         arcRotateCamera.lowerRadiusLimit = effectiveLowerRadiusLimit;
@@ -156,11 +140,9 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
         arcRotateCamera.maxZ = effectiveMaxZ;
         arcRotateCamera.minZ = 0.1;
         
-        // Apply beta limits from DTO
         arcRotateCamera.lowerBetaLimit = BABYLON.Tools.ToRadians(camOpts.lowerBetaLimit);
         arcRotateCamera.upperBetaLimit = BABYLON.Tools.ToRadians(camOpts.upperBetaLimit);
         
-        // Apply optional alpha limits only if user provided them
         if (userProvidedCameraOptions && camOpts.lowerAlphaLimit !== undefined) {
             arcRotateCamera.lowerAlphaLimit = BABYLON.Tools.ToRadians(camOpts.lowerAlphaLimit);
         }
@@ -171,14 +153,12 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
         arcRotateCamera.attachControl(canvas, true);
     }
 
-    // Handle window resize
     const onWindowResize = (): void => {
         engine.resize();
     };
 
     window.addEventListener("resize", onWindowResize, false);
 
-    // Start render loop helper
     const startRenderLoop = (onRender?: () => void): void => {
         engine.runRenderLoop(() => {
             if (scene.activeCamera) {
@@ -190,7 +170,6 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
         });
     };
 
-    // Dispose function to clean up resources
     const dispose = (): void => {
         window.removeEventListener("resize", onWindowResize);
         engine.stopRenderLoop();
@@ -210,7 +189,6 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
         scene.dispose();
         engine.dispose();
         
-        // Remove canvas if we created it
         if (!config.canvasId && canvas.parentNode) {
             canvas.parentNode.removeChild(canvas);
         }

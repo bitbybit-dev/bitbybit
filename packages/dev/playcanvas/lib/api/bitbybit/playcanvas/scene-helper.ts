@@ -27,7 +27,6 @@ import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
 export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): InitPlayCanvasResult {
     const config = inputs || new PlayCanvasScene.InitPlayCanvasDto();
 
-    // Get or create canvas
     let canvas: HTMLCanvasElement;
     if (config.canvasId) {
         const existingCanvas = document.getElementById(config.canvasId) as HTMLCanvasElement;
@@ -43,7 +42,6 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
         document.body.appendChild(canvas);
     }
 
-    // Create PlayCanvas application
     const app = new pc.Application(canvas, {
         graphicsDeviceOptions: {
             antialias: true,
@@ -53,25 +51,19 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
         touch: new pc.TouchDevice(canvas),
     });
 
-    // Fill the window and automatically change resolution to be the same as the canvas size
     app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
     app.setCanvasResolution(pc.RESOLUTION_AUTO);
     
-    // Set pixel ratio for sharper rendering on high-DPI displays
     app.graphicsDevice.maxPixelRatio = window.devicePixelRatio;
     
-    // Create root scene entity
     const scene = new pc.Entity("scene");
     app.root.addChild(scene);
 
-    // Parse background color and set camera clear color later
     const bgColor = hexToRgb(config.backgroundColor);
 
-    // Calculate positions based on scene size
     const lightHeight = config.sceneSize * 0.75;
     const lightOffset = config.sceneSize * 0.5;
 
-    // Set ambient light
     const ambientColor = hexToRgb(config.ambientLightColor);
     app.scene.ambientLight = new pc.Color(
         ambientColor.r * config.ambientLightIntensity,
@@ -79,12 +71,9 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
         ambientColor.b * config.ambientLightIntensity
     );
 
-    // Create directional light
     const directionalLight = new pc.Entity("directionalLight");
     const lightColor = hexToRgb(config.directionalLightColor);
 
-    // Scale bias values with scene size for consistent shadow quality
-    // Smaller scenes need smaller bias, larger scenes need larger bias
     const scaledShadowBias = 0.005 * config.sceneSize;
     const scaledNormalOffsetBias = 0.01 * config.sceneSize;
 
@@ -94,9 +83,7 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
         intensity: config.directionalLightIntensity,
         castShadows: config.enableShadows,
         shadowResolution: config.shadowMapSize,
-        // Shadow distance tightly bounds the scene for maximum effective resolution
         shadowDistance: config.sceneSize * 3,
-        // Bias values scaled proportionally to scene size
         shadowBias: scaledShadowBias,
         normalOffsetBias: scaledNormalOffsetBias,
         numCascades: 4,
@@ -106,7 +93,6 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
     directionalLight.setEulerAngles(45, 30, 0);
     scene.addChild(directionalLight);
 
-    // Create ground plane
     let ground: pc.Entity | null = null;
     if (config.enableGround) {
         const groundSize = config.sceneSize * config.groundScaleFactor;
@@ -121,7 +107,6 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
             config.groundCenter[2]
         );
 
-        // Create ground material
         const groundMaterial = new pc.StandardMaterial();
         const groundColor = hexToRgb(config.groundColor);
         groundMaterial.diffuse = new pc.Color(groundColor.r, groundColor.g, groundColor.b);
@@ -141,25 +126,19 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
         scene.addChild(ground);
     }
 
-    // Create orbit camera if enabled
     let orbitCamera: PlayCanvasOrbitCameraController | null = null;
     if (config.enableOrbitCamera) {
-        // Use provided camera options or create new DTO with defaults as single source of truth
         const camOpts = config.orbitCameraOptions ?? new PlayCanvasCamera.OrbitCameraDto();
 
-        // Compute scene-aware overrides for values that should scale with scene size
-        // Reference scene size of 20 units is used as baseline for sensitivity calculations
         const referenceSize = 20;
         const sizeRatio = config.sceneSize / referenceSize;
 
-        // Only override these values if user didn't provide custom camera options
         const userProvidedCameraOptions = config.orbitCameraOptions !== undefined;
         const effectiveDistance = userProvidedCameraOptions ? camOpts.distance : config.sceneSize * Math.sqrt(2);
         const effectiveDistanceMin = userProvidedCameraOptions ? camOpts.distanceMin : config.sceneSize * 0.05;
         const effectiveDistanceMax = userProvidedCameraOptions ? camOpts.distanceMax : config.sceneSize * 10;
         const effectiveDistanceSensitivity = userProvidedCameraOptions ? camOpts.distanceSensitivity : camOpts.distanceSensitivity * sizeRatio;
 
-        // Create camera entity
         const cameraEntity = new pc.Entity("OrbitCamera");
         cameraEntity.addComponent("camera", {
             clearColor: new pc.Color(bgColor.r, bgColor.g, bgColor.b, 1),
@@ -169,7 +148,6 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
         });
         scene.addChild(cameraEntity);
 
-        // Create orbit camera controller using DTO defaults with scene-aware overrides
         orbitCamera = createOrbitCameraController(app, cameraEntity, {
             autoRender: camOpts.autoRender,
             distanceMax: effectiveDistanceMax,
@@ -188,16 +166,13 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
         });
     }
 
-    // Handle window resize
     const onWindowResize = (): void => {
         app.resizeCanvas();
     };
     window.addEventListener("resize", onWindowResize, false);
 
-    // Start the application
     app.start();
 
-    // Dispose function to clean up resources
     const dispose = (): void => {
         window.removeEventListener("resize", onWindowResize);
 
@@ -220,7 +195,6 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
 
         app.destroy();
 
-        // Remove canvas if we created it
         if (!config.canvasId && canvas.parentNode) {
             canvas.parentNode.removeChild(canvas);
         }
@@ -289,32 +263,27 @@ function createOrbitCameraController(
 ): PlayCanvasOrbitCameraController {
     const orbitCamera = createOrbitCameraInstance(cameraEntity, config);
 
-    // Set initial position
     const pivotVec = new pc.Vec3(config.pivotPoint[0], config.pivotPoint[1], config.pivotPoint[2]);
     orbitCamera.pivotPoint = pivotVec;
     orbitCamera.distance = config.distance;
     orbitCamera.pitch = config.pitch;
     orbitCamera.yaw = config.yaw;
 
-    // Setup mouse input
     const mouseInput = createMouseInput(app, cameraEntity, orbitCamera, {
         orbitSensitivity: config.orbitSensitivity,
         distanceSensitivity: config.distanceSensitivity
     });
 
-    // Setup touch input
     const touchInput = createTouchInput(app, cameraEntity, orbitCamera, {
         orbitSensitivity: config.orbitSensitivity,
         distanceSensitivity: config.distanceSensitivity
     });
 
-    // Register update function
     const updateFn = (dt: number): void => {
         orbitCamera.update(dt);
     };
     app.on("update", updateFn);
 
-    // Focus on entity if provided
     if (config.focusEntity && config.frameOnStart) {
         orbitCamera.focus(config.focusEntity);
     }

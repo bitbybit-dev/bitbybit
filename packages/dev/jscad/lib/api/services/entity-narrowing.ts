@@ -1,11 +1,5 @@
 import * as Inputs from "../inputs/jscad-inputs";
 
-// A JSCAD entity is one of three unrelated shapes, and the kernel's own operations are overloaded
-// per shape: `union` takes a list of 2D regions or a list of solids, never a mixture. Our published
-// input type is the union of the three, because a script may hand us any of them and the kernel is
-// what decides. These are the four places that gap is bridged, gathered here so the bridging is
-// visible rather than spread across the services as casts.
-
 /**
  * Reads an input that the kernel accepts either singly or as a list. The published type says one
  * entity, and a list has always worked too because the kernel's operations are variadic; declaring

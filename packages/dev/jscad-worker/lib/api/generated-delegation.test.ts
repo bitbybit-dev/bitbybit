@@ -44,7 +44,7 @@ describe("the generated worker API", () => {
     it("should keep each service on its own path", () => {
         // Act
         void jscad.shapes.cube(new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE));
-        void jscad.booleans.union({ meshes: [] } as never);
+        void jscad.booleans.union({ meshes: [] });
         void jscad.expansions.expand({ geometry: {}, delta: 1 } as never);
 
         // Assert

@@ -236,7 +236,7 @@ export class OCCTFace {
      * @drawable true
      */
     createCircleFace(inputs: Inputs.OCCT.CircleDto): TopoDS_Face {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face) as TopoDS_Face;
+        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face);
     }
 
     /**
@@ -261,7 +261,7 @@ export class OCCTFace {
      * @drawable true
      */
     createEllipseFace(inputs: Inputs.OCCT.EllipseDto): TopoDS_Face {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face) as TopoDS_Face;
+        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face);
     }
 
     /**
@@ -459,7 +459,7 @@ export class OCCTFace {
      * @drawable true
      */
     reversedFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): TopoDS_Face {
-        const face = inputs.shape as TopoDS_Face;
+        const face = inputs.shape;
         const reversed = face.Reversed();
         const result = this.och.converterService.getActualTypeOfShape(reversed);
         reversed.delete();

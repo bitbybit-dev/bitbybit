@@ -38,8 +38,6 @@ function tokenize(d: string): Token[] {
         while (i < n && /[\s,]/.test(d[i]!)) { i++; }
     };
 
-    // Reads one number; when `isFlag` is set, reads exactly a single 0/1 digit
-    // (SVG arc flag packing, e.g. "016" => 0, 1, 6).
     const readNumber = (isFlag: boolean): number | undefined => {
         skipSep();
         if (i >= n) { return undefined; }
@@ -70,7 +68,6 @@ function tokenize(d: string): Token[] {
         if (i >= n) { break; }
         const ch = d[i]!;
         if (!isCommand(ch)) {
-            // Malformed — skip the offending character to stay resilient.
             i++;
             continue;
         }
@@ -81,14 +78,12 @@ function tokenize(d: string): Token[] {
             tokens.push({ command: ch, args: [] });
             continue;
         }
-        // A command may be followed by multiple coordinate sets (implicit repeat).
         let first = true;
 
         while (true) {
             const group: number[] = [];
             let ok = true;
             for (let k = 0; k < count; k++) {
-                // Arc args 3 and 4 (0-based) are flags.
                 const isFlag = lower === "a" && (k === 3 || k === 4);
                 const num = readNumber(isFlag);
                 if (num === undefined) { ok = false; break; }
@@ -98,11 +93,9 @@ function tokenize(d: string): Token[] {
                 if (first) { /* command had no/partial args; drop it */ }
                 break;
             }
-            // After the first moveto group, implicit repeats are linetos (SVG spec).
             const emitCmd = (!first && lower === "m") ? (ch === "m" ? "l" : "L") : ch;
             tokens.push({ command: emitCmd, args: group });
             first = false;
-            // After the first explicit moveto, subsequent implicit pairs are linetos.
             skipSep();
             if (i >= n || isCommand(d[i]!)) { break; }
         }
@@ -129,7 +122,6 @@ function endpointToCenterArc(
     const x1p = cosPhi * dx + sinPhi * dy;
     const y1p = -sinPhi * dx + cosPhi * dy;
 
-    // Correct out-of-range radii.
     const lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry);
     if (lambda > 1) {
         const s = Math.sqrt(lambda);
@@ -185,7 +177,6 @@ export function parsePathData(d: string): SvgSubpath[] {
     let current: SvgSubpath | undefined;
     let cursor: Base.Point2 = [0, 0];
     let subpathStart: Base.Point2 = [0, 0];
-    // Reflection points for smooth curves.
     let lastCubicCtrl: Base.Point2 | undefined;
     let lastQuadCtrl: Base.Point2 | undefined;
 
@@ -294,7 +285,7 @@ export function parsePathData(d: string): SvgSubpath[] {
                     cursor = [subpathStart[0], subpathStart[1]];
                 }
                 lastCubicCtrl = lastQuadCtrl = undefined;
-                current = undefined; // a following command starts a fresh subpath
+                current = undefined;
                 break;
             }
             default:
@@ -302,6 +293,5 @@ export function parsePathData(d: string): SvgSubpath[] {
         }
     }
 
-    // Drop empty subpaths (e.g. a lone moveto).
     return subpaths.filter((s) => s.segments.length > 0);
 }

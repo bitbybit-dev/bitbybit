@@ -40,10 +40,9 @@ export class MeshBitByBit {
         const normal = this.vector.cross({ first: edge1, second: edge2 });
 
         if (this.vector.lengthSq({ vector: normal as Inputs.Base.Vector3 }) < EPSILON_SQ) {
-            return undefined; // Degenerate triangle
+            return undefined;
         }
 
-        // Defensive copy if normalize modifies in-place
         const normalizedNormal = this.vector.normalized({ vector: normal }) as Inputs.Base.Vector3;
         const d = this.vector.dot({ first: normalizedNormal, second: inputs.triangle[0] });
         return { normal: normalizedNormal, d: d };
@@ -97,19 +96,16 @@ export class MeshBitByBit {
         const allDistQZero = distQ_Plane1.every(d => Math.abs(d) < EPSILON);
 
         if (allDistPZero && allDistQZero) {
-            return undefined; // Explicitly not handling coplanar intersection areas
+            return undefined;
         }
 
         const lineDir = this.vector.cross({ first: plane1.normal, second: plane2.normal }) as Inputs.Base.Vector3;
-        const det = this.vector.dot({ first: lineDir, second: lineDir }); // det = |lineDir|^2
+        const det = this.vector.dot({ first: lineDir, second: lineDir });
 
         if (det < EPSILON * EPSILON) {
-            return undefined; // Planes parallel, no line intersection (coplanar case handled above)
+            return undefined;
         }
 
-        // --- Calculate Interval Projections ---
-
-        // Store the 3D points that define the intervals on the line
         const t1_intersection_points_3d: Inputs.Base.Point3[] = [];
         const t2_intersection_points_3d: Inputs.Base.Point3[] = [];
 
@@ -121,10 +117,9 @@ export class MeshBitByBit {
             const du = dists1[i]!;
             const dv = dists1[(i + 1) % 3]!;
 
-            if (Math.abs(du) < EPSILON) t1_intersection_points_3d.push(u); // Start vertex is on plane2
-            // Removed the redundant check for dv here, handled by next edge start
+            if (Math.abs(du) < EPSILON) t1_intersection_points_3d.push(u);
 
-            if ((du * dv) < 0 && Math.abs(du - dv) > EPSILON) { // Edge crosses plane2
+            if ((du * dv) < 0 && Math.abs(du - dv) > EPSILON) {
                 const t = du / (du - dv);
                 t1_intersection_points_3d.push(this.computeIntersectionPoint(u, v, t));
             }
@@ -138,30 +133,22 @@ export class MeshBitByBit {
             const du = dists2[i]!;
             const dv = dists2[(i + 1) % 3]!;
 
-            if (Math.abs(du) < EPSILON) t2_intersection_points_3d.push(u); // Start vertex is on plane1
-            // Removed redundant check for dv
+            if (Math.abs(du) < EPSILON) t2_intersection_points_3d.push(u);
 
-            if ((du * dv) < 0 && Math.abs(du - dv) > EPSILON) { // Edge crosses plane1
+            if ((du * dv) < 0 && Math.abs(du - dv) > EPSILON) {
                 const t = du / (du - dv);
                 t2_intersection_points_3d.push(this.computeIntersectionPoint(u, v, t));
             }
         }
 
-        // We expect exactly two points for each triangle in the standard piercing case.
-        // Handle potential duplicates or edge cases if more points are generated (e.g., edge lies on plane)
-        // A simple check for the common case:
         if (t1_intersection_points_3d.length < 2 || t2_intersection_points_3d.length < 2) {
-            // This can happen if triangles touch at a vertex or edge without crossing planes,
-            // or due to numerical precision near edges/vertices.
-            return undefined; // Treat touch as no intersection segment
+            return undefined;
         }
 
-        // Calculate a robust origin ON the intersection line
         const n1 = plane1.normal;
         const n2 = plane2.normal;
         const d1 = plane1.d;
         const d2 = plane2.d;
-        // Point P = ( (d1 * N2 - d2 * N1) x D ) / (D dot D)
         const term1 = this.vector.mul({ vector: n2, scalar: d1 });
         const term2 = this.vector.mul({ vector: n1, scalar: d2 });
         const termSub = this.vector.sub({ first: term1, second: term2 });
@@ -169,7 +156,6 @@ export class MeshBitByBit {
         const lineOrigin = this.vector.mul({ vector: crossTerm, scalar: 1.0 / det }) as Inputs.Base.Point3;
 
 
-        // Project the 3D intersection points onto the lineDir, relative to lineOrigin
         const t1_params = t1_intersection_points_3d.map(p =>
             this.vector.dot({ first: this.vector.sub({ first: p, second: lineOrigin }), second: lineDir })
         );
@@ -177,30 +163,24 @@ export class MeshBitByBit {
             this.vector.dot({ first: this.vector.sub({ first: p, second: lineOrigin }), second: lineDir })
         );
 
-        // Find the intervals
         const t1Interval: [number, number] = [Math.min(...t1_params), Math.max(...t1_params)];
         const t2Interval: [number, number] = [Math.min(...t2_params), Math.max(...t2_params)];
 
-        // Find the overlap of the two intervals
         const intersectionMinParam = Math.max(t1Interval[0], t2Interval[0]);
         const intersectionMaxParam = Math.min(t1Interval[1], t2Interval[1]);
 
-        // Check if the overlap is valid
-        if (intersectionMinParam < intersectionMaxParam - (EPSILON * det)) { // Let's use scaled epsilon for robustness against small det values.
-            // Convert the final parameters back to 3D points using the lineOrigin
-            // P = lineOrigin + dir * (param / det)
+        if (intersectionMinParam < intersectionMaxParam - (EPSILON * det)) {
             const point1 = this.vector.add({ first: lineOrigin, second: this.vector.mul({ vector: lineDir, scalar: intersectionMinParam / det }) }) as Inputs.Base.Point3;
             const point2 = this.vector.add({ first: lineOrigin, second: this.vector.mul({ vector: lineDir, scalar: intersectionMaxParam / det }) }) as Inputs.Base.Point3;
 
-            // Check if the resulting segment has non-zero length
             const segVec = this.vector.sub({ first: point1, second: point2 });
             if (this.vector.lengthSq({ vector: segVec as Inputs.Base.Vector3 }) > EPSILON * EPSILON) {
                 return [point1, point2];
             } else {
-                return undefined; // Degenerate segment
+                return undefined;
             }
         } else {
-            return undefined; // Intervals do not overlap
+            return undefined;
         }
     }
 

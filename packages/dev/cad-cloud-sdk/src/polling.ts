@@ -1,7 +1,3 @@
-// ---------------------------------------------------------------------------
-// Task polling — automatically waits for an async task to complete
-// ---------------------------------------------------------------------------
-
 import type { TaskDetail, ApiResponse } from "./types/index.js";
 import { BitbybitApiError } from "./errors.js";
 

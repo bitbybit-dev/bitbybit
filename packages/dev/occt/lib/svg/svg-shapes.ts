@@ -58,7 +58,6 @@ function rectSubpath(x: number, y: number, w: number, h: number, rxIn: number, r
     const arc = (to: Base.Point2, center: Base.Point2, start: number): SvgArcSegment => ({
         type: "arc", to, center, rx, ry, xAxisRotation: 0, startAngle: start, deltaAngle: Math.PI / 2,
     });
-    // Clockwise from top edge start, matching SVG rounded-rect path.
     const start: Base.Point2 = [x + rx, y];
     const segments: SvgSegment[] = [
         { type: "line", to: [x + w - rx, y] },

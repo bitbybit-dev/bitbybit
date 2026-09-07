@@ -138,12 +138,10 @@ export class ShapesHelperService {
     }
 
     beamIProfile(width: number, height: number, webThickness: number, flangeThickness: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
-        // Create I-beam profile centered at origin
         const halfWidth = width / 2;
         const halfHeight = height / 2;
         const halfWeb = webThickness / 2;
 
-        // Points for I-beam (clockwise from top-left)
         const points: Base.Point3[] = [
             [-halfWidth, 0, halfHeight],
             [halfWidth, 0, halfHeight],
@@ -163,13 +161,10 @@ export class ShapesHelperService {
     }
 
     beamHProfile(width: number, height: number, webThickness: number, flangeThickness: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
-        // H-beam is I-beam rotated 90 degrees (width and height swapped)
-        // Create H-beam profile centered at origin (rotated I-beam)
         const halfWidth = width / 2;
         const halfHeight = height / 2;
         const halfWeb = webThickness / 2;
 
-        // Points for H-beam (I-beam rotated 90 degrees, clockwise from top-left)
         const points: Base.Point3[] = [
             [-halfWidth, 0, halfHeight],
             [-halfWidth + flangeThickness, 0, halfHeight],
@@ -189,12 +184,10 @@ export class ShapesHelperService {
     }
 
     beamTProfile(width: number, height: number, webThickness: number, flangeThickness: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
-        // Create T-beam profile centered at origin
         const halfWidth = width / 2;
         const halfHeight = height / 2;
         const halfWeb = webThickness / 2;
 
-        // Points for T-beam (clockwise from top-left)
         const points: Base.Point3[] = [
             [-halfWidth, 0, halfHeight],
             [halfWidth, 0, halfHeight],
@@ -210,11 +203,9 @@ export class ShapesHelperService {
     }
 
     beamUProfile(width: number, height: number, webThickness: number, flangeThickness: number, flangeWidth: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
-        // Create U-beam profile centered at origin (opening upward - rotated 180 degrees from previous)
         const halfWidth = width / 2;
         const halfHeight = height / 2;
 
-        // Points for U-beam (clockwise from top-left outside, opening upward)
         const points: Base.Point3[] = [
             [-halfWidth, 0, halfHeight],
             [-halfWidth + flangeThickness, 0, halfHeight],
@@ -230,8 +221,6 @@ export class ShapesHelperService {
     }
 
     private applyBeamAlignment(points: Base.Point3[], width: number, height: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
-        // Alignment logic: the specified corner/edge of the shape is placed at the origin
-        // For example, topLeft means the top-left corner of the shape is at (0,0)
         let offsetX = 0;
         let offsetZ = 0;
         

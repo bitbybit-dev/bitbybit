@@ -1,7 +1,3 @@
-// ---------------------------------------------------------------------------
-// SDK error class
-// ---------------------------------------------------------------------------
-
 export class BitbybitApiError extends Error {
     readonly code: string;
     readonly statusCode: number;

@@ -350,7 +350,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Assert
             expect(document).toBeDefined();
-            expect(document!.IsNull()).toBe(false);
+            expect(document.IsNull()).toBe(false);
         });
 
         it("should build a document with multiple parts", () => {
@@ -380,7 +380,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Assert - 4 parts with correct names and volumes
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             expect(docParts.length).toEqual(4);
             
             const boxPart = docParts.find(p => p.name === "Box");
@@ -397,9 +397,9 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(cylinderPart!.instanceCount).toBe(1);
             
             // Verify geometry by checking volumes
-            const boxShape = query.getShapeFromLabel({ document: document!, label: boxPart!.label });
-            const sphereShape = query.getShapeFromLabel({ document: document!, label: spherePart!.label });
-            const cylinderShape = query.getShapeFromLabel({ document: document!, label: cylinderPart!.label });
+            const boxShape = query.getShapeFromLabel({ document: document, label: boxPart!.label });
+            const sphereShape = query.getShapeFromLabel({ document: document, label: spherePart!.label });
+            const cylinderShape = query.getShapeFromLabel({ document: document, label: cylinderPart!.label });
             
             expect(solid.getSolidVolume({ shape: boxShape })).toBeCloseTo(boxVolume, 0);
             expect(solid.getSolidVolume({ shape: sphereShape })).toBeCloseTo(sphereVolume, 0);
@@ -432,10 +432,10 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Assert
-            expect(document!.IsNull()).toBe(false);
+            expect(document.IsNull()).toBe(false);
             
             // Verify hierarchy structure
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             expect(hierarchy.nodes.length).toEqual(4); // root, sub, inst1, inst2
             
             // Verify Root node exists at depth 0
@@ -460,13 +460,13 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(depths.length).toEqual(3); // 3 depth levels
             
             // Verify part has 2 instances
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const boxPart = docParts.find(p => p.name === "Box");
             expect(boxPart).toBeDefined();
             expect(boxPart!.instanceCount).toBe(2);
             
             // Verify part geometry
-            const boxShape = query.getShapeFromLabel({ document: document!, label: boxPart!.label });
+            const boxShape = query.getShapeFromLabel({ document: document, label: boxPart!.label });
             expect(solid.getSolidVolume({ shape: boxShape })).toBeCloseTo(boxVolume, 0);
             boxShape.delete();
         });
@@ -492,24 +492,24 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Assert
-            expect(document!.IsNull()).toBe(false);
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            expect(document.IsNull()).toBe(false);
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const transformedNode = hierarchy.nodes.find(n => n.name === "Transformed Box");
             expect(transformedNode).toBeDefined();
             expect(transformedNode!.label).toBeDefined();
             
             // Verify transform is applied
-            const transform = query.getLabelTransform({ document: document!, label: transformedNode!.label });
+            const transform = query.getLabelTransform({ document: document, label: transformedNode!.label });
             expect(transform.translation[0]).toBeCloseTo(50, 0);
             expect(transform.translation[1]).toBeCloseTo(50, 0);
             expect(transform.translation[2]).toBeCloseTo(50, 0);
             expect(transform.scale).toBeCloseTo(2.0, 1);
             
             // Verify original part geometry is preserved
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const boxPart = docParts.find(p => p.name === "Box");
             expect(boxPart).toBeDefined();
-            const boxShape = query.getShapeFromLabel({ document: document!, label: boxPart!.label });
+            const boxShape = query.getShapeFromLabel({ document: document, label: boxPart!.label });
             expect(solid.getSolidVolume({ shape: boxShape })).toBeCloseTo(originalVolume, 0);
             boxShape.delete();
         });
@@ -533,7 +533,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Assert
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             expect(docParts.length).toEqual(2);
             
             const redPart = docParts.find(p => p.name === "Red Box");
@@ -547,14 +547,14 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(redPart!.color!.b).toBeCloseTo(0, 2);
             
             // Verify color via getLabelColor
-            const colorInfo = query.getLabelColor({ document: document!, label: redPart!.label });
+            const colorInfo = query.getLabelColor({ document: document, label: redPart!.label });
             expect(colorInfo.hasColor).toBe(true);
             expect(colorInfo.r).toBeCloseTo(1, 2);
             expect(colorInfo.g).toBeCloseTo(0, 2);
             expect(colorInfo.b).toBeCloseTo(0, 2);
             
             // Verify geometry
-            const boxShape = query.getShapeFromLabel({ document: document!, label: redPart!.label });
+            const boxShape = query.getShapeFromLabel({ document: document, label: redPart!.label });
             expect(solid.getSolidVolume({ shape: boxShape })).toBeCloseTo(expectedVolume, 0);
             boxShape.delete();
         });
@@ -610,7 +610,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure: structure1 });
 
             // Get the part label
-            const initialParts = query.getDocumentParts({ document: document! });
+            const initialParts = query.getDocumentParts({ document: document });
             const partLabel = initialParts.find(p => p.name === "OriginalName")?.label;
             expect(partLabel).toBeDefined();
 
@@ -638,7 +638,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             });
 
             // Assert
-            const updatedParts = query.getDocumentParts({ document: document! });
+            const updatedParts = query.getDocumentParts({ document: document });
             expect(updatedParts.some(p => p.name === "UpdatedName")).toBe(true);
         });
     });
@@ -666,12 +666,12 @@ describe("OCCTAssemblyManager unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const parts = query.getDocumentParts({ document: document! });
+            const parts = query.getDocumentParts({ document: document });
             const label = parts[0]!.label;
 
             // Act
             const result = manager.setLabelColor({
-                document: document!,
+                document: document,
                 label,
                 r: 0,
                 g: 0,
@@ -681,7 +681,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Assert
             expect(result).toBe(true);
-            const color = query.getLabelColor({ document: document!, label });
+            const color = query.getLabelColor({ document: document, label });
             expect(color.hasColor).toBe(true);
             expect(color.b).toBeCloseTo(1, 1);
         });
@@ -710,20 +710,20 @@ describe("OCCTAssemblyManager unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const parts = query.getDocumentParts({ document: document! });
+            const parts = query.getDocumentParts({ document: document });
             const label = parts.find(p => p.name === "OldName")?.label;
             expect(label).toBeDefined();
 
             // Act
             const result = manager.setLabelName({
-                document: document!,
+                document: document,
                 label: label!,
                 name: "NewName"
             });
 
             // Assert
             expect(result).toBe(true);
-            const info = query.getLabelInfo({ document: document!, label: label! });
+            const info = query.getLabelInfo({ document: document, label: label! });
             expect(info.name).toBe("NewName");
         });
     });
@@ -767,15 +767,15 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Assert - Document is valid and contains parts
             expect(document).toBeDefined();
-            expect(document!.IsNull()).toBe(false);
+            expect(document.IsNull()).toBe(false);
             
-            const parts = query.getDocumentParts({ document: document! });
+            const parts = query.getDocumentParts({ document: document });
             expect(parts.length).toEqual(2);
             
             // Verify the geometry was preserved by checking volume of first part with matching volume
             let foundMatchingVolume = false;
             for (const p of parts) {
-                const partShape = query.getShapeFromLabel({ document: document!, label: p.label });
+                const partShape = query.getShapeFromLabel({ document: document, label: p.label });
                 if (!partShape.IsNull()) {
                     const vol = solid.getSolidVolume({ shape: partShape });
                     if (Math.abs(vol - expectedVolume) < 1) {
@@ -814,7 +814,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Act
             const stepData = manager.exportDocumentToStep({
-                document: document!,
+                document: document,
                 fileName: "test.step",
                 author: "Test Author",
                 organization: "Test Org",
@@ -853,7 +853,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Act
             const stepZData = manager.exportDocumentToStep({
-                document: document!,
+                document: document,
                 fileName: "test.stpz",
                 author: "Test Author",
                 organization: "Test Org",
@@ -866,7 +866,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(stepZData.length).toBeGreaterThan(0);
             // Compressed data should be different from uncompressed
             const uncompressedData = manager.exportDocumentToStep({
-                document: document!,
+                document: document,
                 fileName: "test.step",
                 author: "Test Author",
                 organization: "Test Org",
@@ -902,7 +902,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Act
             const glbData = manager.exportDocumentToGltf({
-                document: document!,
+                document: document,
                 meshDeflection: 0.1,
                 meshAngle: 0.5,
                 mergeFaces: false,
@@ -937,7 +937,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Act - Fine mesh
             const fineGlb = manager.exportDocumentToGltf({
-                document: document!,
+                document: document,
                 meshDeflection: 0.01,
                 meshAngle: 0.1,
                 mergeFaces: false,
@@ -950,7 +950,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Act - Coarse mesh  
             const coarseGlb = manager.exportDocumentToGltf({
-                document: document!,
+                document: document,
                 meshDeflection: 1.0,
                 meshAngle: 1.0,
                 mergeFaces: false,
@@ -1005,18 +1005,18 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Assert
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const reusablePart = docParts.find(p => p.name === "ReusablePart");
             expect(reusablePart).toBeDefined();
             expect(reusablePart!.instanceCount).toBe(4); // Used 4 times
             
             // Verify geometry
-            const shape = query.getShapeFromLabel({ document: document!, label: reusablePart!.label });
+            const shape = query.getShapeFromLabel({ document: document, label: reusablePart!.label });
             expect(solid.getSolidVolume({ shape })).toBeCloseTo(boxVolume, 0);
             shape.delete();
             
             // Verify hierarchy has 4 instances with correct names
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             expect(hierarchy.nodes.filter(n => n.name.startsWith("Corner")).length).toBe(4);
         });
 
@@ -1039,7 +1039,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Assert
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             expect(hierarchy.nodes.length).toEqual(4); // the leaf part
             
             // Verify we have a multi-level structure (hierarchy exists)
@@ -1057,10 +1057,10 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(hasLeafOrCylinder).toBe(true);
             
             // Verify part geometry is accessible
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const cylPart = docParts.find(p => p.name === "Cylinder");
             expect(cylPart).toBeDefined();
-            const shape = query.getShapeFromLabel({ document: document!, label: cylPart!.label });
+            const shape = query.getShapeFromLabel({ document: document, label: cylPart!.label });
             expect(solid.getSolidVolume({ shape })).toBeCloseTo(cylinderVolume, 0);
             shape.delete();
         });
@@ -1088,7 +1088,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Assert
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             expect(docParts.length).toEqual(4); // At least 3 parts (OCCT may add internal nodes)
             
             const redBox = docParts.find(p => p.name === "RedBox");
@@ -1130,7 +1130,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Assert
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             expect(hierarchy.nodes.length).toEqual(4); // OCCT may add internal nodes
             
             const scale1x = hierarchy.nodes.find(n => n.name === "Scale1x");
@@ -1138,16 +1138,16 @@ describe("OCCTAssemblyManager unit tests", () => {
             const scale05x = hierarchy.nodes.find(n => n.name === "Scale05x");
             
             // At least verify the part is reused 3 times
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const scalableBox = docParts.find(p => p.name === "ScalableBox");
             expect(scalableBox).toBeDefined();
             expect(scalableBox!.instanceCount).toBe(3);
             
             // If nodes are accessible, verify transforms
             if (scale1x && scale2x && scale05x) {
-                const transform1x = query.getLabelTransform({ document: document!, label: scale1x.label });
-                const transform2x = query.getLabelTransform({ document: document!, label: scale2x.label });
-                const transform05x = query.getLabelTransform({ document: document!, label: scale05x.label });
+                const transform1x = query.getLabelTransform({ document: document, label: scale1x.label });
+                const transform2x = query.getLabelTransform({ document: document, label: scale2x.label });
+                const transform05x = query.getLabelTransform({ document: document, label: scale05x.label });
                 
                 expect(transform1x.scale).toBeCloseTo(1.0, 2);
                 expect(transform2x.scale).toBeCloseTo(2.0, 2);

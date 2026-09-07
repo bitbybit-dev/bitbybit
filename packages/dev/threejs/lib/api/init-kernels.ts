@@ -7,7 +7,6 @@ import {
     waitForKernelInitialization,
 } from "@bitbybit-dev/core";
 
-// Re-export types from core for convenience
 export { type InitBitByBitOptions, type InitKernelsResult } from "@bitbybit-dev/core";
 
 /**
@@ -44,10 +43,8 @@ export async function initBitByBit(
     bitbybit: BitByBitBase,
     options: InitBitByBitOptions
 ): Promise<InitKernelsResult & { bitbybit: BitByBitBase }> {
-    // Get or create workers
     const workers = getOrCreateWorkers(options);
 
-    // Initialize bitbybit with scene and workers
     bitbybit.init(
         scene,
         workers.occtWorker,
@@ -55,7 +52,6 @@ export async function initBitByBit(
         workers.manifoldWorker
     );
 
-    // Wait for kernel initialization
     const result = await waitForKernelInitialization(bitbybit, options);
 
     return {

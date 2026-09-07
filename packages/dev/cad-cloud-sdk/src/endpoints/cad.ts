@@ -1,7 +1,3 @@
-// ---------------------------------------------------------------------------
-// CAD execute endpoint — /api/v1/cad
-// ---------------------------------------------------------------------------
-
 import type { ExecuteBody, PipelineBody, CompoundExecuteBody, TaskCreatedResult, CompoundTaskCreatedResult, TaskDownload } from "../types/index.js";
 import type { TypedPipelineBody } from "../types/pipeline-operations.js";
 import type { PollOptions } from "../polling.js";

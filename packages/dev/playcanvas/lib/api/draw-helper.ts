@@ -10,15 +10,12 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as pc from "playcanvas";
 import { DEFAULT_COLORS, CACHE_CONFIG } from "./constants";
 
-// Type alias for polyline entities with user data
 type PolylineEntity = Inputs.Draw.PolylineEntity;
 
 export class DrawHelper extends DrawHelperCore {
 
-    // Map-based material cache for better performance
     private readonly materialCache = new Map<string, pc.StandardMaterial>();
     
-    // Entity ID generation
     private entityIdCounter = 0;
     private readonly instanceId = `pc-${Date.now()}`;
 
@@ -119,7 +116,6 @@ export class DrawHelper extends DrawHelperCore {
             
             let colour;
             if (inputs.mesh.color && inputs.mesh.color.length > 0) {
-                // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
                 const c = inputs.mesh.color;
                 colour = this.normalizeColor(c, DEFAULT_COLORS.DEFAULT);
             } else {
@@ -203,9 +199,6 @@ export class DrawHelper extends DrawHelperCore {
         
         const processedPoints = this.processPolylinePoints(inputs.polylines as Inputs.Base.Polyline3[]);
 
-        // A polyline may carry a colour of its own, which is how JSCAD geometry arrives - baked on
-        // some entities and not others. The shared colour seeds every slot so a polyline without one
-        // keeps it, and an override replaces exactly its own.
         let colours: string | string[] = inputs.colours ?? "#444444";
         inputs.polylines.forEach((polyline, index) => {
             const own = (polyline as Inputs.Base.Polyline3 & { color?: string | [number, number, number] }).color;
@@ -217,12 +210,10 @@ export class DrawHelper extends DrawHelperCore {
             colours[index] = Array.isArray(own) ? this.normalizedColorToHex(own[0], own[1], own[2]) : own;
         });
 
-        // Determine if we should update existing mesh
         const existingMesh = (inputs.updatable && inputs.polylinesMesh) 
             ? inputs.polylinesMesh.children[0] as pc.Entity
             : undefined;
         
-        // Draw the polylines with per-polyline colors
         const polylineEntity = this.drawPolylines(
             existingMesh,
             processedPoints,
@@ -235,7 +226,6 @@ export class DrawHelper extends DrawHelperCore {
             inputs.arrowAngle
         );
         
-        // Wrap in container group
         return this.wrapPolylineInGroup(polylineEntity!, inputs.polylinesMesh, inputs.updatable);
     }
 
@@ -254,7 +244,6 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<pc.Entity> & { arrowSize?: number, arrowAngle?: number }): pc.Entity {
-        // A copy, not a push: appending here grew the caller's own array on every redraw.
         const points = inputs.polyline.isClosed
             ? [...inputs.polyline.points, inputs.polyline.points[0]!]
             : inputs.polyline.points;
@@ -300,7 +289,6 @@ export class DrawHelper extends DrawHelperCore {
         const vectorPoints = inputs.points;
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
-        // Resolve colors for all points using the color mapping strategy
         const coloursHex = this.resolveAllColors(inputs.colours, vectorPoints.length, strategy);
         
         if (inputs.pointsMesh && inputs.updatable) {
@@ -322,17 +310,14 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     updatePointsInstances(group: pc.Entity, positions: Inputs.Base.Point3[]): void {
-        // The group contains entities with instanced meshes - each entity has an instanceBuffer
         const children = group.children;
         
-        // Build a map of original index to new position
         const positionMap = new Map<number, Inputs.Base.Point3>();
         positions.forEach((pos, index) => {
             positionMap.set(index, pos);
         });
 
         (children as pc.Entity[]).forEach((child: pc.Entity) => {
-            // Handle GPU-instanced points
             if (child.tags?.has("instancedPoints")) {
                 const extendedChild = child as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] };
                 const instanceBuffer = extendedChild.instanceBuffer;
@@ -356,7 +341,6 @@ export class DrawHelper extends DrawHelperCore {
                     }
                 }
             }
-            // Handle fallback single-point entities
             else if (child.tags?.has("singlePoint")) {
                 const idx = parseInt(child.name.split("-").pop() || "0");
                 if (positions[idx]) {
@@ -404,7 +388,6 @@ export class DrawHelper extends DrawHelperCore {
         group: pc.Entity | undefined, updatable: boolean, material: pc.StandardMaterial, addToScene: boolean, hidden: boolean
     ): pc.Entity {
         const createMesh = () => {
-            // Merge all geometries into one
             const totalPositions: number[] = [];
             let totalNormals: number[] = [];
             const totalIndices: number[] = [];
@@ -419,13 +402,11 @@ export class DrawHelper extends DrawHelperCore {
                 if (meshItem.uvs) {
                     totalUvs.push(...meshItem.uvs);
                 }
-                // Offset indices
                 const offsetIndices = meshItem.indices.map(i => i + indexOffset);
                 totalIndices.push(...offsetIndices);
                 indexOffset += meshItem.positions.length / 3;
             });
 
-            // Compute normals if they're missing
             if (totalNormals.length === 0 && totalPositions.length > 0) {
                 totalNormals = this.computeNormals(totalPositions, totalIndices);
             }
@@ -484,7 +465,6 @@ export class DrawHelper extends DrawHelperCore {
         backFaceOpacity: number,
         zOffset: number
     ): pc.Entity {
-        // Create material for back face
         const backMaterial = this.getOrCreateMaterial(backFaceColour + "-back", backFaceOpacity, zOffset + 0.1, () => {
             const mat = new pc.StandardMaterial();
             mat.name = this.generateEntityId("backFaceMaterial");
@@ -492,7 +472,6 @@ export class DrawHelper extends DrawHelperCore {
             mat.metalness = 0.4;
             mat.gloss = 0.2;
             mat.opacity = backFaceOpacity;
-            // Enable alpha blending for transparency when opacity < 1
             if (backFaceOpacity < 1) {
                 mat.blendType = pc.BLEND_NORMAL;
             }
@@ -502,7 +481,6 @@ export class DrawHelper extends DrawHelperCore {
             return mat;
         });
 
-        // Use inherited method to prepare back face mesh data
         const backFaceData = this.prepareBackFaceMeshData(meshDataConverted);
 
         const mesh = new pc.Mesh(this.context.app.graphicsDevice);
@@ -547,7 +525,6 @@ export class DrawHelper extends DrawHelperCore {
             material.metalness = 0.5;
             material.gloss = 0.3;
             material.opacity = inputs.opacity;
-            // Enable alpha blending for transparency when opacity < 1
             if (inputs.opacity < 1) {
                 material.blendType = pc.BLEND_NORMAL;
             }
@@ -564,7 +541,6 @@ export class DrawHelper extends DrawHelperCore {
             inputs.hidden,
         );
 
-        // Draw back faces with different color when two-sided rendering is enabled
         if (inputs.drawTwoSided !== false) {
             const backFaceMesh = this.createBackFaceMesh(
                 [meshDataConverted],
@@ -602,7 +578,6 @@ export class DrawHelper extends DrawHelperCore {
             material.metalness = 0.4;
             material.gloss = 0.4;
             material.opacity = inputs.opacity;
-            // Enable alpha blending for transparency when opacity < 1
             if (inputs.opacity < 1) {
                 material.blendType = pc.BLEND_NORMAL;
             }
@@ -612,7 +587,6 @@ export class DrawHelper extends DrawHelperCore {
 
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable, pbr);
 
-        // Draw back faces with different color when two-sided rendering is enabled
         if (inputs.drawTwoSided !== false) {
             const backFaceMesh = this.createBackFaceMesh(
                 [{ positions: res.positions, indices: res.indices, normals: res.normals }],
@@ -636,7 +610,6 @@ export class DrawHelper extends DrawHelperCore {
         mesh.setPositions(positions);
         mesh.setIndices(indices);
         
-        // Compute normals if they're missing or empty
         if (!normals || normals.length === 0) {
             const computedNormals = this.computeNormals(positions, indices);
             mesh.setNormals(computedNormals);
@@ -655,7 +628,6 @@ export class DrawHelper extends DrawHelperCore {
         });
         jscadMesh.addChild(entity);
         
-        // Apply transforms
         if (transforms && transforms.length === 16) {
             const mat4 = new pc.Mat4();
             mat4.data = new Float32Array(transforms);
@@ -693,7 +665,6 @@ export class DrawHelper extends DrawHelperCore {
                     pbmat.metalness = 0.4;
                     pbmat.gloss = 0.2;
                     pbmat.opacity = alpha;
-                    // Use both depthBias and slopeDepthBias to push faces behind edges
                     pbmat.depthBias = zOffset;
                     pbmat.slopeDepthBias = slopeOffset;
                     pbmat.update();
@@ -713,7 +684,6 @@ export class DrawHelper extends DrawHelperCore {
             const mesh = this.createOrUpdateSurfacesMesh(meshData, undefined, false, pbr, false, false);
             shapeGroup.addChild(mesh);
 
-            // Draw back faces with different color when two-sided rendering is enabled
             if (options.drawTwoSided !== false) {
                 const backFaceMesh = this.createBackFaceMesh(
                     meshData, 
@@ -885,7 +855,7 @@ export class DrawHelper extends DrawHelperCore {
                 );
                 if (line) {
                     line.name = `edge ${edge.edgeIndex}`;
-                    shapeGroup.addChild(line!);
+                    shapeGroup.addChild(line);
                 }
             });
         }
@@ -1022,13 +992,12 @@ export class DrawHelper extends DrawHelperCore {
             const colorHex = explicitColors[index] || explicitColors[0] || "#ff0000";
             const color = this.hexToColor(colorHex);
             
-            // Each segment has 2 vertices, apply the same color to both (RGBA as 0-255)
             for (let i = 0; i < segmentCount * 2; i++) {
                 lineColors.push(
                     Math.round(color.r * 255),
                     Math.round(color.g * 255),
                     Math.round(color.b * 255),
-                    255 // Full opacity
+                    255
                 );
             }
         });
@@ -1056,7 +1025,6 @@ export class DrawHelper extends DrawHelperCore {
         
         mesh.update(pc.PRIMITIVE_LINES);
 
-        // Create material that uses vertex colors
         const mat = new pc.StandardMaterial();
         mat.diffuseVertexColor = true;
         mat.emissiveVertexColor = true;
@@ -1096,19 +1064,17 @@ export class DrawHelper extends DrawHelperCore {
         arrowSize = 0,
         arrowAngle = 30
     ): pc.Entity | undefined {
-        // Validate input
         if (!polylinesPoints || polylinesPoints.length === 0) {
             return undefined;
         }
         
-        // Compute arrow lines if arrowSize > 0
         const arrowLinePoints: Inputs.Base.Vector3[][] = [];
         const arrowLineColors: string[] = [];
         
         if (arrowSize > 0) {
             polylinesPoints.forEach((pts, polylineIndex) => {
                 if (pts.length >= 2) {
-                    const arrowLines = this.computeArrowHeadLines(pts as Inputs.Base.Point3[], arrowSize, arrowAngle);
+                    const arrowLines = this.computeArrowHeadLines(pts, arrowSize, arrowAngle);
                     const polylineColor = this.resolveColorForEntity(colours, polylineIndex, polylinesPoints.length, colorMapStrategy);
                     arrowLines.forEach(arrowLine => {
                         arrowLinePoints.push(arrowLine);
@@ -1118,25 +1084,20 @@ export class DrawHelper extends DrawHelperCore {
             });
         }
         
-        // Combine original polylines with arrow lines
         const allPolylinePoints = [...polylinesPoints, ...arrowLinePoints];
         
         const { positions: linePositions, segmentCounts } = this.computeLinePositionsWithSegmentCounts(allPolylinePoints);
         
-        // Compute explicit colors for all polylines + arrows
         const resolvedPolylineColors = this.resolveAllColors(colours, polylinesPoints.length, colorMapStrategy);
         const allExplicitColors = [...resolvedPolylineColors, ...arrowLineColors];
         
-        // Try to update existing entity
         if (this.canUpdatePolylineEntity(existingEntity, polylinesPoints, updatable)) {
             if (this.updatePolylineEntityPositions(existingEntity, linePositions)) {
                 return existingEntity;
             }
-            // Update failed, fall through to create new
             console.warn("Polyline update failed, creating new entity");
         }
         
-        // Create new entity with per-polyline colors (including arrows)
         return this.createPolylineEntityWithExplicitColors(
             linePositions, 
             size, 
@@ -1156,7 +1117,6 @@ export class DrawHelper extends DrawHelperCore {
                 const vertProperties = decomposedMesh.vertProperties;
                 const triVerts = decomposedMesh.triVerts;
                 
-                // Extract indexed positions based on numProp stride
                 let indexedPositions: number[];
                 if (numProp === 3) {
                     indexedPositions = Array.from(vertProperties);
@@ -1169,7 +1129,6 @@ export class DrawHelper extends DrawHelperCore {
                     }
                 }
                 
-                // Unindex the mesh for flat shading - each triangle gets unique vertices
                 const positions: number[] = [];
                 const normals: number[] = [];
                 const indices: number[] = [];
@@ -1179,7 +1138,6 @@ export class DrawHelper extends DrawHelperCore {
                     const i1 = triVerts[i + 1]!;
                     const i2 = triVerts[i + 2]!;
                     
-                    // Get vertex positions
                     const v0x = indexedPositions[i0 * 3]!;
                     const v0y = indexedPositions[i0 * 3 + 1]!;
                     const v0z = indexedPositions[i0 * 3 + 2]!;
@@ -1192,7 +1150,6 @@ export class DrawHelper extends DrawHelperCore {
                     const v2y = indexedPositions[i2 * 3 + 1]!;
                     const v2z = indexedPositions[i2 * 3 + 2]!;
                     
-                    // Compute face normal
                     const e1x = v1x - v0x;
                     const e1y = v1y - v0y;
                     const e1z = v1z - v0z;
@@ -1205,7 +1162,6 @@ export class DrawHelper extends DrawHelperCore {
                     let ny = e1z * e2x - e1x * e2z;
                     let nz = e1x * e2y - e1y * e2x;
                     
-                    // Normalize
                     const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
                     if (len > 0) {
                         nx /= len;
@@ -1213,14 +1169,12 @@ export class DrawHelper extends DrawHelperCore {
                         nz /= len;
                     }
                     
-                    // Add 3 unique vertices for this triangle
                     const baseIndex = positions.length / 3;
                     
                     positions.push(v0x, v0y, v0z);
                     positions.push(v1x, v1y, v1z);
                     positions.push(v2x, v2y, v2z);
                     
-                    // Same normal for all 3 vertices (flat shading)
                     normals.push(nx, ny, nz);
                     normals.push(nx, ny, nz);
                     normals.push(nx, ny, nz);
@@ -1259,7 +1213,6 @@ export class DrawHelper extends DrawHelperCore {
                 });
                 group.addChild(childEntity);
 
-                // Draw back faces with different color when two-sided rendering is enabled
                 if (options.drawTwoSided !== false) {
                     const backFaceMesh = this.createBackFaceMesh(
                         [{ positions, indices, normals }],
@@ -1317,12 +1270,10 @@ export class DrawHelper extends DrawHelperCore {
         return new pc.Color(1, 0, 0);
     }
 
-    // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
-    // Workers cannot handle complex circular objects like PlayCanvas materials
     private getSafeWorkerOptions<T extends { faceMaterial?: pc.StandardMaterial | undefined }>(inputs: T): Omit<T, "faceMaterial"> {
          
         const { faceMaterial, ...safeOptions } = inputs;
-        return safeOptions as Omit<T, "faceMaterial">;
+        return safeOptions;
     }
 
     /**
@@ -1355,13 +1306,11 @@ export class DrawHelper extends DrawHelperCore {
     ): pc.StandardMaterial {
         const key = super.getMaterialKey(hex, alpha, zOffset, unlit);
 
-        // Check cache first
         const cached = this.materialCache.get(key);
         if (cached) {
             return cached;
         }
 
-        // Evict oldest if at capacity (simple FIFO)
         if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
             const firstKey = this.materialCache.keys().next().value!;
             const material = this.materialCache.get(firstKey);
@@ -1372,7 +1321,6 @@ export class DrawHelper extends DrawHelperCore {
             console.warn(`Material cache full, evicted: ${firstKey}`);
         }
 
-        // Create new material
         const material = createFn();
         this.materialCache.set(key, material);
         return material;
@@ -1383,7 +1331,6 @@ export class DrawHelper extends DrawHelperCore {
      * Should be called when the DrawHelper instance is no longer needed
      */
     public dispose(): void {
-        // Dispose cached materials
         this.materialCache.forEach((material, key) => {
             try {
                 if (material.destroy) {
@@ -1395,7 +1342,6 @@ export class DrawHelper extends DrawHelperCore {
         });
         this.materialCache.clear();
 
-        // Reset counters
         this.entityIdCounter = 0;
 
         console.log("DrawHelper disposed successfully");
@@ -1413,15 +1359,13 @@ export class DrawHelper extends DrawHelperCore {
         existingGroup?: pc.Entity,
         updatable?: boolean
     ): pc.Entity {
-        // If updating and names match, return existing group
         if (existingGroup && updatable && existingGroup.children[0]?.name === polylineEntity.name) {
             return existingGroup;
         }
         
-        // Create new group
         const groupId = this.generateEntityId("polylinesGroup");
         const group = new pc.Entity(groupId);
-        group.addChild(polylineEntity!);
+        group.addChild(polylineEntity);
         this.context.scene.addChild(group);
         
         return group;
@@ -1439,7 +1383,6 @@ export class DrawHelper extends DrawHelperCore {
 
         const colorSet = Array.from(new Set(colors));
         const materialSet = colorSet.map((colour) => {
-            // Use unlit=true to distinguish from lit materials used for surfaces
             const mat = this.getOrCreateMaterial(colour, opacity, 0, () => {
                 const material = new pc.StandardMaterial();
                 material.name = this.generateEntityId("mat");
@@ -1452,7 +1395,7 @@ export class DrawHelper extends DrawHelperCore {
                 material.useLighting = false;
                 material.update();
                 return material;
-            }, true); // unlit = true
+            }, true);
             const positionsFiltered = positionsModel.filter(s => s.color === colour);
 
             return { hex: colour, material: mat, positions: positionsFiltered };
@@ -1461,15 +1404,12 @@ export class DrawHelper extends DrawHelperCore {
         const pointsGroup = new pc.Entity(meshName);
         this.context.scene.addChild(pointsGroup);
         
-        // Create merged geometry for each unique color - one draw call per color
         materialSet.forEach(ms => {
             const pointCount = ms.positions.length;
             if (pointCount === 0) return;
             
-            // Use fewer segments for large point counts
             const segments = pointCount > 1000 ? 4 : 8;
             
-            // Create instanced mesh for all points of this color
             const instancedEntity = this.createInstancedSphereMesh(
                 this.generateEntityId(`points-${ms.hex}`, meshName),
                 ms.positions.map(p => ({ position: p.position, index: p.index })),
@@ -1478,7 +1418,6 @@ export class DrawHelper extends DrawHelperCore {
                 ms.material
             );
             
-            // Store point indices for potential updates
             instancedEntity.tags?.add("instancedPoints");
             pointsGroup.addChild(instancedEntity);
         });
@@ -1500,20 +1439,17 @@ export class DrawHelper extends DrawHelperCore {
         const graphicsDevice = this.context.app?.graphicsDevice;
         
         if (!graphicsDevice) {
-            // Fallback to individual spheres if no graphics device available
             return this.createFallbackPointsMesh(name, positions.map(p => p.position), radius, material);
         }
 
         const instanceCount = positions.length;
         
-        // Create a single sphere mesh to be instanced
         const sphereMesh = pc.Mesh.fromGeometry(graphicsDevice, new pc.SphereGeometry({
             radius: radius,
             latitudeBands: segments,
             longitudeBands: segments
         }));
         
-        // Create instance vertex buffer with world matrices (Mat4 = 16 floats per instance)
         const instanceFormat = pc.VertexFormat.getDefaultInstancingFormat(graphicsDevice);
         const instanceBuffer = new pc.VertexBuffer(
             graphicsDevice,
@@ -1524,34 +1460,27 @@ export class DrawHelper extends DrawHelperCore {
             }
         );
         
-        // Fill the instance buffer with transformation matrices
         const instanceData = new Float32Array(instanceCount * 16);
         const tempMat = new pc.Mat4();
         
         positions.forEach((pos, i) => {
-            // Create a translation matrix for each instance
             tempMat.setTranslate(pos.position[0], pos.position[1], pos.position[2]);
-            // Copy matrix data (16 floats) to the buffer
             instanceData.set(tempMat.data, i * 16);
         });
         
-        // Upload instance data to GPU
         const lockedData = instanceBuffer.lock();
         if (lockedData) {
             new Float32Array(lockedData).set(instanceData);
             instanceBuffer.unlock();
         }
         
-        // Create mesh instance and enable instancing
         const meshInstance = new pc.MeshInstance(sphereMesh, material);
         meshInstance.setInstancing(instanceBuffer);
         meshInstance.instancingCount = instanceCount;
         
-        // Disable shadows for point spheres (they use emissive/unlit materials)
         meshInstance.castShadow = false;
         meshInstance.receiveShadow = false;
         
-        // Create entity with render component
         const entity = new pc.Entity(name);
         entity.addComponent("render", {
             meshInstances: [meshInstance],
@@ -1559,7 +1488,6 @@ export class DrawHelper extends DrawHelperCore {
             receiveShadows: false
         });
         
-        // Store instance data for potential updates
         entity.tags?.add("instancedPoints");
         (entity as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] }).instanceBuffer = instanceBuffer;
         (entity as pc.Entity & { instanceBuffer?: pc.VertexBuffer; pointIndices?: number[] }).pointIndices = positions.map(p => p.index);

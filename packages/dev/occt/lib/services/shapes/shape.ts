@@ -19,8 +19,6 @@ export class OCCTShape {
      * @drawable true
      */
     purgeInternalEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
-        // Note: TopOpeBRepTool_PurgeInternalEdges is not exposed in this build
-        // Return the input shape unchanged as a fallback
         return inputs.shape;
     }
 

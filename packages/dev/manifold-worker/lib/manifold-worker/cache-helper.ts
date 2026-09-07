@@ -14,19 +14,16 @@ export class CacheHelper {
     usedHashes: Record<string, string | number> = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
-    manifoldObjectHashes = new Set<string | number>(); // Track which hashes contain Manifold objects
+    manifoldObjectHashes = new Set<string | number>();
 
     cleanAllCache(): void {
-        // Clean all entries in argCache, not just usedHashes
         const allCacheKeys = Object.keys(this.argCache);
 
         allCacheKeys.forEach(hash => {
             if (this.argCache[hash]) {
                 try {
                     const cachedItem = this.argCache[hash];
-                    // Only attempt to delete Manifold objects
                     if (this.isManifoldObject(cachedItem)) {
-                        // Handle arrays of Manifold objects
                         if (Array.isArray(cachedItem)) {
                             cachedItem.forEach(manifold => {
                                 try {
@@ -56,9 +53,7 @@ export class CacheHelper {
         if (this.argCache[hash]) {
             try {
                 const cachedItem = this.argCache[hash];
-                // Only attempt to delete Manifold objects
                 if (this.isManifoldObject(cachedItem)) {
-                    // Handle arrays of Manifold objects
                     if (Array.isArray(cachedItem)) {
                         cachedItem.forEach(manifold => {
                             try {
@@ -83,28 +78,20 @@ export class CacheHelper {
     }
 
     cleanUpCache(): void {
-        // Clean up cache entries that were used in previous run but not in current run
-        // This helps manage memory by removing unused cached manifolds
-        
         const usedHashKeys = Object.keys(this.usedHashes);
         const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
         
-        // Find hashes that exist in previous run but not in current run
-        // These are the ones we should clean up
         let hashesToDelete: string[] = [];
         if (hashesFromPreviousRunKeys.length > 0) {
             hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
         }
         
-        // Delete unused manifolds and clean them from cache
         if (hashesToDelete.length > 0) {
             hashesToDelete.forEach(hash => {
                 if (this.argCache[hash]) {
                     try {
                         const manifold = this.argCache[hash];
-                        // Only try to delete if it's a Manifold object
                         if (this.isManifoldObject(manifold)) {
-                            // Handle arrays of Manifold objects
                             if (Array.isArray(manifold)) {
                                 manifold.forEach(m => {
                                     try {
@@ -127,7 +114,6 @@ export class CacheHelper {
             });
         }
         
-        // Update hashesFromPreviousRun to be current usedHashes for next cleanup cycle
         this.hashesFromPreviousRun = { ...this.usedHashes };
     }
 
@@ -162,7 +148,6 @@ export class CacheHelper {
                     const itemHash = this.computeHash({ ...args, index });
                     r.hash = itemHash;
                     this.addToCache(itemHash, r);
-                    // Track individual element hashes so they can be cleaned up
                     this.usedHashes[itemHash] = itemHash;
                     this.hashesFromPreviousRun[itemHash] = itemHash;
                 });
@@ -176,14 +161,12 @@ export class CacheHelper {
                     const compoundHash = this.computeHash({ ...args, index: "compound" });
                     objDef.compound.hash = compoundHash;
                     this.addToCache(compoundHash, objDef.compound);
-                    // Track compound hash
                     this.usedHashes[compoundHash] = compoundHash;
                     this.hashesFromPreviousRun[compoundHash] = compoundHash;
                     objDef.manifolds!.forEach((s, index) => {
                         const itemHash = this.computeHash({ ...args, index });
                         s.manifold.hash = itemHash;
                         this.addToCache(itemHash, s.manifold);
-                        // Track individual manifold hashes
                         this.usedHashes[itemHash] = itemHash;
                         this.hashesFromPreviousRun[itemHash] = itemHash;
                     });
@@ -204,16 +187,13 @@ export class CacheHelper {
             return null;
         }
         
-        // For wrapped values (non-Manifold objects stored as { value: ... })
         if (cachedManifold.value !== undefined && !this.isManifoldObject(cachedManifold)) {
             return cachedManifold;
         }
         
-        // If this hash was tracked as a Manifold object, verify it's still valid
         if (this.manifoldObjectHashes.has(hash)) {
             const isStillValid = this.isManifoldObject(cachedManifold);
             if (!isStillValid) {
-                // Object was a Manifold object but is no longer valid
                 delete this.argCache[hash];
                 this.manifoldObjectHashes.delete(hash);
                 return null;
@@ -226,13 +206,11 @@ export class CacheHelper {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addToCache(hash: string | number, object: any): string | number {
         const cacheShape = object;
-        // Only set hash property on objects, not primitives
         if (cacheShape !== null && typeof cacheShape === "object") {
             cacheShape.hash = hash;
         }
         this.argCache[hash] = cacheShape;
         
-        // Track if this is a Manifold object
         if (this.isManifoldObject(cacheShape)) {
             this.manifoldObjectHashes.add(hash);
         }
@@ -260,9 +238,7 @@ export class CacheHelper {
         if (str.length === 0) { return hash; }
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
-            // tslint:disable-next-line: no-bitwise
             hash = ((hash << 5) - hash) + char;
-            // tslint:disable-next-line: no-bitwise
             hash = hash & hash;
         }
         return hash;

@@ -1676,7 +1676,7 @@ describe("Draw unit tests", () => {
                         break;
                 }
                 
-                return texture as unknown as THREE.Texture;
+                return texture;
             });
         });
 

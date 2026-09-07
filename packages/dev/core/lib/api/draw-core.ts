@@ -17,8 +17,6 @@ export interface DrawOptionsBase {
  */
 export class DrawCore {
 
-    // ============== Entity Detection Methods ==============
-
     detectPoint(entity: unknown): boolean {
         return (Array.isArray(entity) && entity.length === 3 && this.checkIfElementsInArrayAreNumbers(entity));
     }
@@ -88,9 +86,6 @@ export class DrawCore {
         return Array.isArray(entity) && !entity.some(el => !this.detectVerbSurface(el));
     }
 
-    // A region holds its edges and a solid holds its polygons; a path holds neither and is drawn by
-    // a different handler. Saying so as a type predicate is what lets the handler read the entity
-    // without asking again - the check and the use are the same statement.
     detectJscadMesh(entity: unknown): entity is Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3 {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
@@ -142,8 +137,6 @@ export class DrawCore {
         return Array.isArray(entity) && !entity.some(el => !this.detectTag(el));
     }
 
-    // ============== Array Validation Helpers ==============
-
     checkIfElementsInArrayAreNumbers(array: unknown[]): boolean {
         return !array.some(el => typeof el !== "number" || isNaN(el));
     }
@@ -160,20 +153,16 @@ export class DrawCore {
         return !array.some(el => el.length !== 3);
     }
 
-    // ============== Input Validation Methods ==============
-
     /**
      * Validate if draw input contains valid entity data
      * @param entity - Entity to validate
      * @returns True if valid, false otherwise
      */
     protected isValidDrawInput(entity: unknown): boolean {
-        // Null or undefined
         if (entity === null || entity === undefined) {
             return false;
         }
         
-        // Empty array
         if (Array.isArray(entity) && entity.length === 0) {
             return false;
         }
@@ -190,7 +179,7 @@ export class DrawCore {
         return value !== null && 
                value !== undefined && 
                typeof value === "object" && 
-               "text" in (value as object);
+               "text" in (value);
     }
 
     /**

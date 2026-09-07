@@ -521,11 +521,9 @@ export class TextBitByBit {
         const text = inputs.text;
         if (typeof text !== "string") throw new Error("text must be a string");
 
-        // NOTE: Just like CSS letter-spacing, the spacing could be positive or negative
         const extraLetterSpacing = (height * letterSpacing);
 
-        // manage the list of lines
-        let maxWidth = 0; // keep track of max width for final alignment
+        let maxWidth = 0;
         let line: Line = { width: 0, height: 0, chars: [] };
         let lines: Line[] = [];
 
@@ -536,7 +534,6 @@ export class TextBitByBit {
             line = { width: 0, height: 0, chars: [] };
         };
 
-        // convert the text into a list of vector lines
         let x = xOffset;
         let y = yOffset;
         let vchar;
@@ -546,18 +543,15 @@ export class TextBitByBit {
             if (character === "\n") {
                 pushLine();
 
-                // reset x and y for a new line
                 x = xOffset;
                 y -= height * lineSpacing;
                 continue;
             }
-            // convert the character
             vchar = this.vectorChar({ xOffset: x, yOffset: y, height, extrudeOffset, char: character });
 
             const width = vchar.width + extraLetterSpacing;
             x += width;
 
-            // update current line
             line.width += width;
             line.height = Math.max(line.height, vchar.height);
             if (character !== " ") {
@@ -566,7 +560,6 @@ export class TextBitByBit {
         }
         if (line.chars.length) pushLine();
 
-        // align all lines as requested
         lines = lines.map((line) => {
             const diff = maxWidth - line.width;
             if (align === Inputs.Base.horizontalAlignEnum.right) {
@@ -581,7 +574,6 @@ export class TextBitByBit {
         if (inputs.centerOnOrigin) {
             const pointsFlat: Inputs.Base.Point3[] = [];
 
-            // flatten the lines into a single array of points
             lines.forEach((line) => {
                 line.chars.forEach((vchar) => {
                     vchar.paths.forEach((path) => {

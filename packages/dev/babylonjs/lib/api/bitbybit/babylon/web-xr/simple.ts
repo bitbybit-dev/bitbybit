@@ -47,7 +47,7 @@ export class BabylonWebXRSimple {
      * @shortname simple xr with teleportation
      */
     async createDefaultXRExperienceWithTeleportation(inputs: Inputs.BabylonWebXR.DefaultWebXRWithTeleportationDto): Promise<void> {
-        this.createDefaultXRExperienceWithTeleportationReturn(inputs);
+        await this.createDefaultXRExperienceWithTeleportationReturn(inputs);
     }
 
     /**

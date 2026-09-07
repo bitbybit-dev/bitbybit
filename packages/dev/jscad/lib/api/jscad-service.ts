@@ -14,7 +14,6 @@ import { JSCADColors } from "./services/jscad-colors";
 import * as JSCAD from "@jscad/modeling";
 
 
-// Worker make an instance of this class itself
 /**
  * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -90,7 +89,6 @@ export class Jscad {
         const polygons: Base.Mesh3 = [];
         const numVertices = positions.length / 3;
 
-        // --- Triangle Reconstruction ---
         for (let i = 0; i < indices.length; i += 3) {
             const index1 = indices[i]!;
             const index2 = indices[i + 1]!;
@@ -110,9 +108,6 @@ export class Jscad {
             const point2: Base.Point3 = [positions[offset2]!, positions[offset2 + 1]!, positions[offset2 + 2]!];
             const point3: Base.Point3 = [positions[offset3]!, positions[offset3 + 1]!, positions[offset3 + 2]!];
 
-            // We must bake the transformations as JSCAD uses those extensively. A geometry carries
-            // exactly one 4x4 matrix, flat, so there is one case to handle - the two branches for a
-            // list of matrices and a list of lists that used to sit here could never be reached.
             const transformedPoints = this.point.transformPoints({
                 points: [point1, point2, point3],
                 transformation: [inputs.mesh.transforms],
@@ -135,8 +130,6 @@ export class Jscad {
     shapeToMesh(inputs: Inputs.JSCAD.MeshDto): Inputs.JSCAD.JSCADMeshData {
         let polygons: Inputs.JSCAD.JSCADPoly3[] = [];
 
-        // A solid already has its polygons. Anything flat - a 2D region or a path - is given a
-        // hair's thickness first, because a mesh needs faces and a flat shape has none.
         if (this.legacyPolygons(inputs.mesh)) {
             polygons = this.legacyPolygons(inputs.mesh)!();
         } else if ("polygons" in inputs.mesh) {
@@ -224,7 +217,7 @@ export class Jscad {
         else if (this.getArrayDepth(transformation) === 3) {
             (transformation as unknown as Base.TransformMatrixes[]).forEach((transforms) => {
                 transforms.forEach((mat: Base.TransformMatrix) => {
-                    transformedMesh = this.jscad.transforms.transform(mat as any, transformedMesh);
+                    transformedMesh = this.jscad.transforms.transform(mat, transformedMesh);
                 });
             });
         }

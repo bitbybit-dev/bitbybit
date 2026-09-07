@@ -78,17 +78,14 @@ export class PlayCanvasOrbitCamera {
             throw new Error("App not initialized. Call init() first.");
         }
 
-        // Find or create camera entity
         let cameraEntity: pc.Entity | undefined;
         if (inputs.focusEntity) {
-            // Use existing camera if found in scene
             cameraEntity = this.context.scene.findOne((node: pc.GraphNode) => 
                 node instanceof pc.Entity && node.camera !== undefined && node.camera !== null
             ) as pc.Entity;
         }
         
         if (!cameraEntity) {
-            // Create new camera entity
             cameraEntity = new pc.Entity("OrbitCamera");
             cameraEntity.addComponent("camera", {
                 clearColor: new pc.Color(0.1, 0.1, 0.1),
@@ -98,7 +95,6 @@ export class PlayCanvasOrbitCamera {
             this.context.scene.addChild(cameraEntity);
         }
 
-        // Create orbit camera with configuration
         const orbitCamera = this.createOrbitCameraInstance(cameraEntity, {
             autoRender: inputs.autoRender,
             distanceMax: inputs.distanceMax,
@@ -110,38 +106,32 @@ export class PlayCanvasOrbitCamera {
             frameOnStart: inputs.frameOnStart
         });
 
-        // Set initial position
         const pivotVec = new pc.Vec3(inputs.pivotPoint[0], inputs.pivotPoint[1], inputs.pivotPoint[2]);
         orbitCamera.pivotPoint = pivotVec;
         orbitCamera.distance = inputs.distance;
         orbitCamera.pitch = inputs.pitch;
         orbitCamera.yaw = inputs.yaw;
 
-        // Initialize the current pivot point to match the target (no inertia on start)
         const state = orbitCamera as any;
         if (state._pivotPoint) {
             state._pivotPoint.copy(pivotVec);
         }
 
-        // Setup mouse input
         const mouseInput = this.createMouseInput(cameraEntity, orbitCamera, {
             orbitSensitivity: inputs.orbitSensitivity,
             distanceSensitivity: inputs.distanceSensitivity
         });
 
-        // Setup touch input
         const touchInput = this.createTouchInput(cameraEntity, orbitCamera, {
             orbitSensitivity: inputs.orbitSensitivity,
             distanceSensitivity: inputs.distanceSensitivity
         });
 
-        // Register update function
         const updateFn = (dt: number) => {
             orbitCamera.update(dt);
         };
         this.context.app.on("update", updateFn);
 
-        // Focus on entity if provided
         if (inputs.focusEntity && inputs.frameOnStart) {
             orbitCamera.focus(inputs.focusEntity);
         }

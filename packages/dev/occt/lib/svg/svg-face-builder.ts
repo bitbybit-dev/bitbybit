@@ -50,7 +50,6 @@ export class SvgFaceBuilder {
             const areas = samples.map((pts) => this.signedAreaXY(pts));
             const centroids = samples.map((pts, i) => this.centroidXY(pts, areas[i]!));
             const sign = areas.map((a) => (a >= 0 ? 1 : -1));
-            // CCW version of each wire (positive area) - used both for inside-tests and as face outers.
             const ccw = wires.map((w, i) => (sign[i]! < 0 ? track(this.och.wiresService.reversedWire({ shape: w })) : w));
             const classFaces = ccw.map((w) => track(this.och.facesService.createFaceFromWire({ shape: w, planar: true })));
 
@@ -102,8 +101,6 @@ export class SvgFaceBuilder {
         for (let i = 0; i < n; i++) {
             const enclosing: number[] = [];
             for (let j = 0; j < n; j++) {
-                // A wire can only be contained by a strictly larger one - the area guard also
-                // disambiguates concentric wires whose centroids coincide.
                 if (j !== i && Math.abs(areas[j]!) > Math.abs(areas[i]!) && this.isInside(classFaces[j]!, centroids[i]!)) {
                     enclosing.push(j);
                 }
@@ -122,7 +119,7 @@ export class SvgFaceBuilder {
         const faces: TopoDS_Face[] = [];
         for (let i = 0; i < n; i++) {
             if (!filled(i)) { continue; }
-            if (parent[i] !== -1 && filled(parent[i]!)) { continue; } // interior of solid material, not a boundary
+            if (parent[i] !== -1 && filled(parent[i]!)) { continue; }
             const holeWires: TopoDS_Wire[] = [];
             const createdHoles: TopoDS_Wire[] = [];
             for (let j = 0; j < n; j++) {

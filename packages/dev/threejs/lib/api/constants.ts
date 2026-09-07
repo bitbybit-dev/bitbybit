@@ -3,7 +3,6 @@
  * Re-exports shared constants from @bitbybit-dev/core and adds ThreeJS-specific defaults.
  */
 
-// Re-export shared constants from core
 export {
     MATERIAL_DEFAULTS,
     GEOMETRY_DEFAULTS,
@@ -12,7 +11,6 @@ export {
     LogLevel,
 } from "@bitbybit-dev/core";
 
-// Import for type usage
 import type { MaterialDefaults, GeometryDefaults, DefaultColors, CacheConfig } from "@bitbybit-dev/core";
 
 /**
@@ -28,5 +26,4 @@ export const THREEJS_MATERIAL_DEFAULTS = {
     },
 } as const;
 
-// Re-export type definitions
 export type { MaterialDefaults, GeometryDefaults, DefaultColors, CacheConfig };

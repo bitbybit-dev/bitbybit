@@ -2,7 +2,6 @@ import * as Manifold3D from "manifold-3d";
 import { MeshEvaluate } from "./mesh-evaluate";
 import { MeshOperations } from "./mesh-operations";
 
-// Worker make an instance of this class itself
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
  * Thanks Manifold community for developing this kernel

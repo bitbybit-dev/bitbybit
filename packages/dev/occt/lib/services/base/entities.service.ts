@@ -30,7 +30,6 @@ export class EntitiesService {
             wire.delete();
             return face;
         }
-        // Default: return wire for curve type as well (Geom_Curve not exposed)
         const wire = this.occ.MakeCircleWire(ax, radius);
         ax.delete();
         return wire;
@@ -53,7 +52,6 @@ export class EntitiesService {
             wire.delete();
             return face;
         }
-        // Default: return wire for curve type as well (Geom_Curve not exposed)
         const wire = this.occ.MakeEllipseWire(ax, majorRadius, minorRadius);
         ax.delete();
         return wire;
@@ -113,11 +111,9 @@ export class EntitiesService {
                 faceBuilder.delete();
             } else {
                 if (!guideFace) {
-                    // Use factory function to avoid constructor overload conflicts
                     const newFace = this.occ.MakeFaceFromWireOnlyPlane(currentWire, planar);
                     faces.push(newFace);
                 } else {
-                    // Use factory function for surface-based face creation
                     const newFace = this.occ.MakeFaceFromFaceSurfaceAndWire(guideFace, currentWire, inside ?? true);
                     faces.push(newFace);
                 }

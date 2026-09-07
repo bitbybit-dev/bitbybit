@@ -6,7 +6,6 @@ import { ManifoldTransforms } from "./manifold-transforms";
 import { ManifoldEvaluate } from "./manifold-evaluate";
 import * as Inputs from "../../inputs";
 
-// Worker make an instance of this class itself
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
  * Thanks Manifold community for developing this kernel

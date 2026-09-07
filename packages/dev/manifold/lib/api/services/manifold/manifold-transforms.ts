@@ -130,7 +130,6 @@ export class ManifoldTransforms {
      */
     transforms(inputs: Inputs.Manifold.TransformsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         let currentShape = inputs.manifold;
-        //potentially leaks in betweens...
         const transformedShapes: Manifold3D.Manifold[] = [];
         inputs.transforms.forEach(transform => {
             currentShape = currentShape.transform(transform);

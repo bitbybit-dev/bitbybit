@@ -18,7 +18,6 @@ export interface InitBitByBitOptions extends WorkerOptions {
     havokPlugin?: BABYLON.HavokPlugin | undefined;
 }
 
-// Re-export types for convenience
 export { type InitKernelsResult, type WorkerInstances, type WorkerOptions };
 
 /**
@@ -38,10 +37,8 @@ export async function initBitByBit(
     bitbybit: BitByBitBase,
     options: InitBitByBitOptions
 ): Promise<InitKernelsResult & { bitbybit: BitByBitBase }> {
-    // Get or create workers
     const workers = getOrCreateWorkers(options);
 
-    // Initialize bitbybit with scene and workers
     bitbybit.init(
         scene,
         workers.occtWorker,
@@ -50,7 +47,6 @@ export async function initBitByBit(
         options.havokPlugin
     );
 
-    // Wait for kernel initialization
     const result = await waitForKernelInitialization(bitbybit, options);
 
     return {

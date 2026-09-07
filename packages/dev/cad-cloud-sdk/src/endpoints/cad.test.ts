@@ -12,7 +12,7 @@ describe("CadEndpoint", () => {
             const body = { operation: "occt.shapes.solid.createBox", params: { width: 10 } };
 
             // Act
-            const result = await cad.execute(body as never);
+            const result = await cad.execute(body);
 
             // Assert
             expect(calls[0]!.method).toBe("POST");
@@ -31,7 +31,7 @@ describe("CadEndpoint", () => {
             const body = { steps: [{ operation: "test", params: {} }] };
 
             // Act
-            const result = await cad.pipeline(body as never);
+            const result = await cad.pipeline(body);
 
             // Assert
             expect(calls[0]!.method).toBe("POST");

@@ -52,10 +52,14 @@ describe("DrawHelper unit tests", () => {
     let mockJscadWorkerManager: JSCADWorkerManager;
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
+    // The same object the context holds as its scene, in its stand-in's type: taken from the
+    // helper that built it rather than reinterpreted again at every place a test reads its state.
+    let mockScene: MockScene;
 
     beforeEach(() => {
         const mocks = createDrawHelperMocks();
         mockContext = mocks.mockContext;
+        mockScene = mocks.mockScene;
         mockSolidText = mocks.mockSolidText;
         mockVector = mocks.mockVector;
         mockJscadWorkerManager = mocks.mockJscadWorkerManager;
@@ -1183,7 +1187,7 @@ describe("DrawHelper unit tests", () => {
 
             // An update keeps the container the caller holds, and replaces what hangs off it.
             expect(result).toBe(existingMesh);
-            expect((mockContext.scene as unknown as MockScene)._meshes).toContain(existingMesh);
+            expect(mockScene._meshes).toContain(existingMesh);
             expect(result.getChildren()).toHaveLength(1);
         });
 
@@ -1195,7 +1199,7 @@ describe("DrawHelper unit tests", () => {
                     normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]]
                 })
             };
-            const scene = mockContext.scene as unknown as MockScene;
+            const scene = mockScene;
             let mesh = drawHelper.drawSurfacesMultiColour(
                 new Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>([mockSurface], ["#ff0000"], 1, false, false, undefined, false)
             );
@@ -1224,7 +1228,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as BABYLON.Mesh,
+                undefined,
                 false,
                 material,
                 true,
@@ -1247,7 +1251,7 @@ describe("DrawHelper unit tests", () => {
             // Create initial mesh
             const existingMesh = drawHelper.createOrUpdateSurfacesMesh(
                 [...meshData],
-                undefined as unknown as BABYLON.Mesh,
+                undefined,
                 true,
                 material,
                 true,
@@ -1277,7 +1281,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as BABYLON.Mesh,
+                undefined,
                 false,
                 material,
                 true,
@@ -1299,7 +1303,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as BABYLON.Mesh,
+                undefined,
                 false,
                 material,
                 true,
@@ -2545,7 +2549,7 @@ describe("DrawHelper unit tests", () => {
         it("should not leak polyline meshes on update", () => {
             const polylines1 = [{ points: [[0, 0, 0], [1, 1, 1]] as Inputs.Base.Point3[] }];
             const inputs1 = new Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>(
-                polylines1 as Inputs.Base.Polyline3[],
+                polylines1,
                 2,
                 ["#ff0000"],
                 1,
@@ -2557,7 +2561,7 @@ describe("DrawHelper unit tests", () => {
 
             const polylines2 = [{ points: [[2, 2, 2], [3, 3, 3]] as Inputs.Base.Point3[] }];
             const inputs2 = new Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>(
-                polylines2 as Inputs.Base.Polyline3[],
+                polylines2,
                 2,
                 ["#ff0000"],
                 1,
@@ -2794,7 +2798,7 @@ describe("DrawHelper unit tests", () => {
             );
 
             const first = drawHelper.drawPoint(options);
-            const scene = mockContext.scene as unknown as MockScene;
+            const scene = mockScene;
             const meshesAfterFirstDraw = scene._meshes.length;
             let result = first;
 
@@ -3001,7 +3005,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as BABYLON.Mesh,
+                undefined,
                 false,
                 material,
                 true,

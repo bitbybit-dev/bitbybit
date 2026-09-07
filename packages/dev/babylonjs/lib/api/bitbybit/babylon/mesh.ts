@@ -435,7 +435,6 @@ export class BabylonMesh {
     getVerticesAsPolygonPoints(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3[][] {
         const vertices = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.PositionKind)!;
         const indices = inputs.babylonMesh.getIndices()!;
-        // this method implies that mesh is triangulated
         const res: Base.Point3[][] = [];
         for (let i = 0; i < indices.length; i += 3) {
             const p1 = indices[i]!;

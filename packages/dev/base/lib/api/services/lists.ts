@@ -194,7 +194,6 @@ export class Lists {
         const elToMerge: unknown[][] = [];
         const result: unknown[][] = [];
         lists.forEach(list => {
-            // flatten to certain level;
             const elementsToMerge = list.flat(level);
             elToMerge.push(elementsToMerge);
         });
@@ -845,7 +844,6 @@ export class Lists {
      * @drawable false
      */
     repeatInPattern<T>(inputs: Inputs.Lists.RepeatInPatternDto<T>): T[] {
-        // will repeat the items provided in the patten till the certain length of the list is reached
         let inpList = inputs.list;
         if (inputs.clone) {
             inpList = structuredClone(inputs.list);

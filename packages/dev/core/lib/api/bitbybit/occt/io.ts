@@ -8,7 +8,6 @@ export class OCCTWIO extends OCCTIO {
     constructor(
         override readonly occWorkerManager: OCCTWorkerManager,
         private readonly context: ContextBase,
-        // private readonly drawHelper: DrawHelper,
     ) {
         super(occWorkerManager);
     }
@@ -21,8 +20,6 @@ export class OCCTWIO extends OCCTIO {
      * @returns OCCT Shape
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
-        // first we should check if we have assetName loaded already
-        // if we dont have we do this, otherwise return from the cache...
         return this.context.getFile(inputs.assetFile).then(s => {
             return this.occWorkerManager.genericCallToWorkerPromise(
                 "io.loadSTEPorIGES",

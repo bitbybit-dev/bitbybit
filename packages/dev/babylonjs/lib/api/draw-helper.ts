@@ -10,13 +10,10 @@ import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./con
 
 export class DrawHelper extends DrawHelperCore {
 
-    // Map-based material cache for better performance (PBR materials for lit surfaces)
     private readonly materialCache = new Map<string, BABYLON.PBRMetallicRoughnessMaterial>();
 
-    // Separate cache for unlit materials (StandardMaterial for points/lines)
     private readonly unlitMaterialCache = new Map<string, BABYLON.StandardMaterial>();
 
-    // Entity ID generation
     private entityIdCounter = 0;
     private readonly instanceId = `babylon-${Date.now()}`;
 
@@ -43,7 +40,6 @@ export class DrawHelper extends DrawHelperCore {
      * Should be called when the DrawHelper instance is no longer needed
      */
     public dispose(): void {
-        // Dispose cached PBR materials
         this.materialCache.forEach((material, key) => {
             try {
                 if (material.dispose) {
@@ -55,7 +51,6 @@ export class DrawHelper extends DrawHelperCore {
         });
         this.materialCache.clear();
 
-        // Dispose cached unlit materials (StandardMaterial for points)
         this.unlitMaterialCache.forEach((material, key) => {
             try {
                 if (material.dispose) {
@@ -67,7 +62,6 @@ export class DrawHelper extends DrawHelperCore {
         });
         this.unlitMaterialCache.clear();
 
-        // Reset counters
         this.entityIdCounter = 0;
 
         console.log("DrawHelper disposed successfully");
@@ -103,26 +97,21 @@ export class DrawHelper extends DrawHelperCore {
     ): BABYLON.PBRMetallicRoughnessMaterial {
         const key = this.getMaterialKey(hex, alpha, zOffset, unlit);
 
-        // Check cache first - material is automatically removed from cache via onDispose callback
         const cached = this.materialCache.get(key);
         if (cached) {
             return cached;
         }
 
-        // Evict oldest if at capacity (simple FIFO)
         if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
             const firstKey = this.materialCache.keys().next().value!;
             const material = this.materialCache.get(firstKey);
             if (material && material.dispose) {
                 material.dispose();
             }
-            // Note: dispose() will trigger onDispose callback which removes from cache
         }
 
-        // Create new material
         const material = createFn();
         
-        // Register onDispose callback to automatically remove from cache when material is disposed externally
         material.onDispose = () => {
             this.materialCache.delete(key);
         };
@@ -144,28 +133,23 @@ export class DrawHelper extends DrawHelperCore {
         alpha: number,
         createFn: () => BABYLON.StandardMaterial
     ): BABYLON.StandardMaterial {
-        const key = this.getMaterialKey(hex, alpha, 0, true); // unlit=true, zOffset=0
+        const key = this.getMaterialKey(hex, alpha, 0, true);
 
-        // Check cache first
         const cached = this.unlitMaterialCache.get(key);
         if (cached) {
             return cached;
         }
 
-        // Evict oldest if at capacity (simple FIFO)
         if (this.unlitMaterialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
             const firstKey = this.unlitMaterialCache.keys().next().value!;
             const material = this.unlitMaterialCache.get(firstKey);
             if (material && material.dispose) {
                 material.dispose();
             }
-            // Note: dispose() will trigger onDispose callback which removes from cache
         }
 
-        // Create new material
         const material = createFn();
         
-        // Register onDispose callback to automatically remove from cache when material is disposed externally
         material.onDispose = () => {
             this.unlitMaterialCache.delete(key);
         };
@@ -193,11 +177,8 @@ export class DrawHelper extends DrawHelperCore {
         useClockWiseSideOrientation = true,
         skipWindingReversal = false
     ): BABYLON.Mesh {
-        // Check if the scene uses right-handed coordinate system
         const isRightHanded = this.context.scene.useRightHandedSystem === true;
         
-        // Create material for back face using the caching system
-        // Include coordinate system in cache key to avoid reusing wrong material
         const materialKey = `${backFaceColour}-back${useClockWiseSideOrientation ? "" : "-jscad"}${isRightHanded ? "-scene-rh" : ""}`;
         const backMaterial = this.getOrCreateMaterial(materialKey, backFaceOpacity, zOffset + 0.1, () => {
             const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("backFaceMaterial"), this.context.scene);
@@ -209,32 +190,23 @@ export class DrawHelper extends DrawHelperCore {
             mat.backFaceCulling = true;
             mat.doubleSided = false;
             
-            // Determine side orientation based on coordinate system and geometry type
             if (isRightHanded) {
-                // Right-handed scene: use CounterClockWise for back faces
                 mat.sideOrientation = BABYLON.Material.CounterClockWiseSideOrientation;
             } else if (useClockWiseSideOrientation) {
-                // Left-handed scene with left-handed geometry (OCCT, Manifold): use ClockWise
                 mat.sideOrientation = BABYLON.Material.ClockWiseSideOrientation;
             }
-            // For JSCAD in left-handed scene: don't set sideOrientation, rely on geometry winding
             
             mat.zOffset = zOffset + 0.1;
             return mat;
         });
 
-        // Prepare back face mesh data
         let backFaceMeshData: MeshData;
         if (skipWindingReversal) {
-            // For JSCAD: only flip normals, don't reverse winding order
-            // This is because JSCAD geometry is right-handed and the main mesh already has correct winding
             backFaceMeshData = this.prepareBackFaceMeshDataNoWindingReversal(meshDataConverted);
         } else {
-            // Standard case: flip normals and reverse winding
             backFaceMeshData = this.prepareBackFaceMeshData(meshDataConverted);
         }
 
-        // Create mesh from the combined mesh data
         const mesh = new BABYLON.Mesh(this.generateEntityId("backFaceSurface"), this.context.scene);
         const vertexData = new BABYLON.VertexData();
         vertexData.positions = backFaceMeshData.positions;
@@ -264,7 +236,6 @@ export class DrawHelper extends DrawHelperCore {
         meshDataArray.forEach(meshItem => {
             totalPositions.push(...meshItem.positions);
             
-            // Flip normals for back face
             if (meshItem.normals && meshItem.normals.length > 0) {
                 for (let i = 0; i < meshItem.normals.length; i++) {
                     totalNormals.push(-meshItem.normals[i]!);
@@ -275,7 +246,6 @@ export class DrawHelper extends DrawHelperCore {
                 totalUvs.push(...meshItem.uvs);
             }
             
-            // Keep original winding order (don't swap indices)
             for (let i = 0; i < meshItem.indices.length; i++) {
                 totalIndices.push(meshItem.indices[i]! + indexOffset);
             }
@@ -400,8 +370,6 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh> & { arrowSize?: number, arrowAngle?: number }): BABYLON.GreasedLineMesh {
-        // handle jscad isClosed case
-        // A copy, not a push: appending here grew the caller's own array on every redraw.
         const points = inputs.polyline.isClosed
             ? [...inputs.polyline.points, inputs.polyline.points[0]!]
             : inputs.polyline.points;
@@ -456,7 +424,6 @@ export class DrawHelper extends DrawHelperCore {
             return mat;
         });
 
-        // Draw back faces FIRST (before createOrUpdateSurfacesMesh which mutates the array)
         let backFaceMesh: BABYLON.Mesh | undefined;
         if (inputs.drawTwoSided !== false) {
             backFaceMesh = this.createBackFaceMesh(
@@ -476,7 +443,6 @@ export class DrawHelper extends DrawHelperCore {
             inputs.hidden,
         );
 
-        // Attach back face mesh to surface mesh
         if (backFaceMesh) {
             backFaceMesh.parent = surfaceMesh;
         }
@@ -516,7 +482,6 @@ export class DrawHelper extends DrawHelperCore {
             return mat;
         });
 
-        // Draw back faces FIRST (before createOrUpdateSurfacesMesh which mutates the array)
         let backFaceMesh: BABYLON.Mesh | undefined;
         if (inputs.drawTwoSided !== false) {
             backFaceMesh = this.createBackFaceMesh(
@@ -536,7 +501,6 @@ export class DrawHelper extends DrawHelperCore {
             inputs.hidden
         );
 
-        // Attach back face mesh to surface mesh
         if (backFaceMesh) {
             backFaceMesh.parent = surfacesMesh;
         }
@@ -549,9 +513,6 @@ export class DrawHelper extends DrawHelperCore {
         const resolvedColours = this.resolveAllColors(inputs.colours, inputs.surfaces.length, strategy);
 
         if (inputs.surfacesMesh && inputs.updatable) {
-            // An update keeps the container the caller already holds and replaces what hangs off it.
-            // Building a new container instead left the old one in the scene on every update, since
-            // only its children were disposed.
             inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
         } else {
             inputs.surfacesMesh = new BABYLON.Mesh(this.generateEntityId("colouredSurfaces"), this.context.scene);
@@ -598,16 +559,9 @@ export class DrawHelper extends DrawHelperCore {
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
         const points = inputs.polylines.map((s, index) => {
-            // Closing copies rather than appending to the caller's array: a configurator that holds
-            // its polylines and redraws them grew one duplicate point per redraw, which also defeated
-            // the update fast-path below, since a point count that changes every call never matches.
             const pts = s.isClosed ? [...s.points, s.points[0]!] : s.points;
-            // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
             if (s.color) {
                 if (!Array.isArray(colours)) {
-                    // Seeded with the shared colour rather than empty: starting from an empty array
-                    // dropped it, and the colour resolution then filled every polyline that carried
-                    // no colour of its own with the last one that did.
                     const shared = colours;
                     colours = inputs.polylines.map(() => shared);
                 }
@@ -648,7 +602,6 @@ export class DrawHelper extends DrawHelperCore {
             polylinePoints.forEach(polyline => {
                 const points = polyline.map(p => p.length === 2 ? [p[0]!, p[1]!, 0] : p);
                 if (segmentize) {
-                    // This is quite expensive operation, so only do it if requested on certain specific methods where polyline greased lines will render badly without it.
                     const segmentedPoints = this.segmentizePolylinePoints(points, tolerance);
                     if (segmentedPoints.length >= 2) {
                         linesForRender.push(segmentedPoints.flat());
@@ -657,7 +610,6 @@ export class DrawHelper extends DrawHelperCore {
                     linesForRender.push(points.flat());
                 }
                 
-                // Compute arrow head lines if arrowSize > 0
                 if (arrowSize > 0 && points.length >= 2) {
                     const arrowLines = this.computeArrowHeadLines(points as Inputs.Base.Point3[], arrowSize, arrowAngle);
                     arrowLines.forEach(arrowLine => {
@@ -666,19 +618,15 @@ export class DrawHelper extends DrawHelperCore {
                 }
             });
             
-            // Add arrow lines to lines for render with matching colors
             const allLinesForRender = [...linesForRender, ...arrowLinesForRender];
             
             const width = size / 100;
             
-            // Resolve colors for each polyline using the color mapping strategy
             const resolvedColors = this.resolveAllColors(colours, polylinePoints.length, colorMapStrategy);
             
-            // Extend colors for arrow lines - each polyline has 4 arrow lines, use same color as parent polyline
             const arrowColors: string[] = [];
             if (arrowSize > 0) {
                 resolvedColors.forEach(color => {
-                    // 4 arrow lines per polyline, each gets the same color as the polyline
                     for (let i = 0; i < 4; i++) {
                         arrowColors.push(color);
                     }
@@ -688,10 +636,9 @@ export class DrawHelper extends DrawHelperCore {
             const babylonColors = allColors.map(c => BABYLON.Color3.FromHexString(c));
 
             if (mesh && updatable) {
-                // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
                 if (!mesh?.metadata?.linesForRenderLengths.some((s: number, i: number) => s !== allLinesForRender[i]?.length)) {
                     mesh.setPoints(allLinesForRender);
-                    return mesh as BABYLON.GreasedLineMesh;
+                    return mesh;
                 } else {
                     mesh.dispose();
                     mesh = this.createGreasedPolylines(updatable, allLinesForRender, width, babylonColors, opacity);
@@ -709,19 +656,15 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     createGreasedPolylines(updatable: boolean, lines: number[][], width: number, colors: BABYLON.Color3[], visibility: number): BABYLON.GreasedLineMesh {
-        // Expand colors to per-point colors for each line
-        // BabylonJS GreasedLine needs one color per point (not per line)
         const expandedColors: BABYLON.Color3[] = [];
         lines.forEach((line, lineIndex) => {
             const lineColor = colors[lineIndex] || colors[0]!;
-            // Each point in the line (line.length / 3 points since it's flat [x,y,z,x,y,z,...])
             const numPoints = line.length / 3;
             for (let i = 0; i < numPoints; i++) {
                 expandedColors.push(lineColor);
             }
         });
         
-        // Only enable useColors when we have multiple different colors
         const hasMultipleColors = colors.length > 1 || (colors.length === 1 && lines.length > 1);
         
         const materialOptions: Parameters<typeof BABYLON.CreateGreasedLine>[2] = {
@@ -758,7 +701,6 @@ export class DrawHelper extends DrawHelperCore {
             return [];
         }
 
-        // First, remove consecutive duplicate points
         const uniquePoints: number[][] = [];
         let prevPoint: number[] | null = null;
 
@@ -769,20 +711,16 @@ export class DrawHelper extends DrawHelperCore {
             }
         }
 
-        // For greased lines to render well, we need at least 2 distinct points
         if (uniquePoints.length < 2) {
             return uniquePoints;
         }
 
-        // Check if the input is already segmented (each segment's end matches next segment's start)
         const isAlreadySegmented = this.isSegmentedPolyline(uniquePoints, tolerance);
 
         if (isAlreadySegmented) {
             return uniquePoints;
         }
 
-        // Convert flat point list to segmented format for greased lines
-        // Each segment needs: [start, end] where end of segment N = start of segment N+1
         const segmentedPoints: number[][] = [];
         for (let i = 0; i < uniquePoints.length - 1; i++) {
             segmentedPoints.push(uniquePoints[i]!);
@@ -793,15 +731,10 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private isSegmentedPolyline(points: number[][], tolerance: number): boolean {
-        // A segmented polyline has pairs of points where:
-        // points[1] == points[2], points[3] == points[4], etc.
-        // i.e., end of each segment matches start of next segment
         if (points.length < 4) {
             return false;
         }
 
-        // Check if odd-indexed points match even-indexed points that follow
-        // e.g., points[1] should equal points[2], points[3] should equal points[4]
         for (let i = 1; i < points.length - 1; i += 2) {
             if (!this.arePointsEqual(points[i]!, points[i + 1]!, tolerance)) {
                 return false;
@@ -864,7 +797,6 @@ export class DrawHelper extends DrawHelperCore {
         const vectorPoints = [inputs.point];
 
         const colorsHex: string[] = Array.isArray(inputs.colours) ? inputs.colours : [inputs.colours];
-        // const { positions, colors } = this.setUpPositionsAndColours(vectorPoints, colours);
         if (inputs.pointMesh && inputs.updatable) {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
         } else {
@@ -879,11 +811,9 @@ export class DrawHelper extends DrawHelperCore {
         const vectorPoints = inputs.points;
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
         
-        // Resolve colors for all points using the color mapping strategy
         const coloursHex = this.resolveAllColors(inputs.colours, vectorPoints.length, strategy);
         
         if (inputs.pointsMesh && inputs.updatable) {
-            // Check if we can update existing mesh by comparing stored point count in metadata
             const storedPointCount = inputs.pointsMesh.metadata?.originalPointCount;
             if (storedPointCount === vectorPoints.length && inputs.pointsMesh.metadata?.canUpdate) {
                 this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
@@ -905,13 +835,11 @@ export class DrawHelper extends DrawHelperCore {
     updatePointsInstances(mesh: BABYLON.Mesh, positions: Inputs.Base.Point3[]): void {
         const children = mesh.getChildMeshes() as BABYLON.Mesh[];
         
-        // Build a map of original index to new position
         const positionMap = new Map<number, Inputs.Base.Point3>();
         positions.forEach((pos, index) => {
             positionMap.set(index, pos);
         });
 
-        // Each child mesh uses thin instances - update the matrix buffer
         children.forEach((child: BABYLON.Mesh) => {
             const pointIndices = child.metadata?.pointIndices as number[];
             const matricesData = child.metadata?.matricesData as Float32Array;
@@ -925,7 +853,6 @@ export class DrawHelper extends DrawHelperCore {
                     }
                 });
                 
-                // Update the thin instance buffer
                 child.thinInstanceSetBuffer("matrix", matricesData, 16, false);
             }
         });
@@ -944,7 +871,6 @@ export class DrawHelper extends DrawHelperCore {
 
         const colorSet = Array.from(new Set(colors));
         const materialSet = colorSet.map((colour) => {
-            // Use cached unlit material for points
             const mat = this.getOrCreateUnlitMaterial(colour, opacity, () => {
                 const material = new BABYLON.StandardMaterial(this.generateEntityId("pointMaterial"), this.context.scene);
                 material.disableLighting = true;
@@ -958,7 +884,6 @@ export class DrawHelper extends DrawHelperCore {
 
         const pointsMesh = new BABYLON.Mesh(meshName, this.context.scene);
         
-        // Store metadata for update checking
         pointsMesh.metadata = {
             originalPointCount: positions.length,
             canUpdate: updatable
@@ -968,10 +893,8 @@ export class DrawHelper extends DrawHelperCore {
             const pointCount = ms.positions.length;
             if (pointCount === 0) return;
             
-            // Use fewer segments for large point counts to improve performance
             const segments = pointCount > 1000 ? 1 : 6;
             
-            // Create a single sphere mesh that will be rendered many times via thin instances
             const sphereMesh = BABYLON.MeshBuilder.CreateSphere(
                 this.generateEntityId(`pointSphere-${ms.hex}`), 
                 { diameter: size, segments, updatable: false }, 
@@ -980,22 +903,17 @@ export class DrawHelper extends DrawHelperCore {
             sphereMesh.material = ms.material;
             sphereMesh.parent = pointsMesh;
             
-            // Use thin instances for GPU instancing (much faster than createInstance)
-            // Build the instance matrix buffer
             const matricesData = new Float32Array(pointCount * 16);
             const pointIndices: number[] = [];
             
             ms.positions.forEach((pos, instanceIndex) => {
-                // Create translation matrix for this instance
                 const matrix = BABYLON.Matrix.Translation(pos.position[0], pos.position[1], pos.position[2]);
                 matrix.copyToArray(matricesData, instanceIndex * 16);
                 pointIndices.push(pos.index);
             });
             
-            // Apply thin instances - this is the key for performance
             sphereMesh.thinInstanceSetBuffer("matrix", matricesData, 16, false);
             
-            // Store metadata for potential updates
             sphereMesh.metadata = { pointIndices, matricesData };
         });
 
@@ -1017,7 +935,6 @@ export class DrawHelper extends DrawHelperCore {
         }
         let colour;
         if (inputs.mesh.color && inputs.mesh.color.length > 0) {
-            // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
             colour = BABYLON.Color3.FromArray(inputs.mesh.color).toHexString();
         } else {
             colour = Array.isArray(inputs.colours) ? inputs.colours[0]! : inputs.colours;
@@ -1031,7 +948,6 @@ export class DrawHelper extends DrawHelperCore {
     private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawFaces?: boolean, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number }, meshToUpdate: BABYLON.Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable);
         
-        // Use material cache instead of creating new material every time
         const zOffset = 0;
         const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, zOffset, () => {
             const mat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("jscadMaterial"), this.context.scene);
@@ -1052,31 +968,27 @@ export class DrawHelper extends DrawHelperCore {
             meshToUpdate.isVisible = false;
         }
         
-        // Add two-sided rendering if enabled using shared createBackFaceMesh method
         const drawTwoSided = (inputs.drawTwoSided === undefined || inputs.drawTwoSided === true) ? true : false;
         if (drawTwoSided) {
             const backFaceColour = inputs.backFaceColour ?? inputs.colour;
             const backFaceOpacity = inputs.backFaceOpacity ?? inputs.opacity;
             
-            // Check if scene uses right-handed coordinate system
             const isRightHanded = this.context.scene.useRightHandedSystem === true;
             
-            // Use the shared createBackFaceMesh method
-            // JSCAD uses right-handed geometry, so handling differs based on scene coordinate system:
-            // - Left-handed scene: use winding reversal, no special sideOrientation
-            // - Right-handed scene: skip winding reversal, use CounterClockWise sideOrientation
             const meshDataArray: MeshData[] = [{
                 positions: res.positions,
                 normals: res.normals,
                 indices: res.indices
             }];
+            const usesClockWiseSideOrientation = false;
+            const skipWindingReversal = isRightHanded;
             const backFaceMesh = this.createBackFaceMesh(
                 meshDataArray,
                 backFaceColour,
                 backFaceOpacity,
                 zOffset,
-                false,           // JSCAD uses right-handed geometry, don't use ClockWise sideOrientation
-                isRightHanded    // Skip winding reversal only in right-handed scenes
+                usesClockWiseSideOrientation,
+                skipWindingReversal
             );
             backFaceMesh.parent = meshToUpdate;
             
@@ -1099,7 +1011,7 @@ export class DrawHelper extends DrawHelperCore {
 
             let localOrigin: BABYLON.Mesh;
             if (inputs.jscadMesh && inputs.updatable) {
-                localOrigin = inputs.jscadMesh as BABYLON.Mesh;
+                localOrigin = inputs.jscadMesh;
                 const children = localOrigin.getChildMeshes();
                 children.forEach(mesh => { mesh.dispose(); localOrigin.removeChild(mesh); });
             } else {
@@ -1134,15 +1046,8 @@ export class DrawHelper extends DrawHelperCore {
     async drawPath(inputs: Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>): Promise<BABYLON.GreasedLineMesh> {
         return new Promise(resolve => {
 
-            // A path is what this draws; the input type is the entity union, which spans all three
-            // JSCAD shapes and so does not say which one arrived.
             const path = inputs.path as Inputs.JSCAD.JSCADPath2;
 
-            // Closing the loop repeats the first point, in a copy - pushing onto `path.points` grew
-            // the caller's own geometry every time it was drawn. It is repeated as it stands, too:
-            // drawPolylines lifts a 2D point to `[x, y, 0]`, and the closing point used to be built
-            // as `[x, 0, y]`, which put the last segment of every closed path in a different plane
-            // from the rest of it.
             const points: number[][] = path.points ?? [];
             const pointsToDraw = points.length > 0 && path.isClosed ? [...points, points[0]!] : points;
 
@@ -1235,7 +1140,6 @@ export class DrawHelper extends DrawHelperCore {
                 };
             });
 
-            // Draw back faces FIRST (before createOrUpdateSurfacesMesh which mutates the array)
             let backFaceMesh: BABYLON.Mesh | undefined;
             if (inputs.drawTwoSided !== false) {
                 backFaceMesh = this.createBackFaceMesh(
@@ -1249,7 +1153,6 @@ export class DrawHelper extends DrawHelperCore {
             const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
             mesh.parent = shapeMesh;
 
-            // Attach back face mesh to shape mesh
             if (backFaceMesh) {
                 backFaceMesh.parent = shapeMesh;
             }
@@ -1461,7 +1364,6 @@ export class DrawHelper extends DrawHelperCore {
 
                 const vertexCount = decomposedMesh.vertProperties.length / decomposedMesh.numProp;
 
-                // Attributes
                 let offset = 0;
                 for (let componentIndex = 0; componentIndex < 1; componentIndex++) {
                     const component = { stride: 3, kind: "position" };
@@ -1499,11 +1401,7 @@ export class DrawHelper extends DrawHelperCore {
                     mesh.material = options.faceMaterial;
                 }
 
-                // Draw back faces with different color when two-sided rendering is enabled
                 if (options.drawTwoSided !== false) {
-                    // Prepare mesh data for back face mesh creation
-                    // IMPORTANT: Use original triVerts (not vertexData.indices which has reversed winding)
-                    // so that prepareBackFaceMeshData reverses the winding correctly for back faces
                     const positions = vertexData.positions as number[];
                     const indices = Array.from(decomposedMesh.triVerts);
                     const normals = (vertexData.normals || []) as number[];
@@ -1514,12 +1412,13 @@ export class DrawHelper extends DrawHelperCore {
                         normals
                     }];
 
+                    const usesClockWiseSideOrientation = true;
                     const backFaceMesh = this.createBackFaceMesh(
                         meshDataArray,
                         options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
                         options.backFaceOpacity ?? options.faceOpacity,
                         0,
-                        true  // Use ClockWise sideOrientation for Manifold (left-handed)
+                        usesClockWiseSideOrientation
                     );
                     backFaceMesh.parent = mesh;
                 }
@@ -1592,11 +1491,9 @@ export class DrawHelper extends DrawHelperCore {
         return countIndices;
     }
 
-    // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
-    // Workers cannot handle complex circular objects like Babylon.js materials
     private getSafeWorkerOptions<T extends { faceMaterial?: BABYLON.Material | undefined }>(inputs: T): Omit<T, "faceMaterial"> {
          
         const { faceMaterial, ...safeOptions } = inputs;
-        return safeOptions as Omit<T, "faceMaterial">;
+        return safeOptions;
     }
 }

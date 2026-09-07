@@ -292,7 +292,7 @@ describe("Draw unit tests", () => {
             spyManager.setupDetectors();
             vi.spyOn(draw, "drawAny").mockReturnValue(mockMesh);
             
-            const result = await draw.drawAnyAsync({ entity: mockPoint as any });
+            const result = await draw.drawAnyAsync({ entity: mockPoint });
             
             expect(draw.drawAny).toHaveBeenCalled();
             expect(result).toBe(mockMesh);
@@ -306,7 +306,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handleJscadMesh", Promise.resolve(mockMesh));
 
             
-            const result = await draw.drawAnyAsync({ entity: mockJscadMesh as any });
+            const result = await draw.drawAnyAsync({ entity: mockJscadMesh });
             
             expect(spyManager.getHandlerSpy("handleJscadMesh")).toHaveBeenCalled();
             expect(result).toBe(mockMesh);
@@ -320,7 +320,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handleOcctShape", Promise.resolve(mockMesh));
 
             
-            const result = await draw.drawAnyAsync({ entity: mockOcctShape as any });
+            const result = await draw.drawAnyAsync({ entity: mockOcctShape });
             
             expect(spyManager.getHandlerSpy("handleOcctShape")).toHaveBeenCalled();
             expect(result).toBe(mockMesh);
@@ -334,7 +334,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handleOcctShapes", Promise.resolve(mockMesh));
 
             
-            const result = await draw.drawAnyAsync({ entity: mockOcctShapes as any });
+            const result = await draw.drawAnyAsync({ entity: mockOcctShapes });
             
             expect(spyManager.getHandlerSpy("handleOcctShapes")).toHaveBeenCalled();
             expect(result).toBe(mockMesh);
@@ -348,7 +348,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handleJscadMeshes", Promise.resolve(mockMesh));
 
             
-            const result = await draw.drawAnyAsync({ entity: mockJscadMeshes as any });
+            const result = await draw.drawAnyAsync({ entity: mockJscadMeshes });
             
             expect(spyManager.getHandlerSpy("handleJscadMeshes")).toHaveBeenCalled();
             expect(result).toBe(mockMesh);
@@ -362,7 +362,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handleManifoldShape", Promise.resolve(mockMesh));
 
             
-            const result = await draw.drawAnyAsync({ entity: mockManifoldShape as any });
+            const result = await draw.drawAnyAsync({ entity: mockManifoldShape });
             
             expect(spyManager.getHandlerSpy("handleManifoldShape")).toHaveBeenCalled();
             expect(result).toBe(mockMesh);
@@ -376,7 +376,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handleManifoldShapes", Promise.resolve(mockMesh));
 
             
-            const result = await draw.drawAnyAsync({ entity: mockManifoldShapes as any });
+            const result = await draw.drawAnyAsync({ entity: mockManifoldShapes });
             
             expect(spyManager.getHandlerSpy("handleManifoldShapes")).toHaveBeenCalled();
             expect(result).toBe(mockMesh);
@@ -403,7 +403,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handlePoint", mockMesh);
             
             
-            const result = draw.drawAny({ entity: mockPoint as any });
+            const result = draw.drawAny({ entity: mockPoint });
             
             expect(result).toBe(mockMesh);
         });
@@ -457,7 +457,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handlePoint", mockMesh);
             
             
-            const result = draw.drawAny({ entity: mockPoint as any });
+            const result = draw.drawAny({ entity: mockPoint });
             
             expect(spyManager.getDetectorSpy("Point")).toHaveBeenCalledWith(mockPoint);
             expect(spyManager.getHandlerSpy("handlePoint")).toHaveBeenCalled();
@@ -487,7 +487,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handleNode", mockNode);
             
             
-            const result = draw.drawAny({ entity: mockNode as any });
+            const result = draw.drawAny({ entity: mockNode });
             
             expect(spyManager.getDetectorSpy("Node")).toHaveBeenCalledWith(mockNode);
             expect(spyManager.getHandlerSpy("handleNode")).toHaveBeenCalled();
@@ -573,7 +573,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handlePoints", mockMesh);
             
             
-            const result = draw.drawAny({ entity: mockPoints as any });
+            const result = draw.drawAny({ entity: mockPoints });
             
             expect(spyManager.getDetectorSpy("Points")).toHaveBeenCalledWith(mockPoints);
             expect(spyManager.getHandlerSpy("handlePoints")).toHaveBeenCalled();
@@ -587,7 +587,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("handleNodes", mockNodes);
             
             
-            const result = draw.drawAny({ entity: mockNodes as any });
+            const result = draw.drawAny({ entity: mockNodes });
             
             expect(spyManager.getDetectorSpy("Nodes")).toHaveBeenCalledWith(mockNodes);
             expect(spyManager.getHandlerSpy("handleNodes")).toHaveBeenCalled();
@@ -671,7 +671,7 @@ describe("Draw unit tests", () => {
             spyManager.setupHandler("updateAny", mockMesh);
             
             
-            const result = draw.drawAny({ entity: [1, 2, 3] as any, babylonMesh: mockMesh });
+            const result = draw.drawAny({ entity: [1, 2, 3], babylonMesh: mockMesh });
             
             expect(spyManager.getHandlerSpy("updateAny")).toHaveBeenCalledWith({ entity: [1, 2, 3], babylonMesh: mockMesh });
             expect(result).toBe(mockMesh);
@@ -1074,7 +1074,7 @@ describe("Draw unit tests", () => {
             vi.spyOn(draw as any, "handlePoints").mockReturnValue(mockMesh);
             
             
-            draw.drawAny({ entity: mockPoints as any });
+            draw.drawAny({ entity: mockPoints });
             
             expect(drawPrivate.handlePoints).toHaveBeenCalledWith({ entity: mockPoints });
         });
@@ -1109,7 +1109,7 @@ describe("Draw unit tests", () => {
             vi.spyOn(draw as any, "handlePoint").mockReturnValue(mockMesh);
             
             
-            draw.drawAny({ entity: mockPoint as any, options });
+            draw.drawAny({ entity: mockPoint, options });
             
             expect(drawPrivate.handlePoint).toHaveBeenCalled();
         });

@@ -102,13 +102,10 @@ export function createOcctWorkerFromCDN(cdnUrl?: string, loadFonts?: string[], a
     const filename = getOcctWorkerFilename(architecture);
     const scriptUrl = `${baseUrl}/workers/${filename}`;
     
-    // All OCCT workers are built as ES modules.
-    // Use blob wrapper with static import to avoid CORS issues.
     const workerUrl = getModuleWorkerURL(scriptUrl);
     const worker = new Worker(workerUrl, { type: "module", name: "OCC_WORKER" });
         URL.revokeObjectURL(workerUrl);
     
-    // Pass cdnUrl so the worker can override GlobalCDNProvider before loading WASM
     worker.postMessage({ type: "initialise", loadFonts: loadFonts ?? [], cdnUrl: baseUrl });
     return worker;
 }
@@ -123,7 +120,6 @@ export function createOcctWorkerFromCDN(cdnUrl?: string, loadFonts?: string[], a
 export function createJscadWorkerFromCDN(cdnUrl?: string): Worker {
     const baseUrl = cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL;
     const scriptUrl = `${baseUrl}/workers/bitbybit-dev-jscad-webworker.js`;
-    // JSCAD workers are classic (non-ES module) workers, use importScripts via blob
     const workerUrl = getClassicWorkerURL(scriptUrl);
     const worker = new Worker(workerUrl, { name: "JSCAD_WORKER" });
     URL.revokeObjectURL(workerUrl);
@@ -140,11 +136,9 @@ export function createJscadWorkerFromCDN(cdnUrl?: string): Worker {
 export function createManifoldWorkerFromCDN(cdnUrl?: string): Worker {
     const baseUrl = cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL;
     const scriptUrl = `${baseUrl}/workers/bitbybit-dev-manifold-webworker.js`;
-    // Manifold workers are classic (non-ES module) workers, use importScripts via blob
     const workerUrl = getClassicWorkerURL(scriptUrl);
     const worker = new Worker(workerUrl, { name: "MANIFOLD_WORKER" });
     URL.revokeObjectURL(workerUrl);
-    // Pass cdnUrl so the worker can override GlobalCDNProvider before loading WASM
     worker.postMessage({ type: "initialise", cdnUrl: baseUrl });
     return worker;
 }
@@ -168,7 +162,6 @@ export function createManifoldWorkerFromCDN(cdnUrl?: string): Worker {
 export function createWorkersFromCDN(options: WorkerOptions): WorkerInstances {
     const workers: WorkerInstances = {};
     const cdnUrl = options.cdnUrl;
-    // Pass loadFonts as-is; createOcctWorkerFromCDN will handle undefined -> []
     const loadFonts = options.loadFonts;
     const occtArchitecture = options.occtArchitecture;
     

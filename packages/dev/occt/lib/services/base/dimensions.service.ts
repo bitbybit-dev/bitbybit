@@ -1,6 +1,5 @@
 import {
     TopoDS_Compound,
-    TopoDS_Edge,
     TopoDS_Shape,
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
@@ -32,28 +31,21 @@ export class DimensionsService {
      */
     private evaluateExpression(expression: string, value: number, decimalPlaces: number, removeTrailingZeros = false): string {
         try {
-            // Replace 'val' with the actual value in the expression
             const evaluatedExpression = expression.replace(/val/g, value.toString());
             
-            // Simple math expression evaluation (supports +, -, *, /, parentheses)
-            // Only allow safe mathematical operations
             const safeExpression = evaluatedExpression.replace(/[^0-9+\-*/.() ]/g, "");
             if (safeExpression !== evaluatedExpression) {
-                // If expression contains non-math characters, treat it as a template
-                // For template strings, we still want to format numbers with decimal places
                 const formattedValue = removeTrailingZeros 
                     ? this.base.math.roundAndRemoveTrailingZeros({ number: value, decimalPlaces }).toString()
                     : value.toFixed(decimalPlaces);
                 return expression.replace(/val/g, formattedValue);
             }
             
-            // Evaluate using safe arithmetic parser from base library (no eval/Function)
             const result = this.base.math.evalArithmetic({ expression: safeExpression });
             return removeTrailingZeros
                 ? this.base.math.roundAndRemoveTrailingZeros({ number: result, decimalPlaces }).toString()
                 : result.toFixed(decimalPlaces);
         } catch {
-            // If evaluation fails, return the original value formatted
             return removeTrailingZeros
                 ? this.base.math.roundAndRemoveTrailingZeros({ number: value, decimalPlaces }).toString()
                 : value.toFixed(decimalPlaces);
@@ -99,20 +91,17 @@ export class DimensionsService {
     }): TopoDS_Compound {
         const shapesToDelete: TopoDS_Shape[] = [];
         
-        // Normalize the direction vector (should point away from tip when not flipped)
         const dir = this.base.vector.normalized({ vector: inputs.direction });
         if (!dir) {
             throw new Error("Arrow direction must not be a zero vector");
         }
         
-        // Determine arrow direction based on flip
         const arrowDir = inputs.flipped 
             ? dir 
             : this.base.vector.mul({ vector: dir, scalar: -1 }) as Inputs.Base.Vector3;
         
-        // Calculate the perpendicular vector in the plane
         const perpendicular = this.base.vector.cross({
-            first: arrowDir as Inputs.Base.Vector3,
+            first: arrowDir,
             second: inputs.normal
         }) as Inputs.Base.Vector3;
         const perpNorm = this.base.vector.normalized({ vector: perpendicular });
@@ -120,21 +109,17 @@ export class DimensionsService {
             throw new Error("Arrow direction must not be parallel to the dimension normal");
         }
         
-        // Calculate half angle in radians
         const halfAngleRad = (inputs.angle / 2) * Math.PI / 180;
         
-        // Calculate arrow line endpoints
         const baseLength = inputs.size * Math.cos(halfAngleRad);
         const sideOffset = inputs.size * Math.sin(halfAngleRad);
         
-        // Base point for both arrow lines
         const baseVec = this.base.vector.mul({ vector: arrowDir, scalar: baseLength }) as Inputs.Base.Vector3;
         const basePoint = this.base.point.translatePoints({
             points: [inputs.tipPoint],
             translation: baseVec
         })[0]!;
         
-        // Calculate the two arrow line endpoints
         const sideVec1 = this.base.vector.mul({ vector: perpNorm, scalar: sideOffset }) as Inputs.Base.Vector3;
         const sideVec2 = this.base.vector.mul({ vector: perpNorm, scalar: -sideOffset }) as Inputs.Base.Vector3;
         
@@ -148,7 +133,6 @@ export class DimensionsService {
             translation: sideVec2
         })[0]!;
         
-        // Create the two arrow lines
         const line1 = this.wiresService.createLineWireWithExtensions({
             start: inputs.tipPoint,
             end: endPoint1,
@@ -165,7 +149,6 @@ export class DimensionsService {
         
         const result = this.converterService.makeCompound({ shapes: [line1, line2] });
         
-        // Cleanup
         shapesToDelete.forEach(shape => shape.delete());
         
         return result;
@@ -234,7 +217,6 @@ export class DimensionsService {
             throw new Error("Dimension label could not be created");
         }
 
-        // get the up vector for the dimension plane
         const normalThreePoints = this.base.point.normalFromThreePoints({
             point1: inputs.start,
             point2: inputs.end,
@@ -259,7 +241,6 @@ export class DimensionsService {
         shapesToDelete.push(...txt.shapes.map((s) => s.shape));
         let previousShape = currentShape;
 
-        // Apply horizontal flip if requested
         if (inputs.labelFlipHorizontal) {
             currentShape = this.transformsService.scale3d({
                 shape: currentShape,
@@ -270,7 +251,6 @@ export class DimensionsService {
             previousShape = currentShape;
         }
 
-        // Apply vertical flip if requested
         if (inputs.labelFlipVertical) {
             currentShape = this.transformsService.scale3d({
                 shape: currentShape,
@@ -313,9 +293,7 @@ export class DimensionsService {
 
         const shapesToInclude: TopoDS_Shape[] = [translatedLine, startLineToTranslatedPoint, endLineToTranslatedPoint, labelTransformed];
 
-        // Add arrows if enabled
         if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
-            // Arrow at start point - points outward by default
             const startArrow = this.createArrow({
                 tipPoint: translatedStartPt,
                 direction: dirStartEnd,
@@ -326,7 +304,6 @@ export class DimensionsService {
             });
             shapesToInclude.push(startArrow);
 
-            // Arrow at end point (direction is reversed) - points outward by default
             const endArrowDir = this.base.vector.mul({ vector: dirStartEnd, scalar: -1 }) as Inputs.Base.Vector3;
             const endArrow = this.createArrow({
                 tipPoint: translatedEndPt,
@@ -341,7 +318,6 @@ export class DimensionsService {
 
         const res = this.converterService.makeCompound({ shapes: shapesToInclude });
 
-        // delete shapes
         shapesToDelete.forEach((shape) => {
             shape.delete();
         });
@@ -405,7 +381,7 @@ export class DimensionsService {
             throw new Error("Dimension points must not be collinear");
         }
 
-        const circ = this.entitiesService.createCircle(inputs.radius, inputs.center, normalThreePointsRev, Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;
+        const circ = this.entitiesService.createCircle(inputs.radius, inputs.center, normalThreePointsRev, Inputs.OCCT.typeSpecificityEnum.edge);
         shapesToDelete.push(circ);
         const arc = this.edgesService.arcFromCircleAndTwoPoints({
             circle: circ,
@@ -420,7 +396,7 @@ export class DimensionsService {
         let angle = this.base.vector.angleBetween({
             first: inputs.direction1,
             second: inputs.direction2,
-        }) as number;
+        });
 
         if (inputs.radians) {
             angle = this.base.math.degToRad({ number: angle });
@@ -460,7 +436,6 @@ export class DimensionsService {
         shapesToDelete.push(...txt.shapes.map((s) => s.shape));
         let previousShape = currentShape;
 
-        // Apply horizontal flip if requested
         if (inputs.labelFlipHorizontal) {
             currentShape = this.transformsService.scale3d({
                 shape: currentShape,
@@ -471,7 +446,6 @@ export class DimensionsService {
             previousShape = currentShape;
         }
 
-        // Apply vertical flip if requested
         if (inputs.labelFlipVertical) {
             currentShape = this.transformsService.scale3d({
                 shape: currentShape,
@@ -505,9 +479,7 @@ export class DimensionsService {
 
         const shapesToInclude: TopoDS_Shape[] = [line1WithExt, line2WithExt, wireArc, labelTransformed];
 
-        // Add arrows if enabled
         if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
-            // Get points on the arc at the start and end for arrow placement
             const arcStartPoint = this.edgesService.pointOnEdgeAtParam({
                 shape: arc,
                 param: 0
@@ -517,7 +489,6 @@ export class DimensionsService {
                 param: 1
             });
 
-            // Get tangent directions at arc endpoints for arrow placement
             const arcStartTangent = this.edgesService.tangentOnEdgeAtParam({
                 shape: arc,
                 param: 0
@@ -527,7 +498,6 @@ export class DimensionsService {
                 param: 1
             });
 
-            // Arrow at first direction point (start of arc) - points outward by default
             const startArrow = this.createArrow({
                 tipPoint: arcStartPoint,
                 direction: arcStartTangent,
@@ -538,13 +508,11 @@ export class DimensionsService {
             });
             shapesToInclude.push(startArrow);
 
-            // Reverse the end tangent so both arrows point outward along the arc by default
             const reversedEndTangent = this.base.vector.mul({ 
                 vector: arcEndTangent, 
                 scalar: -1 
             }) as Inputs.Base.Vector3;
 
-            // Arrow at second direction point (end of arc) - points outward by default
             const endArrow = this.createArrow({
                 tipPoint: arcEndPoint,
                 direction: reversedEndTangent,
@@ -558,7 +526,6 @@ export class DimensionsService {
 
         const res = this.converterService.makeCompound({ shapes: shapesToInclude });
 
-        // delete shapes
         shapesToDelete.forEach((shape) => {
             shape.delete();
         });
@@ -594,7 +561,6 @@ export class DimensionsService {
             throw new Error("Pin direction must not be a zero vector");
         }
         const offsetLabelVec = this.base.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + (inputs.labelOffset ?? 0.3) });
-        // const translateTxtVec = this.vector.add({ first: direction, second: offsetLabelVec }) as Inputs.Base.Vector3;
 
         const endPtLabelLine = this.base.point.translatePoints({
             points: [endPoint],
@@ -626,7 +592,6 @@ export class DimensionsService {
         const shapesToDelete = text.shapes.map((s) => s.shape);
         let previousShape = currentShape;
 
-        // Apply horizontal flip if requested
         if (inputs.labelFlipHorizontal) {
             currentShape = this.transformsService.scale3d({
                 shape: currentShape,
@@ -637,7 +602,6 @@ export class DimensionsService {
             previousShape = currentShape;
         }
 
-        // Apply vertical flip if requested
         if (inputs.labelFlipVertical) {
             currentShape = this.transformsService.scale3d({
                 shape: currentShape,
@@ -673,15 +637,12 @@ export class DimensionsService {
 
         const shapesToInclude: TopoDS_Shape[] = [pinLine, labelTransformed, lineBeneathLabel];
 
-        // Add arrow if enabled
         if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
-            // Calculate the direction from start to end for the pin
             const pinDirection = this.base.vector.sub({
                 first: endPoint,
                 second: inputs.startPoint,
             }) as Inputs.Base.Vector3;
 
-            // Arrow at the start point (default orientation is flipped, then apply user flip)
             const arrow = this.createArrow({
                 tipPoint: inputs.startPoint,
                 direction: pinDirection,
@@ -695,7 +656,6 @@ export class DimensionsService {
 
         const res = this.converterService.makeCompound({ shapes: shapesToInclude });
 
-        // delete shapes
         shapesToDelete.forEach((shape) => {
             shape.delete();
         });

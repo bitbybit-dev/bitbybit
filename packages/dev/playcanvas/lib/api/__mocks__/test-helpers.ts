@@ -14,31 +14,42 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Vector } from "@bitbybit-dev/base";
 
 /**
+ * A test double implements the part of `T` that the test actually exercises. The assertion is
+ * single and from `Partial<T>`, not through `unknown`, so every member supplied is checked against
+ * the real type: one that is renamed or retyped upstream fails here, instead of passing through an
+ * assertion that had erased it.
+ */
+const partialMock = <T>(members: Partial<T>): T => members as T;
+
+/**
  * Creates a basic mock context with app and scene
  */
 export function createMockContext(): Context {
-    const mockScene = new pc.Entity("root");
-    return {
-        scene: mockScene,
-        app: {
-            graphicsDevice: {
-                vram: { vb: 0, ib: 0, tex: 0, total: 0 },
-                createVertexBufferImpl: vi.fn(() => ({})),
-                createIndexBufferImpl: vi.fn(() => ({})),
-            },
-            systems: {}
-        } as unknown as pc.AppBase
-    } as Context;
+    const context = new Context();
+    context.scene = new pc.Entity("root");
+    // The engine creates buffers through the concrete device, not the abstract one, so the
+    // stand-in is typed as the null device playcanvas ships for exactly this - which is what makes
+    // the members below checkable at all.
+    context.app = partialMock<pc.AppBase>({
+        graphicsDevice: partialMock<pc.NullGraphicsDevice>({
+            // The engine's own counter, under the name and shape it really has: the stand-in used
+            // to declare a `vram` with a `total`, neither of which exists on a GraphicsDevice.
+            _vram: { texShadow: 0, texAsset: 0, texLightmap: 0, tex: 0, vb: 0, ib: 0, ub: 0, sb: 0 },
+            // The buffer impls answer to the members the engine calls on them. They used to be
+            // `{}`, so an unlock would have thrown had anything reached it.
+            createVertexBufferImpl: vi.fn(() => ({ destroy: vi.fn(), unlock: vi.fn() })),
+            createIndexBufferImpl: vi.fn(() => ({ destroy: vi.fn(), unlock: vi.fn() })),
+        }),
+        systems: partialMock<pc.AppBase["systems"]>({}),
+    });
+    return context;
 }
 
 /**
  * Creates a simple mock context without app
  */
 export function createSimpleMockContext(): Context {
-    return {
-        app: null,
-        scene: null,
-    } as unknown as Context;
+    return new Context();
 }
 
 /**
@@ -55,30 +66,30 @@ export function mockWindow() {
  * Creates mock worker managers for testing
  */
 export function createMockWorkerManagers() {
-    const mockJscadWorkerManager = {
+    const mockJscadWorkerManager = partialMock<JSCADWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [],
             normals: [],
             indices: [],
             transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
         })
-    } as unknown as JSCADWorkerManager;
+    });
 
-    const mockManifoldWorkerManager = {
+    const mockManifoldWorkerManager = partialMock<ManifoldWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [],
             normals: [],
             indices: []
         })
-    } as unknown as ManifoldWorkerManager;
+    });
 
-    const mockOccWorkerManager = {
+    const mockOccWorkerManager = partialMock<OCCTWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             faceList: [],
             edgeList: [],
             pointsList: []
         })
-    } as unknown as OCCTWorkerManager;
+    });
 
     return {
         mockJscadWorkerManager,
@@ -91,18 +102,18 @@ export function createMockWorkerManagers() {
  * Creates a mock JSCADText service
  */
 export function createMockJSCADText(): JSCADText {
-    return {
+    return partialMock<JSCADText>({
         createVectorText: vi.fn().mockResolvedValue([])
-    } as unknown as JSCADText;
+    });
 }
 
 /**
  * Creates a mock Vector service
  */
 export function createMockVector(): Vector {
-    return {
+    return partialMock<Vector>({
         add: vi.fn().mockReturnValue([0, 0, 0])
-    } as unknown as Vector;
+    });
 }
 
 /**
@@ -121,7 +132,7 @@ export function createDrawHelperMocks() {
         mockJscadWorkerManager,
         mockManifoldWorkerManager,
         mockOccWorkerManager,
-        mockScene: mockContext.scene as pc.Entity
+        mockScene: mockContext.scene
     };
 }
 

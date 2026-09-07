@@ -45,7 +45,7 @@ describe("the generated worker API", () => {
     it("should keep each nested service on its own path", () => {
         // Act
         void occt.shapes.wire.createCircleWire(new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]));
-        void occt.shapes.face.getFaceArea({ shape: WIRE_POINTER } as never);
+        void occt.shapes.face.getFaceArea({ shape: WIRE_POINTER });
         void occt.transforms.translate({ shape: WIRE_POINTER, translation: [1, 0, 0] } as never);
 
         // Assert

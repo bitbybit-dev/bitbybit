@@ -1,5 +1,4 @@
 import { Context } from "../../../context";
-// import { BabylonWebXRBase } from "./base";
 import { BabylonWebXRSimple } from "./simple";
 
 /**
@@ -10,13 +9,11 @@ import { BabylonWebXRSimple } from "./simple";
 export class BabylonWebXR {
 
     simple: BabylonWebXRSimple;
-    // base: BabylonWebXRBase;
 
     constructor(
         context: Context,
     ) {
         this.simple = new BabylonWebXRSimple(context);
-        // this.base = new BabylonWebXRBase(context);
     }
 
 }

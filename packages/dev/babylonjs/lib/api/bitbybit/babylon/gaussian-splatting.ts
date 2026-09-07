@@ -27,7 +27,6 @@ export class BabylonGaussianSplatting {
             return gs;
         }
         else {
-            // No url, nothing to load. The declared mesh type is the contract scripts are typed against.
             return undefined as unknown as BABYLON.GaussianSplattingMesh;
         }
     }

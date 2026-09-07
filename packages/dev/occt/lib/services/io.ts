@@ -41,7 +41,6 @@ export class OCCTIO {
         } else {
             transferShape = shapeToUse;
         }
-        // Convert to a .STEP File
 
         let transferResult;
         try {
@@ -54,14 +53,11 @@ export class OCCTIO {
         }
         let result: string;
         if (transferResult === this.occ.IFSelect_ReturnStatus.RetDone) {
-            // Write the STEP File to the virtual Emscripten Filesystem Temporarily
             const writeResult = writer.Write(fileName);
             if (writeResult === this.occ.IFSelect_ReturnStatus.RetDone) {
-                // Read the STEP File from the filesystem and clean up
                 const stepFileText = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
                 this.occ.FS.unlink("/" + fileName);
 
-                // Return the contents of the STEP File
                 result = stepFileText;
             } else {
                 throw (new Error("Failed when writing step file."));
@@ -86,9 +82,6 @@ export class OCCTIO {
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string {
         const shapeToUse = inputs.shape;
 
-        // This could be made optional...
-        // Clean cached triangulation data for the shape.
-        // This allows to get lower res models out of higher res that was once computed and cached.
         this.occ.BRepTools.Clean(shapeToUse);
 
         let adjustedShape;
@@ -110,13 +103,10 @@ export class OCCTIO {
         let result: string;
         const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, inputs.precision, false, 0.5, false);
 
-        // Write the STL File to the virtual Emscripten Filesystem Temporarily
         const writeResult = writer.Write(transferShape, fileName);
         if (writeResult) {
-            // Read the STL File from the filesystem and clean up
             const stlFile = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
             this.occ.FS.unlink("/" + fileName);
-            // Return the contents of the STL File
             result = stlFile;
         } else {
             throw (new Error("Failed when writing stl file."));
@@ -144,16 +134,15 @@ export class OCCTIO {
         const fileText = inputs.filetext;
         const extension = fileName.toLowerCase().split(".").pop();
         
-        // Determine file type based on extension
         const fileType = (() => {
             switch (extension) {
                 case "step":
                 case "stp":
-                case "stpz":  // Compressed STEP
+                case "stpz":
                     return "step";
                 case "iges":
                 case "igs":
-                case "igz":   // Compressed IGES
+                case "igz":
                     return "iges";
                 default:
                     return undefined;
@@ -165,13 +154,11 @@ export class OCCTIO {
             return undefined;
         }
         
-        // Check if input is binary (ArrayBuffer) - use binary functions
         const isBinaryInput = fileText instanceof ArrayBuffer;
         
         let stepShape: TopoDS_Shape | undefined;
         
         if (isBinaryInput) {
-            // Use binary functions for compressed files or binary content
             const uint8Array = new Uint8Array(fileText);
             if (fileType === "step") {
                 stepShape = this.occ.ReadSTEPFromBinary(uint8Array);
@@ -184,8 +171,7 @@ export class OCCTIO {
                 return undefined;
             }
         } else {
-            // Use traditional file-based approach for text files
-            this.occ.FS.createDataFile("/", `file.${fileType}`, fileText as string, true, true, true);
+            this.occ.FS.createDataFile("/", `file.${fileType}`, fileText, true, true, true);
             
             let reader: STEPControl_Reader | IGESControl_Reader;
             if (fileType === "step") {
@@ -206,7 +192,6 @@ export class OCCTIO {
             }
         }
         
-        // Apply coordinate system adjustment if requested
         let adjustedShape;
         if (inputs.adjustZtoY && stepShape) {
             const mirroredShape = this.och.transformsService.mirrorAlongNormal(
@@ -288,7 +273,6 @@ export class OCCTIO {
             const internalVerticesMode = inputs.internalVerticesMode ?? false;
             const controlSurfaceDeflection = inputs.controlSurfaceDeflection ?? false;
 
-            // Check if input is binary (Uint8Array or ArrayBuffer) - use for STEP-Z compressed files
             if (stepData instanceof Uint8Array) {
                 result = this.occ.ConvertStepToGltfFromBinary(
                     stepData,
@@ -300,7 +284,6 @@ export class OCCTIO {
                     -1
                 );
             } else if (stepData instanceof ArrayBuffer) {
-                // ArrayBuffer needs to be wrapped as Uint8Array
                 result = this.occ.ConvertStepToGltfFromBinary(
                     new Uint8Array(stepData),
                     meshPrecision,
@@ -311,7 +294,6 @@ export class OCCTIO {
                     -1
                 );
             } else if (typeof stepData === "string") {
-                // String input - plain text STEP files
                 result = this.occ.ConvertStepToGltfFromMemory(
                     stepData,
                     meshPrecision,
@@ -322,7 +304,6 @@ export class OCCTIO {
                     -1
                 );
             } else {
-                // File or Blob - should have been converted by worker layer
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
 
@@ -374,12 +355,10 @@ export class OCCTIO {
             const stepData = inputs.stepData;
             let result: Uint8Array;
             
-            // Convert enum string values to OCCT numeric values
             const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.nodeNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
             const meshNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.meshNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
             const transformFormatNum = this.gltfTransformFormatEnumToOcct(inputs.transformFormat ?? Inputs.OCCT.gltfTransformFormatEnum.compact);
             
-            // Check if input is binary (Uint8Array or ArrayBuffer) - use for STEP-Z compressed files
             if (stepData instanceof Uint8Array) {
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     stepData,
@@ -407,7 +386,6 @@ export class OCCTIO {
                     inputs.scale ?? 1.0
                 );
             } else if (stepData instanceof ArrayBuffer) {
-                // ArrayBuffer needs to be wrapped as Uint8Array
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     new Uint8Array(stepData),
                     inputs.readColors ?? true,
@@ -434,7 +412,6 @@ export class OCCTIO {
                     inputs.scale ?? 1.0
                 );
             } else if (typeof stepData === "string") {
-                // String input - cannot use ConvertStepToGltfFromBinaryAdvanced, convert to Uint8Array
                 const encoder = new TextEncoder();
                 const binaryData = encoder.encode(stepData);
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
@@ -463,7 +440,6 @@ export class OCCTIO {
                     inputs.scale ?? 1.0
                 );
             } else {
-                // File or Blob - should have been converted by worker layer
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
 
@@ -638,21 +614,16 @@ export class OCCTIO {
             const stepData = inputs.stepData;
             let jsonString: string;
             
-            // Check if input is binary (Uint8Array or ArrayBuffer) - use for STEP-Z compressed files
             if (stepData instanceof Uint8Array) {
                 jsonString = this.occ.ParseStepAssemblyToJsonFromBinary(stepData);
             } else if (stepData instanceof ArrayBuffer) {
-                // ArrayBuffer needs to be wrapped as Uint8Array
                 jsonString = this.occ.ParseStepAssemblyToJsonFromBinary(new Uint8Array(stepData));
             } else if (typeof stepData === "string") {
-                // String input - plain text STEP files
                 jsonString = this.occ.ParseStepAssemblyToJsonFromMemory(stepData);
             } else {
-                // File or Blob - should have been converted by worker layer
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
 
-            // Parse JSON result
             const result = JSON.parse(jsonString) as Models.OCCT.AssemblyJsonResult;
 
             return result;
@@ -678,7 +649,7 @@ export class OCCTIO {
             case Inputs.OCCT.gltfNameFormatEnum.productOrInstance: return 4;
             case Inputs.OCCT.gltfNameFormatEnum.productAndInstance: return 5;
             case Inputs.OCCT.gltfNameFormatEnum.productAndInstanceAndOcaf: return 6;
-            default: return 2; // Default to instance
+            default: return 2;
         }
     }
 

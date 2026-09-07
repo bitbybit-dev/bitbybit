@@ -15,10 +15,8 @@ export class CSVBitByBit {
      * @drawable false
      */
     parseToArray(inputs: Inputs.CSV.ParseToArrayDto): string[][] {
-        // Convert literal escape sequences to actual characters
         const rowSeparator = this.convertEscapeSequences(inputs.rowSeparator || "\n");
         const columnSeparator = this.convertEscapeSequences(inputs.columnSeparator || ",");
-        // Also convert escape sequences in the CSV data itself (e.g., literal "\n" to actual newline)
         const csvData = this.convertEscapeSequences(inputs.csv);
         const lines = csvData.split(rowSeparator);
         const result: string[][] = [];
@@ -70,10 +68,8 @@ export class CSVBitByBit {
             
             headers.forEach((header, index) => {
                 const value = row[index] || "";
-                // Convert to number if this column is in the numberColumns list
                 if (numberColumnsSet.has(header)) {
                     const num = parseFloat(value);
-                    // Normalize -0 to 0
                     obj[header] = num === 0 ? 0 : num;
                 } else {
                     obj[header] = value;
@@ -115,10 +111,8 @@ export class CSVBitByBit {
             
             inputs.headers.forEach((header, index) => {
                 const value = row[index] || "";
-                // Convert to number if this column is in the numberColumns list
                 if (numberColumnsSet.has(header)) {
                     const num = parseFloat(value);
-                    // Normalize -0 to 0
                     obj[header] = num === 0 ? 0 : num;
                 } else {
                     obj[header] = value;
@@ -177,7 +171,6 @@ export class CSVBitByBit {
             numberColumns: inputs.numberColumns
         });
         
-        // If the column is a number column, compare as numbers
         const isNumberColumn = inputs.numberColumns?.includes(inputs.column);
         const compareValue = isNumberColumn ? parseFloat(inputs.value) : inputs.value;
         
@@ -227,12 +220,10 @@ export class CSVBitByBit {
         
         const lines: string[] = [];
         
-        // Add headers if requested
         if (inputs.includeHeaders) {
             lines.push(inputs.headers.map(h => this.escapeCsvCell(h, columnSeparator)).join(columnSeparator));
         }
         
-        // Add data rows
         inputs.json.forEach(obj => {
             const row = inputs.headers.map(header => {
                 const value = (obj as Record<string, unknown>)[header];
@@ -256,7 +247,6 @@ export class CSVBitByBit {
     jsonToCsvAuto<T = Record<string, unknown>>(inputs: Inputs.CSV.JsonToCsvAutoDto<T>): string {
         if (!inputs.json || inputs.json.length === 0) return "";
         
-        // Get headers from first object
         const headers = Object.keys(inputs.json[0]!);
         
         return this.jsonToCsv({
@@ -338,15 +328,12 @@ export class CSVBitByBit {
             
             if (char === "\"") {
                 if (inQuotes && nextChar === "\"") {
-                    // Escaped quote
                     current += "\"";
-                    i++; // Skip next quote
+                    i++;
                 } else {
-                    // Toggle quote mode
                     inQuotes = !inQuotes;
                 }
             } else if (char === separator && !inQuotes) {
-                // End of field
                 result.push(current);
                 current = "";
             } else {
@@ -354,17 +341,13 @@ export class CSVBitByBit {
             }
         }
         
-        // Add last field
         result.push(current);
         
         return result;
     }
     private escapeCsvCell(cell: unknown, separator: string): string {
-        // Convert to string first
         const cellStr = cell !== undefined && cell !== null ? String(cell) : "";
-        // If cell contains separator, quotes, or newlines, wrap in quotes
         if (cellStr.includes(separator) || cellStr.includes("\"") || cellStr.includes("\n") || cellStr.includes("\r")) {
-            // Escape existing quotes by doubling them
             return "\"" + cellStr.replace(/"/g, "\"\"") + "\"";
         }
         return cellStr;

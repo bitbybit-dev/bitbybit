@@ -3,7 +3,6 @@ import { Context } from "../../context";
 import * as Inputs from "../../inputs";
 import { OrbitCameraInstance, InputHandler, OrbitCameraController } from "../../inputs/threejs-camera-inputs";
 
-// Re-export for backwards compatibility
 export type { OrbitCameraInstance, InputHandler, OrbitCameraController };
 
 const DEG_TO_RAD = Math.PI / 180;
@@ -54,12 +53,10 @@ export class ThreeJSOrbitCamera {
             throw new Error("Scene not initialized. Ensure context.scene is set first.");
         }
 
-        // Get aspect ratio - fallback to 1 if window is not available
         const aspectRatio = typeof window !== "undefined" 
             ? window.innerWidth / window.innerHeight 
             : 1;
 
-        // Create camera
         const camera = new THREEJS.PerspectiveCamera(
             50,
             aspectRatio,
@@ -67,7 +64,6 @@ export class ThreeJSOrbitCamera {
             10000
         );
 
-        // Create orbit camera with configuration
         const orbitCamera = this.createOrbitCameraInstance(camera, {
             autoRender: inputs.autoRender,
             distanceMax: inputs.distanceMax,
@@ -81,42 +77,34 @@ export class ThreeJSOrbitCamera {
             frameOnStart: inputs.frameOnStart
         });
 
-        // Set initial position
         const pivotVec = new THREEJS.Vector3(inputs.pivotPoint[0], inputs.pivotPoint[1], inputs.pivotPoint[2]);
         orbitCamera.pivotPoint = pivotVec;
         orbitCamera.distance = inputs.distance;
         orbitCamera.pitch = inputs.pitch;
         orbitCamera.yaw = inputs.yaw;
 
-        // Initialize the current pivot point to match the target (no inertia on start)
         orbitCamera.initializePivotPoint(pivotVec);
 
-        // Get DOM element for event listeners
         const domElement = inputs.domElement || document.body;
 
-        // Setup mouse input
         const mouseInput = this.createMouseInput(camera, orbitCamera, domElement, {
             orbitSensitivity: inputs.orbitSensitivity,
             distanceSensitivity: inputs.distanceSensitivity,
             panSensitivity: inputs.panSensitivity
         });
 
-        // Setup touch input
         const touchInput = this.createTouchInput(camera, orbitCamera, domElement, {
             orbitSensitivity: inputs.orbitSensitivity,
             distanceSensitivity: inputs.distanceSensitivity,
             panSensitivity: inputs.panSensitivity
         });
 
-        // Setup keyboard input for panning with arrow keys
         const keyboardInput = this.createKeyboardInput(orbitCamera);
 
-        // Update function for animation loop
         const updateFn = (dt: number) => {
             orbitCamera.update(dt);
         };
 
-        // Focus on object if provided
         if (inputs.focusObject && inputs.frameOnStart) {
             orbitCamera.focus(inputs.focusObject);
         }
@@ -262,7 +250,6 @@ export class ThreeJSOrbitCamera {
         const distanceBetween = new THREEJS.Vector3();
 
         const updatePosition = (): void => {
-            // Convert spherical coordinates to cartesian
             const phi = (90 - state._pitch) * DEG_TO_RAD;
             const theta = state._yaw * DEG_TO_RAD;
 
@@ -315,7 +302,6 @@ export class ThreeJSOrbitCamera {
                 return state._targetDistance;
             },
             set distance(value: number) {
-                // Clamp distance using current instance limits
                 state._targetDistance = Math.max(this.distanceMin, Math.min(this.distanceMax, value));
             },
 
@@ -323,7 +309,6 @@ export class ThreeJSOrbitCamera {
                 return state._targetPitch;
             },
             set pitch(value: number) {
-                // Clamp pitch using current instance limits, avoiding gimbal lock
                 const safeMin = Math.max(this.pitchAngleMin, -89.9);
                 const safeMax = Math.min(this.pitchAngleMax, 89.9);
                 state._targetPitch = Math.max(safeMin, Math.min(safeMax, value));
@@ -334,7 +319,6 @@ export class ThreeJSOrbitCamera {
             },
             set yaw(value: number) {
                 state._targetYaw = value;
-                // Handle wrap-around for smooth rotation
                 const diff = state._targetYaw - state._yaw;
                 const remainder = diff % 360;
                 if (remainder > 180) {
@@ -383,7 +367,6 @@ export class ThreeJSOrbitCamera {
                 distanceBetween.subVectors(lookAtPoint, resetPoint);
                 this.distance = distanceBetween.length();
                 
-                // Calculate yaw and pitch from camera orientation
                 const direction = new THREEJS.Vector3();
                 direction.subVectors(resetPoint, lookAtPoint).normalize();
                 
@@ -442,12 +425,10 @@ export class ThreeJSOrbitCamera {
         const panVector = new THREEJS.Vector3();
 
         const pan = (deltaX: number, deltaY: number): void => {
-            // Get camera's right and up vectors
             const right = new THREEJS.Vector3();
             const up = new THREEJS.Vector3();
             camera.matrix.extractBasis(right, up, new THREEJS.Vector3());
 
-            // Calculate pan amount based on distance from pivot
             const panScale = orbitCamera.distance * 0.001 * options.panSensitivity;
 
             panVector.set(0, 0, 0);
@@ -460,11 +441,11 @@ export class ThreeJSOrbitCamera {
         const onMouseDown = (event: MouseEvent): void => {
             event.preventDefault();
             switch (event.button) {
-                case 0: // Left button
+                case 0:
                     lookButtonDown = true;
                     break;
-                case 1: // Middle button
-                case 2: // Right button
+                case 1:
+                case 2:
                     panButtonDown = true;
                     break;
             }
@@ -616,13 +597,11 @@ export class ThreeJSOrbitCamera {
                 lastTouchX = touches[0]!.clientX;
                 lastTouchY = touches[0]!.clientY;
             } else if (touches.length === 2) {
-                // Pinch to zoom
                 const currentPinchDistance = getPinchDistance(touches[0]!, touches[1]!);
                 const pinchDelta = currentPinchDistance - lastPinchDistance;
                 orbitCamera.distance -= pinchDelta * options.distanceSensitivity * 0.1 * (orbitCamera.distance * 0.1);
                 lastPinchDistance = currentPinchDistance;
 
-                // Two-finger pan
                 const mid = getPinchMidpoint(touches[0]!, touches[1]!);
                 const deltaX = mid.x - lastPinchMidX;
                 const deltaY = mid.y - lastPinchMidY;
@@ -651,7 +630,6 @@ export class ThreeJSOrbitCamera {
         orbitCamera: OrbitCameraInstance
     ): InputHandler | null {
         const onKeyDown = (event: KeyboardEvent): void => {
-            // Only handle if the domElement or document has focus
             switch (event.key) {
                 case "ArrowLeft":
                     orbitCamera.yaw -= 2;
@@ -676,7 +654,6 @@ export class ThreeJSOrbitCamera {
             }
         };
 
-        // Use the global window object if available (browser environment)
         const win = typeof window !== "undefined" ? window : null;
         if (win) {
             win.addEventListener("keydown", onKeyDown);
@@ -700,7 +677,6 @@ export class ThreeJSOrbitCamera {
  * @returns Orbit camera controller instance
  */
 export function createOrbitCamera(inputs: Inputs.ThreeJSCamera.OrbitCameraDto & { scene: THREEJS.Scene; domElement?: HTMLElement }): OrbitCameraController {
-    // Create a minimal context for the orbit camera
     const minimalContext = {
         scene: inputs.scene
     } as Context;

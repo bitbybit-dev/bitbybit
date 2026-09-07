@@ -1,7 +1,7 @@
 import * as Inputs from "../../../inputs";
 
 export class DxfGenerator {
-    private entityHandle = 256; // Start at 256 to avoid conflicts with system handles
+    private entityHandle = 256;
     private colorFormat: "aci" | "truecolor" = "aci";
     private acadVersion: "AC1009" | "AC1015" = "AC1009";
 
@@ -9,25 +9,19 @@ export class DxfGenerator {
      * Generate a complete DXF file content from path-based entities
      */
     public generateDxf(dxfInputs: Inputs.IO.DxfModelDto): string {
-        // Set format options from input
         this.colorFormat = dxfInputs.colorFormat || "aci";
         this.acadVersion = dxfInputs.acadVersion || "AC1009";
         
         const dxfContent: string[] = [];
 
-        // Header section
         dxfContent.push(...this.generateHeader());
 
-        // Tables section
         dxfContent.push(...this.generateTables(dxfInputs));
 
-        // Blocks section (required by many CAD programs)
         dxfContent.push(...this.generateBlocks());
 
-        // Entities section
         dxfContent.push(...this.generateEntities(dxfInputs));
 
-        // End of file
         dxfContent.push("0", "EOF");
 
         return dxfContent.join("\n");
@@ -49,7 +43,6 @@ export class DxfGenerator {
         ];
 
         if (this.acadVersion === "AC1009") {
-            // AC1009 (AutoCAD R12) - minimal header for maximum compatibility
             header.push(
                 "9",
                 "$DWGCODEPAGE",
@@ -61,7 +54,6 @@ export class DxfGenerator {
                 "0"
             );
         } else {
-            // AC1015 (AutoCAD 2000) - modern format
             header.push(
                 "9",
                 "$DWGCODEPAGE",
@@ -93,21 +85,16 @@ export class DxfGenerator {
             "TABLES"
         ];
 
-        // VPORT table (required for AC1009)
         if (this.acadVersion === "AC1009") {
             tables.push(...this.generateVportTable());
         }
 
-        // Line type table (required)
         tables.push(...this.generateLineTypeTable());
 
-        // Layer table
         tables.push(...this.generateLayerTable(dxfInputs));
 
-        // Text style table (required for text entities, included for completeness)
         tables.push(...this.generateStyleTable());
 
-        // Additional tables for AC1009
         if (this.acadVersion === "AC1009") {
             tables.push(...this.generateViewTable());
             tables.push(...this.generateUcsTable());
@@ -129,7 +116,7 @@ export class DxfGenerator {
             "2",
             "LTYPE",
             "70",
-            "1" // Number of line types
+            "1"
         ];
 
         if (this.acadVersion === "AC1015") {
@@ -171,7 +158,7 @@ export class DxfGenerator {
             "2",
             "STYLE",
             "70",
-            "1" // Number of styles
+            "1"
         ];
 
         if (this.acadVersion === "AC1015") {
@@ -219,7 +206,7 @@ export class DxfGenerator {
             "2",
             "VPORT",
             "70",
-            "2", // Number of viewports
+            "2",
             "0",
             "VPORT",
             "2",
@@ -387,7 +374,6 @@ export class DxfGenerator {
     private generateLayerTable(dxfInputs: Inputs.IO.DxfModelDto): string[] {
         const layers = new Set<string>();
 
-        // Collect all unique layer names
         if (dxfInputs.dxfPathsParts) {
             dxfInputs.dxfPathsParts.forEach(part => {
                 if (part.layer) {
@@ -396,7 +382,6 @@ export class DxfGenerator {
             });
         }
 
-        // Add default layer if no layers specified
         if (layers.size === 0) {
             layers.add("0");
         }
@@ -414,7 +399,6 @@ export class DxfGenerator {
             layerTable.splice(4, 0, "5", "2", "100", "AcDbSymbolTable");
         }
 
-        // Generate layer entries
         layers.forEach(layerName => {
             layerTable.push(
                 "0",
@@ -424,12 +408,11 @@ export class DxfGenerator {
                 "70",
                 "0",
                 "62",
-                "7", // Default color (white)
+                "7",
                 "6",
-                "CONTINUOUS" // Line type
+                "CONTINUOUS"
             );
 
-            // Add AC1015-specific subclass markers
             if (this.acadVersion === "AC1015") {
                 const insertIdx = layerTable.lastIndexOf("LAYER") + 1;
                 layerTable.splice(insertIdx, 0, "5", this.getNextHandle(), "100", "AcDbSymbolTableRecord", "100", "AcDbLayerTableRecord");
@@ -476,7 +459,6 @@ export class DxfGenerator {
         segment: Inputs.IO.DxfLineSegmentDto | Inputs.IO.DxfArcSegmentDto | Inputs.IO.DxfCircleSegmentDto | Inputs.IO.DxfPolylineSegmentDto | Inputs.IO.DxfSplineSegmentDto,
         part: Inputs.IO.DxfPathsPartDto
     ): string[] {
-        // Check segment type and generate appropriate entity
         if (this.isLineSegment(segment)) {
             return this.generateLineEntity(segment, part);
         } else if (this.isArcSegment(segment)) {
@@ -537,7 +519,6 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        // Add color if specified
         if (part.color !== undefined) {
             const colorCodes = this.convertColorToDxf(part.color);
             colorCodes.forEach(cc => entity.push(cc.code, cc.value));
@@ -549,16 +530,15 @@ export class DxfGenerator {
             "20",
             line.start[1].toFixed(6),
             "30",
-            "0.00", // Z coordinate (2D)
+            "0.00",
             "11",
             line.end[0].toFixed(6),
             "21",
             line.end[1].toFixed(6),
             "31",
-            "0.00" // Z coordinate (2D)
+            "0.00"
         );
 
-        // Add AC1015-specific codes
         if (this.acadVersion === "AC1015") {
             entity.splice(2, 0, "5", this.getNextHandle(), "100", "AcDbEntity");
             const coordIdx = entity.indexOf("10");
@@ -579,7 +559,6 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        // Add color if specified
         if (part.color !== undefined) {
             const colorCodes = this.convertColorToDxf(part.color);
             colorCodes.forEach(cc => entity.push(cc.code, cc.value));
@@ -596,7 +575,6 @@ export class DxfGenerator {
             circle.radius.toFixed(6)
         );
 
-        // Add AC1015-specific codes
         if (this.acadVersion === "AC1015") {
             entity.splice(2, 0, "5", this.getNextHandle(), "100", "AcDbEntity");
             const coordIdx = entity.indexOf("10");
@@ -617,12 +595,10 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        // Add line type for AC1009 (optional empty)
         if (this.acadVersion === "AC1009") {
             entity.push("6", " ");
         }
 
-        // Add color if specified
         if (part.color !== undefined) {
             const colorCodes = this.convertColorToDxf(part.color);
             colorCodes.forEach(cc => entity.push(cc.code, cc.value));
@@ -643,7 +619,6 @@ export class DxfGenerator {
             arc.endAngle.toFixed(6)
         );
 
-        // Add AC1015-specific codes
         if (this.acadVersion === "AC1015") {
             entity.splice(2, 0, "5", this.getNextHandle(), "100", "AcDbEntity");
             const coordIdx = entity.indexOf("10");
@@ -666,7 +641,6 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        // Add color if specified
         if (part.color !== undefined) {
             const colorCodes = this.convertColorToDxf(part.color);
             colorCodes.forEach(cc => entity.push(cc.code, cc.value));
@@ -681,14 +655,12 @@ export class DxfGenerator {
             isClosed ? "1" : "0"
         );
 
-        // Add AC1015-specific codes
         if (this.acadVersion === "AC1015") {
             entity.splice(2, 0, "5", this.getNextHandle(), "100", "AcDbEntity");
             const pointIdx = entity.indexOf("90");
             entity.splice(pointIdx, 0, "100", "AcDbPolyline");
         }
 
-        // Add vertices
         polyline.points.forEach((point, index) => {
             entity.push(
                 "10",
@@ -697,7 +669,6 @@ export class DxfGenerator {
                 point[1].toFixed(6)
             );
             
-            // Add bulge value if specified (for arc segments)
             if (polyline.bulges && polyline.bulges.length > index) {
                 const bulge = polyline.bulges[index]!;
                 if (bulge !== 0) {
@@ -720,7 +691,6 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        // Add color if specified
         if (part.color !== undefined) {
             const colorCodes = this.convertColorToDxf(part.color);
             colorCodes.forEach(cc => entity.push(cc.code, cc.value));
@@ -730,8 +700,7 @@ export class DxfGenerator {
         const numControlPoints = spline.controlPoints.length;
         const numKnots = numControlPoints + degree + 1;
 
-        // Spline flags: 1 = closed, 2 = periodic, 4 = rational, 8 = planar, 16 = linear
-        const flags = spline.closed ? 9 : 8; // Add planar flag (8) for 2D splines
+        const flags = spline.closed ? 9 : 8;
 
         entity.push(
             "210",
@@ -739,7 +708,7 @@ export class DxfGenerator {
             "220",
             "0.0",
             "230",
-            "1.0", // Normal vector (Z-axis for 2D)
+            "1.0",
             "70",
             flags.toString(),
             "71",
@@ -749,22 +718,19 @@ export class DxfGenerator {
             "73",
             numControlPoints.toString(),
             "74",
-            "0" // Number of fit points (we're using control points)
+            "0"
         );
 
-        // Add AC1015-specific codes
         if (this.acadVersion === "AC1015") {
             entity.splice(2, 0, "5", this.getNextHandle(), "100", "AcDbEntity");
             const normalIdx = entity.indexOf("210");
             entity.splice(normalIdx, 0, "100", "AcDbSpline");
         }
 
-        // Generate knot values (uniform knot vector)
         for (let i = 0; i < numKnots; i++) {
             entity.push("40", i.toFixed(6));
         }
 
-        // Add control points
         spline.controlPoints.forEach(point => {
             entity.push(
                 "10",
@@ -772,7 +738,7 @@ export class DxfGenerator {
                 "20",
                 point[1].toFixed(6),
                 "30",
-                "0.0" // Z coordinate (2D)
+                "0.0"
             );
         });
 
@@ -805,7 +771,6 @@ export class DxfGenerator {
      * Returns appropriate DXF color codes based on colorFormat setting
      */
     private convertColorToDxf(color: string): { code: string, value: string }[] {
-        // If it's already a number (ACI index), use it directly
         if (/^\d+$/.test(color)) {
             const colorIndex = parseInt(color, 10);
             if (colorIndex >= 1 && colorIndex <= 255) {
@@ -813,7 +778,6 @@ export class DxfGenerator {
             }
         }
 
-        // If it's a hex color, handle based on format preference
         if (color.startsWith("#")) {
             const hex = color.substring(1);
             if (hex.length === 6) {
@@ -822,21 +786,18 @@ export class DxfGenerator {
                 const b = parseInt(hex.substring(4, 6), 16);
                 
                 if (this.colorFormat === "truecolor") {
-                    // Use 24-bit true color for full color spectrum (newer CAD software)
                     const trueColor = (r * 65536) + (g * 256) + b;
                     return [
-                        { code: "62", value: "256" },  // 256 = ByEntity
+                        { code: "62", value: "256" },
                         { code: "420", value: trueColor.toString() }
                     ];
                 } else {
-                    // Use ACI color index for better compatibility (older CAD software)
                     const aciIndex = this.rgbToAciColorIndex(r, g, b);
                     return [{ code: "62", value: aciIndex.toString() }];
                 }
             }
         }
 
-        // Default to white (7) if color can't be parsed
         return [{ code: "62", value: "7" }];
     }
 
@@ -845,25 +806,22 @@ export class DxfGenerator {
      * Uses a simplified mapping to standard ACI colors
      */
     private rgbToAciColorIndex(r: number, g: number, b: number): number {
-        // ACI standard colors (simplified mapping)
         const aciColors: { [key: number]: [number, number, number] } = {
-            1: [255, 0, 0],     // Red
-            2: [255, 255, 0],   // Yellow
-            3: [0, 255, 0],     // Green
-            4: [0, 255, 255],   // Cyan
-            5: [0, 0, 255],     // Blue
-            6: [255, 0, 255],   // Magenta
-            7: [255, 255, 255], // White
-            8: [128, 128, 128], // Gray
-            9: [192, 192, 192]  // Light gray
+            1: [255, 0, 0],
+            2: [255, 255, 0],
+            3: [0, 255, 0],
+            4: [0, 255, 255],
+            5: [0, 0, 255],
+            6: [255, 0, 255],
+            7: [255, 255, 255],
+            8: [128, 128, 128],
+            9: [192, 192, 192]
         };
 
-        // Special case for black or very dark colors
         if (r < 30 && g < 30 && b < 30) {
-            return 7; // Use white for visibility on dark backgrounds
+            return 7;
         }
 
-        // Find nearest color
         let nearestIndex = 7;
         let minDistance = Infinity;
 

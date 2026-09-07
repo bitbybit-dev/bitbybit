@@ -2327,7 +2327,7 @@ describe("OCCT wire unit tests", () => {
                 [1, 0, 0],
                 [1, 1, 0],
             ];
-            const w = wire.fromPoints({ points })!;
+            const w = wire.fromPoints({ points });
             const length = wire.getWireLength({ shape: w });
             expect(length).toBe(2); // 1 + 1 = 2
             w.delete();
@@ -2347,7 +2347,7 @@ describe("OCCT wire unit tests", () => {
                 [2, 2, 0],
                 [0, 2, 0],
             ];
-            const w = wire.fromPoints({ points })!;
+            const w = wire.fromPoints({ points });
             const length = wire.getWireLength({ shape: w });
             expect(length).toBe(6); // 2 + 2 + 2 = 6 (open polyline, 3 segments)
             w.delete();
@@ -2789,7 +2789,7 @@ describe("OCCT wire unit tests", () => {
         };
 
         it("symmetric interpolation of a diamond is symmetric", () => {
-            const w = wire.interpolatePointsSymmetric({ points: diamond, tolerance: 1e-7 })!;
+            const w = wire.interpolatePointsSymmetric({ points: diamond, tolerance: 1e-7 });
             expect(w.IsNull()).toBe(false);
             expect(bboxAsymmetry(w)).toBeLessThan(1e-5);
             w.delete();
@@ -2799,7 +2799,7 @@ describe("OCCT wire unit tests", () => {
             const w = wire.interpolatePoints({
                 points: diamond, periodic: true,
                 parametrization: Inputs.OCCT.bSplineParametrizationEnum.centripetal, tolerance: 1e-7,
-            })!;
+            });
             expect(w.IsNull()).toBe(false);
             w.delete();
         });
@@ -2808,20 +2808,20 @@ describe("OCCT wire unit tests", () => {
             const w = wire.interpolatePoints({
                 points: [[0, 0, 0], [1, 1, 0], [2, 0, 0]], periodic: false,
                 startTangent: [0, 1, 0], endTangent: [0, -1, 0], tolerance: 1e-7,
-            })!;
+            });
             expect(w.IsNull()).toBe(false);
             w.delete();
         });
 
         it("createBezier builds a low-degree curve", () => {
-            const w = wire.createBezier({ points: [[0, 0, 0], [1, 2, 0], [2, 0, 0]], closed: false })!;
+            const w = wire.createBezier({ points: [[0, 0, 0], [1, 2, 0], [2, 0, 0]], closed: false });
             expect(w.IsNull()).toBe(false);
             w.delete();
         });
 
         it("createBezier builds a bounded-degree curve for many control points", () => {
             const pts: Inputs.Base.Point3[] = Array.from({ length: 60 }, (_, i) => [i, i % 2 === 0 ? 1 : -1, 0]);
-            const w = wire.createBezier({ points: pts, closed: false, degree: 3 })!;
+            const w = wire.createBezier({ points: pts, closed: false, degree: 3 });
             expect(w.IsNull()).toBe(false);
             w.delete();
         });

@@ -106,8 +106,6 @@ export class OCCTWorkerManager {
         this.occWorker.postMessage({
             action: {
                 functionName,
-                // A DTO on this side, a plain object on the other: the structured clone drops the
-                // prototype, which is what the worker's own message type describes.
                 inputs: inputs as Record<string, unknown>,
             },
             uid,

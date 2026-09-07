@@ -1,12 +1,5 @@
 import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, Handle_Geom_Curve, EdgeCurveResult } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 
-// TODO - refactor so that this layer would not be needed anymore
-// This module provides compatibility between the old opencascade.js API patterns
-// and the new BitbybitOcct helper function patterns.
-
-// The old opencascade.js API used reference parameters for output values,
-// while the new API uses helper functions that return result structures.
-
 export interface ReferencedReturn<T> {
     current: T;
 }
@@ -38,7 +31,6 @@ export class OCCReferencedReturns {
         if (result.IsValid) {
             p1.current = result.First;
             p2.current = result.Last;
-            // Use the GetEdgeCurve helper to get the actual curve
             return this.occ.GetEdgeCurve(edge);
         }
         return null;

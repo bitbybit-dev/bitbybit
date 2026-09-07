@@ -1000,7 +1000,7 @@ describe("DrawHelper unit tests", () => {
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
 
-            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+            const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
@@ -1032,7 +1032,7 @@ describe("DrawHelper unit tests", () => {
             inputs.edgeWidth = 2;
             inputs.edgeOpacity = 1;
 
-            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+            const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
@@ -1061,7 +1061,7 @@ describe("DrawHelper unit tests", () => {
             inputs.vertexColour = "#0000ff";
             inputs.vertexSize = 0.1;
 
-            const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
+            const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
             expect(result.children.length).toBe(1);
@@ -1092,7 +1092,7 @@ describe("DrawHelper unit tests", () => {
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
 
-            const result = await drawHelper.drawShapes(inputs as Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>);
+            const result = await drawHelper.drawShapes(inputs);
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
@@ -1266,7 +1266,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as THREEJS.Group,
+                undefined,
                 false,
                 material,
                 true,
@@ -1313,7 +1313,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as THREEJS.Group,
+                undefined,
                 false,
                 material,
                 true,
@@ -1334,7 +1334,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as THREEJS.Group,
+                undefined,
                 false,
                 material,
                 true,
@@ -1352,7 +1352,7 @@ describe("DrawHelper unit tests", () => {
             const points: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1], [2, 0, 0]];
 
             const result = drawHelper.drawPolyline(
-                undefined as unknown as THREEJS.Group,
+                undefined,
                 points,
                 false,
                 2,
@@ -1704,7 +1704,7 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle undefined manifold input", async () => {
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
-            inputs.manifoldOrCrossSection = undefined as unknown as Inputs.Manifold.ManifoldPointer;
+            inputs.manifoldOrCrossSection = undefined;
 
             await expect(drawHelper.drawManifoldOrCrossSection(inputs))
                 .rejects
@@ -1898,6 +1898,8 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0, 0], [1, 1, 1]],
                 1,
                 0.3,
+                // A hole in the colours a caller supplies. The DTO says `string[]` and that type is
+                // socket-visible, so the violation belongs here rather than in the declaration.
                 ["#ff0000", undefined as unknown as string, "#0000ff"]
             );
 
@@ -2032,7 +2034,7 @@ describe("DrawHelper unit tests", () => {
                 [0, 0, 0],
                 1,
                 1,
-                "not-a-color" as Inputs.Base.Color
+                "not-a-color"
             );
 
             const result = drawHelper.drawPoint(inputs);

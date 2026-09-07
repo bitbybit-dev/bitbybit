@@ -1,9 +1,6 @@
 import { Inputs, Models } from "@bitbybit-dev/occt";
 
 export class ShapeParser {
-    // The result has the shape of `obj` with every shape id replaced by its pointer. The data classes
-    // use one type parameter for their shape positions and plain strings alike, so no mapped type can
-    // name the result; callers assign it to the pointer flavour of their data type.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(obj: unknown, partShapes: Models.OCCT.ShapeWithId<Inputs.OCCT.TopoDSShapePointer>[]): any {
         const stack: unknown[] = [obj];
@@ -13,12 +10,12 @@ export class ShapeParser {
             const current = stack.pop();
 
             if (typeof current !== "object" || current === null || visited.has(current)) {
-                continue; // Skip non-object values
+                continue;
             }
             visited.add(current);
             if (Array.isArray(current)) {
                 for (let i = 0; i < current.length; i++) {
-                    stack.push(current[i]); // Push array elements onto the stack
+                    stack.push(current[i]);
                 }
             } else {
                 const keys = Object.keys(current);
@@ -37,7 +34,7 @@ export class ShapeParser {
                 }
 
                 for (const key in current) {
-                    stack.push((current as Record<string, unknown>)[key]); // Push object properties onto the stack
+                    stack.push((current as Record<string, unknown>)[key]);
                 }
             }
         }

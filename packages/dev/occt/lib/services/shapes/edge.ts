@@ -256,7 +256,7 @@ export class OCCTEdge {
      * @drawable true
      */
     createCircleEdge(inputs: Inputs.OCCT.CircleDto): TopoDS_Edge {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;
+        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.edge);
     }
 
     /**
@@ -268,7 +268,7 @@ export class OCCTEdge {
      * @drawable true
      */
     createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): TopoDS_Edge {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;
+        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.edge);
     }
 
     /**

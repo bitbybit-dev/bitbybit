@@ -69,8 +69,6 @@ export class BitByBitBase {
 
     constructor() {
         this.context = new Context();
-        // Every service that is not about the renderer is wired in one place, shared by all three
-        // renderer packages; only the engine facade and what draws through it are built here.
         const shared = createSharedServices(this.context);
         this.jscadWorkerManager = shared.jscadWorkerManager;
         this.manifoldWorkerManager = shared.manifoldWorkerManager;

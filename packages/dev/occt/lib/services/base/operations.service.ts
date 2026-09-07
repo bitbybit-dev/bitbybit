@@ -1,7 +1,6 @@
 import {
     BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, Bnd_Box, EmbindEnumValue,
     BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire,
-    Approx_ParametrizationType
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import * as Inputs from "../../api/inputs";
@@ -61,7 +60,6 @@ export class OperationsService {
                 pointsOnCrvs.push(pts);
             });
 
-            // <= needed due to start and end points that are added
             for (let i = 0; i <= inputs.nrPeriodicSections; i++) {
                 const ptsForPerpWire = pointsOnCrvs.map(p => p[i]!);
                 const periodicWire = this.wiresService.interpolatePoints({ points: ptsForPerpWire, tolerance: inputs.tolerance, periodic: true });
@@ -95,7 +93,7 @@ export class OperationsService {
             parType = this.occ.Approx_ParametrizationType.IsoParametric;
         }
         if (parType) {
-            pipe.SetParType(parType as unknown as Approx_ParametrizationType);
+            pipe.SetParType(parType);
         }
         pipe.CheckCompatibility(false);
         const pipeShape = pipe.Shape();
@@ -111,7 +109,6 @@ export class OperationsService {
 
     closestPointsBetweenTwoShapes(shape1: TopoDS_Shape, shape2: TopoDS_Shape): [Base.Point3, Base.Point3] {
         const result = this.occ.ClosestPointsBetweenShapes(shape1, shape2);
-        // embind returns a VectorDouble object with .size() and .get() methods, not a native array
         if (result.size() === 6) {
             return [[result.get(0)!, result.get(1)!, result.get(2)!], [result.get(3)!, result.get(4)!, result.get(5)!]];
         } else {
@@ -224,7 +221,6 @@ export class OperationsService {
         if (inputs.distance === 0.0) { return inputs.shape; }
         let offset: BRepOffsetAPI_MakeOffset | BRepOffsetAPI_MakeOffsetShape;
         const joinType = this.getJoinType(inputs.joinType);
-        // only this mode is implemented currently, so we cannot expose others...
         const brepOffsetMode = this.occ.BRepOffset_Mode.Skin;
 
         const wires: TopoDS_Wire[] = [];
@@ -250,7 +246,7 @@ export class OperationsService {
                 offset.Perform(inputs.distance, 0.0);
             } catch {
                 offset = new this.occ.BRepOffsetAPI_MakeOffsetShape();
-                (offset as BRepOffsetAPI_MakeOffsetShape).PerformByJoin(
+                (offset).PerformByJoin(
                     wire,
                     inputs.distance,
                     inputs.tolerance,
@@ -264,7 +260,7 @@ export class OperationsService {
         } else {
             const shapeToOffset = inputs.shape;
             offset = new this.occ.BRepOffsetAPI_MakeOffsetShape();
-            (offset as BRepOffsetAPI_MakeOffsetShape).PerformByJoin(
+            (offset).PerformByJoin(
                 shapeToOffset,
                 inputs.distance,
                 inputs.tolerance,
@@ -335,7 +331,6 @@ export class OperationsService {
 
     extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
         const gpVec = new this.occ.gp_Vec(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
-        // Use 2-parameter constructor - the 4-parameter version has binding issues in new Emscripten bindings
         const prismMaker = new this.occ.BRepPrimAPI_MakePrism(inputs.shape, gpVec);
         const prismShape = prismMaker.Shape();
         prismMaker.delete();
@@ -373,12 +368,10 @@ export class OperationsService {
         const dir = new this.occ.gp_Dir(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
         const ax1 = new this.occ.gp_Ax1(pt1, dir);
         if (inputs.angle >= 360.0) {
-            // Full revolution - use 2-parameter constructor
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1);
             result = makeRevol.Shape();
             makeRevol.delete();
         } else {
-            // Partial revolution - use 4-parameter constructor with angle and copy flag
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape,
                 ax1,
                 inputs.angle * 0.0174533, inputs.copy);
@@ -394,10 +387,9 @@ export class OperationsService {
     }
 
     rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
-        // Get the bounding box of the input shape to determine its current position
         const bbox = this.boundingBoxOfShape({ shape: inputs.shape });
-        const shapeStartY = bbox.min[1]; // Y coordinate of the bottom of the shape
-        const shapeEndY = shapeStartY + inputs.height; // Target Y coordinate after extrusion
+        const shapeStartY = bbox.min[1];
+        const shapeEndY = shapeStartY + inputs.height;
 
         const translatedShape = this.transformsService.translate({
             translation: [0, inputs.height, 0],
@@ -410,7 +402,6 @@ export class OperationsService {
                 shape: translatedShape
             });
 
-        // Define the straight spine going from the shape's current position
         const spineWire = this.wiresService.createBSpline({
             points: [
                 [0, shapeStartY, 0],
@@ -419,7 +410,6 @@ export class OperationsService {
             closed: false,
         });
 
-        // Define the guiding helical auxiliary spine (which controls the rotation)
         const steps = 30;
         const aspinePoints: Inputs.Base.Point3[] = [];
         for (let i = 0; i <= steps; i++) {
@@ -433,14 +423,12 @@ export class OperationsService {
 
         const aspineWire = this.wiresService.createBSpline({ points: aspinePoints, closed: false });
 
-        // Sweep the face wires along the spine to create the extrusion
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(spineWire);
         pipe.SetModeWithAuxSpine(aspineWire, true, this.occ.BRepFill_TypeOfContact.NoContact);
         pipe.Add(inputs.shape, false, false);
         pipe.Add(upperPolygon, false, false);
         pipe.Build();
 
-        // default should be to make the solid for backwards compatibility
         if (inputs.makeSolid || inputs.makeSolid === undefined) {
             pipe.MakeSolid();
         }
@@ -471,13 +459,10 @@ export class OperationsService {
     }
 
     pipePolylineWireNGon(inputs: Inputs.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape {
-        // Input wire (the spine)
         const wire = inputs.shape;
 
-        // Get the edges of the wire
         const edge = this.shapeGettersService.getEdge({ shape: wire, index: 0 });
 
-        // Get the start point and tangent of the first edge
         const startPoint = this.edgesService.pointOnEdgeAtParam({ shape: edge, param: 0 });
         const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: edge, param: 0 });
         const ngon = this.wiresService.createNGonWire({
@@ -485,7 +470,7 @@ export class OperationsService {
             center: startPoint,
             direction: tangent,
             nrCorners: inputs.nrCorners
-        }) as TopoDS_Wire;
+        });
 
         const reversedNgon = this.wiresService.reversedWire({
             shape: ngon
@@ -505,7 +490,6 @@ export class OperationsService {
         pipe.Build();
         const pipeShape = pipe.Shape();
 
-        // Convert and clean up
         const result = this.converterService.getActualTypeOfShape(pipeShape);
         pipeShape.delete();
         pipe.delete();
@@ -515,13 +499,10 @@ export class OperationsService {
     }
 
     pipeWireCylindrical(inputs: Inputs.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape {
-        // Input wire (the spine)
         const wire = inputs.shape;
 
-        // Get the edges of the wire
         const edges = this.shapeGettersService.getEdges({ shape: wire });
 
-        // Get the start point and tangent of the first edge
         const firstEdge = edges[0]!;
         const startPoint = this.edgesService.startPointOnEdge({ shape: firstEdge });
         const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: firstEdge, param: 0 });
@@ -531,16 +512,14 @@ export class OperationsService {
             startPoint,
             tangent,
             inputs.makeSolid ? Inputs.OCCT.typeSpecificityEnum.face : Inputs.OCCT.typeSpecificityEnum.wire
-        ) as TopoDS_Wire;
+        );
 
 
-        // Create the pipe by sweeping the profile along the wire
         const geomFillTrihedron = this.enumService.getGeomFillTrihedronEnumOCCTValue(inputs.trihedronEnum);
         const pipe = new this.occ.BRepOffsetAPI_MakePipe(wire, circle, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
         pipe.Build();
         const pipeShape = pipe.Shape();
 
-        // Convert and clean up
         const result = this.converterService.getActualTypeOfShape(pipeShape);
         pipeShape.delete();
         pipe.delete();
@@ -587,7 +566,7 @@ export class OperationsService {
             facesToRemove,
             inputs.offset,
             inputs.tolerance,
-            this.occ.BRepOffset_Mode.Skin, // currently a single option
+            this.occ.BRepOffset_Mode.Skin,
             inputs.intersection,
             inputs.selfIntersection,
             jointType,
@@ -670,10 +649,6 @@ export class OperationsService {
 
     private createBBoxAndTransformShape(shape: TopoDS_Shape, direction: Inputs.Base.Vector3) {
 
-        // we orient the given shape to the reverse direction of sections so that slicing
-        // would always happen in flat bbox aligned orientation
-        // after algorithm computes, we turn all intersections to original shape so that it would match a given shape.
-        // const fromDir
         const transformedShape = this.transformsService.align({
             shape,
             fromOrigin: [0, 0, 0],

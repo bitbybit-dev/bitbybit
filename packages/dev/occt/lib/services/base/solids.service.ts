@@ -118,15 +118,9 @@ export class SolidsService {
             ? 2 * Math.PI
             : this.vectorHelperService.degToRad(inputs.angle);
         let makeTorus;
-        // Use tolerance check for full torus (2*PI) to handle floating-point precision
         if (angle >= 2 * Math.PI - 1e-7) {
-            // Full torus - use simple 3-param constructor
             makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius);
         } else {
-            // Partial torus
-            // 6-param: axes, R1, R2, angle1, angle2, angle
-            // angle1 and angle2 control the ring segment (minor circle), angle controls the pipe segment (major circle)
-            // For a simple pie-slice torus, we keep the full ring (0 to 2*PI) and control the pipe angle
             makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius, 0, 2 * Math.PI, angle);
         }
         const torusShape = makeTorus.Shape();
@@ -140,8 +134,7 @@ export class SolidsService {
         if (inputs.points.length > 0) {
             inputs.points.forEach(pt => {
                 const gpPnt = this.entitiesService.gpPnt(pt);
-                // ClassifyPointInSolid returns: 0=IN, 1=OUT, 2=ON, 3=UNKNOWN
-                const state = this.occ.ClassifyPointInSolid(inputs.shape as TopoDS_Solid, gpPnt, inputs.tolerance);
+                const state = this.occ.ClassifyPointInSolid(inputs.shape, gpPnt, inputs.tolerance);
                 let type: Inputs.OCCT.topAbsStateEnum;
                 switch (state) {
                     case 0: type = Inputs.OCCT.topAbsStateEnum.in; break;

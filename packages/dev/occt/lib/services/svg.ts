@@ -50,16 +50,16 @@ export class OCCTSVG {
     /** Pull the individual wires out of a built element (a single wire or a compound of wires). */
     private extractWires(shape: TopoDS_Shape): { wires: TopoDS_Wire[]; cleanup: TopoDS_Shape[] } {
         if (this.och.enumService.getShapeTypeEnum(shape) === Inputs.OCCT.shapeTypeEnum.wire) {
-            return { wires: [shape as TopoDS_Wire], cleanup: [shape] };
+            return { wires: [shape], cleanup: [shape] };
         }
         const wires: TopoDS_Wire[] = [];
         const cleanup: TopoDS_Shape[] = [shape];
         this.och.iteratorService.forEachShapeInCompound(shape, (_i: number, child: TopoDS_Shape) => {
-            const typed = this.och.converterService.getActualTypeOfShape(child) as TopoDS_Shape;
+            const typed = this.och.converterService.getActualTypeOfShape(child);
             if (typed !== child) { try { child.delete(); } catch { /* noop */ } }
             cleanup.push(typed);
             if (this.och.enumService.getShapeTypeEnum(typed) === Inputs.OCCT.shapeTypeEnum.wire) {
-                wires.push(typed as TopoDS_Wire);
+                wires.push(typed);
             }
         });
         return { wires, cleanup };
@@ -72,9 +72,9 @@ export class OCCTSVG {
             closed: sp.closed,
             segments: sp.segments.map((seg) => {
                 if (seg.type === "quad") {
-                    return { type: "quadratic", c: seg.c, to: seg.to } as Inputs.OCCT.PathQuadraticSegment;
+                    return { type: "quadratic", c: seg.c, to: seg.to };
                 }
-                return seg as Inputs.OCCT.PathSegment;
+                return seg;
             }),
         };
     }
@@ -128,8 +128,6 @@ export class OCCTSVG {
         }
 
         const drawn = scene.elements.filter((el) => !(el.style.hidden && !inputs.includeInvisible));
-        // Always build outline wires natively; faces (with correct holes/winding) are assembled in TS
-        // per element, governed by the face strategy and the element's own fill-rule.
         const groups = drawn.map((el) => ({
             subpaths: el.subpaths.map((sp) => this.toPathSubpath(sp)),
             makeFaces: false,

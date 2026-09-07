@@ -62,7 +62,7 @@ describe("OccHelper", () => {
             const notAFace = occHelper.entitiesService.makeVertex([0, 0, 0]);
 
             // Act, Assert
-            expect(() => occHelper.surfaceFromFace({ shape: notAFace as never })).toThrow();
+            expect(() => occHelper.surfaceFromFace({ shape: notAFace })).toThrow();
         });
     });
 });

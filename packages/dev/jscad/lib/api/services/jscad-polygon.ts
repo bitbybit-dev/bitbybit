@@ -43,7 +43,6 @@ export class JSCADPolygon {
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
 
-    // TODO conversions between various CAD kernels should happen on higher levels of abstraction (this was meant to create jscad polygons from VERB-NURBS curves)
     /**
      * Create a 2D polygon from a curve
      * @param inputs Nurbs curve

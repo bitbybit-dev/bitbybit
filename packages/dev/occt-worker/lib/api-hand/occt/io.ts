@@ -17,7 +17,7 @@ export class OCCTIO {
      * @drawable false
      */
     async saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
-        this.saveSTEP(inputs);
+        await this.saveSTEP(inputs);
     }
 
     // replaces io.saveShapeSTEP
@@ -34,7 +34,7 @@ export class OCCTIO {
      * @drawable false
      */
     async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
-        this.saveStl(inputs);
+        await this.saveStl(inputs);
     }
 
     // replaces io.saveShapeStl

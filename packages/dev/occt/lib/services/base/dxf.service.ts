@@ -22,20 +22,17 @@ export class DxfService {
      * This analyzes the shape geometry and creates appropriate DXF segments
      */
     shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>): IO.DxfPathDto[] {
-        // Get all wires from the shape
         const wires = this.shapeGettersService.getWires({ shape: inputs.shape });
         
         const paths: IO.DxfPathDto[] = [];
 
         wires.forEach(wire => {
-            // Get edges along the wire in order with consistent direction
             const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
             
             if (edges.length === 0) {
                 return;
             }
 
-            // Check if the entire wire is closed once at the beginning
             const isWireClosed = this.wiresService.isWireClosed({ shape: wire });
 
             const segments: (IO.DxfLineSegmentDto | IO.DxfArcSegmentDto | IO.DxfCircleSegmentDto | IO.DxfPolylineSegmentDto)[] = [];
@@ -44,7 +41,6 @@ export class DxfService {
             while (i < edges.length) {
                 const edge = edges[i]!;
                 
-                // Check if edge is a full circle - handle separately
                 if (this.edgesService.isEdgeCircular({ shape: edge })) {
                     const bounds = this.edgesService.getEdgeBounds(edge);
                     const angleRange = bounds.uMax - bounds.uMin;
@@ -54,7 +50,7 @@ export class DxfService {
                         const circle = this.edgesService.getCircularEdgeCenterPoint({ shape: edge });
                         const radius = this.edgesService.getCircularEdgeRadius({ shape: edge });
                         segments.push({
-                            center: [circle[0], circle[2]], // XZ plane (remove Y)
+                            center: [circle[0], circle[2]],
                             radius: radius
                         });
                         i++;
@@ -62,7 +58,6 @@ export class DxfService {
                     }
                 }
                 
-                // Try to collect all edges (linear, arc, and complex) into a unified polyline with bulges
                 const polylineResult = this.tryCreateUnifiedPolyline(edges, i, inputs, isWireClosed && i === 0);
                 if (polylineResult) {
                     segments.push(polylineResult.polyline);
@@ -70,11 +65,9 @@ export class DxfService {
                     continue;
                 }
                 
-                // Fallback: shouldn't reach here normally
                 i++;
             }
             
-            // Create path from segments
             if (segments.length > 0) {
                 paths.push({
                     segments: segments
@@ -104,8 +97,8 @@ export class DxfService {
     dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): string {
         const model = {
             dxfPathsParts: inputs.pathsParts,
-            colorFormat: inputs.colorFormat as "aci" | "truecolor",
-            acadVersion: inputs.acadVersion as "AC1009" | "AC1015"
+            colorFormat: inputs.colorFormat,
+            acadVersion: inputs.acadVersion
         } as IO.DxfModelDto;
         const dxfContent = this.base.io.dxf.dxfCreate(model);
         return dxfContent;
@@ -131,12 +124,11 @@ export class DxfService {
             const isLinear = this.edgesService.isEdgeLinear({ shape: currentEdge });
             const isCircular = this.edgesService.isEdgeCircular({ shape: currentEdge });
             
-            // Check if it's a full circle - stop here
             if (isCircular) {
                 const bounds = this.edgesService.getEdgeBounds(currentEdge);
                 const angleRange = bounds.uMax - bounds.uMin;
                 if (Math.abs(angleRange - 2 * Math.PI) < 0.01) {
-                    break; // Full circle, handle separately
+                    break;
                 }
             }
             
@@ -144,58 +136,36 @@ export class DxfService {
             const endPt = this.edgesService.endPointOnEdge({ shape: currentEdge });
             
             if (isLinear) {
-                // Linear edge: add start point with bulge 0
                 points.push([startPt[0], startPt[2]]);
                 bulges.push(0);
             } else if (isCircular) {
-                // Arc edge: add start point with calculated bulge
                 points.push([startPt[0], startPt[2]]);
                 
-                // DXF bulge is the tangent of 1/4 of the included angle
-                // Positive bulge = arc curves to the left when traveling from start to end (CCW)
-                // Negative bulge = arc curves to the right when traveling from start to end (CW)
-                
-                // Sample a point in the middle of the arc to determine direction
-                const midParam = 0.5; // Middle of the arc
+                const midParam = 0.5;
                 const midPt3d = this.edgesService.pointOnEdgeAtParam({ shape: currentEdge, param: midParam });
                 
-                // Calculate the included angle from the actual arc geometry
-                // We map from 3D (X,Y,Z) to 2D DXF (X,Y) by dropping the Y coordinate
-                // So: 3D X → DXF X, 3D Z → DXF Y
                 const center = this.edgesService.getCircularEdgeCenterPoint({ shape: currentEdge });
                 
-                // Calculate angles in the 2D projection (XZ plane → XY in DXF)
                 const startAngle = Math.atan2(startPt[2] - center[2], startPt[0] - center[0]);
                 const midAngle = Math.atan2(midPt3d[2] - center[2], midPt3d[0] - center[0]);
                 const endAngle = Math.atan2(endPt[2] - center[2], endPt[0] - center[0]);
                 
-                // Calculate the included angle by checking which direction the arc actually goes
-                // We use the midpoint to determine if we're going CCW or CW
                 let angle1 = endAngle - startAngle;
                 let angle2 = midAngle - startAngle;
                 
-                // Normalize angles to [-π, π] using modulo arithmetic
                 angle1 = Math.atan2(Math.sin(angle1), Math.cos(angle1));
                 angle2 = Math.atan2(Math.sin(angle2), Math.cos(angle2));
                 
-                // Check if midpoint is on the path from start to end
-                // Both should have the same sign and mid should be about half of end
                 let includedAngle: number;
                 if (Math.sign(angle1) === Math.sign(angle2) && Math.abs(angle2) < Math.abs(angle1) + 0.1) {
-                    // Midpoint is on the short arc from start to end
                     includedAngle = angle1;
                 } else {
-                    // Midpoint is on the long arc, so we go the other way
                     includedAngle = angle1 > 0 ? angle1 - 2 * Math.PI : angle1 + 2 * Math.PI;
                 }
                 
-                // The bulge is tan(included_angle / 4)
-                // Positive angle = CCW = positive bulge (arc curves left)
-                // Negative angle = CW = negative bulge (arc curves right)
                 const bulge = Math.tan(includedAngle / 4);
                 bulges.push(bulge);
             } else {
-                // Complex edge: tessellate and add points with bulge 0
                 const points3d = this.edgesService.edgeToPoints({
                     shape: currentEdge,
                     angularDeflection: inputs.angularDeflection,
@@ -205,9 +175,6 @@ export class DxfService {
                     minimumLength: inputs.minimumLength
                 });
                 
-                // Add all tessellation points except the last one for all edges
-                // The last point of each edge will be the start point of the next edge
-                // For closed wires, the last edge's last point equals the first edge's first point
                 for (let k = 0; k < points3d.length - 1; k++) {
                     points.push([points3d[k]![0], points3d[k]![2]]);
                     bulges.push(0);
@@ -217,7 +184,6 @@ export class DxfService {
             j++;
         }
         
-        // Add the final endpoint for open polylines
         if (j > startIndex && !shouldBeClosed) {
             const lastEdge = edges[j - 1]!;
             const endPt = this.edgesService.endPointOnEdge({ shape: lastEdge });
@@ -225,7 +191,6 @@ export class DxfService {
             bulges.push(0);
         }
         
-        // Return null if we didn't process any edges
         if (j <= startIndex || points.length < 2) {
             return null;
         }

@@ -14,51 +14,62 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Vector } from "@bitbybit-dev/base";
 
 /**
- * Creates a basic mock context with scene
+ * A test double implements the part of `T` that the test actually exercises. The assertion is
+ * single and from `Partial<T>`, not through `unknown`, so every member supplied is checked against
+ * the real type: one that is renamed or retyped upstream fails here, instead of passing through an
+ * assertion that had erased it.
  */
-export function createMockContext(): Context {
-    const mockScene = new MockScene();
-    return {
-        scene: mockScene as unknown as BABYLON.Scene,
-        engine: null,
-        havokPlugin: null,
-        getSamplingMode: vi.fn().mockReturnValue(1)
-    } as unknown as Context;
+const partialMock = <T>(members: Partial<T>): T => members as T;
+
+/**
+ * A scene double and a Babylon scene are unrelated types, so this is the one place the two meet.
+ * Both views of the same object are returned, and a test takes the `MockScene` one from here
+ * rather than reinterpreting `context.scene` again wherever it reads the double's state.
+ */
+function contextWithSceneDouble(): { context: Context, scene: MockScene } {
+    const scene = new MockScene();
+    const context = new Context();
+    context.scene = scene as unknown as BABYLON.Scene;
+    return { context, scene };
 }
 
 /**
- * Creates a simple mock context without scene
+ * Creates a basic mock context with scene
+ */
+export function createMockContext(): Context {
+    return contextWithSceneDouble().context;
+}
+
+/**
+ * Creates a simple mock context without scene. `Context` declares its members as definitely
+ * assigned, so one that was never given a scene simply has none - no stand-in value is needed.
  */
 export function createSimpleMockContext(): Context {
-    return {
-        scene: null,
-        engine: null,
-        havokPlugin: null,
-    } as unknown as Context;
+    return new Context();
 }
 
 /**
  * Creates mock worker managers for testing
  */
 export function createMockWorkerManagers() {
-    const mockJscadWorkerManager = {
+    const mockJscadWorkerManager = partialMock<JSCADWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
             normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
             indices: [0, 1, 2],
             transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
         })
-    } as unknown as JSCADWorkerManager;
+    });
 
-    const mockManifoldWorkerManager = {
+    const mockManifoldWorkerManager = partialMock<ManifoldWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
             triVerts: new Uint32Array([0, 1, 2]),
             numProp: 3
         })
-    } as unknown as ManifoldWorkerManager;
+    });
 
-    const mockOccWorkerManager = {
+    const mockOccWorkerManager = partialMock<OCCTWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             faceList: [
                 { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2] }
@@ -66,7 +77,7 @@ export function createMockWorkerManagers() {
             edgeList: [],
             pointsList: []
         })
-    } as unknown as OCCTWorkerManager;
+    });
 
     return {
         mockJscadWorkerManager,
@@ -79,16 +90,16 @@ export function createMockWorkerManagers() {
  * Creates a mock JSCADText service
  */
 export function createMockJSCADText(): JSCADText {
-    return {
+    return partialMock<JSCADText>({
         createVectorText: vi.fn().mockResolvedValue([])
-    } as unknown as JSCADText;
+    });
 }
 
 /**
  * Creates a mock Vector service
  */
 export function createMockVector(): Vector {
-    return {
+    return partialMock<Vector>({
         add: vi.fn().mockReturnValue([0, 0, 0]),
         lerp: vi.fn().mockImplementation(({ first, second, fraction }) => {
             return [
@@ -97,14 +108,14 @@ export function createMockVector(): Vector {
                 first[2] + (second[2] - first[2]) * fraction
             ];
         })
-    } as unknown as Vector;
+    });
 }
 
 /**
  * Creates a complete set of mocks for DrawHelper tests
  */
 export function createDrawHelperMocks() {
-    const mockContext = createMockContext();
+    const { context: mockContext, scene: mockScene } = contextWithSceneDouble();
     const mockSolidText = createMockJSCADText();
     const mockVector = createMockVector();
     const { mockJscadWorkerManager, mockManifoldWorkerManager, mockOccWorkerManager } = createMockWorkerManagers();
@@ -116,6 +127,6 @@ export function createDrawHelperMocks() {
         mockJscadWorkerManager,
         mockManifoldWorkerManager,
         mockOccWorkerManager,
-        mockScene: mockContext.scene as unknown as MockScene
+        mockScene
     };
 }

@@ -387,7 +387,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should fillet a single edge on the solid", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const filRes = fillets.filletEdges({ shape: cube, indexes: [0], radius: 0.5 })!;
+        const filRes = fillets.filletEdges({ shape: cube, indexes: [0], radius: 0.5 });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.892699081698724);
@@ -399,7 +399,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should fillet specific edges on the solid by index", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const filRes = fillets.filletEdges({ shape: cube, indexes: [0, 3, 5], radiusList: [0.3, 0.2, 0.1] })!;
+        const filRes = fillets.filletEdges({ shape: cube, indexes: [0, 3, 5], radiusList: [0.3, 0.2, 0.1] });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.9412869655174045);
@@ -417,7 +417,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should fillet all edges on the solid", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const filRes = fillets.filletEdges({ shape: cube, radius: 0.5 })!;
+        const filRes = fillets.filletEdges({ shape: cube, radius: 0.5 });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(6.879793265790643);
@@ -430,7 +430,7 @@ describe("OCCT fillets unit tests", () => {
     it("should fillet edge with variable radius", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
         const edge = occHelper.shapeGettersService.getEdges({ shape: cube })[0]!;
-        const filRes = fillets.filletEdgeVariableRadius({ shape: cube, edge, radiusList: [0.1, 0.3, 0.3, 1], paramsU: [0, 0.2, 0.8, 1] })!;
+        const filRes = fillets.filletEdgeVariableRadius({ shape: cube, edge, radiusList: [0.1, 0.3, 0.3, 1], paramsU: [0, 0.2, 0.8, 1] });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.945527218508813);
@@ -464,7 +464,7 @@ describe("OCCT fillets unit tests", () => {
                 [0, 0.3, 0.4, 1],
                 [0.3, 0.4]
             ]
-        })!;
+        });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.9378791553310855);
@@ -504,7 +504,7 @@ describe("OCCT fillets unit tests", () => {
             shape: cube,
             edges,
             radiusList: [0.1, 0.3, 0.4],
-        })!;
+        });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.892769171674582);
@@ -523,7 +523,7 @@ describe("OCCT fillets unit tests", () => {
             shape: cube,
             edges,
             radius: 0.4,
-        })!;
+        });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.8062536532871505);
@@ -543,7 +543,7 @@ describe("OCCT fillets unit tests", () => {
             edges,
             radiusList: [0.1, 0.3, 0.3, 0.1],
             paramsU: [0, 0.2, 0.8, 1],
-        })!;
+        });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.853043576889979);
@@ -557,7 +557,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should chamfer all edges with one distance", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const filRes = fillets.chamferEdges({ shape: cube, distance: 0.1 })!;
+        const filRes = fillets.chamferEdges({ shape: cube, distance: 0.1 });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.88533333333333);
@@ -572,7 +572,7 @@ describe("OCCT fillets unit tests", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
         const edges = occHelper.shapeGettersService.getEdges({ shape: cube });
         const distanceList = edges.map(_ => 0.1);
-        const filRes = fillets.chamferEdgesList({ shape: cube, edges, distanceList })!;
+        const filRes = fillets.chamferEdgesList({ shape: cube, edges, distanceList });
         const faces = occHelper.shapeGettersService.getFaces({ shape: filRes });
         const volume = solid.getSolidVolume({ shape: filRes });
         expect(volume).toBeCloseTo(7.88533333333333);
@@ -585,7 +585,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should chamfer specific edges selected by indexes with one distance", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const chamferRes = fillets.chamferEdges({ shape: cube, distance: 0.1, indexes: [0, 1, 5] })!;
+        const chamferRes = fillets.chamferEdges({ shape: cube, distance: 0.1, indexes: [0, 1, 5] });
         const faces = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.9703333333333335);
@@ -598,7 +598,7 @@ describe("OCCT fillets unit tests", () => {
 
     it("should chamfer specific edges selected by indexes with specific distances", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
-        const chamferRes = fillets.chamferEdges({ shape: cube, indexes: [0, 1, 5], distanceList: [0.2, 0.3, 0.4] })!;
+        const chamferRes = fillets.chamferEdges({ shape: cube, indexes: [0, 1, 5], distanceList: [0.2, 0.3, 0.4] });
         const faces = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.714666666666666);
@@ -615,7 +615,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edge = allEdges[0]!;
         const face = allFaces[0]!;
-        const chamferRes = fillets.chamferEdgeDistAngle({ shape: cube, edge, face, distance: 0.2, angle: 45 })!;
+        const chamferRes = fillets.chamferEdgeDistAngle({ shape: cube, edge, face, distance: 0.2, angle: 45 });
         const faces = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.959999999999999);
@@ -633,7 +633,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edge = allEdges[0]!;
         const face = allFaces[0]!;
-        const chamferRes = fillets.chamferEdgeDistAngle({ shape: cube, edge, face, distance: 0.2, angle: 60 })!;
+        const chamferRes = fillets.chamferEdgeDistAngle({ shape: cube, edge, face, distance: 0.2, angle: 60 });
         const faces = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.930717967697245);
@@ -651,7 +651,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edge = allEdges[0]!;
         const face = allFaces[0]!;
-        const chamferRes = fillets.chamferEdgeTwoDistances({ shape: cube, edge, face, distance1: 0.2, distance2: 0.6 })!;
+        const chamferRes = fillets.chamferEdgeTwoDistances({ shape: cube, edge, face, distance1: 0.2, distance2: 0.6 });
         const faces = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.879999999999999);
@@ -669,7 +669,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edge = allEdges[0]!;
         const face = allFaces[0]!;
-        const chamferRes = fillets.chamferEdgeTwoDistances({ shape: cube, edge, face, distance1: 0.2, distance2: 0.2 })!;
+        const chamferRes = fillets.chamferEdgeTwoDistances({ shape: cube, edge, face, distance1: 0.2, distance2: 0.2 });
         const faces = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.959999999999999);
@@ -687,7 +687,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edges = [allEdges[0]!, allEdges[1]!, allEdges[2]!];
         const faces = [allFaces[0]!, allFaces[0]!, allFaces[0]!];
-        const chamferRes = fillets.chamferEdgesDistAngle({ shape: cube, edges, faces, distance: 0.2, angle: 45 })!;
+        const chamferRes = fillets.chamferEdgesDistAngle({ shape: cube, edges, faces, distance: 0.2, angle: 45 });
         const facesRes = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.885333333333332);
@@ -705,7 +705,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edges = [allEdges[0]!, allEdges[1]!, allEdges[2]!];
         const faces = [allFaces[0]!, allFaces[0]!, allFaces[0]!];
-        const chamferRes = fillets.chamferEdgesDistAngle({ shape: cube, edges, faces, distance: 0.2, angle: 70 })!;
+        const chamferRes = fillets.chamferEdgesDistAngle({ shape: cube, edges, faces, distance: 0.2, angle: 70 });
         const facesRes = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.684955922569202);
@@ -723,7 +723,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edges = [allEdges[0]!, allEdges[1]!, allEdges[2]!];
         const faces = [allFaces[0]!, allFaces[0]!, allFaces[0]!];
-        const chamferRes = fillets.chamferEdgesDistsAngles({ shape: cube, edges, faces, distances: [0.2, 0.1, 0.5], angles: [70, 45, 30] })!;
+        const chamferRes = fillets.chamferEdgesDistsAngles({ shape: cube, edges, faces, distances: [0.2, 0.1, 0.5], angles: [70, 45, 30] });
         const facesRes = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.738913999084103);
@@ -741,7 +741,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edges = [allEdges[0]!, allEdges[1]!, allEdges[2]!];
         const faces = [allFaces[0]!, allFaces[0]!, allFaces[0]!];
-        const chamferRes = fillets.chamferEdgesTwoDistances({ shape: cube, edges, faces, distance1: 0.2, distance2: 0.5 })!;
+        const chamferRes = fillets.chamferEdgesTwoDistances({ shape: cube, edges, faces, distance1: 0.2, distance2: 0.5 });
         const facesRes = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.713333333333332);
@@ -759,7 +759,7 @@ describe("OCCT fillets unit tests", () => {
         const allFaces = occHelper.shapeGettersService.getFaces({ shape: cube });
         const edges = [allEdges[0]!, allEdges[1]!, allEdges[2]!];
         const faces = [allFaces[0]!, allFaces[0]!, allFaces[0]!];
-        const chamferRes = fillets.chamferEdgesTwoDistancesLists({ shape: cube, edges, faces, distances1: [0.2, 0.3, 0.4], distances2: [0.5, 0.3, 0.6] })!;
+        const chamferRes = fillets.chamferEdgesTwoDistancesLists({ shape: cube, edges, faces, distances1: [0.2, 0.3, 0.4], distances2: [0.5, 0.3, 0.6] });
         const facesRes = occHelper.shapeGettersService.getFaces({ shape: chamferRes });
         const volume = solid.getSolidVolume({ shape: chamferRes });
         expect(volume).toBeCloseTo(7.5922);

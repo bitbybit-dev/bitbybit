@@ -141,12 +141,10 @@ export class Polyline {
             return segments;
         }
 
-        // Create segments between consecutive points
         for (let i = 0; i < numPoints - 1; i++) {
             segments.push([points[i]!, points[i + 1]!]);
         }
 
-        // Add closing segment if the polyline is closed and has enough points
         if (polyline.isClosed && numPoints >= 2) {
             if (!this.point.twoPointsAlmostEqual({ point1: points[numPoints - 1]!, point2: points[0]!, tolerance: 1e-9 })) {
                 segments.push([points[numPoints - 1]!, points[0]!]);
@@ -279,7 +277,7 @@ export class Polyline {
      * @drawable true
      */
     sortSegmentsIntoPolylines(inputs: Inputs.Polyline.SegmentsToleranceDto): Inputs.Base.Polyline3[] {
-        const tolerance = inputs.tolerance ?? 1e-5; // Default tolerance
+        const tolerance = inputs.tolerance ?? 1e-5;
         const segments = inputs.segments;
         if (!segments || segments.length === 0) {
             return [];
@@ -290,7 +288,6 @@ export class Polyline {
         const used = new Array<boolean>(numSegments).fill(false);
         const results: Inputs.Base.Polyline3[] = [];
 
-        // --- Spatial Hash Map ---
         interface EndpointInfo {
             segmentIndex: number;
             endpointIndex: 0 | 1;
@@ -306,11 +303,10 @@ export class Polyline {
             return `${ix},${iy},${iz}`;
         };
 
-        // 1. Build the spatial map
         for (let i = 0; i < numSegments; i++) {
             const segment = segments[i]!;
             if (this.point.twoPointsAlmostEqual({ point1: segment[0], point2: segment[1], tolerance: tolerance })) {
-                used[i] = true; // Mark degenerate as used
+                used[i] = true;
                 continue;
             }
 
@@ -329,11 +325,10 @@ export class Polyline {
                 endpointMap.get(key1)!.push(info1);
             } else {
 
-                endpointMap.get(key0)!.push(info1); // Add both endpoints if same key
+                endpointMap.get(key0)!.push(info1);
             }
         }
 
-        // --- Helper to find connecting segment ---
         const findConnection = (
             pointToMatch: Inputs.Base.Point3
         ): EndpointInfo | undefined => {
@@ -358,35 +353,30 @@ export class Polyline {
                 if (!candidates) continue;
 
                 for (const candidate of candidates) {
-                    // Only consider segments not already used in *any* polyline
                     if (!used[candidate.segmentIndex]) {
                         const diffVector = this.vector.sub({ first: candidate.coords, second: pointToMatch });
                         const distSq = this.vector.lengthSq({ vector: diffVector as Inputs.Base.Vector3 });
 
                         if (distSq < minDistanceSq) {
-                            // Check with precise method if it's a potential best match
                             if (this.point.twoPointsAlmostEqual({ point1: candidate.coords, point2: pointToMatch, tolerance: tolerance })) {
                                 bestMatch = candidate;
-                                minDistanceSq = distSq; // Update min distance found
+                                minDistanceSq = distSq;
                             }
                         }
                     }
                 }
             }
-            // No need for final check here, already done inside the loop
-            if (bestMatch && !used[bestMatch.segmentIndex]) { // Double check used status
+            if (bestMatch && !used[bestMatch.segmentIndex]) {
                 return bestMatch;
             }
             return undefined;
         };
 
 
-        // 2. Iterate and chain segments
         for (let i = 0; i < numSegments; i++) {
-            if (used[i]) continue; // Skip if already part of a polyline
+            if (used[i]) continue;
 
-            // Start a new polyline
-            used[i] = true; // Mark the starting segment as used
+            used[i] = true;
             const startSegment = segments[i]!;
             const currentPoints: Inputs.Base.Point3[] = [startSegment[0], startSegment[1]];
             let currentHead = startSegment[0];
@@ -394,69 +384,55 @@ export class Polyline {
             let isClosed = false;
             let iterations = 0;
 
-            // Extend forward (tail)
             while (iterations++ < numSegments) {
                 const nextMatch = findConnection(currentTail);
-                if (!nextMatch) break; // No unused segment connects to the tail
+                if (!nextMatch) break;
 
-                // We found a potential next segment
                 const nextSegment = segments[nextMatch.segmentIndex]!;
                 const pointToAdd = (nextMatch.endpointIndex === 0) ? nextSegment[1] : nextSegment[0];
 
-                // Check for closure *before* adding the point
                 if (this.point.twoPointsAlmostEqual({ point1: pointToAdd, point2: currentHead, tolerance: tolerance })) {
                     isClosed = true;
-                    // Mark the closing segment as used
                     used[nextMatch.segmentIndex] = true;
-                    break; // Closed loop found
+                    break;
                 }
 
-                // Not closing, so add the point and mark the segment used
                 used[nextMatch.segmentIndex] = true;
                 currentPoints.push(pointToAdd);
                 currentTail = pointToAdd;
             }
 
-            // Extend backward (head) - only if not already closed
             iterations = 0;
             if (!isClosed) {
                 while (iterations++ < numSegments) {
                     const prevMatch = findConnection(currentHead);
-                    if (!prevMatch) break; // No unused segment connects to the head
+                    if (!prevMatch) break;
 
                     const prevSegment = segments[prevMatch.segmentIndex]!;
                     const pointToAdd = (prevMatch.endpointIndex === 0) ? prevSegment[1] : prevSegment[0];
 
-                    // Check for closure against the current tail *before* adding
                     if (this.point.twoPointsAlmostEqual({ point1: pointToAdd, point2: currentTail, tolerance: tolerance })) {
                         isClosed = true;
-                        // Mark the closing segment as used
                         used[prevMatch.segmentIndex] = true;
-                        break; // Closed loop found
+                        break;
                     }
 
-                    // Not closing, add point to beginning and mark segment used
                     used[prevMatch.segmentIndex] = true;
                     currentPoints.unshift(pointToAdd);
                     currentHead = pointToAdd;
                 }
             }
 
-            // Final closure check (might be redundant now, but harmless)
-            // This catches cases like A->B, B->A which form a 2-point closed loop
             if (!isClosed && currentPoints.length >= 2) {
                 isClosed = this.point.twoPointsAlmostEqual({ point1: currentHead, point2: currentTail, tolerance: tolerance });
             }
 
-            // Remove duplicate point for closed loops with more than 2 points
             if (isClosed && currentPoints.length > 2) {
-                // Check if the first and last points are indeed the ones needing merging
                 if (this.point.twoPointsAlmostEqual({ point1: currentPoints[currentPoints.length - 1]!, point2: currentPoints[0]!, tolerance: tolerance })) {
                     currentPoints.pop();
                 }
             }
 
-            // Add the completed polyline (even if it's just the starting segment)
             results.push({
                 points: currentPoints,
                 isClosed: isClosed,
@@ -514,15 +490,11 @@ export class Polyline {
         const allMaxRadii = this.maxFilletsHalfLine(inputs);
 
         if (allMaxRadii.length === 0) {
-            // No corners, or fewer than 3 points. No fillet possible.
             return 0;
         }
 
-        // Find the minimum radius among all calculated maximums.
-        // If any corner calculation resulted in 0, the safest radius is 0.
         const safestRadius = Math.min(...allMaxRadii);
 
-        // Ensure we don't return a negative radius if Math.min had weird input (shouldn't happen here)
         return Math.max(0, safestRadius);
     }
 

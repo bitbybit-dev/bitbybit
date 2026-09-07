@@ -1,7 +1,3 @@
-// ---------------------------------------------------------------------------
-// Shared response unwrapper — extracts data from API envelope or throws
-// ---------------------------------------------------------------------------
-
 import type { ApiResponse } from "./types/index.js";
 import { BitbybitApiError } from "./errors.js";
 

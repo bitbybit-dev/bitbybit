@@ -83,7 +83,7 @@ describe("TasksEndpoint", () => {
             const tasks = new TasksEndpoint(fn);
 
             // Act
-            await tasks.getResult("t-1", "glb" as never);
+            await tasks.getResult("t-1", "glb");
 
             // Assert
             expect(calls[0]!.path).toBe("/api/v1/tasks/t-1/result/glb");

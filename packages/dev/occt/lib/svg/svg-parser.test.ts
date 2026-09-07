@@ -4,7 +4,7 @@ import { applyToPoint, parseTransform, transformSegment } from "./svg-transform"
 import { shapeToSubpaths } from "./svg-shapes";
 import { parseXml } from "./svg-xml";
 import { normalizeSvg } from "./svg-normalizer";
-import { SvgArcSegment, SvgCubicSegment, SvgLineSegment, SvgQuadSegment } from "./svg-models";
+import { SvgArcSegment, SvgCubicSegment, SvgQuadSegment } from "./svg-models";
 
 const near = (a: number, b: number, eps = 1e-9): boolean => Math.abs(a - b) < eps;
 
@@ -108,7 +108,7 @@ describe("svg path-data parser", () => {
 
     it("falls back to a line when arc radius is zero", () => {
         const sp = parsePathData("M0 0 A0 0 0 0 1 10 10");
-        expect(sp[0]!.segments[0]).toEqual({ type: "line", to: [10, 10] } as SvgLineSegment);
+        expect(sp[0]!.segments[0]).toEqual({ type: "line", to: [10, 10] });
     });
 
     it("scales up out-of-range arc radii", () => {

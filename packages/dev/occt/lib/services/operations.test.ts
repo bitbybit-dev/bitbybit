@@ -666,7 +666,7 @@ describe("OCCT operations unit tests", () => {
                 joinType: Inputs.OCCT.joinTypeEnum.arc,
                 removeIntEdges: false
             });
-            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
+            const length = wire.getWireLength({ shape: offsetRes });
             // Original perimeter is 8, offset by 0.2 outward adds arc corners
             expect(length).toBeGreaterThan(8);
             squareWire.delete();
@@ -682,7 +682,7 @@ describe("OCCT operations unit tests", () => {
                 joinType: Inputs.OCCT.joinTypeEnum.intersection,
                 removeIntEdges: false
             });
-            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
+            const length = wire.getWireLength({ shape: offsetRes });
             // Intersection join type preserves sharp corners, so perimeter scales linearly
             expect(length).toBeCloseTo(9.6, 1);
             squareWire.delete();
@@ -698,7 +698,7 @@ describe("OCCT operations unit tests", () => {
                 joinType: Inputs.OCCT.joinTypeEnum.arc,
                 removeIntEdges: false
             });
-            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
+            const length = wire.getWireLength({ shape: offsetRes });
             // Inward offset reduces perimeter
             expect(length).toBeLessThan(8);
             squareWire.delete();
@@ -727,7 +727,7 @@ describe("OCCT operations unit tests", () => {
             const fRev = transforms.mirrorAlongNormal({ shape: f, origin: [0, 0, 0], normal: [1, 0, 0] });
             const offsetRes = operations.offsetAdv({
                 shape: circleWire,
-                face: fRev as TopoDS_Face,
+                face: fRev,
                 distance: 0.2,
                 tolerance: 1e-7,
                 joinType: Inputs.OCCT.joinTypeEnum.arc,
@@ -1042,7 +1042,7 @@ describe("OCCT operations unit tests", () => {
         it("should split a face with a wire", () => {
             const squareFace = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
             const circleWire = wire.createCircleWire({ center: [0, 0, 0], radius: 1, direction: [0, 1, 0] });
-            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [circleWire as TopoDS_Shape]);
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace, [circleWire]);
             const results = operations.splitShapeWithShapes(splitDto);
             // Split should return multiple shapes (the face pieces)
             expect(results.length).toBe(3);
@@ -1055,7 +1055,7 @@ describe("OCCT operations unit tests", () => {
             const squareFace = face.createSquareFace({ size: 6, center: [0, 0, 0], direction: [0, 1, 0] });
             const circleWire1 = wire.createCircleWire({ center: [-1, 0, 0], radius: 0.5, direction: [0, 1, 0] });
             const circleWire2 = wire.createCircleWire({ center: [1, 0, 0], radius: 0.5, direction: [0, 1, 0] });
-            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [circleWire1 as TopoDS_Shape, circleWire2 as TopoDS_Shape]);
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace, [circleWire1, circleWire2]);
             const results = operations.splitShapeWithShapes(splitDto);
             // Split with 2 wires should return more pieces
             expect(results.length).toBe(5);
@@ -1068,7 +1068,7 @@ describe("OCCT operations unit tests", () => {
         it("should return results when splitting shapes", () => {
             const squareFace = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
             const lineWire = wire.createLineWire({ start: [-3, 0, 0], end: [3, 0, 0] });
-            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [lineWire as TopoDS_Shape]);
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace, [lineWire]);
             const results = operations.splitShapeWithShapes(splitDto);
             expect(results.length).toBe(3);
             squareFace.delete();

@@ -6,10 +6,13 @@
   },
   "packages/dev/babylonjs/lib/api/__mocks__/test-helpers.ts": {
     "bitbybit/no-double-assertion": {
-      "count": 9
+      "count": 1
     }
   },
   "packages/dev/babylonjs/lib/api/bitbybit-base.test.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 1
+    },
     "bitbybit/no-double-assertion": {
       "count": 14
     }
@@ -22,9 +25,19 @@
       "count": 1
     }
   },
+  "packages/dev/babylonjs/lib/api/bitbybit/babylon/gui/control.ts": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 6
+    }
+  },
   "packages/dev/babylonjs/lib/api/bitbybit/babylon/io.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
+    }
+  },
+  "packages/dev/babylonjs/lib/api/bitbybit/babylon/mesh.ts": {
+    "@typescript-eslint/no-unnecessary-type-assertion": {
+      "count": 2
     }
   },
   "packages/dev/babylonjs/lib/api/bitbybit/babylon/scene-helper.test.ts": {
@@ -32,7 +45,15 @@
       "count": 3
     }
   },
+  "packages/dev/babylonjs/lib/api/bitbybit/babylon/web-xr/simple.ts": {
+    "@typescript-eslint/no-misused-promises": {
+      "count": 1
+    }
+  },
   "packages/dev/babylonjs/lib/api/bitbybit/draw.test.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 72
+    },
     "bitbybit/no-double-assertion": {
       "count": 11
     }
@@ -54,13 +75,22 @@
     }
   },
   "packages/dev/babylonjs/lib/api/draw-helper.test.ts": {
-    "bitbybit/no-double-assertion": {
+    "@typescript-eslint/unbound-method": {
       "count": 17
+    },
+    "bitbybit/no-double-assertion": {
+      "count": 9
     }
   },
   "packages/dev/babylonjs/lib/api/draw-helper.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    },
+    "@typescript-eslint/no-unnecessary-type-assertion": {
+      "count": 1
+    },
+    "@typescript-eslint/require-await": {
+      "count": 1
     },
     "bitbybit/no-double-assertion": {
       "count": 1
@@ -78,6 +108,11 @@
   },
   "packages/dev/base/lib/api/inputs/base-inputs.ts": {
     "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "packages/dev/base/lib/api/services/color.test.ts": {
+    "@typescript-eslint/require-await": {
       "count": 1
     }
   },
@@ -102,6 +137,11 @@
       "count": 5
     }
   },
+  "packages/dev/base/lib/api/services/logic.ts": {
+    "@typescript-eslint/no-unsafe-enum-comparison": {
+      "count": 8
+    }
+  },
   "packages/dev/base/lib/api/services/math.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -120,21 +160,53 @@
   "packages/dev/base/lib/api/services/text.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
+    },
+    "@typescript-eslint/require-await": {
+      "count": 7
+    }
+  },
+  "packages/dev/cad-cloud-sdk/src/__test__/helpers.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 2
+    }
+  },
+  "packages/dev/cad-cloud-sdk/src/fetch-downloads.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 4
+    }
+  },
+  "packages/dev/cad-cloud-sdk/src/polling.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 5
     }
   },
   "packages/dev/cad-cloud-sdk/src/validation/validator.ts": {
     "bitbybit/no-double-assertion": {
-      "count": 2
+      "count": 1
     }
   },
   "packages/dev/core/lib/api/bitbybit/asset.test.ts": {
+    "@typescript-eslint/await-thenable": {
+      "count": 2
+    },
     "@typescript-eslint/no-explicit-any": {
       "count": 1
+    },
+    "@typescript-eslint/no-floating-promises": {
+      "count": 2
+    },
+    "@typescript-eslint/require-await": {
+      "count": 3
     }
   },
   "packages/dev/core/lib/api/bitbybit/asset.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
+    }
+  },
+  "packages/dev/core/lib/api/bitbybit/csv.ts": {
+    "@typescript-eslint/no-base-to-string": {
+      "count": 2
     }
   },
   "packages/dev/core/lib/api/bitbybit/json.test.ts": {
@@ -200,6 +272,9 @@
   "packages/dev/core/lib/api/context.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
+    },
+    "@typescript-eslint/prefer-promise-reject-errors": {
+      "count": 3
     }
   },
   "packages/dev/core/lib/api/inputs/base-inputs.ts": {
@@ -262,6 +337,11 @@
       "count": 1
     }
   },
+  "packages/dev/create-app/src/index.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 1
+    }
+  },
   "packages/dev/jscad-worker/lib/api/generated-delegation.test.ts": {
     "bitbybit/no-double-assertion": {
       "count": 1
@@ -275,6 +355,9 @@
   "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 1
     },
     "bitbybit/no-double-assertion": {
       "count": 2
@@ -297,7 +380,7 @@
   },
   "packages/dev/jscad/lib/api/jscad-service.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
+      "count": 5
     },
     "bitbybit/no-double-assertion": {
       "count": 1
@@ -347,6 +430,9 @@
     "@typescript-eslint/no-explicit-any": {
       "count": 5
     },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 1
+    },
     "bitbybit/no-double-assertion": {
       "count": 3
     }
@@ -354,6 +440,36 @@
   "packages/dev/manifold/lib/api/manifold-service.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
+    }
+  },
+  "packages/dev/manifold/lib/api/services/cross-section/cross-section-booleans.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 6
+    }
+  },
+  "packages/dev/manifold/lib/api/services/cross-section/cross-section-operations.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 1
+    }
+  },
+  "packages/dev/manifold/lib/api/services/cross-section/cross-section-shapes.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 3
+    }
+  },
+  "packages/dev/manifold/lib/api/services/manifold/manifold-booleans.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 6
+    }
+  },
+  "packages/dev/manifold/lib/api/services/manifold/manifold-operations.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 3
+    }
+  },
+  "packages/dev/manifold/lib/api/services/manifold/manifold-shapes.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 4
     }
   },
   "packages/dev/manifold/lib/api/services/manifold/manifold.ts": {
@@ -367,6 +483,9 @@
     }
   },
   "packages/dev/occt-worker/lib/api/generated-delegation.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 1
+    },
     "bitbybit/no-double-assertion": {
       "count": 2
     }
@@ -384,11 +503,29 @@
   "packages/dev/occt-worker/lib/occ-worker/occ-worker.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    },
+    "@typescript-eslint/prefer-promise-reject-errors": {
+      "count": 2
     }
   },
   "packages/dev/occt-worker/lib/occ-worker/occ-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
+    }
+  },
+  "packages/dev/occt/lib/api/shapes-helper.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/api/vector-helper.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/assembly/assembly.test.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 4
     }
   },
   "packages/dev/occt/lib/services/base/edges.service.ts": {
@@ -399,16 +536,19 @@
   "packages/dev/occt/lib/services/base/enum.service.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
-    }
-  },
-  "packages/dev/occt/lib/services/base/operations.service.ts": {
-    "bitbybit/no-double-assertion": {
-      "count": 1
+    },
+    "@typescript-eslint/require-await": {
+      "count": 8
     }
   },
   "packages/dev/occt/lib/services/base/transforms.service.ts": {
     "bitbybit/no-double-assertion": {
       "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/booleans.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 13
     }
   },
   "packages/dev/occt/lib/services/brep-graph/brep-graph.test.ts": {
@@ -426,8 +566,26 @@
       "count": 1
     }
   },
+  "packages/dev/occt/lib/services/geom/curves.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 6
+    }
+  },
   "packages/dev/occt/lib/services/operations.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 11
+    },
     "bitbybit/no-double-assertion": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/shape-fix.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 9
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/compound.test.ts": {
+    "@typescript-eslint/require-await": {
       "count": 1
     }
   },
@@ -435,16 +593,50 @@
     "@typescript-eslint/no-explicit-any": {
       "count": 3
     },
+    "@typescript-eslint/require-await": {
+      "count": 61
+    },
     "bitbybit/no-double-assertion": {
       "count": 1
     }
   },
+  "packages/dev/occt/lib/services/shapes/face.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 20
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/shape.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 25
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/shapes.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 1
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/shell.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 6
+    }
+  },
+  "packages/dev/occt/lib/services/shapes/solid.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 37
+    }
+  },
   "packages/dev/occt/lib/services/shapes/wire.test.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 75
+    },
     "bitbybit/no-double-assertion": {
       "count": 2
     }
   },
   "packages/dev/occt/lib/shape-parser.ts": {
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 1
+    },
     "bitbybit/no-double-assertion": {
       "count": 1
     }
@@ -456,22 +648,31 @@
   },
   "packages/dev/playcanvas/lib/api/__mocks__/test-helpers.ts": {
     "bitbybit/no-double-assertion": {
-      "count": 9
+      "count": 2
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit-base.test.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 1
+    },
     "bitbybit/no-double-assertion": {
       "count": 6
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit/draw.test.ts": {
+    "@typescript-eslint/await-thenable": {
+      "count": 1
+    },
+    "@typescript-eslint/require-await": {
+      "count": 1
+    },
     "bitbybit/no-double-assertion": {
       "count": 4
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit/draw.ts": {
     "bitbybit/no-double-assertion": {
-      "count": 11
+      "count": 10
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit/playcanvas.test.ts": {
@@ -485,6 +686,9 @@
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/orbit-camera.test.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 3
+    },
     "bitbybit/no-double-assertion": {
       "count": 1
     }
@@ -500,8 +704,16 @@
     }
   },
   "packages/dev/playcanvas/lib/api/draw-helper.test.ts": {
-    "bitbybit/no-double-assertion": {
-      "count": 4
+    "@typescript-eslint/unbound-method": {
+      "count": 7
+    }
+  },
+  "packages/dev/playcanvas/lib/api/draw-helper.ts": {
+    "@typescript-eslint/no-unnecessary-type-assertion": {
+      "count": 1
+    },
+    "@typescript-eslint/require-await": {
+      "count": 1
     }
   },
   "packages/dev/playcanvas/lib/api/inputs/base-inputs.ts": {
@@ -516,17 +728,26 @@
   },
   "packages/dev/threejs/lib/api/__mocks__/test-helpers.ts": {
     "bitbybit/no-double-assertion": {
-      "count": 7
+      "count": 1
     }
   },
   "packages/dev/threejs/lib/api/bitbybit-base.test.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 1
+    },
     "bitbybit/no-double-assertion": {
       "count": 4
     }
   },
   "packages/dev/threejs/lib/api/bitbybit/draw.test.ts": {
+    "@typescript-eslint/await-thenable": {
+      "count": 1
+    },
+    "@typescript-eslint/require-await": {
+      "count": 1
+    },
     "bitbybit/no-double-assertion": {
-      "count": 15
+      "count": 14
     }
   },
   "packages/dev/threejs/lib/api/bitbybit/draw.ts": {
@@ -534,7 +755,7 @@
       "count": 4
     },
     "bitbybit/no-double-assertion": {
-      "count": 4
+      "count": 3
     }
   },
   "packages/dev/threejs/lib/api/bitbybit/threejs/orbit-camera.test.ts": {
@@ -548,8 +769,19 @@
     }
   },
   "packages/dev/threejs/lib/api/draw-helper.test.ts": {
+    "@typescript-eslint/unbound-method": {
+      "count": 11
+    },
     "bitbybit/no-double-assertion": {
-      "count": 8
+      "count": 3
+    }
+  },
+  "packages/dev/threejs/lib/api/draw-helper.ts": {
+    "@typescript-eslint/no-unnecessary-type-assertion": {
+      "count": 1
+    },
+    "@typescript-eslint/require-await": {
+      "count": 1
     }
   },
   "packages/dev/threejs/lib/api/inputs/base-inputs.ts": {

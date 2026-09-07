@@ -33,9 +33,6 @@ export class WiresService {
         private readonly geomService: GeomService,
         private readonly edgesService: EdgesService,
         private readonly vecHelper: VectorHelperService,
-        // Fillets and operations both reach back into wires, so the three cannot all be built
-        // before each other. They arrive as suppliers and are read when a method needs one, which
-        // is after every service exists - rather than being assigned onto this one afterwards.
         private readonly fillets: () => FilletsService,
         private readonly operations: () => OperationsService,
     ) { }
@@ -544,7 +541,7 @@ export class WiresService {
         switch (p) {
             case Inputs.OCCT.bSplineParametrizationEnum.uniform: return 0;
             case Inputs.OCCT.bSplineParametrizationEnum.centripetal: return 2;
-            default: return 1; // chordLength (backward-compatible default)
+            default: return 1;
         }
     }
 
@@ -631,31 +628,25 @@ export class WiresService {
         const startPointOnWire = this.startPointOnWire({ shape: inputs.shape });
         const endPointOnWire = this.endPointOnWire({ shape: inputs.shape });
 
-        // This is needed to make follow up algorithm to work properly on open wires
         const wireIsClosed = this.base.vector.vectorsTheSame({ vec1: endPointOnWire, vec2: startPointOnWire, tolerance });
         return wireIsClosed;
     }
 
     splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
         const wire = inputs.shape;
-        // Remove duplicate points to avoid incorrect behavior
         const splitPoints = this.vecHelper.removeAllDuplicateVectors(inputs.points, 1e-7);
 
-        // 1. Get the list of edges from the wire in correct order along the wire
         const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
         if (edges.length === 0) return [];
 
-        // 2. Collect split locations as {edgeIndex, parameter}
         const splitLocations: { edgeIndex: number; parameter: number }[] = [];
 
-        // Add the wire's start point
         const firstEdge = edges[0]!;
         let first = { current: 0 };
         let last = { current: 0 };
         this.occRefReturns.BRep_Tool_Range_1(firstEdge, first, last);
         splitLocations.push({ edgeIndex: 0, parameter: first.current });
 
-        // Project each split point onto the wire
         splitPoints.forEach((pt) => {
             let minDist = Infinity;
             let bestEdgeIndex = -1;
@@ -672,7 +663,6 @@ export class WiresService {
                 try {
                     const result = this.occ.ProjectPointOnCurve(gpPnt, edge);
                     const param = result.param;
-                    // Clamp the parameter to the edge's range
                     const clampedParam = Math.max(firstVal, Math.min(lastVal, param));
                     const projectedPt = result.Point;
                     const dx = projectedPt.X() - gpPnt.X();
@@ -696,14 +686,12 @@ export class WiresService {
             }
         });
 
-        // Add the wire's end point
         const lastEdge = edges[edges.length - 1]!;
         first = { current: 0 };
         last = { current: 0 };
         this.occRefReturns.BRep_Tool_Range_1(lastEdge, first, last);
         splitLocations.push({ edgeIndex: edges.length - 1, parameter: last.current });
 
-        // 3. Remove duplicates and sort split locations by edgeIndex, then parameter
         const uniqueLocations = splitLocations.filter((loc, index, self) =>
             index === self.findIndex((t) => t.edgeIndex === loc.edgeIndex && t.parameter === loc.parameter)
         );
@@ -712,7 +700,6 @@ export class WiresService {
             return a.parameter - b.parameter;
         });
 
-        // 4. Create new wires between consecutive split locations
         const newWires: TopoDS_Wire[] = [];
         for (let i = 0; i < uniqueLocations.length - 1; i++) {
             const startLoc = uniqueLocations[i]!;
@@ -720,10 +707,8 @@ export class WiresService {
             const wireBuilder = new this.occ.BRepBuilderAPI_MakeWire();
 
             if (startLoc.edgeIndex === endLoc.edgeIndex) {
-                // Same edge: create a single trimmed edge
                 const edge = edges[startLoc.edgeIndex]!;
 
-                // Avoid zero-length segments
                 if (startLoc.parameter === endLoc.parameter) continue;
 
                 const newEdge = this.occ.TrimEdgeToParams(edge, startLoc.parameter, endLoc.parameter);
@@ -731,8 +716,6 @@ export class WiresService {
                     wireBuilder.AddEdge(newEdge);
                 }
             } else {
-                // Spans multiple edges
-                // Trim the start edge
                 const startEdge = edges[startLoc.edgeIndex]!;
                 const startFirst = { current: 0 };
                 const startLast = { current: 0 };
@@ -746,12 +729,10 @@ export class WiresService {
                     }
                 }
 
-                // Add full edges in between
                 for (let j = startLoc.edgeIndex + 1; j < endLoc.edgeIndex; j++) {
                     wireBuilder.AddEdge(edges[j]!);
                 }
 
-                // Trim the end edge
                 const endEdge = edges[endLoc.edgeIndex]!;
                 const endFirst = { current: 0 };
                 const endLast = { current: 0 };
@@ -862,11 +843,11 @@ export class WiresService {
         const endPoints: Base.Point3[] = [];
         inputs.shapes.forEach((shape) => {
             if (this.enumService.getShapeTypeEnum(shape) === Inputs.OCCT.shapeTypeEnum.edge) {
-                startPoints.push(this.edgesService.startPointOnEdge({ shape: shape as TopoDS_Edge }));
-                endPoints.push(this.edgesService.endPointOnEdge({ shape: shape as TopoDS_Edge }));
+                startPoints.push(this.edgesService.startPointOnEdge({ shape: shape }));
+                endPoints.push(this.edgesService.endPointOnEdge({ shape: shape }));
             } else {
-                startPoints.push(this.startPointOnWire({ shape: shape as TopoDS_Wire }));
-                endPoints.push(this.endPointOnWire({ shape: shape as TopoDS_Wire }));
+                startPoints.push(this.startPointOnWire({ shape: shape }));
+                endPoints.push(this.endPointOnWire({ shape: shape }));
             }
         });
         const startWire = this.createWireFromPointsByType(startPoints, inputs.wireType, inputs.closed, inputs.tolerance);
@@ -894,12 +875,12 @@ export class WiresService {
         const isEdge = this.enumService.getShapeTypeEnum(shape) === Inputs.OCCT.shapeTypeEnum.edge;
         if (isEdge) {
             return divideByEqualDistance
-                ? this.edgesService.divideEdgeByEqualDistanceToPoints({ shape: shape as TopoDS_Edge, nrOfDivisions, removeStartPoint: false, removeEndPoint: false })
-                : this.edgesService.divideEdgeByParamsToPoints({ shape: shape as TopoDS_Edge, nrOfDivisions, removeStartPoint: false, removeEndPoint: false });
+                ? this.edgesService.divideEdgeByEqualDistanceToPoints({ shape: shape, nrOfDivisions, removeStartPoint: false, removeEndPoint: false })
+                : this.edgesService.divideEdgeByParamsToPoints({ shape: shape, nrOfDivisions, removeStartPoint: false, removeEndPoint: false });
         }
         return divideByEqualDistance
-            ? this.divideWireByEqualDistanceToPoints({ shape: shape as TopoDS_Wire, nrOfDivisions, removeStartPoint: false, removeEndPoint: false })
-            : this.divideWireByParamsToPoints({ shape: shape as TopoDS_Wire, nrOfDivisions, removeStartPoint: false, removeEndPoint: false });
+            ? this.divideWireByEqualDistanceToPoints({ shape: shape, nrOfDivisions, removeStartPoint: false, removeEndPoint: false })
+            : this.divideWireByParamsToPoints({ shape: shape, nrOfDivisions, removeStartPoint: false, removeEndPoint: false });
     }
 
     private createWireFromPointsByType(points: Base.Point3[], wireType?: Inputs.OCCT.wireFromPointsTypeEnum, closed?: boolean, tolerance?: number): TopoDS_Wire {
@@ -1017,21 +998,18 @@ export class WiresService {
     }
 
     createBSpline(inputs: Inputs.OCCT.BSplineDto): TopoDS_Wire {
-        // Create flat array of coordinates for the new API
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
             coords.push_back(pt[0]);
             coords.push_back(pt[1]);
             coords.push_back(pt[2]);
         }
-        // If closed, add first point again
         if (inputs.closed) {
             coords.push_back(inputs.points[0]![0]);
             coords.push_back(inputs.points[0]![1]);
             coords.push_back(inputs.points[0]![2]);
         }
 
-        // Use MakeApproxBSplineEdge which uses GeomAPI_PointsToBSpline
         const edge = this.occ.MakeApproxBSplineEdge(coords, 3, 8, 1.0e-3);
         const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
         const wire = wireMaker.Wire();
@@ -1044,10 +1022,6 @@ export class WiresService {
     }
 
     createBezier(inputs: Inputs.OCCT.BezierDto): TopoDS_Wire {
-        // A classic Bezier's degree is (control points - 1); OCCT caps Geom_BezierCurve at degree 25
-        // and a higher-degree single Bezier oscillates badly. When a degree is requested, or there are
-        // more control points than the Bezier cap allows, build a clamped bounded-degree BSpline from
-        // the same control polygon instead (scales to arbitrarily many control points).
         const periodic = inputs.periodic === true;
         const totalControlPoints = inputs.points.length + (inputs.closed && !periodic ? 1 : 0);
         const useBoundedDegree = inputs.degree !== undefined || totalControlPoints - 1 > 25;
@@ -1058,8 +1032,6 @@ export class WiresService {
             coords.push_back(pt[1]);
             coords.push_back(pt[2]);
         }
-        // Non-periodic closed: repeat the first point so the wire is C0-closed. A periodic curve must
-        // NOT duplicate poles - its periodic knot vector wraps the control polygon for a smooth seam.
         if (inputs.closed && !periodic) {
             coords.push_back(inputs.points[0]![0]);
             coords.push_back(inputs.points[0]![1]);
@@ -1108,22 +1080,18 @@ export class WiresService {
             throw new Error("Number of points must be one less than number of weights when bezier is closed.");
         }
 
-        // Create flat array of coordinates for the new API
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
             coords.push_back(pt[0]);
             coords.push_back(pt[1]);
             coords.push_back(pt[2]);
         }
-        // Non-periodic closed: repeat the first point (C0 closure). A periodic curve must NOT duplicate
-        // poles - its periodic knot vector wraps the weighted control polygon for a smooth seam.
         if (inputs.closed && !periodic) {
             coords.push_back(inputs.points[0]![0]);
             coords.push_back(inputs.points[0]![1]);
             coords.push_back(inputs.points[0]![2]);
         }
 
-        // Create weights array
         const weights = new this.occ.VectorDouble();
         for (const w of inputs.weights) {
             weights.push_back(w);
@@ -1155,9 +1123,9 @@ export class WiresService {
         makeWire.AddWire(inputs.shape);
         inputs.shapes.forEach((shape) => {
             if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.EDGE) {
-                makeWire.AddEdge(shape as TopoDS_Edge);
+                makeWire.AddEdge(shape);
             } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
-                makeWire.AddWire(shape as TopoDS_Wire);
+                makeWire.AddWire(shape);
             }
         });
         let result;
@@ -1253,7 +1221,6 @@ export class WiresService {
             const umin = { current: 0 };
             const umax = { current: 0 };
             this.occRefReturns.BRep_Tool_Range_1(e, umin, umax);
-            // Use the new API: GetEdgeCurve returns Handle_Geom_Curve wrapper
             const crv = this.occ.GetEdgeCurve(e);
             if (crv && !crv.IsNull()) {
                 const plane = this.entitiesService.gpPln([0, 0, 0], [0, 1, 0]);

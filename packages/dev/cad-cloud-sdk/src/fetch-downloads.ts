@@ -1,7 +1,3 @@
-// ---------------------------------------------------------------------------
-// Shared helper — fetch all download URLs for a completed task
-// ---------------------------------------------------------------------------
-
 import type { TaskDownload, TaskResultsDownload } from "./types/index.js";
 import { unwrap } from "./unwrap.js";
 

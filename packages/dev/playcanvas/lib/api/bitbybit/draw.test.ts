@@ -1024,7 +1024,7 @@ describe("Draw unit tests", () => {
 
         it("should handle invalid point coordinates with NaN", () => {
             const invalidCoords = [NaN, 2, 3];
-            const res = draw.drawAny({ entity: invalidCoords } as any) as DrawnEntity;
+            const res = draw.drawAny({ entity: invalidCoords }) as DrawnEntity;
 
             // NaN coordinates may result in undefined or a valid entity
             // depending on implementation - just verify no crash
@@ -1033,7 +1033,7 @@ describe("Draw unit tests", () => {
 
         it("should handle Infinity in coordinates", () => {
             const invalidCoords = [Infinity, 2, 3];
-            const res = draw.drawAny({ entity: invalidCoords } as any) as DrawnEntity;
+            const res = draw.drawAny({ entity: invalidCoords }) as DrawnEntity;
 
             expect(res).toBeDefined();
             expect(res.children.length).toBe(1);
@@ -1043,7 +1043,7 @@ describe("Draw unit tests", () => {
 
         it("should handle very large coordinate values", () => {
             const largeCoords = [1e10, 2e10, 3e10];
-            const res = draw.drawAny({ entity: largeCoords } as any) as DrawnEntity;
+            const res = draw.drawAny({ entity: largeCoords }) as DrawnEntity;
 
             expect(res).toBeDefined();
             // With GPU instancing, positions are in instance buffer
@@ -1265,7 +1265,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: "#00ff00",
             };
-            const res = await draw.drawAnyAsync({ entity: segments, options } as any) as DrawnEntity;
+            const res = await draw.drawAnyAsync({ entity: segments, options }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.lines);
         });
 

@@ -2010,7 +2010,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as pc.Entity,
+                undefined,
                 false,
                 material,
                 true,
@@ -2058,7 +2058,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as pc.Entity,
+                undefined,
                 false,
                 material,
                 true,
@@ -2080,7 +2080,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
-                undefined as unknown as pc.Entity,
+                undefined,
                 false,
                 material,
                 true,
@@ -2098,7 +2098,7 @@ describe("DrawHelper unit tests", () => {
             const points: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1], [2, 0, 0]];
 
             const result = drawHelper.drawPolyline(
-                undefined as unknown as pc.Entity,
+                undefined,
                 points,
                 false,
                 2,

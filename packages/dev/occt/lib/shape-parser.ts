@@ -17,11 +17,11 @@ export class ShapeParser {
             const current = stack.pop();
 
             if (typeof current !== "object" || current === null) {
-                continue; // Skip non-object values
+                continue;
             }
             if (Array.isArray(current)) {
                 for (let i = 0; i < current.length; i++) {
-                    stack.push(current[i]); // Push array elements onto the stack
+                    stack.push(current[i]);
                 }
             } else {
                 const keys = Object.keys(current);
@@ -49,7 +49,7 @@ export class ShapeParser {
                     }
                 }
                 for (const key in current) {
-                    stack.push((current as Record<string, unknown>)[key]); // Push object properties onto the stack
+                    stack.push((current as Record<string, unknown>)[key]);
                 }
             }
         }

@@ -1,7 +1,3 @@
-// ---------------------------------------------------------------------------
-// BitbybitClient — main entry point for the SDK
-// ---------------------------------------------------------------------------
-
 import { ModelsEndpoint } from "./endpoints/models.js";
 import { TasksEndpoint } from "./endpoints/tasks.js";
 import { CadEndpoint } from "./endpoints/cad.js";
@@ -125,10 +121,6 @@ export class BitbybitClient {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Path → endpoint key mapping for validation lookup
-// ---------------------------------------------------------------------------
-
 const STATIC_PATH_MAP: Record<string, string> = {
     "/api/v1/cad/execute": "cad.execute",
     "/api/v1/cad/pipeline": "cad.pipeline",
@@ -146,16 +138,12 @@ function pathToEndpointKey(path: string): string | undefined {
     const staticKey = STATIC_PATH_MAP[path];
     if (staticKey) return staticKey;
 
-    // /api/v1/models/{slug}/batch → models.batchSubmit
     const batchMatch = MODEL_BATCH_PATH_RE.exec(path);
     if (batchMatch) return "models.batchSubmit";
 
-    // /api/v1/models/{slug} → models.submit.{slug} (per-model) or models.submit (generic)
     const modelMatch = MODEL_PATH_RE.exec(path);
     if (modelMatch) {
         const slug = modelMatch[1];
-        // Try per-model schema first (e.g. models.submit.dragon-cup)
-        // Caller falls back to generic if per-model is not found
         const perModel = `models.submit.${slug}`;
         if (getEndpointSchema(perModel)) return perModel;
         return "models.submit";

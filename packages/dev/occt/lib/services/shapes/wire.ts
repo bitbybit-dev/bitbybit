@@ -733,7 +733,7 @@ export class OCCTWire {
      * @drawable true
      */
     createCircleWire(inputs: Inputs.OCCT.CircleDto): TopoDS_Wire {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire) as TopoDS_Wire;
+        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
     /**
@@ -901,7 +901,7 @@ export class OCCTWire {
      * @drawable true
      */
     createEllipseWire(inputs: Inputs.OCCT.EllipseDto): TopoDS_Wire {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire) as TopoDS_Wire;
+        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
     /**
@@ -1095,8 +1095,8 @@ export class OCCTWire {
      * @drawable true
      */
     placeWireOnFace(inputs: Inputs.OCCT.WireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Wire {
-        const wire = inputs.wire as TopoDS_Wire;
-        const face = inputs.face as TopoDS_Face;
+        const wire = inputs.wire;
+        const face = inputs.face;
         const srf = this.och.surfaceFromFace({ shape: face });
         const result = this.och.wiresService.placeWire(wire, srf);
         return result;

@@ -12,7 +12,7 @@ describe("FilesEndpoint", () => {
             const body = { filename: "test.step", contentType: "application/step", bytes: 1024 };
 
             // Act
-            const result = await files.upload(body as never);
+            const result = await files.upload(body);
 
             // Assert
             expect(calls[0]!.method).toBe("POST");

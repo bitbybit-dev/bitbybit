@@ -1,7 +1,3 @@
-// ---------------------------------------------------------------------------
-// Convert endpoint — /api/v1/convert
-// ---------------------------------------------------------------------------
-
 import type { StepToGltfBody, StepToGltfAdvancedBody, StepToGltfWithDracoBody, StepToGltfAdvancedWithDracoBody, TaskCreatedResult, TaskDownload } from "../types/index.js";
 import type { PollOptions } from "../polling.js";
 import { pollTask } from "../polling.js";
