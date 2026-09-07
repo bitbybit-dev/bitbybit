@@ -194,12 +194,35 @@ function expand(pattern) {
     return dirs.filter((d) => {
         try {
             const scripts = JSON.parse(readFileSync(path.join(d, "package.json"), "utf8")).scripts ?? {};
-            return "test" in scripts || "test-c" in scripts;
+            return "test" in scripts || "test:coverage" in scripts;
         } catch {
             return false;
         }
     });
 }
+
+// The scaffolder greets a user with this; a report of the repository it scaffolds from opens with
+// the same face. It is text in a code fence rather than an image, so it survives a terminal, a raw
+// log and a summary page equally, and it needs nothing fetched.
+const BANNER = [
+    `\u256d${"\u2500".repeat(70)}\u256e`,
+    "\u2502                                                                      \u2502",
+    "\u2502           \u2591\u2588\u2580\u2584\u2591\u2580\u2588\u2580\u2591\u2580\u2588\u2580\u2591\u2588\u2580\u2584\u2591\u2588\u2591\u2588\u2591\u2588\u2580\u2584\u2591\u2580\u2588\u2580\u2591\u2580\u2588\u2580\u2591\u2591\u2591\u2591\u2591\u2588\u2580\u2584\u2591\u2588\u2580\u2580\u2591\u2588\u2591\u2588           \u2502",
+    "\u2502           \u2591\u2588\u2580\u2584\u2591\u2591\u2588\u2591\u2591\u2591\u2588\u2591\u2591\u2588\u2580\u2584\u2591\u2591\u2588\u2591\u2591\u2588\u2580\u2584\u2591\u2591\u2588\u2591\u2591\u2591\u2588\u2591\u2591\u2591\u2591\u2591\u2591\u2588\u2591\u2588\u2591\u2588\u2580\u2580\u2591\u2580\u2584\u2580           \u2502",
+    "\u2502           \u2591\u2580\u2580\u2591\u2591\u2580\u2580\u2580\u2591\u2591\u2580\u2591\u2591\u2580\u2580\u2591\u2591\u2591\u2580\u2591\u2591\u2580\u2580\u2591\u2591\u2580\u2580\u2580\u2591\u2591\u2580\u2591\u2591\u2591\u2580\u2591\u2591\u2580\u2580\u2591\u2591\u2580\u2580\u2580\u2591\u2591\u2580\u2591           \u2502",
+    "\u2502                                                                      \u2502",
+    "\u2502                    3D CAD Development on the Web                     \u2502",
+    `\u2570${"\u2500".repeat(70)}\u256f`,
+];
+
+// Every percentage in the report carries the band it falls in, because a column of thirteen of them
+// is scanned rather than read. Below 30% is a suite that has barely begun, below 50% one that covers
+// a fraction of its surface, below 80% one that is genuinely tested with room left, and above that is
+// where a package should end up. A dot rather than coloured text: colour in a run summary would have
+// to be typeset as mathematics, which reads as a formula to a screen reader and is lost in a log.
+const BANDS = [[30, "\u{1F534}"], [50, "\u{1F7E0}"], [80, "\u{1F535}"]];
+const band = (pct) => (typeof pct === "number" ? (BANDS.find(([edge]) => pct < edge)?.[1] ?? "\u{1F7E2}") : "");
+const fmtPctBanded = (n) => (typeof n === "number" ? `${band(n)} ${fmtPct(n)}` : "-");
 
 // A bar drawn from block characters rather than an image or a badge service: it renders the same in
 // the terminal and in a run summary, needs nothing fetched, and stays readable when a screen reader
@@ -362,7 +385,18 @@ function render(suites, missing) {
     const baseline = readBaseline();
     const logo = logoTag();
     const out = [];
-    out.push(logo ? `${logo}\n\n## ${options.title}` : `## ${options.title}`, "");
+    out.push(
+        ...(logo ? [logo, ""] : []),
+        "```text",
+        ...BANNER,
+        "```",
+        "",
+        `## ${options.title}`,
+        "",
+        "Every suite this repository has, as the run that produced it left them: what ran, what it",
+        "covered, and how that moved against the floor.",
+        "",
+    );
 
     if (!suites.length && !missing.length) {
         out.push(`No test results were found under \`${options.root}\` (looked for \`${RESULTS_DIR}/*.json\`).`, "");
@@ -377,7 +411,7 @@ function render(suites, missing) {
         "",
         "| Tests | Passed | Failed | Skipped | Suites | Files | Time | Lines covered |",
         "|--:|--:|--:|--:|--:|--:|--:|--:|",
-        `| **${fmtN(total.tests)}** | ${fmtN(total.passed)} | ${total.failed ? `**${fmtN(total.failed)}**` : "0"} | ${fmtN(total.skipped)} | ${fmtN(suites.length)} | ${fmtN(total.files)} | ${fmtMs(total.durationMs)} | ${overall.lines === undefined ? "-" : `**${fmtPct(overall.lines)}**`} |`,
+        `| **${fmtN(total.tests)}** | ${fmtN(total.passed)} | ${total.failed ? `**${fmtN(total.failed)}**` : "0"} | ${fmtN(total.skipped)} | ${fmtN(suites.length)} | ${fmtN(total.files)} | ${fmtMs(total.durationMs)} | ${overall.lines === undefined ? "-" : `${band(overall.lines)} **${fmtPct(overall.lines)}**`} |`,
         "",
     );
 
@@ -389,18 +423,11 @@ function render(suites, missing) {
                 .filter((m) => overall[m] !== undefined)
                 .map((m) => {
                     const c = overall.counts?.[m];
-                    return `| ${m[0].toUpperCase()}${m.slice(1)} | ${fmtPct(overall[m])} | ${c ? `${fmtN(c.covered)} of ${fmtN(c.total)}` : ""} | \`${bar(overall[m])}\` |`;
+                    return `| ${m[0].toUpperCase()}${m.slice(1)} | ${fmtPctBanded(overall[m])} | ${c ? `${fmtN(c.covered)} of ${fmtN(c.total)}` : ""} | \`${bar(overall[m])}\` |`;
                 }),
             "",
             "Those totals are what the packages ask coverage to measure: executable lines inside each",
             "package's declared scope. They are not the size of the codebase, which is below.",
-            "",
-            "```mermaid",
-            "pie showData",
-            `    title Lines of the packages, ${fmtPct(overall.lines)} reached`,
-            `    "Reached by a test" : ${overall.lines.toFixed(2)}`,
-            `    "Not reached" : ${(100 - overall.lines).toFixed(2)}`,
-            "```",
             "",
         );
     }
@@ -455,7 +482,7 @@ function render(suites, missing) {
                 .filter((v) => v && v !== "=")
                 .join(", ") || "="} |`
             : "";
-        rows.push(`| ${icon} \`${s.dir}\` | ${fmtN(s.tests)}${s.failed ? ` (${fmtN(s.failed)} failed)` : ""} | ${fmtMs(s.durationMs)} | ${cov ? fmtPct(cov.lines) : "-"} | ${cov ? `\`${bar(cov.lines)}\`` : ""} | ${cov ? fmtPct(cov.branches) : "-"} | ${cov ? fmtPct(cov.functions) : "-"} |${moved}`);
+        rows.push(`| ${icon} \`${s.dir}\` | ${fmtN(s.tests)}${s.failed ? ` (${fmtN(s.failed)} failed)` : ""} | ${fmtMs(s.durationMs)} | ${cov ? fmtPctBanded(cov.lines) : "-"} | ${cov ? `\`${bar(cov.lines)}\`` : ""} | ${cov ? fmtPctBanded(cov.branches) : "-"} | ${cov ? fmtPctBanded(cov.functions) : "-"} |${moved}`);
     }
     for (const d of missing) rows.push(`| \u26a0\ufe0f \`${d}\` | no results |${" |".repeat(baseline ? 6 : 5)}`);
     out.push(...header, ...align, ...rows, "");

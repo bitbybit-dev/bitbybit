@@ -31,7 +31,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: npm run rebuild-all-packages
       - run: npm test
+      # The two packages the aggregate leaves out, run here too: the report below expects every
+      # package that has a suite to have left results, and calls the run red when one has not.
       - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run test:coverage
+      - run: pnpm --filter @bitbybit-dev/create-app run build && pnpm --filter @bitbybit-dev/create-app run test
 
       - name: Test report
         if: always()
