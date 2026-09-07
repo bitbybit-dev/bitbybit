@@ -20,11 +20,21 @@ Pick the run at the top of that list; the report is on its summary page, above t
 
 - **A headline** - total tests, how many passed, failed and were skipped, how long the run took, and
   the coverage over every package together, summed rather than averaged so a large package is not
-  hidden behind several small ones.
+  hidden behind several small ones. Each percentage is shown with the counts it came from, because a
+  bare percentage invites being read as a share of the whole codebase, which it is not.
+- **The size of the codebase** - hand-written source, generated source and unit tests, counted
+  separately, with how many lines of test there are per line of hand-written source. Coverage
+  measures executable lines inside each package's declared scope; that is a smaller number than the
+  source total, and showing both is the only way to read either honestly.
+- **A pie of what is reached and what is not**, and how the floor has moved over its last recorded
+  values, as a trend per metric.
 - **A row per package** - tests, time, and line, branch and function coverage with a bar beside it.
 - **Movement against the recorded floor.** Coverage in this repository is a floor, not a target: it
   is recorded per package and may rise, never fall. The report shows what each suite moved against
   that floor, so a run tells you not only where coverage stands but which way it went.
+- **Other quality signals** - how many lint findings are still suppressed, whether any package still
+  compiles under a relaxed baseline, and how many have their public API surface pinned to a
+  committed report.
 - **Failures in full**, with their messages, on a red run - so a failure is read on the summary page
   rather than dug out of a log.
 - **Skipped tests and the slowest files**, folded away until you want them.
@@ -43,8 +53,9 @@ the step rather than quietly vanishing from the table.
 
 ## Reading the numbers fairly
 
-Coverage percentages measure which lines a test executed, not whether the assertions around them are
-worth anything. We publish them because they are evidence of effort and a useful trend, not because
+Coverage percentages measure which lines a test executed, inside the scope each package declares -
+not every line in the repository, and not whether the assertions around those lines are worth
+anything. We publish them because they are evidence of effort and a useful trend, not because
 a high number proves correctness - a suite can execute every line and assert nothing. The test files
 are open beside the source, which is the better thing to read if you want to judge the testing
 rather than measure it.
