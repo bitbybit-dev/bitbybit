@@ -1,5 +1,5 @@
 {
-    "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers a ratio that sits above 50% even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
+    "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers the ratio whatever it stands at, because taking k from both sides of C/T gives (C-k)/(T-k), which is smaller for any T greater than C - so this bites at 35% exactly as it does at 85%, even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
     "measured": "2026-09-07",
     "history": [
         {
@@ -9,6 +9,14 @@
             "branches": 51.95,
             "functions": 57.82,
             "statements": 65.59
+        },
+        {
+            "measured": "2026-09-07",
+            "tests": 4004,
+            "lines": 68.32,
+            "branches": 52.03,
+            "functions": 57.92,
+            "statements": 65.62
         }
     ],
     "packages": {
@@ -16,10 +24,10 @@
             "runner": "vitest",
             "tests": 453,
             "suites": 7,
-            "lines": 35.11,
-            "branches": 26.64,
+            "lines": 35.1,
+            "branches": 26.69,
             "functions": 25.42,
-            "statements": 30.96
+            "statements": 30.95
         },
         "base": {
             "runner": "vitest",
@@ -34,10 +42,10 @@
             "runner": "vitest",
             "tests": 78,
             "suites": 11,
-            "lines": 69.79,
-            "branches": 78.66,
+            "lines": 70.25,
+            "branches": 79.22,
             "functions": 75,
-            "statements": 70.38
+            "statements": 70.81
         },
         "core": {
             "runner": "vitest",
@@ -55,12 +63,12 @@
         },
         "jscad": {
             "runner": "vitest",
-            "tests": 47,
-            "suites": 9,
-            "lines": 45.95,
-            "branches": 22.66,
-            "functions": 49.45,
-            "statements": 42.52
+            "tests": 60,
+            "suites": 11,
+            "lines": 47.03,
+            "branches": 23.19,
+            "functions": 52.38,
+            "statements": 43.34
         },
         "jscad-worker": {
             "runner": "vitest",

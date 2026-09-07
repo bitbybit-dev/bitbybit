@@ -1138,12 +1138,13 @@ export class DrawHelper extends DrawHelperCore {
             // JSCAD shapes and so does not say which one arrived.
             const path = inputs.path as Inputs.JSCAD.JSCADPath2;
 
-            if (path.points) {
-                if (path.isClosed) {
-                    const pt = path.points[0]!;
-                    path.points.push([pt[0], 0, pt[1]] as unknown as Inputs.JSCAD.JSCADVec2);
-                }
-            }
+            // Closing the loop repeats the first point, in a copy - pushing onto `path.points` grew
+            // the caller's own geometry every time it was drawn. It is repeated as it stands, too:
+            // drawPolylines lifts a 2D point to `[x, y, 0]`, and the closing point used to be built
+            // as `[x, 0, y]`, which put the last segment of every closed path in a different plane
+            // from the rest of it.
+            const points: number[][] = path.points ?? [];
+            const pointsToDraw = points.length > 0 && path.isClosed ? [...points, points[0]!] : points;
 
             let colour = inputs.colour;
             if (path.color) {
@@ -1152,7 +1153,7 @@ export class DrawHelper extends DrawHelperCore {
 
             resolve(this.drawPolyline(
                 inputs.pathMesh,
-                path.points,
+                pointsToDraw,
                 inputs.updatable,
                 inputs.width,
                 inputs.opacity,

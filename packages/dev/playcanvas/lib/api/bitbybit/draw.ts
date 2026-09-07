@@ -46,13 +46,13 @@ export class Draw extends DrawCore {
         const entity = inputs.entity;
         // we start with async ones
         if (this.detectJscadMesh(entity)) {
-            return this.handleJscadMesh(inputs);
+            return this.handleJscadMesh(inputs, entity);
         } else if (this.detectOcctShape(entity)) {
             return this.handleOcctShape(inputs);
         } else if (this.detectOcctShapes(entity)) {
             return this.handleOcctShapes(inputs);
         } else if (this.detectJscadMeshes(entity)) {
-            return this.handleJscadMeshes(inputs);
+            return this.handleJscadMeshes(inputs, entity);
         } else if (this.detectManifoldShape(entity)) {
             return this.handleManifoldShape(inputs);
         } else if (this.detectManifoldShapes(entity)) {
@@ -372,25 +372,21 @@ export class Draw extends DrawCore {
         return { r: 0, g: 0, b: 1 }; // Default blue
     }
 
-    private handleJscadMesh(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
+    private handleJscadMesh(inputs: Inputs.Draw.DrawAny<pc.Entity>, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3): Promise<pc.Entity> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({
                 jscadMesh: inputs.group,
-                // The dispatcher has already identified the entity as JSCAD geometry; Draw.Entity is
-                // the union of everything drawable and does not carry that decision.
-                mesh: inputs.entity as unknown as Inputs.JSCAD.JSCADEntity,
+                mesh,
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMesh);
     }
 
-    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
+    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<pc.Entity>, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]): Promise<pc.Entity> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMeshes({
                 jscadMesh: inputs.group,
-                // The dispatcher has already identified the entity as JSCAD geometry; Draw.Entity is
-                // the union of everything drawable and does not carry that decision.
-                meshes: inputs.entity as unknown as Inputs.JSCAD.JSCADEntity[],
+                meshes,
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMeshes);

@@ -72,13 +72,13 @@ export class Draw extends DrawCore {
         }
         // we start with async ones
         if (this.detectJscadMesh(entity)) {
-            return this.handleJscadMesh(inputs);
+            return this.handleJscadMesh(inputs, entity);
         } else if (this.detectOcctShape(entity)) {
             return this.handleOcctShape(inputs);
         } else if (this.detectOcctShapes(entity)) {
             return this.handleOcctShapes(inputs);
         } else if (this.detectJscadMeshes(entity)) {
-            return this.handleJscadMeshes(inputs);
+            return this.handleJscadMeshes(inputs, entity);
         } else if (this.detectManifoldShape(entity)) {
             return this.handleManifoldShape(inputs);
         } else if (this.detectManifoldShapes(entity)) {
@@ -701,14 +701,14 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny) {
+    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]) {
         let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawSolidOrPolygonMeshes({
             jscadMesh: inputs.babylonMesh,
-            meshes: inputs.entity as any,
+            meshes,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMeshes, options, r);
@@ -777,16 +777,14 @@ export class Draw extends DrawCore {
         });
     }
 
-    private handleJscadMesh(inputs: Inputs.Draw.DrawAny) {
+    private handleJscadMesh(inputs: Inputs.Draw.DrawAny, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3) {
         let options = inputs.options ? inputs.options : this.defaultBasicOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawSolidOrPolygonMesh({
             jscadMesh: inputs.babylonMesh,
-            // The dispatcher has already identified the entity as JSCAD geometry; Draw.Entity is
-            // the union of everything drawable and does not carry that decision.
-            mesh: inputs.entity as unknown as Inputs.JSCAD.JSCADEntity,
+            mesh,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMesh, options, r);

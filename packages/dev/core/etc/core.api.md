@@ -631,9 +631,9 @@ export class DrawCore {
     // (undocumented)
     detectDecomposedMeshes(entity: unknown): boolean;
     // (undocumented)
-    detectJscadMesh(entity: unknown): boolean;
+    detectJscadMesh(entity: unknown): entity is Inputs_3.JSCAD.JSCADGeom2 | Inputs_3.JSCAD.JSCADGeom3;
     // (undocumented)
-    detectJscadMeshes(entity: unknown): boolean;
+    detectJscadMeshes(entity: unknown): entity is (Inputs_3.JSCAD.JSCADGeom2 | Inputs_3.JSCAD.JSCADGeom3)[];
     // (undocumented)
     detectLine(entity: unknown): boolean;
     // (undocumented)

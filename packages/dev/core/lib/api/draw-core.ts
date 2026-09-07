@@ -1,3 +1,5 @@
+import * as Inputs from "./inputs";
+
 /**
  * Base interface for draw options - engine-specific implementations extend this
  */
@@ -86,13 +88,16 @@ export class DrawCore {
         return Array.isArray(entity) && !entity.some(el => !this.detectVerbSurface(el));
     }
 
-    detectJscadMesh(entity: unknown): boolean {
+    // A region holds its edges and a solid holds its polygons; a path holds neither and is drawn by
+    // a different handler. Saying so as a type predicate is what lets the handler read the entity
+    // without asking again - the check and the use are the same statement.
+    detectJscadMesh(entity: unknown): entity is Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3 {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
         return obj["sides"] !== undefined || obj["polygons"] !== undefined;
     }
 
-    detectJscadMeshes(entity: unknown): boolean {
+    detectJscadMeshes(entity: unknown): entity is (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[] {
         return Array.isArray(entity) && !entity.some(el => !this.detectJscadMesh(el));
     }
 

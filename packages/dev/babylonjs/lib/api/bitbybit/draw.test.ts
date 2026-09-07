@@ -17,6 +17,17 @@ import { Context } from "../context";
 import * as Inputs from "../inputs";
 import { MockScene, MockMesh } from "../__mocks__/babylonjs.mock";
 
+// A minimal JSCAD solid. The dispatcher narrows the entity before handing it to a handler, so these
+// suites, which call the handlers directly, pass it the same way the dispatcher would.
+const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+];
+const jscadSolid = (): Inputs.JSCAD.JSCADGeom3 => ({ polygons: [], transforms: IDENTITY_TRANSFORM });
+
+
 // Type definitions for Draw private methods (for type-safe testing)
 type DrawPrivateMethods = {
     // Detector methods
@@ -70,9 +81,9 @@ type DrawPrivateMethods = {
     
     handleTags: (inputs: any) => BABYLON.Mesh | undefined;
     
-    handleJscadMesh: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
+    handleJscadMesh: (inputs: any, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3) => Promise<BABYLON.Mesh | undefined>;
     
-    handleJscadMeshes: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
+    handleJscadMeshes: (inputs: any, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]) => Promise<BABYLON.Mesh | undefined>;
     
     handleOcctShape: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
     
@@ -288,7 +299,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle JSCAD mesh", async () => {
-            const mockJscadMesh = { type: "jscad" };
+            const mockJscadMesh = jscadSolid();
             const mockMesh = createMockMesh("jscad");
             
             spyManager.setupDetectors("JscadMesh");
@@ -330,7 +341,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle JSCAD meshes array", async () => {
-            const mockJscadMeshes = [{ vertices: [] }, { vertices: [] }];
+            const mockJscadMeshes = [jscadSolid(), jscadSolid()];
             const mockMesh = createMockMesh("jscad-meshes");
             
             spyManager.setupDetectors("JscadMeshes");
@@ -1549,12 +1560,12 @@ describe("Draw unit tests", () => {
 
     describe("Async handle methods", () => {
         it("handleJscadMesh should call drawHelper.drawSolidOrPolygonMesh", async () => {
-            const mockJscadMesh = { type: "jscad" };
+            const mockJscadMesh = jscadSolid();
             const mockMesh = createMockMesh("jscad");
             mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             mockDrawHelper.drawSolidOrPolygonMesh = vi.fn().mockResolvedValue(mockMesh);
             
-            const result = await drawPrivate.handleJscadMesh({ entity: mockJscadMesh });
+            const result = await drawPrivate.handleJscadMesh({ entity: mockJscadMesh }, mockJscadMesh);
             
             expect(mockDrawHelper.drawSolidOrPolygonMesh).toHaveBeenCalledWith(expect.objectContaining({
                 mesh: mockJscadMesh
@@ -1563,12 +1574,12 @@ describe("Draw unit tests", () => {
         });
 
         it("handleJscadMeshes should call drawHelper.drawSolidOrPolygonMeshes", async () => {
-            const mockJscadMeshes = [{ type: "jscad1" }, { type: "jscad2" }];
+            const mockJscadMeshes = [jscadSolid(), jscadSolid()];
             const mockMesh = createMockMesh("jscad-meshes");
             mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             mockDrawHelper.drawSolidOrPolygonMeshes = vi.fn().mockResolvedValue(mockMesh);
             
-            const result = await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes });
+            const result = await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes }, mockJscadMeshes);
             
             expect(mockDrawHelper.drawSolidOrPolygonMeshes).toHaveBeenCalledWith(expect.objectContaining({
                 meshes: mockJscadMeshes
@@ -1633,13 +1644,13 @@ describe("Draw unit tests", () => {
         });
 
         it("handleJscadMesh should use options from babylonMesh metadata", async () => {
-            const mockJscadMesh = { type: "jscad" };
+            const mockJscadMesh = jscadSolid();
             const mockMesh = createMockMesh("jscad");
             mockMesh.metadata = { options: { size: 5 } };
             mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             mockDrawHelper.drawSolidOrPolygonMesh = vi.fn().mockResolvedValue(mockMesh);
             
-            await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, babylonMesh: mockMesh });
+            await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, babylonMesh: mockMesh }, mockJscadMesh);
             
             expect(mockDrawHelper.drawSolidOrPolygonMesh).toHaveBeenCalledWith(expect.objectContaining({
                 size: 5
@@ -2070,7 +2081,7 @@ describe("Draw unit tests", () => {
         });
 
         it("handleJscadMesh should use metadata options when babylonMesh provided", async () => {
-            const mockJscadMesh = { vertices: [] };
+            const mockJscadMesh = jscadSolid();
             const mockMesh = createMockMesh("jscad");
             mockMesh.metadata = { options: { size: 4, colours: "#abc123" } };
             mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
@@ -2078,7 +2089,7 @@ describe("Draw unit tests", () => {
             
             vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
-            await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, babylonMesh: mockMesh });
+            await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, babylonMesh: mockMesh }, mockJscadMesh);
             
             expect(mockDrawHelper.drawSolidOrPolygonMesh).toHaveBeenCalledWith(expect.objectContaining({
                 size: 4,
@@ -2087,7 +2098,7 @@ describe("Draw unit tests", () => {
         });
 
         it("handleJscadMeshes should use metadata options when babylonMesh provided", async () => {
-            const mockJscadMeshes = [{ vertices: [] }, { vertices: [] }];
+            const mockJscadMeshes = [jscadSolid(), jscadSolid()];
             const mockMesh = createMockMesh("jscads");
             mockMesh.metadata = { options: { size: 13, colours: "#def456" } };
             mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
@@ -2095,7 +2106,7 @@ describe("Draw unit tests", () => {
             
             vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
-            await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes, babylonMesh: mockMesh });
+            await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes, babylonMesh: mockMesh }, mockJscadMeshes);
             
             expect(mockDrawHelper.drawSolidOrPolygonMeshes).toHaveBeenCalledWith(expect.objectContaining({
                 size: 13,
@@ -2371,14 +2382,14 @@ describe("Draw unit tests", () => {
         });
 
         it("handleJscadMesh should use provided options when options are passed", async () => {
-            const mockJscadMesh = { vertices: [] };
+            const mockJscadMesh = jscadSolid();
             const customOptions = { size: 85, colours: "#858585" };
             const mockMesh = createMockMesh("jscad");
             mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
             mockDrawHelper.drawSolidOrPolygonMesh = vi.fn().mockResolvedValue(mockMesh);
             vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
-            await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, options: customOptions });
+            await drawPrivate.handleJscadMesh({ entity: mockJscadMesh, options: customOptions }, mockJscadMesh);
             
             expect(mockDrawHelper.drawSolidOrPolygonMesh).toHaveBeenCalledWith(expect.objectContaining({
                 size: 85,
@@ -2387,7 +2398,7 @@ describe("Draw unit tests", () => {
         });
 
         it("handleJscadMeshes should use provided options when options are passed", async () => {
-            const mockJscadMeshes = [{ vertices: [] }, { vertices: [] }];
+            const mockJscadMeshes = [jscadSolid(), jscadSolid()];
             const customOptions = { size: 90, colours: "#909090" };
             const mockMesh = createMockMesh("jscads");
             mockMesh.getChildMeshes = vi.fn().mockReturnValue([]);
@@ -2395,7 +2406,7 @@ describe("Draw unit tests", () => {
             
             vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
-            await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes, options: customOptions });
+            await drawPrivate.handleJscadMeshes({ entity: mockJscadMeshes, options: customOptions }, mockJscadMeshes);
             
             expect(mockDrawHelper.drawSolidOrPolygonMeshes).toHaveBeenCalledWith(expect.objectContaining({
                 size: 90,

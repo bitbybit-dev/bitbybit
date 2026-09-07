@@ -18,10 +18,11 @@ export function oneOrMany(geometry: Inputs.JSCAD.JSCADEntity): Inputs.JSCAD.JSCA
 /**
  * Hands a list of entities to an operation overloaded per geometry kind. The kernel still rejects a
  * genuinely mixed list, and it is the right thing to decide that - it knows which combinations its
- * operations support and we would only be guessing ahead of it.
+ * operations support and we would only be guessing ahead of it. The type parameter is constrained to
+ * the three kinds, so this narrows within the union rather than escaping it.
  */
-export function asKind<T>(entities: Inputs.JSCAD.JSCADEntity[]): T[] {
-    return entities as unknown as T[];
+export function asKind<T extends Inputs.JSCAD.JSCADEntity>(entities: Inputs.JSCAD.JSCADEntity[]): T[] {
+    return entities as T[];
 }
 
 /**

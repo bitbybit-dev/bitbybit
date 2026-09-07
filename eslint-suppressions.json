@@ -11,7 +11,7 @@
   },
   "packages/dev/babylonjs/lib/api/bitbybit/draw.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 11
+      "count": 10
     }
   },
   "packages/dev/babylonjs/lib/api/context.test.ts": {
