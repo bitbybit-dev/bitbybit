@@ -3,7 +3,7 @@ import * as Inputs from "../inputs/jscad-inputs";
 /**
  * Reads an input that the kernel accepts either singly or as a list. The published type says one
  * entity, and a list has always worked too because the kernel's operations are variadic; declaring
- * the union would change the input's socket in the visual editors, so the coercion lives here.
+ * the union would change the published type, so the coercion lives here instead.
  */
 export function oneOrMany(geometry: Inputs.JSCAD.JSCADEntity): Inputs.JSCAD.JSCADEntity[] {
     return Array.isArray(geometry) ? geometry as Inputs.JSCAD.JSCADEntity[] : [geometry];

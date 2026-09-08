@@ -42,17 +42,21 @@ export class BabylonGaussianSplatting {
     }
 
     /**
-     * Gets splat positions of the gaussian splat mesh
+     * Gets splat positions of the gaussian splat mesh. The engine holds one centre per splat as
+     * four floats - x, y, z and a fourth it depth-sorts by - so only three of every four are a point.
      * @param inputs Contains BabylonJS mesh
      * @group get
      * @shortname get splat positions
      * @drawable true
      */
     getSplatPositions(inputs: Inputs.BabylonGaussianSplatting.GaussianSplattingMeshDto): Inputs.Base.Point3[] {
-        const data = (inputs.babylonMesh as any)._splatPositions;
+        const data = (inputs.babylonMesh as any)._splatPositions as Float32Array | null;
         const points: Inputs.Base.Point3[] = [];
-        for (let i = 0; i < data.length; i += 3) {
-            points.push([data[i], data[i + 1], data[i + 2]]);
+        if (!data) {
+            return points;
+        }
+        for (let i = 0; i + 2 < data.length; i += 4) {
+            points.push([data[i]!, data[i + 1]!, data[i + 2]!]);
         }
         return points;
     }

@@ -22,7 +22,7 @@ export namespace Draw {
     /**
      * Everything a draw call will accept: points, vectors, lines, segments and polylines; Verb curves
      * and surfaces; OCCT shape handles; tags; meshes from any kernel; and lists of any of them. This
-     * union is what makes one draw call able to render anything the platform produces without you
+     * union is what makes one draw call able to render anything these packages produce without you
      * having to say which kind it is.
      */
     export type Entity = number[] | [number, number, number] | Base.Point3 | Base.Vector3 | Base.Line3  | Base.Segment3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.JSCAD.JSCADEntity | Inputs.OCCT.DecomposedMeshDto | Inputs.Tag.TagDto | { type: string, name?: string, entityName?: string } |

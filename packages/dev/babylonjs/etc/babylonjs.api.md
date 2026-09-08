@@ -163,7 +163,7 @@ export class BabylonCamera {
     free: BabylonFreeCamera;
     freezeProjectionMatrix(inputs: Inputs_2.BabylonCamera.CameraDto): void;
     getPosition(inputs: Inputs_2.BabylonCamera.PositionDto): Base_3.Point3;
-    getSpeed(inputs: Inputs_2.BabylonCamera.PositionDto): Base_3.Point3;
+    getSpeed(inputs: Inputs_2.BabylonCamera.PositionDto): number;
     getTarget(inputs: Inputs_2.BabylonCamera.PositionDto): Base_3.Point3;
     makeCameraOrthographic(inputs: Inputs_2.BabylonCamera.OrthographicDto): void;
     makeCameraPerspective(inputs: Inputs_2.BabylonCamera.CameraDto): void;

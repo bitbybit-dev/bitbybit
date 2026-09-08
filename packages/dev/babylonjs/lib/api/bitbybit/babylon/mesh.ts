@@ -743,7 +743,10 @@ export class BabylonMesh {
                     child.disableEdgesRendering();
                     const newInstance = child.createInstance(uniqueName("InstanceMesh"));
                     newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-                    newInstance.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
+                    newInstance.rotation = new BABYLON.Vector3(
+                        BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians(),
+                        BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians(),
+                        BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians());
                     newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
 
                     if (!inputs.mesh.metadata || (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false)) {

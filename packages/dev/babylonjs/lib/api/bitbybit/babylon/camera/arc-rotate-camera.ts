@@ -68,11 +68,7 @@ export class BabylonArcRotateCamera {
     }
 
     private getRadians(degrees: number): number {
-        let angle = BABYLON.Angle.FromDegrees(degrees).radians();
-        if (degrees < 0) {
-            angle = -angle;
-        }
-        return angle;
+        return BABYLON.Tools.ToRadians(degrees);
     }
 
 }
