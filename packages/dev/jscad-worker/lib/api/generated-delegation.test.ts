@@ -1,6 +1,16 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
+import { JSCADWorkerMock } from "../jscad-worker/jscad-worker-mock";
 import { JSCAD } from "./jscad";
+import { JSCADBooleans } from "./booleans";
+import { JSCADColors } from "./colors";
+import { JSCADExpansions } from "./expansions";
+import { JSCADExtrusions } from "./extrusions";
+import { JSCADHulls } from "./hulls";
+import { JSCADPath } from "./path";
+import { JSCADPolygon } from "./polygon";
+import { JSCADShapes } from "./shapes";
+import { JSCADText } from "./text";
 import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 
 // The API layer under lib/api is generated from the kernel: every method is one call posting its own
@@ -9,61 +19,198 @@ import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
 
+// The worker the manager talks to, recording what reaches it instead of running anything. It is the
+// stand-in the package itself ships, with the one method under test replaced, so the suite is typed
+// against the same contract a host would satisfy.
+class RecordingWorker extends JSCADWorkerMock {
+    readonly posted: PostedCall[] = [];
+
+    override postMessage(message: PostedCall | "busy"): void {
+        if (message !== "busy") {
+            this.posted.push(message);
+        }
+    }
+}
+
 const CUBE_SIZE = 2;
 const ORIGIN: Inputs.Base.Point3 = [0, 0, 0];
 
+// One object stands in for every method's inputs. Each method hands its argument straight to the
+// manager without reading it, so what the argument is cannot matter - only that the same object
+// arrives on the wire. It is declared opaque and handed to each method as whatever that method
+// takes, which is the one thing about it the test does not want checked.
+const SENTINEL_INPUTS: unknown = { sentinel: "delegation" };
+const asInputs = <T>(): T => SENTINEL_INPUTS as T;
+
+// Every generated method, with the path it must post. A method missing here is a method no test
+// runs; a path spelled wrong here fails against the kernel the generator read.
+const DELEGATIONS: [string, (jscad: JSCAD) => unknown][] = [
+    ["booleans.intersect", (j) => j.booleans.intersect(asInputs())],
+    ["booleans.subtract", (j) => j.booleans.subtract(asInputs())],
+    ["booleans.union", (j) => j.booleans.union(asInputs())],
+    ["booleans.intersectTwo", (j) => j.booleans.intersectTwo(asInputs())],
+    ["booleans.subtractTwo", (j) => j.booleans.subtractTwo(asInputs())],
+    ["booleans.unionTwo", (j) => j.booleans.unionTwo(asInputs())],
+    ["booleans.subtractFrom", (j) => j.booleans.subtractFrom(asInputs())],
+    ["colors.colorize", (j) => j.colors.colorize(asInputs())],
+    ["expansions.expand", (j) => j.expansions.expand(asInputs())],
+    ["expansions.offset", (j) => j.expansions.offset(asInputs())],
+    ["extrusions.extrudeLinear", (j) => j.extrusions.extrudeLinear(asInputs())],
+    ["extrusions.extrudeRectangular", (j) => j.extrusions.extrudeRectangular(asInputs())],
+    ["extrusions.extrudeRectangularPoints", (j) => j.extrusions.extrudeRectangularPoints(asInputs())],
+    ["extrusions.extrudeRotate", (j) => j.extrusions.extrudeRotate(asInputs())],
+    ["hulls.hullChain", (j) => j.hulls.hullChain(asInputs())],
+    ["hulls.hull", (j) => j.hulls.hull(asInputs())],
+    ["path.createFromPoints", (j) => j.path.createFromPoints(asInputs())],
+    ["path.createPathsFromPoints", (j) => j.path.createPathsFromPoints(asInputs())],
+    ["path.createFromPolyline", (j) => j.path.createFromPolyline(asInputs())],
+    ["path.close", (j) => j.path.close(asInputs())],
+    ["path.appendPoints", (j) => j.path.appendPoints(asInputs())],
+    ["path.appendPolyline", (j) => j.path.appendPolyline(asInputs())],
+    ["path.appendArc", (j) => j.path.appendArc(asInputs())],
+    ["polygon.createFromPoints", (j) => j.polygon.createFromPoints(asInputs())],
+    ["polygon.createFromPolyline", (j) => j.polygon.createFromPolyline(asInputs())],
+    ["polygon.createFromCurve", (j) => j.polygon.createFromCurve(asInputs())],
+    ["polygon.createFromPath", (j) => j.polygon.createFromPath(asInputs())],
+    ["polygon.circle", (j) => j.polygon.circle(asInputs())],
+    ["polygon.ellipse", (j) => j.polygon.ellipse(asInputs())],
+    ["polygon.rectangle", (j) => j.polygon.rectangle(asInputs())],
+    ["polygon.roundedRectangle", (j) => j.polygon.roundedRectangle(asInputs())],
+    ["polygon.square", (j) => j.polygon.square(asInputs())],
+    ["polygon.star", (j) => j.polygon.star(asInputs())],
+    ["shapes.cube", (j) => j.shapes.cube(asInputs())],
+    ["shapes.cubesOnCenterPoints", (j) => j.shapes.cubesOnCenterPoints(asInputs())],
+    ["shapes.cuboid", (j) => j.shapes.cuboid(asInputs())],
+    ["shapes.cuboidsOnCenterPoints", (j) => j.shapes.cuboidsOnCenterPoints(asInputs())],
+    ["shapes.cylinderElliptic", (j) => j.shapes.cylinderElliptic(asInputs())],
+    ["shapes.cylinderEllipticOnCenterPoints", (j) => j.shapes.cylinderEllipticOnCenterPoints(asInputs())],
+    ["shapes.cylinder", (j) => j.shapes.cylinder(asInputs())],
+    ["shapes.cylindersOnCenterPoints", (j) => j.shapes.cylindersOnCenterPoints(asInputs())],
+    ["shapes.ellipsoid", (j) => j.shapes.ellipsoid(asInputs())],
+    ["shapes.ellipsoidsOnCenterPoints", (j) => j.shapes.ellipsoidsOnCenterPoints(asInputs())],
+    ["shapes.geodesicSphere", (j) => j.shapes.geodesicSphere(asInputs())],
+    ["shapes.geodesicSpheresOnCenterPoints", (j) => j.shapes.geodesicSpheresOnCenterPoints(asInputs())],
+    ["shapes.roundedCuboid", (j) => j.shapes.roundedCuboid(asInputs())],
+    ["shapes.roundedCuboidsOnCenterPoints", (j) => j.shapes.roundedCuboidsOnCenterPoints(asInputs())],
+    ["shapes.roundedCylinder", (j) => j.shapes.roundedCylinder(asInputs())],
+    ["shapes.roundedCylindersOnCenterPoints", (j) => j.shapes.roundedCylindersOnCenterPoints(asInputs())],
+    ["shapes.sphere", (j) => j.shapes.sphere(asInputs())],
+    ["shapes.spheresOnCenterPoints", (j) => j.shapes.spheresOnCenterPoints(asInputs())],
+    ["shapes.torus", (j) => j.shapes.torus(asInputs())],
+    ["shapes.fromPolygonPoints", (j) => j.shapes.fromPolygonPoints(asInputs())],
+    ["text.cylindricalText", (j) => j.text.cylindricalText(asInputs())],
+    ["text.sphericalText", (j) => j.text.sphericalText(asInputs())],
+    ["text.createVectorText", (j) => j.text.createVectorText(asInputs())],
+    ["toPolygonPoints", (j) => j.toPolygonPoints(asInputs())],
+    ["transformSolids", (j) => j.transformSolids(asInputs())],
+    ["transformSolid", (j) => j.transformSolid(asInputs())],
+];
+
 describe("the generated worker API", () => {
-    let manager: JSCADWorkerManager;
+    let worker: RecordingWorker;
     let jscad: JSCAD;
     let posted: PostedCall[];
 
     beforeEach(() => {
-        posted = [];
-        manager = new JSCADWorkerManager();
-        manager.setJscadWorker({
-            postMessage: (message: PostedCall) => posted.push(message),
-            onmessage: null,
-        } as unknown as Worker);
+        const manager = new JSCADWorkerManager();
+        worker = new RecordingWorker();
+        manager.setJscadWorker(worker);
+        posted = worker.posted;
         jscad = new JSCAD(manager);
     });
 
-    it("should post the dotted path of the method that was called", () => {
-        // Arrange
-        const inputs = new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE);
+    describe("service wiring", () => {
+        it("should build one service instance per class the kernel declares", () => {
+            expect(jscad.booleans).toBeInstanceOf(JSCADBooleans);
+            expect(jscad.colors).toBeInstanceOf(JSCADColors);
+            expect(jscad.expansions).toBeInstanceOf(JSCADExpansions);
+            expect(jscad.extrusions).toBeInstanceOf(JSCADExtrusions);
+            expect(jscad.hulls).toBeInstanceOf(JSCADHulls);
+        });
 
-        // Act
-        void jscad.shapes.cube(inputs);
-
-        // Assert
-        expect(posted).toHaveLength(1);
-        const [call] = posted as [PostedCall];
-        expect(call.action.functionName).toBe("shapes.cube");
-        expect(call.action.inputs).toBe(inputs);
+        it("should build the remaining services the kernel declares", () => {
+            expect(jscad.path).toBeInstanceOf(JSCADPath);
+            expect(jscad.polygon).toBeInstanceOf(JSCADPolygon);
+            expect(jscad.shapes).toBeInstanceOf(JSCADShapes);
+            expect(jscad.text).toBeInstanceOf(JSCADText);
+        });
     });
 
-    it("should keep each service on its own path", () => {
-        // Act
-        void jscad.shapes.cube(new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE));
-        void jscad.booleans.union({ meshes: [] });
-        void jscad.expansions.expand({ geometry: {}, delta: 1 } as never);
+    describe("every generated method", () => {
+        it.each(DELEGATIONS)("should post %s when that method is called", (path, call) => {
+            // Act
+            void call(jscad);
 
-        // Assert
-        expect(posted.map((call) => call.action.functionName)).toEqual([
-            "shapes.cube",
-            "booleans.union",
-            "expansions.expand",
-        ]);
+            // Assert
+            expect(posted).toHaveLength(1);
+            expect((posted[0] as PostedCall).action.functionName).toBe(path);
+        });
+
+        it.each(DELEGATIONS)("should hand %s its own inputs untouched", (_path, call) => {
+            // Act
+            void call(jscad);
+
+            // Assert
+            expect((posted[0] as PostedCall).action.inputs).toBe(SENTINEL_INPUTS);
+        });
     });
 
-    it("should settle the call when the worker answers with its identity", async () => {
-        // Arrange
-        const expected = "a-shape";
-        const pending = jscad.shapes.cube(new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE));
+    describe("call identity", () => {
+        it("should post the dotted path of the method that was called", () => {
+            // Arrange
+            const inputs = new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE);
 
-        // Act
-        (manager["jscadWorker"] as Worker).onmessage?.({ data: { uid: (posted[0] as PostedCall).uid, result: expected } } as MessageEvent);
+            // Act
+            void jscad.shapes.cube(inputs);
 
-        // Assert
-        await expect(pending).resolves.toBe(expected);
+            // Assert
+            expect(posted).toHaveLength(1);
+            const [call] = posted as [PostedCall];
+            expect(call.action.functionName).toBe("shapes.cube");
+            expect(call.action.inputs).toBe(inputs);
+        });
+
+        it("should keep each service on its own path", () => {
+            // Act
+            void jscad.shapes.cube(new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE));
+            void jscad.booleans.union({ meshes: [] });
+            void jscad.expansions.expand(asInputs());
+
+            // Assert
+            expect(posted.map((call) => call.action.functionName)).toEqual([
+                "shapes.cube",
+                "booleans.union",
+                "expansions.expand",
+            ]);
+        });
+
+        it("should post the empty path with no inputs of its own", () => {
+            // Act
+            void jscad.path.createEmpty();
+
+            // Assert
+            expect((posted[0] as PostedCall).action).toEqual({ functionName: "path.createEmpty", inputs: {} });
+        });
+
+        it("should give every call its own uid", () => {
+            // Act
+            void jscad.shapes.cube(new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE));
+            void jscad.shapes.cube(new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE));
+
+            // Assert
+            expect((posted[0] as PostedCall).uid).not.toBe((posted[1] as PostedCall).uid);
+        });
+
+        it("should settle the call when the worker answers with its identity", async () => {
+            // Arrange
+            const expected = "a-shape";
+            const pending = jscad.shapes.cube(new Inputs.JSCAD.CubeDto(ORIGIN, CUBE_SIZE));
+
+            // Act
+            worker.onmessage({ data: { uid: (posted[0] as PostedCall).uid, result: expected } });
+
+            // Assert
+            await expect(pending).resolves.toBe(expected);
+        });
     });
 });

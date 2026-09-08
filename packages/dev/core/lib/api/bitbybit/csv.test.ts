@@ -755,4 +755,91 @@ describe("CSV unit tests", () => {
             expect(result).toBe("name\tage\nJohn\t30");
         });
     });
+
+    // The branches the suites above leave untaken: empty input, the defaults each option falls back
+    // to, and the two ways a number column can be read.
+    describe("boundaries and defaults", () => {
+        it("should parse empty text to no rows at all", () => {
+            expect(csv.parseToJson({ csv: "", rowSeparator: "\n", columnSeparator: "," })).toEqual([]);
+        });
+
+        it("should parse empty text to no rows when headers were given", () => {
+            expect(csv.parseToJsonWithHeaders({ csv: "", headers: ["name"], rowSeparator: "\n", columnSeparator: "," })).toEqual([]);
+        });
+
+        it("should read the first row as the header when none was named", () => {
+            // Act
+            const result = csv.parseToJson({ csv: "name,age\nJohn,30", rowSeparator: "\n", columnSeparator: "," });
+
+            // Assert
+            expect(result).toEqual([{ name: "John", age: "30" }]);
+        });
+
+        it("should read from the first row when no data start was named", () => {
+            // Act
+            const result = csv.parseToJsonWithHeaders({ csv: "John,30", headers: ["name", "age"], rowSeparator: "\n", columnSeparator: "," });
+
+            // Assert
+            expect(result).toEqual([{ name: "John", age: "30" }]);
+        });
+
+        it("should treat a missing cell as empty", () => {
+            // Act
+            const result = csv.parseToJsonWithHeaders({ csv: "John", headers: ["name", "age"], rowSeparator: "\n", columnSeparator: "," });
+
+            // Assert
+            expect(result).toEqual([{ name: "John", age: "" }]);
+        });
+
+        it("should read a zero in a number column as zero rather than as nothing", () => {
+            // Act
+            const result = csv.parseToJsonWithHeaders({
+                csv: "John,0",
+                headers: ["name", "age"],
+                numberColumns: ["age"],
+                rowSeparator: "\n",
+                columnSeparator: ",",
+            });
+
+            // Assert
+            expect(result).toEqual([{ name: "John", age: 0 }]);
+        });
+
+        it("should answer with empty text for a column the text does not have", () => {
+            // Act
+            const result = csv.queryColumn({ csv: "name\nJohn", column: "age", rowSeparator: "\n", columnSeparator: "," });
+
+            // Assert
+            expect(result).toEqual([""]);
+        });
+
+        it("should separate columns with a comma when no separator was named", () => {
+            expect(csv.arrayToCsv({ array: [["a", "b"]] })).toBe("a,b");
+        });
+
+        it("should separate rows with a newline when no separator was named", () => {
+            expect(csv.arrayToCsv({ array: [["a"], ["b"]] })).toBe("a\nb");
+        });
+
+        it("should write the headers alone for an empty json array", () => {
+            expect(csv.jsonToCsv({ json: [], headers: ["name", "age"], includeHeaders: true })).toBe("name,age");
+        });
+
+        it("should write nothing at all for an empty json array when headers were not asked for", () => {
+            expect(csv.jsonToCsv({ json: [], headers: ["name", "age"], includeHeaders: false })).toBe("");
+        });
+
+        it("should include the headers by default when deriving them from the json", () => {
+            expect(csv.jsonToCsvAuto({ json: [{ name: "John" }] })).toBe("name\nJohn");
+        });
+
+        it("should refuse a header row the text does not have", () => {
+            expect(() => csv.getHeaders({ csv: "name,age", headerRow: 5, rowSeparator: "\n", columnSeparator: "," }))
+                .toThrow("Header row 5 is out of bounds (total rows: 1)");
+        });
+
+        it("should read the first row as the header when none was named", () => {
+            expect(csv.getHeaders({ csv: "name,age\nJohn,30", rowSeparator: "\n", columnSeparator: "," })).toEqual(["name", "age"]);
+        });
+    });
 });

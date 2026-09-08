@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { CacheHelper } from "./cache-helper";
 
@@ -970,6 +970,485 @@ describe("CacheHelper unit tests", () => {
             
             expect(cacheHelper.usedHashes[hash]).toBe(hash);
             expect(cacheHelper.hashesFromPreviousRun[hash]).toBe(hash);
+        });
+    });
+
+    // A cached entry can hold a list rather than one object, and the cleanups have to walk it: a shape
+    // in the list has its triangulation freed before it is deleted, and an object that has already
+    // gone must not stop the rest of the list being freed.
+    describe("cleaning an entry that holds a list", () => {
+        const makeShape = () => {
+            const point = new occt.gp_Pnt(0, 0, 0);
+            const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
+            const shape = vertex.Vertex();
+            vertex.delete();
+            point.delete();
+            return shape;
+        };
+
+        it("should free every shape of the list when the hash is cleaned", () => {
+            // Arrange
+            const shapes = [makeShape(), makeShape()];
+            cacheHelper.addToCache("list-hash", shapes);
+
+            // Act
+            cacheHelper.cleanCacheForHash("list-hash");
+
+            // Assert
+            expect(cacheHelper.checkCache("list-hash")).toBeNull();
+        });
+
+        it("should free every shape of the list when the whole cache is dropped", () => {
+            // Arrange
+            cacheHelper.addToCache("list-hash", [makeShape(), makeShape()]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should free every shape of a list the run no longer uses", () => {
+            // Arrange
+            cacheHelper.addToCache("list-hash", [makeShape()]);
+            cacheHelper.usedHashes = { "list-hash": "list-hash" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should keep going when a member of the list has already gone", () => {
+            // Arrange
+            const gone = makeShape();
+            const alive = makeShape();
+            cacheHelper.addToCache("list-hash", [gone, alive]);
+            gone.delete();
+
+            // Act & Assert
+            expect(() => cacheHelper.cleanCacheForHash("list-hash")).not.toThrow();
+        });
+
+        it("should skip an entry that holds nothing", () => {
+            // Arrange
+            cacheHelper.argCache["empty"] = null;
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+    });
+
+    // A kernel method can answer with more than a shape. Two of those answers carry kernel objects
+    // inside them, and the cache has to reach in and hash each one, because the main thread only ever
+    // sees the hashes and hands them back on the next call.
+    describe("answers that carry kernel objects inside them", () => {
+        const makeShape = () => {
+            const point = new occt.gp_Pnt(0, 0, 0);
+            const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
+            const shape = vertex.Vertex();
+            vertex.delete();
+            point.delete();
+            return shape;
+        };
+
+        it("should hash the compound and every shape of an object definition", () => {
+            // Arrange
+            const compound = makeShape();
+            const part = makeShape();
+            const args = { functionName: "shapes.wire.textWiresWithData", inputs: { text: "AB" } };
+
+            // Act
+            const result = cacheHelper.cacheOp(args, () => ({
+                compound,
+                data: { type: "text", name: "AB" },
+                shapes: [{ id: "letter-a", shape: part }],
+            }));
+
+            // Assert
+            expect(result.compound.hash).toBeDefined();
+            expect(result.shapes[0].shape.hash).toBeDefined();
+        });
+
+        it("should serve an object definition from the cache on the second call", () => {
+            // Arrange
+            const args = { functionName: "shapes.wire.textWiresWithData", inputs: { text: "AB" } };
+            let calls = 0;
+            const first = cacheHelper.cacheOp(args, () => {
+                calls += 1;
+                return { compound: makeShape(), data: { type: "text" }, shapes: [{ id: "a", shape: makeShape() }] };
+            });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return null; });
+
+            // Assert
+            expect(calls).toBe(1);
+            expect(second.compound.hash).toBe(first.compound.hash);
+        });
+
+        it("should hash the handle an answer reports success with", () => {
+            // Arrange - any kernel object that is not a shape is a handle, an assembly document among them
+            const document = new occt.gp_Pnt(0, 0, 0);
+            const args = { functionName: "assembly.manager.loadStepToDoc", inputs: { stepData: "ISO-10303-21;" } };
+
+            // Act
+            const result = cacheHelper.cacheOp(args, () => ({ success: true, document }));
+
+            // Assert
+            expect(result.document.hash).toBeDefined();
+            expect(cacheHelper.checkCache(result.document.hash)).toBeTruthy();
+        });
+    });
+
+    // checkCache hands back nothing rather than a pointer into freed memory, so a shape the kernel has
+    // let go of is dropped from the cache the moment it is asked for.
+    describe("checking a cache entry that is no longer valid", () => {
+        it("should drop a shape that reports itself null", () => {
+            // Arrange
+            const empty = new occt.TopoDS_Shape();
+            cacheHelper.addToCache("null-shape", empty);
+
+            // Act
+            const result = cacheHelper.checkCache("null-shape");
+
+            // Assert
+            expect(result).toBeNull();
+        });
+
+        it("should drop a list holding a shape that reports itself null", () => {
+            // Arrange
+            const empty = new occt.TopoDS_Shape();
+            cacheHelper.addToCache("null-list", [empty]);
+
+            // Act
+            const result = cacheHelper.checkCache("null-list");
+
+            // Assert
+            expect(result).toBeNull();
+        });
+    });
+
+    // A STEP payload is megabytes of text or bytes. It never reaches the hash itself: what reaches it
+    // is a digest of the same size whatever the payload, so the cache key stays cheap and still
+    // changes when the content does.
+    describe("large and binary inputs", () => {
+        const LARGE_TEXT = "x".repeat(CacheHelper.LARGE_STRING_THRESHOLD + 1);
+
+        describe("hasLargeOrBinaryInput", () => {
+            it("should see a large string among the inputs", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { stepData: LARGE_TEXT } })).toBe(true);
+            });
+
+            it("should see bytes among the inputs", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { stepData: new Uint8Array([1, 2]) } })).toBe(true);
+            });
+
+            it("should see a buffer among the inputs", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { stepData: new ArrayBuffer(8) } })).toBe(true);
+            });
+
+            it("should see a blob among the inputs", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { stepData: new Blob(["a"]) } })).toBe(true);
+            });
+
+            it("should read the arguments themselves when they carry no inputs wrapper", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ stepData: LARGE_TEXT })).toBe(true);
+            });
+
+            it("should say no for an ordinary short string", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { fileName: "part.step" } })).toBe(false);
+            });
+
+            it("should say no for a number", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { radius: 5 } })).toBe(false);
+            });
+
+            it("should say no for an input that is not set", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { shape: null, other: undefined } })).toBe(false);
+            });
+
+            it("should say no for a plain object", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { point: { x: 1 } } })).toBe(false);
+            });
+
+            it("should say no when there are no arguments at all", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput(null)).toBe(false);
+            });
+
+            it("should say no when the arguments are not an object", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput("shapes.solid.createSphere")).toBe(false);
+            });
+        });
+
+        describe("toHashableArgs", () => {
+            it("should replace a large string with a digest of it", () => {
+                // Act
+                const result = cacheHelper.toHashableArgs({ functionName: "loadStep", inputs: { stepData: LARGE_TEXT } });
+
+                // Assert
+                expect(result.inputs.stepData).toMatchObject({ length: LARGE_TEXT.length });
+            });
+
+            it("should leave ordinary arguments exactly as they are", () => {
+                // Arrange
+                const args = { functionName: "shapes.solid.createSphere", inputs: { radius: 5 } };
+
+                // Act
+                const result = cacheHelper.toHashableArgs(args);
+
+                // Assert
+                expect(result).toBe(args);
+            });
+
+            it("should replace a payload sitting directly in the arguments", () => {
+                // Act
+                const result = cacheHelper.toHashableArgs({ stepData: new Uint8Array([1, 2, 3]) });
+
+                // Assert
+                expect(result.stepData).toMatchObject({ byteLength: 3 });
+            });
+
+            it("should hand back a value that is not an object as it stands", () => {
+                expect(cacheHelper.toHashableArgs("createSphere")).toBe("createSphere");
+            });
+        });
+
+        describe("digestIfLargeOrBinary", () => {
+            it("should digest a buffer by its content and length", () => {
+                // Act
+                const digest = cacheHelper.digestIfLargeOrBinary(new Uint8Array([1, 2, 3]).buffer);
+
+                // Assert
+                expect(digest).toMatchObject({ byteLength: 3 });
+            });
+
+            it("should digest bytes by their content and length", () => {
+                // Act
+                const digest = cacheHelper.digestIfLargeOrBinary(new Uint8Array([1, 2, 3]));
+
+                // Assert
+                expect(digest).toMatchObject({ byteLength: 3 });
+            });
+
+            it("should give two different payloads two different digests", () => {
+                // Act
+                const first = cacheHelper.digestIfLargeOrBinary(new Uint8Array([1, 2, 3]));
+                const second = cacheHelper.digestIfLargeOrBinary(new Uint8Array([3, 2, 1]));
+
+                // Assert
+                expect(second.__binaryDigest__).not.toBe(first.__binaryDigest__);
+            });
+
+            it("should describe a blob by its size and type, which is all that can be read of it", () => {
+                // Act
+                const digest = cacheHelper.digestIfLargeOrBinary(new Blob(["abc"], { type: "text/plain" }));
+
+                // Assert
+                expect(digest).toEqual({ __blobDigest__: true, size: 3, type: "text/plain" });
+            });
+
+            it("should describe a file by its name as well", () => {
+                // Act
+                const digest = cacheHelper.digestIfLargeOrBinary(new File(["abc"], "part.step", { lastModified: 1000 }));
+
+                // Assert
+                expect(digest).toMatchObject({ __blobDigest__: true, name: "part.step", lastModified: 1000 });
+            });
+
+            it("should say nothing for a short string", () => {
+                expect(cacheHelper.digestIfLargeOrBinary("part.step")).toBeUndefined();
+            });
+
+            it("should say nothing for a number", () => {
+                expect(cacheHelper.digestIfLargeOrBinary(5)).toBeUndefined();
+            });
+
+            it("should say nothing for a value that is not set", () => {
+                expect(cacheHelper.digestIfLargeOrBinary(null)).toBeUndefined();
+            });
+
+            it("should say nothing for a plain object", () => {
+                expect(cacheHelper.digestIfLargeOrBinary({ radius: 5 })).toBeUndefined();
+            });
+        });
+
+        describe("bytesToHash", () => {
+            it("should hash the same bytes to the same number", () => {
+                expect(cacheHelper.bytesToHash(new Uint8Array([1, 2, 3]))).toBe(cacheHelper.bytesToHash(new Uint8Array([1, 2, 3])));
+            });
+
+            it("should hash different bytes to different numbers", () => {
+                expect(cacheHelper.bytesToHash(new Uint8Array([1, 2, 3]))).not.toBe(cacheHelper.bytesToHash(new Uint8Array([3, 2, 1])));
+            });
+
+            it("should hash no bytes to zero", () => {
+                expect(cacheHelper.bytesToHash(new Uint8Array([]))).toBe(0);
+            });
+        });
+    });
+
+    // The hash is taken over the arguments with every kernel pointer stripped out, because a pointer
+    // is an address that changes between runs and would make two identical calls look different. A
+    // pointer the strip did not catch is a bug in the pattern, and the helper says so rather than
+    // hashing an address.
+    describe("computeHash and stray pointers", () => {
+        it("should say so when a pointer survives the strip", () => {
+            // Arrange
+            const reported: unknown[] = [];
+            vi.spyOn(console, "error").mockImplementation((message: unknown) => { reported.push(message); });
+
+            // Act
+            cacheHelper.computeHash({ ptrCount: 3 });
+
+            // Assert
+            expect(reported).toEqual(["YOU DONE MESSED UP YOUR REGEX."]);
+            vi.restoreAllMocks();
+        });
+
+        it("should stay quiet for arguments carrying a pointer the strip catches", () => {
+            // Arrange
+            const reported: unknown[] = [];
+            vi.spyOn(console, "error").mockImplementation((message: unknown) => { reported.push(message); });
+
+            // Act
+            cacheHelper.computeHash({ ptr: 140, radius: 3 });
+
+            // Assert
+            expect(reported).toEqual([]);
+            vi.restoreAllMocks();
+        });
+
+        it("should digest a payload sitting in a list of arguments", () => {
+            // Arrange
+            const large = "x".repeat(CacheHelper.LARGE_STRING_THRESHOLD + 1);
+
+            // Act
+            const result = cacheHelper.toHashableArgs([large]);
+
+            // Assert
+            expect(result[0]).toMatchObject({ length: large.length });
+        });
+    });
+
+    // Not everything the cache holds is a shape. A kernel handle - an assembly document, a geometry
+    // handle - is deleted like a shape but has no triangulation to free first, and a result that is
+    // neither is a plain value the cache keeps as it stands.
+    describe("entries that are handles rather than shapes", () => {
+        it("should delete a handle without trying to free a triangulation when the hash is cleaned", () => {
+            // Arrange
+            cacheHelper.addToCache("handle", new occt.gp_Pnt(0, 0, 0));
+
+            // Act
+            cacheHelper.cleanCacheForHash("handle");
+
+            // Assert
+            expect(cacheHelper.argCache["handle"]).toBeUndefined();
+        });
+
+        it("should delete a handle when the whole cache is dropped", () => {
+            // Arrange
+            cacheHelper.addToCache("handle", new occt.gp_Pnt(0, 0, 0));
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should delete a handle the run no longer uses", () => {
+            // Arrange
+            cacheHelper.addToCache("handle", new occt.gp_Pnt(0, 0, 0));
+            cacheHelper.usedHashes = { handle: "handle" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should delete a list of handles when the hash is cleaned", () => {
+            // Arrange
+            cacheHelper.addToCache("handles", [new occt.gp_Pnt(0, 0, 0), new occt.gp_Pnt(1, 1, 1)]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("handles");
+
+            // Assert
+            expect(cacheHelper.argCache["handles"]).toBeUndefined();
+        });
+
+        it("should delete a list of handles when the whole cache is dropped", () => {
+            // Arrange
+            cacheHelper.addToCache("handles", [new occt.gp_Pnt(0, 0, 0)]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should delete a list of handles the run no longer uses", () => {
+            // Arrange
+            cacheHelper.addToCache("handles", [new occt.gp_Pnt(0, 0, 0)]);
+            cacheHelper.usedHashes = { handles: "handles" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should hand back the same plain value on the second call rather than running it again", () => {
+            // Arrange
+            const args = { functionName: "shapes.face.getFaceArea", inputs: { shape: 1 } };
+            let calls = 0;
+            cacheHelper.cacheOp(args, () => { calls += 1; return 12.5; });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return 0; });
+
+            // Assert
+            expect(second).toBe(12.5);
+            expect(calls).toBe(1);
+        });
+
+        it("should leave a handle nested in an answer unhashed, having nothing to draw with it", () => {
+            // Arrange
+            const args = { functionName: "svg.loadSVG", inputs: { svg: "<svg/>" } };
+
+            // Act
+            const result = cacheHelper.cacheOp(args, () => ({ handles: [new occt.gp_Pnt(0, 0, 0)] }));
+
+            // Assert
+            expect(result.handles[0].hash).toBeUndefined();
+        });
+
+        it("should digest every payload the arguments carry, not only the first", () => {
+            // Arrange
+            const large = "x".repeat(CacheHelper.LARGE_STRING_THRESHOLD + 1);
+
+            // Act
+            const result = cacheHelper.toHashableArgs({ inputs: { first: large, second: new Uint8Array([1, 2]) } });
+
+            // Assert
+            expect(result.inputs.first).toMatchObject({ length: large.length });
+            expect(result.inputs.second).toMatchObject({ byteLength: 2 });
         });
     });
 });

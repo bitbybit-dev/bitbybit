@@ -84,4 +84,36 @@ describe("ManifoldEvaluate", () => {
             expect(Number.isFinite(tolerance)).toBe(true);
         });
     });
+
+    describe("originalID", () => {
+        it("should give a solid built from a primitive an identity of its own", () => {
+            // Act
+            const id = manifold.manifold.evaluate.originalID(new Inputs.Manifold.ManifoldDto(cube));
+
+            // Assert
+            expect(id).toBeGreaterThanOrEqual(0);
+        });
+
+        it("should give a solid built by a boolean no identity of its own", () => {
+            // Arrange
+            const moved = manifold.manifold.transforms.translateXYZ(new Inputs.Manifold.TranslateXYZDto(cube, CUBE_SIZE / 2, 0, 0));
+            const cut = manifold.manifold.booleans.subtract(new Inputs.Manifold.TwoManifoldsDto(cube, moved));
+
+            // Act
+            const id = manifold.manifold.evaluate.originalID(new Inputs.Manifold.ManifoldDto(cut));
+
+            // Assert
+            expect(id).toBe(-1);
+        });
+    });
+
+    describe("status", () => {
+        it("should report a well formed solid as being in no error", () => {
+            // Act
+            const status = manifold.manifold.evaluate.status(new Inputs.Manifold.ManifoldDto(cube));
+
+            // Assert
+            expect(status).toBe("NoError");
+        });
+    });
 });

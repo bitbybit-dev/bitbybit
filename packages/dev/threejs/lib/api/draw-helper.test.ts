@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
 import { createDrawHelperMocks, hexToRgb, colorsAreEqual, getMaterialFromMesh, createMockJSCADMesh, createMockOCCTShape, mockWorkerError } from "./__mocks__/test-helpers";
+import { mockOCCTBoxDecomposedMesh } from "./__mocks__/test-data";
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
@@ -2734,5 +2735,284 @@ describe("DrawHelper unit tests", () => {
             consoleWarnSpy.mockRestore();
         });
     });
-});
 
+    // The paths the suites above leave untouched: the material caches and their disposal, the
+    // per-face drawing a script asks for when it wants to pick a face out afterwards, the colour
+    // strategies of a polyline, and what each drawing does with data that is not what it expects.
+    describe("the material caches", () => {
+        it("should report itself disposed while it holds no material", () => {
+            expect(drawHelper.isDisposed()).toBe(true);
+        });
+
+        it("should hold a material once one has been made", async () => {
+            // Arrange
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = createMockOCCTShape();
+            inputs.drawFaces = true;
+
+            // Act
+            await drawHelper.handleDecomposedMeshIndividually(inputs, mockOCCTBoxDecomposedMesh(), {});
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(false);
+        });
+
+        it("should let every material it holds go when disposed", async () => {
+            // Arrange
+            vi.spyOn(console, "log").mockImplementation(() => undefined);
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = createMockOCCTShape();
+            await drawHelper.drawShape(inputs);
+
+            // Act
+            drawHelper.dispose();
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(true);
+        });
+
+        it("should carry on disposing when one material refuses", async () => {
+            // Arrange
+            vi.spyOn(console, "log").mockImplementation(() => undefined);
+            const warned: unknown[] = [];
+            vi.spyOn(console, "warn").mockImplementation((message: unknown) => { warned.push(message); });
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = createMockOCCTShape();
+            inputs.drawFaces = true;
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputs, mockOCCTBoxDecomposedMesh(), {});
+            const face = group.children.find((child) => child.name === "face 0")!;
+            const material = (face.children[0] as THREEJS.Mesh).material as THREEJS.Material;
+            material.dispose = () => { throw new Error("already gone"); };
+
+            // Act
+            drawHelper.dispose();
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(true);
+            expect(warned.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe("handleDecomposedMeshIndividually", () => {
+        const inputsFor = (): Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer> => {
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = createMockOCCTShape();
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawVertices = true;
+            return inputs;
+        };
+
+        it("should give every face a mesh of its own, named after the face", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputsFor(), mockOCCTBoxDecomposedMesh(), {});
+
+            // Assert
+            expect(group.children.some((child) => child.name === "face 0")).toBe(true);
+            expect(group.children.some((child) => child.name === "face 5")).toBe(true);
+        });
+
+        it("should give every face a back face as well unless told otherwise", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputsFor(), mockOCCTBoxDecomposedMesh(), {});
+
+            // Assert
+            expect(group.children.some((child) => child.name === "face 0 backFace")).toBe(true);
+        });
+
+        it("should leave the back faces out when the shape is drawn one sided", async () => {
+            // Arrange
+            const inputs = inputsFor();
+            inputs.drawTwoSided = false;
+
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputs, mockOCCTBoxDecomposedMesh(), {});
+
+            // Assert
+            expect(group.children.some((child) => child.name.includes("backFace"))).toBe(false);
+        });
+
+        it("should give every edge a mesh of its own, named after the edge", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputsFor(), mockOCCTBoxDecomposedMesh(), {});
+
+            // Assert
+            expect(group.children.some((child) => child.name === "edge 0")).toBe(true);
+        });
+
+        it("should draw the vertices in one mesh of their own", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputsFor(), mockOCCTBoxDecomposedMesh(), {});
+
+            // Assert
+            expect(group.children.filter((child) => child.name === "vertices")).toHaveLength(1);
+        });
+
+        it("should take the face material it was given rather than making one", async () => {
+            // Arrange
+            const inputs = inputsFor();
+            const material = new THREEJS.MeshPhysicalMaterial({ color: 0xff00ff });
+            inputs.faceMaterial = material;
+
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputs, mockOCCTBoxDecomposedMesh(), {});
+            const face = group.children.find((child) => child.name === "face 0")!;
+            const drawnMaterial = (face.children[0] as THREEJS.Mesh).material as THREEJS.MeshPhysicalMaterial;
+
+            // Assert
+            expect(drawnMaterial.color.getHexString()).toBe("ff00ff");
+        });
+
+        it("should draw nothing of a kind it was not asked for", async () => {
+            // Arrange
+            const inputs = inputsFor();
+            inputs.drawFaces = false;
+            inputs.drawEdges = false;
+            inputs.drawVertices = false;
+
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputs, mockOCCTBoxDecomposedMesh(), {});
+
+            // Assert
+            expect(group.children).toEqual([]);
+        });
+    });
+
+    // What each drawing does when the data is not what it expects, and the paths a colour takes
+    // through a polyline. Both are reachable from a script: the first when a worker answers oddly,
+    // the second whenever more than one colour is given.
+    describe("what a drawing does with data it cannot use", () => {
+        it("should say which drawing failed when the worker refuses a list of manifolds", async () => {
+            // Arrange
+            vi.spyOn(console, "error").mockImplementation(() => undefined);
+            mockWorkerError(mockManifoldWorkerManager, "decomposeManifoldsOrCrossSections", new Error("kernel gone"));
+            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
+            inputs.manifoldsOrCrossSections = [{ hash: 123, type: "manifold" }];
+
+            // Act & Assert
+            await expect(drawHelper.drawManifoldsOrCrossSections(inputs))
+                .rejects.toThrow("Failed to draw manifolds or cross sections");
+        });
+
+        it("should say which drawing failed when the worker refuses a list of shapes", async () => {
+            // Arrange
+            vi.spyOn(console, "error").mockImplementation(() => undefined);
+            mockWorkerError(mockOccWorkerManager, "shapesToMeshes", new Error("kernel gone"));
+            const inputs = new Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shapes = [createMockOCCTShape()];
+
+            // Act & Assert
+            await expect(drawHelper.drawShapes(inputs)).rejects.toThrow("Failed to draw OCCT shapes");
+        });
+
+        it("should say which drawing failed when the worker refuses a list of jscad meshes", async () => {
+            // Arrange
+            vi.spyOn(console, "error").mockImplementation(() => undefined);
+            mockWorkerError(mockJscadWorkerManager, "shapesToMeshes", new Error("kernel gone"));
+            const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<THREEJS.Group>();
+            inputs.meshes = [createMockJSCADMesh()];
+
+            // Act & Assert
+            await expect(drawHelper.drawSolidOrPolygonMeshes(inputs)).rejects.toThrow("Failed to draw JSCAD meshes");
+        });
+    });
+
+    describe("the colours of a list of jscad meshes", () => {
+        it("should give each mesh the colour standing at its own place in the list", async () => {
+            // Arrange
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+            ]);
+            const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<THREEJS.Group>();
+            inputs.meshes = [createMockJSCADMesh(), createMockJSCADMesh()];
+            inputs.colours = ["#ff0000", "#00ff00"];
+            inputs.opacity = 1;
+
+            // Act
+            const group = await drawHelper.drawSolidOrPolygonMeshes(inputs);
+
+            // Assert
+            expect(group.children).toHaveLength(2);
+        });
+
+        it("should give every mesh the first colour when the list does not line up", async () => {
+            // Arrange
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+            ]);
+            const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<THREEJS.Group>();
+            inputs.meshes = [createMockJSCADMesh(), createMockJSCADMesh()];
+            inputs.colours = ["#ff0000"];
+            inputs.opacity = 1;
+
+            // Act
+            const group = await drawHelper.drawSolidOrPolygonMeshes(inputs);
+
+            // Assert
+            expect(group.children).toHaveLength(2);
+        });
+
+        it("should draw nothing of a mesh the worker described without a transform", async () => {
+            // Arrange
+            vi.spyOn(console, "warn").mockImplementation(() => undefined);
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2] },
+            ]);
+            const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<THREEJS.Group>();
+            inputs.meshes = [createMockJSCADMesh()];
+            inputs.colours = "#ff0000";
+            inputs.opacity = 1;
+
+            // Act
+            const group = await drawHelper.drawSolidOrPolygonMeshes(inputs);
+
+            // Assert - the mesh group is made but no geometry is put in it
+            const meshGroup = group.children[0] as THREEJS.Group;
+            expect(meshGroup.children.every((child) => !(child instanceof THREEJS.Mesh))).toBe(true);
+        });
+    });
+
+    describe("a surface drawn from mesh data", () => {
+        // The method takes a material, and a caller that has none passes nothing; the parameter is not
+        // declared optional, so the absence has to be spelled out.
+        type SurfaceMeshData = { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined };
+        const NO_MATERIAL: THREEJS.MeshPhysicalMaterial = undefined!;
+
+        it("should work out the normals when the data carries none", () => {
+            // Act
+            const group = drawHelper.createOrUpdateSurfacesMesh(
+                [{ positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2] }],
+                undefined, false, NO_MATERIAL, true, false);
+            const mesh = group.children[0] as THREEJS.Mesh;
+
+            // Assert
+            expect(mesh.geometry.getAttribute("normal").count).toBe(3);
+        });
+
+        it("should skip a mesh the data describes without positions", () => {
+            // Arrange
+            vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+            // Act
+            const group = drawHelper.createOrUpdateSurfacesMesh(
+                [{ indices: [0, 1, 2] } as SurfaceMeshData],
+                undefined, false, NO_MATERIAL, true, false);
+            const mesh = group.children[0] as THREEJS.Mesh;
+
+            // Assert
+            expect(mesh.geometry.getAttribute("position").count).toBe(0);
+        });
+
+        it("should hide the group when it was asked to draw it hidden", () => {
+            // Act
+            const group = drawHelper.createOrUpdateSurfacesMesh(
+                [{ positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2] }],
+                undefined, false, NO_MATERIAL, true, true);
+
+            // Assert
+            expect(group.visible).toBe(false);
+        });
+    });
+});

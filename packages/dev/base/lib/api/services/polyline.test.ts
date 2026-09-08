@@ -843,5 +843,23 @@ describe("Polyline unit tests", () => {
         });
     });
 
-});
 
+    describe("create without saying whether the polyline closes", () => {
+        it("should leave it open", () => {
+            expect(polyline.create({ points: [[0, 0, 0], [1, 0, 0]] }).isClosed).toBe(false);
+        });
+    });
+
+    describe("the segments of a closed polyline that already returns to its start", () => {
+        it("should not add a segment of no length to close it again", () => {
+            // Arrange - the last point repeats the first
+            const closed = { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 0, 0]] as Inputs.Base.Point3[], isClosed: true };
+
+            // Act
+            const segments = polyline.polylineToSegments({ polyline: closed });
+
+            // Assert
+            expect(segments).toHaveLength(3);
+        });
+    });
+});

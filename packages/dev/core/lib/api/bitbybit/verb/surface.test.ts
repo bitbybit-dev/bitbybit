@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { verbSurface } from "../../__test__/verb";
 import type { VerbSurface } from "./surface";
 import * as Inputs from "../../inputs";
+import { BaseTypes } from "../base-types";
 
 // verb's surface objects have no type on the API today, so the suite names the one the API returns.
 type Surface = ReturnType<VerbSurface["createSurfaceByCorners"]>;
@@ -131,6 +132,177 @@ describe("VerbSurface", () => {
             expect(Math.sign(after[2])).toBe(-Math.sign(before[2]));
             expect(point[0]).toBeCloseTo(WIDTH * MIDDLE, 6);
             expect(point[1]).toBeCloseTo(LENGTH * MIDDLE, 6);
+        });
+    });
+
+    // The rest of the class: the other ways a surface can be made, the readers of what it is made of,
+    // the isocurve families, and the transform, which rebuilds the surface from moved control points
+    // rather than asking verb to move it.
+    describe("createSurfaceByKnotsControlPointsWeights", () => {
+        it("should build a flat patch spanning the control points it was given", () => {
+            // Arrange - a bilinear patch over the same rectangle
+            const points = [[CORNER_A, CORNER_D], [CORNER_B, CORNER_C]];
+            const weights = [[1, 1], [1, 1]];
+
+            // Act
+            const built = surfaceService.createSurfaceByKnotsControlPointsWeights(
+                new Inputs.Verb.KnotsControlPointsWeightsDto(1, 1, [0, 0, 1, 1], [0, 0, 1, 1], points as never, weights as never));
+
+            // Assert
+            expect(surfaceService.point(new Inputs.Verb.SurfaceLocationDto(built, 1, 1))).toEqual(CORNER_C);
+        });
+    });
+
+    describe("createSurfaceByLoftingCurves", () => {
+        it("should build a surface running between the curves it was given", () => {
+            // Arrange
+            const first = surfaceService.isocurve(new Inputs.Verb.SurfaceParameterDto(flat, 0, false));
+            const second = surfaceService.isocurve(new Inputs.Verb.SurfaceParameterDto(flat, 1, false));
+
+            // Act
+            const lofted = surfaceService.createSurfaceByLoftingCurves(new Inputs.Verb.LoftCurvesDto(1, [first, second]));
+
+            // Assert
+            const corner = surfaceService.point(new Inputs.Verb.SurfaceLocationDto(lofted, 0, 0));
+            expect(corner[0]).toBeCloseTo(CORNER_A[0], 6);
+            expect(corner[1]).toBeCloseTo(CORNER_A[1], 6);
+        });
+    });
+
+    describe("clone", () => {
+        it("should hand back a surface of its own spanning the same corners", () => {
+            // Act
+            const copy = surfaceService.clone(new Inputs.Verb.SurfaceDto(flat));
+
+            // Assert
+            expect(copy).not.toBe(flat);
+            expect(surfaceService.point(new Inputs.Verb.SurfaceLocationDto(copy, 1, 1))[0]).toBeCloseTo(CORNER_C[0], 6);
+        });
+    });
+
+    describe("closestParam", () => {
+        it("should give the parameters nearest the point it was given", () => {
+            // The API declares a UVDto here, but verb answers with the pair as an array and this
+            // method hands back what verb gave it. The declared type is the one that is wrong, and
+            // this pins what a caller actually receives.
+            // Act
+            const uv: BaseTypes.UVDto = surfaceService.closestParam(new Inputs.Verb.SurfaceParamDto(flat, [WIDTH / 2, LENGTH / 2, 5]));
+            const pair = Object.values(uv);
+
+            // Assert
+            expect(pair[0]).toBeCloseTo(MIDDLE, 4);
+            expect(pair[1]).toBeCloseTo(MIDDLE, 4);
+        });
+    });
+
+    describe("controlPoints", () => {
+        it("should give a grid of control points, one row per span", () => {
+            // Act
+            const points = surfaceService.controlPoints(new Inputs.Verb.SurfaceDto(flat));
+
+            // Assert
+            expect(points).toHaveLength(CORNER_SURFACE_DEGREE + 1);
+            expect(points[0]).toHaveLength(CORNER_SURFACE_DEGREE + 1);
+        });
+    });
+
+    describe("weights", () => {
+        it("should give a weight for every control point", () => {
+            // Act
+            const weights = surfaceService.weights(new Inputs.Verb.SurfaceDto(flat));
+
+            // Assert
+            expect(weights).toHaveLength(CORNER_SURFACE_DEGREE + 1);
+            expect(weights[0]).toEqual([1, 1, 1, 1]);
+        });
+    });
+
+    describe("knotsU", () => {
+        it("should give the knot vector of a cubic patch", () => {
+            expect(surfaceService.knotsU(new Inputs.Verb.SurfaceDto(flat))).toEqual([0, 0, 0, 0, 1, 1, 1, 1]);
+        });
+    });
+
+    describe("knotsV", () => {
+        it("should give the knot vector of the other direction", () => {
+            expect(surfaceService.knotsV(new Inputs.Verb.SurfaceDto(flat))).toEqual([0, 0, 0, 0, 1, 1, 1, 1]);
+        });
+    });
+
+    describe("derivatives", () => {
+        it("should give the point and how it moves in each direction", () => {
+            // Act
+            const derivatives = surfaceService.derivatives(new Inputs.Verb.DerivativesDto(flat, MIDDLE, MIDDLE, 1));
+
+            // Assert
+            expect(derivatives[0]![0]![0]).toBeCloseTo(WIDTH / 2, 6);
+            expect(derivatives[0]![0]![1]).toBeCloseTo(LENGTH / 2, 6);
+        });
+    });
+
+    describe("boundaries", () => {
+        it("should give the four edges of the patch", () => {
+            expect(surfaceService.boundaries(new Inputs.Verb.SurfaceDto(flat))).toHaveLength(4);
+        });
+    });
+
+    describe("isocurve", () => {
+        it("should give the curve across the patch at that parameter", () => {
+            // Act
+            const isocurve = surfaceService.isocurve(new Inputs.Verb.SurfaceParameterDto(flat, MIDDLE, false));
+
+            // Assert - the curve runs the length of the patch at half its width
+            expect(isocurve.point(0)[0]).toBeCloseTo(WIDTH / 2, 6);
+            expect(isocurve.point(1)[1]).toBeCloseTo(LENGTH, 6);
+        });
+    });
+
+    describe("isocurvesAtParams", () => {
+        it("should give one curve per parameter it was given", () => {
+            // Act
+            const isocurves = surfaceService.isocurvesAtParams(new Inputs.Verb.IsocurvesParametersDto(flat, [0.25, MIDDLE, 0.75], false));
+
+            // Assert
+            expect(isocurves).toHaveLength(3);
+        });
+    });
+
+    describe("isocurvesSubdivision", () => {
+        it("should drop the last curve when it was not asked for", () => {
+            // Act
+            const withLast = surfaceService.isocurvesSubdivision(new Inputs.Verb.IsocurveSubdivisionDto(flat, false, true, true, ISOCURVES));
+            const withoutLast = surfaceService.isocurvesSubdivision(new Inputs.Verb.IsocurveSubdivisionDto(flat, false, false, true, ISOCURVES));
+
+            // Assert
+            expect(withoutLast).toHaveLength(withLast.length - 1);
+        });
+
+        it("should drop the first curve when it was not asked for", () => {
+            // Act
+            const withFirst = surfaceService.isocurvesSubdivision(new Inputs.Verb.IsocurveSubdivisionDto(flat, false, true, true, ISOCURVES));
+            const withoutFirst = surfaceService.isocurvesSubdivision(new Inputs.Verb.IsocurveSubdivisionDto(flat, false, true, false, ISOCURVES));
+
+            // Assert
+            expect(withoutFirst).toHaveLength(withFirst.length - 1);
+        });
+    });
+
+    describe("split", () => {
+        it("should cut the patch in two at the parameter it was given", () => {
+            expect(surfaceService.split(new Inputs.Verb.SurfaceParameterDto(flat, MIDDLE, false))).toHaveLength(2);
+        });
+    });
+
+    describe("transformSurface", () => {
+        it("should move the patch by the transformation it was given", () => {
+            // Arrange - a translation of 10 along Z
+            const translation: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1]];
+
+            // Act
+            const moved = surfaceService.transformSurface(new Inputs.Verb.SurfaceTransformDto(flat, translation));
+
+            // Assert
+            expect(surfaceService.point(new Inputs.Verb.SurfaceLocationDto(moved, 0, 0))[2]).toBeCloseTo(10, 6);
         });
     });
 });

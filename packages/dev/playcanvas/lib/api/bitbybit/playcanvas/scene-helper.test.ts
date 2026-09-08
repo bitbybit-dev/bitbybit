@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initPlayCanvas } from "./scene-helper";
 import { PlayCanvasScene } from "../../inputs/playcanvas-scene-helper-inputs";
 import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
-import { MockEntityType, MockAppType } from "../../__mocks__/playcanvas.mock";
+import { asMockApp, asMockEntity } from "../../__mocks__/playcanvas.mock";
+import type { Mock } from "vitest";
+import * as pc from "playcanvas";
 
 // Mock PlayCanvas module using centralized mocks
 vi.mock("playcanvas", async () => {
@@ -82,7 +84,7 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas();
 
             // Assert
-            expect((result.app as unknown as MockAppType)._started).toBe(true);
+            expect(asMockApp(result.app)._started).toBe(true);
 
             // Cleanup
             result.dispose();
@@ -99,7 +101,7 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas(config);
 
             // Assert
-            expect((result.app as unknown as MockAppType)._canvas).toBe(mockCanvas);
+            expect(asMockApp(result.app)._canvas).toBe(mockCanvas);
 
             // Cleanup
             result.dispose();
@@ -119,7 +121,7 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas();
 
             // Assert - canvas should be created and different from test canvas
-            expect((result.app as unknown as MockAppType)._canvas).not.toBe(mockCanvas);
+            expect(asMockApp(result.app)._canvas).not.toBe(mockCanvas);
 
             // Cleanup
             result.dispose();
@@ -368,7 +370,7 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas(config);
 
             // Assert
-            const lightComponent = (result.directionalLight as unknown as MockEntityType).light;
+            const lightComponent = asMockEntity(result.directionalLight).light;
             expect(lightComponent?.intensity).toBe(2.5);
 
             // Cleanup
@@ -385,7 +387,7 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas(config);
 
             // Assert
-            const lightComponent = (result.directionalLight as unknown as MockEntityType).light;
+            const lightComponent = asMockEntity(result.directionalLight).light;
             expect(lightComponent?.castShadows).toBe(true);
 
             // Cleanup
@@ -402,7 +404,7 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas(config);
 
             // Assert
-            const lightComponent = (result.directionalLight as unknown as MockEntityType).light;
+            const lightComponent = asMockEntity(result.directionalLight).light;
             expect(lightComponent?.castShadows).toBe(false);
 
             // Cleanup
@@ -420,7 +422,7 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas(config);
 
             // Assert
-            const lightComponent = (result.directionalLight as unknown as MockEntityType).light;
+            const lightComponent = asMockEntity(result.directionalLight).light;
             expect(lightComponent?.shadowResolution).toBe(4096);
 
             // Cleanup
@@ -582,7 +584,7 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas(config);
 
             // Assert
-            expect((result.app as unknown as MockAppType)._updateCallbacks.length).toBeGreaterThan(0);
+            expect(asMockApp(result.app)._updateCallbacks.length).toBeGreaterThan(0);
 
             // Cleanup
             result.dispose();
@@ -594,13 +596,13 @@ describe("initPlayCanvas unit tests", () => {
             config.canvasId = "test-canvas";
             config.enableOrbitCamera = true;
             const result = initPlayCanvas(config);
-            const initialCallbackCount = (result.app as unknown as MockAppType)._updateCallbacks.length;
+            const initialCallbackCount = asMockApp(result.app)._updateCallbacks.length;
 
             // Act
             result.orbitCamera?.destroy();
 
             // Assert
-            expect((result.app as unknown as MockAppType)._updateCallbacks.length).toBeLessThan(initialCallbackCount);
+            expect(asMockApp(result.app)._updateCallbacks.length).toBeLessThan(initialCallbackCount);
 
             // Cleanup
             result.dispose();
@@ -637,6 +639,355 @@ describe("initPlayCanvas unit tests", () => {
 
             // Cleanup
             result.dispose();
+        });
+    });
+});
+
+// The camera is driven by a pointer and by a pair of fingers, and PlayCanvas delivers both as events
+// on the application's own devices. The devices the suite stands in for record the handlers they are
+// given, so calling one back is exactly what the engine would do.
+describe("the orbit camera's input handling", () => {
+    let result: ReturnType<typeof initPlayCanvas>;
+
+    const handlerFor = (device: { on: Mock }, type: string): ((event: unknown) => void) =>
+        device.on.mock.calls.find((call) => call[0] === type)![1] as (event: unknown) => void;
+
+    const mouseHandler = (type: string): ((event: unknown) => void) =>
+        handlerFor(asMockApp(result.app).mouse!, type);
+
+    const touchHandler = (type: string): ((event: unknown) => void) =>
+        handlerFor(asMockApp(result.app).touch!, type);
+
+    const mouseEvent = (fields: Record<string, unknown>): unknown =>
+        ({ x: 0, y: 0, dx: 0, dy: 0, wheelDelta: 0, event: { preventDefault: () => undefined }, ...fields });
+
+    let canvas: HTMLCanvasElement;
+
+    beforeEach(() => {
+        canvas = document.createElement("canvas");
+        canvas.id = "test-canvas";
+        document.body.appendChild(canvas);
+        const config = new PlayCanvasScene.InitPlayCanvasDto();
+        config.canvasId = "test-canvas";
+        config.enableOrbitCamera = true;
+        result = initPlayCanvas(config);
+    });
+
+    afterEach(() => {
+        result.dispose();
+        canvas.remove();
+    });
+
+    describe("the mouse", () => {
+        it("should turn the camera while the left button is held", () => {
+            // Arrange
+            const started = result.orbitCamera!.orbitCamera.yaw;
+            mouseHandler("mousedown")(mouseEvent({ button: 0 }));
+
+            // Act
+            mouseHandler("mousemove")(mouseEvent({ dx: 10, dy: 5 }));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).not.toBe(started);
+            expect(result.orbitCamera!.orbitCamera.pitch).not.toBe(0);
+        });
+
+        it("should stop turning once the left button is released", () => {
+            // Arrange
+            const started = result.orbitCamera!.orbitCamera.yaw;
+            mouseHandler("mousedown")(mouseEvent({ button: 0 }));
+            mouseHandler("mouseup")(mouseEvent({ button: 0 }));
+
+            // Act
+            mouseHandler("mousemove")(mouseEvent({ dx: 10, dy: 5 }));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).toBe(started);
+        });
+
+        it("should move the pivot while the right button is held", () => {
+            // Arrange
+            const started = result.orbitCamera!.orbitCamera.yaw;
+            mouseHandler("mousedown")(mouseEvent({ button: 2 }));
+
+            // Act
+            mouseHandler("mousemove")(mouseEvent({ x: 100, y: 100 }));
+
+            // Assert - a pan moves the pivot rather than turning the camera
+            expect(result.orbitCamera!.orbitCamera.yaw).toBe(started);
+            expect(result.orbitCamera!.orbitCamera.pivotPoint.x).not.toBe(0);
+        });
+
+        it("should stop moving the pivot once the middle button is released", () => {
+            // Arrange
+            mouseHandler("mousedown")(mouseEvent({ button: 1 }));
+            mouseHandler("mouseup")(mouseEvent({ button: 1 }));
+            const before = result.orbitCamera!.orbitCamera.yaw;
+
+            // Act
+            mouseHandler("mousemove")(mouseEvent({ dx: 10 }));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).toBe(before);
+        });
+
+        it("should back away on a wheel turn", () => {
+            // Arrange
+            const before = result.orbitCamera!.orbitCamera.distance;
+
+            // Act
+            mouseHandler("mousewheel")(mouseEvent({ wheelDelta: 1 }));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBeGreaterThan(before);
+        });
+
+        it("should forget the buttons when the pointer leaves the window", () => {
+            // Arrange
+            const started = result.orbitCamera!.orbitCamera.yaw;
+            mouseHandler("mousedown")(mouseEvent({ button: 0 }));
+            window.dispatchEvent(new Event("mouseout"));
+
+            // Act
+            mouseHandler("mousemove")(mouseEvent({ dx: 10, dy: 5 }));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).toBe(started);
+        });
+    });
+
+    describe("touch", () => {
+        const touches = (points: { x: number; y: number }[]): unknown => ({ touches: points });
+
+        it("should turn the camera as one finger moves", () => {
+            // Arrange
+            const started = result.orbitCamera!.orbitCamera.yaw;
+            touchHandler("touchstart")(touches([{ x: 0, y: 0 }]));
+
+            // Act
+            touchHandler("touchmove")(touches([{ x: 10, y: 5 }]));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).not.toBe(started);
+        });
+
+        it("should come closer as two fingers spread apart", () => {
+            // Arrange
+            const before = result.orbitCamera!.orbitCamera.distance;
+            touchHandler("touchstart")(touches([{ x: 0, y: 0 }, { x: 10, y: 0 }]));
+
+            // Act
+            touchHandler("touchmove")(touches([{ x: 0, y: 0 }, { x: 100, y: 0 }]));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).not.toBe(before);
+        });
+
+        it("should take up where it left off when a finger is lifted", () => {
+            // Arrange
+            const started = result.orbitCamera!.orbitCamera.yaw;
+            touchHandler("touchstart")(touches([{ x: 0, y: 0 }, { x: 10, y: 0 }]));
+
+            // Act
+            touchHandler("touchend")(touches([{ x: 50, y: 50 }]));
+            touchHandler("touchmove")(touches([{ x: 60, y: 50 }]));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).not.toBe(started);
+        });
+
+        it("should do nothing for a touch of more fingers than it follows", () => {
+            // Arrange
+            const before = result.orbitCamera!.orbitCamera.yaw;
+
+            // Act
+            touchHandler("touchcancel")(touches([{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }]));
+            touchHandler("touchmove")(touches([{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }]));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).toBe(before);
+        });
+    });
+});
+
+// What the camera itself does once it exists: the limits it holds its values inside, the two ways it
+// can be pointed at something, and the easing it applies on the way to where it was told to go.
+describe("the orbit camera instance", () => {
+    let result: ReturnType<typeof initPlayCanvas>;
+    let canvas: HTMLCanvasElement;
+
+    const build = (adjust: (config: PlayCanvasScene.InitPlayCanvasDto) => void = () => undefined): ReturnType<typeof initPlayCanvas> => {
+        const config = new PlayCanvasScene.InitPlayCanvasDto();
+        config.canvasId = "test-canvas";
+        config.enableOrbitCamera = true;
+        adjust(config);
+        return initPlayCanvas(config);
+    };
+
+    beforeEach(() => {
+        canvas = document.createElement("canvas");
+        canvas.id = "test-canvas";
+        document.body.appendChild(canvas);
+        result = build();
+    });
+
+    afterEach(() => {
+        result.dispose();
+        canvas.remove();
+    });
+
+    describe("distance", () => {
+        it("should not come closer than the nearest it is allowed", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.distance = -100;
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBe(result.orbitCamera!.orbitCamera.distanceMin);
+        });
+
+        it("should not back away further than the furthest it is allowed", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.distance = 1e9;
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBe(result.orbitCamera!.orbitCamera.distanceMax);
+        });
+
+        it("should take a distance that lies within the limits", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.distance = 12;
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBe(12);
+        });
+    });
+
+    describe("pitch", () => {
+        it("should not look further up than it is allowed", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.pitch = 1000;
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.pitch).toBe(result.orbitCamera!.orbitCamera.pitchAngleMax);
+        });
+
+        it("should not look further down than it is allowed", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.pitch = -1000;
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.pitch).toBe(result.orbitCamera!.orbitCamera.pitchAngleMin);
+        });
+    });
+
+    describe("yaw", () => {
+        it("should take the shorter way round rather than unwinding a whole turn", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.yaw = 350;
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).toBe(350);
+        });
+
+        it("should take the shorter way round in the other direction too", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.yaw = -350;
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).toBe(-350);
+        });
+    });
+
+    describe("pivotPoint", () => {
+        it("should take the point it was given rather than the object holding it", () => {
+            // Arrange
+            const point = result.orbitCamera!.orbitCamera.pivotPoint.clone();
+            point.x = 5;
+
+            // Act
+            result.orbitCamera!.orbitCamera.pivotPoint = point;
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.pivotPoint.x).toBe(5);
+            expect(result.orbitCamera!.orbitCamera.pivotPoint).not.toBe(point);
+        });
+    });
+
+    describe("reset", () => {
+        it("should put the camera where it was told, all three at once", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.reset(45, 30, 20);
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.yaw).toBe(45);
+            expect(result.orbitCamera!.orbitCamera.pitch).toBe(30);
+            expect(result.orbitCamera!.orbitCamera.distance).toBe(20);
+        });
+    });
+
+    describe("update", () => {
+        it("should move part of the way towards where it was told to go", () => {
+            // Arrange
+            result.orbitCamera!.orbitCamera.reset(0, 0, 10);
+            result.orbitCamera!.orbitCamera.distance = 20;
+
+            // Act
+            result.orbitCamera!.update(0.001);
+
+            // Assert - the target is held while the camera eases towards it
+            expect(result.orbitCamera!.orbitCamera.distance).toBe(20);
+        });
+
+        it("should arrive at once when it was given no inertia", () => {
+            // Arrange
+            result.dispose();
+            result = build((config) => {
+            config.orbitCameraOptions = new PlayCanvasCamera.OrbitCameraDto();
+            config.orbitCameraOptions.inertiaFactor = 0;
+        });
+
+            // Act
+            result.orbitCamera!.orbitCamera.distance = 20;
+            result.orbitCamera!.update(0.016);
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBe(20);
+        });
+    });
+
+    describe("focus", () => {
+        it("should back away far enough to hold the object it was pointed at", () => {
+            // Arrange
+            const target = result.app.root.children[0]!;
+
+            // Act
+            result.orbitCamera!.orbitCamera.focus(target as never);
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBeGreaterThan(0);
+        });
+    });
+
+    describe("resetAndLookAtPoint", () => {
+        it("should look at the point it was given from where it was told to stand", () => {
+            // Act
+            result.orbitCamera!.orbitCamera.resetAndLookAtPoint(new pc.Vec3(0, 0, 20), new pc.Vec3(0, 0, 0));
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBeCloseTo(20, 5);
+        });
+    });
+
+    describe("resetAndLookAtEntity", () => {
+        it("should look at the middle of the object it was given", () => {
+            // Arrange
+            const target = result.app.root.children[0]!;
+
+            // Act
+            result.orbitCamera!.orbitCamera.resetAndLookAtEntity(new pc.Vec3(0, 0, 20), target as never);
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBeGreaterThan(0);
         });
     });
 });

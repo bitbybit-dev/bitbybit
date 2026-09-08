@@ -137,4 +137,91 @@ describe("ManifoldBooleans", () => {
             expect(volumeOf(lower)).toBeCloseTo(BIG_VOLUME / 2, 6);
         });
     });
+
+    describe("split", () => {
+        it("should give back both what the cutter kept and what it took away", () => {
+            // Arrange - a cutter reaching through half the cube
+            const cutter = manifold.manifold.transforms.translateXYZ(
+                new Inputs.Manifold.TranslateXYZDto(big, BIG_SIZE / 2, 0, 0));
+
+            // Act
+            const pieces = manifold.manifold.booleans.split(new Inputs.Manifold.SplitManifoldsDto(big, cutter));
+
+            // Assert
+            expect(pieces).toHaveLength(2);
+            expect(volumeOf(pieces[0]!) + volumeOf(pieces[1]!)).toBeCloseTo(BIG_VOLUME, 5);
+        });
+    });
+
+    describe("trimByPlane", () => {
+        it("should keep only what lies on one side of the plane", () => {
+            // Act
+            const trimmed = manifold.manifold.booleans.trimByPlane(new Inputs.Manifold.TrimByPlaneDto(big, [1, 0, 0], 0));
+
+            // Assert
+            expect(volumeOf(trimmed)).toBeCloseTo(BIG_VOLUME / 2, 5);
+        });
+    });
+
+    describe("splitByPlaneOnOffsets", () => {
+        it("should give back one piece per offset it was given", () => {
+            // Act
+            const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
+                new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-BIG_SIZE / 4, 0, BIG_SIZE / 4]));
+
+            // Assert
+            expect(pieces).toHaveLength(3);
+        });
+
+        it("should cut each piece at the offset that follows it", () => {
+            // Act
+            const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
+                new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-BIG_SIZE / 4, 0, BIG_SIZE / 4]));
+
+            // Assert - a 4 wide cube cut at -1, 0 and 1 gives three slabs of one unit each
+            expect(pieces.map((piece) => volumeOf(piece))).toEqual(pieces.map(() => expect.closeTo(BIG_VOLUME / 4, 5)));
+        });
+
+        it("should give back the whole solid for an offset the solid lies beyond", () => {
+            // Act - a plane far along the normal leaves the whole solid on the near side of it
+            const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
+                new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [FAR]));
+
+            // Assert
+            expect(pieces).toHaveLength(1);
+            expect(volumeOf(pieces[0]!)).toBeCloseTo(BIG_VOLUME, 5);
+        });
+
+        it("should give back nothing for an offset that lies before all of the solid", () => {
+            // Act - a plane far back along the normal leaves nothing on the near side of it, and what
+            // is on the far side is the remainder, which is released rather than returned
+            const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
+                new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-FAR]));
+
+            // Assert
+            expect(pieces).toEqual([]);
+        });
+
+        it("should give back nothing when there is no solid to split", () => {
+            // Arrange - subtracting a shape from itself leaves nothing behind
+            const empty = manifold.manifold.booleans.subtract(new Inputs.Manifold.TwoManifoldsDto(big, big));
+
+            // Act
+            const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
+                new Inputs.Manifold.SplitByPlaneOnOffsetsDto(empty, [1, 0, 0], [0]));
+
+            // Assert
+            expect(pieces).toEqual([]);
+        });
+
+        it("should not give back what lies beyond the last offset", () => {
+            // Act
+            const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
+                new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [0]));
+
+            // Assert - the half above the plane comes back; the half below it is the remainder, and
+            // the remainder is released rather than returned
+            expect(pieces.reduce((total, piece) => total + volumeOf(piece), 0)).toBeCloseTo(BIG_VOLUME / 2, 5);
+        });
+    });
 });

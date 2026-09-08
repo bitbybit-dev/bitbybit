@@ -2961,4 +2961,146 @@ describe("DrawHelper unit tests", () => {
             expect(materials.size).toBe(1);
         });
     });
+
+    // The paths the suites above leave untouched: the material cache and its disposal, the per-face
+    // drawing a script asks for when it wants to pick a face out afterwards, and what each drawing
+    // says when the worker refuses.
+    const A_DECOMPOSED_BOX: Inputs.OCCT.DecomposedMeshDto = {
+        faceList: [
+            { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], uvs: [0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2], vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0, 1, 0]], numberOfTriangles: 1, centerPoint: [0.33, 0.33, 0], centerNormal: [0, 0, 1], faceIndex: 0 },
+            { vertexCoord: [0, 0, 1, 1, 0, 1, 0, 1, 1], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], uvs: [0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2], vertexCoordVec: [[0, 0, 1], [1, 0, 1], [0, 1, 1]], numberOfTriangles: 1, centerPoint: [0.33, 0.33, 1], centerNormal: [0, 0, 1], faceIndex: 1 },
+        ],
+        edgeList: [
+            { vertexCoord: [[0, 0, 0], [1, 0, 0]], middlePoint: [0.5, 0, 0], edgeIndex: 0 },
+        ],
+        pointsList: [[0, 0, 0], [1, 0, 0]],
+    };
+
+    const occtInputs = (): Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer> => {
+        const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+        inputs.shape = { hash: 1, type: "occ-shape" };
+        inputs.drawFaces = true;
+        inputs.drawEdges = true;
+        inputs.drawVertices = true;
+        return inputs;
+    };
+
+    describe("the material cache", () => {
+        it("should report itself disposed while it holds no material", () => {
+            expect(drawHelper.isDisposed()).toBe(true);
+        });
+
+        it("should hold a material once one has been made", async () => {
+            // Act
+            await drawHelper.handleDecomposedMeshIndividually(occtInputs(), A_DECOMPOSED_BOX, {});
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(false);
+        });
+
+        it("should let every material it holds go when disposed", async () => {
+            // Arrange
+            vi.spyOn(console, "log").mockImplementation(() => undefined);
+            await drawHelper.handleDecomposedMeshIndividually(occtInputs(), A_DECOMPOSED_BOX, {});
+
+            // Act
+            drawHelper.dispose();
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(true);
+        });
+    });
+
+    describe("handleDecomposedMeshIndividually", () => {
+        it("should give every face an entity of its own, named after the face", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(occtInputs(), A_DECOMPOSED_BOX, {});
+
+            // Assert
+            expect(group.children.some((child) => child.name === "face 0")).toBe(true);
+            expect(group.children.some((child) => child.name === "face 1")).toBe(true);
+        });
+
+        it("should give every face a back face as well unless told otherwise", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(occtInputs(), A_DECOMPOSED_BOX, {});
+
+            // Assert
+            expect(group.children.some((child) => child.name === "face 0 backFace")).toBe(true);
+        });
+
+        it("should leave the back faces out when the shape is drawn one sided", async () => {
+            // Arrange - this drawing reads the two sided flag from the options rather than the inputs
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(occtInputs(), A_DECOMPOSED_BOX, { drawTwoSided: false });
+
+            // Assert
+            expect(group.children.some((child) => child.name.includes("backFace"))).toBe(false);
+        });
+
+        it("should give every edge an entity of its own, named after the edge", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(occtInputs(), A_DECOMPOSED_BOX, {});
+
+            // Assert
+            expect(group.children.some((child) => child.name === "edge 0")).toBe(true);
+        });
+
+        it("should draw the vertices in one entity of their own", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(occtInputs(), A_DECOMPOSED_BOX, {});
+
+            // Assert
+            expect(group.children.filter((child) => child.name === "vertices")).toHaveLength(1);
+        });
+
+        it("should draw nothing of a kind it was not asked for", async () => {
+            // Arrange
+            const inputs = occtInputs();
+            inputs.drawFaces = false;
+            inputs.drawEdges = false;
+            inputs.drawVertices = false;
+
+            // Act
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputs, A_DECOMPOSED_BOX, {});
+
+            // Assert
+            expect(group.children).toEqual([]);
+        });
+    });
+
+    describe("what a drawing says when the worker refuses", () => {
+        it("should say which drawing failed for a list of manifolds", async () => {
+            // Arrange
+            vi.spyOn(console, "error").mockImplementation(() => undefined);
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockRejectedValue(new Error("kernel gone"));
+            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer, pc.StandardMaterial>();
+            inputs.manifoldsOrCrossSections = [{ hash: 123, type: "manifold" }];
+
+            // Act & Assert
+            await expect(drawHelper.drawManifoldsOrCrossSections(inputs)).rejects.toThrow("Failed to draw manifolds or cross sections");
+        });
+
+        it("should say which drawing failed for a list of shapes", async () => {
+            // Arrange
+            vi.spyOn(console, "error").mockImplementation(() => undefined);
+            (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockRejectedValue(new Error("kernel gone"));
+            const inputs = new Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shapes = [{ hash: 1, type: "occ-shape" }];
+
+            // Act & Assert
+            await expect(drawHelper.drawShapes(inputs)).rejects.toThrow("Failed to draw OCCT shapes");
+        });
+
+        it("should say which drawing failed for a list of jscad meshes", async () => {
+            // Arrange
+            vi.spyOn(console, "error").mockImplementation(() => undefined);
+            (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockRejectedValue(new Error("kernel gone"));
+            const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<pc.Entity>();
+            inputs.meshes = [jscadSolid()];
+
+            // Act & Assert
+            await expect(drawHelper.drawSolidOrPolygonMeshes(inputs)).rejects.toThrow("Failed to draw JSCAD meshes");
+        });
+    });
 });

@@ -92,6 +92,12 @@ export class MockVec3 {
         this.z = from.z + (to.z - from.z) * t;
         return this;
     }
+    clone() {
+        return new MockVec3(this.x, this.y, this.z);
+    }
+    equals(other: MockVec3) {
+        return this.x === other.x && this.y === other.y && this.z === other.z;
+    }
 }
 
 export class MockQuat {
@@ -151,8 +157,24 @@ export class MockColor {
 
 export class MockCameraComponent {
     fov = 45;
+    // The engine works this out from the viewport it renders into; a camera that has never rendered
+    // still answers with a number, and a square one keeps the arithmetic that reads it honest.
+    aspectRatio = 1;
     farClip = 10000;
     nearClip = 0.1;
+
+    /**
+     * The engine's own projection of a screen point onto a plane at the given depth. A camera that
+     * has never rendered has no viewport to project through, so this stands the point up in world
+     * space unchanged, which is enough for the pans that only need the difference between two of them.
+     */
+    screenToWorld(x: number, y: number, z: number, result?: MockVec3): MockVec3 {
+        const world = result ?? new MockVec3();
+        world.x = x;
+        world.y = y;
+        world.z = z;
+        return world;
+    }
 }
 
 export class MockEntity {
@@ -374,6 +396,24 @@ export interface MockAppType {
     _canvas: HTMLCanvasElement | null;
     _started: boolean;
     _updateCallbacks: ((dt: number) => void)[];
+    // The devices the engine reads input from. A browser may hand over neither, which is why the
+    // application declares them as optional, and the camera has to cope with their absence.
+    mouse: MockMouse | null;
+    touch: MockTouch | null;
+    root: MockEntity;
+}
+
+/**
+ * Reads a value the engine's types describe as one of its own as the stand-in it actually is. The
+ * suites hold engine-typed handles - an application, an entity - that the mocked module built, and
+ * the members they need to read are the recording ones these classes add.
+ */
+export function asMockApp(app: unknown): MockAppType {
+    return app as MockAppType;
+}
+
+export function asMockEntity(entity: unknown): MockEntityType {
+    return entity as MockEntityType;
 }
 
 /**

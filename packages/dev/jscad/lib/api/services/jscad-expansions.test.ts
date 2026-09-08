@@ -64,4 +64,29 @@ describe("JSCADExpansions", () => {
             expect(offset.sides.length).toBeGreaterThan(4);
         });
     });
+
+    describe("when no corner style was asked for", () => {
+        it("should expand with rounded corners", () => {
+            // Arrange
+            const square = jscad.polygon.square(new Inputs.JSCAD.SquareDto([0, 0], 4));
+
+            // Act
+            const expanded = jscad.expansions.expand({ geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto);
+
+            // Assert - a rounded corner is many segments where an edged one is a single point
+            expect(kernel.measurements.measureArea(expanded)).toBeGreaterThan(16);
+        });
+
+        it("should offset with edged corners", () => {
+            // Arrange
+            const square = jscad.polygon.square(new Inputs.JSCAD.SquareDto([0, 0], 4));
+
+            // Act
+            const rounded = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16, corners: Inputs.JSCAD.solidCornerTypeEnum.round });
+            const edged = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto);
+
+            // Assert - the edged corner reaches further out than the rounded one
+            expect(kernel.measurements.measureArea(edged)).toBeGreaterThan(kernel.measurements.measureArea(rounded));
+        });
+    });
 });

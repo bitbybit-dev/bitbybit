@@ -52,3 +52,20 @@ export function spyFetcher(...responses: Response[]) {
     };
     return { fn, calls };
 }
+
+/**
+ * A task status response, as GET /api/v1/tasks/:id answers it.
+ */
+export function taskResponse(taskId: string, status: string, extra: Record<string, unknown> = {}): Response {
+    return okResponse({ taskId, status, ...extra });
+}
+
+/**
+ * The downloads response, as GET /api/v1/tasks/:id/results answers it.
+ */
+export function downloadsResponse(...downloads: { format: string; url: string }[]): Response {
+    return okResponse({ downloads });
+}
+
+/** Poll options that do not wait between attempts, so a suite runs at full speed. */
+export const NO_WAIT = { intervalMs: 0 };

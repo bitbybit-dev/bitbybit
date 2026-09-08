@@ -1945,4 +1945,78 @@ describe("Point unit tests", () => {
             }
         });
     });
+
+    // The corners a fillet cannot be cut into, and the defaults each reader falls back to.
+    describe("maxFilletRadius at a corner that is not one", () => {
+        it("should give no radius where two of the points are the same", () => {
+            expect(point.maxFilletRadius(new Inputs.Point.ThreePointsToleranceDto([0, 0, 0], [0, 0, 0], [1, 0, 0]))).toBe(0);
+        });
+
+        it("should give no radius where the three points lie on one line", () => {
+            expect(point.maxFilletRadius(new Inputs.Point.ThreePointsToleranceDto([1, 0, 0], [2, 0, 0], [0, 0, 0]))).toBe(0);
+        });
+    });
+
+    describe("maxFilletRadiusHalfLine at a corner that is not one", () => {
+        it("should give no radius where two of the points are the same", () => {
+            expect(point.maxFilletRadiusHalfLine(new Inputs.Point.ThreePointsToleranceDto([0, 0, 0], [0, 0, 0], [1, 0, 0]))).toBe(0);
+        });
+
+        it("should give no radius where the three points lie on one line", () => {
+            expect(point.maxFilletRadiusHalfLine(new Inputs.Point.ThreePointsToleranceDto([1, 0, 0], [2, 0, 0], [0, 0, 0]))).toBe(0);
+        });
+    });
+
+    describe("twoPointsAlmostEqual without a tolerance of its own", () => {
+        it("should call two points a hair apart the same", () => {
+            expect(point.twoPointsAlmostEqual({ point1: [1, 0, 0], point2: [1 + 1e-9, 0, 0] })).toBe(true);
+        });
+
+        it("should call two points further apart than that different", () => {
+            expect(point.twoPointsAlmostEqual({ point1: [1, 0, 0], point2: [1.1, 0, 0] })).toBe(false);
+        });
+    });
+
+    describe("hexGridScaledToFit without the sizes and counts", () => {
+        it("should fall back to a ten by ten grid in a ten by ten square", () => {
+            // Act
+            const grid = point.hexGridScaledToFit({});
+
+            // Assert
+            expect(grid.centers).toHaveLength(100);
+        });
+
+        it("should refuse a grid with no size to fill", () => {
+            // Arrange
+            const warned: unknown[] = [];
+            const consoleWarn = console.warn;
+            console.warn = (message: unknown) => { warned.push(message); };
+
+            // Act
+            const grid = point.hexGridScaledToFit({ width: 0, height: 10 });
+            console.warn = consoleWarn;
+
+            // Assert
+            expect(grid).toEqual({ centers: [], hexagons: [], shortestDistEdge: undefined, longestDistEdge: undefined, maxFilletRadius: undefined });
+            expect(warned).toHaveLength(1);
+        });
+
+        it("should centre a flat topped grid on the origin when asked to", () => {
+            // Act
+            const grid = point.hexGridScaledToFit({ width: 10, height: 20, flatTop: true, centerGrid: true });
+            const xs = grid.centers.map((centre) => centre[0]);
+
+            // Assert - the grid straddles the origin rather than starting at it
+            expect(Math.min(...xs)).toBeLessThan(0);
+            expect(Math.max(...xs)).toBeGreaterThan(0);
+        });
+
+        it("should group a flat topped grid by the ten columns it falls back to", () => {
+            // Act
+            const grid = point.hexGridScaledToFit({ width: 10, height: 10, flatTop: true });
+
+            // Assert
+            expect(grid.centers).toHaveLength(100);
+        });
+    });
 });

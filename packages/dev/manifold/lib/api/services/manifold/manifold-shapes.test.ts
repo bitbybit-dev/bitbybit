@@ -108,4 +108,125 @@ describe("ManifoldShapes", () => {
             expect(analyticVolume - volume).toBeLessThan(CYLINDER_VOLUME_TOLERANCE);
         });
     });
+
+    describe("tetrahedron", () => {
+        it("should build a solid with four triangular faces", () => {
+            // Act
+            const shape = manifold.manifold.shapes.tetrahedron();
+
+            // Assert
+            expect(manifold.manifold.evaluate.numTri(new Inputs.Manifold.ManifoldDto(shape))).toBe(4);
+            expect(manifold.manifold.evaluate.volume(new Inputs.Manifold.ManifoldDto(shape))).toBeGreaterThan(0);
+        });
+    });
+
+    describe("fromPolygonPoints", () => {
+        it("should build the solid the polygon points enclose", () => {
+            // Arrange - the four faces of a tetrahedron on three legs of length 2
+            const polygonPoints: Inputs.Base.Point3[][] = [
+                [[0, 0, 0], [0, 2, 0], [2, 0, 0]],
+                [[0, 0, 0], [2, 0, 0], [0, 0, 2]],
+                [[0, 0, 0], [0, 0, 2], [0, 2, 0]],
+                [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
+            ];
+
+            // Act
+            const shape = manifold.manifold.shapes.fromPolygonPoints(new Inputs.Manifold.FromPolygonPointsDto(polygonPoints));
+
+            // Assert - base area 2, height 2
+            expect(manifold.manifold.evaluate.volume(new Inputs.Manifold.ManifoldDto(shape))).toBeCloseTo(8 / 6, 5);
+        });
+
+        it("should give a shared corner one vertex rather than one per polygon", () => {
+            // Arrange
+            const polygonPoints: Inputs.Base.Point3[][] = [
+                [[0, 0, 0], [0, 2, 0], [2, 0, 0]],
+                [[0, 0, 0], [2, 0, 0], [0, 0, 2]],
+                [[0, 0, 0], [0, 0, 2], [0, 2, 0]],
+                [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
+            ];
+
+            // Act
+            const shape = manifold.manifold.shapes.fromPolygonPoints(new Inputs.Manifold.FromPolygonPointsDto(polygonPoints));
+
+            // Assert
+            expect(manifold.manifold.evaluate.numVert(new Inputs.Manifold.ManifoldDto(shape))).toBe(4);
+        });
+    });
+
+    describe("manifoldFromMesh", () => {
+        it("should rebuild the solid a mesh was taken from", () => {
+            // Arrange
+            const cube = manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, CUBE_SIZE));
+            const mesh = manifold.manifold.manifoldToMesh(new Inputs.Manifold.ManifoldToMeshDto(cube));
+
+            // Act
+            const rebuilt = manifold.manifold.shapes.manifoldFromMesh({ mesh });
+
+            // Assert
+            expect(manifold.manifold.evaluate.volume(new Inputs.Manifold.ManifoldDto(rebuilt))).toBeCloseTo(CUBE_VOLUME, 5);
+        });
+    });
+
+    describe("fromPolygonPoints given data it cannot use", () => {
+        it("should skip a polygon that is not a triangle", () => {
+            // Arrange - one square face among the four triangles of a tetrahedron
+            const warned: unknown[] = [];
+            const consoleWarn = console.warn;
+            console.warn = (message: unknown) => { warned.push(message); };
+            const polygonPoints: Inputs.Base.Point3[][] = [
+                [[0, 0, 0], [0, 2, 0], [2, 0, 0]],
+                [[0, 0, 0], [2, 0, 0], [0, 0, 2]],
+                [[0, 0, 0], [0, 0, 2], [0, 2, 0]],
+                [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
+                [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
+            ];
+
+            // Act
+            const shape = manifold.manifold.shapes.fromPolygonPoints(new Inputs.Manifold.FromPolygonPointsDto(polygonPoints));
+            console.warn = consoleWarn;
+
+            // Assert - the tetrahedron is built and the square is reported and left out
+            expect(warned).toHaveLength(1);
+            expect(manifold.manifold.evaluate.volume(new Inputs.Manifold.ManifoldDto(shape))).toBeCloseTo(8 / 6, 5);
+        });
+
+        it("should refuse a point that is not a point at all", () => {
+            // Arrange
+            const consoleWarn = console.warn;
+            console.warn = () => undefined;
+            const polygonPoints = [[[0, 0, 0], [0, 2, 0], [Number.NaN, 0, 0]]] as Inputs.Base.Point3[][];
+
+            // Act & Assert
+            expect(() => manifold.manifold.shapes.fromPolygonPoints(new Inputs.Manifold.FromPolygonPointsDto(polygonPoints)))
+                .toThrow("Invalid point data encountered");
+            console.warn = consoleWarn;
+        });
+    });
+
+    describe("manifoldsToMeshes", () => {
+        it("should turn every solid it was given into a mesh", () => {
+            // Arrange
+            const cube = manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, CUBE_SIZE));
+
+            // Act
+            const meshes = manifold.manifold.manifoldsToMeshes(new Inputs.Manifold.ManifoldsToMeshesDto([cube, cube]));
+
+            // Assert
+            expect(meshes).toHaveLength(2);
+            expect(manifold.mesh.evaluate.numTri(new Inputs.Manifold.MeshDto(meshes[0]))).toBe(CUBE_TRIANGLES);
+        });
+
+        it("should hand each solid the normal channel that lines up with it", () => {
+            // Arrange
+            const cube = manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, CUBE_SIZE));
+            const withNormals = manifold.manifold.operations.calculateNormals(new Inputs.Manifold.CalculateNormalsDto(cube, 3, 60));
+
+            // Act
+            const meshes = manifold.manifold.manifoldsToMeshes(new Inputs.Manifold.ManifoldsToMeshesDto([withNormals], [3]));
+
+            // Assert
+            expect(manifold.mesh.evaluate.numProp(new Inputs.Manifold.MeshDto(meshes[0]))).toBeGreaterThan(3);
+        });
+    });
 });

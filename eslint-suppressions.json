@@ -185,20 +185,6 @@
       "count": 1
     }
   },
-  "packages/dev/core/lib/api/bitbybit/asset.test.ts": {
-    "@typescript-eslint/await-thenable": {
-      "count": 2
-    },
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    },
-    "@typescript-eslint/no-floating-promises": {
-      "count": 2
-    },
-    "@typescript-eslint/require-await": {
-      "count": 3
-    }
-  },
   "packages/dev/core/lib/api/bitbybit/asset.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -342,11 +328,6 @@
       "count": 1
     }
   },
-  "packages/dev/jscad-worker/lib/api/generated-delegation.test.ts": {
-    "bitbybit/no-double-assertion": {
-      "count": 1
-    }
-  },
   "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker-mock.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -416,11 +397,6 @@
       "count": 1
     }
   },
-  "packages/dev/manifold-worker/lib/api/generated-delegation.test.ts": {
-    "bitbybit/no-double-assertion": {
-      "count": 1
-    }
-  },
   "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker-mock.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -480,19 +456,6 @@
   "packages/dev/manifold/lib/api/services/mesh/mesh.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    }
-  },
-  "packages/dev/occt-worker/lib/api/generated-delegation.test.ts": {
-    "@typescript-eslint/require-await": {
-      "count": 1
-    },
-    "bitbybit/no-double-assertion": {
-      "count": 2
-    }
-  },
-  "packages/dev/occt-worker/lib/occ-worker/constants.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 8
     }
   },
   "packages/dev/occt-worker/lib/occ-worker/occ-worker-mock.ts": {
@@ -698,11 +661,6 @@
       "count": 1
     }
   },
-  "packages/dev/playcanvas/lib/api/bitbybit/playcanvas/scene-helper.test.ts": {
-    "bitbybit/no-double-assertion": {
-      "count": 10
-    }
-  },
   "packages/dev/playcanvas/lib/api/draw-helper.test.ts": {
     "@typescript-eslint/unbound-method": {
       "count": 7
@@ -747,7 +705,7 @@
       "count": 1
     },
     "bitbybit/no-double-assertion": {
-      "count": 14
+      "count": 12
     }
   },
   "packages/dev/threejs/lib/api/bitbybit/draw.ts": {

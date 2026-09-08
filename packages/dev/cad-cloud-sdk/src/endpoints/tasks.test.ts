@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { TasksEndpoint } from "./tasks.js";
-import { okResponse, spyFetcher } from "../__test__/helpers.js";
+import { NO_WAIT, downloadsResponse, okResponse, spyFetcher, taskResponse } from "../__test__/helpers.js";
 
 describe("TasksEndpoint", () => {
     describe("get", () => {
@@ -152,6 +152,42 @@ describe("TasksEndpoint", () => {
             // Assert
             expect(calls[0]!.path).toBe("/api/v1/tasks/c-1/result");
             expect(result).toStrictEqual(manifest);
+        });
+    });
+
+    describe("poll", () => {
+        it("polls until the task reaches a terminal status", async () => {
+            // Arrange
+            const { fn, calls } = spyFetcher(
+                taskResponse("t-1", "running"),
+                taskResponse("t-1", "completed"),
+            );
+            const tasks = new TasksEndpoint(fn);
+
+            // Act
+            const task = await tasks.poll("t-1", NO_WAIT);
+
+            // Assert
+            expect(calls).toHaveLength(2);
+            expect(task.status).toBe("completed");
+        });
+    });
+
+    describe("pollAndDownload", () => {
+        it("polls the task and then asks for its downloads", async () => {
+            // Arrange
+            const { fn, calls } = spyFetcher(
+                taskResponse("t-1", "completed"),
+                downloadsResponse({ format: "glb", url: "https://example.test/part.glb" }),
+            );
+            const tasks = new TasksEndpoint(fn);
+
+            // Act
+            const result = await tasks.pollAndDownload("t-1", NO_WAIT);
+
+            // Assert
+            expect(calls.map((call) => call.path)).toStrictEqual(["/api/v1/tasks/t-1", "/api/v1/tasks/t-1/results"]);
+            expect(result.downloads).toStrictEqual([{ format: "glb", url: "https://example.test/part.glb" }]);
         });
     });
 });

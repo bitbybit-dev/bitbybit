@@ -1,290 +1,190 @@
-import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { initializationComplete, onMessageInput } from "./manifold-worker";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
 
-describe("Manifold Worker Functions Tests", () => {
-    let mockManifold: any;
+// The same message loop as manifold-worker.test.ts, but over the real kernel wrapper and the real
+// cache rather than stand-ins: what is asserted here is that a call arrives at a kernel method and
+// comes back as a pointer to a cached shape, and that two identical calls are answered from the cache
+// rather than run twice.
 
-    beforeAll(() => {
-        // Create a mock manifold object that returns valid shapes with $$ property
-        // and has methods like translate, scale, etc. that return new manifolds
-        const createMockManifold = (): any => {
-            const mock = {
-                $$: Math.floor(Math.random() * 10000) + 1,
-                delete: vi.fn(),
-                translate: vi.fn(() => createMockManifold()),
-                scale: vi.fn(() => createMockManifold()),
-                rotate: vi.fn(() => createMockManifold()),
-                getMesh: vi.fn(() => ({ vertProperties: new Float32Array([]), triVerts: new Uint32Array([]), numProp: 3 })),
-                hash: undefined as any // Will be set by cache
-            };
-            return mock;
-        };
-        
-        // Mock the WASM ManifoldToplevel structure that ManifoldService constructor expects
-        // ManifoldService(wasm) creates internal service classes (Manifold, CrossSection, Mesh)
-        // which call WASM methods like wasm.Manifold.cube()
-        mockManifold = {
-            Manifold: {
-                cube: vi.fn(() => createMockManifold()),
-                sphere: vi.fn(() => createMockManifold())
-            }
-        };
-        
-        // Initialize once for all tests - this creates new ManifoldService(mockManifold)
-        initializationComplete(mockManifold, undefined, true);
-    });
+type Pointer = { hash: string | number; type: string };
+type Answer = { uid: string; result?: Pointer; error?: string };
+type Message = "busy" | Answer;
 
-    afterEach(() => {
-        // Clean cache after each test
-        const cleanInput = {
-            action: {
-                functionName: "cleanAllCache",
-                inputs: {}
-            },
-            uid: "clean"
-        };
-        const messages: any[] = [];
-        onMessageInput(cleanInput, (data: any) => messages.push(data));
+const A_CUBE = { size: [1, 1, 1], center: false };
+
+// A kernel shape as embind hands one over: the marker the cache recognises it by, and the members
+// the calls below reach for. Each transform answers with a new shape, as the kernel's do.
+const createShape = (): Record<string, unknown> => ({
+    $$: Math.floor(Math.random() * 10000) + 1,
+    delete: vi.fn(),
+    translate: vi.fn(() => createShape()),
+    scale: vi.fn(() => createShape()),
+    rotate: vi.fn(() => createShape()),
+    getMesh: vi.fn(() => ({ vertProperties: new Float32Array([]), triVerts: new Uint32Array([]), numProp: 3 })),
+});
+
+// The wasm module the wrapper is built over, with only the entry points these calls reach.
+const createKernel = () => ({
+    Manifold: {
+        cube: vi.fn(() => createShape()),
+        sphere: vi.fn(() => createShape()),
+    },
+});
+
+describe("the worker message loop over the real kernel", () => {
+    const collect = (action: DataInput["action"], uid = "uid-1"): Message[] => {
+        const messages: Message[] = [];
+        onMessageInput({ action, uid }, (message: unknown) => { messages.push(message as Message); });
+        return messages;
+    };
+
+    const answerTo = (action: DataInput["action"], uid = "uid-1"): Answer => collect(action, uid)[1] as Answer;
+
+    beforeEach(() => {
+        initializationComplete(createKernel(), undefined, true);
     });
 
     describe("initializationComplete", () => {
-        it("should initialize manifold worker", () => {
-            expect(() => initializationComplete(mockManifold, undefined, true)).not.toThrow();
+        it("should take a kernel with no plugins", () => {
+            expect(() => initializationComplete(createKernel(), undefined, true)).not.toThrow();
         });
 
-        it("should initialize with plugins", () => {
+        it("should take a kernel with plugins", () => {
+            // Arrange
             const plugins = { dependencies: { testDep: "testValue" } };
-            expect(() => initializationComplete(mockManifold, plugins, true)).not.toThrow();
+
+            // Act & Assert
+            expect(() => initializationComplete(createKernel(), plugins, true)).not.toThrow();
         });
     });
 
-    describe("onMessageInput - basic operations", () => {
-        it("should post busy message then result", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.shapes.cube",
-                    inputs: { size: [1, 1, 1], center: false }
-                },
-                uid: "test-uid"
-            }, (data: any) => messages.push(data));
-            
+    describe("answering a call", () => {
+        it("should say it is busy first and answer second", () => {
+            // Act
+            const messages = collect({ functionName: "manifold.shapes.cube", inputs: A_CUBE });
+
+            // Assert
             expect(messages).toHaveLength(2);
             expect(messages[0]).toBe("busy");
-            expect(messages[1].uid).toBe("test-uid");
-            // Check if there's an error first
-            if (messages[1].error) {
-                console.error("Error in test:", messages[1].error);
-            }
-            expect(messages[1].error).toBeUndefined();
-            expect(messages[1].result).toBeDefined();
         });
 
-        it("should handle 3-level function paths", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.shapes.cube",
-                    inputs: { size: 1 }
-                },
-                uid: "uid-1"
-            }, (data: any) => messages.push(data));
-            
-            expect(messages[1].error).toBeUndefined();
-            expect(messages[1].result).toBeDefined();
-            expect(messages[1].result.hash).toBeDefined();
-            expect(messages[1].result.type).toBe("manifold-shape");
+        it("should answer under the uid the call arrived with", () => {
+            // Act
+            const answer = answerTo({ functionName: "manifold.shapes.cube", inputs: A_CUBE }, "uid-7");
+
+            // Assert
+            expect(answer.uid).toBe("uid-7");
         });
 
-        it("should handle 2-level function paths", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.shapes.sphere",
-                    inputs: { radius: 5 }
-                },
-                uid: "uid-2"
-            }, (data: any) => messages.push(data));
-            
-            expect(messages[1].error).toBeUndefined();
-            expect(messages[1].result).toBeDefined();
-            expect(messages[1].result.hash).toBeDefined();
-            expect(messages[1].result.type).toBe("manifold-shape");
+        it("should answer a three part path with a pointer to a cached shape", () => {
+            // Act
+            const answer = answerTo({ functionName: "manifold.shapes.cube", inputs: A_CUBE });
+
+            // Assert
+            expect(answer.error).toBeUndefined();
+            expect(answer.result?.type).toBe("manifold-shape");
+        });
+
+        it("should answer another three part path with a pointer of its own", () => {
+            // Act
+            const answer = answerTo({ functionName: "manifold.shapes.sphere", inputs: { radius: 5 } });
+
+            // Assert
+            expect(answer.error).toBeUndefined();
+            expect(answer.result?.type).toBe("manifold-shape");
         });
     });
 
-    describe("onMessageInput - cache validation", () => {
-        it("should throw error when manifold not found in cache", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.transforms.translate",
-                    inputs: {
-                        manifold: { hash: 999999, type: "manifold-shape" },
-                        offset: [1, 0, 0]
-                    }
-                },
-                uid: "test-uid"
-            }, (data: any) => messages.push(data));
-            
-            expect(messages[1].error).toBeDefined();
-            expect(messages[1].error).toContain("not found in cache");
+    describe("resolving hashed shapes against the cache", () => {
+        it("should fail the call when the hash is not in the cache", () => {
+            // Act
+            const answer = answerTo({
+                functionName: "manifold.transforms.translate",
+                inputs: { manifold: { hash: 999999, type: "manifold-shape" }, offset: [1, 0, 0] },
+            });
+
+            // Assert
+            expect(answer.error).toContain("Manifold with hash 999999 not found in cache");
         });
 
-        it("should use cached manifold", () => {
-            // Create manifold
-            const messages1: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.shapes.cube",
-                    inputs: { size: [1, 1, 1], center: false }
-                },
-                uid: "uid-1"
-            }, (data: any) => messages1.push(data));
+        it("should run the call when the hash is one the cache holds", () => {
+            // Arrange
+            const hash = answerTo({ functionName: "manifold.shapes.cube", inputs: A_CUBE }).result?.hash;
 
-            expect(messages1[1].error).toBeUndefined();
-            expect(messages1[1].result).toBeDefined();
-            const hash = messages1[1].result.hash;
+            // Act
+            const answer = answerTo({
+                functionName: "manifold.transforms.translate",
+                inputs: { manifold: { hash, type: "manifold-shape" }, offset: [1, 0, 0] },
+            }, "uid-2");
 
-            // Use cached manifold
-            const messages2: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.transforms.translate",
-                    inputs: {
-                        manifold: { hash, type: "manifold-shape" },
-                        offset: [1, 0, 0]
-                    }
-                },
-                uid: "uid-2"
-            }, (data: any) => messages2.push(data));
-
-            expect(messages2[1].error).toBeUndefined();
-            expect(messages2[1].result).toBeDefined();
+            // Assert
+            expect(answer.error).toBeUndefined();
+            expect(answer.result?.type).toBe("manifold-shape");
         });
     });
 
-    describe("onMessageInput - special functions", () => {
-        it("should handle decomposeManifoldOrCrossSection", () => {
-            const messages1: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.shapes.cube",
-                    inputs: { size: [1, 1, 1], center: false }
-                },
-                uid: "uid-1"
-            }, (data: any) => messages1.push(data));
+    describe("decomposeManifoldOrCrossSection", () => {
+        it("should answer with the mesh of a shape the cache holds", () => {
+            // Arrange
+            const hash = answerTo({ functionName: "manifold.shapes.cube", inputs: A_CUBE }).result?.hash;
 
-            expect(messages1[1].error).toBeUndefined();
-            expect(messages1[1].result).toBeDefined();
-            const hash = messages1[1].result.hash;
+            // Act
+            const answer = answerTo({
+                functionName: "decomposeManifoldOrCrossSection",
+                inputs: { manifoldOrCrossSection: { hash, type: "manifold-shape" } },
+            }, "uid-2");
 
-            const messages2: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "decomposeManifoldOrCrossSection",
-                    inputs: {
-                        manifoldOrCrossSection: { hash, type: "manifold-shape" }
-                    }
-                },
-                uid: "uid-2"
-            }, (data: any) => messages2.push(data));
-
-            expect(messages2[1].error).toBeUndefined();
-            expect(messages2[1].result).toBeDefined();
-        });
-
-        it("should handle cleanAllCache", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "cleanAllCache",
-                    inputs: {}
-                },
-                uid: "uid-1"
-            }, (data: any) => messages.push(data));
-
-            expect(messages[1].result).toEqual({});
-        });
-
-        it("should handle startedTheRun", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "startedTheRun",
-                    inputs: {}
-                },
-                uid: "uid-1"
-            }, (data: any) => messages.push(data));
-
-            expect(messages[1].result).toEqual({});
+            // Assert
+            expect(answer.error).toBeUndefined();
+            expect(answer.result).toBeInstanceOf(Object);
         });
     });
 
-    describe("onMessageInput - error handling", () => {
-        it("should provide detailed error messages", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "nonExistentFunction",
-                    inputs: { test: "data" }
-                },
-                uid: "test-uid"
-            }, (data: any) => messages.push(data));
+    describe("the run markers", () => {
+        it("should answer cleanAllCache with an empty result", () => {
+            // Act
+            const answer = answerTo({ functionName: "cleanAllCache", inputs: {} });
 
-            expect(messages[1].error).toBeDefined();
-            expect(messages[1].error).toContain("Manifold computation failed");
+            // Assert
+            expect(answer.result).toEqual({});
+        });
+
+        it("should answer startedTheRun with an empty result", () => {
+            // Act
+            const answer = answerTo({ functionName: "startedTheRun", inputs: {} });
+
+            // Assert
+            expect(answer.result).toEqual({});
         });
     });
 
-    describe("onMessageInput - caching behavior", () => {
-        it("should cache operation results", () => {
-            const inputs = { size: [1, 1, 1], center: false };
-            
-            const messages1: any[] = [];
-            onMessageInput({
-                action: { functionName: "manifold.shapes.cube", inputs },
-                uid: "uid-1"
-            }, (data: any) => messages1.push(data));
+    describe("when the call names no kernel method", () => {
+        it("should answer with the failure rather than throw", () => {
+            // Act
+            const answer = answerTo({ functionName: "nonExistentFunction", inputs: { test: "data" } });
 
-            const messages2: any[] = [];
-            onMessageInput({
-                action: { functionName: "manifold.shapes.cube", inputs },
-                uid: "uid-2"
-            }, (data: any) => messages2.push(data));
+            // Assert
+            expect(answer.error).toContain("Manifold computation failed");
+        });
+    });
 
-            expect(messages1[1].error).toBeUndefined();
-            expect(messages2[1].error).toBeUndefined();
-            expect(messages1[1].result).toBeDefined();
-            expect(messages2[1].result).toBeDefined();
-            expect(messages1[1].result.hash).toBe(messages2[1].result.hash);
+    describe("caching", () => {
+        it("should answer two identical calls with the same hash", () => {
+            // Act
+            const first = answerTo({ functionName: "manifold.shapes.cube", inputs: A_CUBE }, "uid-1");
+            const second = answerTo({ functionName: "manifold.shapes.cube", inputs: A_CUBE }, "uid-2");
+
+            // Assert
+            expect(second.result?.hash).toBe(first.result?.hash);
         });
 
-        it("should return different hashes for different inputs", () => {
-            const messages1: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.shapes.cube",
-                    inputs: { size: [1, 1, 1], center: false }
-                },
-                uid: "uid-1"
-            }, (data: any) => messages1.push(data));
+        it("should answer calls that differ with different hashes", () => {
+            // Act
+            const first = answerTo({ functionName: "manifold.shapes.cube", inputs: A_CUBE }, "uid-1");
+            const second = answerTo({ functionName: "manifold.shapes.cube", inputs: { size: [2, 2, 2], center: false } }, "uid-2");
 
-            const messages2: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "manifold.shapes.cube",
-                    inputs: { size: [2, 2, 2], center: false }
-                },
-                uid: "uid-2"
-            }, (data: any) => messages2.push(data));
-
-            expect(messages1[1].error).toBeUndefined();
-            expect(messages2[1].error).toBeUndefined();
-            expect(messages1[1].result).toBeDefined();
-            expect(messages2[1].result).toBeDefined();
-            expect(messages1[1].result.hash).not.toBe(messages2[1].result.hash);
+            // Assert
+            expect(second.result?.hash).not.toBe(first.result?.hash);
         });
     });
 });

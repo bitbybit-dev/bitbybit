@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { FilesEndpoint } from "./files.js";
 import { okResponse, spyFetcher } from "../__test__/helpers.js";
+import { BitbybitApiError } from "../errors.js";
 
 describe("FilesEndpoint", () => {
     describe("upload", () => {
@@ -100,6 +101,72 @@ describe("FilesEndpoint", () => {
             expect(calls[0]!.method).toBe("DELETE");
             expect(calls[0]!.path).toBe("/api/v1/files/f-1");
             expect(result).toStrictEqual({ deleted: true });
+        });
+    });
+
+    // uploadBytes is the only member that talks to something other than the API: it asks for an
+    // upload url, PUTs the bytes straight at the store behind it, and then confirms the file.
+    describe("uploadBytes", () => {
+        afterEach(() => {
+            vi.unstubAllGlobals();
+        });
+
+        it("asks for an upload url, puts the bytes there, and confirms the file", async () => {
+            // Arrange
+            const puts: { url: string; init: RequestInit }[] = [];
+            vi.stubGlobal("fetch", (url: string, init: RequestInit) => {
+                puts.push({ url, init });
+                return Promise.resolve(new Response(null, { status: 200 }));
+            });
+            const { fn, calls } = spyFetcher(
+                okResponse({ fileId: "f-1", uploadUrl: "https://store.test/put" }),
+                okResponse({ fileId: "f-1", status: "ready" }),
+            );
+            const files = new FilesEndpoint(fn);
+            const bytes = new Uint8Array([1, 2, 3]);
+
+            // Act
+            const result = await files.uploadBytes("part.step", bytes, "application/step");
+
+            // Assert
+            expect(calls[0]!.body).toStrictEqual({ filename: "part.step", contentType: "application/step", bytes: 3 });
+            expect(puts[0]!.url).toBe("https://store.test/put");
+            expect(result).toStrictEqual({ fileId: "f-1", status: "ready" });
+        });
+
+        it("puts the bytes as the content type it was given", async () => {
+            // Arrange
+            const puts: { init: RequestInit }[] = [];
+            vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+                puts.push({ init });
+                return Promise.resolve(new Response(null, { status: 200 }));
+            });
+            const { fn } = spyFetcher(
+                okResponse({ fileId: "f-1", uploadUrl: "https://store.test/put" }),
+                okResponse({ fileId: "f-1", status: "ready" }),
+            );
+            const files = new FilesEndpoint(fn);
+
+            // Act
+            await files.uploadBytes("part.bin", new Uint8Array([1]));
+
+            // Assert
+            expect(puts[0]!.init.method).toBe("PUT");
+            expect(puts[0]!.init.headers).toStrictEqual({ "Content-Type": "application/octet-stream" });
+        });
+
+        it("fails with what the store said when the put is refused", async () => {
+            // Arrange
+            vi.stubGlobal("fetch", () => Promise.resolve(new Response(null, { status: 403, statusText: "Forbidden" })));
+            const { fn } = spyFetcher(
+                okResponse({ fileId: "f-1", uploadUrl: "https://store.test/put" }),
+                okResponse({ fileId: "f-1", uploadUrl: "https://store.test/put" }),
+            );
+            const files = new FilesEndpoint(fn);
+
+            // Act & Assert
+            await expect(files.uploadBytes("part.step", new Uint8Array([1]))).rejects.toThrow(BitbybitApiError);
+            await expect(files.uploadBytes("part.step", new Uint8Array([1]))).rejects.toThrow("PUT to upload URL failed: 403 Forbidden");
         });
     });
 });

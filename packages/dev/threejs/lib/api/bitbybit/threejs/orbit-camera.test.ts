@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-import { ThreeJSOrbitCamera, OrbitCameraController } from "./orbit-camera";
+import { ThreeJSOrbitCamera, OrbitCameraController, createOrbitCamera } from "./orbit-camera";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
 import * as THREEJS from "three";
@@ -516,3 +516,421 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 });
 
 // Note: DTO constructor tests are in threejs-camera-inputs.test.ts to avoid duplication
+
+// The camera is driven by a pointer, a pair of fingers and the arrow keys, and each of those arrives
+// as an event on the element it was attached to. The element the suite hands in records its
+// listeners, so an event dispatched on it reaches the handler exactly as a browser's would.
+describe("ThreeJSOrbitCamera input handling", () => {
+    let orbitCamera: ThreeJSOrbitCamera;
+    let domElement: HTMLElement;
+    let controller: OrbitCameraController;
+
+    const inputsFor = (element: HTMLElement): Inputs.ThreeJSCamera.OrbitCameraDto => ({
+        autoRender: true,
+        distanceMax: 1000,
+        distanceMin: 0.1,
+        pitchAngleMax: 90,
+        pitchAngleMin: -90,
+        inertiaFactor: 0.1,
+        enableDamping: true,
+        dampingFactor: 0.1,
+        focusObject: undefined,
+        frameOnStart: false,
+        pivotPoint: [0, 0, 0],
+        distance: 10,
+        pitch: 0,
+        yaw: 0,
+        orbitSensitivity: 1,
+        distanceSensitivity: 1,
+        panSensitivity: 1,
+        domElement: element,
+    });
+
+    // The events a browser would send. jsdom builds MouseEvent and KeyboardEvent, but not TouchEvent,
+    // so a touch event is the plain object the handler reads: a list of points with coordinates.
+    const mouse = (type: string, init: MouseEventInit): Event => new MouseEvent(type, init);
+    const wheel = (deltaY: number): Event => new WheelEvent("wheel", { deltaY });
+    const touch = (type: string, points: { clientX: number; clientY: number }[]): Event => {
+        const event = new Event(type);
+        return Object.assign(event, { touches: points, preventDefault: () => undefined });
+    };
+
+    beforeEach(() => {
+        orbitCamera = new ThreeJSOrbitCamera(createMockContext());
+        domElement = createMockDOMElement();
+        controller = orbitCamera.create(inputsFor(domElement));
+    });
+
+    afterEach(() => {
+        controller.destroy();
+        vi.clearAllMocks();
+    });
+
+    describe("the mouse", () => {
+        it("should turn the camera while the left button is held", () => {
+            // Arrange
+            domElement.dispatchEvent(mouse("mousedown", { button: 0, clientX: 0, clientY: 0 }));
+
+            // Act
+            domElement.dispatchEvent(mouse("mousemove", { clientX: 10, clientY: 5 }));
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBeCloseTo(-10, 5);
+            expect(controller.orbitCamera.pitch).toBeCloseTo(5, 5);
+        });
+
+        it("should stop turning once the left button is released", () => {
+            // Arrange
+            domElement.dispatchEvent(mouse("mousedown", { button: 0, clientX: 0, clientY: 0 }));
+            domElement.dispatchEvent(mouse("mouseup", { button: 0 }));
+
+            // Act
+            domElement.dispatchEvent(mouse("mousemove", { clientX: 10, clientY: 5 }));
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBe(0);
+        });
+
+        it("should move the pivot while the right button is held", () => {
+            // Arrange
+            const before = controller.orbitCamera.pivotPoint.clone();
+            domElement.dispatchEvent(mouse("mousedown", { button: 2, clientX: 0, clientY: 0 }));
+
+            // Act
+            domElement.dispatchEvent(mouse("mousemove", { clientX: 100, clientY: 100 }));
+
+            // Assert
+            expect(controller.orbitCamera.pivotPoint.equals(before)).toBe(false);
+        });
+
+        it("should stop moving the pivot once the right button is released", () => {
+            // Arrange
+            domElement.dispatchEvent(mouse("mousedown", { button: 1, clientX: 0, clientY: 0 }));
+            domElement.dispatchEvent(mouse("mouseup", { button: 1 }));
+            const before = controller.orbitCamera.pivotPoint.clone();
+
+            // Act
+            domElement.dispatchEvent(mouse("mousemove", { clientX: 100, clientY: 100 }));
+
+            // Assert
+            expect(controller.orbitCamera.pivotPoint.equals(before)).toBe(true);
+        });
+
+        it("should forget the buttons when the pointer leaves the element", () => {
+            // Arrange
+            domElement.dispatchEvent(mouse("mousedown", { button: 0, clientX: 0, clientY: 0 }));
+            domElement.dispatchEvent(new Event("mouseout"));
+
+            // Act
+            domElement.dispatchEvent(mouse("mousemove", { clientX: 10, clientY: 5 }));
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBe(0);
+        });
+
+        it("should back away on a wheel turn away from the viewer", () => {
+            // Act
+            domElement.dispatchEvent(wheel(100));
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBeGreaterThan(10);
+        });
+
+        it("should come closer on a wheel turn towards the viewer", () => {
+            // Act
+            domElement.dispatchEvent(wheel(-100));
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBeLessThan(10);
+        });
+
+        it("should keep the browser's own menu off the canvas", () => {
+            // Arrange
+            const event = new Event("contextmenu", { cancelable: true });
+
+            // Act
+            domElement.dispatchEvent(event);
+
+            // Assert
+            expect(event.defaultPrevented).toBe(true);
+        });
+    });
+
+    describe("touch", () => {
+        it("should turn the camera as one finger moves", () => {
+            // Arrange
+            domElement.dispatchEvent(touch("touchstart", [{ clientX: 0, clientY: 0 }]));
+
+            // Act
+            domElement.dispatchEvent(touch("touchmove", [{ clientX: 10, clientY: 5 }]));
+
+            // Assert
+            expect(controller.orbitCamera.yaw).not.toBe(0);
+        });
+
+        it("should come closer as two fingers spread apart", () => {
+            // Arrange
+            domElement.dispatchEvent(touch("touchstart", [{ clientX: 0, clientY: 0 }, { clientX: 10, clientY: 0 }]));
+
+            // Act
+            domElement.dispatchEvent(touch("touchmove", [{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]));
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBeLessThan(10);
+        });
+
+        it("should take up where it left off when a finger is lifted", () => {
+            // Arrange
+            domElement.dispatchEvent(touch("touchstart", [{ clientX: 0, clientY: 0 }, { clientX: 10, clientY: 0 }]));
+
+            // Act
+            domElement.dispatchEvent(touch("touchend", [{ clientX: 50, clientY: 50 }]));
+            domElement.dispatchEvent(touch("touchmove", [{ clientX: 60, clientY: 50 }]));
+
+            // Assert
+            expect(controller.orbitCamera.yaw).not.toBe(0);
+        });
+
+        it("should do nothing for a touch of more fingers than it follows", () => {
+            // Arrange
+            const before = controller.orbitCamera.yaw;
+
+            // Act
+            domElement.dispatchEvent(touch("touchstart", [{ clientX: 0, clientY: 0 }, { clientX: 1, clientY: 0 }, { clientX: 2, clientY: 0 }]));
+            domElement.dispatchEvent(touch("touchmove", [{ clientX: 0, clientY: 0 }, { clientX: 1, clientY: 0 }, { clientX: 2, clientY: 0 }]));
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBe(before);
+        });
+    });
+
+    describe("the arrow keys", () => {
+        const press = (key: string, shiftKey = false): void => {
+            window.dispatchEvent(new KeyboardEvent("keydown", { key, shiftKey }));
+        };
+
+        it("should turn left on the left arrow", () => {
+            // Act
+            press("ArrowLeft");
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBe(-2);
+        });
+
+        it("should turn right on the right arrow", () => {
+            // Act
+            press("ArrowRight");
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBe(2);
+        });
+
+        it("should look up on the up arrow", () => {
+            // Act
+            press("ArrowUp");
+
+            // Assert
+            expect(controller.orbitCamera.pitch).toBe(2);
+        });
+
+        it("should look down on the down arrow", () => {
+            // Act
+            press("ArrowDown");
+
+            // Assert
+            expect(controller.orbitCamera.pitch).toBe(-2);
+        });
+
+        it("should come closer on shift and the up arrow", () => {
+            // Act
+            press("ArrowUp", true);
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBeLessThan(10);
+        });
+
+        it("should back away on shift and the down arrow", () => {
+            // Act
+            press("ArrowDown", true);
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBeGreaterThan(10);
+        });
+
+        it("should ignore a key it does not drive anything with", () => {
+            // Act
+            press("Escape");
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBe(0);
+        });
+    });
+});
+
+// The rest of the controller: what it does on the way in, the two ways it can be pointed at
+// something, and the free function a host uses when it has only a scene to hand.
+describe("ThreeJSOrbitCamera framing and placement", () => {
+    let orbitCameraService: ThreeJSOrbitCamera;
+    let scene: THREEJS.Scene;
+    let domElement: HTMLElement;
+
+    const inputsFor = (element: HTMLElement, focusObject?: THREEJS.Object3D, frameOnStart = false): Inputs.ThreeJSCamera.OrbitCameraDto => ({
+        autoRender: true,
+        distanceMax: 1000,
+        distanceMin: 0.1,
+        pitchAngleMax: 90,
+        pitchAngleMin: -90,
+        inertiaFactor: 0.1,
+        enableDamping: true,
+        dampingFactor: 0.1,
+        focusObject,
+        frameOnStart,
+        pivotPoint: [0, 0, 0],
+        distance: 10,
+        pitch: 0,
+        yaw: 0,
+        orbitSensitivity: 1,
+        distanceSensitivity: 1,
+        panSensitivity: 1,
+        domElement: element,
+    });
+
+    const aBox = (): THREEJS.Mesh => {
+        const box = new THREEJS.Mesh(new THREEJS.BoxGeometry(4, 4, 4), new THREEJS.MeshBasicMaterial());
+        box.position.set(10, 0, 0);
+        box.updateMatrixWorld(true);
+        return box;
+    };
+
+    beforeEach(() => {
+        const context = createMockContext();
+        scene = context.scene;
+        orbitCameraService = new ThreeJSOrbitCamera(context);
+        domElement = createMockDOMElement();
+    });
+
+    describe("frameOnStart", () => {
+        it("should frame the object it was pointed at", () => {
+            // Arrange
+            const box = aBox();
+            scene.add(box);
+
+            // Act
+            const controller = orbitCameraService.create(inputsFor(domElement, box, true));
+
+            // Assert - the camera pulls back to hold the whole box, and looks at where it stands
+            expect(controller.orbitCamera.distance).toBeGreaterThan(0);
+            expect(controller.orbitCamera.pivotPoint.x).toBeCloseTo(10, 5);
+            controller.destroy();
+        });
+
+        it("should leave the camera where it was asked to be when it frames nothing", () => {
+            // Act
+            const controller = orbitCameraService.create(inputsFor(domElement, aBox(), false));
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBe(10);
+            controller.destroy();
+        });
+
+        it("should do nothing when the object it was pointed at has no size", () => {
+            // Arrange - an empty group has no bounds to frame
+            const empty = new THREEJS.Group();
+
+            // Act
+            const controller = orbitCameraService.create(inputsFor(domElement, empty, true));
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBe(10);
+            controller.destroy();
+        });
+    });
+
+    describe("setDistance", () => {
+        it("should put the camera at the distance it was given", () => {
+            // Arrange
+            const controller = orbitCameraService.create(inputsFor(domElement));
+
+            // Act
+            orbitCameraService.setDistance({ orbitCamera: controller, yaw: 0, pitch: 0, distance: 42 });
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBe(42);
+            controller.destroy();
+        });
+    });
+
+    describe("resetAndLookAtPoint", () => {
+        it("should stand the camera where it was told and turn it towards the point", () => {
+            // Arrange
+            const controller = orbitCameraService.create(inputsFor(domElement));
+
+            // Act
+            controller.orbitCamera.resetAndLookAtPoint(new THREEJS.Vector3(0, 0, 20), new THREEJS.Vector3(0, 0, 0));
+
+            // Assert
+            expect(controller.orbitCamera.distance).toBeCloseTo(20, 5);
+            expect(controller.orbitCamera.pivotPoint.z).toBeCloseTo(0, 5);
+            controller.destroy();
+        });
+    });
+
+    describe("resetAndLookAtObject", () => {
+        it("should turn the camera towards the middle of the object", () => {
+            // Arrange
+            const controller = orbitCameraService.create(inputsFor(domElement));
+            const box = aBox();
+            scene.add(box);
+
+            // Act
+            controller.orbitCamera.resetAndLookAtObject(new THREEJS.Vector3(10, 0, 20), box);
+
+            // Assert
+            expect(controller.orbitCamera.pivotPoint.x).toBeCloseTo(10, 5);
+            controller.destroy();
+        });
+    });
+
+    describe("the yaw a full turn away", () => {
+        it("should take the shorter way round rather than unwinding a whole turn", () => {
+            // Arrange
+            const controller = orbitCameraService.create(inputsFor(domElement));
+
+            // Act - asking for 350 degrees from 0 is ten degrees the other way
+            controller.orbitCamera.yaw = 350;
+            controller.update(1);
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBe(350);
+            controller.destroy();
+        });
+
+        it("should take the shorter way round in the other direction too", () => {
+            // Arrange
+            const controller = orbitCameraService.create(inputsFor(domElement));
+
+            // Act
+            controller.orbitCamera.yaw = -350;
+            controller.update(1);
+
+            // Assert
+            expect(controller.orbitCamera.yaw).toBe(-350);
+            controller.destroy();
+        });
+    });
+
+    describe("createOrbitCamera", () => {
+        it("should build a controller from a scene alone", () => {
+            // Arrange - domElement and focusObject are both optional, so a scene-only call omits them
+            const { focusObject, domElement: element, ...rest } = inputsFor(domElement);
+            expect(focusObject).toBeUndefined();
+
+            // Act
+            const controller = createOrbitCamera({ ...rest, domElement: element!, scene });
+
+            // Assert
+            expect(controller.camera).toBeInstanceOf(THREEJS.PerspectiveCamera);
+            controller.destroy();
+        });
+    });
+});

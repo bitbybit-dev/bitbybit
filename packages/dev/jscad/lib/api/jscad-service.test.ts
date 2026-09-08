@@ -18,6 +18,19 @@ const TRANSLATE_X_MATRIX: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0,
 const IDENTITY: Inputs.Base.TransformMatrixes = [IDENTITY_MATRIX];
 const TRANSLATE_X: Inputs.Base.TransformMatrixes = [TRANSLATE_X_MATRIX];
 
+// Mesh data the kernel would never produce. toPolygonPoints reads what shapeToMesh gives it and
+// checks it before walking it, so the checks are reached by handing that method something else -
+// which is also what happens when a caller builds mesh data by hand and passes it in.
+// What a caller sees when the data never arrived at all, which the reader checks for before it reads.
+const NO_MESH_DATA: Inputs.JSCAD.JSCADMeshData = undefined!;
+
+const meshData = (positions: number[], indices: number[]): Inputs.JSCAD.JSCADMeshData => ({
+    positions,
+    indices,
+    normals: [],
+    transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+});
+
 describe("Jscad", () => {
     let jscad: Jscad;
     let kernel: typeof Modeling;
@@ -163,6 +176,160 @@ describe("Jscad", () => {
             expect(moved).toHaveLength(2);
             expect(kernel.measurements.measureCenter(expectSolid(moved[0]!))).toEqual([SHIFT_X, 0, 0]);
             expect(kernel.measurements.measureCenter(expectSolid(moved[1]!))).toEqual([SHIFT_X, SHIFT_X, 0]);
+        });
+    });
+
+    // The failure paths of toPolygonPoints, the 2D route through shapeToMesh, and the four
+    // serialisers. Every one of these is reachable from a script and none was run above.
+    describe("toPolygonPoints when the mesh cannot be read", () => {
+        let reading: Jscad;
+
+        beforeAll(async () => {
+            const loaded = await getJscad();
+            reading = Object.create(loaded.jscad) as Jscad;
+        });
+
+        const readingBack = (positions: number[], indices: number[]): Jscad => {
+            reading.shapeToMesh = () => meshData(positions, indices);
+            return reading;
+        };
+
+        it("should refuse mesh data whose positions do not divide into points", () => {
+            // Arrange - three coordinates make one point, so a length that is not a multiple of three
+            // cannot be a list of points at all
+
+            // Act & Assert
+            expect(() => readingBack([0, 1], []).toPolygonPoints({ mesh: cube }))
+                .toThrow("'positions' array length (2) must be a multiple of 3");
+        });
+
+        it("should refuse mesh data whose indices do not divide into triangles", () => {
+            expect(() => readingBack([0, 0, 0, 1, 1, 1, 2, 2, 2], [0, 1]).toPolygonPoints({ mesh: cube }))
+                .toThrow("'indices' array length (2) must be a multiple of 3");
+        });
+
+        it("should refuse mesh data that is not there at all", () => {
+            // Arrange
+            reading.shapeToMesh = () => NO_MESH_DATA;
+
+            // Act & Assert
+            expect(() => reading.toPolygonPoints({ mesh: cube }))
+                .toThrow("'data', 'data.positions', and 'data.indices' must be provided");
+        });
+
+        it("should give no points for mesh data holding no triangles", () => {
+            expect(readingBack([0, 0, 0, 1, 1, 1, 2, 2, 2], []).toPolygonPoints({ mesh: cube })).toEqual([]);
+        });
+
+        it("should skip a triangle naming a point the mesh does not have", () => {
+            // Arrange - one valid triangle and one naming point 9 of a three point mesh
+            const reported: unknown[] = [];
+            const consoleError = console.error;
+            console.error = (message: unknown) => { reported.push(message); };
+
+            // Act
+            const points = readingBack([0, 0, 0, 1, 0, 0, 0, 1, 0], [0, 1, 2, 0, 1, 9]).toPolygonPoints({ mesh: cube });
+            console.error = consoleError;
+
+            // Assert
+            expect(points).toHaveLength(1);
+            expect(reported).toHaveLength(1);
+        });
+    });
+
+    describe("shapeToMesh of a two dimensional shape", () => {
+        it("should give it a thickness so that it has polygons at all", () => {
+            // Arrange
+            const circle = jscad.polygon.circle(new Inputs.JSCAD.CircleDto([0, 0], 1, 16));
+
+            // Act
+            const mesh = jscad.shapeToMesh({ mesh: circle });
+
+            // Assert
+            expect(mesh.positions.length).toBeGreaterThan(0);
+            expect(mesh.indices.length % 3).toBe(0);
+        });
+    });
+
+    describe("the download serialisers", () => {
+        it("should write a solid as a binary stl blob", () => {
+            // Act
+            const { blob } = jscad.downloadSolidSTL(new Inputs.JSCAD.DownloadSolidDto(cube, "part"));
+
+            // Assert
+            expect(blob.type).toBe("application/sla");
+            expect(blob.size).toBeGreaterThan(0);
+        });
+
+        it("should write several solids into one stl blob", () => {
+            // Act
+            const { blob } = jscad.downloadSolidsSTL(new Inputs.JSCAD.DownloadSolidsDto([cube, cube], "parts"));
+
+            // Assert
+            expect(blob.size).toBeGreaterThan(0);
+        });
+
+        it("should write a geometry as a dxf blob", () => {
+            // Arrange
+            const circle = jscad.polygon.circle(new Inputs.JSCAD.CircleDto([0, 0], 1, 16));
+
+            // Act
+            const { blob } = jscad.downloadGeometryDxf(new Inputs.JSCAD.DownloadGeometryDto(circle, "drawing"));
+
+            // Assert
+            expect(blob.size).toBeGreaterThan(0);
+        });
+
+        it("should write a geometry as a 3mf blob", () => {
+            // Act
+            const { blob } = jscad.downloadGeometry3MF(new Inputs.JSCAD.DownloadGeometryDto(cube, "part"));
+
+            // Assert
+            expect(blob.size).toBeGreaterThan(0);
+        });
+    });
+
+    describe("the shapes an operation cannot take", () => {
+        it("should say which operation wanted a solid when given a flat shape", () => {
+            // Arrange
+            const circle = jscad.polygon.circle(new Inputs.JSCAD.CircleDto([0, 0], 1, 16));
+
+            // Act & Assert
+            expect(() => jscad.transformSolid({ mesh: circle, transformation: IDENTITY }))
+                .toThrow("transformSolid needs a 3D solid, but was given a 2D geometry or a path.");
+        });
+    });
+
+    describe("a geometry in the shape the first version of JSCAD handed back", () => {
+        it("should read its polygons through the method it carries", () => {
+            // Arrange - a v1 geometry is an object that knows how to produce its own polygons
+            const triangle: Inputs.JSCAD.JSCADPoly3 = { vertices: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] };
+            const legacy = Object.assign(jscad.path.createEmpty(), { toPolygons: () => [triangle] });
+
+            // Act
+            const mesh = jscad.shapeToMesh({ mesh: legacy });
+
+            // Assert
+            expect(mesh.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+        });
+    });
+
+    describe("the serialisers, given options of their own", () => {
+        it("should hand the dxf serialiser the options it was given", () => {
+            // Act
+            const { blob } = jscad.downloadGeometryDxf(
+                new Inputs.JSCAD.DownloadGeometryDto(jscad.polygon.circle(new Inputs.JSCAD.CircleDto([0, 0], 1, 16)), "drawing", { unit: "mm" }));
+
+            // Assert
+            expect(blob.size).toBeGreaterThan(0);
+        });
+
+        it("should hand the 3mf serialiser the options it was given", () => {
+            // Act
+            const { blob } = jscad.downloadGeometry3MF(new Inputs.JSCAD.DownloadGeometryDto(cube, "part", { unit: "millimeter" }));
+
+            // Assert
+            expect(blob.size).toBeGreaterThan(0);
         });
     });
 });

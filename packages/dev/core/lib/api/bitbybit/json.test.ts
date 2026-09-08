@@ -189,4 +189,17 @@ describe("JSON unit tests", () => {
             expect(json.query({ json: value, query: "$" })).toEqual(expected);
         });
     });
+
+    describe("getValueOnProp for a value that cannot be cloned", () => {
+        it("should read the property from the object it was given", () => {
+            // Arrange - a function cannot be structured-cloned, so the clone is not attempted twice
+            const value = { name: "part", build: () => undefined };
+
+            // Act
+            const result = json.getValueOnProp({ json: value, property: "name" });
+
+            // Assert
+            expect(result).toBe("part");
+        });
+    });
 });

@@ -163,4 +163,28 @@ describe("Tag", () => {
             expect(context.tagBag).toHaveLength(0);
         });
     });
+
+    describe("drawTags with more tags than were drawn before", () => {
+        it("should draw a span for each tag the list has gained", () => {
+            // Arrange
+            const drawn = tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag()]));
+
+            // Act
+            tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag(), aTag(SECOND_TEXT), aTag(THIRD_TEXT)], true, drawn));
+
+            // Assert
+            expect(document.querySelectorAll(`.${CANVAS_ZONE_CLASS} span`)).toHaveLength(3);
+        });
+
+        it("should record every tag the list has gained", () => {
+            // Arrange
+            const drawn = tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag()]));
+
+            // Act
+            tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag(), aTag(SECOND_TEXT), aTag(THIRD_TEXT)], true, drawn));
+
+            // Assert
+            expect(context.tagBag).toHaveLength(3);
+        });
+    });
 });

@@ -418,5 +418,42 @@ describe("Mesh unit tests", () => {
             });
         });
     });
-});
 
+    describe("two triangles that cannot cross", () => {
+        it("should find no segment between two triangles on parallel planes", () => {
+            // Arrange - the same triangle, one unit higher
+            const lower: Inputs.Base.Triangle3 = [[0, 0, 0], [4, 0, 0], [0, 4, 0]];
+            const upper: Inputs.Base.Triangle3 = [[0, 0, 1], [4, 0, 1], [0, 4, 1]];
+
+            // Act
+            const segment = meshBitByBit.triangleTriangleIntersection({ triangle1: lower, triangle2: upper, tolerance: 1e-7 });
+
+            // Assert
+            expect(segment).toBeUndefined();
+        });
+
+        it("should find no segment between two triangles lying in the same plane", () => {
+            // Arrange - overlapping triangles on one plane have no line of intersection to give
+            const first: Inputs.Base.Triangle3 = [[0, 0, 0], [4, 0, 0], [0, 4, 0]];
+            const second: Inputs.Base.Triangle3 = [[1, 1, 0], [5, 1, 0], [1, 5, 0]];
+
+            // Act
+            const segment = meshBitByBit.triangleTriangleIntersection({ triangle1: first, triangle2: second, tolerance: 1e-7 });
+
+            // Assert
+            expect(segment).toBeUndefined();
+        });
+
+        it("should find no segment where two triangles only touch at a point", () => {
+            // Arrange - two triangles meeting at one corner only
+            const first: Inputs.Base.Triangle3 = [[0, 0, 0], [4, 0, 0], [0, 4, 0]];
+            const second: Inputs.Base.Triangle3 = [[0, 0, 0], [0, 0, 4], [-4, 0, 0]];
+
+            // Act
+            const segment = meshBitByBit.triangleTriangleIntersection({ triangle1: first, triangle2: second, tolerance: 1e-7 });
+
+            // Assert
+            expect(segment).toBeUndefined();
+        });
+    });
+});

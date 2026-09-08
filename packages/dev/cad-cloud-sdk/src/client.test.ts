@@ -147,4 +147,66 @@ describe("BitbybitClient", () => {
             expect(result).toStrictEqual(healthData);
         });
     });
+
+    // Which schema a request body is checked against is decided from its path: a fixed table for the
+    // endpoints that have one, and two patterns for the model paths, where a model with a schema of
+    // its own is checked against that one and any other against the generic submission schema.
+    describe("request validation by path", () => {
+        it("refuses a body the endpoint's schema rejects", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/cad/execute", {})).rejects.toThrow();
+        });
+
+        it("checks a model with a schema of its own against that schema", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/models/dragon-cup", { params: { height: "tall" } })).rejects.toThrow();
+        });
+
+        it("checks a model with no schema of its own against the generic one", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/models/no-such-model", { outputs: 7 })).rejects.toThrow();
+        });
+
+        it("checks a batch submission against the batch schema", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/models/dragon-cup/batch", { variations: "many" })).rejects.toThrow();
+        });
+
+        it("sends a body on a path no schema covers without checking it", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/something/new", { anything: true })).resolves.toBeInstanceOf(Response);
+        });
+
+        it("trims a trailing slash from the base url it was given", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test", baseUrl: "https://staging.example.test/" });
+            fetchMock.mockResolvedValueOnce(new Response("{}", { status: 200 }));
+
+            // Act
+            await client.request("GET", "/api/v1/tasks");
+
+            // Assert
+            expect(fetchMock.mock.calls[0]![0]).toBe("https://staging.example.test/api/v1/tasks");
+        });
+    });
 });

@@ -894,5 +894,99 @@ describe("Math unit tests", () => {
         const result = math.moveTowards({ current: 10, target: 0, maxDelta: 2 });
         expect(result).toEqual(8);
     });
-});
 
+    // evalArithmetic is a small expression parser rather than a call into anything: it turns the text
+    // into tokens, orders the operators by precedence and folds them. A script author's typo reaches
+    // it directly, so what it refuses matters as much as what it computes.
+    describe("evalArithmetic", () => {
+        describe("what it computes", () => {
+            it("should add", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("1+2"))).toBe(3);
+            });
+
+            it("should subtract", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("5-2"))).toBe(3);
+            });
+
+            it("should multiply", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("3*4"))).toBe(12);
+            });
+
+            it("should divide", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("12/4"))).toBe(3);
+            });
+
+            it("should multiply before it adds", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("2+3*4"))).toBe(14);
+            });
+
+            it("should do what the parentheses ask first", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("(2+3)*4"))).toBe(20);
+            });
+
+            it("should read a nest of parentheses", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("((1+2)*(3+4))/3"))).toBe(7);
+            });
+
+            it("should fold operators of equal precedence from the left", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("10-3-2"))).toBe(5);
+            });
+
+            it("should read a decimal number", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("1.5*2"))).toBe(3);
+            });
+
+            it("should ignore the spaces between the parts", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto(" 1 +  2 "))).toBe(3);
+            });
+
+            it("should read a leading minus as part of the number", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("-3+5"))).toBe(2);
+            });
+
+            it("should read a minus after an operator as part of the number", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("2*-3"))).toBe(-6);
+            });
+
+            it("should read a minus after an opening parenthesis as part of the number", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("(-3)*2"))).toBe(-6);
+            });
+
+            it("should compute what a new expression object defaults to", () => {
+                expect(math.evalArithmetic(new Inputs.Math.EvalArithmeticDto())).toBe(2);
+            });
+        });
+
+        describe("what it refuses", () => {
+            it("should refuse a character that is not part of arithmetic", () => {
+                expect(() => math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("2^3")))
+                    .toThrow("Invalid character in expression");
+            });
+
+            it("should refuse a minus with nothing after it", () => {
+                expect(() => math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("-")))
+                    .toThrow("Invalid expression");
+            });
+
+            it("should refuse a closing parenthesis that opens nothing", () => {
+                expect(() => math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("1+2)")))
+                    .toThrow("Mismatched parentheses");
+            });
+
+            it("should refuse an opening parenthesis that closes nothing", () => {
+                expect(() => math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("(1+2")))
+                    .toThrow("Mismatched parentheses");
+            });
+
+            it("should refuse an expression that folds to nothing", () => {
+                expect(() => math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("")))
+                    .toThrow("Invalid expression");
+            });
+
+            it("should refuse a number it cannot read", () => {
+                expect(() => math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("1+.")))
+                    .toThrow("Invalid number");
+            });
+        });
+    });
+});

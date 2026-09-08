@@ -133,27 +133,48 @@ it("should calculate distance between two points", () => {
 
 ## TypeScript Best Practices
 
-### Avoid `as any`
+### Avoid `as any`, and avoid `as unknown as T`
 
-Minimize use of `as any` type assertions. Instead:
+Both discard what the compiler knew. `as any` says nothing is checked; `as unknown as T` widens
+until nothing is left to check and then declares a type, so the declared type can be wrong in every
+way and the build stays green. The lint rule `bitbybit/no-double-assertion` fails a double assertion
+wherever it appears, tests included, so reach for one of these instead:
 
-1. **Create properly typed mocks** in the `__mocks__` folder
-2. **Use `as unknown as Type`** when casting is necessary (two-step cast is more explicit)
-3. **Define mock interfaces** that match the expected type contract
+1. **A mock class that satisfies the contract**, so no assertion is needed at all. Extending the
+   stand-in a package already ships is usually the shortest route: `class RecordingWorker extends
+   JSCADWorkerMock`, or `class RecordingWorker extends EventTarget implements Worker` where a whole
+   `Worker` is what the method declares.
+2. **A single `as` from a value declared opaque.** `unknown` converts to anything in one step, which
+   is honest about what the test is doing: `const SENTINEL: unknown = { ... }` and then
+   `SENTINEL as T` at the point of use.
+3. **`Partial<T> as T`** for a mock that carries only the members the code under test reaches.
+4. **A helper in `__mocks__` that reads an engine-typed handle as the stand-in it actually is**, so
+   the one assertion lives beside the mock rather than in every suite.
 
 ```typescript
-// ❌ Avoid
+// ❌ Avoid - nothing is checked
 const mockScene = {} as any;
 
-// ✅ Prefer typed mock
+// ❌ Avoid - the assertion is unfalsifiable, and lint fails it
 const mockScene = new MockScene() as unknown as BABYLON.Scene;
 
-// ✅ Or create a proper mock class
-export class MockScene {
-    meshes: MockMesh[] = [];
-    getMeshByName(name: string) { /* ... */ }
-}
+// ✅ A mock class that satisfies the contract, asserted once from Partial
+const mockScene: Partial<BABYLON.Scene> = { meshes: [] };
+const scene = mockScene as BABYLON.Scene;
+
+// ✅ Or, where the engine can run headless, no stand-in at all
+const engine = new BABYLON.NullEngine();
+const scene = new BABYLON.Scene(engine);
 ```
+
+### Prefer the real thing to a stand-in
+
+Where a library can run outside a browser, run it. BabylonJS ships `NullEngine` for exactly this, the
+OCCT, JSCAD and Manifold kernels load under the test runner, and verb is plain JavaScript. A suite
+over the real library asserts what the library ends up holding, which is what a user gets; a suite
+over a mock asserts which call was made, which is only what the code says it does. Stand something in
+when the real one cannot reach the case at all - a kernel that throws a string, a transport that
+refuses a message - and say so in the file.
 
 ## Assertion Best Practices
 

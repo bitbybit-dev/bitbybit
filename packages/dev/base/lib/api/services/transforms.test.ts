@@ -303,4 +303,21 @@ describe("Transforms unit tests", () => {
 
     });
 
+
+    describe("a stretch along a direction that is not one", () => {
+        it("should leave the points where they are", () => {
+            // Arrange - a zero vector points nowhere, so there is nothing to stretch along
+            const warned: unknown[] = [];
+            const consoleWarn = console.warn;
+            console.warn = (message: unknown) => { warned.push(message); };
+
+            // Act
+            const matrices = transforms.stretchDirFromCenter({ center: [0, 0, 0], direction: [0, 0, 0], scale: 2 });
+            console.warn = consoleWarn;
+
+            // Assert - the stretch in the middle of the three is the identity
+            expect(matrices[1]).toEqual([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+            expect(warned).toHaveLength(1);
+        });
+    });
 });

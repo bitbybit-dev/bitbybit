@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { CacheHelper } from "./cache-helper";
 
 describe("CacheHelper unit tests", () => {
@@ -696,6 +696,246 @@ describe("CacheHelper unit tests", () => {
             const hash = cacheHelper.computeHash(args);
             expect(cacheHelper.usedHashes[hash]).toBeDefined();
             expect(cacheHelper.hashesFromPreviousRun[hash]).toBeDefined();
+        });
+    });
+
+    // An array reaches the cache under one hash only when it is put there directly: cacheOp splits a
+    // returned array into one entry per element. The cleanup paths still have to walk such an entry,
+    // and deleting one kernel object that has already gone must not stop the rest being deleted.
+    describe("cleaning an entry that holds an array", () => {
+        type Deletable = { delete: () => void; data: string };
+
+        const deletable = (data: string, deleted: string[]): Deletable => ({
+            data,
+            delete: () => { deleted.push(data); },
+        });
+
+        it("should delete every kernel object the entry holds when the hash is cleaned", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("array-hash", [deletable("first", deleted), deletable("second", deleted)]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("array-hash");
+
+            // Assert
+            expect(deleted).toEqual(["first", "second"]);
+        });
+
+        it("should keep deleting the rest when one object refuses", () => {
+            // Arrange
+            const deleted: string[] = [];
+            const refusing = { data: "refusing", delete: () => { throw new Error("already gone"); } };
+            cacheHelper.addToCache("array-hash", [refusing, deletable("second", deleted)]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("array-hash");
+
+            // Assert
+            expect(deleted).toEqual(["second"]);
+        });
+
+        it("should forget the entry once it is cleaned", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("array-hash", [deletable("first", deleted)]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("array-hash");
+
+            // Assert
+            expect(cacheHelper.checkCache("array-hash")).toBeNull();
+        });
+
+        it("should delete every kernel object the entry holds when the run no longer uses it", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("array-hash", [deletable("first", deleted), deletable("second", deleted)]);
+            cacheHelper.usedHashes = { "array-hash": "array-hash" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(deleted).toEqual(["first", "second"]);
+        });
+
+        it("should keep deleting the rest of an unused entry when one object refuses", () => {
+            // Arrange
+            const deleted: string[] = [];
+            const refusing = { data: "refusing", delete: () => { throw new Error("already gone"); } };
+            cacheHelper.addToCache("array-hash", [refusing, deletable("second", deleted)]);
+            cacheHelper.usedHashes = { "array-hash": "array-hash" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(deleted).toEqual(["second"]);
+        });
+
+        it("should delete every kernel object the entry holds when the whole cache is dropped", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("array-hash", [deletable("first", deleted), deletable("second", deleted)]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(deleted).toEqual(["first", "second"]);
+        });
+    });
+
+    // The hash is taken over the arguments with every kernel pointer stripped out, because a pointer
+    // is an address that changes between runs and would make two identical calls look different. A
+    // pointer the strip did not catch is a bug in the pattern, and the helper says so rather than
+    // hashing an address.
+    describe("computeHash and stray pointers", () => {
+        let reported: unknown[];
+
+        beforeEach(() => {
+            reported = [];
+            vi.spyOn(console, "error").mockImplementation((message: unknown) => { reported.push(message); });
+        });
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should say so when a pointer survives the strip", () => {
+            // Act
+            cacheHelper.computeHash({ ptrCount: 3 });
+
+            // Assert
+            expect(reported).toEqual(["YOU DONE MESSED UP YOUR REGEX."]);
+        });
+
+        it("should stay quiet for arguments carrying a pointer the strip catches", () => {
+            // Act
+            cacheHelper.computeHash({ ptr: 140, radius: 3 });
+
+            // Assert
+            expect(reported).toEqual([]);
+        });
+    });
+
+    // What the cache holds is whatever the kernel handed back, and that is not always a live object
+    // with a delete on it: an entry can be a plain value, an object whose delete has already been
+    // taken away, or a list where only some of the members are kernel objects. None of those may
+    // stop a cleanup, and none of them may be deleted twice.
+    describe("entries that are not live kernel objects", () => {
+        it("should skip an entry that holds nothing when the whole cache is dropped", () => {
+            // Arrange
+            cacheHelper.argCache["empty"] = null;
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should leave an object whose delete has been taken away alone", () => {
+            // Arrange
+            cacheHelper.addToCache("no-delete", { delete: null, data: "kept" });
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should leave an object whose delete has been taken away alone when its hash is cleaned", () => {
+            // Arrange
+            cacheHelper.addToCache("no-delete", { delete: null, data: "kept" });
+
+            // Act
+            cacheHelper.cleanCacheForHash("no-delete");
+
+            // Assert
+            expect(cacheHelper.checkCache("no-delete")).toBeNull();
+        });
+
+        it("should leave an object whose delete has been taken away alone when the run stops using it", () => {
+            // Arrange
+            cacheHelper.addToCache("no-delete", { delete: null, data: "kept" });
+            cacheHelper.usedHashes = { "no-delete": "no-delete" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should delete only the members of a list that are kernel objects", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("mixed", [{ delete: () => { deleted.push("first"); } }, { data: "plain" }]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(deleted).toEqual(["first"]);
+        });
+
+        it("should delete only the kernel objects of a list when its hash is cleaned", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("mixed", [{ delete: () => { deleted.push("first"); } }, { data: "plain" }]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("mixed");
+
+            // Assert
+            expect(deleted).toEqual(["first"]);
+        });
+
+        it("should delete only the kernel objects of a list the run stopped using", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("mixed", [{ delete: () => { deleted.push("first"); } }, { data: "plain" }]);
+            cacheHelper.usedHashes = { mixed: "mixed" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(deleted).toEqual(["first"]);
+        });
+
+        it("should hand back the same empty result on the second call rather than running it again", () => {
+            // Arrange
+            const args = { radius: 1 };
+            let calls = 0;
+            cacheHelper.cacheOp(args, () => { calls += 1; return null; });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return null; });
+
+            // Assert
+            expect(second).toBeNull();
+            expect(calls).toBe(1);
+        });
+
+        it("should cache a value that is not an object without stamping a hash onto it", () => {
+            // Act
+            const hash = cacheHelper.addToCache("primitive", 42);
+
+            // Assert
+            expect(hash).toBe("primitive");
+            expect(cacheHelper.argCache["primitive"]).toBe(42);
         });
     });
 });

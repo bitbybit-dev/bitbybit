@@ -1,6 +1,7 @@
 /**
  * Mock data for testing geometry drawing functions
  */
+import * as Inputs from "../inputs";
 
 /**
  * Creates a mock surface object for Verb NURBS testing
@@ -39,7 +40,7 @@ export function createSurfaceMock2() {
 /**
  * Creates mock OCCT box decomposed mesh data
  */
-export function mockOCCTBoxDecomposedMesh() {
+export function mockOCCTBoxDecomposedMesh(): Inputs.OCCT.DecomposedMeshDto {
     return {
         "faceList": [
             { "vertexCoord": [-0.5, -1, -1.5, -0.5, -1, 1.5, -0.5, 1, -1.5, -0.5, 1, 1.5], "normalCoord": [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0], "uvs": [0, 0, 3, 0, 0, -2, 3, -2], "triIndexes": [0, 1, 2, 2, 1, 3], "vertexCoordVec": [[-0.5, -1, -1.5], [-0.5, -1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, 1.5]], "numberOfTriangles": 2, "centerPoint": [-0.5, 0, 0], "centerNormal": [-1, 0, 0], "faceIndex": 0 },

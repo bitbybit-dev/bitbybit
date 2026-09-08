@@ -949,4 +949,55 @@ describe("DxfGenerator unit tests", () => {
             expect(result).toContain("420\n16711680"); // #FF0000 = 16711680 in decimal
         });
     });
+
+    // The corners of the writer: a bulge on a polyline vertex, a two point polyline, and a segment of
+    // a kind the writer does not know.
+    describe("Polyline bulges", () => {
+        it("should write the bulge of a vertex that has one", () => {
+            // Arrange - a bulge turns the run to the next vertex into an arc
+            const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10]];
+            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false, [0.5, 0, 0]);
+            const model = new Inputs.IO.DxfModelDto([
+                new Inputs.IO.DxfPathsPartDto("Polylines", "3", [new Inputs.IO.DxfPathDto([polylineSegment])]),
+            ]);
+
+            // Act
+            const result = generator.generateDxf(model);
+
+            // Assert
+            expect(result).toContain("42\n0.500000");
+        });
+
+        it("should leave out the bulge of a vertex that has none", () => {
+            // Arrange
+            const points: Inputs.Base.Point2[] = [[0, 0], [10, 0]];
+            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false, [0, 0]);
+            const model = new Inputs.IO.DxfModelDto([
+                new Inputs.IO.DxfPathsPartDto("Polylines", "3", [new Inputs.IO.DxfPathDto([polylineSegment])]),
+            ]);
+
+            // Act
+            const result = generator.generateDxf(model);
+
+            // Assert - "42" is the bulge code; a vertex with no bulge writes no value under it
+            expect(result).not.toContain("42\n0.000000");
+        });
+    });
+
+    describe("a segment of a kind the writer does not know", () => {
+        it("should write no entity for it", () => {
+            // Arrange - a segment carrying none of the members any kind is recognised by
+            const unknown: Inputs.IO.DxfLineSegmentDto = new Inputs.IO.DxfLineSegmentDto();
+            const model = new Inputs.IO.DxfModelDto([
+                new Inputs.IO.DxfPathsPartDto("Unknown", "3", [new Inputs.IO.DxfPathDto([unknown])]),
+            ]);
+
+            // Act
+            const result = generator.generateDxf(model);
+
+            // Assert - the file is written, with the section markers and nothing between them
+            expect(result).toContain("0\nSECTION");
+            expect(result).not.toContain("8\nUnknown");
+        });
+    });
 });

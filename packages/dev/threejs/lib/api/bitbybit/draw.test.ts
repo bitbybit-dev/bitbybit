@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import { createSurfaceMock, createSurfaceMock2, mockOCCTBoxDecomposedMesh, mockJSCADBoxDecomposedMesh } from "../__mocks__/test-data";
 import { Tag } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -1462,91 +1462,75 @@ describe("Draw unit tests", () => {
         });
     });
 
+    // createTexture is run here rather than stood in for: three's loader hands back a Texture at once
+    // and fills its image in later, so everything this method sets is readable without a network.
     describe("createTexture", () => {
-        it("should create texture with default properties", () => {
-            // Arrange
+        const textureFor = (adjust: (inputs: Inputs.Draw.GenericTextureDto) => void = () => undefined): THREE.Texture => {
             const inputs = new Inputs.Draw.GenericTextureDto();
             inputs.url = "test.png";
+            adjust(inputs);
+            return draw.createTexture(inputs);
+        };
 
-            // Mock TextureLoader to avoid DOM dependency
-            const mockTexture = {
-                name: "",
-                offset: { x: 0, y: 0 },
-                repeat: { x: 1, y: 1, set: vi.fn() },
-                rotation: 0,
-                flipY: true,
-                wrapS: 0,
-                wrapT: 0,
-                minFilter: 0,
-                magFilter: 0,
-            };
-            vi.spyOn(draw, "createTexture").mockImplementation(() => {
-                const texture = { ...mockTexture };
-                texture.name = inputs.name;
-                texture.repeat.set(inputs.uScale || 1, inputs.vScale || 1);
-                texture.offset.x = inputs.uOffset || 0;
-                texture.offset.y = inputs.vOffset || 0;
-                texture.rotation = inputs.wAng || 0;
-                texture.flipY = !inputs.invertY;
-                return texture as unknown as THREE.Texture;
-            });
-
-            // Act
-            const result = draw.createTexture(inputs);
-
-            // Assert
-            expect(result).toBeDefined();
-            expect(result.name).toBe(inputs.name);
-            expect(result.offset.x).toBe(0);
-            expect(result.offset.y).toBe(0);
-            expect(result.rotation).toBe(0);
+        it("should name the texture as it was asked to", () => {
+            expect(textureFor((inputs) => { inputs.name = "bricks"; }).name).toBe("bricks");
         });
 
-        it("should create texture with custom properties", () => {
-            // Arrange
-            const inputs = new Inputs.Draw.GenericTextureDto();
-            inputs.url = "custom.jpg";
-            inputs.name = "CustomTexture";
-            inputs.uOffset = 0.5;
-            inputs.vOffset = 0.25;
-            inputs.uScale = 2;
-            inputs.vScale = 3;
-            inputs.wAng = 1.57; // ~90 degrees in radians
-            inputs.invertY = false;
-
-            // Mock TextureLoader to avoid DOM dependency
-            const mockTexture = {
-                name: "",
-                offset: { x: 0, y: 0 },
-                repeat: { x: 1, y: 1, set: vi.fn() },
-                rotation: 0,
-                flipY: true,
-                wrapS: 0,
-                wrapT: 0,
-                minFilter: 0,
-                magFilter: 0,
-            };
-            vi.spyOn(draw, "createTexture").mockImplementation(() => {
-                const texture = { ...mockTexture };
-                texture.name = inputs.name;
-                texture.repeat.set(inputs.uScale || 1, inputs.vScale || 1);
-                texture.offset.x = inputs.uOffset || 0;
-                texture.offset.y = inputs.vOffset || 0;
-                texture.rotation = inputs.wAng || 0;
-                texture.flipY = !inputs.invertY;
-                return texture as unknown as THREE.Texture;
-            });
-
+        it("should scale the texture by the numbers it was given", () => {
             // Act
-            const result = draw.createTexture(inputs);
+            const texture = textureFor((inputs) => { inputs.uScale = 2; inputs.vScale = 3; });
 
             // Assert
-            expect(result).toBeDefined();
-            expect(result.name).toBe("CustomTexture");
-            expect(result.offset.x).toBe(0.5);
-            expect(result.offset.y).toBe(0.25);
-            expect(result.rotation).toBe(1.57);
-            expect(result.flipY).toBe(true);
+            expect([texture.repeat.x, texture.repeat.y]).toEqual([2, 3]);
+        });
+
+        it("should offset the texture by the numbers it was given", () => {
+            // Act
+            const texture = textureFor((inputs) => { inputs.uOffset = 0.25; inputs.vOffset = 0.5; });
+
+            // Assert
+            expect([texture.offset.x, texture.offset.y]).toEqual([0.25, 0.5]);
+        });
+
+        it("should turn the texture by the angle it was given", () => {
+            expect(textureFor((inputs) => { inputs.wAng = 1.5; }).rotation).toBe(1.5);
+        });
+
+        it("should flip the texture unless it was asked to invert it", () => {
+            expect(textureFor((inputs) => { inputs.invertY = false; }).flipY).toBe(true);
+            expect(textureFor((inputs) => { inputs.invertY = true; }).flipY).toBe(false);
+        });
+
+        it("should let the texture repeat across the surface", () => {
+            // Act
+            const texture = textureFor();
+
+            // Assert
+            expect([texture.wrapS, texture.wrapT]).toEqual([THREE.RepeatWrapping, THREE.RepeatWrapping]);
+        });
+
+        it("should sample nearest when asked for the sharpest reading", () => {
+            // Act
+            const texture = textureFor((inputs) => { inputs.samplingMode = Inputs.Draw.samplingModeEnum.nearest; });
+
+            // Assert
+            expect([texture.minFilter, texture.magFilter]).toEqual([THREE.NearestFilter, THREE.NearestFilter]);
+        });
+
+        it("should sample bilinear when asked to smooth within one level", () => {
+            // Act
+            const texture = textureFor((inputs) => { inputs.samplingMode = Inputs.Draw.samplingModeEnum.bilinear; });
+
+            // Assert
+            expect([texture.minFilter, texture.magFilter]).toEqual([THREE.LinearFilter, THREE.LinearFilter]);
+        });
+
+        it("should sample trilinear when asked to smooth between levels as well", () => {
+            // Act
+            const texture = textureFor((inputs) => { inputs.samplingMode = Inputs.Draw.samplingModeEnum.trilinear; });
+
+            // Assert
+            expect([texture.minFilter, texture.magFilter]).toEqual([THREE.LinearMipmapLinearFilter, THREE.LinearFilter]);
         });
     });
 
@@ -1653,73 +1637,72 @@ describe("Draw unit tests", () => {
         });
     });
 
-    describe("texture sampling modes", () => {
-        beforeEach(() => {
-            // Mock createTexture to test sampling modes
-            vi.spyOn(draw, "createTexture").mockImplementation((...args: unknown[]) => {
-                const inputs = args[0] as Inputs.Draw.GenericTextureDto;
-                const texture = new THREE.Texture();
-                
-                // Apply sampling mode logic
-                switch (inputs.samplingMode) {
-                    case Inputs.Draw.samplingModeEnum.nearest:
-                        texture.minFilter = THREE.NearestFilter;
-                        texture.magFilter = THREE.NearestFilter;
-                        break;
-                    case Inputs.Draw.samplingModeEnum.bilinear:
-                        texture.minFilter = THREE.LinearFilter;
-                        texture.magFilter = THREE.LinearFilter;
-                        break;
-                    case Inputs.Draw.samplingModeEnum.trilinear:
-                        texture.minFilter = THREE.LinearMipmapLinearFilter;
-                        texture.magFilter = THREE.LinearFilter;
-                        break;
-                }
-                
-                return texture;
-            });
-        });
 
-        it("should apply nearest sampling mode", () => {
+    // A decomposed mesh is what the worker sends back once a shape has been triangulated: the faces,
+    // edges and points as plain data. A script can hand one straight to the drawing API, singly or as
+    // a list, and both routes are here.
+    // drawAnyAsync detects a decomposed mesh and draws it, but the Entity union the DTO declares does
+    // not list one, so a caller holding a mesh cannot say so in the type. It is passed in opaque here,
+    // which is what a script does through the untyped editor.
+    describe("Draw decomposed meshes", () => {
+        const asEntity = (entity: unknown): Inputs.Draw.Entity => entity as Inputs.Draw.Entity;
+
+        it("should draw a decomposed mesh handed in directly", async () => {
             // Arrange
-            const inputs = new Inputs.Draw.GenericTextureDto();
-            inputs.url = "test.png";
-            inputs.samplingMode = Inputs.Draw.samplingModeEnum.nearest;
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
 
             // Act
-            const result = draw.createTexture(inputs);
+            const res = await draw.drawAnyAsync({ entity: asEntity(mockOCCTBoxDecomposedMesh()), options }) as THREE.Group;
 
             // Assert
-            expect(result.minFilter).toBe(THREE.NearestFilter);
-            expect(result.magFilter).toBe(THREE.NearestFilter);
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
+            expect(res.children.length).toBe(3);
         });
 
-        it("should apply bilinear sampling mode", () => {
+        it("should draw a list of decomposed meshes into one group", async () => {
             // Arrange
-            const inputs = new Inputs.Draw.GenericTextureDto();
-            inputs.url = "test.png";
-            inputs.samplingMode = Inputs.Draw.samplingModeEnum.bilinear;
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
 
             // Act
-            const result = draw.createTexture(inputs);
+            const res = await draw.drawAnyAsync({
+                entity: asEntity([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]),
+                options,
+            }) as THREE.Group;
 
             // Assert
-            expect(result.minFilter).toBe(THREE.LinearFilter);
-            expect(result.magFilter).toBe(THREE.LinearFilter);
+            expect(res.name).toBe("decomposedMeshesContainer");
+            expect(res.children).toHaveLength(2);
         });
 
-        it("should apply trilinear sampling mode", () => {
+        it("should add the group of decomposed meshes to the scene the first one landed in", async () => {
             // Arrange
-            const inputs = new Inputs.Draw.GenericTextureDto();
-            inputs.url = "test.png";
-            inputs.samplingMode = Inputs.Draw.samplingModeEnum.trilinear;
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
 
             // Act
-            const result = draw.createTexture(inputs);
+            const res = await draw.drawAnyAsync({
+                entity: asEntity([mockOCCTBoxDecomposedMesh()]),
+                options,
+            }) as THREE.Group;
 
             // Assert
-            expect(result.minFilter).toBe(THREE.LinearMipmapLinearFilter);
-            expect(result.magFilter).toBe(THREE.LinearFilter);
+            expect(res.parent).not.toBeNull();
+        });
+    });
+
+    describe("createPBRMaterial that does not take the light", () => {
+        it("should emit its own colour rather than reflect any", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.baseColor = "#ff0000";
+            inputs.unlit = true;
+
+            // Act
+            const material = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(material.emissive.getHexString()).toBe("ff0000");
+            expect(material.emissiveIntensity).toBe(1);
+            expect(material.color.getHexString()).toBe("000000");
         });
     });
 });

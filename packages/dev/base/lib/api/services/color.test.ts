@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { Color } from "./color";
 import { MathBitByBit } from "./math";
+import * as Inputs from "../inputs";
 
 describe("Color unit tests", () => {
     let color: Color;
@@ -83,5 +84,77 @@ describe("Color unit tests", () => {
     it("should invert colors to black and white", () => {
         const res = color.invert({ color: "#ffeeaa", blackAndWhite: true });
         expect(res).toEqual("#000000");
+    });
+
+    // The six readers that hand a colour straight back are what a visual editor's colour control
+    // produces, so each is checked for what it hands on and, where it builds an object, for what that
+    // object holds.
+    describe("the colour readers", () => {
+        it("should hand back the rgb colour it was given in 0 to 255", () => {
+            // Arrange
+            const colorRgb = { r: 255, g: 128, b: 0 };
+
+            // Act
+            const result = color.rgb255Color(new Inputs.Color.Rgb255Dto(colorRgb));
+
+            // Assert
+            expect(result).toBe(colorRgb);
+        });
+
+        it("should hand back the rgb colour it was given in 0 to 1", () => {
+            // Arrange
+            const colorRgb = { r: 1, g: 0.5, b: 0 };
+
+            // Act
+            const result = color.rgb1Color(new Inputs.Color.Rgb1Dto(colorRgb));
+
+            // Assert
+            expect(result).toBe(colorRgb);
+        });
+
+        it("should hand back the rgba colour it was given in 0 to 255", () => {
+            // Arrange
+            const colorRgba = { r: 255, g: 128, b: 0, a: 255 };
+
+            // Act
+            const result = color.rgba255Color(new Inputs.Color.Rgba255Dto(colorRgba));
+
+            // Assert
+            expect(result).toBe(colorRgba);
+        });
+
+        it("should hand back the rgba colour it was given in 0 to 1", () => {
+            // Arrange
+            const colorRgba = { r: 1, g: 0.5, b: 0, a: 1 };
+
+            // Act
+            const result = color.rgba1Color(new Inputs.Color.Rgba1Dto(colorRgba));
+
+            // Assert
+            expect(result).toBe(colorRgba);
+        });
+
+        it("should gather three channels given one at a time in 0 to 255", () => {
+            // Act
+            const result = color.rgbAtomic255Color(new Inputs.Color.RgbAttomic255Dto(255, 128, 0));
+
+            // Assert
+            expect(result).toEqual({ r: 255, g: 128, b: 0 });
+        });
+
+        it("should gather three channels given one at a time in 0 to 1", () => {
+            // Act
+            const result = color.rgbAtomic1Color(new Inputs.Color.RgbAttomic1Dto(1, 0.5, 0));
+
+            // Assert
+            expect(result).toEqual({ r: 1, g: 0.5, b: 0 });
+        });
+    });
+
+    describe("hexToRgb", () => {
+        it("should refuse text that is not a hex colour", () => {
+            expect(() => color.hexToRgb(new Inputs.Color.HexDto("not a colour")))
+                .toThrow("Invalid hex color: not a colour");
+        });
     });
 });

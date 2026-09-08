@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ModelsEndpoint } from "./models.js";
-import { okResponse, spyFetcher } from "../__test__/helpers.js";
+import { NO_WAIT, downloadsResponse, errorResponse, okResponse, spyFetcher, taskResponse } from "../__test__/helpers.js";
 
 describe("ModelsEndpoint", () => {
     describe("list", () => {
@@ -101,6 +101,129 @@ describe("ModelsEndpoint", () => {
             expect(calls[0]!.method).toBe("POST");
             expect(calls[0]!.path).toBe("/api/v1/models/dragon-cup/batch");
             expect(result).toStrictEqual(compoundResult);
+        });
+    });
+
+    // run and batchRun are the whole point of the endpoint: submit, poll, and collect what came out.
+    describe("run", () => {
+        it("submits the model, polls it, and returns its downloads", async () => {
+            // Arrange
+            const { fn, calls } = spyFetcher(
+                okResponse({ taskId: "t-1", status: "queued" }),
+                taskResponse("t-1", "completed"),
+                downloadsResponse({ format: "glb", url: "https://example.test/model.glb" }),
+            );
+            const models = new ModelsEndpoint(fn);
+
+            // Act
+            const result = await models.run("gear", { outputs: { glb: true } } as never, NO_WAIT);
+
+            // Assert
+            expect(calls.map((call) => call.path)).toStrictEqual([
+                "/api/v1/models/gear",
+                "/api/v1/tasks/t-1",
+                "/api/v1/tasks/t-1/results",
+            ]);
+            expect(result).toStrictEqual({ taskId: "t-1", downloads: [{ format: "glb", url: "https://example.test/model.glb" }] });
+        });
+
+        it("escapes a model name that needs it", async () => {
+            // Arrange
+            const { fn, calls } = spyFetcher(
+                okResponse({ taskId: "t-1", status: "queued" }),
+                taskResponse("t-1", "completed"),
+                downloadsResponse(),
+            );
+            const models = new ModelsEndpoint(fn);
+
+            // Act
+            await models.run("gear/v2", { outputs: {} } as never, NO_WAIT);
+
+            // Assert
+            expect(calls[0]!.path).toBe("/api/v1/models/gear%2Fv2");
+        });
+    });
+
+    describe("batchSubmit", () => {
+        it("sends POST to the batch path and returns the compound task", async () => {
+            // Arrange
+            const compound = { taskId: "c-1", subTasks: [] };
+            const { fn, calls } = spyFetcher(okResponse(compound));
+            const models = new ModelsEndpoint(fn);
+
+            // Act
+            const result = await models.batchSubmit("gear", { variations: [] } as never);
+
+            // Assert
+            expect(calls[0]!.path).toBe("/api/v1/models/gear/batch");
+            expect(result).toStrictEqual(compound);
+        });
+    });
+
+    describe("batchRun", () => {
+        it("returns the downloads of every sub task that completed", async () => {
+            // Arrange
+            const { fn } = spyFetcher(
+                okResponse({ taskId: "c-1", subTasks: [{ taskId: "s-1", index: 0, status: "queued" }] }),
+                taskResponse("c-1", "completed", { subTasks: [{ taskId: "s-1", index: 0, status: "completed" }] }),
+                downloadsResponse({ format: "glb", url: "https://example.test/0.glb" }),
+            );
+            const models = new ModelsEndpoint(fn);
+
+            // Act
+            const result = await models.batchRun("gear", { variations: [] } as never, NO_WAIT);
+
+            // Assert
+            expect(result.subTasks).toStrictEqual([
+                { taskId: "s-1", index: 0, downloads: [{ format: "glb", url: "https://example.test/0.glb" }] },
+            ]);
+        });
+
+        it("returns no downloads for a sub task that did not complete", async () => {
+            // Arrange
+            const { fn } = spyFetcher(
+                okResponse({ taskId: "c-1", subTasks: [{ taskId: "s-1", index: 0, status: "queued" }] }),
+                taskResponse("c-1", "completed", { subTasks: [{ taskId: "s-1", index: 0, status: "failed" }] }),
+            );
+            const models = new ModelsEndpoint(fn);
+
+            // Act
+            const result = await models.batchRun("gear", { variations: [] } as never, NO_WAIT);
+
+            // Assert
+            expect(result.subTasks).toStrictEqual([{ taskId: "s-1", index: 0, downloads: [] }]);
+        });
+
+        it("returns no downloads for a sub task whose results cannot be fetched", async () => {
+            // Arrange
+            const { fn } = spyFetcher(
+                okResponse({ taskId: "c-1", subTasks: [{ taskId: "s-1", index: 0, status: "queued" }] }),
+                taskResponse("c-1", "completed", { subTasks: [{ taskId: "s-1", index: 0, status: "completed" }] }),
+                errorResponse("NOT_FOUND", "results are gone", 404),
+            );
+            const models = new ModelsEndpoint(fn);
+
+            // Act
+            const result = await models.batchRun("gear", { variations: [] } as never, NO_WAIT);
+
+            // Assert
+            expect(result.subTasks).toStrictEqual([{ taskId: "s-1", index: 0, downloads: [] }]);
+        });
+
+        it("falls back to the sub tasks the submission reported when the compound task lists none", async () => {
+            // Arrange
+            const { fn } = spyFetcher(
+                okResponse({ taskId: "c-1", subTasks: [{ taskId: "s-1", index: 0, status: "completed" }] }),
+                taskResponse("c-1", "completed"),
+                downloadsResponse({ format: "glb", url: "https://example.test/0.glb" }),
+            );
+            const models = new ModelsEndpoint(fn);
+
+            // Act
+            const result = await models.batchRun("gear", { variations: [] } as never, NO_WAIT);
+
+            // Assert
+            expect(result.subTasks[0]!.downloads).toHaveLength(1);
         });
     });
 });

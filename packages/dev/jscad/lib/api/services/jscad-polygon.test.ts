@@ -133,4 +133,44 @@ describe("JSCADPolygon", () => {
             expect(triangle.sides).toHaveLength(TRIANGLE.length);
         });
     });
+
+    describe("createFromPolyline", () => {
+        it("should build a region closed through the polyline's points", () => {
+            // Arrange
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [3, 0, 0], [3, 3, 0], [0, 3, 0]];
+
+            // Act
+            const region = expectRegion(jscad.polygon.createFromPolyline(new Inputs.JSCAD.PolylineDto({ points })));
+
+            // Assert
+            expect(region.sides).toHaveLength(SQUARE_SIDES);
+            expect(kernel.measurements.measureArea(region)).toBeCloseTo(SQUARE_AREA, 5);
+        });
+    });
+
+    describe("createFromPath", () => {
+        it("should build a region closed through the path's points", () => {
+            // Arrange
+            const path = jscad.path.createFromPoints(new Inputs.JSCAD.PathFromPointsDto([[0, 0], [3, 0], [3, 3], [0, 3]], true));
+
+            // Act
+            const region = expectRegion(jscad.polygon.createFromPath(new Inputs.JSCAD.PathDto(path)));
+
+            // Assert
+            expect(kernel.measurements.measureArea(region)).toBeCloseTo(SQUARE_AREA, 5);
+        });
+    });
+
+    describe("createFromCurve", () => {
+        it("should build a region through the points the curve tessellates into", () => {
+            // Arrange - anything that tessellates will do; the API asks only for that
+            const curve = { tessellate: (): Inputs.Base.Point3[] => [[0, 0, 0], [3, 0, 0], [3, 3, 0], [0, 3, 0]] };
+
+            // Act
+            const region = expectRegion(jscad.polygon.createFromCurve(new Inputs.JSCAD.CurveDto(curve)));
+
+            // Assert
+            expect(kernel.measurements.measureArea(region)).toBeCloseTo(SQUARE_AREA, 5);
+        });
+    });
 });

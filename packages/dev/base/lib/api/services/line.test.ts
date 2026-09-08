@@ -587,5 +587,70 @@ describe("Line unit tests", () => {
 
         });
     });
-});
 
+    describe("getPointOnLine without a parameter of its own", () => {
+        it("should give the middle of the line", () => {
+            expect(line.getPointOnLine({ line: { start: [0, 0, 0], end: [10, 0, 0] } })).toEqual([5, 0, 0]);
+        });
+    });
+
+    describe("lineLineIntersection given something that is not a line", () => {
+        it("should refuse a line with no start", () => {
+            // Arrange
+            const reported: unknown[] = [];
+            const consoleError = console.error;
+            console.error = (message: unknown) => { reported.push(message); };
+
+            // Act
+            const result = line.lineLineIntersection({
+                line1: { end: [1, 0, 0] } as Inputs.Base.Line3,
+                line2: { start: [0, 0, 0], end: [0, 1, 0] },
+                checkSegmentsOnly: false,
+                tolerance: 1e-7,
+            });
+            console.error = consoleError;
+
+            // Assert
+            expect(result).toBeUndefined();
+            expect(reported).toHaveLength(1);
+        });
+
+        it("should refuse a point that is not in three dimensions", () => {
+            // Arrange - a two dimensional point is what a script gets from a 2D construction
+            const consoleError = console.error;
+            console.error = () => undefined;
+            const flat: Inputs.Base.Point3 = [0, 0, 0];
+            flat.pop();
+
+            // Act
+            const result = line.lineLineIntersection({
+                line1: { start: flat, end: [1, 0, 0] },
+                line2: { start: [0, 0, 0], end: [0, 1, 0] },
+                checkSegmentsOnly: false,
+                tolerance: 1e-7,
+            });
+            console.error = consoleError;
+
+            // Assert
+            expect(result).toBeUndefined();
+        });
+    });
+
+    describe("lineLineIntersection of a line with no length", () => {
+        it("should find nothing, a point having no direction to cross anything in", () => {
+            // Arrange
+            const degenerate: Inputs.Base.Line3 = { start: [5, 5, 0], end: [5, 5, 0] };
+
+            // Act
+            const result = line.lineLineIntersection({
+                line1: degenerate,
+                line2: { start: [0, 0, 0], end: [10, 0, 0] },
+                checkSegmentsOnly: false,
+                tolerance: 1e-7,
+            });
+
+            // Assert
+            expect(result).toBeUndefined();
+        });
+    });
+});
