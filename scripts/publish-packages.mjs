@@ -124,7 +124,11 @@ for (const [i, tier] of tiers.entries()) {
         execFileSync("npm", cmd, { cwd: p.publishDir, stdio: "inherit" });
         publishedNow++;
     }
-    if (!dryRun && i < tiers.length - 1) await waitForTier(tier);
+    // Every tier, the last one included. The wait exists because a fresh publish can lag the
+    // registry's read path, and skipping it on the final tier assumed nothing else reads from it -
+    // but the install smoke that follows does, seconds later, and raced whichever package of that
+    // tier resolved slowest. A publish that worked then reported failure at the step after it.
+    if (!dryRun) await waitForTier(tier);
 }
 console.log(`\n${dryRun ? "dry run complete" : `published ${publishedNow}, skipped ${skipped} already on the registry`}`);
 if (!dryRun && tag === "next" && publishedNow) console.log(`published under next; promoting needs a token or an npm login, OIDC cannot:\n  ${[...packages.keys()].map((n) => `npm dist-tag add ${n}@${version} latest`).join(" && ")}`);
