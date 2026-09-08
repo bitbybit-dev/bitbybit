@@ -130,7 +130,14 @@ for (const { dir, fromDist } of [...distProjects, ...rootProjects]) {
         }
     }
     checkNothingSilentlyStripped(manifest.name, publishDir, fromDist ? ["."] : (manifest.files ?? ["."]));
-    const [packed] = JSON.parse(run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", packDir], publishDir));
+    // npm 11.6 answers with an array of one entry; a later npm answers with the entry itself, and
+    // destructuring the second as the first throws "object is not iterable" halfway through a
+    // release. Take either shape, and say which npm produced a third rather than crashing on it.
+    const packOutput = JSON.parse(run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", packDir], publishDir));
+    const packed = Array.isArray(packOutput) ? packOutput[0] : packOutput;
+    if (!packed?.filename || !Array.isArray(packed.files)) {
+        fail(`npm ${run("npm", ["--version"]).trim()} answered \`npm pack --json\` in a shape this does not understand: ${JSON.stringify(packOutput).slice(0, 200)}`);
+    }
     const shipped = packed.files.map((f) => f.path);
     const leaked = shipped.filter((f) => f.endsWith(".tsbuildinfo") || f.endsWith(".npmignore") || f.startsWith("coverage/") || f.startsWith("babel.config"));
     if (leaked.length) fail(`${manifest.name} ships build-only files: ${leaked.join(", ")}`);
