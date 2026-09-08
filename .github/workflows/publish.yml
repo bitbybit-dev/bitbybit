@@ -11,11 +11,16 @@
 #
 # The rehearsal is `dry_run`: everything is built, tested and checked, and nothing is published, so
 # it can be run at any version any number of times. A release version is published straight to
-# `latest`. It is never staged under `next` first, because a published version is immutable and the
-# OIDC token signs `npm publish` and `npm stage publish` only - `npm dist-tag add` needs a granular
-# token or an interactive login, so a version parked on `next` could not be promoted from here, and
-# its number would be spent. `next` and `rc` carry prerelease versions (1.2.0-rc.1 and the like),
-# which is the way to make something installable before a release.
+# `latest` and is never staged on a prerelease channel first, because a published version is
+# immutable and the OIDC token signs `npm publish` and `npm stage publish` only - `npm dist-tag add`
+# needs a granular token or an interactive login, so a number parked on `rc` could not be promoted
+# from here and would simply be spent.
+#
+# A prerelease publishes under its own identifier: a `-rc.1` version to `rc`, a `-beta.2` one to `beta`. The
+# version decides, and publish-packages.mjs refuses the two pairings that cannot be undone - a
+# prerelease on `latest`, which would become everyone's default install, and a release version on a
+# channel it could never be promoted out of. That is how something is installable by name before a
+# release: `npm install @bitbybit-dev/core@rc`.
 #
 # Before the first release from here, each of the thirteen packages needs a trusted publisher on
 # npmjs.com pointing at bitbybit-dev/bitbybit and this file, publish.yml. A package's first ever
@@ -26,10 +31,10 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "npm dist-tag: next to rehearse (installable by exact version only), latest to release"
+        description: "npm dist-tag - must match the version: a prerelease takes its own channel, a release takes latest"
         type: choice
-        options: [next, latest]
-        default: next
+        options: [rc, beta, alpha, next, latest]
+        default: rc
       dry_run:
         description: "build and check everything, publish nothing"
         type: boolean
@@ -99,5 +104,5 @@ jobs:
           npm view "@bitbybit-dev/core@$VERSION" --json | node -e "const j=JSON.parse(require('fs').readFileSync(0,'utf8')); if (!j.dist || !j.dist.attestations) { console.error('no provenance attestation on core'); process.exit(1); } console.log('provenance:', j.dist.attestations.url)"
 
       - name: Promotion reminder
-        if: ${{ !inputs.dry_run && inputs.tag == 'next' }}
-        run: echo "Published under the next tag, installable by exact version, while npm install still picks latest. Promoting it from a workflow is not possible - OIDC signs publishes, not dist-tags - so a release version is published directly with tag = latest, and next is for prereleases."
+        if: ${{ !inputs.dry_run && inputs.tag != 'latest' }}
+        run: echo "Published under the ${{ inputs.tag }} tag - installable as @${{ inputs.tag }} or by exact version, while npm install still picks latest. Promoting it from a workflow is not possible - OIDC signs publishes, not dist-tag moves. A release version is published directly with tag = latest."
