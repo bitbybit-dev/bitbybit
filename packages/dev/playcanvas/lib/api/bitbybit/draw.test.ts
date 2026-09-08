@@ -1375,120 +1375,115 @@ describe("Draw unit tests", () => {
     });
 
     describe("Draw tags", () => {
-        it("should call tag.drawTag for a single tag entity", () => {
-            const mockGroup = new pc.Entity();
-            (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: {} };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+        const canvasZoneClass = "bitbybit-canvas-zone";
 
-            const tagEntity: Inputs.Tag.TagDto = {
-                text: "Test Tag",
-                position: [1, 2, 3],
-                colour: "#ff0000",
-                size: 1,
-                adaptDepth: false,
-            };
-            const res = draw.drawAny({ entity: tagEntity }) as DrawnEntity;
-            expect(drawTagSpy).toHaveBeenCalledTimes(1);
-            expect(drawTagSpy).toHaveBeenCalledWith(expect.objectContaining({
-                tag: tagEntity,
-            }));
-            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.tag);
-            drawTagSpy.mockRestore();
+        const tagNamed = (text: string, position: Inputs.Base.Point3): Inputs.Tag.TagDto => ({
+            text, position, colour: "#ff0000", size: 1, adaptDepth: false,
         });
 
-        it("should call tag.drawTag with custom options", () => {
-            const mockGroup = new pc.Entity();
-            (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: {} };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+        beforeEach(() => {
+            const zone = document.createElement("div");
+            zone.className = canvasZoneClass;
+            document.body.appendChild(zone);
+            draw.context.canvasZoneClass = canvasZoneClass;
+            draw.context.tagBag = [];
+        });
 
-            const tagEntity: Inputs.Tag.TagDto = {
-                text: "Hello World",
-                position: [0, 0, 0],
-                colour: "#00ff00",
-                size: 2,
-                adaptDepth: false,
-            };
-            const options = {
-                ...new Inputs.Draw.DrawBasicGeometryOptions(),
-                updatable: true
-            };
-            const res = draw.drawAny({ entity: tagEntity, options }) as DrawnEntity;
+        afterEach(() => {
+            document.querySelectorAll("." + canvasZoneClass).forEach(zone => zone.remove());
+        });
+
+        it("should hand back the tag itself, carrying the metadata an update reads", () => {
+            // Arrange
+            const drawTagSpy = vi.spyOn(tag, "drawTag");
+            const tagEntity = tagNamed("Test Tag", [1, 2, 3]);
+
+            // Act
+            const res = draw.drawAny({ entity: tagEntity }) as Inputs.Draw.DrawnTag;
+
+            // Assert
+            expect(drawTagSpy).toHaveBeenCalledTimes(1);
+            expect(drawTagSpy).toHaveBeenCalledWith(expect.objectContaining({ tag: tagEntity }));
+            expect(res.text).toBe("Test Tag");
+            expect(res.bitbybitMeta?.type).toBe(Inputs.Draw.drawingTypes.tag);
+        });
+
+        it("should pass the caller's options through to the tag api", () => {
+            // Arrange
+            const drawTagSpy = vi.spyOn(tag, "drawTag");
+            const tagEntity = tagNamed("Hello World", [0, 0, 0]);
+            const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
+
+            // Act
+            const res = draw.drawAny({ entity: tagEntity, options }) as Inputs.Draw.DrawnTag;
+
+            // Assert
             expect(drawTagSpy).toHaveBeenCalledWith(expect.objectContaining({
                 tag: tagEntity,
                 updatable: true,
             }));
-            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.tag);
-            drawTagSpy.mockRestore();
+            expect(res.bitbybitMeta?.type).toBe(Inputs.Draw.drawingTypes.tag);
         });
 
-        it("should call tag.drawTag when updating a tag with group", () => {
-            const mockGroup = new pc.Entity();
-            (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+        it("should register the drawn tag with the context so the renderer can position it", () => {
+            // Arrange
+            const tagEntity = tagNamed("Registered", [4, 5, 6]);
 
-            const tagEntity: Inputs.Tag.TagDto = {
-                text: "Updated Tag",
-                position: [1, 1, 1],
-                colour: "#00ff00",
-                size: 2,
-                adaptDepth: false,
-            };
-            void draw.drawAny({ entity: tagEntity, group: mockGroup });
-            expect(drawTagSpy).toHaveBeenCalled();
-            drawTagSpy.mockRestore();
+            // Act
+            const res = draw.drawAny({ entity: tagEntity }) as Inputs.Draw.DrawnTag;
+
+            // Assert
+            expect(draw.context.tagBag).toStrictEqual([res]);
+            expect(res.needsUpdate).toBe(true);
+            expect(document.getElementById(res.id!)?.textContent).toBe("Registered");
         });
 
-        it("should call tag.drawTags for multiple tag entities", () => {
-            const mockGroup = new pc.Entity();
-            (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: {} };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
-
-            const tagsEntity: Inputs.Tag.TagDto[] = [
-                { text: "Tag 1", position: [0, 0, 0], colour: "#ff0000", size: 1, adaptDepth: false },
-                { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 1, adaptDepth: false },
-                { text: "Tag 3", position: [2, 2, 2], colour: "#0000ff", size: 1, adaptDepth: false },
+        it("should hand back every tag of a list, each carrying its own metadata", () => {
+            // Arrange
+            const drawTagsSpy = vi.spyOn(tag, "drawTags");
+            const tagsEntity = [
+                tagNamed("Tag 1", [0, 0, 0]),
+                tagNamed("Tag 2", [1, 1, 1]),
+                tagNamed("Tag 3", [2, 2, 2]),
             ];
-            const res = draw.drawAny({ entity: tagsEntity }) as DrawnEntity;
+
+            // Act
+            const res = draw.drawAny({ entity: tagsEntity }) as Inputs.Draw.DrawnTag[];
+
+            // Assert
             expect(drawTagsSpy).toHaveBeenCalledTimes(1);
-            expect(drawTagsSpy).toHaveBeenCalledWith(expect.objectContaining({
-                tags: tagsEntity,
-            }));
-            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.tags);
-            drawTagsSpy.mockRestore();
+            expect(drawTagsSpy).toHaveBeenCalledWith(expect.objectContaining({ tags: tagsEntity }));
+            expect(res.map(drawn => drawn.text)).toStrictEqual(["Tag 1", "Tag 2", "Tag 3"]);
+            expect(res.map(drawn => drawn.bitbybitMeta?.type))
+                .toStrictEqual(Array(3).fill(Inputs.Draw.drawingTypes.tags));
         });
 
-        it("should call tag.drawTags when updating multiple tags with group", () => {
-            const mockGroup = new pc.Entity();
-            (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+        it("should pass the caller's options through to the tag list api", () => {
+            // Arrange
+            const drawTagsSpy = vi.spyOn(tag, "drawTags");
+            const tagsEntity = [tagNamed("Custom Tag", [5, 5, 5])];
+            const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: false };
 
-            const tagsEntity: Inputs.Tag.TagDto[] = [
-                { text: "Tag C", position: [2, 2, 2], colour: "#0000ff", size: 2, adaptDepth: false },
-                { text: "Tag D", position: [3, 3, 3], colour: "#ffff00", size: 2, adaptDepth: false },
-            ];
-            void draw.drawAny({ entity: tagsEntity, group: mockGroup });
-            expect(drawTagsSpy).toHaveBeenCalled();
-            drawTagsSpy.mockRestore();
+            // Act
+            const res = draw.drawAny({ entity: tagsEntity, options }) as Inputs.Draw.DrawnTag[];
+
+            // Assert
+            expect(drawTagsSpy).toHaveBeenCalledWith(expect.objectContaining({ tags: tagsEntity }));
+            expect(res[0]!.bitbybitMeta?.type).toBe(Inputs.Draw.drawingTypes.tags);
         });
 
-        it("should call tag.drawTags with custom options", () => {
-            const mockGroup = new pc.Entity();
-            (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: {} };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+        it("should redraw a tag that is passed back in, rather than refusing it", () => {
+            // Arrange
+            const first = draw.drawAny({ entity: tagNamed("First", [0, 0, 0]) }) as Inputs.Draw.DrawnTag;
+            const drawnTag: unknown = first;
+            const group = drawnTag as pc.Entity;
 
-            const tagsEntity: Inputs.Tag.TagDto[] = [
-                { text: "Custom Tag", position: [5, 5, 5], colour: "#ffffff", size: 3, adaptDepth: false },
-            ];
-            const options = {
-                ...new Inputs.Draw.DrawBasicGeometryOptions(),
-                updatable: false,
-            };
-            const res = draw.drawAny({ entity: tagsEntity, options }) as DrawnEntity;
-            expect(drawTagsSpy).toHaveBeenCalledWith(expect.objectContaining({
-                tags: tagsEntity,
-            }));
-            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.tags);
-            drawTagsSpy.mockRestore();
+            // Act
+            const res = draw.drawAny({ entity: tagNamed("Second", [1, 1, 1]), group }) as Inputs.Draw.DrawnTag;
+
+            // Assert
+            expect(res.text).toBe("Second");
+            expect(res.bitbybitMeta?.type).toBe(Inputs.Draw.drawingTypes.tag);
         });
     });
 
@@ -1551,26 +1546,28 @@ describe("Draw unit tests", () => {
         it("should update tag when group has tag type via spy", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
-
             const tag2: Inputs.Tag.TagDto = { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false };
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(tag2);
 
-            const res = draw.drawAny({ entity: tag2, group: mockGroup }) as DrawnEntity;
+            const res = draw.drawAny({ entity: tag2, group: mockGroup }) as Inputs.Draw.DrawnTag;
             expect(drawTagSpy).toHaveBeenCalled();
-            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.tag);
+            expect(res.bitbybitMeta?.type).toBe(Inputs.Draw.drawingTypes.tag);
             drawTagSpy.mockRestore();
         });
 
         it("should update tags when group has tags type via spy", () => {
+            // Arrange
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawn: Inputs.Tag.TagDto[] = [{ text: "Tag B", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false }];
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(drawn);
 
-            const tags2: Inputs.Tag.TagDto[] = [{ text: "Tag B", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false }];
+            // Act
+            const res = draw.drawAny({ entity: drawn, group: mockGroup }) as Inputs.Draw.DrawnTag[];
 
-            const res = draw.drawAny({ entity: tags2, group: mockGroup }) as DrawnEntity;
+            // Assert
             expect(drawTagsSpy).toHaveBeenCalled();
-            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.tags);
+            expect(res[0]!.bitbybitMeta?.type).toBe(Inputs.Draw.drawingTypes.tags);
             drawTagsSpy.mockRestore();
         });
 

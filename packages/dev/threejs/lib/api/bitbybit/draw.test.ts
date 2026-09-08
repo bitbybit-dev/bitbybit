@@ -1226,7 +1226,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTag for a single tag entity", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: {} };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockImplementation(inputs => inputs.tag);
             
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Test Tag",
@@ -1247,7 +1247,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTag with custom options", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: {} };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockImplementation(inputs => inputs.tag);
             
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Hello World",
@@ -1269,7 +1269,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTag when updating a tag with group", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockImplementation(inputs => inputs.tag);
             
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Updated Tag",
@@ -1286,7 +1286,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags for multiple tag entities", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: {} };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto[]);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockImplementation(inputs => inputs.tags);
             
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Tag 1", position: [0, 0, 0], colour: "#ff0000", size: 1, adaptDepth: false },
@@ -1305,7 +1305,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags when updating multiple tags with group", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto[]);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockImplementation(inputs => inputs.tags);
             
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Tag C", position: [2, 2, 2], colour: "#0000ff", size: 2, adaptDepth: false },
@@ -1319,7 +1319,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags with custom options", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: {} };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto[]);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockImplementation(inputs => inputs.tags);
             
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Custom Tag", position: [5, 5, 5], colour: "#ffffff", size: 3, adaptDepth: false },
@@ -1396,7 +1396,7 @@ describe("Draw unit tests", () => {
         it("should update tag when group has tag type via spy", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockImplementation(inputs => inputs.tag);
             
             const tag2: Inputs.Tag.TagDto = { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false };
             
@@ -1409,7 +1409,7 @@ describe("Draw unit tests", () => {
         it("should update tags when group has tags type via spy", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto[]);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockImplementation(inputs => inputs.tags);
             
             const tags2: Inputs.Tag.TagDto[] = [{ text: "Tag B", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false }];
             

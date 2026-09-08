@@ -35,7 +35,7 @@ export class Draw extends DrawCore {
         super();
     }
 
-    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<BitByBitEntity | undefined> {
+    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<Inputs.Draw.DrawnEntity | undefined> {
         if (!this.isValidDrawInput(inputs.entity)) {
             return Promise.resolve(undefined);
         }
@@ -94,7 +94,7 @@ export class Draw extends DrawCore {
      * @group draw sync
      * @shortname draw sync
      */
-    drawAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity | undefined {
+    drawAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): Inputs.Draw.DrawnEntity | undefined {
         if (!this.isValidDrawInput(inputs.entity)) {
             return undefined;
         }
@@ -522,39 +522,41 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurfaces);
     }
 
-    private handleTag(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
+    private handleTag(inputs: Inputs.Draw.DrawAny<pc.Entity>): Inputs.Draw.DrawnTag {
         const options = this.resolveDrawOptions(inputs, { ...this.defaultBasicOptions, updatable: false });
-        
+
         if (!this.isTagDto(inputs.entity)) {
             throw new Error("Entity must be a TagDto for drawTag operation");
         }
-        
+
         const result = this.tag.drawTag({
             tagVariable: inputs.group && this.isTagDto(inputs.group) ? inputs.group as unknown as Inputs.Tag.TagDto : undefined,
             tag: inputs.entity as unknown as Inputs.Tag.TagDto,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
-        
-        return this.attachMetadata(result, Inputs.Draw.drawingTypes.tag, options);
+
+        return this.attachTagMetadata(result, Inputs.Draw.drawingTypes.tag, options);
     }
 
-    private handleTags(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
+    private handleTags(inputs: Inputs.Draw.DrawAny<pc.Entity>): Inputs.Draw.DrawnTags {
         const options = this.resolveDrawOptions(inputs, { ...this.defaultBasicOptions, updatable: false });
-        
+
         if (!this.isTagDtoArray(inputs.entity)) {
             throw new Error("Entity must be a TagDto array for drawTags operation");
         }
-        
+
         const result = this.tag.drawTags({
             tagsVariable: inputs.group && this.isTagDtoArray(inputs.group) ? inputs.group as unknown as Inputs.Tag.TagDto[] : undefined,
             tags: inputs.entity as unknown as Inputs.Tag.TagDto[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
-        return this.attachMetadata(result, Inputs.Draw.drawingTypes.tags, options);
+        const drawnTags = result.map(tag => this.attachTagMetadata(tag, Inputs.Draw.drawingTypes.tags, options)) as Inputs.Draw.DrawnTags;
+        drawnTags.bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options };
+        return drawnTags;
     }
 
-    private updateAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity | undefined {
+    private updateAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): Inputs.Draw.DrawnEntity | undefined {
         let result;
         const group = inputs.group as BitByBitEntity;
         if (group && group.bitbybitMeta) {
@@ -676,15 +678,6 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Type guard to check if value is a PlayCanvas Entity
-     * @param value - Value to check
-     * @returns True if value is pc.Entity
-     */
-    private isEntity(value: unknown): value is pc.Entity {
-        return value instanceof pc.Entity;
-    }
-
-    /**
      * Extract options from inputs with proper fallback chain
      * @param inputs - Draw inputs
      * @param defaultOptions - Default options to use as fallback
@@ -707,24 +700,20 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Attach BitByBit metadata to an entity
-     * @param entity - Entity to attach metadata to
+     * Attach BitByBit metadata to a drawn tag
+     * @param tag - Tag the tag API drew
      * @param type - Drawing type
      * @param options - Draw options
-     * @returns Entity with attached metadata
+     * @returns Tag with attached metadata
      */
-    private attachMetadata(
-        entity: pc.Entity | unknown, 
-        type: Inputs.Draw.drawingTypes, 
+    private attachTagMetadata(
+        tag: Inputs.Tag.TagDto,
+        type: Inputs.Draw.drawingTypes,
         options: Inputs.Draw.DrawOptions
-    ): BitByBitEntity {
-        if (!entity || !this.isEntity(entity)) {
-            throw new Error(`Invalid entity type for metadata attachment: ${typeof entity}`);
-        }
-        
-        const bitByBitEntity = entity as BitByBitEntity;
-        bitByBitEntity.bitbybitMeta = { type, options };
-        return bitByBitEntity;
+    ): Inputs.Draw.DrawnTag {
+        const drawnTag = tag as Inputs.Draw.DrawnTag;
+        drawnTag.bitbybitMeta = { type, options };
+        return drawnTag;
     }
 
 }

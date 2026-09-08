@@ -432,9 +432,15 @@ describe("Lists unit tests", () => {
         expect(result).toEqual(5);
     });
 
-    it("should get longest list length", () => {
-        const result = lists.getLongestListLength({ lists: undefined as unknown as number[][] });
-        expect(result).toEqual(undefined);
+    it("should answer nothing with a length of zero, which is what the declared number promises", () => {
+        // Arrange
+        const noLists: number[][] = undefined!;
+
+        // Act
+        const result = lists.getLongestListLength({ lists: noLists });
+
+        // Assert
+        expect(result).toBe(0);
     });
 
     it("should group nth and skip remainder", () => {

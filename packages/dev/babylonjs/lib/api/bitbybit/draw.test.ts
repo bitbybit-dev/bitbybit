@@ -734,7 +734,7 @@ describe("Draw unit tests", () => {
         it("should detect and handle tags array", () => {
             const mockTags = [{ tag: "test1" }, { tag: "test2" }];
             const mockMesh = createMockMesh("tags");
-            mockTag.drawTags = vi.fn().mockReturnValue(mockMesh);
+            mockTag.drawTags = vi.fn((inputs) => inputs.tags);
             
             spyManager.setupDetectors("Tags");
             spyManager.setupHandler("handleTags", mockMesh);
@@ -989,8 +989,7 @@ describe("Draw unit tests", () => {
     describe("Private handle methods", () => {
         it("handleTags should call tag.drawTags", () => {
             const mockTags = [{ tag: "test1" }, { tag: "test2" }];
-            const mockMesh = createMockMesh("tags");
-            mockTag.drawTags = vi.fn().mockReturnValue(mockMesh);
+            mockTag.drawTags = vi.fn((inputs) => inputs.tags);
             
             const result = drawPrivate.handleTags({ entity: mockTags });
             
@@ -1002,8 +1001,7 @@ describe("Draw unit tests", () => {
         it("handleTags should use provided options when options are passed", () => {
             const mockTags = [{ tag: "test1" }, { tag: "test2" }];
             const customOptions = { updatable: true, size: 22 };
-            const mockMesh = createMockMesh("tags");
-            mockTag.drawTags = vi.fn().mockReturnValue(mockMesh);
+            mockTag.drawTags = vi.fn((inputs) => inputs.tags);
             
             const result = drawPrivate.handleTags({ entity: mockTags, options: customOptions });
             
@@ -1018,8 +1016,7 @@ describe("Draw unit tests", () => {
         it("handleTags should use provided options when options are passed", () => {
             const mockTags = [{ tag: "test1" }, { tag: "test2" }];
             const customOptions = { updatable: true, size: 22 };
-            const mockMesh = createMockMesh("tags");
-            mockTag.drawTags = vi.fn().mockReturnValue(mockMesh);
+            mockTag.drawTags = vi.fn((inputs) => inputs.tags);
             
             const result = drawPrivate.handleTags({ entity: mockTags, options: customOptions });
             

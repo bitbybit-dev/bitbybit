@@ -17,6 +17,23 @@ import { parseXml, XmlNode } from "./svg-xml";
 
 const DRAWABLE = new Set(["path", "rect", "circle", "ellipse", "line", "polyline", "polygon"]);
 const SKIP_GEOMETRY = new Set(["defs", "symbol", "clippath", "mask", "marker", "pattern", "metadata", "title", "desc"]);
+/** Elements that hold no geometry themselves but whose children may, so the walk descends without comment. */
+const CONTAINERS = new Set(["svg", "g", "a", "switch", "style", "script", "view", "set", "animate",
+    "animatemotion", "animatetransform", "lineargradient", "radialgradient", "stop", "filter"]);
+
+/**
+ * What to say about the unsupported elements whose absence is otherwise hard to explain. `<use>` is
+ * the one that matters most: it instantiates geometry defined inside `<defs>`, which is skipped, so an
+ * SVG built that way imports as nothing at all unless the import says why.
+ */
+const UNSUPPORTED_HINTS: { [tag: string]: string } = {
+    use: " It instantiates geometry defined elsewhere in the document, usually inside <defs>, which is not imported; inline the shapes it references.",
+    text: " Convert text to paths before exporting.",
+    tspan: " Convert text to paths before exporting.",
+    textpath: " Convert text to paths before exporting.",
+    image: " Raster images have no geometry to import.",
+    foreignobject: " Its content is not SVG.",
+};
 
 const STYLE_KEYS = [
     "fill", "stroke", "stroke-width", "opacity", "fill-opacity",
@@ -114,6 +131,7 @@ export function normalizeSvg(svg: string): SvgScene {
 
     const elements: SvgElement[] = [];
     let warnedStyleEl = false;
+    const warnedUnsupported = new Set<string>();
 
     const walk = (node: XmlNode, parentMatrix: Matrix, inheritedProps: { [k: string]: string }): void => {
         if (node.tag === "style" && !warnedStyleEl) {
@@ -121,6 +139,10 @@ export function normalizeSvg(svg: string): SvgScene {
             warnedStyleEl = true;
         }
         if (SKIP_GEOMETRY.has(node.tag)) { return; }
+        if (!DRAWABLE.has(node.tag) && !CONTAINERS.has(node.tag) && !warnedUnsupported.has(node.tag)) {
+            warnings.push(`<${node.tag}> is not supported and contributes no geometry.${UNSUPPORTED_HINTS[node.tag] ?? ""}`);
+            warnedUnsupported.add(node.tag);
+        }
 
         const matrix = multiply(parentMatrix, parseTransform(node.attrs["transform"]));
         const props = resolveStyleProps(node, inheritedProps);

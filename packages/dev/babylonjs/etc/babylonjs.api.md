@@ -3214,6 +3214,20 @@ namespace Draw_2 {
         colorZ: Base_3.Color;
         size: number;
     }
+    interface DrawnTag extends Inputs_2.Tag.TagDto {
+        // (undocumented)
+        metadata?: DrawnTagMeta | undefined;
+    }
+    interface DrawnTagMeta {
+        options: DrawOptions | {
+            updatable: boolean;
+        };
+        // (undocumented)
+        type: drawingTypes;
+    }
+    type DrawnTags = DrawnTag[] & {
+        metadata?: DrawnTagMeta | undefined;
+    };
     // (undocumented)
     class DrawOcctShapeMaterialOptions {
         constructor(precision?: number, faceMaterial?: any, drawEdges?: boolean, edgeColour?: Base_3.Color, edgeWidth?: number);

@@ -185,6 +185,10 @@ export class OCCTIO {
                 reader.TransferRoots();
                 stepShape = reader.OneShape();
                 this.occ.FS.unlink(`/file.${fileType}`);
+                if (!stepShape || stepShape.IsNull()) {
+                    console.error("Failed to read " + fileType.toUpperCase() + " file: " + fileName);
+                    return undefined;
+                }
             } else {
                 console.error("Something in OCCT went wrong trying to read " + fileName);
                 this.occ.FS.unlink(`/file.${fileType}`);

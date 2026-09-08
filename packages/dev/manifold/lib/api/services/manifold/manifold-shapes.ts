@@ -2,6 +2,25 @@ import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
 
 /**
+ * The grid a vertex is snapped onto before it is used as a de-duplication key.
+ *
+ * Vertices arriving from separate triangles of the same surface differ in the last bits after any
+ * floating-point arithmetic has touched them, and keying on the exact coordinates left every such
+ * pair as two vertices - which is what made a mesh built from polygon points non-watertight along a
+ * seam that looks closed. Snapping to a grid merges them.
+ *
+ * The value is absolute, not relative: it is chosen to be far above the noise of double arithmetic on
+ * ordinary CAD magnitudes and far below any distance a model means to express. Two vertices that
+ * genuinely sit closer together than this are merged, and two that straddle a grid boundary are not -
+ * that is inherent to snapping, and the alternative, a neighbourhood search, costs more than it is
+ * worth here.
+ */
+const VERTEX_MERGE_TOLERANCE = 1e-7;
+
+/** Snaps a coordinate onto the merge grid, normalising a negative zero so it keys the same as zero. */
+const quantize = (coordinate: number): number => Math.round(coordinate / VERTEX_MERGE_TOLERANCE) || 0;
+
+/**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
  * Thanks Manifold community for developing this kernel
  */
@@ -64,7 +83,7 @@ export class ManifoldShapes {
                     throw new Error(`Invalid point data encountered: ${JSON.stringify(point)} in triangle ${JSON.stringify(triangle)}`);
                 }
 
-                const vertexKey = `${point[0]},${point[1]},${point[2]}`;
+                const vertexKey = `${quantize(point[0])},${quantize(point[1])},${quantize(point[2])}`;
 
                 let index: number;
 

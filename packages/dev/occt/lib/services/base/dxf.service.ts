@@ -105,8 +105,23 @@ export class DxfService {
     }
 
     /**
-     * Try to create a unified polyline from consecutive edges (linear, arc, and complex)
-     * This creates a single LWPOLYLINE with bulges where applicable
+     * Try to create a unified polyline from consecutive edges (linear, arc, and complex).
+     * This creates a single LWPOLYLINE with bulges where applicable.
+     *
+     * A DXF bulge encodes a whole arc as one number on the vertex it starts from:
+     * `bulge = tan(includedAngle / 4)`. Positive curves left travelling start to end, negative curves
+     * right, and zero is a straight segment.
+     *
+     * The included angle cannot be recovered from the two endpoint angles alone. Two arcs share those
+     * endpoints - the short way round and the long way round - and the difference between them is
+     * exactly what the bulge has to express. So a third point, halfway along the edge, is sampled to
+     * choose between them: when its offset from the start has the same sign as the end's and is
+     * smaller in magnitude, the arc is the short one, and otherwise it is the complement.
+     * @param edges the edges to walk from startIndex
+     * @param startIndex where in the edge list to begin
+     * @param inputs the export options in force
+     * @param shouldBeClosed whether the resulting polyline closes
+     * @returns the polyline and the index to continue from, or null when none could be built
      */
     private tryCreateUnifiedPolyline(
         edges: TopoDS_Edge[],

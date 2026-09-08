@@ -32,6 +32,26 @@ export namespace Draw {
     }
 
     /**
+     * A drawn tag. Drawing a tag produces the tag itself rather than a scene entity, because a tag is
+     * rendered as an HTML overlay positioned from the scene rather than as geometry in it. It carries
+     * the same metadata a drawn entity does, so that passing it back in updates it in place.
+     */
+    export interface DrawnTag extends Inputs.Tag.TagDto {
+        bitbybitMeta?: BitByBitMeta | undefined;
+    }
+
+    /**
+     * A list of drawn tags. The list itself carries the metadata as well as each tag does, because an
+     * update is driven by handing back what drawing returned, which for a list of tags is the list.
+     */
+    export type DrawnTags = DrawnTag[] & { bitbybitMeta?: BitByBitMeta | undefined };
+
+    /**
+     * What drawing hands back: an entity for geometry, the tag or tags for tags.
+     */
+    export type DrawnEntity = BitByBitEntity | DrawnTag | DrawnTags;
+
+    /**
      * User data stored on polyline entities to track line lengths for update optimization
      */
     export interface PolylineUserData {

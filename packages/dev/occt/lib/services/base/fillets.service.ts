@@ -457,6 +457,25 @@ export class FilletsService {
         return result;
     }
 
+    /**
+     * Fillets the corners of a wire that does not lie in a plane.
+     *
+     * OCCT has no 3D wire fillet, so the wire is extruded into a shell, the shell's edges are filleted,
+     * and the wanted edge of each resulting face is collected back into a wire. That makes the whole
+     * operation depend on how OCCT numbers the edges of an extrusion, which is observed behaviour
+     * rather than anything documented, and cannot be worked out from first principles:
+     *
+     * - a 0-based corner `i >= 2` becomes extruded edge `4 + 3 * (i - 2)`
+     * - a closed wire has its edge list rotated by one before that mapping applies
+     * - on an open wire, corner 0 becomes edge 1
+     * - after filleting, the edge wanted from each resulting face is always at index 3
+     *
+     * The assembled wire is finally translated back along the negated extrusion direction, undoing the
+     * lift. The 2D fillet also falls back to this path whenever a wire is not made purely of straight
+     * and circular edges, because the planar routine only handles those.
+     * @param inputs wire, radius or radius list, corner indexes and the extrusion direction
+     * @returns the filleted wire
+     */
     fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>): TopoDS_Shape {
         let useRadiusList = false;
         if (inputs.radiusList && inputs.radiusList.length > 0 && inputs.indexes && inputs.indexes.length > 0) {

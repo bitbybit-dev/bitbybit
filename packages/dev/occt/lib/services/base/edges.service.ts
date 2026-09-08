@@ -7,7 +7,6 @@ import { Base } from "../../api/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";
-import { OCCReferencedReturns } from "../../occ-referenced-returns";
 import { ShapeGettersService } from "./shape-getters";
 import { IteratorService } from "./iterator.service";
 import { EnumService } from "./enum.service";
@@ -18,7 +17,6 @@ export class EdgesService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        _occRefReturns: OCCReferencedReturns,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly entitiesService: EntitiesService,
         private readonly iteratorService: IteratorService,

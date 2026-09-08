@@ -1184,6 +1184,36 @@ describe("DrawHelper unit tests", () => {
             expect(result.name).toContain("surface");
         });
 
+        it("should leave the mesh data list it was given intact, so a caller may reuse it", () => {
+            // Arrange
+            const meshData = [
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] },
+                { positions: [0, 0, 1, 1, 0, 1, 0, 1, 1], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] },
+            ];
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("testMaterial");
+
+            // Act
+            drawHelper.createOrUpdateSurfacesMesh(meshData, undefined, false, material, true, false);
+
+            // Assert
+            expect(meshData).toHaveLength(2);
+        });
+
+        it("should build one mesh out of every entry it was given", () => {
+            // Arrange
+            const meshData = [
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] },
+                { positions: [0, 0, 1, 1, 0, 1, 0, 1, 1], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] },
+            ];
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("testMaterial");
+
+            // Act
+            const result = drawHelper.createOrUpdateSurfacesMesh(meshData, undefined, false, material, true, false);
+
+            // Assert
+            expect(result.getTotalVertices()).toBe(6);
+        });
+
         it("should update existing mesh when updatable is true", () => {
             const meshData = [{
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
@@ -1953,6 +1983,48 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
+        });
+
+        it("should draw a closed path back to its first point", async () => {
+            // Arrange
+            const mockPath = jscadPath([[0, 0], [1, 0], [1, 1]], true);
+            const drawPolyline = vi.spyOn(drawHelper, "drawPolyline");
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath, "#00ff00", 1, 2, false);
+
+            // Act
+            await drawHelper.drawPath(inputs);
+
+            // Assert
+            expect(drawPolyline.mock.calls[0]![1]).toStrictEqual([[0, 0], [1, 0], [1, 1], [0, 0]]);
+        });
+
+        it("should leave the points of the path it was given untouched when closing it", async () => {
+            // Arrange
+            const mockPath = jscadPath([[0, 0], [1, 0], [1, 1]], true);
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath, "#00ff00", 1, 2, false);
+
+            // Act
+            await drawHelper.drawPath(inputs);
+            await drawHelper.drawPath(inputs);
+
+            // Assert
+            expect(mockPath.points).toStrictEqual([[0, 0], [1, 0], [1, 1]]);
+        });
+
+        it("should draw an open path exactly as it was given", async () => {
+            // Arrange
+            const mockPath = jscadPath([[0, 0], [1, 0], [1, 1]], false);
+            const drawPolyline = vi.spyOn(drawHelper, "drawPolyline");
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath, "#00ff00", 1, 2, false);
+
+            // Act
+            await drawHelper.drawPath(inputs);
+
+            // Assert
+            expect(drawPolyline.mock.calls[0]![1]).toStrictEqual([[0, 0], [1, 0], [1, 1]]);
         });
 
         it("should use baked color from path if available", async () => {

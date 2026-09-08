@@ -75,7 +75,7 @@ undeclared import on your machine and nowhere else, which is how one reached CI.
 type-aware set (it reads the type graph, so it sees an unawaited promise), the house style, and two
 local rules in `eslint-rules/`, neither with a fixer - `no-double-assertion` (`x as unknown as T`
 widens until nothing is checked; use a type predicate) and `no-loose-comments` (JSDoc and directives
-stay, free-form comments do not; what the code cannot say belongs in `architecture/`, and in a test in
+stay, free-form comments do not; what the code cannot say belongs in JSDoc or a `CLAUDE.md`, and in a test in
 the name of the `it` - a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each on its own,
 and no other comment at all). Findings that predate a rule sit in `eslint-suppressions.json`; a new
 one fails, as does a stale suppression, so the count only falls. Never load `eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.

@@ -148,6 +148,40 @@ describe("ManifoldShapes", () => {
             // Assert
             expect(manifold.manifold.evaluate.numVert(new Inputs.Manifold.ManifoldDto(shape))).toBe(4);
         });
+
+        it("should merge corners that differ only by floating point noise", () => {
+            // Arrange
+            const noise = 1e-12;
+            const cornerReachedTwoWays: Inputs.Base.Point3[][] = [
+                [[0, 0, 0], [0, 2, 0], [2, 0, 0]],
+                [[noise, 0, 0], [2, 0, 0], [0, 0, 2]],
+                [[0, noise, 0], [0, 0, 2], [0, 2, 0]],
+                [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
+            ];
+
+            // Act
+            const shape = manifold.manifold.shapes.fromPolygonPoints(
+                new Inputs.Manifold.FromPolygonPointsDto(cornerReachedTwoWays));
+
+            // Assert
+            expect(manifold.manifold.evaluate.numVert(new Inputs.Manifold.ManifoldDto(shape))).toBe(4);
+            expect(manifold.manifold.evaluate.volume(new Inputs.Manifold.ManifoldDto(shape))).toBeCloseTo(8 / 6, 5);
+        });
+
+        it("should leave a corner further apart than the tolerance as the open seam it is", () => {
+            // Arrange
+            const separation = 1e-4;
+            const nearlyTouching: Inputs.Base.Point3[][] = [
+                [[0, 0, 0], [0, 2, 0], [2, 0, 0]],
+                [[separation, 0, 0], [2, 0, 0], [0, 0, 2]],
+                [[0, 0, 0], [0, 0, 2], [0, 2, 0]],
+                [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
+            ];
+
+            // Act & Assert
+            expect(() => manifold.manifold.shapes.fromPolygonPoints(
+                new Inputs.Manifold.FromPolygonPointsDto(nearlyTouching))).toThrow("Not manifold");
+        });
     });
 
     describe("manifoldFromMesh", () => {

@@ -23,9 +23,15 @@ const ARG_COUNTS: { [cmd: string]: number } = {
 };
 
 /**
- * Tokenize a `d` string into command + flat arg list groups. Arc flags
- * (large-arc, sweep) are single digits that may be written without separators,
- * so we parse per-command rather than globally splitting numbers.
+ * Tokenize a `d` string into command + flat arg list groups.
+ *
+ * Parsing is per-command rather than a global split into numbers, because the two arc flags break the
+ * usual rule. Large-arc and sweep are single `0` or `1` digits, and the specification lets them be
+ * written with no separator after them, so `"016"` in an arc means `0, 1, 6` rather than `16`. A
+ * general number reader consumes it as one number, which misreads essentially every arc produced by
+ * real drawing tools. Knowing which argument position we are at is what makes the difference readable.
+ * @param d the `d` attribute of a path
+ * @returns one token per command, each with its flat argument list
  */
 function tokenize(d: string): Token[] {
     const tokens: Token[] = [];

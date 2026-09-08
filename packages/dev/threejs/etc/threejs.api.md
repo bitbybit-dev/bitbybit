@@ -685,6 +685,20 @@ namespace Draw_2 {
         faceMaterial?: Base_3.Material | undefined;
         faceOpacity: number;
     }
+    interface DrawnTag extends Inputs_2.Tag.TagDto {
+        // (undocumented)
+        userData?: DrawnTagMeta | undefined;
+    }
+    interface DrawnTagMeta {
+        options: DrawOptions | {
+            updatable: boolean;
+        };
+        // (undocumented)
+        type: drawingTypes;
+    }
+    type DrawnTags = DrawnTag[] & {
+        userData?: DrawnTagMeta | undefined;
+    };
     // (undocumented)
     class DrawOcctShapeOptions {
         constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
@@ -843,7 +857,7 @@ export class DrawHelper extends DrawHelperCore {
 }
 
 // @public
-export type DrawnEntity = THREEJS.Group | Inputs_2.Tag.TagDto | Inputs_2.Tag.TagDto[] | undefined;
+export type DrawnEntity = THREEJS.Group | Inputs_2.Draw.DrawnTag | Inputs_2.Draw.DrawnTags | undefined;
 
 // @public
 export function initBitByBit(scene: Scene, bitbybit: BitByBitBase, options: InitBitByBitOptions): Promise<InitKernelsResult & {

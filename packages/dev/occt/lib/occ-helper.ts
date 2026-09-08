@@ -2,7 +2,6 @@ import { BitbybitOcctModule, Geom_Surface, TopoDS_Face } from "../bitbybit-dev-o
 import { VectorHelperService } from "./api/vector-helper.service";
 import * as Inputs from "./api/inputs";
 import { ShapesHelperService } from "./api/shapes-helper.service";
-import { OCCReferencedReturns } from "./occ-referenced-returns";
 import { IteratorService } from "./services/base/iterator.service";
 import { EnumService } from "./services/base/enum.service";
 import { ConverterService } from "./services/base/converter.service";
@@ -25,8 +24,6 @@ import { BaseBitByBit } from "./base";
 import { DxfService } from "./services/base/dxf.service";
 
 export class OccHelper {
-
-    private readonly occRefReturns: OCCReferencedReturns;
 
     public readonly base: BaseBitByBit;
     
@@ -59,7 +56,6 @@ export class OccHelper {
         public readonly occ: BitbybitOcctModule,
     ) {
         this.base = new BaseBitByBit();
-        this.occRefReturns = new OCCReferencedReturns(occ);
         this.iteratorService = new IteratorService(occ);
         this.enumService = new EnumService(occ);
         this.converterService = new ConverterService(occ);
@@ -69,10 +65,10 @@ export class OccHelper {
         this.transformsService = new TransformsService(occ, this.converterService, this.entitiesService, this.vecHelper);
         this.booleansService = new BooleansService(occ, this.shapeGettersService);
 
-        this.edgesService = new EdgesService(occ, this.occRefReturns, this.shapeGettersService, this.entitiesService,
+        this.edgesService = new EdgesService(occ, this.shapeGettersService, this.entitiesService,
             this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
-        this.wiresService = new WiresService(occ, this.occRefReturns, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
+        this.wiresService = new WiresService(occ, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
             this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper,
             () => this.filletsService, () => this.operationsService);
 
@@ -83,7 +79,7 @@ export class OccHelper {
 
         this.meshingService = new MeshingService(occ, this.wiresService, this.base);
 
-        this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,
+        this.facesService = new FacesService(occ, this.entitiesService, this.enumService,
             this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.base,
             () => this.filletsService);
 

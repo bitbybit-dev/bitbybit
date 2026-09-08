@@ -818,13 +818,19 @@ describe("OCCT io unit tests", () => {
     });
 
     describe("reading an IGES file as text", () => {
-        it("should hand back an empty shape rather than nothing where the text carries no model", () => {
+        it("should refuse text it can make no model out of", () => {
+            // Arrange
+            const originalError = console.error;
+            const reported: unknown[] = [];
+            console.error = (message: unknown): void => { reported.push(message); };
+
             // Act
             const result = io.loadSTEPorIGES({ filetext: "", fileName: "part.igs", adjustZtoY: false });
+            console.error = originalError;
 
             // Assert
-            expect(result).toBeDefined();
-            expect(result!.IsNull()).toBe(true);
+            expect(result).toBeUndefined();
+            expect(reported).toStrictEqual(["Failed to read IGES file: part.igs"]);
         });
     });
 

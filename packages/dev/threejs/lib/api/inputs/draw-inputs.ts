@@ -14,6 +14,29 @@ export namespace Draw {
     export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
     export type Entity = number[] | [number, number, number] | Base.Point3 | Base.Vector3 | Base.Line3  | Base.Segment3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.JSCAD.JSCADEntity | Inputs.OCCT.DecomposedMeshDto | Inputs.Tag.TagDto | { type: string, name?: string, entityName?: string } |
        number[][] | Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Segment3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.JSCAD.JSCADEntity[] | Inputs.OCCT.DecomposedMeshDto[] | Inputs.Tag.TagDto[] | { type: string[], name?: string, entityName?: string } | { type: string, name?: string, entityName?: string }[];
+    /**
+     * Metadata a drawn tag carries so that handing it back updates it in place.
+     */
+    export interface DrawnTagMeta {
+        type: drawingTypes;
+        /** Whatever options the draw was given. Drawing a tag without any records only updatability. */
+        options: DrawOptions | { updatable: boolean };
+    }
+
+    /**
+     * A drawn tag. Drawing a tag produces the tag itself rather than a scene object, because a tag is
+     * rendered as an HTML overlay positioned from the scene rather than as geometry in it.
+     */
+    export interface DrawnTag extends Inputs.Tag.TagDto {
+        userData?: DrawnTagMeta | undefined;
+    }
+
+    /**
+     * A list of drawn tags. The list itself carries the metadata as well as each tag does, because an
+     * update is driven by handing back what drawing returned, which for a list of tags is the list.
+     */
+    export type DrawnTags = DrawnTag[] & { userData?: DrawnTagMeta | undefined };
+
     export class DrawAny<U> {
         constructor(entity?: Entity, options?: DrawOptions) {
             if (entity !== undefined) { this.entity = entity; }

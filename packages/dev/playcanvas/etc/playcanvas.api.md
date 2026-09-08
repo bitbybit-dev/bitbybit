@@ -583,12 +583,11 @@ export class Draw extends DrawCore {
     readonly context: Context;
     createPBRMaterial(inputs: Inputs_2.Draw.GenericPBRMaterialDto): pc_2.StandardMaterial;
     createTexture(inputs: Inputs_2.Draw.GenericTextureDto): pc_2.Texture;
-    drawAny(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): BitByBitEntity | undefined;
+    drawAny(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Inputs_2.Draw.DrawnEntity | undefined;
     // Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "BitByBitEntity" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    drawAnyAsync(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Promise<BitByBitEntity | undefined>;
+    drawAnyAsync(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Promise<Inputs_2.Draw.DrawnEntity | undefined>;
     // (undocumented)
     readonly drawHelper: DrawHelper;
     optionsOcctShape(inputs: Inputs_2.Draw.DrawOcctShapeOptions): Inputs_2.Draw.DrawOcctShapeOptions;
@@ -691,6 +690,14 @@ namespace Draw_2 {
         faceMaterial?: Base_3.Material | undefined;
         faceOpacity: number;
     }
+    type DrawnEntity = BitByBitEntity | DrawnTag | DrawnTags;
+    interface DrawnTag extends Inputs_2.Tag.TagDto {
+        // (undocumented)
+        bitbybitMeta?: BitByBitMeta | undefined;
+    }
+    type DrawnTags = DrawnTag[] & {
+        bitbybitMeta?: BitByBitMeta | undefined;
+    };
     // (undocumented)
     class DrawOcctShapeOptions {
         constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);

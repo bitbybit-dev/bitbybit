@@ -408,15 +408,19 @@ async function createProject(options: ProjectOptions): Promise<void> {
 
         if (occtArchitecture !== "32") {
             const mainTsPath = path.join(targetDir, "src", "main.ts");
-            if (fs.existsSync(mainTsPath)) {
-                let mainTsContent = await fs.readFile(mainTsPath, "utf-8");
-                
-                const optionsPattern = /(const options:\s*InitBitByBitOptions\s*=\s*\{[\s\S]*?enableManifold:\s*true),(\s*\};)/;
-                const replacement = `$1,\n        occtArchitecture: "${occtArchitecture}"$2`;
-                
-                mainTsContent = mainTsContent.replace(optionsPattern, replacement);
-                await fs.writeFile(mainTsPath, mainTsContent, "utf-8");
+            if (!fs.existsSync(mainTsPath)) {
+                throw new Error(`Cannot select the ${occtArchitecture} OCCT kernel: ${path.relative(targetDir, mainTsPath)} is not in this template, and it is the file the architecture is written into.`);
             }
+            const mainTsContent = await fs.readFile(mainTsPath, "utf-8");
+
+            const optionsPattern = /(const options:\s*InitBitByBitOptions\s*=\s*\{[\s\S]*?enableManifold:\s*true),(\s*\};)/;
+            const replacement = `$1,\n        occtArchitecture: "${occtArchitecture}"$2`;
+
+            const patched = mainTsContent.replace(optionsPattern, replacement);
+            if (patched === mainTsContent) {
+                throw new Error(`Cannot select the ${occtArchitecture} OCCT kernel: the options object in src/main.ts is not in the shape this patch expects (enableManifold last). Writing the file unchanged would have produced a 32-bit project reported as ${occtArchitecture}.`);
+            }
+            await fs.writeFile(mainTsPath, patched, "utf-8");
         }
 
         if (occtArchitecture === "64-mt") {

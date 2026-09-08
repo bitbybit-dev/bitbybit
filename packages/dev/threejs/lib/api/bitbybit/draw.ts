@@ -6,7 +6,7 @@ import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 
 /** What drawAny hands back: a group for geometry, the tag or tags for tags, nothing for an empty entity. */
-export type DrawnEntity = THREEJS.Group | Inputs.Tag.TagDto | Inputs.Tag.TagDto[] | undefined;
+export type DrawnEntity = THREEJS.Group | Inputs.Draw.DrawnTag | Inputs.Draw.DrawnTags | undefined;
 
 export class Draw extends DrawCore {
     private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
@@ -431,7 +431,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurfaces);
     }
 
-    private handleTag(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
+    private handleTag(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Inputs.Draw.DrawnTag {
         const options = inputs.options ? inputs.options : {
             updatable: false,
         };
@@ -440,11 +440,12 @@ export class Draw extends DrawCore {
             tag: inputs.entity as Inputs.Tag.TagDto,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
-        (result as any).userData = { type: Inputs.Draw.drawingTypes.tag, options };
-        return result;
+        const drawnTag = result as Inputs.Draw.DrawnTag;
+        drawnTag.userData = { type: Inputs.Draw.drawingTypes.tag, options };
+        return drawnTag;
     }
 
-    private handleTags(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
+    private handleTags(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Inputs.Draw.DrawnTags {
         const options = inputs.options ? inputs.options : {
             updatable: false,
         };
@@ -454,8 +455,10 @@ export class Draw extends DrawCore {
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
-        (result as any).userData = { type: Inputs.Draw.drawingTypes.tags, options };
-        return result;
+        const drawnTags = result as Inputs.Draw.DrawnTags;
+        drawnTags.forEach(drawnTag => { drawnTag.userData = { type: Inputs.Draw.drawingTypes.tags, options }; });
+        drawnTags.userData = { type: Inputs.Draw.drawingTypes.tags, options };
+        return drawnTags;
     }
 
     private updateAny(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): DrawnEntity {
