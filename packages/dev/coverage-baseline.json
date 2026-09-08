@@ -57,12 +57,20 @@
             "branches": 89.97,
             "functions": 98.57,
             "statements": 97.32
+        },
+        {
+            "measured": "2026-09-08",
+            "tests": 7678,
+            "lines": 97.39,
+            "branches": 89.95,
+            "functions": 98.57,
+            "statements": 97.32
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 1904,
+            "tests": 1906,
             "suites": 54,
             "lines": 98.5,
             "branches": 93.7,
@@ -89,8 +97,8 @@
         },
         "core": {
             "runner": "vitest",
-            "tests": 256,
-            "suites": 11,
+            "tests": 261,
+            "suites": 12,
             "lines": 100,
             "branches": 100,
             "functions": 100,
@@ -121,12 +129,12 @@
         },
         "manifold": {
             "runner": "vitest",
-            "tests": 341,
+            "tests": 343,
             "suites": 9,
-            "lines": 99.3,
+            "lines": 99.31,
             "branches": 99.24,
             "functions": 100,
-            "statements": 99.46
+            "statements": 99.47
         },
         "manifold-worker": {
             "runner": "vitest",
@@ -139,12 +147,12 @@
         },
         "occt": {
             "runner": "vitest",
-            "tests": 1234,
+            "tests": 1239,
             "suites": 32,
-            "lines": 95.46,
-            "branches": 78.31,
+            "lines": 95.44,
+            "branches": 78.29,
             "functions": 97.22,
-            "statements": 95.32
+            "statements": 95.31
         },
         "occt-worker": {
             "runner": "vitest",

@@ -5,7 +5,6 @@ import {
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
-import { OCCReferencedReturns } from "../../occ-referenced-returns";
 import { EdgesService } from "./edges.service";
 import { ShapeGettersService } from "./shape-getters";
 import { EntitiesService } from "./entities.service";
@@ -22,7 +21,6 @@ export class WiresService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        private readonly occRefReturns: OCCReferencedReturns,
         private readonly base: BaseBitByBit,
         private readonly shapesHelperService: ShapesHelperService,
         private readonly shapeGettersService: ShapeGettersService,
@@ -642,10 +640,7 @@ export class WiresService {
         const splitLocations: { edgeIndex: number; parameter: number }[] = [];
 
         const firstEdge = edges[0]!;
-        let first = { current: 0 };
-        let last = { current: 0 };
-        this.occRefReturns.BRep_Tool_Range_1(firstEdge, first, last);
-        splitLocations.push({ edgeIndex: 0, parameter: first.current });
+        splitLocations.push({ edgeIndex: 0, parameter: this.edgeParameterRange(firstEdge).first });
 
         splitPoints.forEach((pt) => {
             let minDist = Infinity;
@@ -653,11 +648,7 @@ export class WiresService {
             let bestParam = 0;
 
             edges.forEach((edge, index) => {
-                const first = { current: 0 };
-                const last = { current: 0 };
-                this.occRefReturns.BRep_Tool_Range_1(edge, first, last);
-                const firstVal = first.current;
-                const lastVal = last.current;
+                const { first: firstVal, last: lastVal } = this.edgeParameterRange(edge);
 
                 const gpPnt = this.entitiesService.gpPnt(pt as Base.Point3);
                 try {
@@ -687,10 +678,7 @@ export class WiresService {
         });
 
         const lastEdge = edges[edges.length - 1]!;
-        first = { current: 0 };
-        last = { current: 0 };
-        this.occRefReturns.BRep_Tool_Range_1(lastEdge, first, last);
-        splitLocations.push({ edgeIndex: edges.length - 1, parameter: last.current });
+        splitLocations.push({ edgeIndex: edges.length - 1, parameter: this.edgeParameterRange(lastEdge).last });
 
         const uniqueLocations = splitLocations.filter((loc, index, self) =>
             index === self.findIndex((t) => t.edgeIndex === loc.edgeIndex && t.parameter === loc.parameter)
@@ -717,10 +705,7 @@ export class WiresService {
                 }
             } else {
                 const startEdge = edges[startLoc.edgeIndex]!;
-                const startFirst = { current: 0 };
-                const startLast = { current: 0 };
-                this.occRefReturns.BRep_Tool_Range_1(startEdge, startFirst, startLast);
-                const startLastVal = startLast.current;
+                const startLastVal = this.edgeParameterRange(startEdge).last;
 
                 if (startLoc.parameter < startLastVal) {
                     const newStartEdge = this.occ.TrimEdgeToParams(startEdge, startLoc.parameter, startLastVal);
@@ -734,10 +719,7 @@ export class WiresService {
                 }
 
                 const endEdge = edges[endLoc.edgeIndex]!;
-                const endFirst = { current: 0 };
-                const endLast = { current: 0 };
-                this.occRefReturns.BRep_Tool_Range_1(endEdge, endFirst, endLast);
-                const endFirstVal = endFirst.current;
+                const endFirstVal = this.edgeParameterRange(endEdge).first;
 
                 if (endLoc.parameter > endFirstVal) {
                     const newEndEdge = this.occ.TrimEdgeToParams(endEdge, endFirstVal, endLoc.parameter);
@@ -1214,18 +1196,27 @@ export class WiresService {
         return res;
     }
 
+    /**
+     * The parameter range of an edge, as the kernel's own helper reports it. An edge the helper
+     * cannot read reports zero for both, which is what the callers below already treated as "no range".
+     * @param edge edge to read
+     * @returns first and last parameter
+     */
+    private edgeParameterRange(edge: TopoDS_Edge): { first: number, last: number } {
+        const result = this.occ.BRep_Tool_GetEdgeParameters(edge);
+        return result.IsValid ? { first: result.First, last: result.Last } : { first: 0, last: 0 };
+    }
+
     placeWire(wire: TopoDS_Wire, surface: Geom_Surface) {
         const edges = this.shapeGettersService.getEdges({ shape: wire });
         const newEdges: TopoDS_Edge[] = [];
         edges.forEach(e => {
-            const umin = { current: 0 };
-            const umax = { current: 0 };
-            this.occRefReturns.BRep_Tool_Range_1(e, umin, umax);
+            const { first: umin, last: umax } = this.edgeParameterRange(e);
             const crv = this.occ.GetEdgeCurve(e);
             if (crv && !crv.IsNull()) {
                 const plane = this.entitiesService.gpPln([0, 0, 0], [0, 1, 0]);
                 const c2 = this.occ.GeomAPI_To2d(crv, plane);
-                const newEdgeOnSrf = this.edgesService.makeEdgeFromGeom2dCurveAndSurfaceBounded({ curve: c2, surface }, umin.current, umax.current);
+                const newEdgeOnSrf = this.edgesService.makeEdgeFromGeom2dCurveAndSurfaceBounded({ curve: c2, surface }, umin, umax);
                 if (newEdgeOnSrf) {
                     newEdges.push(newEdgeOnSrf);
                 }

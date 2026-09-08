@@ -265,7 +265,8 @@ export class DrawHelper extends DrawHelperCore {
         mesh: BABYLON.Mesh | undefined, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): BABYLON.Mesh {
         const createMesh = () => {
-            const first = meshDataConverted.pop()!;
+            const first = meshDataConverted[meshDataConverted.length - 1]!;
+            const rest = meshDataConverted.slice(0, -1);
             const vd = new BABYLON.VertexData();
             vd.positions = first.positions;
             vd.indices = first.indices;
@@ -275,7 +276,7 @@ export class DrawHelper extends DrawHelperCore {
             }
 
             const v: BABYLON.VertexData[] = [];
-            meshDataConverted.forEach(meshData => {
+            rest.forEach(meshData => {
                 const vertexData = new BABYLON.VertexData();
                 vertexData.positions = meshData.positions;
                 vertexData.indices = meshData.indices;

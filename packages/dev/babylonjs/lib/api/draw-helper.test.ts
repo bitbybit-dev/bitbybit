@@ -1184,6 +1184,36 @@ describe("DrawHelper unit tests", () => {
             expect(result.name).toContain("surface");
         });
 
+        it("should leave the mesh data list it was given intact, so a caller may reuse it", () => {
+            // Arrange
+            const meshData = [
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] },
+                { positions: [0, 0, 1, 1, 0, 1, 0, 1, 1], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] },
+            ];
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("testMaterial");
+
+            // Act
+            drawHelper.createOrUpdateSurfacesMesh(meshData, undefined, false, material, true, false);
+
+            // Assert
+            expect(meshData).toHaveLength(2);
+        });
+
+        it("should build one mesh out of every entry it was given", () => {
+            // Arrange
+            const meshData = [
+                { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] },
+                { positions: [0, 0, 1, 1, 0, 1, 0, 1, 1], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2] },
+            ];
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("testMaterial");
+
+            // Act
+            const result = drawHelper.createOrUpdateSurfacesMesh(meshData, undefined, false, material, true, false);
+
+            // Assert
+            expect(result.getTotalVertices()).toBe(6);
+        });
+
         it("should update existing mesh when updatable is true", () => {
             const meshData = [{
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],

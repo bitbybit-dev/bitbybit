@@ -1,7 +1,6 @@
 import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire, Geom_Surface, Handle_Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
-import { OCCReferencedReturns } from "../../occ-referenced-returns";
 import { ShapeGettersService } from "./shape-getters";
 import { EntitiesService } from "./entities.service";
 import { EnumService } from "./enum.service";
@@ -17,7 +16,6 @@ export class FacesService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        private readonly occRefReturns: OCCReferencedReturns,
         private readonly entitiesService: EntitiesService,
         private readonly enumService: EnumService,
         private readonly shapeGettersService: ShapeGettersService,
@@ -318,12 +316,10 @@ export class FacesService {
     }
 
     getUVBounds(face: TopoDS_Face): { uMin: number, uMax: number, vMin: number, vMax: number } {
-        const uMin = { current: 0 };
-        const uMax = { current: 0 };
-        const vMin = { current: 0 };
-        const vMax = { current: 0 };
-        this.occRefReturns.BRepTools_UVBounds_1(face, uMin, uMax, vMin, vMax);
-        return { uMin: uMin.current, uMax: uMax.current, vMin: vMin.current, vMax: vMax.current };
+        const result = this.occ.GetFaceUVBounds(face);
+        return result.IsValid
+            ? { uMin: result.UMin, uMax: result.UMax, vMin: result.VMin, vMax: result.VMax }
+            : { uMin: 0, uMax: 0, vMin: 0, vMax: 0 };
     }
 
     createFaceFromWires(inputs: Inputs.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face {

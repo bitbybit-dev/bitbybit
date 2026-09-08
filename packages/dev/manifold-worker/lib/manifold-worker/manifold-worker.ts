@@ -1,6 +1,15 @@
 import { CacheHelper, ObjectDefinition } from "./cache-helper";
 import { ManifoldService } from "@bitbybit-dev/manifold";
 
+/**
+ * Maximum number of cached hashes before a run triggers a full cache cleanup. This is the only bound
+ * on WASM memory growth across a long editing session, and what it bounds is a count of hashes rather
+ * than anything measured from memory. Matches the threshold the other kernel workers use, and is local to this module
+ * rather than exported, because nothing outside it sets the bound.
+ */
+const CACHE_THRESHOLD = 10000;
+
+
 let manifold: ManifoldService;
 let cacheHelper: CacheHelper;
 
@@ -144,7 +153,7 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             result = {};
         }
         if (d.action.functionName === "startedTheRun") {
-            if (cacheHelper && Object.keys(cacheHelper.usedHashes).length > 10000) {
+            if (cacheHelper && Object.keys(cacheHelper.usedHashes).length > CACHE_THRESHOLD) {
                 cacheHelper.cleanAllCache();
             }
             result = {};

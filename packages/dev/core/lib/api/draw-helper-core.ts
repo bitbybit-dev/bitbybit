@@ -158,7 +158,8 @@ export class DrawHelperCore {
      */
     protected colorToHex(r: number, g: number, b: number): string {
         const toHex = (n: number) => {
-            const hex = Math.round(n).toString(16);
+            const clamped = Math.min(255, Math.max(0, Math.round(n)));
+            const hex = clamped.toString(16);
             return hex.length === 1 ? "0" + hex : hex;
         };
         return "#" + toHex(r) + toHex(g) + toHex(b);
@@ -208,7 +209,11 @@ export class DrawHelperCore {
                 console.warn(`Invalid color array length: ${color.length}, expected at least 3. Using fallback: ${fallback}`);
                 return fallback;
             }
-            return this.normalizedColorToHex(color[0]!, color[1]!, color[2]!);
+            const components = [color[0]!, color[1]!, color[2]!];
+            if (components.some((component) => !(component >= 0 && component <= 1))) {
+                console.warn(`Colour components are normalized to 0-1, and [${components.join(", ")}] is outside that range. Values are clamped; divide by 255 if these are byte values.`);
+            }
+            return this.normalizedColorToHex(components[0]!, components[1]!, components[2]!);
         }
 
         if (typeof color === "string") {

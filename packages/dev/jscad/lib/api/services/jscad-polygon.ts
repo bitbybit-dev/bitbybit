@@ -50,6 +50,10 @@ export class JSCADPolygon {
      * @group from
      * @shortname curve
      * @drawable true
+     * @deprecated This takes a verb-nurbs curve, and verb is deprecated for removal in the next major,
+     * so this goes with it. It is also the one method here that converts between two different CAD
+     * kernels, which belongs above a kernel-specific package rather than inside one. Build the polygon
+     * from points or from a polyline instead.
      */
     createFromCurve(inputs: Inputs.JSCAD.CurveDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.curve.tessellate().map((pt: Inputs.Base.Point3) => [pt[0], pt[1]]);

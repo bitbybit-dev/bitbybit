@@ -366,6 +366,67 @@ describe("normalizeSvg", () => {
         expect(scene.elements[0]!.tag).toBe("circle");
     });
 
+    it("warns that a <use> element brought in no geometry, and says why", () => {
+        // Arrange
+        const svg = `<svg><defs><rect id="r" width="5" height="5"/></defs><use href="#r"/></svg>`;
+
+        // Act
+        const scene = normalizeSvg(svg);
+
+        // Assert
+        expect(scene.elements).toHaveLength(0);
+        expect(scene.warnings).toHaveLength(1);
+        expect(scene.warnings[0]).toContain("<use> is not supported");
+        expect(scene.warnings[0]).toContain("<defs>");
+    });
+
+    it("warns once per unsupported element rather than once per occurrence", () => {
+        // Arrange
+        const svg = `<svg><text x="0" y="0">a</text><text x="1" y="1">b</text><image href="x.png"/></svg>`;
+
+        // Act
+        const scene = normalizeSvg(svg);
+
+        // Assert
+        expect(scene.warnings.filter((w) => w.includes("<text>"))).toHaveLength(1);
+        expect(scene.warnings.filter((w) => w.includes("<image>"))).toHaveLength(1);
+    });
+
+    it("warns about an unsupported element it has no particular advice for", () => {
+        // Arrange
+        const svg = "<svg><mesh/><circle r=\"1\"/></svg>";
+
+        // Act
+        const scene = normalizeSvg(svg);
+
+        // Assert
+        expect(scene.elements).toHaveLength(1);
+        expect(scene.warnings).toStrictEqual(["<mesh> is not supported and contributes no geometry."]);
+    });
+
+    it("should say nothing about the elements it descends through", () => {
+        // Arrange
+        const svg = `<svg><g><a><switch><circle r="1"/></switch></a></g></svg>`;
+
+        // Act
+        const scene = normalizeSvg(svg);
+
+        // Assert
+        expect(scene.elements).toHaveLength(1);
+        expect(scene.warnings).toStrictEqual([]);
+    });
+
+    it("should say nothing about the elements it deliberately skips", () => {
+        // Arrange
+        const svg = `<svg><title>t</title><desc>d</desc><metadata/><circle r="1"/></svg>`;
+
+        // Act
+        const scene = normalizeSvg(svg);
+
+        // Assert
+        expect(scene.warnings).toStrictEqual([]);
+    });
+
     it("warns about embedded <style> CSS", () => {
         const svg = `<svg><style>.c{fill:red}</style><rect class="c" width="5" height="5"/></svg>`;
         const scene = normalizeSvg(svg);
