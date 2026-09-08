@@ -45,3 +45,17 @@ colour appears ignored for some JSCAD shapes and not others.
   distance or clipping limits, and the pan and wheel sensitivities are all derived from
   `sceneSize / 20` - but only for a caller who passes no camera options. Passing camera options opts
   out of the derivation, so an options object is tied to the scene size it was written for.
+
+## Defensive guards that stay uncovered, on purpose
+
+A few guards in `base`, `jscad` and the worker cache helpers cannot be reached through the public API,
+and they are why several packages read just under 100%. They stay, and they stay unmarked.
+
+The ones that were provably dead have been removed - a re-check of a value the only caller had already
+established, an early return for a variable assigned an object two lines above, the argument checks in
+JSCAD's `toPolygonPoints` whose own producer cannot emit what they refuse. What is left is different in
+kind: a cell-count check asserting a relationship between two constants, and two intersection guards
+whose own messages call them internal errors. Marking those with a coverage-ignore comment would buy a
+few tenths of a percent by introducing a mechanism for hiding gaps, and the floor here is meant to be
+honest. Deleting covered dead code also *lowers* the ratio, since it takes the same count from both
+sides - so neither number is a reason to keep code or to hide it.

@@ -241,16 +241,13 @@ export class Lists {
     getLongestListLength<T>(inputs: Inputs.Lists.GetLongestListLength<T[]>): number {
         let longestSoFar = 0;
         if (inputs.lists) {
-
             inputs.lists.forEach(l => {
                 if (l.length > longestSoFar) {
                     longestSoFar = l.length;
                 }
             });
-            return longestSoFar;
-        } else {
-            return undefined as unknown as number;
         }
+        return longestSoFar;
     }
 
     /**

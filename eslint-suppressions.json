@@ -60,7 +60,7 @@
   },
   "packages/dev/babylonjs/lib/api/bitbybit/draw.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 10
+      "count": 6
     },
     "bitbybit/no-double-assertion": {
       "count": 9
@@ -121,15 +121,12 @@
       "count": 3
     },
     "bitbybit/no-double-assertion": {
-      "count": 2
+      "count": 1
     }
   },
   "packages/dev/base/lib/api/services/lists.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    },
-    "bitbybit/no-double-assertion": {
-      "count": 1
     }
   },
   "packages/dev/base/lib/api/services/logic.test.ts": {
@@ -705,12 +702,12 @@
       "count": 1
     },
     "bitbybit/no-double-assertion": {
-      "count": 12
+      "count": 4
     }
   },
   "packages/dev/threejs/lib/api/bitbybit/draw.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 4
+      "count": 2
     },
     "bitbybit/no-double-assertion": {
       "count": 3

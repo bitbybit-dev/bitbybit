@@ -49,26 +49,34 @@
             "branches": 89.97,
             "functions": 98.57,
             "statements": 97.31
+        },
+        {
+            "measured": "2026-09-08",
+            "tests": 7664,
+            "lines": 97.39,
+            "branches": 89.97,
+            "functions": 98.57,
+            "statements": 97.32
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 1901,
+            "tests": 1904,
             "suites": 54,
-            "lines": 98.51,
+            "lines": 98.5,
             "branches": 93.7,
             "functions": 98.5,
             "statements": 98.69
         },
         "base": {
             "runner": "vitest",
-            "tests": 1166,
-            "suites": 15,
-            "lines": 99.39,
-            "branches": 94.57,
+            "tests": 1172,
+            "suites": 16,
+            "lines": 99.4,
+            "branches": 94.58,
             "functions": 100,
-            "statements": 99.39
+            "statements": 99.4
         },
         "cad-cloud-sdk": {
             "runner": "vitest",
@@ -95,10 +103,10 @@
         },
         "jscad": {
             "runner": "vitest",
-            "tests": 299,
+            "tests": 297,
             "suites": 13,
-            "lines": 99.85,
-            "branches": 99.61,
+            "lines": 99.84,
+            "branches": 99.59,
             "functions": 100,
             "statements": 99.88
         },
@@ -151,10 +159,10 @@
             "runner": "vitest",
             "tests": 501,
             "suites": 10,
-            "lines": 93.35,
-            "branches": 81.33,
+            "lines": 93.4,
+            "branches": 81.48,
             "functions": 94.09,
-            "statements": 92.23
+            "statements": 92.28
         },
         "threejs": {
             "runner": "vitest",
@@ -162,8 +170,8 @@
             "suites": 9,
             "lines": 97.21,
             "branches": 87.42,
-            "functions": 97.91,
-            "statements": 96.59
+            "functions": 97.92,
+            "statements": 96.6
         }
     }
 }

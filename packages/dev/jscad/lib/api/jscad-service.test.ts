@@ -17,7 +17,6 @@ const TRANSLATE_X_MATRIX: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0,
 const IDENTITY: Inputs.Base.TransformMatrixes = [IDENTITY_MATRIX];
 const TRANSLATE_X: Inputs.Base.TransformMatrixes = [TRANSLATE_X_MATRIX];
 
-const NO_MESH_DATA: Inputs.JSCAD.JSCADMeshData = undefined!;
 
 const meshData = (positions: number[], indices: number[]): Inputs.JSCAD.JSCADMeshData => ({
     positions,
@@ -50,6 +49,41 @@ describe("Jscad", () => {
             expect(mesh.positions).toHaveLength(CUBE_TRIANGLES * POINTS_PER_TRIANGLE * COORDINATES_PER_POINT);
             const highestIndex = Math.max(...mesh.indices);
             expect(highestIndex).toBeLessThan(mesh.positions.length / COORDINATES_PER_POINT);
+        });
+
+        it("should carry one unit normal for every position, which the declared type promises", () => {
+            // Arrange
+            const inputs = new Inputs.JSCAD.MeshDto(cube);
+
+            // Act
+            const mesh = jscad.shapeToMesh(inputs);
+
+            // Assert
+            expect(mesh.normals).toHaveLength(mesh.positions.length);
+            const lengths = [];
+            for (let i = 0; i < mesh.normals.length; i += COORDINATES_PER_POINT) {
+                const x = mesh.normals[i]!, y = mesh.normals[i + 1]!, z = mesh.normals[i + 2]!;
+                lengths.push(Math.sqrt(x * x + y * y + z * z));
+            }
+            lengths.forEach(length => expect(length).toBeCloseTo(1));
+        });
+
+        it("should point a cube's normals along the axes its faces face", () => {
+            // Arrange
+            const inputs = new Inputs.JSCAD.MeshDto(cube);
+
+            // Act
+            const mesh = jscad.shapeToMesh(inputs);
+
+            // Assert
+            const distinct = new Set<string>();
+            for (let i = 0; i < mesh.normals.length; i += COORDINATES_PER_POINT) {
+                distinct.add([mesh.normals[i]!, mesh.normals[i + 1]!, mesh.normals[i + 2]!]
+                    .map(component => Math.round(component)).join(","));
+            }
+            expect([...distinct].sort()).toStrictEqual([
+                "-1,0,0", "0,-1,0", "0,0,-1", "0,0,1", "0,1,0", "1,0,0",
+            ]);
         });
     });
 
@@ -172,7 +206,7 @@ describe("Jscad", () => {
         });
     });
 
-    describe("toPolygonPoints when the mesh cannot be read", () => {
+    describe("toPolygonPoints of mesh data holding no triangles", () => {
         let reading: Jscad;
 
         beforeAll(async () => {
@@ -185,43 +219,10 @@ describe("Jscad", () => {
             return reading;
         };
 
-        it("should refuse mesh data whose positions do not divide into points", () => {
-            // Act & Assert
-            expect(() => readingBack([0, 1], []).toPolygonPoints({ mesh: cube }))
-                .toThrow("'positions' array length (2) must be a multiple of 3");
-        });
-
-        it("should refuse mesh data whose indices do not divide into triangles", () => {
-            expect(() => readingBack([0, 0, 0, 1, 1, 1, 2, 2, 2], [0, 1]).toPolygonPoints({ mesh: cube }))
-                .toThrow("'indices' array length (2) must be a multiple of 3");
-        });
-
-        it("should refuse mesh data that is not there at all", () => {
-            // Arrange
-            reading.shapeToMesh = () => NO_MESH_DATA;
-
-            // Act & Assert
-            expect(() => reading.toPolygonPoints({ mesh: cube }))
-                .toThrow("'data', 'data.positions', and 'data.indices' must be provided");
-        });
-
         it("should give no points for mesh data holding no triangles", () => {
             expect(readingBack([0, 0, 0, 1, 1, 1, 2, 2, 2], []).toPolygonPoints({ mesh: cube })).toEqual([]);
         });
 
-        it("should skip a triangle naming a point the mesh does not have", () => {
-            const reported: unknown[] = [];
-            const consoleError = console.error;
-            console.error = (message: unknown) => { reported.push(message); };
-
-            // Act
-            const points = readingBack([0, 0, 0, 1, 0, 0, 0, 1, 0], [0, 1, 2, 0, 1, 9]).toPolygonPoints({ mesh: cube });
-            console.error = consoleError;
-
-            // Assert
-            expect(points).toHaveLength(1);
-            expect(reported).toHaveLength(1);
-        });
     });
 
     describe("shapeToMesh of a two dimensional shape", () => {

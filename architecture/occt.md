@@ -85,6 +85,23 @@ post-construction field assignment, gives undefined collaborators at runtime.
   holds. `removeConsecutiveDuplicates` is still the cheaper call when only neighbouring duplicates
   matter.
 
+## Guards that cannot fire, and readers that do not refuse
+
+Three behaviours here look like defects and are not. Each is pinned by a test, so a correction shows
+up as a failing test rather than as silence.
+
+- **The IGES text reader accepts a file it can make nothing of, and reports success.** Reading an empty
+  file as `.igs` hands back a shape rather than `undefined`, so a caller that needs to know learns it
+  from the shape being null, not from the result. The failure branch of the combined STEP-or-IGES load
+  is therefore unreachable from a text input. The binary path does report failure.
+- **`multiplyTransforms`' empty-list guard cannot fire.** The fold wraps a bare matrix in a
+  one-element list before the length check, and treats an empty array as a bare matrix, so the list is
+  never empty by the time it is measured.
+- **Three of the four branches of `quaternionFromMatrix` are unreachable through the public API.**
+  Reading a shape's transform reads its placement, and this library's rotate writes the turn into the
+  geometry instead, so the matrix read back is always the identity and the trace is always positive. A
+  caller could reasonably expect the opposite, which is why the behaviour is pinned rather than assumed.
+
 ## Assemblies
 
 - The native document expects a node's matrix as a flat **row-major 3x4** (12 values); the public API

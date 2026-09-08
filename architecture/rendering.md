@@ -32,6 +32,21 @@ baked colour, the array is materialised by repeating the shared colour and only 
 entries that have their own. Seeding from empty dropped the shared colour, and the `lastColorRemainder`
 strategy then painted every uncoloured polyline with the last one that had a colour.
 
+## Tags
+
+**Drawing a tag hands back the tag, not a scene object.** A tag is an HTML overlay positioned from the
+scene rather than geometry in it, so the tag API returns the tag itself and the draw path attaches the
+same metadata a drawn entity carries - under each renderer's own property name, because that is what
+its update path reads back. Each renderer declares that shape (`DrawnTag`, and `DrawnTags` for a list,
+which carries the metadata on the list as well as on every tag in it, since an update is driven by
+handing back what drawing returned).
+
+This was worth stating because getting it wrong is silent. One renderer routed drawn tags through the
+attach step written for scene entities, which refused anything that was not one, so every tag draw
+threw; the suites did not catch it because they replaced the tag API with a stand-in that returned a
+scene entity, which the real one never does. A stand-in for the tag API must return the tag it was
+given, which is what the real one does.
+
 ## Materials
 
 **The material cache self-evicts.** Every cached material registers an `onDispose` that deletes its

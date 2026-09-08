@@ -58,7 +58,10 @@ export class Draw extends DrawCore {
     /**
      * Draws any kind of geometry and returns the babylon mesh
      * @param inputs Contains options and entities to be drawn
-     * @returns BabylonJS Mesh Promise
+     * @returns BabylonJS Mesh Promise. Resolves undefined when there is nothing to draw, which is the
+     * case for an undefined entity and for an empty list; a mesh is what every drawable output is
+     * declared as, so the empty case is not spelled in the type. Drawing a tag resolves the tag itself
+     * rather than a mesh, for the same reason.
      * @group draw async
      * @shortname draw async
      * @drawable true
@@ -477,8 +480,11 @@ export class Draw extends DrawCore {
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
-        (result as any).metadata = { type: Inputs.Draw.drawingTypes.tags, options } as any;
-        return result as unknown as BABYLON.Mesh;
+        const drawnTags = result as Inputs.Draw.DrawnTags;
+        const tagsMetadata = { type: Inputs.Draw.drawingTypes.tags, options };
+        drawnTags.forEach(drawnTag => { drawnTag.metadata = tagsMetadata; });
+        drawnTags.metadata = tagsMetadata;
+        return drawnTags as unknown as BABYLON.Mesh;
     }
 
     private handleTag(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
@@ -493,8 +499,9 @@ export class Draw extends DrawCore {
             tag: inputs.entity as Inputs.Tag.TagDto,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
-        (result as any).metadata = { type: Inputs.Draw.drawingTypes.tag, options } as any;
-        return result as unknown as BABYLON.Mesh;
+        const drawnTag = result as Inputs.Draw.DrawnTag;
+        drawnTag.metadata = { type: Inputs.Draw.drawingTypes.tag, options };
+        return drawnTag as unknown as BABYLON.Mesh;
     }
 
     private handleVerbSurfaces(inputs: Inputs.Draw.DrawAny) {

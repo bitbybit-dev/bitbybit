@@ -16,6 +16,21 @@ points itself. Because there is only ever one matrix, earlier branches handling 
 a list of lists were unreachable and have been removed - do not re-add them speculatively, and do not
 drop the transform step, which silently emits untransformed geometry for anything that was moved.
 
+**`shapeToMesh` computes the normals it declares.** Its mesh data type states `normals` as a required
+array, and for a long time it allocated one and returned it empty, so every renderer recomputed the
+same values for itself. It now fills them through `computeVertexNormals`, the one implementation, which
+lives in `base` beside the other internal helpers because both this package and the shared draw helper
+need it and neither may import the other. A renderer that receives mesh data over a worker still guards
+against an empty array: nothing enforces a type across that boundary, so the guard is a boundary check
+rather than dead code.
+
+**`toPolygonPoints` trusts its own producer.** It reads `shapeToMesh`, which always returns both arrays
+and always pushes three numbers per vertex and one dense index per vertex, so earlier guards refusing a
+missing array, a length that is not a multiple of three, or an index outside the vertex range were
+unreachable and have been removed. The two remaining early returns, for positions or indices that are
+empty, are reachable: a geometry with no polygons produces them. Do not re-add the others - reaching
+them at all needed a test that replaced `shapeToMesh` on the instance.
+
 **`entity-narrowing.ts` exists to keep the casts in one place.** The published input type is
 deliberately the union of all three shape kinds, because a script may hand over any of them and the
 kernel decides; the kernel's own operations are overloaded per kind and never accept a mixture.

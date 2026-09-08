@@ -17,16 +17,6 @@ export class BabylonGuiTextBlock {
     createTextBlock(inputs: Inputs.BabylonGui.CreateTextBlockDto): BABYLON.GUI.TextBlock {
         const textBlock = new BABYLON.GUI.TextBlock(inputs.name, inputs.text);
 
-        if (inputs.height) {
-            textBlock.height = inputs.height;
-        } else {
-            textBlock.height = 1;
-        }
-        if (inputs.width) {
-            textBlock.width = inputs.width;
-        } else {
-            textBlock.width = "42px";
-        }
         if (inputs.width) {
             textBlock.width = inputs.width;
         } else {

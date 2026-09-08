@@ -1955,6 +1955,48 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
         });
 
+        it("should draw a closed path back to its first point", async () => {
+            // Arrange
+            const mockPath = jscadPath([[0, 0], [1, 0], [1, 1]], true);
+            const drawPolyline = vi.spyOn(drawHelper, "drawPolyline");
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath, "#00ff00", 1, 2, false);
+
+            // Act
+            await drawHelper.drawPath(inputs);
+
+            // Assert
+            expect(drawPolyline.mock.calls[0]![1]).toStrictEqual([[0, 0], [1, 0], [1, 1], [0, 0]]);
+        });
+
+        it("should leave the points of the path it was given untouched when closing it", async () => {
+            // Arrange
+            const mockPath = jscadPath([[0, 0], [1, 0], [1, 1]], true);
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath, "#00ff00", 1, 2, false);
+
+            // Act
+            await drawHelper.drawPath(inputs);
+            await drawHelper.drawPath(inputs);
+
+            // Assert
+            expect(mockPath.points).toStrictEqual([[0, 0], [1, 0], [1, 1]]);
+        });
+
+        it("should draw an open path exactly as it was given", async () => {
+            // Arrange
+            const mockPath = jscadPath([[0, 0], [1, 0], [1, 1]], false);
+            const drawPolyline = vi.spyOn(drawHelper, "drawPolyline");
+            const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
+                mockPath, "#00ff00", 1, 2, false);
+
+            // Act
+            await drawHelper.drawPath(inputs);
+
+            // Assert
+            expect(drawPolyline.mock.calls[0]![1]).toStrictEqual([[0, 0], [1, 0], [1, 1]]);
+        });
+
         it("should use baked color from path if available", async () => {
             const mockPath = jscadPath([[0, 0], [1, 0]], false, [1, 0, 0, 1]);
             const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(

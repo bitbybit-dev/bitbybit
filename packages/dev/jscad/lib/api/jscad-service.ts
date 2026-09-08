@@ -1,5 +1,6 @@
 import { GeometryHelper, Lists, Point, Transforms, Vector } from "@bitbybit-dev/base";
 import { MathBitByBit } from "@bitbybit-dev/base";
+import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
 import { JSCADExpansions } from "./services/jscad-expansions";
 import { JSCADBooleans } from "./services/jscad-booleans";
 import { JSCADExtrusions } from "./services/jscad-extrusions";
@@ -64,19 +65,7 @@ export class Jscad {
 
         const meshData = this.shapeToMesh({ mesh: inputs.mesh });
 
-        if (!meshData || !meshData.positions || !meshData.indices) {
-            throw new Error("Invalid input: 'data', 'data.positions', and 'data.indices' must be provided.");
-        }
-
         const { positions, indices } = meshData;
-
-        if (positions.length % 3 !== 0) {
-            throw new Error(`Invalid input: 'positions' array length (${positions.length}) must be a multiple of 3.`);
-        }
-
-        if (indices.length % 3 !== 0) {
-            throw new Error(`Invalid input: 'indices' array length (${indices.length}) must be a multiple of 3.`);
-        }
 
         if (positions.length === 0) {
             return [];
@@ -87,18 +76,11 @@ export class Jscad {
 
 
         const polygons: Base.Mesh3 = [];
-        const numVertices = positions.length / 3;
 
         for (let i = 0; i < indices.length; i += 3) {
             const index1 = indices[i]!;
             const index2 = indices[i + 1]!;
             const index3 = indices[i + 2]!;
-
-            if (index1 >= numVertices || index2 >= numVertices || index3 >= numVertices ||
-                index1 < 0 || index2 < 0 || index3 < 0) {
-                console.error(`Invalid vertex index found in 'indices' array at triangle starting at index ${i}. Max vertex index is ${numVertices - 1}. Indices: ${index1}, ${index2}, ${index3}. Skipping triangle.`);
-                continue;
-            }
 
             const offset1 = index1 * 3;
             const offset2 = index2 * 3;
@@ -145,7 +127,6 @@ export class Jscad {
         }
 
         const positions: number[] = [];
-        const normals: number[] = [];
         const indices: number[] = [];
         let countIndices = 0;
 
@@ -179,7 +160,10 @@ export class Jscad {
         }
 
         return {
-            positions, normals, indices, transforms: inputs.mesh.transforms,
+            positions,
+            normals: computeVertexNormals(positions, indices),
+            indices,
+            transforms: inputs.mesh.transforms,
         };
     }
 
