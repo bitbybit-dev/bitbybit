@@ -17,6 +17,13 @@ const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const noComments = (text) => text.split("\n").filter((line) => !line.trimStart().startsWith("//")).join("\n");
 const projects = JSON.parse(noComments(readFileSync(join(ROOT, "tsconfig.build.json"), "utf8"))).references
     .map((r) => join(ROOT, dirname(r.path)));
+// Each package typechecks with `tsc -p`, which resolves its siblings through `paths` into their built
+// dist rather than building them, so it answers about whatever those siblings last emitted. A signature
+// changed in a worker and not rebuilt gave a clean pass here while the real build failed on a call the
+// new signature rejects. The reference graph is therefore built first, and the check then reads dists
+// that match the sources it is checking.
+execFileSync(join(ROOT, "node_modules", ".bin", "tsc"), ["-b", "tsconfig.build.json"], { cwd: ROOT, stdio: "inherit" });
+
 const scratch = mkdtempSync(join(tmpdir(), "bitbybit-strict-baselines-"));
 process.on("exit", () => rmSync(scratch, { recursive: true, force: true }));
 

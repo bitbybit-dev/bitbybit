@@ -27,12 +27,6 @@
             "@bitbybit-dev/base/*": [
                 "../base/dist/*"
             ],
-            "@bitbybit-dev/core": [
-                "../core/dist"
-            ],
-            "@bitbybit-dev/core/*": [
-                "../core/dist/*"
-            ],
             "@bitbybit-dev/jscad": [
                 "../jscad/dist"
             ],

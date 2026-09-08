@@ -15,6 +15,31 @@ This is why the two export paths look asymmetric, and the asymmetry is correct.
   restoring it in `.then` - left the live scene without metadata while the export ran, and for good if
   the export rejected.
 
+## Sibling path mappings serve api-extractor, not just the compiler
+
+Each package's build config maps the siblings it resolves, and several of those mappings have no
+import behind them. They are not debris, and removing them breaks a gate that `tsc` cannot see.
+
+**api-extractor follows declarations where the compiler follows references.** A package's
+`dist/index.d.ts` names types from siblings it never imports directly - the renderers' `Draw.Entity`
+names JSCAD's entity type, the two worker packages' kernels name base's types - and api-extractor
+resolves those names through `paths`. Without the mapping it reaches the sibling's **source** and fails
+with `ae-wrong-input-file-type`. `tsc` never notices, because it resolves siblings through project
+references instead, so a build and a strict typecheck both pass while `api:check` fails.
+
+That is why the three renderer packages map `jscad`, `manifold` and `occt` although nothing in them
+imports those packages, and why `jscad-worker` and `manifold-worker` map `base` although neither
+depends on it. Removing any of them was tried and reverted: the build stayed green and `api:check`
+failed. A mapping here is evidence about the declarations, not about the imports.
+
+`core`'s mapping of its own name to its own `dist` was the one real piece of debris, and is gone. A
+self-mapping would have resolved the package's own name to its stale build output had anything used it.
+
+The check cannot tell these apart for you. `check:references` compares the three generated configs
+against each other and against the manifests' `references`; it never compares `paths` against
+`dependencies`, so a mapping with nothing behind it passes, and so does a missing one until
+api-extractor fails.
+
 ## STEP and IGES
 
 `.stpz` is compressed STEP and `.igz` compressed IGES. Binary input must go through the `*FromBinary`

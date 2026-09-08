@@ -28,7 +28,7 @@
         "check:exports": "node scripts/check-exports.mjs",
         "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
         "lint:fix": "eslint --cache --cache-location ./node_modules/.cache/eslint . --fix",
-        "typecheck:strict": "pnpm -r run typecheck:strict",
+        "typecheck:strict": "tsc -b tsconfig.build.json && pnpm -r run typecheck:strict",
         "typecheck:tests": "pnpm -r run typecheck:tests",
         "check:strict-baselines": "node scripts/check-strict-baselines.mjs",
         "check:worker-parity": "node scripts/worker-parity.mjs",
