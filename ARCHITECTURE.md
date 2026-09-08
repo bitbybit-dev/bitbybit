@@ -3,7 +3,7 @@
 What these packages are, how they fit together, and which of those arrangements are load-bearing.
 
 This page is the shape. It deliberately holds no technical detail: the conventions, kernel quirks and
-accepted limitations live in `architecture/`, and are listed at the bottom.
+accepted limitations live in the per-package `CLAUDE.md` files, listed at the bottom.
 
 ## What this repository is
 
@@ -98,7 +98,7 @@ since an expensive shape asked for twice is computed once.
 The price is paid in three places, and all three are easy to reintroduce by accident: the cache must
 be walked and bounded or WASM memory grows without limit; every result that nests a shape must be
 hashed or the shape never arrives; and disposal has to be best-effort, because a freed handle throws
-on contact rather than reading as null. `architecture/workers.md` is the working detail.
+on contact rather than reading as null. `packages/dev/CLAUDE.md` carries the working detail.
 
 ## What is generated, and from what
 
@@ -167,12 +167,18 @@ before the suites, so a stale generated tree fails the aggregate rather than the
 
 ## Where the detail lives
 
-| Page | Read it for |
-|---|---|
-| `architecture/conventions.md` | handedness, axis and colour conventions, and the defaults that are easy to invert |
-| `architecture/workers.md` | the worker boundary, the hash-handle protocol, the caches, CDN-loaded workers |
-| `architecture/occt.md` | the embind bindings, OCCT geometry behaviour, assemblies, the service dependency ring |
-| `architecture/jscad-manifold.md` | JSCAD shape kinds and transforms, Manifold's memory and buffer layout |
-| `architecture/rendering.md` | the shared draw path, and what each of the three engines forces |
-| `architecture/import-export.md` | SVG, DXF, STEP/IGES, and why the two scene serializers differ |
-| `architecture/sdk-and-cli.md` | the cloud SDK's validation model and the scaffolder's template contract |
+Detail sits next to what it describes, in three places.
+
+**Per-package `CLAUDE.md`** holds what is true of one package: the kernel quirks, the engine
+differences, the memory rules. Every package under `packages/dev` has one, and
+`packages/dev/CLAUDE.md` holds what is true of all of them - the worker boundary, the two rules about
+untrusted input and caller-owned data, and what a package's tsconfig `paths` actually describe.
+
+**JSDoc on the function** holds what is true of one function, including the things that cannot be
+re-derived: the closed-form SVD behind transforming an elliptical arc, how a DXF bulge picks between
+the short and long arc, the extrusion edge numbering the 3D wire fillet depends on. That reaches the
+editor, which is where someone meets the function.
+
+**The documentation site** (`docs/learn`) holds what a user of the published packages needs before
+they hit it: the colour range, which way is up, what an SVG import supports, how DXF colours and
+versions behave.

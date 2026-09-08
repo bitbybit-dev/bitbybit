@@ -32,3 +32,64 @@ consume.
 
 Suites here are kernel-heavy: keep the `NODE_OPTIONS` the scripts already set, or failures look
 like test bugs rather than an exhausted heap.
+
+## Services are built in a ring
+
+Wires, operations, fillets and faces need each other in a cycle: wires needs operations and fillets,
+operations needs wires and faces, fillets needs operations and faces, faces needs wires and fillets.
+No construction order gives every one of them its collaborators.
+
+Each link that closes a cycle is therefore passed in as a **supplier function**, called when it is
+needed rather than when the object is built. Everything else is built in true dependency order, and
+nothing is assigned onto a service afterwards. Replace a supplier with a direct reference, or go back
+to assigning fields after construction, and collaborators are undefined at runtime.
+
+## Living with the embind bindings
+
+- Native calls return **embind vectors**: `.size()` and `.get(i)`, no `length`, no indexing. Treating
+  one as an array yields `undefined` rather than an error, so the failure surfaces far from its cause.
+- `TopAbs_State` arrives as a plain number: **0 = IN, 1 = OUT, 2 = ON, 3 = UNKNOWN**.
+- **Overload resolution is fragile.** `BRepPrimAPI_MakePrism` must use the 2-argument form; faces go
+  through `MakeFaceFromWireOnlyPlane` and `MakeFaceFromFaceSurfaceAndWire` rather than the
+  `BRepBuilderAPI_MakeFace` constructor, to avoid an ambiguity that appears only at runtime.
+  `BRepPrimAPI_MakeRevol` is the opposite case: 2 arguments for a full revolution, 4 for a partial one.
+- **A deleted object throws on any method call** rather than becoming null, which is why validity is
+  probed by calling and catching, and why disposal paths swallow.
+- **Extra outputs arrive as result structures**, each carrying `IsValid`.
+  `BRep_Tool_GetEdgeParameters`, `GetEdgeCurve` and `GetFaceUVBounds` return one. Nothing on this side
+  passes an object in to be written into.
+
+## Knowing whether something worked
+
+The kernel reports failure inconsistently, so what counts as failure differs per entry point and is
+not visible in the return type.
+
+**A status code is not a result.** `ReadFile` returns `RetDone` for a file it parsed but could build
+no model from, and the transfer then yields a null shape. Success has two parts, the status and a
+non-null shape, and both loaders check both.
+
+Two behaviours are stable and surprising, so assume the opposite at your peril:
+
+- **A shape's transform always reads back as the identity.** Reading a transform reads the shape's
+  placement, and rotation here is written into the geometry instead. A caller hoping to recover the
+  rotation it applied will not find it there.
+- **Folding transformations never sees an empty list.** A bare matrix is wrapped into a one-element
+  list before any length is measured, and an empty array is treated as a bare matrix.
+
+## Assemblies
+
+The native document wants a node's matrix as a flat **row-major 3x4** (12 numbers); the public API uses
+**column-major 4x4** and also accepts an ordered list. The manager folds and transposes at the
+boundary. Passing a public matrix straight through transposes every placement, giving part positions
+that look plausible and are wrong.
+
+`loadedParts` reference their source document by index and **deliberately carry no shape data**, unlike
+`parts`, which are serialised by index into the shapes array.
+
+## A security boundary
+
+**Dimension label expressions are filtered, then parsed - never evaluated.** A label is checked against
+`[0-9 + - * / . ( ) space]` and only then handed to a small arithmetic parser; anything else is treated
+as plain text. `eval` and `Function` are deliberately absent from this path, because these expressions
+arrive in user-authored scripts.
+

@@ -98,6 +98,35 @@ When working with DXF export, keep in mind that the format is fundamentally 2D. 
 
 The precision parameters deserve careful consideration based on your end use. Laser cutters and CNC machines typically need accurate curve representation, so you'd use smaller deflection values. For drawings that will be manually edited or used for visualization, you can be more relaxed with these settings, resulting in smaller files that are easier to work with.
 
+## Colours and File Versions
+
+Two export options change how the file behaves in whatever opens it, and neither default is the one
+people expect.
+
+### Colours do not round-trip unless you ask for true colour
+
+The default colour format is **ACI**, AutoCAD's classic palette of numbered colours. Your colour is
+matched to the nearest of a small set of palette entries, so the colour you get back out is close to
+what you asked for rather than identical.
+
+Anything very dark is deliberately turned white. CAD applications usually show model space on a dark
+background, and near-black geometry on a dark background is invisible. Turning it white keeps the
+drawing usable, at the cost of not being the colour you specified.
+
+Choose **`truecolor`** if you need exact colours, and your target application supports it. Modern CAD
+software does; some older software and some machine controllers do not, which is why ACI is the
+default.
+
+### The default version is deliberately old
+
+`AC1009`, which is AutoCAD R12, is the default. It is a minimal format, and that is the point: it
+opens in the widest range of software, including old machine controllers and free viewers.
+
+`AC1015`, AutoCAD 2000, is the modern choice. Use it when your target application is modern and you
+want features R12 cannot express. It writes a larger file with more structure in it.
+
+If a DXF you exported will not open somewhere, the version is the first thing to try changing.
+
 ## Conclusion
 
 DXF export represents an important bridge between Bitbybit's parametric 3D environment and the established world of 2D CAD. By mastering this workflow, you gain the ability to take your parametric designs and deliver them in a format that's universally understood across the manufacturing and design industries. The combination of text generation, geometric processing, pattern creation, and organized layer output demonstrates the power of having a complete toolchain within a single environment.

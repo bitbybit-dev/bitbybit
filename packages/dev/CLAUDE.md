@@ -38,8 +38,7 @@ npm run lint
   constructors and the services treat an explicit undefined as "use the default", and under
   exactOptionalPropertyTypes only that spelling lets a caller pass an optional value straight through
   (`{ tolerance: inputs.tolerance }`). Write the type out - an inferred one prints differently in the
-  declarations depending on the compiler flags, and the declarations the visual editors are generated from must
-  not move with a flag. The service applies the default itself where it reads the property
+  declarations depending on the compiler flags, and the published declarations must not move with a flag. The service applies the default itself where it reads the property
   (`inputs.tolerance ?? 1e-7`), because only `new Dto()` runs the initializer; an object literal from a
   script does not. Index reads inside a bounds-checked loop, after a length check, or of a regex group
   the pattern guarantees carry a non-null assertion; everything else narrows.
@@ -65,7 +64,7 @@ npm run lint
 - **Method and class JSDoc is authored on the kernel and describes the API as users reach it** - the
   asynchronous, worker-backed one (`await` in examples, File/Blob accepted where the worker converts
   them, `deleteDocument()` for document lifetime) - with the generator tags (`@group`, `@shortname`,
-  `@drawable`) that the visual editors are built from. The worker's copy is generated; `check:worker-parity`
+  `@drawable`) that code generation reads. The worker's copy is generated; `check:worker-parity`
   still compares the two and fails on any difference. A kernel method the worker splits into several
   public methods is allow-listed in `scripts/worker-parity.allow.json` under `docs`, with the reason.
 - Kernel suites need the raised heap the scripts already set, and the process per file their
@@ -114,6 +113,61 @@ npm run lint
   which engine version to install, so the distinction is not cosmetic. Both also run a
   `delete-mocks` step during packaging.
 
-Four packages carry their own `CLAUDE.md` because they genuinely differ: `occt` (ships wasm),
-`babylonjs` (peer-dependency engine), `cad-cloud-sdk` (generated types) and
-`create-app` (a CLI). The rest follow this file.
+## Two rules that hold across every package
+
+**Check a value where it arrives, not where it is used.** Data from a caller, from a file, or across
+the worker boundary is untrusted whatever the types say, and is checked there. Data produced a few
+lines earlier by our own code, in a function whose output shape is fixed, is not re-checked by its own
+consumer: a guard against a state the producer cannot emit protects nothing and tells the reader that
+case is possible.
+
+**Nothing consumes what it was given.** Helpers here are called repeatedly on the same data - a
+configurator redraws on every parameter change - so a function that appends to or pops from a
+caller's array makes its own result depend on how many times it has run. Read by index, and build new
+arrays rather than mutating the one you were handed.
+
+## The worker boundary
+
+The two threads share no memory. Everything crossing between them is copied by structured clone, and
+almost every rule here follows from that.
+
+- **Workers return hashes, never geometry.** A kernel shape lives in the worker's WASM memory, so a
+  worker stores its result in its own cache and returns a short identifier. Inputs carrying such an
+  identifier are rehydrated from that cache before dispatch. A new worker method that returns a kernel
+  object either fails structured clone or hands over a meaningless pointer.
+- **`uid` is the only correlation key**, echoed unchanged on success and failure. A request that
+  produces no reply leaves its caller waiting forever, which is why the error path wraps its own
+  `postMessage` in a second try/catch.
+- **Structured clone drops prototypes.** A DTO arrives as a plain object: no methods, no getters, no
+  `instanceof`. That is why worker-side types are plain records.
+- **Materials cannot cross** - engine material objects are cyclic and throw `DataCloneError`, so
+  `getSafeWorkerOptions` drops `faceMaterial`. **Typed arrays must cross untouched** - the recursive
+  walkers short-circuit on `ArrayBuffer` and its views before their generic object branch, which would
+  otherwise rebuild them through `Object.keys` and destroy them. **`File` and `Blob` are converted on
+  the main thread**, because reading one is asynchronous and input resolution is not. **Never
+  `JSON.stringify` a binary input in an error path**; a multi-megabyte buffer can crash the engine and
+  turn a readable failure into a hung promise.
+- **Results can nest shapes at any depth**, so the cache walks the whole result and hashes every shape
+  it finds. The serializer only converts a shape into a reference if it has a hash, so a missed shape
+  never arrives intact.
+
+## `paths` in a package tsconfig describe its declarations, not its imports
+
+Two tools read these configs and need different sets. The compiler resolves siblings through project
+references; api-extractor resolves them through `paths`.
+
+A package's `dist/index.d.ts` names types from packages it never imports - a renderer's draw entity
+union names JSCAD's entity type, a worker's kernel names base's types. Without the mapping,
+api-extractor reaches the sibling's source instead of its declarations and stops with
+`ae-wrong-input-file-type`.
+
+So the question about a `paths` entry is not "what imports this?" but "does anything in the published
+declarations name it?". Remove one on the first question and the build and typecheck stay green while
+`api:check` fails. A package never maps its own name; that would let a stale build output satisfy a
+reference to current source. `check:references` compares the generated configs to each other and to
+the manifests' `references` - it never compares `paths` to `dependencies`.
+
+## Per-package `CLAUDE.md`
+
+Most packages carry one, for what is true of that package alone: the kernel quirks, the engine
+differences, the memory rules. This file holds what is true of all of them.

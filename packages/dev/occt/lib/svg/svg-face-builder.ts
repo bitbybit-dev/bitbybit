@@ -87,6 +87,19 @@ export class SvgFaceBuilder {
      * Containment-based reconstruction shared by nonzero and even-odd: classify each wire's nesting
      * depth, decide which regions are solid, and emit a face per solid region with its immediate
      * non-solid children as holes (forced to CW so OCCT subtracts them).
+     *
+     * Containment needs two tests, not one. A point-in-face test alone cannot order two wires drawn
+     * around the same centre, because each contains the other's centroid, and the nesting depth then
+     * comes out wrong for both. Requiring the enclosing wire to have the strictly larger absolute area
+     * as well is what breaks that tie, and concentric outlines are ordinary in real drawings - a ring,
+     * a washer, any letter with a counter.
+     * @param ccw every wire, normalised to counter-clockwise
+     * @param centroids one centroid per wire
+     * @param areas one signed area per wire
+     * @param sign the original winding of each wire
+     * @param classFaces a face per wire, used only for the point-in-face test
+     * @param rule the fill rule that decides which depths are solid
+     * @returns one face per solid region, holes already subtracted
      */
     private buildNested(
         ccw: TopoDS_Wire[],
