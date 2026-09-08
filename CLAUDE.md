@@ -131,10 +131,10 @@ report diff in the same commit. `occt-worker` is the exception because `Bitbybit
 its public signature, is declared by the emscripten glue, whose thousands of ambient consts
 api-extractor cannot follow; its surface is pinned harder elsewhere, by `check:worker-api` (the whole
 API layer is generated from the kernel and must match byte for byte) and by `check:worker-parity`
-(the dotted paths, the signatures and the docs on both sides). `check:tarballs` packs every built
-dist and installs all the tarballs together into an empty project, then compiles a probe that imports
-each package as a consumer would, so a sibling only the workspace could resolve, a dependency a
-manifest forgot, or a shipped build info file fails there and not on a user's machine.
+(the dotted paths, the signatures and the docs on both sides). `check:tarballs` packs all thirteen -
+the eleven staged dists and the two that publish from their own root - installs the library ones into
+an empty project and probes each as a consumer would, then reads what every tarball actually carries:
+a credential, an absolute build path, a source map naming sources it excludes, a file npm strips.
 
 ## The generated worker layer
 

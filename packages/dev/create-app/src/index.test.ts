@@ -120,6 +120,22 @@ describe("create-app", () => {
             expect(existsSync(path.join(work, name, "backend", "package.json"))).toBe(true);
             expect(existsSync(path.join(work, name, "README.md"))).toBe(true);
         });
+
+        it.each(CLOUD_BACKENDS)("should give the %s backend a .gitignore that covers the secret file the CLI writes beside it", (backend) => {
+            // Arrange
+            const name = `ignored-${backend}`;
+            const secret = backend.startsWith("hono") ? ".dev.vars" : ".env";
+
+            // Act
+            const { status } = scaffold([name, "-t", "cloud", "-b", backend]);
+
+            // Assert
+            expect(status).toBe(0);
+            const backendDir = path.join(work, name, "backend");
+            expect(existsSync(path.join(backendDir, secret))).toBe(true);
+            expect(existsSync(path.join(backendDir, "_gitignore"))).toBe(false);
+            expect(readFileSync(path.join(backendDir, ".gitignore"), "utf8")).toContain(secret);
+        });
     });
 
     describe("when the arguments are wrong", () => {

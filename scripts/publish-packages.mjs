@@ -22,13 +22,15 @@
  * Authentication comes from where it runs: publish.yml publishes through npm trusted publishing,
  * a local run through the logged-in npm, and --dry-run publishes nothing.
  *
- *   node scripts/publish-packages.mjs [--tag next|latest] [--dry-run]
+ *   node scripts/publish-packages.mjs [--tag latest|rc|beta|alpha|next] [--dry-run]
  *
- * --tag next publishes every package under the `next` dist-tag: installable by exact version, not
- * what `npm install` picks by default. It is for prerelease versions, not for rehearsing a release
- * one - --dry-run is the rehearsal, and a release version goes straight to `latest`, because a
- * published version cannot be republished and moving a dist-tag afterwards needs a granular token
- * or an interactive login, which a workflow authenticating through OIDC does not have.
+ * A prerelease publishes under its own identifier - a `-rc.0` version to `rc`, a `-beta.1` one to `beta` -
+ * so a channel is installable by name and not only by exact version. It is never for rehearsing a
+ * release version: --dry-run is the rehearsal, and a release version goes straight to `latest`,
+ * because a published version cannot be republished and moving a dist-tag afterwards needs a
+ * granular token or an interactive login, which a workflow authenticating through OIDC does not
+ * have. The pairing is checked both ways here: a prerelease can never take latest, and a release
+ * version can never take a prerelease channel it could not be promoted out of.
  */
 import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -40,7 +42,8 @@ const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 const tagIndex = args.indexOf("--tag");
 const tag = tagIndex >= 0 ? args[tagIndex + 1] : "latest";
-if (!["latest", "next"].includes(tag)) { console.error("--tag must be latest or next"); process.exit(2); }
+const CHANNELS = ["alpha", "beta", "rc", "next"];
+if (![...CHANNELS, "latest"].includes(tag)) { console.error(`--tag must be latest or one of ${CHANNELS.join(", ")}`); process.exit(2); }
 const SCOPE = "@bitbybit-dev/";
 const POLL_SECONDS = 15, POLL_LIMIT = 40;
 
@@ -61,6 +64,13 @@ for (const dir of readdirSync(path.join(ROOT, "packages/dev"))) {
 const versions = new Set([...packages.values()].map((p) => p.version));
 if (versions.size !== 1) { console.error(`the packages do not share one version: ${[...versions].join(", ")}`); process.exit(1); }
 const [version] = versions;
+// The dist-tag and the version must agree, and neither mistake is recoverable: a prerelease under
+// latest becomes everyone's default install, and a release version under a prerelease channel is
+// spent, because OIDC signs a publish and never a dist-tag move.
+const channel = version.includes("-") ? version.slice(version.indexOf("-") + 1).split(".")[0] : null;
+if (channel && !CHANNELS.includes(channel)) { console.error(`${version} names the prerelease channel "${channel}", which is not one of ${CHANNELS.join(", ")}`); process.exit(2); }
+if (channel && tag !== channel) { console.error(`${version} is a ${channel} prerelease but --tag says ${tag}; a prerelease publishes under its own channel and can never be promoted out of another`); process.exit(2); }
+if (!channel && tag !== "latest") { console.error(`${version} is a release version; ${tag} could never be promoted to latest afterwards`); process.exit(2); }
 for (const p of packages.values()) for (const d of p.deps) if (!packages.has(d)) { console.error(`${p.name} depends on ${d}, which is not a package here`); process.exit(1); }
 for (const p of packages.values()) {
     if (!p.fromDist) continue;
