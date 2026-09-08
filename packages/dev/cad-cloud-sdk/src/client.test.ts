@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { BitbybitClient } from "./client.js";
 
-// Mock global fetch for health() and request()
 const fetchMock = vi.fn();
 
 describe("BitbybitClient", () => {
@@ -114,9 +113,8 @@ describe("BitbybitClient", () => {
             // Arrange
             const client = new BitbybitClient({ apiKey: "bbk_test", validate: false });
             fetchMock.mockResolvedValueOnce(new Response("{}", { status: 200 }));
-            const invalidBody = {}; // missing required fields
+            const invalidBody = {};
 
-            // Act & Assert (should not throw validation error)
             await expect(client.request("POST", "/api/v1/cad/execute", invalidBody)).resolves.toBeInstanceOf(Response);
         });
 
@@ -125,7 +123,6 @@ describe("BitbybitClient", () => {
             const client = new BitbybitClient({ apiKey: "bbk_test", validate: true });
             fetchMock.mockResolvedValueOnce(new Response("{}", { status: 200 }));
 
-            // Act & Assert (GET with body should not trigger validation)
             await expect(client.request("GET", "/api/v1/tasks", {})).resolves.toBeInstanceOf(Response);
         });
     });
@@ -148,9 +145,6 @@ describe("BitbybitClient", () => {
         });
     });
 
-    // Which schema a request body is checked against is decided from its path: a fixed table for the
-    // endpoints that have one, and two patterns for the model paths, where a model with a schema of
-    // its own is checked against that one and any other against the generic submission schema.
     describe("request validation by path", () => {
         it("refuses a body the endpoint's schema rejects", async () => {
             // Arrange

@@ -112,7 +112,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
 
         it("should handle nested function calls with 3 levels", () => new Promise<void>((done) => {
-            // First create a shape
             const boxDto = new Inputs.OCCT.BoxDto(1, 1, 1);
             onMessageInput({
                 action: {
@@ -220,7 +219,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
 
         it("should use cached shape when available", () => new Promise<void>((done) => {
-            // First create a shape
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
             let wireHash: number;
 
@@ -234,7 +232,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                 if (data !== "busy" && data.result) {
                     wireHash = data.result.hash;
 
-                    // Now use the cached shape
                     onMessageInput({
                         action: {
                             functionName: "shapes.wire.getWireLength",
@@ -254,7 +251,6 @@ describe("OCC Worker Functions Unit Tests", () => {
 
     describe("onMessageInput - special functions", () => {
         it("should handle shapeToMesh function", () => new Promise<void>((done) => {
-            // First create a shape
             const boxDto = new Inputs.OCCT.BoxDto(1, 1, 1);
             
             onMessageInput({
@@ -267,7 +263,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                 if (data !== "busy" && data.result) {
                     const shapeHash = data.result.hash;
 
-                    // Now convert to mesh
                     onMessageInput({
                         action: {
                             functionName: "shapeToMesh",
@@ -310,7 +305,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
 
         it("should handle shapesToMeshes function", () => new Promise<void>((done) => {
-            // Create two shapes
             const box1 = new Inputs.OCCT.BoxDto(1, 1, 1);
             const box2 = new Inputs.OCCT.BoxDto(0.5, 0.5, 0.5);
 
@@ -334,7 +328,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                         if (data2 !== "busy" && data2.result) {
                             const hash2 = data2.result.hash;
 
-                            // Now convert both to meshes
                             onMessageInput({
                                 action: {
                                     functionName: "shapesToMeshes",
@@ -405,7 +398,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
 
         it("should handle deleteShape function", () => new Promise<void>((done) => {
-            // First create a shape
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
 
             onMessageInput({
@@ -418,7 +410,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                 if (data !== "busy" && data.result) {
                     const shapeHash = data.result.hash;
 
-                    // Delete the shape
                     onMessageInput({
                         action: {
                             functionName: "deleteShape",
@@ -431,7 +422,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                         if (data2 !== "busy" && data2.result !== undefined) {
                             expect(data2.result).toEqual({});
 
-                            // Verify shape is no longer in cache
                             const cachedShape = cacheHelper.checkCache(shapeHash);
                             expect(cachedShape).toBeNull();
                             done();
@@ -442,7 +432,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
 
         it("should handle deleteShapes function", () => new Promise<void>((done) => {
-            // Create two shapes
             const circle1 = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
             const circle2 = new Inputs.OCCT.CircleDto(2, [0, 0, 0], [0, 1, 0]);
 
@@ -466,7 +455,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                         if (data2 !== "busy" && data2.result) {
                             const hash2 = data2.result.hash;
 
-                            // Delete both shapes
                             onMessageInput({
                                 action: {
                                     functionName: "deleteShapes",
@@ -482,7 +470,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                                 if (data3 !== "busy" && data3.result !== undefined) {
                                     expect(data3.result).toEqual({});
 
-                                    // Verify shapes are no longer in cache
                                     expect(cacheHelper.checkCache(hash1)).toBeNull();
                                     expect(cacheHelper.checkCache(hash2)).toBeNull();
                                     done();
@@ -495,7 +482,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
 
         it("should handle saveShapeSTEP function", () => new Promise<void>((done) => {
-            // First create a shape
             const boxDto = new Inputs.OCCT.BoxDto(1, 1, 1);
 
             onMessageInput({
@@ -508,7 +494,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                 if (data !== "busy" && data.result) {
                     const shapeHash = data.result.hash;
 
-                    // Save to STEP
                     onMessageInput({
                         action: {
                             functionName: "saveShapeSTEP",
@@ -548,7 +533,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
 
         it("should handle cleanAllCache function", () => new Promise<void>((done) => {
-            // First create a shape
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
 
             onMessageInput({
@@ -562,7 +546,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                     const shapeHash = data.result.hash;
                     expect(cacheHelper.checkCache(shapeHash)).toBeDefined();
 
-                    // Clean all cache
                     onMessageInput({
                         action: {
                             functionName: "cleanAllCache",
@@ -573,7 +556,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                         if (data2 !== "busy" && data2.result !== undefined) {
                             expect(data2.result).toEqual({});
                             
-                            // Verify cache is empty
                             expect(cacheHelper.checkCache(shapeHash)).toBeNull();
                             expect(Object.keys(cacheHelper.argCache).length).toBe(0);
                             done();
@@ -584,7 +566,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
 
         it("should handle startedTheRun function without cleaning cache (below threshold)", () => new Promise<void>((done) => {
-            // Create a shape to ensure cache has some entries
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
 
             onMessageInput({
@@ -597,7 +578,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                 if (data !== "busy" && data.result) {
                     const shapeHash = data.result.hash;
 
-                    // Call startedTheRun
                     onMessageInput({
                         action: {
                             functionName: "startedTheRun",
@@ -608,7 +588,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                         if (data2 !== "busy" && data2.result !== undefined) {
                             expect(data2.result).toEqual({});
                             
-                            // Cache should still have the shape (below 10000 threshold)
                             expect(cacheHelper.checkCache(shapeHash)).toBeDefined();
                             done();
                         }
@@ -631,8 +610,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                 uid: "uid-1"
             }, (data: any) => {
                 if (data !== "busy") {
-                    // addOc doesn't set result, so it will be undefined
-                    // Just verify no error was thrown
                     expect(data.error).toBeUndefined();
                     done();
                 }
@@ -688,7 +665,6 @@ describe("OCC Worker Functions Unit Tests", () => {
 
     describe("onMessageInput - array results", () => {
         it("should return array of shape hashes for array results", () => new Promise<void>((done) => {
-            // Create a box and get its edges
             const boxDto = new Inputs.OCCT.BoxDto(1, 1, 1);
 
             onMessageInput({
@@ -701,7 +677,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                 if (data !== "busy" && data.result) {
                     const boxHash = data.result.hash;
 
-                    // Get edges (returns array)
                     onMessageInput({
                         action: {
                             functionName: "shapes.edge.getEdges",
@@ -726,8 +701,6 @@ describe("OCC Worker Functions Unit Tests", () => {
 
     describe("onMessageInput - ObjectDefinition results", () => {
         it("should handle results with compound, data, and shapes", () => new Promise<void>((done) => {
-            // This test would require a function that returns ObjectDefinition
-            // For now, we'll just verify the logic path exists
             expect(true).toBe(true);
             done();
         }));
@@ -735,7 +708,6 @@ describe("OCC Worker Functions Unit Tests", () => {
 
     describe("onMessageInput - non-OCCT results", () => {
         it("should return non-OCCT results directly", () => new Promise<void>((done) => {
-            // Create a wire and get its length (returns number)
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
 
             onMessageInput({
@@ -748,7 +720,6 @@ describe("OCC Worker Functions Unit Tests", () => {
                 if (data !== "busy" && data.result) {
                     const wireHash = data.result.hash;
 
-                    // Get length (returns number, not OCCT object)
                     onMessageInput({
                         action: {
                             functionName: "shapes.wire.getWireLength",

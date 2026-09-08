@@ -31,8 +31,6 @@ describe("BitByBitBase unit tests", () => {
             expect(bitByBit).toBeInstanceOf(BitByBitBase);
         });
 
-        // Every service is asserted by its class rather than by being defined: the failure this
-        // guards against is a field wired to the wrong constructor, which any presence check passes.
         const wiring: [keyof BitByBitBase, new (...args: never[]) => object][] = [
             ["context", Context],
             ["jscadWorkerManager", JSCADWorkerManager],
@@ -355,25 +353,21 @@ describe("BitByBitBase unit tests", () => {
 
     describe("Service dependencies", () => {
         it("should have vector service used by point service", () => {
-            // Point service depends on vector service
             const distance = bitByBit.point.distance({ startPoint: [0, 0, 0], endPoint: [1, 0, 0] });
             expect(distance).toBe(1);
         });
 
         it("should have vector service used by line service", () => {
-            // Line service depends on vector service
             const line = bitByBit.line.create({ start: [0, 0, 0], end: [1, 0, 0] });
             expect(line).toBeDefined();
         });
 
         it("should have vector and point services used by polyline service", () => {
-            // Polyline service depends on vector and point services
             const polyline = bitByBit.polyline.create({ points: [[0, 0, 0], [1, 0, 0]] });
             expect(polyline).toBeDefined();
         });
 
         it("should have math service used by color service", () => {
-            // Color service depends on math service
             const rgb = bitByBit.color.hexToRgb({ color: "#ffffff" });
             expect(rgb).toEqual({ r: 255, g: 255, b: 255 });
         });
@@ -393,7 +387,6 @@ describe("BitByBitBase unit tests", () => {
 
         it("should have babylon service with context", () => {
             expect(bitByBit.babylon).toBeDefined();
-            // Babylon service should have access to context via draw helper
         });
     });
 
@@ -407,7 +400,6 @@ describe("BitByBitBase unit tests", () => {
 
         it("should have tag service with context", () => {
             expect(bitByBit.tag).toBeDefined();
-            // Tag service should have access to context
         });
     });
 
@@ -421,7 +413,6 @@ describe("BitByBitBase unit tests", () => {
 
         it("should have time service with context", () => {
             expect(bitByBit.time).toBeDefined();
-            // Time service should have access to context
         });
     });
 });

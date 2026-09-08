@@ -16,9 +16,6 @@ import { Vector } from "@bitbybit-dev/base";
 
 import * as pc from "playcanvas";
 
-// A minimal JSCAD geometry. These suites mock the worker manager, so the draw path hands the entity
-// straight through and nothing reads it - but it should still be the shape the API says it is, and
-// `jscadSolid()`, which is what stood here, is not a JSCAD geometry at all.
 const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -60,12 +57,10 @@ describe("DrawHelper unit tests", () => {
     });
 
     afterEach(() => {
-        // Clean up material cache to prevent cross-test contamination
         drawHelper.dispose();
         vi.clearAllMocks();
     });
 
-    // Helper function to extract material from entity's render component or mesh instance
     const getMaterialFromEntity = (node: pc.GraphNode): pc.StandardMaterial | null => {
         const entity = node as pc.Entity;
         if (entity.render && entity.render.meshInstances && entity.render.meshInstances.length > 0) {
@@ -74,7 +69,6 @@ describe("DrawHelper unit tests", () => {
         return null;
     };
 
-    // Helper function to convert hex color to RGB values (0-1 range)
     const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         if (result) {
@@ -84,10 +78,9 @@ describe("DrawHelper unit tests", () => {
                 b: parseInt(result[3]!, 16) / 255
             };
         }
-        return { r: 1, g: 0, b: 0 }; // Default to red if parsing fails
+        return { r: 1, g: 0, b: 0 };
     };
 
-    // Helper function to check if two colors are approximately equal (within tolerance)
     const colorsAreEqual = (color1: pc.Color, color2: { r: number; g: number; b: number }, tolerance = 0.01): boolean => {
         return Math.abs(color1.r - color2.r) < tolerance &&
                Math.abs(color1.g - color2.g) < tolerance &&
@@ -109,24 +102,19 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.name).toContain("pointMesh");
-            // With GPU instancing, points are grouped by color (one child entity per color)
             expect(result.children.length).toBe(1);
 
-            // Validate the instanced entity structure (one entity per unique color)
             const instancedEntity = result.children[0]!;
             expect(instancedEntity).toBeDefined();
             expect(instancedEntity.name).toContain("points-#ff0000");
 
-            // Validate material color
             const material = getMaterialFromEntity(instancedEntity);
             if (material && material.diffuse) {
                 const expectedColor = hexToRgb("#ff0000");
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate material opacity
             if (material) {
-                // Note: The actual opacity value depends on the DrawPointDto constructor parameter order
                 expect(material.opacity).toBeDefined();
             }
         });
@@ -144,21 +132,17 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
 
-            // Validate the instanced entity (one entity per unique color)
             const instancedEntity = result.children[0]!;
             expect(instancedEntity).toBeDefined();
             expect(instancedEntity.name).toContain("points-");
 
-            // Validate that first color from array is used
             const material = getMaterialFromEntity(instancedEntity);
             if (material && material.diffuse) {
                 const expectedColor = hexToRgb("#ff0000");
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate opacity
             if (material) {
-                // Note: The actual opacity value depends on the DrawPointDto constructor parameter order
                 expect(material.opacity).toBeDefined();
             }
         });
@@ -166,7 +150,6 @@ describe("DrawHelper unit tests", () => {
         it("should update existing point mesh when updatable is true", () => {
             const existingMesh = new pc.Entity();
             existingMesh.name = "existingPointMesh";
-            // Add a child entity to simulate existing point
             const childEntity = new pc.Entity(`point-0-${Math.random()}`);
             childEntity.setLocalPosition(0, 0, 0);
             existingMesh.addChild(childEntity);
@@ -199,11 +182,9 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            // With GPU instancing, all 3 points share one entity (one color group)
             expect(result.children.length).toBe(1);
             expect(result.name).toContain("pointsMesh");
 
-            // Validate the instanced entity has correct material properties
             const instancedEntity = result.children[0]!;
             const material = getMaterialFromEntity(instancedEntity);
             if (material && material.diffuse) {
@@ -211,8 +192,6 @@ describe("DrawHelper unit tests", () => {
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate opacity (DrawPointsDto params are: points, opacity, size, colour)
-            // So here: opacity=1, size=0.3
             if (material) {
                 expect(material.opacity).toBe(1);
             }
@@ -227,11 +206,10 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoints(inputs);
-            expect(result.children.length).toBe(3); // 3 unique colors = 3 instanced entities
+            expect(result.children.length).toBe(3);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
 
-            // Validate each instanced entity has the correct color
             const expectedColors = ["#ff0000", "#00ff00", "#0000ff"];
             result.children.forEach((instancedEntity, index) => {
                 const material = getMaterialFromEntity(instancedEntity);
@@ -240,7 +218,6 @@ describe("DrawHelper unit tests", () => {
                     expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
                 }
 
-                // Validate opacity is consistent
                 if (material) {
                     expect(material.opacity).toBeDefined();
                 }
@@ -252,18 +229,16 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]],
                 1,
                 0.3,
-                ["#ff0000", "#00ff00"] // Only 2 colours for 4 points
+                ["#ff0000", "#00ff00"]
             );
 
             const result = drawHelper.drawPoints(inputs);
-            // With colorMapStrategy lastColorRemainder: 2 colors for 4 points = 2 unique colors = 2 children
             expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
         });
 
         it("should update existing points mesh when updatable is true with same point count", () => {
-            // First create a mesh
             const firstInputs = new Inputs.Point.DrawPointsDto<pc.Entity>(
                 [[0, 0, 0], [1, 1, 1]],
                 1,
@@ -272,7 +247,6 @@ describe("DrawHelper unit tests", () => {
             );
             const existingMesh = drawHelper.drawPoints(firstInputs);
 
-            // Now update with new positions
             const updateInputs = new Inputs.Point.DrawPointsDto<pc.Entity>(
                 [[5, 5, 5], [6, 6, 6]],
                 1,
@@ -283,13 +257,11 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoints(updateInputs);
-            // Same color for all points = 1 instanced entity
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
         });
 
         it("should recreate points mesh when point count changes during update", () => {
-            // First create a mesh
             const firstInputs = new Inputs.Point.DrawPointsDto<pc.Entity>(
                 [[0, 0, 0], [1, 1, 1]],
                 1,
@@ -298,7 +270,6 @@ describe("DrawHelper unit tests", () => {
             );
             const existingMesh = drawHelper.drawPoints(firstInputs);
 
-            // Now update with different point count
             const updateInputs = new Inputs.Point.DrawPointsDto<pc.Entity>(
                 [[5, 5, 5], [6, 6, 6], [7, 7, 7]],
                 1,
@@ -309,7 +280,6 @@ describe("DrawHelper unit tests", () => {
             );
 
             const result = drawHelper.drawPoints(updateInputs);
-            // 3 points with same color = 1 instanced entity
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
@@ -335,15 +305,12 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.name).toContain("polyline");
 
-            // Validate polyline material color
             const polylineEntity = result.children[0]!;
             const material = getMaterialFromEntity(polylineEntity);
             if (material && material.diffuse) {
-                // Just verify the material has a diffuse color set
                 expect(material.diffuse).toBeDefined();
             }
 
-            // Validate opacity (default should be 1)
             if (material) {
                 expect(material.opacity).toBeDefined();
             }
@@ -370,7 +337,6 @@ describe("DrawHelper unit tests", () => {
         it("should update existing polyline mesh when updatable is true", () => {
             const existingMesh = new pc.Entity();
             existingMesh.name = "existingPolyline";
-            // Add a child entity to simulate existing polyline
             const childEntity = new pc.Entity("polyline-child");
             existingMesh.addChild(childEntity);
 
@@ -429,8 +395,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            // The first polyline carries its own colour; the second carries none and keeps the
-            // shared one. Colours are per vertex, as RGBA bytes.
             expect(result.children.length).toBe(1);
             const vertexColours = setColors32.mock.calls[0]![0] as number[];
             const asRgb = [];
@@ -460,7 +424,6 @@ describe("DrawHelper unit tests", () => {
         it("should update existing polylines mesh when updatable is true", () => {
             const existingMesh = new pc.Entity();
             existingMesh.name = "existingPolylines";
-            // Add a child entity to simulate existing polylines
             const childEntity = new pc.Entity("polylines-child");
             existingMesh.addChild(childEntity);
 
@@ -507,7 +470,6 @@ describe("DrawHelper unit tests", () => {
         it("should update existing curve mesh when updatable is true", () => {
             const existingMesh = new pc.Entity();
             existingMesh.name = "existingCurve";
-            // Add a child entity to simulate existing curve
             const childEntity = new pc.Entity("curve-child");
             existingMesh.addChild(childEntity);
 
@@ -638,13 +600,12 @@ describe("DrawHelper unit tests", () => {
             });
 
             expect(result).toBeDefined();
-            // PlayCanvas returns an Entity, not necessarily with render component directly
             expect(result).toBeInstanceOf(pc.Entity);
         });
 
         it("should handle polylines with insufficient points for arrows", () => {
             const polyline: Inputs.Base.Polyline3 = {
-                points: [[0, 0, 0]] // Only 1 point
+                points: [[0, 0, 0]]
             };
 
             const result = drawHelper.drawPolylineClose({
@@ -662,8 +623,6 @@ describe("DrawHelper unit tests", () => {
             const lineEntity = result.children[0] as pc.Entity;
             expect(lineEntity.render).toBeDefined();
             
-            // With a single point, there should be no segments to draw
-            // The mesh may have empty or null storage
             if (lineEntity.render!.meshInstances && lineEntity.render!.meshInstances.length > 0) {
                 const mesh = lineEntity.render!.meshInstances[0]!.mesh;
                 if (mesh.vertexBuffer && mesh.vertexBuffer.storage) {
@@ -688,7 +647,6 @@ describe("DrawHelper unit tests", () => {
                 arrowAngle: 30
             });
 
-            // Update with new points
             const updatedPolyline: Inputs.Base.Polyline3 = {
                 points: [[0, 0, 0], [2, 2, 2]]
             };
@@ -747,7 +705,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -757,7 +715,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(pc.Entity);
             expect(mockSurface.tessellate).toHaveBeenCalled();
 
-            // Validate surface material color
             const surfaceEntity = result.children[0]!;
             const material = getMaterialFromEntity(surfaceEntity);
             if (material && material.diffuse) {
@@ -765,7 +722,6 @@ describe("DrawHelper unit tests", () => {
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate opacity (default is 1)
             if (material) {
                 expect(material.opacity).toBe(1);
             }
@@ -784,9 +740,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#0000ff",
                 false,
-                true, // hidden
+                true,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -813,7 +769,7 @@ describe("DrawHelper unit tests", () => {
                 true,
                 false,
                 existingMesh,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -836,14 +792,13 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
 
-            // Validate that first color from array is used
             const surfaceEntity = result.children[0]!;
             const material = getMaterialFromEntity(surfaceEntity);
             if (material && material.diffuse) {
@@ -867,19 +822,17 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
 
-            // Validate opacity is correctly applied
             const surfaceEntity = result.children[0]!;
             const material = getMaterialFromEntity(surfaceEntity);
             if (material) {
                 expect(material.opacity).toBe(0.6);
             }
 
-            // Validate color is correct
             if (material && material.diffuse) {
                 const expectedColor = hexToRgb("#0000ff");
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
@@ -905,11 +858,9 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawSurface(inputs);
 
             expect(result).toBeDefined();
-            // With two-sided rendering, there should be 2 children: front and back face
             expect(result.children.length).toBe(2);
             expect(result).toBeInstanceOf(pc.Entity);
 
-            // Validate front face material color
             const frontSurfaceEntity = result.children[0]!;
             const frontMaterial = getMaterialFromEntity(frontSurfaceEntity);
             if (frontMaterial && frontMaterial.diffuse) {
@@ -917,7 +868,6 @@ describe("DrawHelper unit tests", () => {
                 expect(colorsAreEqual(frontMaterial.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate back face material color (default blue)
             const backSurfaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backSurfaceEntity);
             if (backMaterial && backMaterial.diffuse) {
@@ -941,13 +891,12 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided = false
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
 
             expect(result).toBeDefined();
-            // With two-sided rendering disabled, there should be only 1 child (front face)
             expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -967,8 +916,8 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided = true
-                "#00ff00" // custom backFaceColour
+                true,
+                "#00ff00"
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -976,7 +925,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
 
-            // Validate back face has custom green color
             const backSurfaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backSurfaceEntity);
             if (backMaterial && backMaterial.diffuse) {
@@ -1000,9 +948,9 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided = true
-                "#0000ff", // backFaceColour
-                0.5 // backFaceOpacity
+                true,
+                "#0000ff",
+                0.5
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -1010,7 +958,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
 
-            // Validate back face has custom opacity
             const backSurfaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backSurfaceEntity);
             if (backMaterial) {
@@ -1043,7 +990,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -1052,7 +999,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.children.length).toBe(2);
 
-            // Validate each surface has its corresponding color
             const expectedColors = ["#ff0000", "#00ff00"];
             result.children.forEach((surfaceEntity, index) => {
                 const material = getMaterialFromEntity(surfaceEntity);
@@ -1061,7 +1007,6 @@ describe("DrawHelper unit tests", () => {
                     expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
                 }
 
-                // Validate opacity
                 if (material) {
                     expect(material.opacity).toBe(1);
                 }
@@ -1079,12 +1024,12 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Verb.DrawSurfacesColoursDto<pc.Entity>(
                 [mockSurface, mockSurface, mockSurface],
-                ["#ff0000"], // Only one colour for 3 surfaces
+                ["#ff0000"],
                 1,
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -1104,12 +1049,12 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Verb.DrawSurfacesColoursDto<pc.Entity>(
                 [mockSurface, mockSurface],
-                ["#ff0000"], // Array colour
+                ["#ff0000"],
                 1,
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -1137,7 +1082,7 @@ describe("DrawHelper unit tests", () => {
                 true,
                 false,
                 existingMesh,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -1157,7 +1102,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1167,7 +1112,6 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(1);
             expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
 
-            // Validate mesh material color
             const meshEntity = result.children[0]!;
             const material = getMaterialFromEntity(meshEntity);
             if (material && material.diffuse) {
@@ -1175,7 +1119,6 @@ describe("DrawHelper unit tests", () => {
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate opacity (default is 1)
             if (material) {
                 expect(material.opacity).toBe(1);
             }
@@ -1190,7 +1133,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1213,9 +1156,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#ff0000",
                 false,
-                true, // hidden
+                true,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1237,7 +1180,7 @@ describe("DrawHelper unit tests", () => {
                 true,
                 false,
                 existingMesh,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1255,7 +1198,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1263,7 +1206,6 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
 
-            // Validate that first color from array is used
             const meshEntity = result.children[0]!;
             const material = getMaterialFromEntity(meshEntity);
             if (material && material.diffuse) {
@@ -1281,21 +1223,19 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
             expect(result.children.length).toBe(1);
 
-            // Validate opacity is correctly applied
             const meshEntity = result.children[0]!;
             const material = getMaterialFromEntity(meshEntity);
             if (material) {
                 expect(material.opacity).toBe(0.4);
             }
 
-            // Validate color is correct
             if (material && material.diffuse) {
                 const expectedColor = hexToRgb("#00ff00");
                 expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
@@ -1315,11 +1255,9 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
             expect(result).toBeDefined();
-            // With two-sided rendering, there should be 2 children: front and back face
             expect(result.children.length).toBe(2);
             expect(result).toBeInstanceOf(pc.Entity);
 
-            // Validate front face material color
             const frontFaceEntity = result.children[0]!;
             const frontMaterial = getMaterialFromEntity(frontFaceEntity);
             if (frontMaterial && frontMaterial.diffuse) {
@@ -1327,7 +1265,6 @@ describe("DrawHelper unit tests", () => {
                 expect(colorsAreEqual(frontMaterial.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate back face material color (default blue)
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial && backMaterial.diffuse) {
@@ -1345,13 +1282,12 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided = false
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
             expect(result).toBeDefined();
-            // With two-sided rendering disabled, there should be only 1 child
             expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -1365,8 +1301,8 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided = true
-                "#00ff00" // custom backFaceColour
+                true,
+                "#00ff00"
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1374,7 +1310,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
 
-            // Validate back face has custom green color
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial && backMaterial.diffuse) {
@@ -1392,9 +1327,9 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided = true
-                "#0000ff", // backFaceColour
-                0.5 // backFaceOpacity
+                true,
+                "#0000ff",
+                0.5
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1402,7 +1337,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
 
-            // Validate back face has custom opacity
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial) {
@@ -1426,7 +1360,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1435,7 +1369,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
 
-            // Validate each mesh has correct material properties
             result.children.forEach((meshEntity) => {
                 const material = getMaterialFromEntity(meshEntity);
                 if (material && material.diffuse) {
@@ -1443,7 +1376,6 @@ describe("DrawHelper unit tests", () => {
                     expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
                 }
 
-                // Validate opacity
                 if (material) {
                     expect(material.opacity).toBe(1);
                 }
@@ -1464,7 +1396,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1483,11 +1415,11 @@ describe("DrawHelper unit tests", () => {
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<pc.Entity>(
                 mockMeshes,
                 1,
-                ["#ff0000", "#00ff00"], // Matching colours
+                ["#ff0000", "#00ff00"],
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1495,7 +1427,6 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
 
-            // Validate each mesh has its corresponding color
             const expectedColors = ["#ff0000", "#00ff00"];
             result.children.forEach((meshEntity, index) => {
                 const material = getMaterialFromEntity(meshEntity);
@@ -1522,7 +1453,7 @@ describe("DrawHelper unit tests", () => {
                 true,
                 false,
                 existingMesh,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1549,7 +1480,7 @@ describe("DrawHelper unit tests", () => {
             inputs.drawVertices = false;
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
@@ -1576,7 +1507,7 @@ describe("DrawHelper unit tests", () => {
             inputs.edgeColour = "#00ff00";
             inputs.edgeWidth = 2;
             inputs.edgeOpacity = 1;
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
@@ -1599,7 +1530,7 @@ describe("DrawHelper unit tests", () => {
             inputs.drawVertices = true;
             inputs.vertexColour = "#0000ff";
             inputs.vertexSize = 0.1;
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
@@ -1623,16 +1554,13 @@ describe("DrawHelper unit tests", () => {
             inputs.drawVertices = false;
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
-            // drawTwoSided defaults to true
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            // With two-sided rendering, there should be 2 children: front and back face
             expect(result.children.length).toBe(2);
             expect(result).toBeInstanceOf(pc.Entity);
 
-            // Validate front face material color
             const frontFaceEntity = result.children[0]!;
             const frontMaterial = getMaterialFromEntity(frontFaceEntity);
             if (frontMaterial && frontMaterial.diffuse) {
@@ -1640,7 +1568,6 @@ describe("DrawHelper unit tests", () => {
                 expect(colorsAreEqual(frontMaterial.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate back face material color (default blue)
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial && backMaterial.diffuse) {
@@ -1670,7 +1597,6 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            // With two-sided rendering disabled, there should be only 1 child
             expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -1699,7 +1625,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
 
-            // Validate back face has custom green color
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial && backMaterial.diffuse) {
@@ -1733,7 +1658,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
 
-            // Validate back face has custom opacity
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial) {
@@ -1758,7 +1682,7 @@ describe("DrawHelper unit tests", () => {
             inputs.drawEdges = false;
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = await drawHelper.drawShapes(inputs as Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>);
 
@@ -1771,7 +1695,6 @@ describe("DrawHelper unit tests", () => {
 
     describe("drawManifoldOrCrossSection", () => {
         it("should draw manifold or cross section", async () => {
-            // handleDecomposedManifold expects vertProperties and triVerts
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
                 triVerts: new Uint32Array([0, 1, 2])
@@ -1781,7 +1704,7 @@ describe("DrawHelper unit tests", () => {
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
@@ -1799,7 +1722,7 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
@@ -1807,7 +1730,6 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle cross section polygons", async () => {
-            // When decomposed mesh is 2D polygons instead of 3D mesh
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 [[0, 0], [1, 0], [1, 1], [0, 1]] as Inputs.Base.Vector2[]
             ]);
@@ -1817,7 +1739,7 @@ describe("DrawHelper unit tests", () => {
             inputs.crossSectionColour = "#00ff00";
             inputs.crossSectionOpacity = 1;
             inputs.crossSectionWidth = 2;
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
             expect(result.children.length).toBe(1);
@@ -1835,16 +1757,13 @@ describe("DrawHelper unit tests", () => {
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
-            // drawTwoSided defaults to true
 
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
-            // With two-sided rendering, there should be 2 children: front and back face
             expect(result.children.length).toBe(2);
             expect(result).toBeInstanceOf(pc.Entity);
 
-            // Validate front face material color
             const frontFaceEntity = result.children[0]!;
             const frontMaterial = getMaterialFromEntity(frontFaceEntity);
             if (frontMaterial && frontMaterial.diffuse) {
@@ -1852,7 +1771,6 @@ describe("DrawHelper unit tests", () => {
                 expect(colorsAreEqual(frontMaterial.diffuse, expectedColor)).toBe(true);
             }
 
-            // Validate back face material color (default blue)
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial && backMaterial.diffuse) {
@@ -1876,7 +1794,6 @@ describe("DrawHelper unit tests", () => {
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
-            // With two-sided rendering disabled, there should be only 1 child
             expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(pc.Entity);
         });
@@ -1899,7 +1816,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
 
-            // Validate back face has custom green color
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial && backMaterial.diffuse) {
@@ -1927,7 +1843,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.children.length).toBe(2);
 
-            // Validate back face has custom opacity
             const backFaceEntity = result.children[1]!;
             const backMaterial = getMaterialFromEntity(backFaceEntity);
             if (backMaterial) {
@@ -1949,7 +1864,7 @@ describe("DrawHelper unit tests", () => {
                 { hash: 456, type: "manifold" }
             ];
             inputs.faceColour = "#ff0000";
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
             expect(result.children.length).toBe(2);
@@ -1960,7 +1875,7 @@ describe("DrawHelper unit tests", () => {
         it("should filter out undefined meshes", async () => {
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) },
-                { vertProperties: new Float32Array([]), triVerts: new Uint32Array([]) } // This will be filtered out
+                { vertProperties: new Float32Array([]), triVerts: new Uint32Array([]) }
             ]);
 
             const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
@@ -1969,7 +1884,7 @@ describe("DrawHelper unit tests", () => {
                 { hash: 456, type: "manifold" }
             ];
             inputs.faceColour = "#ff0000";
-            inputs.drawTwoSided = false; // disable two-sided rendering for this test
+            inputs.drawTwoSided = false;
 
             const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
             expect(result.children.length).toBe(1);
@@ -1980,20 +1895,15 @@ describe("DrawHelper unit tests", () => {
 
     describe("updatePointsInstances", () => {
         it("should update positions of instanced meshes", () => {
-            // With GPU instancing, points are grouped by color into instanced entities
-            // The update method updates the instance buffer matrices
             const group = new pc.Entity();
 
-            // Create an instanced entity that simulates the GPU instancing structure
             const instancedEntity = new pc.Entity("points-#ff0000");
             group.addChild(instancedEntity);
 
             const newPositions: Inputs.Base.Point3[] = [[5, 5, 5], [10, 10, 10]];
 
-            // The update method updates the instance buffer data (not individual entity positions)
             drawHelper.updatePointsInstances(group, newPositions);
 
-            // Validate that the group still has the instanced entity
             expect(group.children.length).toBe(1);
             expect(instancedEntity.parent).toBe(group);
         });
@@ -2062,7 +1972,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 material,
                 true,
-                true // hidden
+                true
             );
 
             expect(result.children.length).toBe(1);
@@ -2115,7 +2025,6 @@ describe("DrawHelper unit tests", () => {
         it("should handle existing mesh with children", () => {
             const existingMesh = new pc.Entity();
             existingMesh.name = "existingPolyline";
-            // Add a child entity to simulate existing polyline
             const childEntity = new pc.Entity("polyline-child");
             existingMesh.addChild(childEntity);
 
@@ -2187,7 +2096,6 @@ describe("DrawHelper unit tests", () => {
         it("should call JSCAD worker with correct parameters", async () => {
             const mockMesh = jscadSolid();
 
-            // Reset mock to track new calls
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockClear();
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 positions: [],
@@ -2206,7 +2114,6 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            // The implementation calls shapeToMesh not geomToMesh
             expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalled();
             const [[, secondArgument]] = (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mock.calls as [[unknown, unknown]];
             expect(secondArgument).toMatchObject({
@@ -2307,25 +2214,23 @@ describe("DrawHelper unit tests", () => {
 
             const cacheSize = drawHelper["materialCache"].size;
 
-            // Since materials may or may not be cached depending on implementation
-            // Just verify method completes successfully
             expect(cacheSize).toBe(2);
         });
 
         it("should create new material for different opacity", () => {
             const inputs1 = new Inputs.Point.DrawPointDto<pc.Entity>(
-                [1, 2, 3],     // point
-                1.0,           // opacity
-                1,             // size
-                "#ff0000",     // colours
-                false          // updatable
+                [1, 2, 3],
+                1.0,
+                1,
+                "#ff0000",
+                false
             );
             const inputs2 = new Inputs.Point.DrawPointDto<pc.Entity>(
-                [4, 5, 6],     // point
-                0.5,           // opacity
-                1,             // size
-                "#ff0000",     // colours
-                false          // updatable
+                [4, 5, 6],
+                0.5,
+                1,
+                "#ff0000",
+                false
             );
 
             drawHelper.drawPoint(inputs1);
@@ -2333,13 +2238,10 @@ describe("DrawHelper unit tests", () => {
 
             const cacheSize = drawHelper["materialCache"].size;
 
-            // Two different materials should be cached (different opacities)
             expect(cacheSize).toBe(2);
         });
 
         it("should not exceed cache limit", () => {
-            // The actual cache limit is CACHE_CONFIG.MAX_MATERIALS (1000) from constants
-            // This test verifies materials are cached correctly for unique colors
             const TEST_MATERIALS_COUNT = 110;
 
             for (let i = 0; i < TEST_MATERIALS_COUNT; i++) {
@@ -2355,7 +2257,6 @@ describe("DrawHelper unit tests", () => {
             }
 
             const cacheSize = drawHelper["materialCache"].size;
-            // Each unique color should be cached (limit is 1000, so 110 unique materials are fine)
             expect(cacheSize).toBe(TEST_MATERIALS_COUNT);
         });
     });
@@ -2392,7 +2293,6 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle cleanup on dispose", () => {
-            // Create entities to populate cache
             for (let i = 0; i < 50; i++) {
                 const inputs = new Inputs.Point.DrawPointDto<pc.Entity>(
                     [i, i, i],
@@ -2404,7 +2304,6 @@ describe("DrawHelper unit tests", () => {
                 drawHelper.drawPoint(inputs);
             }
 
-            // Verify dispose clears cache (cache may or may not be used)
             drawHelper.dispose();
 
             const cacheSizeAfterDispose = drawHelper["materialCache"].size;
@@ -2502,7 +2401,6 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoints(inputs);
 
             expect(result).toBeDefined();
-            // With GPU instancing: same color for all points = 1 child entity
             expect(result.children.length).toBe(1);
         });
 
@@ -2583,9 +2481,6 @@ describe("DrawHelper unit tests", () => {
     });
 
     describe("Visual property validation", () => {
-        // Note: These tests verify the structure but cannot fully validate
-        // actual PlayCanvas rendering in a mocked environment
-
         it("should create point entity with expected structure", () => {
             const inputs = new Inputs.Point.DrawPointDto<pc.Entity>(
                 [1, 2, 3],
@@ -2594,7 +2489,6 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
             expect(result).toBeDefined();
 
-            // Verify entity structure
             expect(result.children).toBeDefined();
             expect(result.children.length).toBe(1);
 
@@ -2611,7 +2505,6 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoints(inputs);
             expect(result).toBeDefined();
 
-            // Verify multiple children created
             expect(result.children).toBeDefined();
             expect(result.children.length).toBe(1);
         });
@@ -2634,15 +2527,11 @@ describe("DrawHelper unit tests", () => {
             );
             const result = drawHelper.drawPoints(inputs);
 
-            // Verify correct number of children
             expect(result.children.length).toBe(2);
         });
     });
 
     describe("Mesh geometry validation", () => {
-        // Note: Full mesh validation requires actual WebGL context
-        // These tests verify the geometry is created
-
         it("should create entity for point with expected position", () => {
             const inputs = new Inputs.Point.DrawPointDto<pc.Entity>(
                 [5, 10, 15],
@@ -2668,7 +2557,6 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(1);
             const mesh = result.children[0]!;
             expect(mesh).toBeDefined();
-            // Verify it's a valid entity (name format may vary)
             expect(mesh.name).toBeDefined();
             expect(mesh.name.length).toBeGreaterThan(0);
         });
@@ -2724,8 +2612,6 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoint(inputs);
             const instancedEntity = result.children[0];
 
-            // With GPU instancing, size is used in sphere geometry creation, not entity scale
-            // Just validate the entity exists
             expect(instancedEntity).toBeDefined();
             expect(result.children.length).toBe(1);
         });
@@ -2744,8 +2630,6 @@ describe("DrawHelper unit tests", () => {
                 const result = drawHelper.drawPoint(inputs);
                 const instancedEntity = result.children[0];
 
-                // With GPU instancing, size is used in sphere geometry radius, not entity scale
-                // Just validate the entity exists
                 expect(instancedEntity).toBeDefined();
                 expect(result.children.length).toBe(1);
             });
@@ -2774,14 +2658,14 @@ describe("DrawHelper unit tests", () => {
 
         it("should validate material color accuracy for various hex values", () => {
             const colors = [
-                "#ff0000", // Red
-                "#00ff00", // Green
-                "#0000ff", // Blue
-                "#ffff00", // Yellow
-                "#ff00ff", // Magenta
-                "#00ffff", // Cyan
-                "#ffffff", // White
-                "#000000"  // Black
+                "#ff0000",
+                "#00ff00",
+                "#0000ff",
+                "#ffff00",
+                "#ff00ff",
+                "#00ffff",
+                "#ffffff",
+                "#000000"
             ];
 
             colors.forEach(hexColor => {
@@ -2821,8 +2705,6 @@ describe("DrawHelper unit tests", () => {
                 const result = drawHelper.drawPolylineClose(inputs);
                 expect(result).toBeDefined();
                 expect(result.children.length).toBe(1);
-                // In a real scenario, we'd validate the line width here
-                // For now, just verify the structure is correct
             });
         });
 
@@ -2838,13 +2720,11 @@ describe("DrawHelper unit tests", () => {
             const result1 = drawHelper.drawPoint(inputs);
             const material1 = getMaterialFromEntity(result1.children[0]!);
 
-            // Update position but keep other properties
             inputs.point = [4, 5, 6];
             inputs.pointMesh = result1;
             const result2 = drawHelper.drawPoint(inputs);
             const material2 = getMaterialFromEntity(result2.children[0]!);
 
-            // Materials should have same properties after update
             if (material1 && material2) {
                 expect(material1.opacity).toBe(material2.opacity);
                 if (material1.diffuse && material2.diffuse) {
@@ -2871,12 +2751,10 @@ describe("DrawHelper unit tests", () => {
             const material = getMaterialFromEntity(pointEntity);
 
             if (material) {
-                // Validate semi-transparency
                 expect(material.opacity).toBe(0.3);
                 expect(material.opacity).toBeLessThan(1);
                 expect(material.opacity).toBeGreaterThan(0);
 
-                // Validate color is still correct
                 if (material.diffuse) {
                     const expectedColor = hexToRgb("#0066ff");
                     expect(colorsAreEqual(material.diffuse, expectedColor)).toBe(true);
@@ -2895,8 +2773,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(inputs);
 
-            // One child entity, not one per point: the 100 points share a colour, so they are GPU
-            // instances of a single entity. A wall clock cannot tell those two apart; this can.
             expect(result.children).toHaveLength(1);
         });
 
@@ -2913,8 +2789,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(inputs);
 
-            // Still one child entity at a thousand points - the instancing does not fall back to an
-            // entity per point as the count grows.
             expect(result.children).toHaveLength(1);
         });
 
@@ -2934,8 +2808,6 @@ describe("DrawHelper unit tests", () => {
                 result = drawHelper.drawPoint(options);
             }
 
-            // What "without degradation" means here is that an update moves the entity it was given
-            // rather than building another one. Timing it measured the machine, not the code.
             expect(result).toBe(first);
             expect(first.children).toHaveLength(1);
         });
@@ -2956,15 +2828,10 @@ describe("DrawHelper unit tests", () => {
                 });
             }
 
-            // Fifty draws of one colour share one material. That is what the cache is for, and it
-            // is a fact about the code rather than about how fast this machine happened to run.
             expect(materials.size).toBe(1);
         });
     });
 
-    // The paths the suites above leave untouched: the material cache and its disposal, the per-face
-    // drawing a script asks for when it wants to pick a face out afterwards, and what each drawing
-    // says when the worker refuses.
     const A_DECOMPOSED_BOX: Inputs.OCCT.DecomposedMeshDto = {
         faceList: [
             { vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], uvs: [0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2], vertexCoordVec: [[0, 0, 0], [1, 0, 0], [0, 1, 0]], numberOfTriangles: 1, centerPoint: [0.33, 0.33, 0], centerNormal: [0, 0, 1], faceIndex: 0 },

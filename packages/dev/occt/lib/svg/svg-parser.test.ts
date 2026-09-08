@@ -63,7 +63,7 @@ describe("svg path-data parser", () => {
     it("reflects the control point for smooth cubic S", () => {
         const sp = parsePathData("M0 0 C1 1 2 2 3 3 S5 5 6 6");
         const smooth = sp[0]!.segments[1] as SvgCubicSegment;
-        expect(smooth.c1).toEqual([4, 4]); // reflection of (2,2) about (3,3)
+        expect(smooth.c1).toEqual([4, 4]);
         expect(smooth.c2).toEqual([5, 5]);
         expect(smooth.to).toEqual([6, 6]);
     });
@@ -71,13 +71,12 @@ describe("svg path-data parser", () => {
     it("treats S with no preceding cubic as using current point for first control", () => {
         const sp = parsePathData("M2 2 S5 5 6 6");
         const seg = sp[0]!.segments[0] as SvgCubicSegment;
-        expect(seg.c1).toEqual([2, 2]); // no reflection -> current point
+        expect(seg.c1).toEqual([2, 2]);
     });
 
     it("reflects the control point for smooth quadratic T", () => {
         const sp = parsePathData("M0 0 Q1 2 2 0 T6 0");
         const t = sp[0]!.segments[1] as SvgQuadSegment;
-        // reflection of (1,2) about endpoint (2,0) -> (3,-2)
         expect(t.c).toEqual([3, -2]);
         expect(t.to).toEqual([6, 0]);
     });
@@ -87,7 +86,7 @@ describe("svg path-data parser", () => {
         const arc = sp[0]!.segments[0] as SvgArcSegment;
         expect(arc.type).toBe("arc");
         expect(arc.to).toEqual([6, 6]);
-        expect(arc.deltaAngle).toBeGreaterThan(0); // sweep=1
+        expect(arc.deltaAngle).toBeGreaterThan(0);
     });
 
     it("converts a semicircle arc to center form", () => {
@@ -112,7 +111,6 @@ describe("svg path-data parser", () => {
     });
 
     it("scales up out-of-range arc radii", () => {
-        // endpoints 40 apart but radius only 10 -> radii must scale to >= 20
         const arc = parsePathData("M0 0 A10 10 0 0 1 40 0")[0]!.segments[0] as SvgArcSegment;
         expect(arc.rx).toBeGreaterThanOrEqual(20 - 1e-9);
     });

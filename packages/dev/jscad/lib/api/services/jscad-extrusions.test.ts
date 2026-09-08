@@ -14,7 +14,6 @@ const TWIST_STEPS = 16;
 const QUARTER_TURN = Math.PI / 2;
 const WALL_SIZE = 0.25;
 const SQUARE_PERIMETER = 16;
-// The wall straddles the outline, so `size` is a half-thickness: it reaches that far to each side.
 const WALL_VOLUME = SQUARE_PERIMETER * 2 * WALL_SIZE * HEIGHT;
 
 describe("JSCADExtrusions", () => {
@@ -94,7 +93,6 @@ describe("JSCADExtrusions", () => {
 
     describe("extrudeRotate", () => {
         it("should sweep the outline into a solid of revolution", () => {
-            // Arrange - a square set away from the axis, so the sweep is a ring rather than a disc
             const outline = jscad.polygon.rectangle(new Inputs.JSCAD.RectangleDto([4, 0], 1, 1));
 
             // Act

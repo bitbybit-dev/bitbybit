@@ -3,9 +3,7 @@ import Module from "manifold-3d";
 import { ManifoldService } from "./manifold-service";
 import * as Inputs from "./inputs";
 
-// A unit cube: eight corners, six faces of one square unit each.
 const CUBE_SIZE = 1;
-// The DTO's own default, which a script relies on when it passes nothing.
 const DEFAULT_CUBE_SIZE = 1;
 const CUBE_VOLUME = 1;
 const CUBE_SURFACE_AREA = 6;
@@ -32,7 +30,6 @@ describe("Manifold unit tests", () => {
     });
 
     it("should fall back to the documented defaults when the DTO is built empty", () => {
-        // Arrange - the no-argument form is what a script gets when it omits every field
         const inputs = new Inputs.Manifold.CubeDto();
 
         // Act
@@ -44,8 +41,6 @@ describe("Manifold unit tests", () => {
         expect(cube.volume()).toBeCloseTo(DEFAULT_CUBE_SIZE ** 3, 6);
     });
 
-    // The three members on the service itself, which take either kind of shape and turn it into
-    // something a renderer can draw.
     describe("decomposeManifoldOrCrossSection", () => {
         it("should turn a solid into its mesh", () => {
             // Arrange
@@ -121,7 +116,6 @@ describe("Manifold unit tests", () => {
         });
 
         it("should refuse a shape that has no mesh to convert", () => {
-            // Arrange - a cross section is not a solid, and carries no mesh
             const square = manifold.crossSection.shapes.square(new Inputs.Manifold.SquareDto(true, CUBE_SIZE));
 
             // Act & Assert
@@ -130,7 +124,6 @@ describe("Manifold unit tests", () => {
         });
 
         it("should give no polygons for a solid that is empty", () => {
-            // Arrange - subtracting a shape from itself leaves nothing behind
             const cube = manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, CUBE_SIZE));
             const empty = manifold.manifold.booleans.subtract(new Inputs.Manifold.TwoManifoldsDto(cube, cube));
             const warned: unknown[] = [];

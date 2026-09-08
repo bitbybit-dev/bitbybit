@@ -4,11 +4,6 @@ import { Context } from "../../context";
 import { BabylonScene } from "./scene";
 import * as Inputs from "../../inputs";
 
-// The scene service is where a script reaches the engine's own scene: lights and their shadows, the
-// camera, the fog, the skybox and the page behind the canvas. Everything here runs against a real
-// BabylonJS scene on the headless engine the library ships for exactly this - nothing is stood in
-// for, so what is asserted is what the engine ends up holding.
-
 const A_COLOUR = "#ff0000";
 const A_POSITION: Inputs.Base.Point3 = [1, 2, 3];
 const A_DIRECTION: Inputs.Base.Vector3 = [0, -1, 0];
@@ -40,7 +35,6 @@ describe("BabylonScene", () => {
         scene = new BABYLON.Scene(engine);
         scene.metadata = { shadowGenerators: [] };
         new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
-        // The scene the API attaches always carries this node, and clearAllDrawn keeps it.
         new BABYLON.TransformNode("root", scene);
         context = new Context();
         context.scene = scene;
@@ -522,7 +516,6 @@ describe("BabylonScene", () => {
 
     describe("clearAllDrawn", () => {
         it("should leave the transform nodes empty rather than holding nothing", () => {
-            // Arrange - a scene the host attached itself may carry no node called root
             scene.getTransformNodeByName("root")!.dispose();
 
             // Act
@@ -563,6 +556,265 @@ describe("BabylonScene", () => {
 
             // Assert
             expect(scene.useRightHandedSystem).toBe(false);
+        });
+    });
+    describe("the meshes a shadow-casting light picks up", () => {
+        const meshNamed = (name: string): BABYLON.Mesh => BABYLON.MeshBuilder.CreateBox(name, { size: 1 }, scene);
+
+        it("should sign up every ordinary mesh already in the scene", () => {
+            // Arrange
+            const mesh = meshNamed("part");
+
+            // Act
+            sceneService.drawPointLight(pointLight((inputs) => { inputs.enableShadows = true; }));
+            const [generator] = sceneService.getShadowGenerators();
+
+            // Assert
+            expect(generator!.getShadowMap()!.renderList).toContain(mesh);
+            expect(mesh.receiveShadows).toBe(true);
+        });
+
+        it.each([
+            ["bitbybit-hdrSkyBox"],
+            ["poi_marker"],
+            ["dimension_text_3d_1"],
+            ["bitbybit-ground"],
+        ])("should leave the library's own %s out of the shadows", (name) => {
+            // Arrange
+            const mesh = meshNamed(name);
+
+            // Act
+            sceneService.drawPointLight(pointLight((inputs) => { inputs.enableShadows = true; }));
+            const [generator] = sceneService.getShadowGenerators();
+
+            // Assert
+            expect(generator!.getShadowMap()!.renderList).not.toContain(mesh);
+        });
+
+        it("should leave a mesh marked as casting no shadows out of the shadows", () => {
+            // Arrange
+            const mesh = meshNamed("part");
+            mesh.metadata = { shadows: false };
+
+            // Act
+            sceneService.drawPointLight(pointLight((inputs) => { inputs.enableShadows = true; }));
+            const [generator] = sceneService.getShadowGenerators();
+
+            // Assert
+            expect(generator!.getShadowMap()!.renderList).not.toContain(mesh);
+        });
+
+        it("should do the same for a directional light", () => {
+            // Arrange
+            const mesh = meshNamed("part");
+            meshNamed("bitbybit-ground");
+
+            // Act
+            sceneService.drawDirectionalLight(directionalLight((inputs) => { inputs.enableShadows = true; }));
+            const [generator] = sceneService.getShadowGenerators();
+
+            // Assert
+            expect(generator!.getShadowMap()!.renderList).toContain(mesh);
+            expect(generator!.getShadowMap()!.renderList).not.toContain(scene.getMeshByName("bitbybit-ground"));
+        });
+
+        it("should let shadows fall through transparent surfaces of a directional light when asked", () => {
+            // Act
+            sceneService.drawDirectionalLight(directionalLight((inputs) => {
+                inputs.enableShadows = true;
+                inputs.transparencyShadow = true;
+            }));
+            const [generator] = sceneService.getShadowGenerators();
+
+            // Assert
+            expect(generator!.transparencyShadow).toBe(true);
+        });
+    });
+
+    describe("what a shadow-casting light takes with it when it goes", () => {
+        it("should take its shadow generator off the scene when the light is disposed of", () => {
+            // Arrange
+            const light = sceneService.drawPointLight(pointLight((inputs) => { inputs.enableShadows = true; }));
+
+            // Act
+            light.dispose();
+
+            // Assert
+            expect(sceneService.getShadowGenerators()).toEqual([]);
+        });
+
+        it("should leave the other lights' generators alone", () => {
+            // Arrange
+            const first = sceneService.drawPointLight(pointLight((inputs) => { inputs.enableShadows = true; }));
+            sceneService.drawDirectionalLight(directionalLight((inputs) => { inputs.enableShadows = true; }));
+
+            // Act
+            first.dispose();
+
+            // Assert
+            expect(sceneService.getShadowGenerators()).toHaveLength(1);
+        });
+    });
+
+    describe("enableSkybox", () => {
+        it.each([
+            [Inputs.Base.skyboxEnum.default],
+            [Inputs.Base.skyboxEnum.greyGradient],
+            [Inputs.Base.skyboxEnum.clearSky],
+            [Inputs.Base.skyboxEnum.city],
+        ])("should put a skybox of the %s kind into the scene", (kind) => {
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(kind, 100, 0.1, 1));
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")).toBeTruthy();
+        });
+
+        it("should take the environment intensity it was given", () => {
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 0.4));
+
+            // Assert
+            expect(scene.environmentIntensity).toBe(0.4);
+        });
+
+        it("should keep the skybox out of sight when it was asked to", () => {
+            // Act
+            sceneService.enableSkybox(
+                new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, true));
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")!.isVisible).toBe(false);
+        });
+
+        it("should replace the skybox already there rather than add a second", () => {
+            // Arrange
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1));
+
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.city, 100, 0.1, 1));
+
+            // Assert
+            expect(scene.meshes.filter(m => m.name === "bitbybit-hdrSkyBox")).toHaveLength(1);
+        });
+    });
+
+    describe("enableSkyboxCustomTexture", () => {
+        it.each([
+            ["https://example.test/sky.env"],
+            ["https://example.test/sky"],
+            ["https://example.test/sky.env?v=2"],
+        ])("should read the kind of texture out of the url %s", (url) => {
+            // Act
+            sceneService.enableSkyboxCustomTexture(
+                new Inputs.BabylonScene.SkyboxCustomTextureDto(url, 256, 100, 0.1, 1));
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")).toBeTruthy();
+        });
+
+        it("should do nothing at all when it was given no url", () => {
+            // Act
+            sceneService.enableSkyboxCustomTexture(new Inputs.BabylonScene.SkyboxCustomTextureDto());
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")).toBeNull();
+        });
+    });
+
+    describe("what else clearAllDrawn takes away", () => {
+        it("should let go of the environment texture", () => {
+            // Arrange
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1));
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.environmentTexture).toBeNull();
+        });
+
+        it("should take the materials and the textures with it", () => {
+            // Arrange
+            const mesh = BABYLON.MeshBuilder.CreateBox("box", { size: 1 }, scene);
+            mesh.material = new BABYLON.StandardMaterial("mat", scene);
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.materials).toEqual([]);
+            expect(scene.textures).toEqual([]);
+        });
+
+        it("should take the geometries with it", () => {
+            // Arrange
+            BABYLON.MeshBuilder.CreateBox("box", { size: 1 }, scene);
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.geometries).toEqual([]);
+        });
+
+        it("should take every light except the hemispheric one it is told to keep", () => {
+            // Arrange
+            new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            sceneService.drawPointLight(pointLight());
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.lights.map(l => l.name)).toEqual(["HemiLight"]);
+        });
+
+        it("should take every transform node except the one everything hangs off", () => {
+            // Arrange
+            const root = scene.getTransformNodeByName("root")!;
+            new BABYLON.TransformNode("other", scene);
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.transformNodes).toEqual([root]);
+        });
+
+        it("should take the shadow generators with it", () => {
+            // Arrange
+            sceneService.drawPointLight(pointLight((inputs) => { inputs.enableShadows = true; }));
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(sceneService.getShadowGenerators()).toEqual([]);
+        });
+
+        it("should put the default camera back where a script had swapped it", () => {
+            // Arrange
+            const other = new BABYLON.FreeCamera("mine", new BABYLON.Vector3(0, 0, -10), scene);
+            scene.activeCamera = other;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.activeCamera.name).toBe("Camera");
+            expect(scene.activeCamera).toBeInstanceOf(BABYLON.ArcRotateCamera);
+        });
+
+        it("should leave the default camera where it is", () => {
+            // Arrange
+            const camera = scene.activeCamera!;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.activeCamera).toBe(camera);
         });
     });
 });

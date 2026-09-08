@@ -2,9 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { Inputs } from ".";
 import { VectorHelperService } from "./vector-helper.service";
 
-// The implementation that shipped before removeAllDuplicateVectors was made linear. Every
-// equivalence test below runs its input through both and demands the identical result, so this is
-// the specification of the behaviour the fast path has to reproduce exactly.
 const removeAllDuplicateVectorsQuadraticOracle = (
     service: VectorHelperService,
     vectors: number[][],
@@ -19,8 +16,6 @@ const removeAllDuplicateVectorsQuadraticOracle = (
     return cleanVectors;
 };
 
-// Reference identity (toBe on every element) rather than deep equality: it proves the same
-// elements, in the same order, and the same choice of which of a duplicate pair survived.
 const expectSameAsOracle = (
     service: VectorHelperService,
     vectors: number[][],

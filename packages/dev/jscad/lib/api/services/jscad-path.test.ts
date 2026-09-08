@@ -4,7 +4,6 @@ import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
 const OPEN_CORNER: Inputs.Base.Point2[] = [[0, 0], [4, 0], [4, 3]];
-// The same corner as a polyline, which carries its points in three dimensions.
 const OPEN_CORNER_3D: Inputs.Base.Point3[] = [[0, 0, 0], [4, 0, 0], [4, 3, 0]];
 const EXTRA_POINTS_3D: Inputs.Base.Point3[] = [[0, 3, 0]];
 const EXTRA_POINTS: Inputs.Base.Point2[] = [[0, 3]];

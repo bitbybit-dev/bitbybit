@@ -57,8 +57,6 @@ describe("CadEndpoint", () => {
         });
     });
 
-    // The two "and poll" members are the same three steps in a row: submit, poll the task until it is
-    // done, then ask for every download the task produced.
     describe("executeAndPoll", () => {
         it("submits, polls until the task completes, and returns its downloads", async () => {
             // Arrange

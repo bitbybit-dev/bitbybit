@@ -254,10 +254,9 @@ describe("Transforms unit tests", () => {
                 ]);
             });
 
-            // Add tests for pure Pitch (X rot) and pure Roll (Z rot) if desired
             it("should create translate-rotateYPR-translate matrices for pure Pitch (X rot)", () => {
                 const yaw = 0, pitch = 90, roll = 0;
-                const angleRadX = math.degToRad({ number: pitch }); // Pitch corresponds to X
+                const angleRadX = math.degToRad({ number: pitch });
 
                 const result = transforms.rotationCenterYawPitchRoll({ center: centerPoint, yaw, pitch, roll });
                 expect(result).toHaveLength(3);
@@ -274,7 +273,7 @@ describe("Transforms unit tests", () => {
 
             it("should create translate-rotateYPR-translate matrices for pure Roll (Z rot)", () => {
                 const yaw = 0, pitch = 0, roll = 90;
-                const angleRadZ = math.degToRad({ number: roll }); // Roll corresponds to Z
+                const angleRadZ = math.degToRad({ number: roll });
 
                 const result = transforms.rotationCenterYawPitchRoll({ center: centerPoint, yaw, pitch, roll });
                 expect(result).toHaveLength(3);
@@ -306,7 +305,6 @@ describe("Transforms unit tests", () => {
 
     describe("a stretch along a direction that is not one", () => {
         it("should leave the points where they are", () => {
-            // Arrange - a zero vector points nowhere, so there is nothing to stretch along
             const warned: unknown[] = [];
             const consoleWarn = console.warn;
             console.warn = (message: unknown) => { warned.push(message); };
@@ -315,7 +313,6 @@ describe("Transforms unit tests", () => {
             const matrices = transforms.stretchDirFromCenter({ center: [0, 0, 0], direction: [0, 0, 0], scale: 2 });
             console.warn = consoleWarn;
 
-            // Assert - the stretch in the middle of the three is the identity
             expect(matrices[1]).toEqual([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
             expect(warned).toHaveLength(1);
         });

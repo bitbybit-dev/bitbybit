@@ -3,11 +3,6 @@ import { expectSolid, getJscad } from "../__test__/kernel";
 import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
-// Text in JSCAD is not a font in the usual sense: the kernel turns a string into a stroke path per
-// character, and this service walks those strokes with a solid at every point, hulling them into a
-// continuous run. The strokes are also shifted so the run is centred on the origin rather than
-// starting there, which is what makes the text usable as geometry.
-
 const TEXT = "AV";
 const SEGMENTS = 8;
 const HEIGHT = 10;

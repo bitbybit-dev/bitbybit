@@ -10,7 +10,6 @@ const CUBE_VOLUME = 8;
 const CUBE_FACES = 6;
 const COORDINATES_PER_POINT = 3;
 const POINTS_PER_TRIANGLE = 3;
-// Each of the six square faces becomes two triangles.
 const CUBE_TRIANGLES = 12;
 const SHIFT_X = 10;
 const IDENTITY_MATRIX: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -18,10 +17,6 @@ const TRANSLATE_X_MATRIX: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0,
 const IDENTITY: Inputs.Base.TransformMatrixes = [IDENTITY_MATRIX];
 const TRANSLATE_X: Inputs.Base.TransformMatrixes = [TRANSLATE_X_MATRIX];
 
-// Mesh data the kernel would never produce. toPolygonPoints reads what shapeToMesh gives it and
-// checks it before walking it, so the checks are reached by handing that method something else -
-// which is also what happens when a caller builds mesh data by hand and passes it in.
-// What a caller sees when the data never arrived at all, which the reader checks for before it reads.
 const NO_MESH_DATA: Inputs.JSCAD.JSCADMeshData = undefined!;
 
 const meshData = (positions: number[], indices: number[]): Inputs.JSCAD.JSCADMeshData => ({
@@ -129,7 +124,6 @@ describe("Jscad", () => {
 
     describe("transformSolid, in each shape it accepts", () => {
         it("should apply a single matrix given on its own", () => {
-            // Arrange - a bare matrix, rather than a list of them
             const inputs = new Inputs.JSCAD.TransformSolidDto(cube, TRANSLATE_X_MATRIX as unknown as Inputs.Base.TransformMatrixes);
 
             // Act
@@ -140,7 +134,6 @@ describe("Jscad", () => {
         });
 
         it("should apply every matrix in a list, in order", () => {
-            // Arrange - translating twice by the same matrix lands at twice the distance
             const inputs = new Inputs.JSCAD.TransformSolidDto(cube, [TRANSLATE_X_MATRIX, TRANSLATE_X_MATRIX]);
 
             // Act
@@ -179,8 +172,6 @@ describe("Jscad", () => {
         });
     });
 
-    // The failure paths of toPolygonPoints, the 2D route through shapeToMesh, and the four
-    // serialisers. Every one of these is reachable from a script and none was run above.
     describe("toPolygonPoints when the mesh cannot be read", () => {
         let reading: Jscad;
 
@@ -195,9 +186,6 @@ describe("Jscad", () => {
         };
 
         it("should refuse mesh data whose positions do not divide into points", () => {
-            // Arrange - three coordinates make one point, so a length that is not a multiple of three
-            // cannot be a list of points at all
-
             // Act & Assert
             expect(() => readingBack([0, 1], []).toPolygonPoints({ mesh: cube }))
                 .toThrow("'positions' array length (2) must be a multiple of 3");
@@ -222,7 +210,6 @@ describe("Jscad", () => {
         });
 
         it("should skip a triangle naming a point the mesh does not have", () => {
-            // Arrange - one valid triangle and one naming point 9 of a three point mesh
             const reported: unknown[] = [];
             const consoleError = console.error;
             console.error = (message: unknown) => { reported.push(message); };
@@ -302,7 +289,6 @@ describe("Jscad", () => {
 
     describe("a geometry in the shape the first version of JSCAD handed back", () => {
         it("should read its polygons through the method it carries", () => {
-            // Arrange - a v1 geometry is an object that knows how to produce its own polygons
             const triangle: Inputs.JSCAD.JSCADPoly3 = { vertices: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] };
             const legacy = Object.assign(jscad.path.createEmpty(), { toPolygons: () => [triangle] });
 

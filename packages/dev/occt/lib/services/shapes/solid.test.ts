@@ -231,12 +231,7 @@ describe("OCCT solid unit tests", () => {
         sphere.delete();
     });
 
-    // I-Beam profile solid tests
     it("should create an I-beam profile solid with default values", async () => {
-        // I-beam area: 2 flanges (width * flangeThickness) + web ((height - 2*flangeThickness) * webThickness)
-        // width=2, height=3, webThickness=0.2, flangeThickness=0.3, extrusionLengthFront=1
-        // Area = 2 * (2 * 0.3) + (3 - 2*0.3) * 0.2 = 1.2 + 2.4 * 0.2 = 1.2 + 0.48 = 1.68
-        // Volume = 1.68 * 1 = 1.68
         const opt = new Inputs.OCCT.IBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -247,8 +242,6 @@ describe("OCCT solid unit tests", () => {
     });
 
     it("should create an I-beam profile solid with bidirectional extrusion", async () => {
-        // Same area as above: 1.68
-        // Volume = 1.68 * (1 + 0.5) = 1.68 * 1.5 = 2.52
         const opt = new Inputs.OCCT.IBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0.5;
@@ -258,12 +251,7 @@ describe("OCCT solid unit tests", () => {
         ibeam.delete();
     });
 
-    // H-Beam profile solid tests
     it("should create an H-beam profile solid with default values", async () => {
-        // H-beam area: 2 flanges (height * flangeThickness) + web ((width - 2*flangeThickness) * webThickness)
-        // width=2, height=3, webThickness=0.2, flangeThickness=0.3, extrusionLengthFront=1
-        // Area = 2 * (3 * 0.3) + (2 - 2*0.3) * 0.2 = 1.8 + 1.4 * 0.2 = 1.8 + 0.28 = 2.08
-        // Volume = 2.08 * 1 = 2.08
         const opt = new Inputs.OCCT.HBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -274,7 +262,6 @@ describe("OCCT solid unit tests", () => {
     });
 
     it("should create an H-beam profile solid with backward extrusion only", async () => {
-        // Volume = 2.08 * 2 = 4.16
         const opt = new Inputs.OCCT.HBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 0;
         opt.extrusionLengthBack = 2;
@@ -284,12 +271,7 @@ describe("OCCT solid unit tests", () => {
         hbeam.delete();
     });
 
-    // T-Beam profile solid tests
     it("should create a T-beam profile solid with default values", async () => {
-        // T-beam area: 1 flange (width * flangeThickness) + web ((height - flangeThickness) * webThickness)
-        // width=2, height=2, webThickness=0.2, flangeThickness=0.3, extrusionLengthFront=1
-        // Area = (2 * 0.3) + (2 - 0.3) * 0.2 = 0.6 + 1.7 * 0.2 = 0.6 + 0.34 = 0.94
-        // Volume = 0.94 * 1 = 0.94
         const opt = new Inputs.OCCT.TBeamProfileSolidDto(2, 2, 0.2, 0.3);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -299,32 +281,22 @@ describe("OCCT solid unit tests", () => {
         tbeam.delete();
     });
 
-    // U-Beam profile solid tests
     it("should create a U-beam profile solid with default values", async () => {
-        // U-beam area: 2 vertical flanges + bottom web
-        // width=2, height=3, webThickness=0.2, flangeThickness=0.3, flangeWidth=0.5, extrusionLengthFront=1
         const opt = new Inputs.OCCT.UBeamProfileSolidDto(2, 3, 0.2, 0.3, 0.5);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
         const ubeam = solid.createUBeamProfileSolid(opt);
         const volume = solid.getSolidVolume({ shape: ubeam });
-        // Actual computed volume is 2.25
         expect(volume).toBeCloseTo(2.25);
         ubeam.delete();
     });
 
-    // Star solid tests
     it("should create a star solid with default values", async () => {
         const opt = new Inputs.OCCT.StarSolidDto(2, 1, 5);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
         const star = solid.createStarSolid(opt);
         const volume = solid.getSolidVolume({ shape: star });
-        // 5-pointed star area ≈ 5 * (0.5 * outerRadius * innerRadius * sin(2π/5)) = 5 * 0.5 * 2 * 1 * sin(72°)
-        // For a 5-pointed star with outer=2, inner=1:
-        // Area can be calculated as n * r1 * r2 * sin(π/n) where n=5
-        // = 5 * 2 * 1 * sin(36°) ≈ 5 * 2 * 0.588 ≈ 5.878
-        // Volume ≈ 5.878
         expect(volume).toBeCloseTo(5.877, 2);
 
         star.delete();
@@ -337,16 +309,11 @@ describe("OCCT solid unit tests", () => {
         opt.extrusionLengthBack = 0;
         const star = solid.createStarSolid(opt);
         const volume = solid.getSolidVolume({ shape: star });
-        // 6-pointed star with outer=2, inner=1
         expect(volume).toBe(6);
         star.delete();
     });
 
-    // NGon solid tests
     it("should create a hexagon (6-gon) solid", async () => {
-        // Hexagon area = (3 * sqrt(3) / 2) * r^2 where r is the radius
-        // For radius = 1: Area = (3 * 1.732 / 2) * 1 = 2.598
-        // Volume = 2.598 * 1 = 2.598
         const opt = new Inputs.OCCT.NGonSolidDto([0, 0, 0], [0, 1, 0], 6, 1);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -357,8 +324,6 @@ describe("OCCT solid unit tests", () => {
     });
 
     it("should create a pentagon (5-gon) solid", async () => {
-        // Pentagon area = (5/4) * r^2 * sqrt(10 + 2*sqrt(5)) / sqrt(5)
-        // Simplified: (5/2) * r^2 * sin(72°) = 2.5 * 1 * 0.951 = 2.378
         const opt = new Inputs.OCCT.NGonSolidDto([0, 0, 0], [0, 1, 0], 5, 1);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -369,9 +334,6 @@ describe("OCCT solid unit tests", () => {
     });
 
     it("should create a triangle (3-gon) solid", async () => {
-        // Equilateral triangle inscribed in circle of radius r
-        // Area = (3 * sqrt(3) / 4) * (r * sqrt(3))^2 = (3 * sqrt(3) / 4) * 3 * r^2 = (9 * sqrt(3) / 4) * r^2
-        // For r = 1: Area = 1.299
         const opt = new Inputs.OCCT.NGonSolidDto([0, 0, 0], [0, 1, 0], 3, 1);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -381,12 +343,7 @@ describe("OCCT solid unit tests", () => {
         triangle.delete();
     });
 
-    // Parallelogram solid tests
     it("should create a parallelogram solid", async () => {
-        // Parallelogram area = width * height (base * height for the slanted shape)
-        // width=2, height=1, angle=15 degrees
-        // Area = 2 * 1 = 2
-        // Volume = 2 * 1 = 2
         const opt = new Inputs.OCCT.ParallelogramSolidDto([0, 0, 0], [0, 1, 0], true, 2, 1, 15);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -402,19 +359,16 @@ describe("OCCT solid unit tests", () => {
         opt.extrusionLengthBack = 1;
         const parallelogram = solid.createParallelogramSolid(opt);
         const volume = solid.getSolidVolume({ shape: parallelogram });
-        // Volume = 2 * 2 = 4
         expect(volume).toBeCloseTo(4);
         parallelogram.delete();
     });
 
-    // Heart solid tests
     it("should create a heart solid", async () => {
         const opt = new Inputs.OCCT.HeartSolidDto([0, 0, 0], [0, 1, 0], 0, 2);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
         const heart = solid.createHeartSolid(opt);
         const volume = solid.getSolidVolume({ shape: heart });
-        // Heart shape volume depends on the parametric curve
         expect(volume).toBeCloseTo(2.732, 2);
         heart.delete();
     });
@@ -437,7 +391,6 @@ describe("OCCT solid unit tests", () => {
         heart2.delete();
     });
 
-    // Christmas tree solid tests
     it("should create a christmas tree solid", async () => {
         const opt = new Inputs.OCCT.ChristmasTreeSolidDto(6, 1.5, 3, 5, 1, 1, false, 0, [0, 0, 0], [0, 1, 0]);
         opt.extrusionLengthFront = 1;
@@ -454,21 +407,16 @@ describe("OCCT solid unit tests", () => {
         opt.extrusionLengthBack = 1;
         const tree = solid.createChristmasTreeSolid(opt);
         const volume = solid.getSolidVolume({ shape: tree });
-        // Bidirectional extrusion should double the volume
         expect(volume).toBeCloseTo(31.375, 2);
         tree.delete();
     });
 
-    // L-Polygon solid tests
     it("should create an L-polygon solid with default values", async () => {
-        // L-polygon area depends on alignment mode
-        // widthFirst=1, lengthFirst=2, widthSecond=0.5, lengthSecond=2
         const opt = new Inputs.OCCT.LPolygonSolidDto(1, 2, 0.5, 2);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
         const lpolygon = solid.createLPolygonSolid(opt);
         const volume = solid.getSolidVolume({ shape: lpolygon });
-        // Actual computed volume is 3.5
         expect(volume).toBeCloseTo(3.5);
         lpolygon.delete();
     });
@@ -479,12 +427,10 @@ describe("OCCT solid unit tests", () => {
         opt.extrusionLengthBack = 1;
         const lpolygon = solid.createLPolygonSolid(opt);
         const volume = solid.getSolidVolume({ shape: lpolygon });
-        // Volume = 3.5 * 2 = 7
         expect(volume).toBeCloseTo(7);
         lpolygon.delete();
     });
 
-    // Error case tests
     it("should throw error when both extrusion lengths are zero", async () => {
         const opt = new Inputs.OCCT.IBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 0;
@@ -497,5 +443,93 @@ describe("OCCT solid unit tests", () => {
         opt.extrusionLengthFront = 0;
         opt.extrusionLengthBack = 0;
         expect(() => solid.createNGonSolid(opt)).toThrow("Cannot create solid: both extrusionLengthFront and extrusionLengthBack are 0");
+    });
+    describe("where a primitive stands relative to the point it was given", () => {
+        it("should stand a box on the point it was given rather than straddle it", () => {
+            // Act
+            const centred = solid.createBox({ width: 4, length: 6, height: 10, center: [0, 0, 0], originOnCenter: true });
+            const standing = solid.createBox({ width: 4, length: 6, height: 10, center: [0, 0, 0], originOnCenter: false });
+
+            // Assert
+            expect(solid.getSolidCenterOfMass({ shape: centred })[1]).toBeCloseTo(0, 6);
+            expect(solid.getSolidCenterOfMass({ shape: standing })[1]).toBeCloseTo(5, 6);
+
+            centred.delete();
+            standing.delete();
+        });
+
+        it("should stand a cube on the point it was given rather than straddle it", () => {
+            // Act
+            const centred = solid.createCube({ size: 8, center: [0, 0, 0], originOnCenter: true });
+            const standing = solid.createCube({ size: 8, center: [0, 0, 0], originOnCenter: false });
+
+            // Assert
+            expect(solid.getSolidCenterOfMass({ shape: centred })[1]).toBeCloseTo(0, 6);
+            expect(solid.getSolidCenterOfMass({ shape: standing })[1]).toBeCloseTo(4, 6);
+
+            centred.delete();
+            standing.delete();
+        });
+
+        it("should centre a cylinder on the point it was given when it is told to", () => {
+            // Act
+            const standing = solid.createCylinder({
+                radius: 2, height: 10, center: [0, 0, 0], direction: [0, 1, 0], angle: 360, originOnCenter: false
+            });
+            const centred = solid.createCylinder({
+                radius: 2, height: 10, center: [0, 0, 0], direction: [0, 1, 0], angle: 360, originOnCenter: true
+            });
+
+            // Assert
+            expect(solid.getSolidCenterOfMass({ shape: standing })[1]).toBeCloseTo(5, 6);
+            expect(solid.getSolidCenterOfMass({ shape: centred })[1]).toBeCloseTo(0, 6);
+
+            standing.delete();
+            centred.delete();
+        });
+    });
+
+    describe("createTorus", () => {
+        it("should build a whole ring when no angle was asked for", () => {
+            // Act
+            const torus = solid.createTorus({
+                majorRadius: 10, minorRadius: 2, center: [0, 0, 0], direction: [0, 1, 0], angle: 360
+            });
+
+            const expected = 2 * Math.PI * Math.PI * 10 * 2 * 2;
+            expect(solid.getSolidVolume({ shape: torus })).toBeCloseTo(expected, 2);
+
+            torus.delete();
+        });
+
+        it("should build a slice of a ring for an angle short of the whole way round", () => {
+            // Act
+            const whole = solid.createTorus({
+                majorRadius: 10, minorRadius: 2, center: [0, 0, 0], direction: [0, 1, 0], angle: 360
+            });
+            const half = solid.createTorus({
+                majorRadius: 10, minorRadius: 2, center: [0, 0, 0], direction: [0, 1, 0], angle: 180
+            });
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: half })).toBeCloseTo(solid.getSolidVolume({ shape: whole }) / 2, 2);
+
+            whole.delete();
+            half.delete();
+        });
+
+        it("should build a whole ring where no angle was given at all", () => {
+            const inputs = new Inputs.OCCT.TorusDto(10, 2, [0, 0, 0], [0, 1, 0]);
+            Object.assign(inputs, { angle: undefined });
+
+            // Act
+            const torus = solid.createTorus(inputs);
+
+            // Assert
+            const expected = 2 * Math.PI * Math.PI * 10 * 2 * 2;
+            expect(solid.getSolidVolume({ shape: torus })).toBeCloseTo(expected, 2);
+
+            torus.delete();
+        });
     });
 });

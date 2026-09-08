@@ -49,18 +49,14 @@ describe("OCCT dimensions unit tests", () => {
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
 
-            // Verify the compound contains shapes
             const shapes = compound.getShapesOfCompound({ shape: result });
             expect(shapes.length).toBeGreaterThan(0);
 
-            // Extract and verify vertices
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBeGreaterThan(0);
 
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
 
-            // Check dimension line endpoints and extension lines
-            // Should include original start/end and their extensions with crossing size
             const originalStart = [0, 0, 0];
             const originalEnd = [10, 0, 0];
 
@@ -91,8 +87,6 @@ describe("OCCT dimensions unit tests", () => {
             const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints = occHelper.shapeGettersService.getVertices({ shape: result });
 
-            // These tests are not great, but they fixate on verifying the dimension was created and has expected complexity
-            // it will break if something changes unexpectedly.
             expect(vertexPoints.length).toEqual(194);
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -129,16 +123,13 @@ describe("OCCT dimensions unit tests", () => {
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
 
-            // Verify more shapes are present due to arrows
             const shapes = compound.getShapesOfCompound({ shape: result });
-            expect(shapes.length).toBeGreaterThan(4); // Should include arrow shapes
+            expect(shapes.length).toBeGreaterThan(4);
 
-            // Extract and verify vertices - arrows should be at translated endpoints
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
-            expect(vertices.length).toEqual(212); // More vertices due to arrows
+            expect(vertices.length).toEqual(212);
 
-            // Arrow tips should be at translated start and end points
             const arrowTipStart = [0, 2, 0];
             const arrowTipEnd = [10, 2, 0];
 
@@ -286,11 +277,9 @@ describe("OCCT dimensions unit tests", () => {
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
 
-            // Verify vertices in 3D space
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
 
-            // Check original start and end points are in the dimension
             const originalStart = [1, 2, 3];
             const originalEnd = [4, 5, 6];
 
@@ -327,17 +316,13 @@ describe("OCCT dimensions unit tests", () => {
             const shapes = compound.getShapesOfCompound({ shape: result });
             expect(shapes.length).toBe(4);
 
-            // Extract and verify vertices
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(174);
 
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
 
-            // Verify dimension has arc vertices (arc will have multiple vertices on the curve)
-            // Just check that we have enough vertices for a proper angular dimension
             expect(vertexPoints.length).toBeGreaterThan(4);
 
-            // Check that at least some vertices are at approximately radius 3 from center
             const verticesAtRadius = vertexPoints.filter(p => {
                 const dist = Math.sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
                 return Math.abs(dist - 3) < 0.1;
@@ -378,17 +363,14 @@ describe("OCCT dimensions unit tests", () => {
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
 
-            // Verify arrows are included
             const shapes = compound.getShapesOfCompound({ shape: result });
             expect(shapes.length).toBeGreaterThan(4);
 
-            // Verify vertices include arc endpoints where arrows should be placed
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
-            expect(vertices.length).toBeGreaterThan(8); // More vertices due to arrows
+            expect(vertices.length).toBeGreaterThan(8);
 
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
             expect(vertices.length).toBe(258);
-            // Normalized direction1 * radius = [1, 0, 0] * 5 = [5, 0, 0]
             const dir1End = [5, 0, 0];
             const hasDir1End = vertexPoints.some(p =>
                 Math.abs(p[0] - dir1End[0]!) < 0.01 &&
@@ -524,13 +506,11 @@ describe("OCCT dimensions unit tests", () => {
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
 
-            // Verify vertices with offset center
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBeGreaterThan(0);
             expect(vertices.length).toBe(288);
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
 
-            // Check that vertices are at approximately radius 3 from center [5, 5, 5]
             const center = [5, 5, 5];
             const verticesAtRadius = vertexPoints.filter(p => {
                 const dx = p[0] - center[0]!;
@@ -542,8 +522,6 @@ describe("OCCT dimensions unit tests", () => {
 
             expect(verticesAtRadius.length).toBeGreaterThan(0);
 
-            // Verify the dimension is in the correct plane (Y-Z plane around center)
-            // At least some vertices should have X coordinate close to center's X
             const verticesNearCenterX = vertexPoints.filter(p =>
                 Math.abs(p[0] - center[0]!) < 0.1
             );
@@ -584,7 +562,6 @@ describe("OCCT dimensions unit tests", () => {
             const shapes = compound.getShapesOfCompound({ shape: result });
             expect(shapes.length).toBeGreaterThan(0);
 
-            // Verify vertices include start and end points
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
             expect(vertices.length).toBe(96);
@@ -600,7 +577,6 @@ describe("OCCT dimensions unit tests", () => {
                 Math.abs(p[2] - 0) < 0.01
             );
 
-            // Label line end at endPoint + direction = [0, 5, 0] + [2, 0, 0] = [2, 5, 0]
             const labelLineEnd = [2, 5, 0];
             const hasLabelLineEnd = vertexPoints.some(p =>
                 Math.abs(p[0] - labelLineEnd[0]!) < 0.01 &&
@@ -628,17 +604,14 @@ describe("OCCT dimensions unit tests", () => {
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
 
-            // Should include arrow shape
             const shapes = compound.getShapesOfCompound({ shape: result });
             expect(shapes.length).toBeGreaterThan(3);
 
-            // Verify arrow is placed at start point
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
-            expect(vertices.length).toBeGreaterThan(6); // More vertices due to arrow
+            expect(vertices.length).toBeGreaterThan(6);
             expect(vertices.length).toBe(130);
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
 
-            // Arrow tip should be at start point [0, 0, 0]
             const hasArrowTip = vertexPoints.some(p =>
                 Math.abs(p[0] - 0) < 0.01 &&
                 Math.abs(p[1] - 0) < 0.01 &&
@@ -790,7 +763,6 @@ describe("OCCT dimensions unit tests", () => {
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
 
-            // Verify 3D coordinates
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             const vertexPoints = vertices.map(v => vertex.vertexToPoint({ shape: v }));
 
@@ -806,7 +778,6 @@ describe("OCCT dimensions unit tests", () => {
                 Math.abs(p[2] - 4) < 0.01
             );
 
-            // Label line end: [2, 8, 4] + [0, 0, 2] = [2, 8, 6]
             const labelEnd = [2, 8, 6];
             const hasLabelEnd = vertexPoints.some(p =>
                 Math.abs(p[0] - labelEnd[0]!) < 0.01 &&
@@ -887,7 +858,6 @@ describe("OCCT dimensions unit tests", () => {
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(568);
-            // Should still create the dimension, falling back to template or value
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
         });
@@ -972,8 +942,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // The dimension should be created successfully
-                // Label should be "10 mm" instead of "10.000 mm"
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -992,7 +960,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // Label should be "10.000 mm"
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -1011,7 +978,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // Label should be "10.5 mm" instead of "10.500 mm"
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -1030,7 +996,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // Label should be "3.14159 mm" (no trailing zeros to remove)
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -1047,7 +1012,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // Should behave as removeTrailingZeros = false by default
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -1069,7 +1033,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // Label should be "90 °" instead of "90.000 °"
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -1089,7 +1052,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // Label should be "90.00 °"
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -1110,7 +1072,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // Label should show π/2 ≈ 1.5708 rad (actual value depends on calculation)
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -1151,7 +1112,6 @@ describe("OCCT dimensions unit tests", () => {
                 expect(result).toBeDefined();
                 expect(result.IsNull()).toBe(false);
                 
-                // labelOverwrite should be evaluated normally
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
@@ -1175,6 +1135,51 @@ describe("OCCT dimensions unit tests", () => {
                 const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
                 expect(vertices.length).toBeGreaterThan(0);
             });
+        });
+    });
+    describe("the arguments a dimension refuses", () => {
+        it("should refuse a linear dimension pointed nowhere", () => {
+            const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
+            inputs.start = [0, 0, 0];
+            inputs.end = [10, 0, 0];
+            inputs.direction = [0, 0, 0];
+
+            // Act & Assert
+            expect(() => dimensions.simpleLinearLengthDimension(inputs)).toThrow(/points must differ/);
+        });
+
+        it("should refuse an angular dimension whose two directions lie on one line", () => {
+            // Arrange
+            const inputs = new Inputs.OCCT.SimpleAngularDimensionDto();
+            inputs.center = [0, 0, 0];
+            inputs.direction1 = [1, 0, 0];
+            inputs.direction2 = [1, 0, 0];
+            inputs.radius = 5;
+
+            // Act & Assert
+            expect(() => dimensions.simpleAngularDimension(inputs)).toThrow(/collinear/);
+        });
+
+        it("should refuse a pin pointed nowhere", () => {
+            // Arrange
+            const inputs = new Inputs.OCCT.PinWithLabelDto();
+            inputs.startPoint = [0, 0, 0];
+            inputs.endPoint = [10, 0, 0];
+            inputs.direction = [0, 0, 0];
+            inputs.label = "here";
+
+            // Act & Assert
+            expect(() => dimensions.pinWithLabel(inputs)).toThrow(/must not be a zero vector/);
+        });
+
+        it("should refuse an arrow pointed along the plane the dimension sits in", () => {
+            const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
+            inputs.start = [0, 0, 0];
+            inputs.end = [10, 0, 0];
+            inputs.direction = [10, 0, 0];
+
+            // Act & Assert
+            expect(() => dimensions.simpleLinearLengthDimension(inputs)).toThrow();
         });
     });
 });

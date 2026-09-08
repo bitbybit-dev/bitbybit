@@ -180,7 +180,6 @@ describe("pollTask", () => {
 
     describe("defaults", () => {
         it("gives up before the first check when no attempts are allowed", async () => {
-            // Arrange - with no attempts the interval never elapses, so the default one can stand
             const calls: string[] = [];
             const fetcher = (_method: string, path: string): Promise<Response> => {
                 calls.push(path);

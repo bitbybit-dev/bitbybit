@@ -15,9 +15,6 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Vector } from "@bitbybit-dev/base";
 import * as BABYLON from "@babylonjs/core";
 
-// A minimal JSCAD solid. These suites mock the worker manager, so the draw path hands the entity
-// straight through and nothing reads it - but it should still be the shape the API says it is, and
-// `jscadSolid()`, which is what stood here, is not a JSCAD geometry at all.
 const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -29,9 +26,6 @@ const jscadSolid = (color?: Inputs.JSCAD.JSCADColor): Inputs.JSCAD.JSCADGeom3 =>
         ? { polygons: [], transforms: IDENTITY_TRANSFORM }
         : { polygons: [], transforms: IDENTITY_TRANSFORM, color };
 
-// A real OCCT shape pointer. These suites mock the worker the pointer is sent to, so nothing
-// dereferences it - but a pointer is `{ hash: number, type: "occ-shape" }`, and what stood here had
-// a string hash and a `type` naming the shape kind, which is not what the kernel hands back.
 let nextShapeHash = 1;
 const occtShape = (): Inputs.OCCT.TopoDSShapePointer => ({ hash: nextShapeHash++, type: "occ-shape" });
 const jscadPath = (
@@ -52,8 +46,6 @@ describe("DrawHelper unit tests", () => {
     let mockJscadWorkerManager: JSCADWorkerManager;
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
-    // The same object the context holds as its scene, in its stand-in's type: taken from the
-    // helper that built it rather than reinterpreted again at every place a test reads its state.
     let mockScene: MockScene;
 
     beforeEach(() => {
@@ -80,7 +72,6 @@ describe("DrawHelper unit tests", () => {
         vi.clearAllMocks();
     });
 
-    // Helper function to convert hex color to RGB values (0-1 range)
     const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         if (result) {
@@ -90,10 +81,9 @@ describe("DrawHelper unit tests", () => {
                 b: parseInt(result[3]!, 16) / 255
             };
         }
-        return { r: 1, g: 0, b: 0 }; // Default to red if parsing fails
+        return { r: 1, g: 0, b: 0 };
     };
 
-    // Helper function to check if two colors are approximately equal (within tolerance)
     const colorsAreEqual = (
         color1: { r: number; g: number; b: number },
         color2: { r: number; g: number; b: number },
@@ -122,7 +112,6 @@ describe("DrawHelper unit tests", () => {
             expect(result.name).toContain("pointMesh");
             expect(result.getChildMeshes().length).toBe(1);
             
-            // Validate material properties (thin instances use regular Mesh)
             const childMesh = result.getChildMeshes()[0] as BABYLON.Mesh;
             expect(childMesh).toBeInstanceOf(BABYLON.Mesh);
             expect(childMesh.metadata).toBeDefined();
@@ -133,7 +122,6 @@ describe("DrawHelper unit tests", () => {
             expect(material).toBeDefined();
             expect(material.alpha).toBe(1);
             
-            // Validate color
             const expectedColor = hexToRgb("#ff0000");
             const actualColor = {
                 r: material.emissiveColor.r,
@@ -159,7 +147,6 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should update existing point mesh when updatable is true", () => {
-            // First create a point
             const initialInputs = new Inputs.Point.DrawPointDto<BABYLON.Mesh>(
                 [0, 0, 0],
                 1,
@@ -169,7 +156,6 @@ describe("DrawHelper unit tests", () => {
             );
             const existingMesh = drawHelper.drawPoint(initialInputs);
 
-            // Now update with new position
             const updateInputs = new Inputs.Point.DrawPointDto<BABYLON.Mesh>(
                 [5, 5, 5],
                 1,
@@ -200,10 +186,8 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
             expect(result.name).toContain("pointsMesh");
-            // With thin instances, all 3 points share one mesh (one color group)
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(1);
             
-            // Validate material properties (thin instances use regular Mesh)
             const children = result.getChildMeshes();
             children.forEach((child) => {
                 expect(child.metadata).toBeDefined();
@@ -235,14 +219,11 @@ describe("DrawHelper unit tests", () => {
             
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            // With thin instances and 3 different colors, we get 3 child meshes (one per color)
             expect(result.getChildMeshes().length).toBe(3);
             
-            // Validate each child mesh has correct color
             const expectedColors = ["#ff0000", "#00ff00", "#0000ff"];
             const children = result.getChildMeshes();
             
-            // Each child has one point (since each has unique color)
             children.forEach((child) => {
                 const material = child.material as BABYLON.StandardMaterial;
                 const actualColor = {
@@ -250,7 +231,6 @@ describe("DrawHelper unit tests", () => {
                     g: material.emissiveColor.g,
                     b: material.emissiveColor.b
                 };
-                // Check if the color matches one of the expected colors
                 const matchesAny = expectedColors.some(hexColor => {
                     const expectedColor = hexToRgb(hexColor);
                     return colorsAreEqual(actualColor, expectedColor);
@@ -264,30 +244,26 @@ describe("DrawHelper unit tests", () => {
                 [[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]],
                 1,
                 0.3,
-                ["#ff0000", "#00ff00"] // Only 2 colours for 4 points
+                ["#ff0000", "#00ff00"]
             );
 
             const result = drawHelper.drawPoints(inputs);
             
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            // Implementation groups by color and creates instances per color group
-            // With 2 colors, we get 4 instances (2 per color since colors cycle through points)
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(2);
         });
 
         it("should update existing points mesh when updatable is true with same point count", () => {
-            // First create points with updatable=true
             const firstInputs = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[0, 0, 0], [1, 1, 1]],
                 1,
                 0.3,
                 "#ff0000",
-                true  // Mark as updatable
+                true
             );
             const existingMesh = drawHelper.drawPoints(firstInputs);
 
-            // Now update with new positions
             const updateInputs = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[5, 5, 5], [6, 6, 6]],
                 1,
@@ -300,12 +276,10 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPoints(updateInputs);
             
             expect(result).toBe(existingMesh);
-            // With thin instances and same color, all points in one mesh
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(1);
         });
 
         it("should recreate points mesh when point count changes during update", () => {
-            // First create points
             const firstInputs = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[0, 0, 0], [1, 1, 1]],
                 1,
@@ -314,7 +288,6 @@ describe("DrawHelper unit tests", () => {
             );
             const existingMesh = drawHelper.drawPoints(firstInputs);
 
-            // Now update with different point count
             const updateInputs = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[5, 5, 5], [6, 6, 6], [7, 7, 7]],
                 1,
@@ -328,14 +301,12 @@ describe("DrawHelper unit tests", () => {
             
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            // With thin instances and same color, all points in one mesh
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(1);
         });
     });
 
     describe("updatePointsInstances", () => {
         it("should update positions of instanced meshes", () => {
-            // First create points to get a mesh with instances
             const inputs = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[0, 0, 0], [1, 1, 1]],
                 1,
@@ -344,13 +315,10 @@ describe("DrawHelper unit tests", () => {
             );
             const mesh = drawHelper.drawPoints(inputs);
 
-            // Update positions
             const newPositions: Inputs.Base.Point3[] = [[5, 5, 5], [10, 10, 10]];
             drawHelper.updatePointsInstances(mesh, newPositions);
 
-            // Verify the mesh is still valid
             expect(mesh).toBeDefined();
-            // With thin instances and same color (#ff0000), all points grouped in 1 mesh
             expect(mesh.getChildMeshes().length).toBe(1);
         });
     });
@@ -393,7 +361,6 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should update existing polyline mesh when updatable is true", () => {
-            // First create a polyline
             const initialData = {
                 points: [[0, 0, 0], [1, 1, 1]] as Inputs.Base.Point3[],
                 isClosed: false
@@ -406,7 +373,6 @@ describe("DrawHelper unit tests", () => {
             );
             const existingMesh = drawHelper.drawPolylineClose(initialInputs);
 
-            // Update the polyline
             const updateData = {
                 points: [[0, 0, 0], [2, 2, 2]] as Inputs.Base.Point3[],
                 isClosed: false
@@ -459,8 +425,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            // A polyline carrying its own colour takes it; one that carries none keeps the shared
-            // colour. Greased lines colour per point, so each two-point polyline contributes two.
             const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
             expect(options.colors!.map((c) => [c.r, c.g, c.b])).toEqual([[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0]]);
         });
@@ -491,8 +455,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            // Closing repeats the first point, and the polyline is segmentized before rendering, so
-            // a triangle is drawn as three segments returning to where it started.
             const points = (result as unknown as MockGreasedLineMesh)._points;
             expect(points).toHaveLength(1);
             expect(points[0]!.slice(0, 3)).toEqual([0, 0, 0]);
@@ -501,7 +463,6 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should update existing polylines mesh when updatable is true", () => {
-            // First create polylines
             const initialData = [
                 { points: [[0, 0, 0], [1, 1, 1]] as Inputs.Base.Point3[], isClosed: false }
             ];
@@ -513,7 +474,6 @@ describe("DrawHelper unit tests", () => {
             );
             const existingMesh = drawHelper.drawPolylinesWithColours(initialInputs);
 
-            // Update polylines
             const updateData = [
                 { points: [[0, 0, 0], [5, 5, 5]] as Inputs.Base.Point3[], isClosed: false },
                 { points: [[6, 6, 6], [7, 7, 7]] as Inputs.Base.Point3[], isClosed: false }
@@ -622,8 +582,6 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
-            // BabylonJS creates separate lines for polyline and arrows
-            // 1 polyline + 4 arrow lines = 5 total lines
             expect(result.metadata.linesForRenderLengths).toHaveLength(5);
         });
 
@@ -648,7 +606,6 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.GreasedLineMesh);
-            // 3 polylines + (3 * 4 arrow lines) = 15 total lines
             expect(result!.metadata.linesForRenderLengths).toHaveLength(15);
         });
 
@@ -669,7 +626,6 @@ describe("DrawHelper unit tests", () => {
             });
 
             expect(result).toBeDefined();
-            // Only the polyline, no arrows
             expect(result.metadata.linesForRenderLengths).toHaveLength(1);
         });
 
@@ -690,7 +646,6 @@ describe("DrawHelper unit tests", () => {
             });
 
             expect(result).toBeDefined();
-            // 1 polyline + 4 arrow lines
             expect(result.metadata.linesForRenderLengths).toHaveLength(5);
         });
 
@@ -712,13 +667,12 @@ describe("DrawHelper unit tests", () => {
             });
 
             expect(result).toBeDefined();
-            // 2 polylines + (2 * 4 arrows) = 10 lines
             expect(result!.metadata.linesForRenderLengths).toHaveLength(10);
         });
 
         it("should handle polylines with insufficient points for arrows", () => {
             const polyline: Inputs.Base.Polyline3 = {
-                points: [[0, 0, 0]] // Only 1 point
+                points: [[0, 0, 0]]
             };
 
             const result = drawHelper.drawPolylineClose({
@@ -732,8 +686,6 @@ describe("DrawHelper unit tests", () => {
                 arrowAngle: 30
             });
 
-            // A single point can't form a line or arrows
-            // Result may be undefined or have empty linesForRenderLengths
             if (result && result.metadata && result.metadata.linesForRenderLengths) {
                 expect(result.metadata.linesForRenderLengths.length).toBe(0);
             } else {
@@ -757,7 +709,6 @@ describe("DrawHelper unit tests", () => {
                 arrowAngle: 30
             });
 
-            // Update with new points
             const updatedPolyline: Inputs.Base.Polyline3 = {
                 points: [[0, 0, 0], [2, 2, 2]]
             };
@@ -774,7 +725,6 @@ describe("DrawHelper unit tests", () => {
             });
 
             expect(secondResult).toBe(firstResult);
-            // 1 polyline + 4 arrow lines
             expect(secondResult.metadata.linesForRenderLengths).toHaveLength(5);
         });
     });
@@ -847,7 +797,7 @@ describe("DrawHelper unit tests", () => {
                     { start: [0, 2, 0], end: [1, 2, 0] }
                 ],
                 1,
-                ["#ff0000"], // Only one color for 3 lines
+                ["#ff0000"],
                 2
             );
 
@@ -901,7 +851,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -924,9 +874,9 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#0000ff",
                 false,
-                true, // hidden
+                true,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -1007,13 +957,11 @@ describe("DrawHelper unit tests", () => {
                 "#ff0000",
                 false,
                 false
-                // drawTwoSided defaults to true
             );
 
             const result = drawHelper.drawSurface(inputs);
 
             expect(result).toBeDefined();
-            // With two-sided rendering, there should be a back face child
             expect(result.getChildMeshes().length).toBe(1);
         });
 
@@ -1032,13 +980,12 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided = false
+                false
             );
 
             const result = drawHelper.drawSurface(inputs);
 
             expect(result).toBeDefined();
-            // Without two-sided rendering, there should be no back face child
             expect(result.getChildMeshes().length).toBe(0);
         });
 
@@ -1057,8 +1004,8 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided = true
-                "#00ff00" // custom backFaceColour
+                true,
+                "#00ff00"
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -1082,9 +1029,9 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided = true
-                "#0000ff", // backFaceColour
-                0.5 // backFaceOpacity
+                true,
+                "#0000ff",
+                0.5
             );
 
             const result = drawHelper.drawSurface(inputs);
@@ -1118,7 +1065,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = drawHelper.drawSurfacesMultiColour(inputs);
@@ -1139,7 +1086,7 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>(
                 [mockSurface, mockSurface, mockSurface],
-                ["#ff0000"], // Only one colour for 3 surfaces
+                ["#ff0000"],
                 1,
                 false,
                 false,
@@ -1185,7 +1132,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawSurfacesMultiColour(updateInputs);
 
-            // An update keeps the container the caller holds, and replaces what hangs off it.
             expect(result).toBe(existingMesh);
             expect(mockScene._meshes).toContain(existingMesh);
             expect(result.getChildren()).toHaveLength(1);
@@ -1205,14 +1151,12 @@ describe("DrawHelper unit tests", () => {
             );
             const afterFirstDraw = scene._meshes.length;
 
-            // Act - a configurator redraws on every parameter change
             for (let i = 0; i < 5; i++) {
                 mesh = drawHelper.drawSurfacesMultiColour(
                     new Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>([mockSurface], ["#00ff00"], 1, true, false, mesh, false)
                 );
             }
 
-            // Assert - five updates leave the scene the size one draw left it
             expect(scene._meshes).toHaveLength(afterFirstDraw);
         });
     });
@@ -1248,7 +1192,6 @@ describe("DrawHelper unit tests", () => {
             }];
             const material = new BABYLON.PBRMetallicRoughnessMaterial("testMaterial");
 
-            // Create initial mesh
             const existingMesh = drawHelper.createOrUpdateSurfacesMesh(
                 [...meshData],
                 undefined,
@@ -1258,7 +1201,6 @@ describe("DrawHelper unit tests", () => {
                 false
             );
 
-            // Update the mesh
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
                 existingMesh,
@@ -1285,7 +1227,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 material,
                 true,
-                true // hidden
+                true
             );
 
             expect(result).toBeDefined();
@@ -1326,7 +1268,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1361,7 +1303,7 @@ describe("DrawHelper unit tests", () => {
                 1,
                 "#ff0000",
                 false,
-                true, // hidden
+                true,
                 undefined,
                 false
             );
@@ -1426,13 +1368,11 @@ describe("DrawHelper unit tests", () => {
                 "#ff0000",
                 false,
                 false
-                // drawTwoSided defaults to true
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
             expect(result).toBeDefined();
-            // With two-sided rendering, there should be a back face child
             expect(result.getChildMeshes().length).toBe(1);
         });
 
@@ -1445,13 +1385,12 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided = false
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
             expect(result).toBeDefined();
-            // Without two-sided rendering, no back face child
             expect(result.getChildMeshes().length).toBe(0);
         });
 
@@ -1464,8 +1403,8 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided = true
-                "#00ff00" // custom backFaceColour
+                true,
+                "#00ff00"
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1483,9 +1422,9 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided = true
-                "#0000ff", // backFaceColour
-                0.5 // backFaceOpacity
+                true,
+                "#0000ff",
+                0.5
             );
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
@@ -1510,7 +1449,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                false // drawTwoSided disabled for this test
+                false
             );
 
             const result = await drawHelper.drawSolidOrPolygonMeshes(inputs);
@@ -1553,7 +1492,7 @@ describe("DrawHelper unit tests", () => {
             const inputs = new Inputs.JSCAD.DrawSolidMeshesDto<BABYLON.Mesh>(
                 mockMeshes,
                 1,
-                ["#ff0000", "#00ff00"], // Matching colours
+                ["#ff0000", "#00ff00"],
                 false,
                 false,
                 undefined,
@@ -1670,7 +1609,6 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            // Should have child meshes for points
             expect(result.getChildMeshes().length).toBeGreaterThan(0);
         });
 
@@ -1690,12 +1628,10 @@ describe("DrawHelper unit tests", () => {
             inputs.drawVertices = false;
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
-            // drawTwoSided defaults to true
 
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            // With two-sided rendering, there should be 2 children: front and back face
             expect(result.getChildMeshes().length).toBe(2);
             expect(result).toBeInstanceOf(BABYLON.Mesh);
         });
@@ -1721,7 +1657,6 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            // With two-sided rendering disabled, there should be only 1 child
             expect(result.getChildMeshes().length).toBe(1);
             expect(result).toBeInstanceOf(BABYLON.Mesh);
         });
@@ -1801,8 +1736,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
             expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
-            // Each shape becomes a child (2 shapes), and each child has 1 mesh child (no two-sided)
-            // So result has 2 direct children, each with 1 grandchild
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(2);
         });
     });
@@ -1874,12 +1807,10 @@ describe("DrawHelper unit tests", () => {
             inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
-            // drawTwoSided defaults to true
 
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
-            // With two-sided rendering, there should be child meshes for back face
             expect(result.getChildMeshes().length).toBeGreaterThan(0);
             expect(result).toBeInstanceOf(BABYLON.Mesh);
         });
@@ -1900,7 +1831,6 @@ describe("DrawHelper unit tests", () => {
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
 
             expect(result).toBeDefined();
-            // With two-sided rendering disabled, there should be no child meshes
             expect(result.getChildMeshes().length).toBe(0);
             expect(result).toBeInstanceOf(BABYLON.Mesh);
         });
@@ -1966,14 +1896,13 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            // Each manifold becomes a child
             expect(result.getChildMeshes().length).toBe(2);
         });
 
         it("should filter out undefined meshes", async () => {
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]), numProp: 3 },
-                { vertProperties: new Float32Array([]), triVerts: new Uint32Array([]), numProp: 3 } // This will be filtered out
+                { vertProperties: new Float32Array([]), triVerts: new Uint32Array([]), numProp: 3 }
             ]);
 
             const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
@@ -1988,7 +1917,6 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            // Only one valid manifold should be a child
             expect(result.getChildMeshes().length).toBe(1);
         });
     });
@@ -1999,10 +1927,10 @@ describe("DrawHelper unit tests", () => {
             const mockPath = jscadPath([[0, 0], [1, 0], [1, 1], [0, 1]], false);
             const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
                 mockPath,
-                "#ff0000", // colour
-                1,          // opacity
-                2,          // width
-                false       // updatable
+                "#ff0000",
+                1,
+                2,
+                false
             );
 
             const result = await drawHelper.drawPath(inputs);
@@ -2015,10 +1943,10 @@ describe("DrawHelper unit tests", () => {
             const mockPath = jscadPath([[0, 0], [1, 0], [1, 1]], true);
             const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
                 mockPath,
-                "#00ff00", // colour
-                1,          // opacity
-                2,          // width
-                false       // updatable
+                "#00ff00",
+                1,
+                2,
+                false
             );
 
             const result = await drawHelper.drawPath(inputs);
@@ -2031,10 +1959,10 @@ describe("DrawHelper unit tests", () => {
             const mockPath = jscadPath([[0, 0], [1, 0]], false, [1, 0, 0, 1]);
             const inputs = new Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>(
                 mockPath,
-                "#0000ff", // colour - Blue, should be overridden by baked color
-                1,          // opacity
-                2,          // width
-                false       // updatable
+                "#0000ff",
+                1,
+                2,
+                false
             );
 
             const result = await drawHelper.drawPath(inputs);
@@ -2049,20 +1977,18 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.localAxes(
                 1,
                 mockContext.scene,
-                "#ff0000", // X axis - red
-                "#00ff00", // Y axis - green
-                "#0000ff"  // Z axis - blue
+                "#ff0000",
+                "#00ff00",
+                "#0000ff"
             );
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(result.isVisible).toBe(false); // Origin should be invisible
+            expect(result.isVisible).toBe(false);
             
-            // Should have 3 children (X, Y, Z axes)
             const children = result.getChildMeshes();
             expect(children.length).toBe(3);
             
-            // Verify each axis is a LinesMesh
             children.forEach(child => {
                 expect(child).toBeInstanceOf(BABYLON.LinesMesh);
             });
@@ -2110,7 +2036,6 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            // Should have both face mesh and edge mesh as children
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(2);
         });
 
@@ -2142,7 +2067,6 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            // Should have face, edge, and vertex meshes
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(3);
         });
 
@@ -2163,7 +2087,6 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
             expect(result).toBeDefined();
-            // Empty mesh should have no visible children
             expect(result.getChildMeshes().length).toBe(0);
         });
     });
@@ -2192,7 +2115,6 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            // Result is the surface mesh itself, not a container
             expect(result.material).toBe(customMaterial);
         });
 
@@ -2207,7 +2129,7 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.createOrUpdateSurfacesMesh(
                 meshData,
                 undefined,
-                true, // updatable
+                true,
                 material,
                 true,
                 false
@@ -2302,7 +2224,6 @@ describe("DrawHelper unit tests", () => {
 
     describe("Material caching", () => {
         it("should cache and reuse materials with same properties", async () => {
-            // Use JSCAD meshes which go through the material cache
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
                 normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
@@ -2322,7 +2243,7 @@ describe("DrawHelper unit tests", () => {
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 jscadSolid(),
                 1,
-                "#ff0000", // Same color
+                "#ff0000",
                 false,
                 false,
                 undefined,
@@ -2335,7 +2256,6 @@ describe("DrawHelper unit tests", () => {
             await drawHelper.drawSolidOrPolygonMesh(inputs2);
             const cacheSize2 = drawHelper["materialCache"].size;
 
-            // Same material should be reused
             expect(cacheSize2).toBe(cacheSize1);
         });
 
@@ -2359,7 +2279,7 @@ describe("DrawHelper unit tests", () => {
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 jscadSolid(),
                 1,
-                "#00ff00", // Different color
+                "#00ff00",
                 false,
                 false,
                 undefined,
@@ -2392,7 +2312,7 @@ describe("DrawHelper unit tests", () => {
             );
             const inputs2 = new Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>(
                 jscadSolid(),
-                0.5, // Different opacity
+                0.5,
                 "#ff0000",
                 false,
                 false,
@@ -2408,8 +2328,6 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should not exceed cache limit", async () => {
-            // The actual cache limit is CACHE_CONFIG.MAX_MATERIALS (1000) from constants
-            // This test verifies materials are cached correctly for unique colors
             const TEST_MATERIALS_COUNT = 110;
 
             (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
@@ -2434,12 +2352,10 @@ describe("DrawHelper unit tests", () => {
             }
 
             const cacheSize = drawHelper["materialCache"].size;
-            // Each unique color should be cached (limit is 1000, so 110 unique materials are fine)
             expect(cacheSize).toBe(TEST_MATERIALS_COUNT);
         });
 
         it("should cache and reuse unlit materials for points", () => {
-            // Draw points with same color - should reuse material from unlit cache
             const inputs1 = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[1, 2, 3], [4, 5, 6]],
                 1,
@@ -2450,33 +2366,31 @@ describe("DrawHelper unit tests", () => {
             
             drawHelper.drawPoints(inputs1);
             const unlitCacheSize1 = drawHelper["unlitMaterialCache"].size;
-            expect(unlitCacheSize1).toBe(1); // One unique color = one cached material
+            expect(unlitCacheSize1).toBe(1);
             
-            // Draw more points with the same color - should reuse cached material
             const inputs2 = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[7, 8, 9], [10, 11, 12]],
                 1,
                 1,
-                "#ff0000", // Same color
+                "#ff0000",
                 false
             );
             
             drawHelper.drawPoints(inputs2);
             const unlitCacheSize2 = drawHelper["unlitMaterialCache"].size;
-            expect(unlitCacheSize2).toBe(1); // Still one cached material (reused)
+            expect(unlitCacheSize2).toBe(1);
             
-            // Draw points with different color - should create new cached material
             const inputs3 = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[13, 14, 15]],
                 1,
                 1,
-                "#00ff00", // Different color
+                "#00ff00",
                 false
             );
             
             drawHelper.drawPoints(inputs3);
             const unlitCacheSize3 = drawHelper["unlitMaterialCache"].size;
-            expect(unlitCacheSize3).toBe(2); // Two unique colors = two cached materials
+            expect(unlitCacheSize3).toBe(2);
         });
     });
 
@@ -2510,7 +2424,6 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle cleanup on dispose", () => {
-            // Create meshes to populate cache
             for (let i = 0; i < 50; i++) {
                 const inputs = new Inputs.Point.DrawPointDto<BABYLON.Mesh>(
                     [i, i, i],
@@ -2529,14 +2442,12 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle error during material disposal", () => {
-            // Create a material that will throw error on dispose
             const mockErrorMaterial = {
                 dispose: vi.fn().mockImplementation(() => {
                     throw new Error("Disposal error");
                 })
             } as unknown as BABYLON.PBRMetallicRoughnessMaterial;
             
-            // Manually add error-prone material to cache
             const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
             drawHelper["materialCache"].set("error-material", mockErrorMaterial);
             
@@ -2762,8 +2673,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(inputs);
 
-            // One child mesh, not one per point: the 100 points share a colour, so they are thin
-            // instances of a single mesh. A wall clock cannot tell those two apart; this can.
             expect(result.getChildMeshes()).toHaveLength(1);
         });
 
@@ -2783,8 +2692,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPoints(inputs);
 
-            // Still one child mesh at a thousand points - the instancing does not fall back to a
-            // mesh per point as the count grows.
             expect(result.getChildMeshes()).toHaveLength(1);
         });
 
@@ -2809,8 +2716,6 @@ describe("DrawHelper unit tests", () => {
                 result = drawHelper.drawPoint(options);
             }
 
-            // What "without degradation" means here is that an update moves the mesh it was given
-            // rather than building another one. Timing it measured the machine, not the code.
             expect(result).toBe(first);
             expect(scene._meshes).toHaveLength(meshesAfterFirstDraw);
         });
@@ -2832,8 +2737,6 @@ describe("DrawHelper unit tests", () => {
                 mesh.getChildMeshes().forEach((child) => materials.add(child.material));
             }
 
-            // Fifty draws of one colour share one material. That is what the cache is for, and it
-            // is a fact about the code rather than about how fast this machine happened to run.
             expect(materials.size).toBe(1);
         });
     });
@@ -2890,7 +2793,7 @@ describe("DrawHelper unit tests", () => {
                 false,
                 false,
                 undefined,
-                true, // drawTwoSided
+                true,
                 "#00ff00",
                 0.8
             );
@@ -2900,12 +2803,10 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.material).toBeDefined();
             const children = result.getChildMeshes();
-            expect(children.length).toBe(1); // Should have back face mesh
-            // Check main mesh material
+            expect(children.length).toBe(1);
             const mainMaterial = result.material as BABYLON.PBRMetallicRoughnessMaterial;
             expect(colorsAreEqual(mainMaterial.baseColor, hexToRgb("#ff0000"))).toBe(true);
             expect(mainMaterial.alpha).toBe(1);
-            // Check back face mesh exists and has correct material
             const backFaceMesh = children[0]!;
             expect(backFaceMesh.material).toBeDefined();
             const backMaterial = backFaceMesh.material as BABYLON.PBRMetallicRoughnessMaterial;
@@ -2935,7 +2836,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result.material).toBeDefined();
             const material = result.material as BABYLON.PBRMetallicRoughnessMaterial;
-            // Should use first color from array
             expect(colorsAreEqual(material.baseColor, hexToRgb("#ff0000"))).toBe(true);
         });
     });
@@ -2959,7 +2859,7 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>(
                 [mockSurface1, mockSurface2],
-                ["#ff0000"], // Single colour in array
+                ["#ff0000"],
                 1,
                 false,
                 false,
@@ -2972,7 +2872,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             const children = result.getChildMeshes();
             expect(children.length).toBe(2);
-            // Each child should have the same material since we passed single colour
             children.forEach(child => {
                 expect(child.material).toBeDefined();
                 const material = child.material as BABYLON.PBRMetallicRoughnessMaterial;
@@ -3015,7 +2914,6 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
             expect(result.material).toBe(material);
-            // Verify mesh has vertex data from all three sources merged
             expect(result.getTotalVertices()).toBeGreaterThan(0);
         });
     });
@@ -3028,13 +2926,12 @@ describe("DrawHelper unit tests", () => {
                     {
                         edgeIndex: 0,
                         middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] // Edge vertices as array of Point3
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
             };
 
-            // Mock the OCCT worker to return our shape with edges
             (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(mockShape);
 
             const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
@@ -3048,7 +2945,6 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             const children = result.getChildMeshes();
-            // Should have edge mesh as child (GreasedLineMesh for edges)
             expect(children.length).toBeGreaterThan(0);
             const edgeMesh = children.find(child => child instanceof BABYLON.GreasedLineMesh);
             expect(edgeMesh).toBeDefined();
@@ -3082,7 +2978,6 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             const children = result.getChildMeshes();
-            // Should have face mesh as child
             expect(children.length).toBeGreaterThan(0);
             const faceMesh = children.find(child => child.material);
             expect(faceMesh).toBeDefined();
@@ -3108,13 +3003,12 @@ describe("DrawHelper unit tests", () => {
                     {
                         edgeIndex: 0,
                         middlePoint: [0.5, 0, 0] as Inputs.Base.Point3,
-                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] // Edge vertices as array of Point3
+                        vertexCoord: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
                 pointsList: []
             };
 
-            // Mock the OCCT worker to return our shape with edges and faces
             (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(mockShape);
 
             const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
@@ -3129,13 +3023,11 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             const children = result.getChildMeshes();
-            // Should have both face and edge meshes
             expect(children.length).toBeGreaterThan(0);
             const faceMesh = children.find(child => child.material instanceof BABYLON.PBRMetallicRoughnessMaterial);
             const edgeMesh = children.find(child => child instanceof BABYLON.GreasedLineMesh);
             expect(faceMesh).toBeDefined();
             expect(edgeMesh).toBeDefined();
-            // Verify face material color
             if (faceMesh && faceMesh.material) {
                 const faceMaterial = faceMesh.material as BABYLON.PBRMetallicRoughnessMaterial;
                 expect(colorsAreEqual(faceMaterial.baseColor, hexToRgb("#00ff00"))).toBe(true);
@@ -3171,10 +3063,8 @@ describe("DrawHelper unit tests", () => {
                 pointsList: []
             };
 
-            // Mock the OCCT worker
             (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(mockShape);
 
-            // Mock createVectorText to return sample polyline data for text
             (mockSolidText.createVectorText as Mock).mockResolvedValue([
                 [[0, 0], [0.1, 0], [0.1, 0.2], [0, 0.2]]
             ]);
@@ -3191,16 +3081,12 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            // Verify createVectorText was called for each edge
             expect(mockSolidText.createVectorText).toHaveBeenCalled();
-            // Should be called twice (once for each edge)
             expect((mockSolidText.createVectorText as Mock).mock.calls.length).toBeGreaterThanOrEqual(2);
             
-            // Verify the text height was set correctly
             const [[firstCall]] = (mockSolidText.createVectorText as Mock).mock.calls as [[{ height: number; text: string; lineSpacing?: number }]];
             expect(firstCall.height).toBe(0.1);
             
-            // Verify the text content uses edgeIndex from the decomposed mesh (0-based from OCCT)
             expect(firstCall.text).toBe("0");
         });
 
@@ -3210,7 +3096,6 @@ describe("DrawHelper unit tests", () => {
                 edgeList: [
                     {
                         edgeIndex: 0,
-                        // middlePoint is undefined - should trigger computeEdgeMiddlePos
                         vertexCoord: [[0, 0, 0], [2, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
@@ -3235,7 +3120,6 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(mockSolidText.createVectorText).toHaveBeenCalled();
-            // Vector.add should be called to position the text at computed middle point
             expect(mockVector.add).toHaveBeenCalled();
         });
 
@@ -3245,7 +3129,6 @@ describe("DrawHelper unit tests", () => {
                 edgeList: [
                     {
                         edgeIndex: 0,
-                        // 3 vertices - middle one should be used
                         vertexCoord: [[0, 0, 0], [1, 0, 0], [2, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
@@ -3278,7 +3161,6 @@ describe("DrawHelper unit tests", () => {
                 edgeList: [
                     {
                         edgeIndex: 0,
-                        // More than 3 vertices - should lerp between middle vertices
                         vertexCoord: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 0]] as Inputs.Base.Point3[]
                     }
                 ],
@@ -3344,7 +3226,6 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            // The edge index mesh should have its parent set to shapeMesh
             const children = result.getChildMeshes();
             expect(children.length).toBeGreaterThan(0);
         });
@@ -3384,16 +3265,12 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            // Verify createVectorText was called for each face
             expect(mockSolidText.createVectorText).toHaveBeenCalled();
-            // Should be called once for the face
             expect((mockSolidText.createVectorText as Mock).mock.calls.length).toBeGreaterThanOrEqual(1);
             
-            // Verify the text height was set correctly
             const [[firstCall]] = (mockSolidText.createVectorText as Mock).mock.calls as [[{ height: number; text: string; lineSpacing?: number }]];
             expect(firstCall.height).toBe(0.15);
             
-            // Verify the text content is face index (0-based)
             expect(firstCall.text).toBe("0");
         });
 
@@ -3428,7 +3305,7 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
             inputs.shape = occtShape();
-            inputs.drawFaces = false; // Only draw face indexes, not faces
+            inputs.drawFaces = false;
             inputs.drawEdges = false;
             inputs.drawFaceIndexes = true;
             inputs.faceIndexHeight = 0.15;
@@ -3438,10 +3315,8 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            // Should be called twice (once for each face)
             expect((mockSolidText.createVectorText as Mock).mock.calls.length).toBe(2);
             
-            // Verify second face index is "1"
             const [, [secondCall]] = (mockSolidText.createVectorText as Mock).mock.calls as [unknown[], [{ text: string }]];
             expect(secondCall.text).toBe("1");
         });
@@ -3451,7 +3326,6 @@ describe("DrawHelper unit tests", () => {
                 faceList: [
                     {
                         faceIndex: 0,
-                        // centerPoint is undefined - should trigger computeFaceMiddlePos
                         vertexCoord: [0, 0, 0, 2, 0, 0, 1, 2, 0],
                         vertexCoordVec: [[0, 0, 0], [2, 0, 0], [1, 2, 0]] as Inputs.Base.Point3[],
                         normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
@@ -3480,7 +3354,6 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(mockSolidText.createVectorText).toHaveBeenCalled();
-            // Vector.add should be called to position the text at computed center point
             expect(mockVector.add).toHaveBeenCalled();
         });
 
@@ -3523,7 +3396,6 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            // The mesh should have zOffset set when drawEdges is true
             const children = result.getChildMeshes();
             expect(children.length).toBeGreaterThan(0);
         });
@@ -3618,13 +3490,10 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            // Should have called createVectorText for all edges (3) and faces (1)
             expect((mockSolidText.createVectorText as Mock).mock.calls.length).toBe(4);
         });
 
         it("should not call createVectorText when edgeList is empty but drawEdgeIndexes is true", async () => {
-            // When edgeList is empty but drawEdgeIndexes is true, no text creation happens
-            // The promises array will be empty, resulting in empty textPolylines
             const mockShape = {
                 faceList: [
                     {
@@ -3649,20 +3518,15 @@ describe("DrawHelper unit tests", () => {
             inputs.shape = occtShape();
             inputs.drawFaces = true;
             inputs.drawEdges = false;
-            inputs.drawEdgeIndexes = true; // true but edgeList is empty
+            inputs.drawEdgeIndexes = true;
             inputs.edgeIndexHeight = 0.1;
             inputs.edgeIndexColour = "#ffff00";
             inputs.drawTwoSided = false;
 
-            // Note: Currently the implementation throws when edgeList is empty
-            // because drawPolylines returns undefined for empty polylines
-            // and the code tries to set parent on undefined
             await expect(drawHelper.drawShape(inputs)).rejects.toThrow();
         });
 
         it("should not call createVectorText when faceList is empty but drawFaceIndexes is true", async () => {
-            // When faceList is empty but drawFaceIndexes is true, no text creation happens
-            // The promises array will be empty, resulting in empty textPolylines
             const mockShape = {
                 faceList: [],
                 edgeList: [
@@ -3684,15 +3548,12 @@ describe("DrawHelper unit tests", () => {
             inputs.shape = occtShape();
             inputs.drawFaces = false;
             inputs.drawEdges = true;
-            inputs.drawEdgeIndexes = false; // Only test face indexes
-            inputs.drawFaceIndexes = true; // true but faceList is empty
+            inputs.drawEdgeIndexes = false;
+            inputs.drawFaceIndexes = true;
             inputs.faceIndexHeight = 0.1;
             inputs.faceIndexColour = "#ff00ff";
             inputs.drawTwoSided = false;
 
-            // Note: Currently the implementation throws when faceList is empty
-            // because drawPolylines returns undefined for empty polylines
-            // and the code tries to set parent on undefined
             await expect(drawHelper.drawShape(inputs)).rejects.toThrow();
         });
 
@@ -3780,7 +3641,6 @@ describe("DrawHelper unit tests", () => {
 
             (mockOccWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValueOnce(mockShape);
             
-            // Return text polyline with known coordinates
             (mockSolidText.createVectorText as Mock).mockResolvedValue([
                 [[0, 0], [1, 0]]
             ]);
@@ -3796,10 +3656,8 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawShape(inputs);
 
-            // Vector.add should be called with the modified point (Y offset of 0.05)
             expect(mockVector.add).toHaveBeenCalled();
             const [[firstAdd]] = (mockVector.add as Mock).mock.calls as [[{ first: number[] }]];
-            // Check that the first parameter contains the Y offset
             expect(firstAdd.first[1]).toBe(0.05);
         });
     });
@@ -3817,25 +3675,21 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
-            // Positions should remain the same
             expect(result.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
             
-            // Normals should be flipped (negated)
             expect(result.normals.length).toBe(9);
-            expect(Math.abs(result.normals[0]!)).toBe(0); // Handle -0 vs 0
-            expect(Math.abs(result.normals[1]!)).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[0]!)).toBe(0);
+            expect(Math.abs(result.normals[1]!)).toBe(0);
             expect(result.normals[2]).toBe(-1);
-            expect(Math.abs(result.normals[3]!)).toBe(0); // Handle -0 vs 0
-            expect(Math.abs(result.normals[4]!)).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[3]!)).toBe(0);
+            expect(Math.abs(result.normals[4]!)).toBe(0);
             expect(result.normals[5]).toBe(-1);
-            expect(Math.abs(result.normals[6]!)).toBe(0); // Handle -0 vs 0
-            expect(Math.abs(result.normals[7]!)).toBe(0); // Handle -0 vs 0
+            expect(Math.abs(result.normals[6]!)).toBe(0);
+            expect(Math.abs(result.normals[7]!)).toBe(0);
             expect(result.normals[8]).toBe(-1);
             
-            // Indices should NOT be reversed (this is the key difference from prepareBackFaceMeshData)
             expect(result.indices).toEqual([0, 1, 2]);
             
-            // UVs should be preserved
             expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1]);
         });
 
@@ -3855,15 +3709,12 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
 
-            // Positions should be combined
             expect(result.positions).toEqual([
                 0, 0, 0, 1, 0, 0, 0, 1, 0,
                 2, 0, 0, 3, 0, 0, 2, 1, 0
             ]);
             
-            // Normals should all be flipped
             expect(result.normals.length).toBe(18);
-            // Check only the non-zero values
             expect(result.normals[2]).toBe(-1);
             expect(result.normals[5]).toBe(-1);
             expect(result.normals[8]).toBe(-1);
@@ -3871,19 +3722,18 @@ describe("DrawHelper unit tests", () => {
             expect(result.normals[14]).toBe(-1);
             expect(result.normals[17]).toBe(-1);
             
-            // Indices should be combined with proper offsets (no winding reversal)
             expect(result.indices).toEqual([0, 1, 2, 3, 4, 5]);
         });
 
         it("should correctly apply index offset for multiple meshes", () => {
             const meshDataArray = [
                 {
-                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], // 3 vertices
+                    positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
                     normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
                     indices: [0, 1, 2]
                 },
                 {
-                    positions: [2, 0, 0, 3, 0, 0, 2, 1, 0, 3, 1, 0], // 4 vertices
+                    positions: [2, 0, 0, 3, 0, 0, 2, 1, 0, 3, 1, 0],
                     normals: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
                     indices: [0, 1, 2, 1, 3, 2]
                 }
@@ -3891,10 +3741,9 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
 
-            // Second mesh indices should be offset by 3 (first mesh had 3 vertices)
             expect(result.indices).toEqual([
-                0, 1, 2,        // First mesh
-                3, 4, 5, 4, 6, 5 // Second mesh with offset of 3
+                0, 1, 2,
+                3, 4, 5, 4, 6, 5
             ]);
         });
 
@@ -3909,7 +3758,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
-            // All normals should be negated
             expect(result.normals.length).toBe(9);
             expect(result.normals[0]).toBe(-0.5);
             expect(result.normals[1]).toBe(0.5);
@@ -3918,8 +3766,8 @@ describe("DrawHelper unit tests", () => {
             expect(result.normals[4]).toBe(-0.8);
             expect(result.normals[5]).toBe(0.5);
             expect(result.normals[6]).toBe(-1);
-            expect(result.normals[7]).toBeCloseTo(0, 10); // Handle -0 vs 0
-            expect(result.normals[8]).toBeCloseTo(0, 10); // Handle -0 vs 0
+            expect(result.normals[7]).toBeCloseTo(0, 10);
+            expect(result.normals[8]).toBeCloseTo(0, 10);
         });
 
         it("should handle mesh data without UVs", () => {
@@ -3933,7 +3781,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
-            // UVs should be undefined when not provided
             expect(result.uvs).toBeUndefined();
         });
 
@@ -3949,7 +3796,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
-            // UVs should be preserved
             expect(result.uvs).toEqual([0, 0, 1, 0, 0.5, 1]);
         });
 
@@ -3971,7 +3817,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
 
-            // UVs should be combined
             expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0.5, 0.5]);
         });
 
@@ -3986,7 +3831,6 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
-            // Normals should remain empty (not flipped)
             expect(result.normals.length).toBe(0);
         });
 
@@ -3994,10 +3838,10 @@ describe("DrawHelper unit tests", () => {
             const meshData = [
                 {
                     positions: [
-                        0, 0, 0,  // vertex 0
-                        1, 0, 0,  // vertex 1
-                        0, 1, 0,  // vertex 2
-                        1, 1, 0   // vertex 3
+                        0, 0, 0,
+                        1, 0, 0,
+                        0, 1, 0,
+                        1, 1, 0
                     ],
                     normals: [
                         0, 0, 1,
@@ -4005,22 +3849,19 @@ describe("DrawHelper unit tests", () => {
                         0, 0, 1,
                         0, 0, 1
                     ],
-                    indices: [0, 1, 2, 1, 3, 2], // Two triangles forming a quad
+                    indices: [0, 1, 2, 1, 3, 2],
                     uvs: [0, 0, 1, 0, 0, 1, 1, 1]
                 }
             ];
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
-            // Normals should all be flipped
             expect(result.normals.length).toBe(12);
-            // Check the z-components which should be -1
             expect(result.normals[2]).toBe(-1);
             expect(result.normals[5]).toBe(-1);
             expect(result.normals[8]).toBe(-1);
             expect(result.normals[11]).toBe(-1);
             
-            // Winding order should NOT be reversed
             expect(result.indices).toEqual([0, 1, 2, 1, 3, 2]);
         });
 
@@ -4036,13 +3877,11 @@ describe("DrawHelper unit tests", () => {
                     positions: [2, 0, 0, 3, 0, 0, 2, 1, 0],
                     normals: [0, 0, 1, 0, 0, 1, 0, 0, 1],
                     indices: [0, 1, 2]
-                    // No UVs in second mesh
                 }
             ];
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshDataArray);
 
-            // Only the first mesh's UVs should be present
             expect(result.uvs).toEqual([0, 0, 1, 0, 0, 1]);
         });
 
@@ -4057,9 +3896,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
-            // Zero normals should remain zero after negation (note: -0 == 0 in JavaScript)
             expect(result.normals.length).toBe(9);
-            // All values should be zero (or -0, which is mathematically equal to 0)
             result.normals.forEach((val: number) => expect(Math.abs(val)).toBe(0));
         });
 
@@ -4074,8 +3911,141 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper["prepareBackFaceMeshDataNoWindingReversal"](meshData);
 
-            // Small values should be properly negated
             expect(result.normals).toEqual([-0.001, 0.002, -0.003, 0.001, -0.002, 0.003, -0.0001, 0.0002, -0.0003]);
+        });
+    });
+    describe("handleDecomposedMeshIndividually", () => {
+        const decomposedFace = (): Inputs.OCCT.DecomposedFaceDto => {
+            const face = new Inputs.OCCT.DecomposedFaceDto();
+            face.faceIndex = 0;
+            face.vertexCoord = [0, 0, 0, 1, 0, 0, 0, 1, 0];
+            face.normalCoord = [0, 0, 1, 0, 0, 1, 0, 0, 1];
+            face.triIndexes = [0, 1, 2];
+            face.uvs = [0, 0, 1, 0, 0, 1];
+            face.numberOfTriangles = 1;
+            face.vertexCoordVec = [[0, 0, 0], [1, 0, 0], [0, 1, 0]];
+            face.centerPoint = [0.33, 0.33, 0];
+            face.centerNormal = [0, 0, 1];
+            return face;
+        };
+
+        const decomposedEdge = (): Inputs.OCCT.DecomposedEdgeDto => {
+            const edge = new Inputs.OCCT.DecomposedEdgeDto();
+            edge.edgeIndex = 0;
+            edge.vertexCoord = [[0, 0, 0], [1, 0, 0]];
+            edge.middlePoint = [0.5, 0, 0];
+            return edge;
+        };
+
+        const decomposedMesh = (): Inputs.OCCT.DecomposedMeshDto => {
+            const mesh = new Inputs.OCCT.DecomposedMeshDto([decomposedFace()], [decomposedEdge()]);
+            mesh.pointsList = [[0, 0, 0]];
+            return mesh;
+        };
+
+        const shapeInputs = (adjust: (inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>) => void = () => undefined): Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer> => {
+            const inputs = new Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>();
+            inputs.shape = occtShape();
+            inputs.drawFaces = true;
+            inputs.drawEdges = true;
+            inputs.drawVertices = true;
+            inputs.drawTwoSided = false;
+            adjust(inputs);
+            return inputs;
+        };
+
+        it("should hang a mesh named after each face off one hidden container", async () => {
+            // Act
+            const result = await drawHelper.handleDecomposedMeshIndividually(shapeInputs(), decomposedMesh(), {});
+
+            // Assert
+            expect(result.isVisible).toBe(false);
+            expect(result.getChildMeshes().map(m => m.name)).toContain("face 0");
+        });
+
+        it("should name the edge and the vertex meshes so a script can find them", async () => {
+            // Act
+            const result = await drawHelper.handleDecomposedMeshIndividually(shapeInputs(), decomposedMesh(), {});
+
+            // Assert
+            const names = result.getChildMeshes().map(m => m.name);
+            expect(names).toContain("edge 0");
+            expect(names).toContain("vertices");
+        });
+
+        it("should add a second mesh behind each face when both sides are drawn", async () => {
+            // Act
+            const result = await drawHelper.handleDecomposedMeshIndividually(
+                shapeInputs((inputs) => { inputs.drawTwoSided = true; }), decomposedMesh(), {});
+
+            // Assert
+            expect(result.getChildMeshes().map(m => m.name)).toContain("face 0 backFace");
+        });
+
+        it("should draw only what it was asked for", async () => {
+            // Act
+            const result = await drawHelper.handleDecomposedMeshIndividually(
+                shapeInputs((inputs) => {
+                    inputs.drawEdges = false;
+                    inputs.drawVertices = false;
+                }), decomposedMesh(), {});
+
+            // Assert
+            const names = result.getChildMeshes().map(m => m.name);
+            expect(names).toContain("face 0");
+            expect(names).not.toContain("edge 0");
+            expect(names).not.toContain("vertices");
+        });
+
+        it("should build an empty container where the mesh carries nothing at all", async () => {
+            // Arrange
+            const empty = new Inputs.OCCT.DecomposedMeshDto([], []);
+            empty.pointsList = [];
+
+            // Act
+            const result = await drawHelper.handleDecomposedMeshIndividually(shapeInputs(), empty, {});
+
+            // Assert
+            expect(result.getChildMeshes()).toEqual([]);
+        });
+
+        it("should use the material it was handed rather than make one of its own", async () => {
+            // Arrange
+            const faceMaterial = new BABYLON.PBRMetallicRoughnessMaterial("given", mockContext.scene);
+
+            // Act
+            const result = await drawHelper.handleDecomposedMeshIndividually(
+                shapeInputs(), decomposedMesh(), { faceMaterial });
+
+            // Assert
+            const face = result.getChildMeshes().find(m => m.name === "face 0")!;
+            expect(face.material).toBe(faceMaterial);
+        });
+    });
+
+    describe("isDisposed", () => {
+        it("should say a helper that has cached nothing yet holds nothing", () => {
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(true);
+        });
+
+        it("should say a helper that has cached a material still holds something", () => {
+            // Arrange
+            drawHelper.drawPoint(new Inputs.Point.DrawPointDto<BABYLON.Mesh>([0, 0, 0], 1, 1, "#ff0000", false));
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(false);
+        });
+
+        it("should say so again once everything it held has been let go of", () => {
+            // Arrange
+            drawHelper.drawPoint(new Inputs.Point.DrawPointDto<BABYLON.Mesh>([0, 0, 0], 1, 1, "#ff0000", false));
+
+            // Act
+            drawHelper.dispose();
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(true);
         });
     });
 });

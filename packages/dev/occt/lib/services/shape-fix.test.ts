@@ -121,9 +121,7 @@ describe("OCCT shape fix unit tests", () => {
     });
 
     it("should fix edge orientations along wire when edges have inconsistent directions", async () => {
-        // Create edges where the second edge is reversed (end to start instead of start to end)
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
-        // This edge goes backwards - from [2,0,0] to [1,0,0] instead of [1,0,0] to [2,0,0]
         const edge2 = edge.line({ start: [2, 0, 0], end: [1, 0, 0] });
         const edge3 = edge.line({ start: [2, 0, 0], end: [3, 0, 0] });
 
@@ -133,16 +131,13 @@ describe("OCCT shape fix unit tests", () => {
 
         const result = shapeFix.fixEdgeOrientationsAlongWire({ shape: wire1 });
 
-        // Get edges from the fixed wire
         const fixedEdges = edge.getEdges({ shape: result });
         expect(fixedEdges.length).toBe(3);
 
-        // Check that edges are now properly oriented along the wire
         const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]!);
         const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]!);
         const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]!);
 
-        // Each edge's end should connect to the next edge's start
         expect(edge1Points.end[0]).toBeCloseTo(edge2Points.start[0]!, 5);
         expect(edge1Points.end[1]).toBeCloseTo(edge2Points.start[1]!, 5);
         expect(edge1Points.end[2]).toBeCloseTo(edge2Points.start[2]!, 5);
@@ -160,7 +155,6 @@ describe("OCCT shape fix unit tests", () => {
     });
 
     it("should preserve wire when edges already have correct orientations", async () => {
-        // Create properly oriented edges
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
         const edge2 = edge.line({ start: [1, 0, 0], end: [2, 0, 0] });
         const edge3 = edge.line({ start: [2, 0, 0], end: [3, 0, 0] });
@@ -174,7 +168,6 @@ describe("OCCT shape fix unit tests", () => {
         const fixedEdges = edge.getEdges({ shape: result });
         expect(fixedEdges.length).toBe(3);
 
-        // Verify edges maintain correct orientation
         const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]!);
         const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]!);
         const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]!);
@@ -195,9 +188,7 @@ describe("OCCT shape fix unit tests", () => {
     });
 
     it("should fix edge orientations in a closed wire", async () => {
-        // Create a closed triangle with one reversed edge
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
-        // Reversed edge
         const edge2 = edge.line({ start: [0.5, 1, 0], end: [1, 0, 0] });
         const edge3 = edge.line({ start: [0.5, 1, 0], end: [0, 0, 0] });
 
@@ -214,7 +205,6 @@ describe("OCCT shape fix unit tests", () => {
         const fixedEdges = edge.getEdges({ shape: result });
         expect(fixedEdges.length).toBe(3);
 
-        // Check connectivity of fixed edges
         const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]!);
         const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]!);
         const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]!);
@@ -236,7 +226,6 @@ describe("OCCT shape fix unit tests", () => {
 
     it("should fix edge orientations with arc edges", async () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
-        // Arc going backwards
         const arcEdge = edge.arcThroughThreePoints({ start: [2, 0, 0], middle: [1.5, 0.5, 0], end: [1, 0, 0] });
         const edge3 = edge.line({ start: [2, 0, 0], end: [3, 0, 0] });
 
@@ -249,7 +238,6 @@ describe("OCCT shape fix unit tests", () => {
         const fixedEdges = edge.getEdges({ shape: result });
         expect(fixedEdges.length).toBe(3);
 
-        // Check that edges are connected properly
         const edge1Points = getEdgeStartAndEndPoints(fixedEdges[0]!);
         const edge2Points = getEdgeStartAndEndPoints(fixedEdges[1]!);
         const edge3Points = getEdgeStartAndEndPoints(fixedEdges[2]!);
@@ -287,4 +275,3 @@ describe("OCCT shape fix unit tests", () => {
         fixedEdges.forEach(e => e.delete());
     });
 });
-

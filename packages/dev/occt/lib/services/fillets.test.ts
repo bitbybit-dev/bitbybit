@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
@@ -183,11 +183,9 @@ describe("OCCT fillets unit tests", () => {
         const edges1 = occHelper.edgesService.getEdgesAlongWire({ shape: results[0]! });
         const edges2 = occHelper.edgesService.getEdgesAlongWire({ shape: results[1]! });
 
-        // All edges should be filleted, so we expect more edges than original
         expect(edges1.length).toBe(28);
         expect(edges2.length).toBe(24);
 
-        // Some edges should be short fillet arcs
         const edgeLengths1 = edges1.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
         const edgeLengths2 = edges2.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
         const hasShortEdges1 = edgeLengths1.some(length => length < 1);
@@ -222,7 +220,6 @@ describe("OCCT fillets unit tests", () => {
         const edges1 = occHelper.edgesService.getEdgesAlongWire({ shape: results[0]! });
         const edges2 = occHelper.edgesService.getEdgesAlongWire({ shape: results[1]! });
 
-        // Check that fillets were applied
         const edgeLengths1 = edges1.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
         const edgeLengths2 = edges2.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
         const hasShortEdges1 = edgeLengths1.some(length => length < 1);
@@ -332,11 +329,9 @@ describe("OCCT fillets unit tests", () => {
         const edges1 = occHelper.shapeGettersService.getEdges({ shape: results[0]! });
         const edges2 = occHelper.shapeGettersService.getEdges({ shape: results[1]! });
 
-        // All edges should be filleted, so we expect more edges than original
         expect(edges1.length).toBe(28);
         expect(edges2.length).toBe(24);
 
-        // Some edges should be short fillet arcs
         const edgeLengths1 = edges1.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
         const edgeLengths2 = edges2.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
         const hasShortEdges1 = edgeLengths1.some(length => length < 1);
@@ -370,7 +365,6 @@ describe("OCCT fillets unit tests", () => {
         const edges1 = occHelper.shapeGettersService.getEdges({ shape: results[0]! });
         const edges2 = occHelper.shapeGettersService.getEdges({ shape: results[1]! });
 
-        // Check that fillets were applied
         const edgeLengths1 = edges1.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
         const edgeLengths2 = edges2.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
         const hasShortEdges1 = edgeLengths1.some(length => length < 1);
@@ -795,5 +789,131 @@ describe("OCCT fillets unit tests", () => {
         expect(occHelper.shapeGettersService.getEdges({ shape: chamfered }).length).toBe(8);
         square.delete();
         chamfered.delete();
+    });
+    describe("the arguments a fillet or a chamfer refuses", () => {
+        let box: TopoDS_Shape;
+        let boxEdges: TopoDS_Edge[];
+        let boxFaces: TopoDS_Face[];
+
+        beforeAll(() => {
+            box = solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
+            boxEdges = occHelper.shapeGettersService.getEdges({ shape: box });
+            boxFaces = occHelper.shapeGettersService.getFaces({ shape: box });
+        });
+
+        it("should refuse to fillet every edge without being told a radius", () => {
+            // Arrange
+            const inputs = new Inputs.OCCT.FilletDto<TopoDS_Shape>(box);
+            Object.assign(inputs, { radius: undefined });
+
+            // Act & Assert
+            expect(() => fillets.filletEdges(inputs)).toThrow(/Radius not defined/);
+        });
+
+        it("should refuse to fillet named edges with no edges named", () => {
+            // Act & Assert
+            expect(() => fillets.filletEdgesList({ shape: box, edges: [], radiusList: [] }))
+                .toThrow(/Edges and radius list/);
+        });
+
+        it("should refuse a radius list of a different length from the edge list", () => {
+            // Act & Assert
+            expect(() => fillets.filletEdgesList({
+                shape: box, edges: [boxEdges[0]!, boxEdges[1]!], radiusList: [1]
+            })).toThrow(/same length/);
+        });
+
+        it("should refuse a variable radius whose params do not line up with its radii", () => {
+            // Act & Assert
+            expect(() => fillets.filletEdgeVariableRadius({
+                shape: box, edge: boxEdges[0]!, radiusList: [1, 2], paramsU: [0]
+            })).toThrow(/same length/);
+        });
+
+        it("should refuse the same variable radius across edges when the lists do not line up", () => {
+            // Act & Assert
+            expect(() => fillets.filletEdgesSameVariableRadius({
+                shape: box, edges: [boxEdges[0]!], radiusList: [1, 2], paramsU: [0]
+            })).toThrow(/same length/);
+        });
+
+        it("should refuse per-edge variable radii when the three lists do not line up", () => {
+            // Act & Assert
+            expect(() => fillets.filletEdgesVariableRadius({
+                shape: box, edges: [boxEdges[0]!], radiusLists: [[1, 2]], paramsULists: [[0], [1]]
+            })).toThrow(/same length/);
+        });
+
+        it("should refuse to chamfer every edge without being told a distance", () => {
+            // Arrange
+            const inputs = new Inputs.OCCT.ChamferDto<TopoDS_Shape>(box);
+            Object.assign(inputs, { distance: undefined });
+
+            // Act & Assert
+            expect(() => fillets.chamferEdges(inputs)).toThrow(/Distance is undefined/);
+        });
+
+        it("should refuse a distance list of a different length from the edge list", () => {
+            // Act & Assert
+            expect(() => fillets.chamferEdgesList({
+                shape: box, edges: [boxEdges[0]!, boxEdges[1]!], distanceList: [1]
+            })).toThrow(/same length/);
+        });
+
+        it("should refuse two-distance chamfers when the edges and faces do not line up", () => {
+            // Act & Assert
+            expect(() => fillets.chamferEdgesTwoDistances({
+                shape: box, edges: [boxEdges[0]!, boxEdges[1]!], faces: [boxFaces[0]!],
+                distance1: 1, distance2: 2
+            })).toThrow(/same length/);
+        });
+
+        it("should refuse two-distance lists when any of the four do not line up", () => {
+            // Act & Assert
+            expect(() => fillets.chamferEdgesTwoDistancesLists({
+                shape: box, edges: [boxEdges[0]!], faces: [boxFaces[0]!],
+                distances1: [1, 1], distances2: [2]
+            })).toThrow(/same length/);
+        });
+
+        it("should refuse a distance-and-angle chamfer when the edges and faces do not line up", () => {
+            // Act & Assert
+            expect(() => fillets.chamferEdgesDistAngle({
+                shape: box, edges: [boxEdges[0]!, boxEdges[1]!], faces: [boxFaces[0]!],
+                distance: 1, angle: 45
+            })).toThrow(/same length/);
+        });
+
+        it("should refuse distance-and-angle lists when any of the four do not line up", () => {
+            // Act & Assert
+            expect(() => fillets.chamferEdgesDistsAngles({
+                shape: box, edges: [boxEdges[0]!], faces: [boxFaces[0]!],
+                distances: [1, 1], angles: [45]
+            })).toThrow(/same length/);
+        });
+    });
+
+    describe("the arguments a 2d fillet refuses", () => {
+        it("should refuse a radius list that does not match the corners it names", () => {
+            // Arrange
+            const square = wire.createSquareWire({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act & Assert
+            expect(() => fillets.fillet2d({ shape: square, radiusList: [1, 2], indexes: [1] }))
+                .toThrow(/length of the list must match/);
+
+            square.delete();
+        });
+
+        it("should refuse anything that is neither a flat wire nor a flat face", () => {
+            // Arrange
+            const box = solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
+
+            // Act & Assert
+            expect(() => fillets.fillet2d({ shape: box, radius: 1 }))
+                .toThrow(/only fillet a 2d wire or a 2d face/);
+
+            box.delete();
+        });
     });
 });

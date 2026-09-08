@@ -3,11 +3,6 @@ import { OCCTWorkerManager } from "./occ-worker-manager";
 import { OccStateEnum } from "./occ-state.enum";
 import { OccInfo } from "./occ-info";
 
-// The manager is the whole of the promise bookkeeping between the API layer and the worker: it hands
-// out a uid per call, answers the matching promise when a message carrying that uid arrives, and
-// publishes what the worker is doing on its state subject. It also turns the file shapes a browser
-// hands a caller into something that survives a postMessage.
-
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
 type WorkerAnswer = "occ-initialised" | "busy" | { uid: string; result?: unknown; error?: string };
 

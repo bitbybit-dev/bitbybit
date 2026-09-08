@@ -6,7 +6,6 @@ import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybi
 
 const NO_MODULE: BitbybitOcctModule = {} as BitbybitOcctModule;
 
-// Helper to create a mock function that tracks calls
 function createMockFn<T = unknown>(): { fn: (...args: unknown[]) => T; calls: unknown[][]; returnValue: T | undefined; mockReturnValue: (val: T) => void; mockImplementation: (impl: (...args: unknown[]) => T) => void } {
     let returnValue: T | undefined;
     let implementation: ((...args: unknown[]) => T) | undefined;
@@ -241,7 +240,6 @@ describe("Result Serializer Unit Tests", () => {
             mockIsShape = createMockFn<boolean>();
             mockIsEntityHandle = createMockFn<boolean>();
             
-            // Default: isShape checks for $$ property and ShapeType method
             mockIsShape.mockImplementation((obj: unknown) => {
                 if (obj === null || obj === undefined || typeof obj !== "object") {
                     return false;
@@ -250,7 +248,6 @@ describe("Result Serializer Unit Tests", () => {
                 return "$$" in o && typeof o["ShapeType"] === "function";
             });
             
-            // Default: isEntityHandle checks for $$ but NOT ShapeType
             mockIsEntityHandle.mockImplementation((obj: unknown) => {
                 if (obj === null || obj === undefined || typeof obj !== "object") {
                     return false;
@@ -278,7 +275,6 @@ describe("Result Serializer Unit Tests", () => {
         it("should serialize single OCCT object to shape reference", () => {
             mockIsOCCTObject.mockReturnValue(true);
             
-            // Mock shape with ShapeType function to be detected as a shape (not entity)
             const shape = { $$: {}, hash: 12345, ShapeType: () => 0 };
             const result = resultSerializer.serializeResult(shape);
             
@@ -301,8 +297,6 @@ describe("Result Serializer Unit Tests", () => {
         });
 
         it("should serialize ObjectDefinition structure", () => {
-            // Note: ObjectDefinition compound is handled specially via isObjectDefinition check,
-            // so it doesn't need ShapeType. The individual shapes inside do need ShapeType.
             const objDef = {
                 compound: { $$: {}, hash: 100, ShapeType: () => 0 },
                 data: { someData: "value" },
@@ -324,8 +318,6 @@ describe("Result Serializer Unit Tests", () => {
         });
 
         it("should recursively serialize OCCT objects nested in plain objects (AssemblyPartDef-like)", () => {
-            // This tests the scenario where createPart returns { id, shape, name, colorRgba }
-            // The shape property contains an OCCT object that needs to be serialized
             const assemblyPart = {
                 id: "box",
                 shape: { $$: {}, hash: 12345, ShapeType: () => 0 },
@@ -366,7 +358,6 @@ describe("Result Serializer Unit Tests", () => {
         });
 
         it("should recursively serialize arrays containing objects with OCCT shapes", () => {
-            // This tests combineStructure scenario - parts array with shapes inside
             const parts = [
                 { id: "part1", shape: { $$: {}, hash: 111, ShapeType: () => 0 }, name: "Part 1" },
                 { id: "part2", shape: { $$: {}, hash: 222, ShapeType: () => 0 }, name: "Part 2" }
@@ -424,10 +415,9 @@ describe("Result Serializer Unit Tests", () => {
         it("should preserve Uint8Array (binary data) without converting to plain object", () => {
             mockIsOCCTObject.mockReturnValue(false);
             
-            const binaryData = new Uint8Array([71, 76, 84, 70, 2, 0, 0, 0]); // glTF magic bytes
+            const binaryData = new Uint8Array([71, 76, 84, 70, 2, 0, 0, 0]);
             const result = resultSerializer.serializeResult(binaryData);
             
-            // Should return the same Uint8Array, not a plain object
             expect(result).toBeInstanceOf(Uint8Array);
             expect(result).toBe(binaryData);
             expect((result as Uint8Array).length).toBe(8);
@@ -565,15 +555,10 @@ describe("Function Path Resolver Unit Tests", () => {
     });
 });
 
-// The paths above leave four cases untouched, each of which a real call reaches: a STEP payload
-// travelling as bytes, an assembly document coming back out, a result that only looks like an object
-// definition, and a dotted path whose parent is not there.
 describe("Shape Resolver edge cases", () => {
     let cacheHelper: CacheHelper;
 
     beforeEach(() => {
-        // None of these paths reaches the kernel: they either walk the value or fail before a shape
-        // is freed, so the helper is built over a module with nothing in it.
         cacheHelper = new CacheHelper(NO_MODULE);
     });
 

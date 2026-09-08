@@ -68,7 +68,6 @@ describe("OCCT io unit tests", () => {
     it("should save shape as step file with adjustYtoZ and fromRightHanded (no mirroring)", () => {
         const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
         
-        // Save with fromRightHanded=true (skips mirroring)
         const stepRightHanded = io.saveShapeSTEP({ 
             shape: box, 
             adjustYtoZ: true, 
@@ -76,7 +75,6 @@ describe("OCCT io unit tests", () => {
             fileName: "box.step" 
         });
         
-        // Save with fromRightHanded=false (default, applies mirroring)
         const stepLeftHanded = io.saveShapeSTEP({ 
             shape: box, 
             adjustYtoZ: true, 
@@ -84,13 +82,11 @@ describe("OCCT io unit tests", () => {
             fileName: "box.step" 
         });
         
-        // Both should be valid STEP files
         expect(stepRightHanded).toContain("ISO-10303-21;");
         expect(stepRightHanded).toContain("END-ISO-10303-21;");
         expect(stepLeftHanded).toContain("ISO-10303-21;");
         expect(stepLeftHanded).toContain("END-ISO-10303-21;");
         
-        // The content should differ because mirroring changes the geometry
         expect(stepRightHanded).not.toEqual(stepLeftHanded);
         
         box.delete();
@@ -106,13 +102,11 @@ describe("OCCT io unit tests", () => {
             fileName: "cylinder.step" 
         });
         
-        // Load it back (adjustZtoY should reverse the rotation)
         const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true })!;
         
         const volumeOriginal = solid.getSolidVolume({ shape: cylinder });
         const volumeLoaded = solid.getSolidVolume({ shape: loaded });
         
-        // Volume should be preserved
         expect(volumeOriginal).toBeCloseTo(volumeLoaded);
         
         cylinder.delete();
@@ -157,7 +151,6 @@ describe("OCCT io unit tests", () => {
 
         const edges = occHelper.edgesService.getEdgesAlongWire({ shape: filletedWire });
         
-        // Verify edge connectivity
         for (let i = 1; i < edges.length; i++) {
             const prevEnd = occHelper.edgesService.endPointOnEdge({ shape: edges[i - 1]! });
             const currStart = occHelper.edgesService.startPointOnEdge({ shape: edges[i]! });
@@ -182,7 +175,6 @@ describe("OCCT io unit tests", () => {
         expect(polyline.closed).toBe(true);
         expect(polyline.points.length).toBe(polyline.bulges.length);
         
-        // First and last points should not be the same for a closed polyline
         const firstPoint = polyline.points[0];
         const lastPoint = polyline.points[polyline.points.length - 1];
         const distanceToClose = Math.sqrt(
@@ -206,9 +198,8 @@ describe("OCCT io unit tests", () => {
         const polyline = dxfPaths[0]!.segments[0] as any;
         expect(polyline.points).toBeDefined();
         expect(polyline.closed).toBe(true);
-        expect(polyline.points.length).toBe(4); // 4 corners, no duplicate for closed
+        expect(polyline.points.length).toBe(4);
         
-        // All bulges should be 0 for straight lines
         polyline.bulges.forEach((bulge: number) => {
             expect(bulge).toBe(0);
         });
@@ -227,16 +218,14 @@ describe("OCCT io unit tests", () => {
         expect(dxfPaths.length).toBe(1);
         expect(dxfPaths[0]!.segments.length).toBe(1);
         
-        // A full circle is represented as a CIRCLE entity in DXF, not a polyline
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const circleSegment = dxfPaths[0]!.segments[0] as any;
         
-        // Check it's a circle entity with center and radius
         expect(circleSegment.center).toBeDefined();
         expect(circleSegment.radius).toBeDefined();
         expect(circleSegment.radius).toBeCloseTo(5, 2);
-        expect(circleSegment.center[0]).toBeCloseTo(0, 2); // X coordinate
-        expect(circleSegment.center[1]).toBeCloseTo(0, 2); // Z coordinate (Y removed for 2D)
+        expect(circleSegment.center[0]).toBeCloseTo(0, 2);
+        expect(circleSegment.center[1]).toBeCloseTo(0, 2);
     });
 
     it("should create dxf from mixed linear and arc edges", () => {
@@ -263,7 +252,6 @@ describe("OCCT io unit tests", () => {
         expect(polyline.closed).toBe(true);
         expect(polyline.bulges).toBeDefined();
         
-        // Should have both zero and non-zero bulges
         const hasZeroBulge = polyline.bulges.some((bulge: number) => Math.abs(bulge) < 0.01);
         const hasNonZeroBulge = polyline.bulges.some((bulge: number) => Math.abs(bulge) > 0.01);
         expect(hasZeroBulge).toBe(true);
@@ -284,9 +272,8 @@ describe("OCCT io unit tests", () => {
         const polyline = dxfPaths[0]!.segments[0] as any;
         expect(polyline.points).toBeDefined();
         expect(polyline.closed).toBe(false);
-        expect(polyline.points.length).toBeGreaterThan(4); // Should tessellate
+        expect(polyline.points.length).toBeGreaterThan(4);
         
-        // All bulges should be 0 since tessellation creates line segments
         polyline.bulges.forEach((bulge: number) => {
             expect(bulge).toBe(0);
         });
@@ -308,7 +295,7 @@ describe("OCCT io unit tests", () => {
         const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(faceWithHole);
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
 
-        expect(dxfPaths.length).toBe(2); // Outer and inner wire
+        expect(dxfPaths.length).toBe(2);
         
         dxfPaths.forEach(path => {
             expect(path.segments.length).toBe(1);
@@ -357,7 +344,6 @@ describe("OCCT io unit tests", () => {
 
         const edges = occHelper.edgesService.getEdgesAlongWire({ shape: combinedWire });
         
-        // Verify all edges connect properly
         for (let i = 1; i < edges.length; i++) {
             const prevEnd = occHelper.edgesService.endPointOnEdge({ shape: edges[i - 1]! });
             const currStart = occHelper.edgesService.startPointOnEdge({ shape: edges[i]! });
@@ -386,7 +372,6 @@ describe("OCCT io unit tests", () => {
         const rightArcCenterX = 30;
         const arcCenterZ = 20;
 
-        // Top straight line
         const topLine = wire.createPolylineWire({
             points: [
                 [leftArcCenterX, 0, arcCenterZ + radius],
@@ -394,14 +379,12 @@ describe("OCCT io unit tests", () => {
             ]
         });
 
-        // Right semicircle arc (from top to bottom, curving right)
         const rightArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
             start: [rightArcCenterX, 0, arcCenterZ + radius],
             end: [rightArcCenterX, 0, arcCenterZ - radius],
             tangentVec: [1, 0, 0]
         });
 
-        // Bottom straight line
         const bottomLine = wire.createPolylineWire({
             points: [
                 [rightArcCenterX, 0, arcCenterZ - radius],
@@ -409,7 +392,6 @@ describe("OCCT io unit tests", () => {
             ]
         });
 
-        // Left semicircle arc (from bottom to top, curving left)
         const leftArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
             start: [leftArcCenterX, 0, arcCenterZ - radius],
             end: [leftArcCenterX, 0, arcCenterZ + radius],
@@ -432,14 +414,11 @@ describe("OCCT io unit tests", () => {
         expect(polyline.bulges).toBeDefined();
         expect(polyline.closed).toBe(true);
 
-        // Find bulge indices for the arcs
         const bulges = polyline.bulges;
 
-        // Both arcs should have significant non-zero bulges (semicircles ≈ ±1)
         const significantBulges = bulges.filter((b: number) => Math.abs(b) > 0.9);
-        expect(significantBulges.length).toBe(2); // Two semicircular arcs
+        expect(significantBulges.length).toBe(2);
 
-        // Both arcs bulge outward from the slot
         const bulgeIndices: number[] = [];
         for (let i = 0; i < bulges.length; i++) {
             if (Math.abs(bulges[i]) > 0.9) {
@@ -448,7 +427,6 @@ describe("OCCT io unit tests", () => {
         }
         expect(bulgeIndices.length).toBe(2);
         
-        // Both bulges should be negative based on the actual arc traversal
         const bulge1 = bulges[bulgeIndices[0]!];
         const bulge2 = bulges[bulgeIndices[1]!];
         expect(bulge1).toBeLessThan(-0.9);
@@ -466,12 +444,10 @@ describe("OCCT io unit tests", () => {
         const centerX = 20;
         const centerZ = 10;
 
-        // Semicircle arc from top to bottom with tangent pointing right
-        // When traveling downward, curving right means positive bulge (left of travel direction)
         const rightArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
             start: [centerX, 0, centerZ + radius],
             end: [centerX, 0, centerZ - radius],
-            tangentVec: [1, 0, 0]  // Tangent pointing right
+            tangentVec: [1, 0, 0]
         });
 
         const arcWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [rightArc] });
@@ -479,8 +455,7 @@ describe("OCCT io unit tests", () => {
         const startPt = occHelper.edgesService.startPointOnEdge({ shape: rightArc });
         const endPt = occHelper.edgesService.endPointOnEdge({ shape: rightArc });
 
-        // Verify the arc geometry
-        expect(startPt[2]).toBeGreaterThan(endPt[2]); // Start is higher than end
+        expect(startPt[2]).toBeGreaterThan(endPt[2]);
         
         const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(arcWire);
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
@@ -489,8 +464,7 @@ describe("OCCT io unit tests", () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const polyline = dxfPaths[0]!.segments[0] as any;
 
-        // For a semicircular arc, the bulge should be close to ±1
-        expect(polyline.bulges[0]).toBeLessThan(-0.9); // Semicircle ≈ -1
+        expect(polyline.bulges[0]).toBeLessThan(-0.9);
         
         arcWire.delete();
         rightArc.delete();
@@ -501,12 +475,10 @@ describe("OCCT io unit tests", () => {
         const centerX = 20;
         const centerZ = 10;
 
-        // Semicircle arc from bottom to top with tangent pointing left
-        // When traveling upward, curving left means positive bulge (left of travel direction)
         const leftArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
             start: [centerX, 0, centerZ - radius],
             end: [centerX, 0, centerZ + radius],
-            tangentVec: [-1, 0, 0]  // Tangent pointing left
+            tangentVec: [-1, 0, 0]
         });
 
         const arcWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [leftArc] });
@@ -514,8 +486,7 @@ describe("OCCT io unit tests", () => {
         const startPt = occHelper.edgesService.startPointOnEdge({ shape: leftArc });
         const endPt = occHelper.edgesService.endPointOnEdge({ shape: leftArc });
 
-        // Verify the arc geometry
-        expect(startPt[2]).toBeLessThan(endPt[2]); // Start is lower than end
+        expect(startPt[2]).toBeLessThan(endPt[2]);
 
         const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(arcWire);
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
@@ -524,8 +495,7 @@ describe("OCCT io unit tests", () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const polyline = dxfPaths[0]!.segments[0] as any;
 
-        // For a semicircular arc, the bulge should be close to ±1
-        expect(polyline.bulges[0]).toBeLessThan(-0.9); // Semicircle ≈ -1
+        expect(polyline.bulges[0]).toBeLessThan(-0.9);
 
         arcWire.delete();
         leftArc.delete();
@@ -536,12 +506,10 @@ describe("OCCT io unit tests", () => {
         const centerX = 20;
         const centerZ = 10;
 
-        // Semicircle arc from bottom to top with tangent pointing RIGHT
-        // When traveling upward, curving right means negative bulge (right of travel direction)
         const rightArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
             start: [centerX, 0, centerZ - radius],
             end: [centerX, 0, centerZ + radius],
-            tangentVec: [1, 0, 0]  // Tangent pointing right
+            tangentVec: [1, 0, 0]
         });
 
         const arcWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [rightArc] });
@@ -549,8 +517,7 @@ describe("OCCT io unit tests", () => {
         const startPt = occHelper.edgesService.startPointOnEdge({ shape: rightArc });
         const endPt = occHelper.edgesService.endPointOnEdge({ shape: rightArc });
 
-        // Verify the arc geometry
-        expect(startPt[2]).toBeLessThan(endPt[2]); // Start is lower than end
+        expect(startPt[2]).toBeLessThan(endPt[2]);
 
         const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(arcWire);
         const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
@@ -559,8 +526,7 @@ describe("OCCT io unit tests", () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const polyline = dxfPaths[0]!.segments[0] as any;
 
-        // For a semicircular arc curving right (when traveling up), bulge should be positive
-        expect(polyline.bulges[0]).toBeGreaterThan(0.9); // Semicircle ≈ 1
+        expect(polyline.bulges[0]).toBeGreaterThan(0.9);
 
         arcWire.delete();
         rightArc.delete();
@@ -571,16 +537,12 @@ describe("OCCT io unit tests", () => {
         const endX = 20;
         const chordZ = 15;
         
-        // Create arc with center above the chord
-        // For a horizontal chord, center above means positive Z offset
         const centerX = (startX + endX) / 2;
-        const centerZ = chordZ + 5; // Center 5 units above the chord
-        const radius = Math.sqrt(Math.pow((endX - startX) / 2, 2) + Math.pow(5, 2)); // Calculate radius
+        const centerZ = chordZ + 5;
+        const radius = Math.sqrt(Math.pow((endX - startX) / 2, 2) + Math.pow(5, 2));
 
-        // Create arc using arcThroughThreePoints
-        // Middle point should be on the arc itself, at the peak
         const middleX = centerX;
-        const middleZ = centerZ + radius; // Top of the arc
+        const middleZ = centerZ + radius;
         
         const arc = occHelper.edgesService.arcThroughThreePoints({
             start: [startX, 0, chordZ],
@@ -599,10 +561,8 @@ describe("OCCT io unit tests", () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const polyline = dxfPaths[0]!.segments[0] as any;
 
-        // Verify center is actually above the chord
         expect(center[2]).toBeGreaterThan(chordZ);
         
-        // For a horizontal chord traveling right, center above = negative bulge
         expect(polyline.bulges[0]).toBeLessThan(-0.1);
 
         arcWire.delete();
@@ -614,15 +574,12 @@ describe("OCCT io unit tests", () => {
         const endX = 20;
         const chordZ = 15;
         
-        // Create arc with center below the chord
         const centerX = (startX + endX) / 2;
-        const centerZ = chordZ - 5; // Center 5 units below the chord
-        const radius = Math.sqrt(Math.pow((endX - startX) / 2, 2) + Math.pow(5, 2)); // Calculate radius
+        const centerZ = chordZ - 5;
+        const radius = Math.sqrt(Math.pow((endX - startX) / 2, 2) + Math.pow(5, 2));
 
-        // Create arc using arcThroughThreePoints
-        // Middle point should be on the arc itself, at the lowest point
         const middleX = centerX;
-        const middleZ = centerZ - radius; // Bottom of the arc
+        const middleZ = centerZ - radius;
         
         const arc = occHelper.edgesService.arcThroughThreePoints({
             start: [startX, 0, chordZ],
@@ -641,10 +598,8 @@ describe("OCCT io unit tests", () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const polyline = dxfPaths[0]!.segments[0] as any;
 
-        // Verify center is actually below the chord
         expect(center[2]).toBeLessThan(chordZ);
         
-        // For a horizontal chord traveling right, center below = positive bulge
         expect(polyline.bulges[0]).toBeGreaterThan(0.1);
 
         arcWire.delete();
@@ -656,7 +611,6 @@ describe("OCCT io unit tests", () => {
         const dto = new Inputs.OCCT.SaveStlDto(cube, "cube.stl", 0.01, false);
         const stl = io.saveShapeStl(dto);
         
-        // STL file should contain proper header and facet definitions
         expect(stl).toContain("solid");
         expect(stl).toContain("facet normal");
         expect(stl).toContain("outer loop");
@@ -677,7 +631,6 @@ describe("OCCT io unit tests", () => {
         expect(stl).toContain("facet normal");
         expect(stl).toContain("endsolid");
         
-        // Count the number of facets (triangles)
         const facetCount = (stl.match(/facet normal/g) || []).length;
         expect(facetCount).toBeGreaterThan(10);
         
@@ -704,7 +657,6 @@ describe("OCCT io unit tests", () => {
         const dtoHighRes = new Inputs.OCCT.SaveStlDto(sphere, "sphere.stl", 0.01, false);
         const stlHighRes = io.saveShapeStl(dtoHighRes);
         
-        // Higher precision should result in more facets
         const facetCountLow = (stlLowRes.match(/facet normal/g) || []).length;
         const facetCountHigh = (stlHighRes.match(/facet normal/g) || []).length;
         
@@ -718,14 +670,12 @@ describe("OCCT io unit tests", () => {
         const dto = new Inputs.OCCT.SaveStlDto(box, "box.stl", 0.01, false);
         const stl = io.saveShapeStl(dto);
         
-        // A box should have 12 triangular facets (2 per face, 6 faces)
         const facetCount = (stl.match(/facet normal/g) || []).length;
         expect(facetCount).toBe(12);
         
-        // Check that vertex coordinates are present
         const vertexMatches = stl.match(/vertex\s+[-\d.e+]+\s+[-\d.e+]+\s+[-\d.e+]+/g);
         expect(vertexMatches).not.toBeNull();
-        expect(vertexMatches).toHaveLength(36); // 12 facets * 3 vertices each
+        expect(vertexMatches).toHaveLength(36);
         
         box.delete();
     });
@@ -790,5 +740,420 @@ describe("OCCT io unit tests", () => {
         expect(result).toBeUndefined();
         expect(errorMessage).toBe("opencascade can't parse this extension!");
         console.error = originalError;
+    });
+    describe("reading a file that arrived as bytes rather than text", () => {
+        it("should read a STEP file handed over as an ArrayBuffer", () => {
+            // Arrange
+            const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
+            const stepText = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+            const bytes = new TextEncoder().encode(stepText);
+
+            // Act
+            const loaded = io.loadSTEPorIGES({
+                filetext: bytes.buffer, fileName: "box.step", adjustZtoY: false
+            })!;
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: loaded })).toBeCloseTo(solid.getSolidVolume({ shape: box }));
+
+            box.delete();
+            loaded.delete();
+        });
+
+        it("should read a compressed STEP file by its own extension", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+            const stepText = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+            const bytes = new TextEncoder().encode(stepText);
+
+            // Act
+            const loaded = io.loadSTEPorIGES({
+                filetext: bytes.buffer, fileName: "box.stpz", adjustZtoY: false
+            })!;
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: loaded })).toBeCloseTo(8);
+
+            box.delete();
+            loaded.delete();
+        });
+
+        it("should say so rather than throw where the bytes are not a model at all", () => {
+            // Arrange
+            const originalError = console.error;
+            const said: string[] = [];
+            console.error = (msg: string) => { said.push(msg); };
+            const rubbish = new TextEncoder().encode("this is not a step file");
+
+            // Act
+            const result = io.loadSTEPorIGES({
+                filetext: rubbish.buffer, fileName: "part.step", adjustZtoY: false
+            });
+
+            // Assert
+            expect(result).toBeUndefined();
+            expect(said[0]).toContain("Failed to read STEP file");
+
+            console.error = originalError;
+        });
+
+        it("should say so rather than throw where the bytes are not an IGES model", () => {
+            // Arrange
+            const originalError = console.error;
+            const said: string[] = [];
+            console.error = (msg: string) => { said.push(msg); };
+            const rubbish = new TextEncoder().encode("this is not an iges file");
+
+            // Act
+            const result = io.loadSTEPorIGES({
+                filetext: rubbish.buffer, fileName: "part.iges", adjustZtoY: false
+            });
+
+            // Assert
+            expect(result).toBeUndefined();
+            expect(said[0]).toContain("Failed to read IGES file");
+
+            console.error = originalError;
+        });
+    });
+
+    describe("reading an IGES file as text", () => {
+        it("should hand back an empty shape rather than nothing where the text carries no model", () => {
+            // Act
+            const result = io.loadSTEPorIGES({ filetext: "", fileName: "part.igs", adjustZtoY: false });
+
+            // Assert
+            expect(result).toBeDefined();
+            expect(result!.IsNull()).toBe(true);
+        });
+    });
+
+    describe("converting a STEP model to glTF", () => {
+        const stepOfABox = (): string => {
+            const box = solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+            const step = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+            box.delete();
+            return step;
+        };
+
+        const isGlb = (result: Uint8Array): boolean =>
+            result.length > 4 && String.fromCharCode(result[0]!, result[1]!, result[2]!, result[3]!) === "glTF";
+
+        it("should convert a STEP model handed over as text", () => {
+            // Act
+            const result = io.convertStepToGltf({ ...new Inputs.OCCT.ConvertStepToGltfDto(stepOfABox()) });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it("should convert the same model handed over as bytes", () => {
+            // Arrange
+            const bytes = new TextEncoder().encode(stepOfABox());
+
+            // Act
+            const result = io.convertStepToGltf({ ...new Inputs.OCCT.ConvertStepToGltfDto(bytes) });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it("should convert the same model handed over as an ArrayBuffer", () => {
+            // Arrange
+            const bytes = new TextEncoder().encode(stepOfABox());
+
+            // Act
+            const result = io.convertStepToGltf({
+                ...new Inputs.OCCT.ConvertStepToGltfDto(bytes.buffer)
+            });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it("should refuse a File, which only the worker layer knows how to unwrap", () => {
+            // Arrange
+            const inputs = { ...new Inputs.OCCT.ConvertStepToGltfDto(stepOfABox()) };
+            Object.assign(inputs, { stepData: { name: "part.step" } });
+
+            // Act
+            const act = (): Uint8Array => io.convertStepToGltf(inputs);
+
+            // Assert
+            expect(act).toThrow(/must be converted to ArrayBuffer/);
+        });
+
+        it("should say what went wrong where the data is not a model at all", () => {
+            // Act
+            const act = (): Uint8Array => io.convertStepToGltf({
+                ...new Inputs.OCCT.ConvertStepToGltfDto("this is not a step file")
+            });
+
+            // Assert
+            expect(act).toThrow(/STEP to glTF conversion failed/);
+        });
+    });
+
+    describe("converting a STEP model to glTF with every knob exposed", () => {
+        const stepOfABox = (): string => {
+            const box = solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+            const step = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+            box.delete();
+            return step;
+        };
+
+        const isGlb = (result: Uint8Array): boolean =>
+            result.length > 4 && String.fromCharCode(result[0]!, result[1]!, result[2]!, result[3]!) === "glTF";
+
+        it("should convert a model handed over as text", () => {
+            // Act
+            const result = io.convertStepToGltfAdvanced({
+                ...new Inputs.OCCT.ConvertStepToGltfAdvancedDto(stepOfABox())
+            });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it("should convert a model handed over as bytes", () => {
+            // Arrange
+            const bytes = new TextEncoder().encode(stepOfABox());
+
+            // Act
+            const result = io.convertStepToGltfAdvanced({
+                ...new Inputs.OCCT.ConvertStepToGltfAdvancedDto(bytes)
+            });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it("should convert a model handed over as an ArrayBuffer", () => {
+            // Arrange
+            const bytes = new TextEncoder().encode(stepOfABox());
+
+            // Act
+            const result = io.convertStepToGltfAdvanced({
+                ...new Inputs.OCCT.ConvertStepToGltfAdvancedDto(bytes.buffer)
+            });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it("should refuse a File, which only the worker layer knows how to unwrap", () => {
+            // Arrange
+            const inputs = { ...new Inputs.OCCT.ConvertStepToGltfAdvancedDto(stepOfABox()) };
+            Object.assign(inputs, { stepData: { name: "part.step" } });
+
+            // Act
+            const act = (): Uint8Array => io.convertStepToGltfAdvanced(inputs);
+
+            // Assert
+            expect(act).toThrow(/must be converted to ArrayBuffer/);
+        });
+
+        it("should say what went wrong where the data is not a model at all", () => {
+            // Act
+            const act = (): Uint8Array => io.convertStepToGltfAdvanced({
+                ...new Inputs.OCCT.ConvertStepToGltfAdvancedDto("this is not a step file")
+            });
+
+            // Assert
+            expect(act).toThrow(/STEP to glTF advanced conversion failed/);
+        });
+    });
+    describe("converting a STEP model to glTF with Draco compression", () => {
+        const stepOfABox = (): string => {
+            const box = solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+            const step = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+            box.delete();
+            return step;
+        };
+
+        const isGlb = (result: Uint8Array): boolean =>
+            result.length > 4 && String.fromCharCode(result[0]!, result[1]!, result[2]!, result[3]!) === "glTF";
+
+        it.each([
+            ["text", (step: string): string | ArrayBuffer | Uint8Array => step],
+            ["bytes", (step: string): string | ArrayBuffer | Uint8Array => new TextEncoder().encode(step)],
+            ["an ArrayBuffer", (step: string): string | ArrayBuffer | Uint8Array =>
+                new TextEncoder().encode(step).buffer],
+        ])("should convert a model handed over as %s", (_kind, asData) => {
+            // Act
+            const result = io.convertStepToGltfWithDraco({
+                ...new Inputs.OCCT.ConvertStepToGltfWithDracoDto(asData(stepOfABox()))
+            });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it("should refuse a File, which only the worker layer knows how to unwrap", () => {
+            // Arrange
+            const inputs = { ...new Inputs.OCCT.ConvertStepToGltfWithDracoDto(stepOfABox()) };
+            Object.assign(inputs, { stepData: { name: "part.step" } });
+
+            // Act
+            const act = (): Uint8Array => io.convertStepToGltfWithDraco(inputs);
+
+            // Assert
+            expect(act).toThrow(/must be converted to ArrayBuffer/);
+        });
+
+        it("should say what went wrong where the data is not a model at all", () => {
+            // Act
+            const act = (): Uint8Array => io.convertStepToGltfWithDraco({
+                ...new Inputs.OCCT.ConvertStepToGltfWithDracoDto("this is not a step file")
+            });
+
+            // Assert
+            expect(act).toThrow(/STEP to glTF \(Draco\) conversion failed/);
+        });
+    });
+
+    describe("converting a STEP model to glTF with every knob and Draco", () => {
+        const stepOfABox = (): string => {
+            const box = solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+            const step = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+            box.delete();
+            return step;
+        };
+
+        const isGlb = (result: Uint8Array): boolean =>
+            result.length > 4 && String.fromCharCode(result[0]!, result[1]!, result[2]!, result[3]!) === "glTF";
+
+        it.each([
+            ["text", (step: string): string | ArrayBuffer | Uint8Array => step],
+            ["bytes", (step: string): string | ArrayBuffer | Uint8Array => new TextEncoder().encode(step)],
+            ["an ArrayBuffer", (step: string): string | ArrayBuffer | Uint8Array =>
+                new TextEncoder().encode(step).buffer],
+        ])("should convert a model handed over as %s", (_kind, asData) => {
+            // Act
+            const result = io.convertStepToGltfAdvancedWithDraco({
+                ...new Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto(asData(stepOfABox()))
+            });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it("should refuse a File, which only the worker layer knows how to unwrap", () => {
+            // Arrange
+            const inputs = { ...new Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto(stepOfABox()) };
+            Object.assign(inputs, { stepData: { name: "part.step" } });
+
+            // Act
+            const act = (): Uint8Array => io.convertStepToGltfAdvancedWithDraco(inputs);
+
+            // Assert
+            expect(act).toThrow(/must be converted to ArrayBuffer/);
+        });
+
+        it("should say what went wrong where the data is not a model at all", () => {
+            // Act
+            const act = (): Uint8Array => io.convertStepToGltfAdvancedWithDraco({
+                ...new Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto("this is not a step file")
+            });
+
+            // Assert
+            expect(act).toThrow(/conversion failed/);
+        });
+    });
+    describe("reading the structure of a STEP assembly", () => {
+        const stepOfABox = (): string => {
+            const box = solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+            const step = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+            box.delete();
+            return step;
+        };
+
+        it.each([
+            ["text", (step: string): string | ArrayBuffer | Uint8Array => step],
+            ["bytes", (step: string): string | ArrayBuffer | Uint8Array => new TextEncoder().encode(step)],
+            ["an ArrayBuffer", (step: string): string | ArrayBuffer | Uint8Array =>
+                new TextEncoder().encode(step).buffer],
+        ])("should read the tree out of a model handed over as %s", (_kind, asData) => {
+            // Act
+            const result = io.parseStepToJson({
+                ...new Inputs.OCCT.ParseStepAssemblyToJsonDto(asData(stepOfABox()))
+            });
+
+            // Assert
+            expect(result.error).toBeUndefined();
+            expect(result.nodes.length).toBeGreaterThan(0);
+        });
+
+        it("should report the trouble in the result rather than throw", () => {
+            // Act
+            const result = io.parseStepToJson({
+                ...new Inputs.OCCT.ParseStepAssemblyToJsonDto("this is not a step file")
+            });
+
+            // Assert
+            expect(result.nodes ?? []).toEqual([]);
+            expect(result.error).toBeDefined();
+        });
+
+        it("should report a File the same way, since only the worker layer unwraps one", () => {
+            // Arrange
+            const inputs = { ...new Inputs.OCCT.ParseStepAssemblyToJsonDto("") };
+            Object.assign(inputs, { stepData: { name: "part.step" } });
+
+            // Act
+            const result = io.parseStepToJson(inputs);
+
+            // Assert
+            expect(result.error).toContain("must be converted to ArrayBuffer");
+        });
+    });
+
+    describe("the naming and transform choices a glTF export is given", () => {
+        const stepOfABox = (): string => {
+            const box = solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+            const step = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+            box.delete();
+            return step;
+        };
+
+        const isGlb = (result: Uint8Array): boolean =>
+            result.length > 4 && String.fromCharCode(result[0]!, result[1]!, result[2]!, result[3]!) === "glTF";
+
+        it.each([
+            [Inputs.OCCT.gltfNameFormatEnum.empty],
+            [Inputs.OCCT.gltfNameFormatEnum.product],
+            [Inputs.OCCT.gltfNameFormatEnum.instance],
+            [Inputs.OCCT.gltfNameFormatEnum.instanceOrProduct],
+            [Inputs.OCCT.gltfNameFormatEnum.productOrInstance],
+            [Inputs.OCCT.gltfNameFormatEnum.productAndInstance],
+            [Inputs.OCCT.gltfNameFormatEnum.productAndInstanceAndOcaf],
+        ])("should export a file whose nodes are named the %s way", (nodeNameFormat) => {
+            // Arrange
+            const inputs = new Inputs.OCCT.ConvertStepToGltfAdvancedDto(stepOfABox());
+            inputs.nodeNameFormat = nodeNameFormat;
+            inputs.meshNameFormat = nodeNameFormat;
+
+            // Act
+            const result = io.convertStepToGltfAdvanced({ ...inputs });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
+
+        it.each([
+            [Inputs.OCCT.gltfTransformFormatEnum.compact],
+            [Inputs.OCCT.gltfTransformFormatEnum.mat4],
+            [Inputs.OCCT.gltfTransformFormatEnum.trs],
+        ])("should export a file whose transforms are written the %s way", (transformFormat) => {
+            // Arrange
+            const inputs = new Inputs.OCCT.ConvertStepToGltfAdvancedDto(stepOfABox());
+            inputs.transformFormat = transformFormat;
+
+            // Act
+            const result = io.convertStepToGltfAdvanced({ ...inputs });
+
+            // Assert
+            expect(isGlb(result)).toBe(true);
+        });
     });
 });

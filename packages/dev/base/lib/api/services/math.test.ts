@@ -895,9 +895,6 @@ describe("Math unit tests", () => {
         expect(result).toEqual(8);
     });
 
-    // evalArithmetic is a small expression parser rather than a call into anything: it turns the text
-    // into tokens, orders the operators by precedence and folds them. A script author's typo reaches
-    // it directly, so what it refuses matters as much as what it computes.
     describe("evalArithmetic", () => {
         describe("what it computes", () => {
             it("should add", () => {

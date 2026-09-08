@@ -6,11 +6,6 @@ import { CacheHelper } from "./cache-helper";
 import { ShapeResolver } from "./shape-resolver";
 import { ReservedFunctions, CACHE_THRESHOLD } from "./constants";
 
-// The reserved commands are the ones the worker answers itself rather than passing to a kernel
-// method of the same name: meshing, deletion, the run markers and the plugin dependencies. Each is a
-// pure function of its inputs and the context it is handed, so each is run here against a context
-// that records what it was asked to do.
-
 describe("the reserved command handlers", () => {
     let occt: BitbybitOcctModule;
     let openCascade: OCCTService;

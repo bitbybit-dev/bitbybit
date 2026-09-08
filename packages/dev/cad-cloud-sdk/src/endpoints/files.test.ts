@@ -104,8 +104,6 @@ describe("FilesEndpoint", () => {
         });
     });
 
-    // uploadBytes is the only member that talks to something other than the API: it asks for an
-    // upload url, PUTs the bytes straight at the store behind it, and then confirms the file.
     describe("uploadBytes", () => {
         afterEach(() => {
             vi.unstubAllGlobals();

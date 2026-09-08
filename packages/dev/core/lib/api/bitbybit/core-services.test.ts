@@ -13,10 +13,6 @@ import { OCCTWIO } from "./occt/io";
 import { BaseTypes } from "./base-types";
 import * as Inputs from "../inputs";
 
-// The small pieces of the core API that hold no geometry of their own: the render-loop registry, the
-// two classes that gather the verb and OCCT services, the OCCT io that reads a file before sending
-// it, and the shared result types.
-
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
 
 class RecordingWorker extends EventTarget implements Worker {

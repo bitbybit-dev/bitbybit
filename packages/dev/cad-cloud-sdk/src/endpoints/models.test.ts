@@ -104,7 +104,6 @@ describe("ModelsEndpoint", () => {
         });
     });
 
-    // run and batchRun are the whole point of the endpoint: submit, poll, and collect what came out.
     describe("run", () => {
         it("submits the model, polls it, and returns its downloads", async () => {
             // Arrange

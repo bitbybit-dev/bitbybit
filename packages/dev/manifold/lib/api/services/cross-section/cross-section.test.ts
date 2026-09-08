@@ -16,7 +16,6 @@ const RECTANGLE_HEIGHT = 2;
 const RECTANGLE_AREA = 12;
 const SHIFT = 10;
 const OVERLAP_OFFSET = 2;
-// Two 4x4 squares offset by 2 in both axes share a 2x2 corner.
 const OVERLAP_AREA = 4;
 const SCALE: Inputs.Base.Vector2 = [2, 3];
 
@@ -115,7 +114,6 @@ describe("ManifoldCrossSection", () => {
             const list = new Inputs.Manifold.CrossSectionsDto([square, offsetSquare]);
             const pair = new Inputs.Manifold.TwoCrossSectionsDto(square, offsetSquare);
 
-            // Act, Assert
             expect(areaOf(manifold.crossSection.booleans.union(list)))
                 .toBeCloseTo(areaOf(manifold.crossSection.booleans.unionTwo(pair)), 6);
             expect(areaOf(manifold.crossSection.booleans.difference(list)))
@@ -148,11 +146,8 @@ describe("ManifoldCrossSection", () => {
         });
     });
 
-    // The rest of the cross-section API: the ways one is built from points, the ways one is read back
-    // as points, the operations that reshape it, and the transforms that move it.
     describe("shapes.create", () => {
         it("should build a section from the contour it was given", () => {
-            // Arrange - a 4 x 4 square, given as its four corners
             const polygons: Inputs.Base.Vector2[][] = [[[-2, -2], [2, -2], [2, 2], [-2, 2]]];
 
             // Act
@@ -176,7 +171,6 @@ describe("ManifoldCrossSection", () => {
         });
 
         it("should drop a repeated point when asked to", () => {
-            // Arrange - the first corner appears twice in a row
             const points: Inputs.Base.Point3[] = [[-2, -2, 0], [-2, -2, 0], [2, -2, 0], [2, 2, 0], [-2, 2, 0]];
 
             // Act
@@ -200,7 +194,6 @@ describe("ManifoldCrossSection", () => {
 
     describe("crossSectionFromPolygons", () => {
         it("should build a section from every contour it was given", () => {
-            // Arrange - a square with a square hole through it
             const polygonPoints: Inputs.Base.Point3[][] = [
                 [[-2, -2, 0], [2, -2, 0], [2, 2, 0], [-2, 2, 0]],
                 [[-1, -1, 0], [-1, 1, 0], [1, 1, 0], [1, -1, 0]],
@@ -290,7 +283,6 @@ describe("ManifoldCrossSection", () => {
             // Act
             manifold.crossSection.deleteCrossSection(new Inputs.Manifold.CrossSectionDto(throwaway));
 
-            // Assert - a released section can no longer be measured
             expect(() => areaOf(throwaway)).toThrow();
         });
     });
@@ -314,7 +306,6 @@ describe("ManifoldCrossSection", () => {
 
     describe("operations", () => {
         it("should hull a section into its convex outline", () => {
-            // Arrange - an L shape, whose hull is the triangle that spans it
             const l = manifold.crossSection.crossSectionFromPoints({
                 points: [[0, 0, 0], [4, 0, 0], [4, 1, 0], [1, 1, 0], [1, 4, 0], [0, 4, 0]],
             });
@@ -335,7 +326,6 @@ describe("ManifoldCrossSection", () => {
         });
 
         it("should revolve a section into a solid of revolution", () => {
-            // Arrange - a section set away from the axis, so the sweep is a ring rather than a disc
             const away = manifold.crossSection.transforms.translateXY(
                 new Inputs.Manifold.TranslateXYCrossSectionDto(square, SHIFT, 0));
 
@@ -351,8 +341,6 @@ describe("ManifoldCrossSection", () => {
             const away = manifold.crossSection.transforms.translateXY(
                 new Inputs.Manifold.TranslateXYCrossSectionDto(square, SHIFT, 0));
 
-            // Act - the kernel revolves about Y and leaves the ring lying in XZ; matching the profile
-            // turns it back a quarter, so the ring stands in the plane the section was drawn on
             const asRevolved = manifold.crossSection.operations.revolve(new Inputs.Manifold.RevolveDto(away, 360, false, 64));
             const upright = manifold.crossSection.operations.revolve(new Inputs.Manifold.RevolveDto(away, 360, true, 64));
             const spanOf = (shape: Manifold3D.Manifold, axis: 0 | 1 | 2): number => {
@@ -360,7 +348,6 @@ describe("ManifoldCrossSection", () => {
                 return max[axis] - min[axis];
             };
 
-            // Assert - the thin axis of the ring moves from Z to Y
             expect(spanOf(asRevolved, 2)).toBeCloseTo(SQUARE_SIZE, 5);
             expect(spanOf(upright, 1)).toBeCloseTo(SQUARE_SIZE, 5);
         });
@@ -430,7 +417,6 @@ describe("ManifoldCrossSection", () => {
         });
 
         it("should turn a section by the angle it was given", () => {
-            // Arrange - an oblong, so that a quarter turn is visible
             const oblong = manifold.crossSection.shapes.rectangle(
                 new Inputs.Manifold.RectangleDto(RECTANGLE_LENGTH, RECTANGLE_HEIGHT, true));
 
@@ -443,8 +429,6 @@ describe("ManifoldCrossSection", () => {
         });
 
         it("should apply the matrix it was given", () => {
-            // Arrange - the kernel reads the matrix in column order, so the translation is the last
-            // column and the row after it is ignored
             const translate: Inputs.Base.TransformMatrix3x3 = [1, 0, 0, 0, 1, 0, SHIFT, 0, 1];
 
             // Act

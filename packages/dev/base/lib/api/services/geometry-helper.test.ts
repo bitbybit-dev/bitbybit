@@ -4,9 +4,6 @@ import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 import { Vector } from "./vector";
 
-// The implementation that shipped before removeAllDuplicateVectors was made linear. Every
-// equivalence test below runs its input through both and demands the identical result, so this is
-// the specification of the behaviour the fast path has to reproduce exactly.
 const removeAllDuplicateVectorsQuadraticOracle = (
     helper: GeometryHelper,
     vectors: number[][],
@@ -21,8 +18,6 @@ const removeAllDuplicateVectorsQuadraticOracle = (
     return cleanVectors;
 };
 
-// Reference identity (toBe on every element) rather than deep equality: it proves the same
-// elements, in the same order, and the same choice of which of a duplicate pair survived.
 const expectSameAsOracle = (
     helper: GeometryHelper,
     vectors: number[][],
@@ -208,7 +203,6 @@ describe("GeometryHelper unit tests", () => {
 
         describe("tolerance edge cases", () => {
             it("should return false with zero tolerance even for identical points (due to < comparison)", () => {
-                // Note: approxEq uses Math.abs(num1 - num2) < tolerance, so 0 < 0 is false
                 const pointA: Inputs.Base.Point3 = [1, 2, 3];
                 const pointB: Inputs.Base.Point3 = [1, 2, 3];
                 expect(geometryHelper.arePointsTheSame(pointA, pointB, 0)).toBe(false);
@@ -387,7 +381,6 @@ describe("GeometryHelper unit tests", () => {
 
         it("should remove consecutive duplicates within tolerance (keeps last occurrence)", () => {
             const vectors = [[1, 2], [1.0000001, 2.0000001], [3, 4]];
-            // Algorithm keeps the last occurrence of consecutive duplicates
             expect(geometryHelper.removeConsecutiveVectorDuplicates(vectors, false, 1e-5)).toEqual([[1.0000001, 2.0000001], [3, 4]]);
         });
 
@@ -434,7 +427,6 @@ describe("GeometryHelper unit tests", () => {
 
         it("should remove duplicates within tolerance (keeps last occurrence)", () => {
             const points: Inputs.Base.Point3[] = [[1, 2, 3], [1.0000001, 2.0000001, 3.0000001], [4, 5, 6]];
-            // Algorithm keeps the last occurrence of consecutive duplicates
             expect(geometryHelper.removeConsecutivePointDuplicates(points, false, 1e-5)).toEqual([[1.0000001, 2.0000001, 3.0000001], [4, 5, 6]]);
         });
     });
@@ -457,7 +449,6 @@ describe("GeometryHelper unit tests", () => {
         });
 
         it("should return -Infinity for empty array (due to Math.max with no arguments)", () => {
-            // Note: Math.max(...[]) returns -Infinity, so 1 + (-Infinity) = -Infinity
             expect(geometryHelper.getArrayDepth([])).toBe(-Infinity);
         });
 
@@ -492,7 +483,6 @@ describe("GeometryHelper unit tests", () => {
         });
 
         it("should transform points using translation matrix", () => {
-            // Translation by (10, 20, 30)
             const translation: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 20, 30, 1]];
             const points: Inputs.Base.Point3[] = [[0, 0, 0]];
             const result = geometryHelper.transformControlPoints(translation, points);
@@ -509,7 +499,6 @@ describe("GeometryHelper unit tests", () => {
         });
 
         it("should apply multiple transformations in sequence", () => {
-            // Two translations: first by (1, 0, 0), then by (0, 1, 0)
             const transforms: Inputs.Base.TransformMatrixes = [
                 [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1],
                 [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1]
@@ -529,7 +518,6 @@ describe("GeometryHelper unit tests", () => {
         });
 
         it("should apply uniform scale transformation", () => {
-            // Scale by 2
             const scale: Inputs.Base.TransformMatrixes = [[2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1]];
             const points: Inputs.Base.Point3[] = [[1, 1, 1]];
             const result = geometryHelper.transformControlPoints(scale, points);

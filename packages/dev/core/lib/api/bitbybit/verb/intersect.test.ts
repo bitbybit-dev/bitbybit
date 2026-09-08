@@ -9,15 +9,10 @@ import { MathBitByBit } from "@bitbybit-dev/base";
 import * as Inputs from "../../inputs";
 import { BaseTypes } from "../base-types";
 
-// Intersections through verb, and the readers that pull one part out of a result. Every reader drops
-// a result whose parameter falls outside the curve, which is how verb reports an intersection found
-// on the infinite extension of a curve rather than on the curve itself.
-
 const CROSSING: Inputs.Base.Point3[] = [[-5, 0, 0], [5, 0, 0]];
 const CROSSED: Inputs.Base.Point3[] = [[0, -5, 0], [0, 5, 0]];
 const TOLERANCE = 1e-3;
 
-// An intersection verb would report outside the curve it was asked about.
 const OFF_CURVE: BaseTypes.CurveCurveIntersection = {
     point0: [99, 0, 0],
     point1: [99, 0, 0],

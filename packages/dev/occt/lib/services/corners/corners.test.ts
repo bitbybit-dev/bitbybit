@@ -92,7 +92,6 @@ describe("OCCT corners unit tests", () => {
         const volumeBefore = solid.getSolidVolume({ shape: b });
         const rounded = corners.filletCornerByPoint({ shape: b, points: cornerPoints, radius: 1.5, taperFactor: 1, snapTolerance: 0, mode: Inputs.OCCT.cornerModeEnum.auto });
         expect(rounded.IsNull()).toBe(false);
-        // every corner should now have its own rounding face
         expect(brepGraph.analyze({ shape: rounded }).faces).toBeGreaterThanOrEqual(6 + 8);
         const volumeAfter = solid.getSolidVolume({ shape: rounded });
         expect(volumeAfter).toBeLessThan(volumeBefore);
@@ -128,7 +127,6 @@ describe("OCCT corners unit tests", () => {
                 const rounded = corners.filletCornerByPoint({ shape: b, points: [[5, 5, 5]], radius: 2, taperFactor, snapTolerance: 0, mode: Inputs.OCCT.cornerModeEnum.auto });
                 expect(rounded.IsNull()).toBe(false);
                 const volumeAfter = solid.getSolidVolume({ shape: rounded });
-                // a corner round must remove a little material and add at least one face
                 expect(volumeAfter).toBeLessThan(volumeBefore);
                 expect(volumeAfter).toBeGreaterThan(volumeBefore * 0.85);
                 expect(brepGraph.analyze({ shape: rounded }).faces).toBeGreaterThan(6);
@@ -158,7 +156,6 @@ describe("OCCT corners unit tests", () => {
             };
             const vFull = measure(1);
             const vTight = measure(0);
-            // a tighter (more spherical) corner removes less material, so keeps more volume
             expect(vTight).not.toBeCloseTo(vFull, 3);
             expect(vTight).toBeGreaterThan(vFull);
         });

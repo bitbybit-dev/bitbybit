@@ -4,15 +4,8 @@ import { JSCADWorkerMock } from "../jscad-worker/jscad-worker-mock";
 import { JSCAD } from "./jscad";
 import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 
-// The four download methods are the only hand-written members of the generated class: the worker
-// answers with a blob and this side turns it into a click on a link the browser follows. The link
-// never reaches a document here - the element is a recording stand-in - so what is asserted is the
-// anchor the code builds, which is the whole of its behaviour.
-
 type PostedCall = { uid: string };
 
-// A worker that answers every call at once with a blob, so the download path runs end to end without
-// a kernel behind it.
 class AnsweringWorker extends JSCADWorkerMock {
     readonly blobs: Blob[] = [];
 

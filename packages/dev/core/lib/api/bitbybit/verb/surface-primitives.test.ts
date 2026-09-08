@@ -6,11 +6,6 @@ import { VerbSurface } from "./surface";
 import { VerbCurve } from "./curve";
 import * as Inputs from "../../inputs";
 
-// The six primitive surfaces verb builds - cone, cylinder, extrusion, sphere, revolution and sweep -
-// each reached through its own service on the surface API. Every service builds one and reads back
-// the parameters it was built from, and the revolution is the only one that converts, holding its
-// angle in radians while the API speaks degrees.
-
 const AXIS: Inputs.Base.Vector3 = [0, 1, 0];
 const X_AXIS: Inputs.Base.Vector3 = [1, 0, 0];
 const BASE: Inputs.Base.Point3 = [0, 0, 0];
@@ -138,15 +133,10 @@ describe("the verb primitive surfaces", () => {
         });
 
         it("should answer with the centre when asked for the axis, which is what verb holds", () => {
-            // The surface is built around the axis that was given - only the reader is wrong, and it
-            // is verb's: RevolvedSurface.axis() returns its own _center (verb 2.1.0). This API hands
-            // back what the library holds, so it repeats the answer rather than correcting it.
             expect(surface.revolved.axis(new Inputs.Verb.RevolutionDto(revolved))).toEqual(CENTER);
         });
 
         it("should sweep the profile around the axis it was given", () => {
-            // Act - the profile starts at [1, 0, 0], which sits at [0, -2, -3] from the centre; a
-            // quarter turn about Y carries that to [-3, -2, 0], and back from the centre to [-2, 0, 3]
             const swept = revolved.point(1, 0);
 
             // Assert

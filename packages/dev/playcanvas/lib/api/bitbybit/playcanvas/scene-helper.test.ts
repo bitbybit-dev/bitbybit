@@ -6,7 +6,6 @@ import { asMockApp, asMockEntity } from "../../__mocks__/playcanvas.mock";
 import type { Mock } from "vitest";
 import * as pc from "playcanvas";
 
-// Mock PlayCanvas module using centralized mocks
 vi.mock("playcanvas", async () => {
     const { createSceneHelperMock } = await vi.importActual<typeof import("../../__mocks__/playcanvas.mock")>("../../__mocks__/playcanvas.mock");
     return createSceneHelperMock();
@@ -16,23 +15,19 @@ describe("initPlayCanvas unit tests", () => {
     let mockCanvas: HTMLCanvasElement;
 
     beforeEach(() => {
-        // Create a mock canvas element
         mockCanvas = document.createElement("canvas");
         mockCanvas.id = "test-canvas";
         document.body.appendChild(mockCanvas);
 
-        // Mock window properties
         Object.defineProperty(window, "innerWidth", { value: 1920, writable: true });
         Object.defineProperty(window, "innerHeight", { value: 1080, writable: true });
         Object.defineProperty(window, "devicePixelRatio", { value: 1, writable: true });
     });
 
     afterEach(() => {
-        // Clean up DOM
         if (mockCanvas && mockCanvas.parentNode) {
             mockCanvas.parentNode.removeChild(mockCanvas);
         }
-        // Clean up any canvases created by tests
         document.querySelectorAll("canvas").forEach(canvas => {
             if (canvas.parentNode) {
                 canvas.parentNode.removeChild(canvas);
@@ -53,7 +48,6 @@ describe("initPlayCanvas unit tests", () => {
             expect(result.ground).toBeDefined();
             expect(typeof result.dispose).toBe("function");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -64,7 +58,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(result.scene.name).toBe("scene");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -75,7 +68,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(result.directionalLight.name).toBe("directionalLight");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -86,7 +78,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(asMockApp(result.app)._started).toBe(true);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -103,7 +94,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(asMockApp(result.app)._canvas).toBe(mockCanvas);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -120,10 +110,8 @@ describe("initPlayCanvas unit tests", () => {
             // Arrange & Act
             const result = initPlayCanvas();
 
-            // Assert - canvas should be created and different from test canvas
             expect(asMockApp(result.app)._canvas).not.toBe(mockCanvas);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -142,7 +130,6 @@ describe("initPlayCanvas unit tests", () => {
             expect(result.ground).not.toBeNull();
             expect(result.ground?.name).toBe("ground");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -158,7 +145,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(result.ground).toBeNull();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -178,7 +164,6 @@ describe("initPlayCanvas unit tests", () => {
             expect(position?.y).toBe(-2);
             expect(position?.z).toBe(10);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -194,12 +179,11 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas(config);
 
             // Assert
-            const expectedSize = config.sceneSize * config.groundScaleFactor; // 150
+            const expectedSize = config.sceneSize * config.groundScaleFactor;
             const scale = result.ground?.getLocalScale();
             expect(scale?.x).toBe(expectedSize);
             expect(scale?.z).toBe(expectedSize);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -219,7 +203,6 @@ describe("initPlayCanvas unit tests", () => {
             expect(result.orbitCamera?.cameraEntity).toBeDefined();
             expect(result.orbitCamera?.orbitCamera).toBeDefined();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -235,7 +218,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(result.orbitCamera).toBeNull();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -253,7 +235,6 @@ describe("initPlayCanvas unit tests", () => {
             const expectedDistance = config.sceneSize * Math.sqrt(2);
             expect(result.orbitCamera?.orbitCamera.distance).toBeCloseTo(expectedDistance, 5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -275,7 +256,6 @@ describe("initPlayCanvas unit tests", () => {
             expect(result.orbitCamera?.orbitCamera.pitch).toBe(45);
             expect(result.orbitCamera?.orbitCamera.yaw).toBe(90);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -293,7 +273,6 @@ describe("initPlayCanvas unit tests", () => {
             expect(result.orbitCamera?.orbitCamera.distanceMin).toBeCloseTo(config.sceneSize * 0.05, 5);
             expect(result.orbitCamera?.orbitCamera.distanceMax).toBeCloseTo(config.sceneSize * 10, 5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -309,7 +288,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(result.orbitCamera?.cameraEntity.name).toBe("OrbitCamera");
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -325,14 +303,13 @@ describe("initPlayCanvas unit tests", () => {
             const result = initPlayCanvas(config);
 
             // Assert
-            const expectedHeight = config.sceneSize * 0.75; // 75
-            const expectedOffset = config.sceneSize * 0.5; // 50
+            const expectedHeight = config.sceneSize * 0.75;
+            const expectedOffset = config.sceneSize * 0.5;
             const lightPosition = result.directionalLight.getPosition();
             expect(lightPosition.x).toBeCloseTo(expectedOffset, 5);
             expect(lightPosition.y).toBeCloseTo(expectedHeight, 5);
             expect(lightPosition.z).toBeCloseTo(expectedOffset, 5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -349,12 +326,10 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             const ambientLight = result.app.scene.ambientLight;
             expect(ambientLight).toBeDefined();
-            // Ambient light values should be RGB * intensity
             expect(ambientLight.r).toBeCloseTo(0.5, 2);
             expect(ambientLight.g).toBeCloseTo(0.5, 2);
             expect(ambientLight.b).toBeCloseTo(0.5, 2);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -373,7 +348,6 @@ describe("initPlayCanvas unit tests", () => {
             const lightComponent = asMockEntity(result.directionalLight).light;
             expect(lightComponent?.intensity).toBe(2.5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -390,7 +364,6 @@ describe("initPlayCanvas unit tests", () => {
             const lightComponent = asMockEntity(result.directionalLight).light;
             expect(lightComponent?.castShadows).toBe(true);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -407,7 +380,6 @@ describe("initPlayCanvas unit tests", () => {
             const lightComponent = asMockEntity(result.directionalLight).light;
             expect(lightComponent?.castShadows).toBe(false);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -425,7 +397,6 @@ describe("initPlayCanvas unit tests", () => {
             const lightComponent = asMockEntity(result.directionalLight).light;
             expect(lightComponent?.shadowResolution).toBe(4096);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -442,7 +413,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(removeEventListenerSpy).toHaveBeenCalledWith("resize", expect.any(Function));
 
-            // Cleanup
             removeEventListenerSpy.mockRestore();
         });
 
@@ -513,14 +483,12 @@ describe("initPlayCanvas unit tests", () => {
         });
 
         it("should remove created canvas from DOM on dispose", () => {
-            // Arrange - no canvasId means a new canvas is created
             const result = initPlayCanvas();
             const canvasCount = document.querySelectorAll("canvas").length;
 
             // Act
             result.dispose();
 
-            // Assert - there should be one less canvas (only the mock test canvas remains)
             const newCanvasCount = document.querySelectorAll("canvas").length;
             expect(newCanvasCount).toBeLessThan(canvasCount);
         });
@@ -534,7 +502,6 @@ describe("initPlayCanvas unit tests", () => {
             // Act
             result.dispose();
 
-            // Assert - canvas should still be in DOM
             expect(mockCanvas.parentNode).toBe(document.body);
         });
     });
@@ -544,15 +511,13 @@ describe("initPlayCanvas unit tests", () => {
             // Arrange
             const config = new PlayCanvasScene.InitPlayCanvasDto();
             config.canvasId = "test-canvas";
-            config.backgroundColor = "#ff0000"; // Pure red
+            config.backgroundColor = "#ff0000";
 
             // Act
             const result = initPlayCanvas(config);
 
-            // Assert - the background color should be parsed and applied
             expect(result.app).toBeDefined();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -560,7 +525,7 @@ describe("initPlayCanvas unit tests", () => {
             // Arrange
             const config = new PlayCanvasScene.InitPlayCanvasDto();
             config.canvasId = "test-canvas";
-            config.groundColor = "#00ff00"; // Pure green
+            config.groundColor = "#00ff00";
 
             // Act
             const result = initPlayCanvas(config);
@@ -568,7 +533,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(result.ground).toBeDefined();
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -586,7 +550,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(asMockApp(result.app)._updateCallbacks.length).toBeGreaterThan(0);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -604,7 +567,6 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(asMockApp(result.app)._updateCallbacks.length).toBeLessThan(initialCallbackCount);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -621,7 +583,6 @@ describe("initPlayCanvas unit tests", () => {
             expect(result.orbitCamera?.mouseInput).toBeDefined();
             expect(result.orbitCamera?.touchInput).toBeDefined();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -637,15 +598,11 @@ describe("initPlayCanvas unit tests", () => {
             // Assert
             expect(typeof result.orbitCamera?.update).toBe("function");
 
-            // Cleanup
             result.dispose();
         });
     });
 });
 
-// The camera is driven by a pointer and by a pair of fingers, and PlayCanvas delivers both as events
-// on the application's own devices. The devices the suite stands in for record the handlers they are
-// given, so calling one back is exactly what the engine would do.
 describe("the orbit camera's input handling", () => {
     let result: ReturnType<typeof initPlayCanvas>;
 
@@ -713,7 +670,6 @@ describe("the orbit camera's input handling", () => {
             // Act
             mouseHandler("mousemove")(mouseEvent({ x: 100, y: 100 }));
 
-            // Assert - a pan moves the pivot rather than turning the camera
             expect(result.orbitCamera!.orbitCamera.yaw).toBe(started);
             expect(result.orbitCamera!.orbitCamera.pivotPoint.x).not.toBe(0);
         });
@@ -810,8 +766,6 @@ describe("the orbit camera's input handling", () => {
     });
 });
 
-// What the camera itself does once it exists: the limits it holds its values inside, the two ways it
-// can be pointed at something, and the easing it applies on the way to where it was told to go.
 describe("the orbit camera instance", () => {
     let result: ReturnType<typeof initPlayCanvas>;
     let canvas: HTMLCanvasElement;
@@ -934,7 +888,6 @@ describe("the orbit camera instance", () => {
             // Act
             result.orbitCamera!.update(0.001);
 
-            // Assert - the target is held while the camera eases towards it
             expect(result.orbitCamera!.orbitCamera.distance).toBe(20);
         });
 

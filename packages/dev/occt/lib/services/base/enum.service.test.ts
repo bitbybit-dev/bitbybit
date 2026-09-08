@@ -89,7 +89,6 @@ describe("OCCT enum service unit tests", () => {
         });
 
         it("should return shell for a shell shape", () => {
-            // Create a shell by sewing two faces together
             const face1 = occHelper.facesService.createSquareFace({ size: 1, center: [0, 0, 0], direction: [0, 0, 1] });
             const face2 = occHelper.facesService.createSquareFace({ size: 1, center: [0, 0.5, 0.5], direction: [0, 1, 0] });
             const shell = occHelper.shellsService.sewFaces({ shapes: [face1, face2], tolerance: 1e-7 });
@@ -176,4 +175,3 @@ describe("OCCT enum service unit tests", () => {
         });
     });
 });
-

@@ -25,8 +25,6 @@ describe("BitByBitBase unit tests", () => {
             expect(bitByBit).toBeInstanceOf(BitByBitBase);
         });
 
-        // Every service is asserted by its class rather than by being defined: the failure this
-        // guards against is a field wired to the wrong constructor, which any presence check passes.
         const wiring: [keyof BitByBitBase, new (...args: never[]) => object][] = [
             ["context", Context],
             ["jscadWorkerManager", JSCADWorkerManager],
@@ -176,7 +174,6 @@ describe("BitByBitBase unit tests", () => {
 
     describe("Service integration", () => {
         it("should have functional math operations", () => {
-            // Test basic number creation instead of twoNrOperation which requires proper enum
             const result = bitByBit.math.number({ number: 42 });
             expect(result).toBe(42);
         });
@@ -274,7 +271,6 @@ describe("BitByBitBase unit tests", () => {
             const scene = new THREEJS.Scene();
             bitByBit.init(scene);
             
-            // Draw a point
             const result = bitByBit.draw.drawAny({ entity: [1, 2, 3] });
             expect(result).toBeDefined();
             expect(scene.children.length).toBeGreaterThan(0);
@@ -286,7 +282,7 @@ describe("BitByBitBase unit tests", () => {
             
             bitByBit.draw.drawAny({ entity: [1, 2, 3] });
             bitByBit.draw.drawAny({ entity: [4, 5, 6] });
-            bitByBit.draw.drawAny({ entity: [[0, 0, 0], [1, 1, 1]] }); // line
+            bitByBit.draw.drawAny({ entity: [[0, 0, 0], [1, 1, 1]] });
             
             expect(scene.children.length).toBeGreaterThanOrEqual(3);
         });

@@ -9,7 +9,6 @@ const BIG_SIDE = 4;
 const BIG_VOLUME = 64;
 const SMALL_SIDE = 2;
 const SMALL_VOLUME = 8;
-// The small cube sits at a corner of the big one, so exactly one of its eight octants overlaps.
 const OVERLAP_CORNER: Inputs.Base.Point3 = [2, 2, 2];
 const OVERLAP_VOLUME = 1;
 const FAR_AWAY: Inputs.Base.Point3 = [100, 0, 0];

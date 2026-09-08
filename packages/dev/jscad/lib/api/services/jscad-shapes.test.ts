@@ -16,7 +16,6 @@ const CUBOID_VOLUME = 48;
 
 const SPHERE_RADIUS = 1;
 const SPHERE_SEGMENTS = 64;
-// A polyhedral sphere is inscribed in the true one, so it is a little smaller than 4/3 pi r^3.
 const SPHERE_VOLUME_TOLERANCE = 0.05;
 
 const CYLINDER_RADIUS = 2;
@@ -93,8 +92,6 @@ describe("JSCADShapes", () => {
 
             // Assert
             expect(kernel.measurements.measureVolume(cuboid)).toBeCloseTo(CUBOID_VOLUME, 6);
-            // Height is the Y span and length the Z span: these primitives are built to stand on
-            // the ground plane, so depth runs along Z.
             const [min, max] = kernel.measurements.measureBoundingBox(cuboid);
             expect(max[0] - min[0]).toBeCloseTo(CUBOID_WIDTH, 6);
             expect(max[1] - min[1]).toBeCloseTo(CUBOID_HEIGHT, 6);
@@ -169,17 +166,12 @@ describe("JSCADShapes", () => {
             // Assert
             expect(fineSphere.polygons.length).toBeGreaterThan(coarseSphere.polygons.length);
             expect(coarseSphere.polygons.length).toBeGreaterThan(CUBE_FACES);
-            // Both are polyhedra inscribed in the sphere, so neither can be wider than the
-            // diameter - and the finer one is the closer of the two.
             expect(spanOf(coarseSphere)).toBeLessThan(diameter);
             expect(spanOf(fineSphere)).toBeLessThanOrEqual(diameter);
             expect(spanOf(fineSphere)).toBeGreaterThan(spanOf(coarseSphere));
         });
     });
 
-    // The remaining primitives, and the plural forms that place one copy per centre point. Each
-    // plural form is the singular one applied down a list, so what matters is that every centre gets
-    // a shape and that each lands where it was asked for.
     describe("the remaining primitives", () => {
         it("should build an elliptic cylinder wider in one direction than the other", () => {
             // Act
@@ -187,8 +179,6 @@ describe("JSCADShapes", () => {
                 new Inputs.JSCAD.CylidnerEllipticDto([0, 0, 0], CYLINDER_HEIGHT, [4, 2], [4, 2], 32)));
             const [min, max] = kernel.measurements.measureBoundingBox(shape);
 
-            // Assert - the cylinder stands along Z, so its height is that axis and the two radii
-            // give its width and depth
             expect(max[0] - min[0]).toBeCloseTo(8, 1);
             expect(max[1] - min[1]).toBeCloseTo(4, 1);
             expect(max[2] - min[2]).toBeCloseTo(CYLINDER_HEIGHT, 5);
@@ -226,7 +216,6 @@ describe("JSCADShapes", () => {
         });
 
         it("should build a solid from the polygon points it was given", () => {
-            // Arrange - the four faces of a tetrahedron
             const points: Inputs.Base.Point3[][] = [
                 [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
                 [[0, 0, 0], [0, 1, 0], [0, 0, 1]],

@@ -179,8 +179,6 @@ describe("JSON unit tests", () => {
             { value: "abc", expected: ["abc"] },
             { value: 42, expected: [42] },
             { value: true, expected: [true] },
-            // The engine answers a null root with undefined rather than a wrapped null, and an
-            // unconnected input reaches it as null, so the two agree - which is the point.
             { value: null, expected: undefined },
             { value: undefined, expected: undefined },
         ];
@@ -192,7 +190,6 @@ describe("JSON unit tests", () => {
 
     describe("getValueOnProp for a value that cannot be cloned", () => {
         it("should read the property from the object it was given", () => {
-            // Arrange - a function cannot be structured-cloned, so the clone is not attempted twice
             const value = { name: "part", build: () => undefined };
 
             // Act

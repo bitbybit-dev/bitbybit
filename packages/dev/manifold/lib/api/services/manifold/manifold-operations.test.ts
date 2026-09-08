@@ -10,7 +10,6 @@ const CUBE_TRIANGLES = 12;
 const CORNERS: Inputs.Base.Point3[] = [
     [0, 0, 0], [2, 0, 0], [0, 2, 0], [0, 0, 2],
 ];
-// A tetrahedron on three unit-2 legs from the origin: base area 2, height 2, so volume 8/6.
 const TETRAHEDRON_VOLUME = 8 / 6;
 const SEPARATION = 10;
 const TWO_PARTS = 2;
@@ -105,9 +104,6 @@ describe("ManifoldOperations", () => {
         });
     });
 
-    // The rest of the operations. Most hand a knob straight to the kernel, so what is asserted is
-    // that the solid comes back changed in the way the knob names, or unchanged where that is the
-    // point - and, for the identity ones, that the volume is what it was.
     describe("asOriginal", () => {
         it("should give back a solid of the same volume, with an identity of its own", () => {
             // Act
@@ -142,8 +138,6 @@ describe("ManifoldOperations", () => {
 
     describe("refineToTolerance", () => {
         it("should divide the faces of a curved solid until they meet the tolerance", () => {
-            // Arrange - a coarse sphere carries the curvature that a tolerance can improve on; a cube
-            // is already exact and would come back untouched
             const sphere = manifold.manifold.shapes.sphere(new Inputs.Manifold.SphereDto(1, 8));
             const loosened = manifold.manifold.operations.setTolerance(new Inputs.Manifold.ManifoldRefineToleranceDto(sphere, 0.1));
 

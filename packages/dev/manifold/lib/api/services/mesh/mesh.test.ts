@@ -4,10 +4,6 @@ import type { ManifoldService } from "../../manifold-service";
 import type * as Manifold3D from "manifold-3d";
 import * as Inputs from "../../inputs";
 
-// A mesh is what a solid becomes once it is triangulated: vertex positions, the triangles that index
-// them, and the property channels alongside. This service reads those back one at a time, so what is
-// asserted is that each reader lands on the part of the mesh it names.
-
 const CUBE_SIZE = 2;
 const CUBE_TRIANGLES = 12;
 const CUBE_VERTICES = 8;
@@ -53,7 +49,6 @@ describe("the mesh services", () => {
             // Act
             const position = manifold.mesh.evaluate.position(new Inputs.Manifold.MeshVertexIndexDto(mesh, 0));
 
-            // Assert - every corner of a cube of side 2 centred on the origin is one unit out on each axis
             expect(position.map(Math.abs)).toEqual([1, 1, 1]);
         });
     });
@@ -74,16 +69,12 @@ describe("the mesh services", () => {
             // Act
             const extras = manifold.mesh.evaluate.extras(new Inputs.Manifold.MeshVertexIndexDto(mesh, 0));
 
-            // Assert - a plain cube carries its position and nothing else
             expect(extras).toEqual([]);
         });
     });
 
     describe("transform", () => {
         it("should read the placement of a run out of the mesh's own window on it", () => {
-            // The reader hands back whatever the kernel wrote for that run. A cube built where it
-            // stands carries almost nothing there, so what is pinned is that the reader reads that
-            // window rather than inventing a matrix of its own.
             // Act
             const transform = manifold.mesh.evaluate.transform(new Inputs.Manifold.MeshTriangleRunIndexDto(mesh, 0));
 
@@ -100,8 +91,6 @@ describe("the mesh services", () => {
 
     describe("tangent", () => {
         it("should read the tangent of a half edge out of the mesh's window on it", () => {
-            // A plain cube carries no tangents, so what is pinned is that the reader reads that
-            // window rather than inventing values of its own.
             // Act
             const tangent = manifold.mesh.evaluate.tangent(new Inputs.Manifold.MeshHalfEdgeIndexDto(mesh, 0));
 

@@ -119,15 +119,50 @@ Structure every test using the AAA pattern:
 
 ```typescript
 it("should calculate distance between two points", () => {
-    // Arrange - set up test data
+    // Arrange
     const startPoint = [0, 0, 0];
     const endPoint = [3, 4, 0];
 
-    // Act - execute the code under test
+    // Act
     const result = bitByBit.point.distance({ startPoint, endPoint });
 
-    // Assert - verify expected outcome
+    // Assert
     expect(result).toBeCloseTo(5, 5);
+});
+```
+
+### The three markers are the only comments a test may carry
+
+`bitbybit/no-loose-comments` runs over every `*.test.ts`, and it allows exactly `// Arrange`,
+`// Act`, `// Assert` and `// Act & Assert` - the marker on its own, with nothing after it. Every
+other comment in a test file is an error, and there is no fixer, so the rule never rewrites your file.
+
+The markers are structure rather than description: they say which part of the test a line belongs to,
+and a marker cannot drift from the code because it makes no claim about it. A sentence explaining
+*why* can drift, and in a test it has somewhere better to go:
+
+| What you wanted to write in a comment | Where it goes instead |
+| --- | --- |
+| what this test proves | the name of the `it` |
+| what this group of tests is about | the name of the `describe` |
+| why this input, and not another | the name of the value: `const unevenlySpacedCorners = ...` |
+| what this arrangement is | a named helper: `const documentOfOneBox = () => ...` |
+| what a magic number means | a named constant: `const FULL_TURN_DEGREES = 360;` |
+| a caveat the code cannot express | the `it` name, as behaviour: `"should ... , because a turn is baked into the geometry"` |
+
+```typescript
+// Wrong - the note is a second description, and the name says nothing
+it("should subdivide", () => {
+    // a face longer than it is wide, so the two sides differ
+    const f = face.createRectangleFace({ width: 20, length: 5, center: [0, 0, 0], direction: [0, 0, 1] });
+    ...
+});
+
+// Right - the name carries the claim, the value carries the reason
+it("should round the rectangles by the shorter of their two sides", () => {
+    // Arrange
+    const longerThanItIsWide = face.createRectangleFace({ width: 20, length: 5, center: [0, 0, 0], direction: [0, 0, 1] });
+    ...
 });
 ```
 
@@ -305,9 +340,10 @@ export function createMockWorkerManagers() {
 - [ ] File named `<source-file>.test.ts`
 - [ ] Reusable mocks in `__mocks__` folder
 - [ ] AAA pattern followed (Arrange-Act-Assert)
+- [ ] No comment in the file except those three markers, each on its own
 - [ ] Specific assertions used (not `toBeDefined`, `toBeGreaterThan(0)`)
 - [ ] Failure scenarios included
-- [ ] `as any` avoided (use typed mocks or `as unknown as Type`)
+- [ ] `as any` avoided, and `as unknown as T` too - `bitbybit/no-double-assertion` bans both
 - [ ] Each test is independent
 - [ ] Descriptive test names that explain expected behavior
 

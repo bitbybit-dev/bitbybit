@@ -65,7 +65,6 @@ describe("OCCT shape unit tests", () => {
         expect(edges.length).toBe(8);
         expect(faces.length).toBe(1);
 
-        // Cleanup
         square1.delete();
         square2.delete();
         square3.delete();
@@ -129,7 +128,6 @@ describe("OCCT shape unit tests", () => {
     });
 
     it("should check whether loft shape is marked as convex", async () => {
-        // it seems that in OCCT marking does not happen automatically, could be investigated further
         const circle1 = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const circle2 = wire.createCircleWire({ radius: 1.5, center: [0, 1, 0], direction: [0, 1, 0] });
         const circle3 = wire.createCircleWire({ radius: 1, center: [0, 2, 0], direction: [0, 1, 0] });
@@ -144,7 +142,6 @@ describe("OCCT shape unit tests", () => {
     });
 
     it("should check whether loft shape is marked as convex", async () => {
-        // it seems that in OCCT marking does not happen automatically
         const circle1 = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const circle2 = wire.createCircleWire({ radius: 0.5, center: [0, 1, 0], direction: [0, 1, 0] });
         const circle3 = wire.createCircleWire({ radius: 1, center: [0, 2, 0], direction: [0, 1, 0] });

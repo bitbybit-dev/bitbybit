@@ -164,10 +164,8 @@ describe("CacheHelper unit tests", () => {
             
             cacheHelper.addToCache(hash, mockManifold);
             
-            // Simulate deletion by removing $$ property
             delete (mockManifold as Partial<typeof mockManifold>).$$;
             
-            // Should return null because manifold is deleted
             const cached = cacheHelper.checkCache(hash);
             expect(cached).toBeNull();
         });
@@ -196,10 +194,8 @@ describe("CacheHelper unit tests", () => {
             
             cacheHelper.addToCache(hash, manifolds);
             
-            // Simulate deletion of one manifold
             delete (manifold1 as Partial<typeof manifold1>).$$;
             
-            // Should return null because one manifold is deleted
             const cached = cacheHelper.checkCache(hash);
             expect(cached).toBeNull();
         });
@@ -230,11 +226,9 @@ describe("CacheHelper unit tests", () => {
                 return mockResult;
             };
             
-            // First call - should call cacheMiss
             cacheHelper.cacheOp(args, cacheMiss);
             expect(cacheMissCallCount).toBe(1);
             
-            // Second call - should use cache
             let cacheMiss2Called = false;
             const cacheMiss2 = () => {
                 cacheMiss2Called = true;
@@ -260,7 +254,6 @@ describe("CacheHelper unit tests", () => {
             expect(result.hash).toBeDefined();
             expect(cacheMissCallCount).toBe(1);
             
-            // Second call should use cache
             let cacheMiss2Called = false;
             const cacheMiss2 = () => {
                 cacheMiss2Called = true;
@@ -322,14 +315,11 @@ describe("CacheHelper unit tests", () => {
                 return manifold1;
             };
             
-            // First call - creates and caches
             cacheHelper.cacheOp(args, cacheMiss1);
             expect(cacheMiss1CallCount).toBe(1);
             
-            // Simulate deletion
             delete (manifold1 as Partial<typeof manifold1>).$$;
             
-            // Second call - should detect deleted manifold and call cacheMiss again
             const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             let cacheMiss2CallCount = 0;
             const cacheMiss2 = () => {
@@ -436,10 +426,8 @@ describe("CacheHelper unit tests", () => {
         it("should clean all entries from argCache not just usedHashes", () => {
             const manifold = { $$: { ptr: 123 }, delete: vi.fn() };
             
-            // Add to cache through cacheOp
             cacheHelper.cacheOp({ test: 1 }, () => manifold);
             
-            // Manually add another entry that's not in usedHashes
             cacheHelper.argCache["manual-hash"] = manifold;
             
             cacheHelper.cleanAllCache();
@@ -466,21 +454,17 @@ describe("CacheHelper unit tests", () => {
             const args2 = { test: 2 };
             const value = { data: "test" };
             
-            // First run - cache both
             cacheHelper.cacheOp(args1, () => value);
             cacheHelper.cacheOp(args2, () => value);
             
             const hash1 = cacheHelper.computeHash(args1);
             const hash2 = cacheHelper.computeHash(args2);
             
-            // Mark this as previous run
             cacheHelper.cleanUpCache();
             
-            // Second run - only use first argument
             cacheHelper.usedHashes = {};
             cacheHelper.cacheOp(args1, () => value);
             
-            // Clean up should remove unused hash2
             cacheHelper.cleanUpCache();
             
             expect(cacheHelper.checkCache(hash1)).toBeDefined();
@@ -494,22 +478,18 @@ describe("CacheHelper unit tests", () => {
             const args1 = { test: 1 };
             const args2 = { test: 2 };
             
-            // First run - cache both
             cacheHelper.cacheOp(args1, () => manifold1);
             cacheHelper.cacheOp(args2, () => manifold2);
             
-            // Mark this as previous run
             cacheHelper.cleanUpCache();
             
-            // Second run - only use first argument
             cacheHelper.usedHashes = {};
             cacheHelper.cacheOp(args1, () => manifold1);
             
-            // Clean up should delete manifold2
             cacheHelper.cleanUpCache();
             
-            expect(manifold1.delete).not.toHaveBeenCalled(); // manifold1 still in use
-            expect(manifold2.delete).toHaveBeenCalled();  // manifold2 was cleaned
+            expect(manifold1.delete).not.toHaveBeenCalled();
+            expect(manifold2.delete).toHaveBeenCalled();
         });
 
         it("should handle arrays of Manifold objects during cleanup", () => {
@@ -519,16 +499,12 @@ describe("CacheHelper unit tests", () => {
             
             const args = { test: 1 };
             
-            // First run - cache array
             cacheHelper.cacheOp(args, () => manifolds);
             
-            // Mark this as previous run
             cacheHelper.cleanUpCache();
             
-            // Second run - don't use this cache
             cacheHelper.usedHashes = {};
             
-            // Clean up should delete both manifolds
             cacheHelper.cleanUpCache();
             
             expect(manifold1.delete).toHaveBeenCalled();
@@ -539,11 +515,9 @@ describe("CacheHelper unit tests", () => {
             const args = { test: 1 };
             const value = { data: "test" };
             
-            // First run
             cacheHelper.cacheOp(args, () => value);
             cacheHelper.cleanUpCache();
             
-            // Second run - still using same args
             cacheHelper.cacheOp(args, () => value);
             cacheHelper.cleanUpCache();
             
@@ -555,12 +529,10 @@ describe("CacheHelper unit tests", () => {
             const args = { test: 1 };
             const value = { data: "test" };
             
-            // Clean up with no previous run
             expect(() => {
                 cacheHelper.cleanUpCache();
             }).not.toThrow();
             
-            // Add some cache and clean up
             cacheHelper.cacheOp(args, () => value);
             expect(() => {
                 cacheHelper.cleanUpCache();
@@ -591,16 +563,12 @@ describe("CacheHelper unit tests", () => {
             };
             const args = { test: 1 };
             
-            // First run - cache manifold
             cacheHelper.cacheOp(args, () => manifold);
             
-            // Mark this as previous run
             cacheHelper.cleanUpCache();
             
-            // Second run - don't use this cache
             cacheHelper.usedHashes = {};
             
-            // Clean up should handle the error gracefully
             expect(() => {
                 cacheHelper.cleanUpCache();
             }).not.toThrow();
@@ -628,13 +596,9 @@ describe("CacheHelper unit tests", () => {
             const obj3 = { hash: "hash3", ptr: 300, data: "test3" };
             const array = [obj1, obj2, obj3];
             
-            // Try to remove with same ptr but different hash
-            // The remove logic uses OR: keep if (hash !== hash OR ptr !== ptr)
-            // So removal only happens when BOTH hash AND ptr match
             const objToRemove = { hash: "different", ptr: 200 };
             const result = cacheHelper.remove(array, objToRemove);
             
-            // Since hash is different, obj2 should NOT be removed
             expect(result.length).toBe(3);
             expect(result).toContain(obj1);
             expect(result).toContain(obj2);
@@ -669,7 +633,6 @@ describe("CacheHelper unit tests", () => {
             const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
             const manifold3 = { $$: { ptr: 789 }, delete: vi.fn() };
             
-            // Cache multiple manifolds with different args
             const result1 = cacheHelper.cacheOp({ op: "create", id: 1 }, () => manifold1);
             const result2 = cacheHelper.cacheOp({ op: "create", id: 2 }, () => manifold2);
             const result3 = cacheHelper.cacheOp({ op: "create", id: 3 }, () => manifold3);
@@ -679,17 +642,14 @@ describe("CacheHelper unit tests", () => {
             expect(result3.hash).toBeDefined();
             expect(result1.hash).not.toBe(result2.hash);
             
-            // Retrieve from cache
             const cached1 = cacheHelper.cacheOp({ op: "create", id: 1 }, () => manifold1);
             expect(cached1.hash).toBe(result1.hash);
             
-            // Clean up cache
             cacheHelper.cleanUpCache();
             cacheHelper.usedHashes = {};
-            cacheHelper.cacheOp({ op: "create", id: 1 }, () => manifold1); // Only use manifold1
+            cacheHelper.cacheOp({ op: "create", id: 1 }, () => manifold1);
             cacheHelper.cleanUpCache();
             
-            // manifold2 and manifold3 should be cleaned
             const hash2 = cacheHelper.computeHash({ op: "create", id: 2 });
             const hash3 = cacheHelper.computeHash({ op: "create", id: 3 });
             expect(cacheHelper.checkCache(hash2)).toBeNull();
@@ -708,10 +668,6 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
-    // An array reaches the cache under one hash only when it is put there directly: cacheOp splits a
-    // returned array into one entry per element. The cleanup paths still have to walk such an entry,
-    // and deleting one kernel object that has already gone must not stop the rest being deleted. A
-    // kernel object is recognised by the marker embind puts on it, not by having a delete.
     describe("cleaning an entry that holds an array", () => {
         type Deletable = { $$: object; delete: () => void };
 
@@ -801,8 +757,6 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
-    // What the cache holds is whatever the kernel handed back, and that is not always a live kernel
-    // shape: an entry can be a plain value or nothing at all. Neither may stop a cleanup.
     describe("entries that are not live kernel shapes", () => {
         it("should skip an entry that holds nothing when the whole cache is dropped", () => {
             // Arrange
@@ -839,10 +793,6 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
-    // The hash is taken over the arguments with every kernel pointer stripped out, because a pointer
-    // is an address that changes between runs and would make two identical calls look different. A
-    // pointer the strip did not catch is a bug in the pattern, and the helper says so rather than
-    // hashing an address.
     describe("computeHash and stray pointers", () => {
         let reported: unknown[];
 

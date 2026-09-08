@@ -85,7 +85,6 @@ describe("narrowing a JSCAD entity to the kind an operation needs", () => {
         });
 
         it("should pass a list through unchanged", () => {
-            // Arrange - the published type says one, and the kernel has always taken either
             const many = [SOLID, REGION] as unknown as Inputs.JSCAD.JSCADEntity;
 
             // Act

@@ -8,7 +8,6 @@ const BIG_SIZE = 4;
 const BIG_VOLUME = 64;
 const SMALL_SIZE = 2;
 const SMALL_VOLUME = 8;
-// The small cube sits on a corner of the big one, so exactly one of its octants overlaps.
 const OVERLAP_VOLUME = 1;
 const OVERLAP_CORNER = 2;
 const FAR = 100;
@@ -140,7 +139,6 @@ describe("ManifoldBooleans", () => {
 
     describe("split", () => {
         it("should give back both what the cutter kept and what it took away", () => {
-            // Arrange - a cutter reaching through half the cube
             const cutter = manifold.manifold.transforms.translateXYZ(
                 new Inputs.Manifold.TranslateXYZDto(big, BIG_SIZE / 2, 0, 0));
 
@@ -169,7 +167,6 @@ describe("ManifoldBooleans", () => {
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-BIG_SIZE / 4, 0, BIG_SIZE / 4]));
 
-            // Assert - three planes cut a solid into four
             expect(pieces).toHaveLength(4);
         });
 
@@ -178,12 +175,10 @@ describe("ManifoldBooleans", () => {
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-BIG_SIZE / 4, 0, BIG_SIZE / 4]));
 
-            // Assert - a 4 wide cube cut at -1, 0 and 1 gives four slabs of one unit each
             expect(pieces.map((piece) => volumeOf(piece))).toEqual(pieces.map(() => expect.closeTo(BIG_VOLUME / 4, 5)));
         });
 
         it("should give back the whole solid for an offset the solid lies beyond", () => {
-            // Act - a plane far along the normal leaves the whole solid on the near side of it
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [FAR]));
 
@@ -193,8 +188,6 @@ describe("ManifoldBooleans", () => {
         });
 
         it("should give back the whole solid for an offset that lies before all of it", () => {
-            // Act - a plane far back along the normal leaves nothing on the near side of it, so the
-            // solid comes back whole as the piece beyond the plane
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-FAR]));
 
@@ -204,7 +197,6 @@ describe("ManifoldBooleans", () => {
         });
 
         it("should give back nothing when there is no solid to split", () => {
-            // Arrange - subtracting a shape from itself leaves nothing behind
             const empty = manifold.manifold.booleans.subtract(new Inputs.Manifold.TwoManifoldsDto(big, big));
 
             // Act
@@ -220,14 +212,11 @@ describe("ManifoldBooleans", () => {
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [0]));
 
-            // Assert - both halves come back, and together they are the solid that went in
             expect(pieces).toHaveLength(2);
             expect(pieces.reduce((total, piece) => total + volumeOf(piece), 0)).toBeCloseTo(BIG_VOLUME, 5);
         });
 
         it("should stop cutting once nothing is left to cut", () => {
-            // Act - the first plane lies beyond the solid, so everything is a finished piece and the
-            // offsets after it have nothing to work on
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [FAR, FAR * 2]));
 

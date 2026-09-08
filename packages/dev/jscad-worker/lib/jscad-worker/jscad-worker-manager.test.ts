@@ -4,14 +4,9 @@ import { JscadStateEnum } from "./jscad-state.enum";
 import { JscadInfo } from "./jscad-info";
 import { JSCADWorkerMock } from "./jscad-worker-mock";
 
-// The manager is the whole of the promise bookkeeping between the API layer and the worker: it hands
-// out a uid per call, answers the matching promise when a message carrying that uid arrives, and
-// publishes what the worker is doing on its state subject. Nothing else in the package tracks either.
-
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
 type WorkerAnswer = "jscad-initialised" | "busy" | { uid: string; result?: unknown; error?: string };
 
-// The worker the manager talks to, recording what reaches it instead of running anything.
 class RecordingWorker extends JSCADWorkerMock {
     readonly posted: PostedCall[] = [];
 

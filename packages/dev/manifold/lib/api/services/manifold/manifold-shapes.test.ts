@@ -7,9 +7,7 @@ const CUBE_SIZE = 2;
 const CUBE_VOLUME = 8;
 const CUBE_SURFACE_AREA = 24;
 const CUBE_VERTICES = 8;
-// Six square faces, each split into two triangles.
 const CUBE_TRIANGLES = 12;
-// A solid with no holes through it.
 const GENUS_OF_A_BALL = 0;
 
 const SPHERE_RADIUS = 1;
@@ -122,7 +120,6 @@ describe("ManifoldShapes", () => {
 
     describe("fromPolygonPoints", () => {
         it("should build the solid the polygon points enclose", () => {
-            // Arrange - the four faces of a tetrahedron on three legs of length 2
             const polygonPoints: Inputs.Base.Point3[][] = [
                 [[0, 0, 0], [0, 2, 0], [2, 0, 0]],
                 [[0, 0, 0], [2, 0, 0], [0, 0, 2]],
@@ -133,7 +130,6 @@ describe("ManifoldShapes", () => {
             // Act
             const shape = manifold.manifold.shapes.fromPolygonPoints(new Inputs.Manifold.FromPolygonPointsDto(polygonPoints));
 
-            // Assert - base area 2, height 2
             expect(manifold.manifold.evaluate.volume(new Inputs.Manifold.ManifoldDto(shape))).toBeCloseTo(8 / 6, 5);
         });
 
@@ -170,7 +166,6 @@ describe("ManifoldShapes", () => {
 
     describe("fromPolygonPoints given data it cannot use", () => {
         it("should skip a polygon that is not a triangle", () => {
-            // Arrange - one square face among the four triangles of a tetrahedron
             const warned: unknown[] = [];
             const consoleWarn = console.warn;
             console.warn = (message: unknown) => { warned.push(message); };
@@ -186,7 +181,6 @@ describe("ManifoldShapes", () => {
             const shape = manifold.manifold.shapes.fromPolygonPoints(new Inputs.Manifold.FromPolygonPointsDto(polygonPoints));
             console.warn = consoleWarn;
 
-            // Assert - the tetrahedron is built and the square is reported and left out
             expect(warned).toHaveLength(1);
             expect(manifold.manifold.evaluate.volume(new Inputs.Manifold.ManifoldDto(shape))).toBeCloseTo(8 / 6, 5);
         });

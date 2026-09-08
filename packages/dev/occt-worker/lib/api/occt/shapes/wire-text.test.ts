@@ -4,10 +4,6 @@ import { OCCTWire } from "./wire";
 import { AnsweringWorker } from "../../__mocks__/test-helpers";
 import { Inputs } from "@bitbybit-dev/occt";
 
-// textWiresWithData is hand-written: the worker answers with the data and the shapes apart, and this
-// side puts them back together, replacing every shape id in the data with the shape it names. Every
-// other member of the class only forwards, and the delegation suite runs those.
-
 const A_SHAPE: Inputs.OCCT.TopoDSShapePointer = { hash: 1, type: "occ-shape" };
 const A_COMPOUND: Inputs.OCCT.TopoDSCompoundPointer = { hash: 2, type: "occ-shape" };
 

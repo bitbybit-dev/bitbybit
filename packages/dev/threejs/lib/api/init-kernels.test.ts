@@ -3,12 +3,6 @@ import * as THREEJS from "three";
 import { BitByBitBase } from "./bitbybit-base";
 import { initBitByBit, initKernels } from "./init-kernels";
 
-// The one call that sets a Three.js application up: it takes the workers a host already has (or
-// fetches them from the CDN, which is not something a suite should do), hands them to the base along
-// with the scene, and waits for the kernels the host asked for to report themselves ready.
-
-// A worker that never answers. The cases below enable no kernel, so nothing is waited for; what is
-// under test is that the workers reach the base and that the scene is the one that was given.
 class SilentWorker extends EventTarget implements Worker {
     onmessage: Worker["onmessage"] = null;
     onmessageerror: Worker["onmessageerror"] = null;

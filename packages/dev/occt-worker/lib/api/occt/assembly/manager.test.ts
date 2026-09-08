@@ -4,15 +4,8 @@ import { OCCTAssemblyManager } from "./manager";
 import { AnchorRecord, AnsweringWorker, recordDownloads } from "../../__mocks__/test-helpers";
 import { Inputs } from "@bitbybit-dev/occt";
 
-// The three export members and the step loader are hand-written: an export decides whether the
-// browser is asked to download what the worker answered with, and the loader turns the file shapes a
-// browser hands a caller into something that survives a postMessage. Everything else in the class
-// only forwards, and the delegation suite runs those.
-
 const A_DOCUMENT: Inputs.OCCT.TDocStdDocumentPointer = { hash: 1, type: "occ-entity" };
 
-// Every export DTO carries a dozen mesh and format settings that these tests do not touch; each
-// starts from the defaults the DTO itself declares and states only what the case is about.
 type Pointer = Inputs.OCCT.TDocStdDocumentPointer;
 const stepInputs = (over: Partial<Inputs.OCCT.ExportDocumentToStepDto<Pointer>>): Inputs.OCCT.ExportDocumentToStepDto<Pointer> =>
     Object.assign(new Inputs.OCCT.ExportDocumentToStepDto<Pointer>(A_DOCUMENT), over);

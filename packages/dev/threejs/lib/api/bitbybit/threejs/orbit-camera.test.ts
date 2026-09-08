@@ -15,7 +15,6 @@ describe("ThreeJSOrbitCamera unit tests", () => {
         mockContext = createMockContext();
         orbitCamera = new ThreeJSOrbitCamera(mockContext);
 
-        // Create mock DOM element from shared test helpers
         mockDomElement = createMockDOMElement();
     });
 
@@ -144,15 +143,12 @@ describe("ThreeJSOrbitCamera unit tests", () => {
         it("should destroy all input handlers on destroy call", () => {
             const controller = orbitCamera.create(createDefaultInputs(mockDomElement));
 
-            // Verify input handlers exist with destroy methods before destruction
             expect(typeof controller.mouseInput!.destroy).toBe("function");
             expect(typeof controller.touchInput!.destroy).toBe("function");
             expect(typeof controller.keyboardInput!.destroy).toBe("function");
 
-            // Destroy should complete without error
             controller.destroy();
 
-            // After destroy, the controller should still be a valid object
             expect(controller.camera).toBeInstanceOf(THREEJS.PerspectiveCamera);
         });
     });
@@ -221,7 +217,7 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
             const pivot = orbitCamera.getPivotPoint({
                 orbitCamera: controller,
-                pivotPoint: [0, 0, 0], // This won't be used for getting
+                pivotPoint: [0, 0, 0],
             });
 
             expect(pivot).toEqual([3, 6, 9]);
@@ -365,11 +361,9 @@ describe("ThreeJSOrbitCamera unit tests", () => {
                 max: 100,
             });
 
-            // Try to set distance below min
             controller.orbitCamera.distance = 1;
             expect(controller.orbitCamera.distance).toBe(5);
 
-            // Try to set distance above max
             controller.orbitCamera.distance = 200;
             expect(controller.orbitCamera.distance).toBe(100);
         });
@@ -381,11 +375,9 @@ describe("ThreeJSOrbitCamera unit tests", () => {
                 max: 45,
             });
 
-            // Try to set pitch below min
             controller.orbitCamera.pitch = -60;
             expect(controller.orbitCamera.pitch).toBe(-45);
 
-            // Try to set pitch above max
             controller.orbitCamera.pitch = 60;
             expect(controller.orbitCamera.pitch).toBe(45);
         });
@@ -417,14 +409,11 @@ describe("ThreeJSOrbitCamera unit tests", () => {
             const controller = orbitCamera.create(defaultInputs);
             const initialPosition = controller.camera.position.clone();
 
-            // Change target values
             controller.orbitCamera.yaw = 45;
             controller.orbitCamera.pitch = 30;
 
-            // Update with dt
             controller.update(0.016);
 
-            // Camera position should have changed
             expect(controller.camera.position.equals(initialPosition)).toBe(false);
         });
 
@@ -452,17 +441,13 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
 
-            // Set target distance
             controller.orbitCamera.distance = 50;
 
-            // Update partially
             controller.update(0.016);
 
-            // Should not have reached target yet due to damping
             const currentDistance = (controller.orbitCamera as any)._distance || 
                                    controller.camera.position.length();
 
-            // The distance should be somewhere between initial and target
             expect(currentDistance).not.toBe(50);
         });
     });
@@ -492,21 +477,18 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
 
-            // Create a test mesh
             const geometry = new THREEJS.BoxGeometry(2, 2, 2);
             const material = new THREEJS.MeshBasicMaterial();
             const mesh = new THREEJS.Mesh(geometry, material);
             mesh.position.set(5, 5, 5);
             mockContext.scene.add(mesh);
 
-            // Focus on the mesh
             orbitCamera.focusOnObject({
                 orbitCamera: controller,
                 object: mesh,
                 padding: 1.5,
             });
 
-            // Pivot should be at mesh center
             const pivot = controller.orbitCamera.pivotPoint;
             expect(pivot.x).toBeCloseTo(5, 1);
             expect(pivot.y).toBeCloseTo(5, 1);
@@ -515,11 +497,6 @@ describe("ThreeJSOrbitCamera unit tests", () => {
     });
 });
 
-// Note: DTO constructor tests are in threejs-camera-inputs.test.ts to avoid duplication
-
-// The camera is driven by a pointer, a pair of fingers and the arrow keys, and each of those arrives
-// as an event on the element it was attached to. The element the suite hands in records its
-// listeners, so an event dispatched on it reaches the handler exactly as a browser's would.
 describe("ThreeJSOrbitCamera input handling", () => {
     let orbitCamera: ThreeJSOrbitCamera;
     let domElement: HTMLElement;
@@ -546,8 +523,6 @@ describe("ThreeJSOrbitCamera input handling", () => {
         domElement: element,
     });
 
-    // The events a browser would send. jsdom builds MouseEvent and KeyboardEvent, but not TouchEvent,
-    // so a touch event is the plain object the handler reads: a list of points with coordinates.
     const mouse = (type: string, init: MouseEventInit): Event => new MouseEvent(type, init);
     const wheel = (deltaY: number): Event => new WheelEvent("wheel", { deltaY });
     const touch = (type: string, points: { clientX: number; clientY: number }[]): Event => {
@@ -767,8 +742,6 @@ describe("ThreeJSOrbitCamera input handling", () => {
     });
 });
 
-// The rest of the controller: what it does on the way in, the two ways it can be pointed at
-// something, and the free function a host uses when it has only a scene to hand.
 describe("ThreeJSOrbitCamera framing and placement", () => {
     let orbitCameraService: ThreeJSOrbitCamera;
     let scene: THREEJS.Scene;
@@ -818,7 +791,6 @@ describe("ThreeJSOrbitCamera framing and placement", () => {
             // Act
             const controller = orbitCameraService.create(inputsFor(domElement, box, true));
 
-            // Assert - the camera pulls back to hold the whole box, and looks at where it stands
             expect(controller.orbitCamera.distance).toBeGreaterThan(0);
             expect(controller.orbitCamera.pivotPoint.x).toBeCloseTo(10, 5);
             controller.destroy();
@@ -834,7 +806,6 @@ describe("ThreeJSOrbitCamera framing and placement", () => {
         });
 
         it("should do nothing when the object it was pointed at has no size", () => {
-            // Arrange - an empty group has no bounds to frame
             const empty = new THREEJS.Group();
 
             // Act
@@ -896,7 +867,6 @@ describe("ThreeJSOrbitCamera framing and placement", () => {
             // Arrange
             const controller = orbitCameraService.create(inputsFor(domElement));
 
-            // Act - asking for 350 degrees from 0 is ten degrees the other way
             controller.orbitCamera.yaw = 350;
             controller.update(1);
 
@@ -921,7 +891,6 @@ describe("ThreeJSOrbitCamera framing and placement", () => {
 
     describe("createOrbitCamera", () => {
         it("should build a controller from a scene alone", () => {
-            // Arrange - domElement and focusObject are both optional, so a scene-only call omits them
             const { focusObject, domElement: element, ...rest } = inputsFor(domElement);
             expect(focusObject).toBeUndefined();
 

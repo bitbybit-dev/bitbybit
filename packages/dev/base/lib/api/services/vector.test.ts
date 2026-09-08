@@ -399,9 +399,6 @@ describe("Vector unit tests", () => {
         expect(res).toEqual([1, 2.5, 3]);
     });
 
-    // The three answers that depend on something other than the arithmetic: a comparison delegated to
-    // the geometry helper, an angle brought back into a full turn, and a vector too short to have a
-    // direction at all.
     describe("vectorsTheSame", () => {
         it("should call two vectors within the tolerance the same", () => {
             expect(vector.vectorsTheSame({ vec1: [1, 0, 0], vec2: [1 + 1e-9, 0, 0], tolerance: 1e-7 })).toBe(true);
@@ -414,7 +411,6 @@ describe("Vector unit tests", () => {
 
     describe("positiveAngleBetween", () => {
         it("should bring a turn measured the other way round into a full turn", () => {
-            // Act - the reference axis decides the sign, so this measures -90 and reports 270
             const angle = vector.positiveAngleBetween({ first: [1, 0, 0], second: [0, 1, 0], reference: [0, 0, -1] });
 
             // Assert

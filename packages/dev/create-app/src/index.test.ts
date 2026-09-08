@@ -26,8 +26,6 @@ type EngineTemplate = { engine: string; mainTs: string };
 const templateMainTs = (engine: string): string =>
     path.join(ENGINE_TEMPLATES_DIR, engine, TEMPLATE_LANGUAGE, "src", "main.ts");
 
-// Every engine template the CLI can patch, found on disk rather than listed, so an engine added to
-// the templates directory is covered here the day it lands.
 const engineTemplates = (): EngineTemplate[] =>
     readdirSync(ENGINE_TEMPLATES_DIR, { withFileTypes: true })
         .filter((entry) => entry.isDirectory())
@@ -35,8 +33,6 @@ const engineTemplates = (): EngineTemplate[] =>
         .filter((template) => existsSync(template.mainTs))
         .sort((left, right) => left.engine.localeCompare(right.engine));
 
-// Read out of src/index.ts rather than copied. A second copy of the regex here could only ever
-// prove itself right, and this suite exists to catch the day the CLI's own regex stops matching.
 const cliOptionsPattern = (): RegExp => {
     const source = readFileSync(CLI_SOURCE, "utf8");
     const declaration = OPTIONS_PATTERN_DECLARATION.exec(source);
@@ -47,7 +43,6 @@ const cliOptionsPattern = (): RegExp => {
             "scaffolded project's src/main.ts when 64-bit OCCT is chosen; if it was renamed or moved, point this " +
             "test at it again rather than deleting the test. Check src/index.ts.");
     }
-    // Without g or y, so that testing the same text twice cannot disagree with itself over lastIndex.
     return new RegExp(body, (declaration?.[2] ?? "").replace(/[gy]/g, ""));
 };
 
@@ -67,7 +62,6 @@ const manifestOf = (...segments: string[]): Manifest =>
 
 describe("create-app", () => {
     beforeAll(() => {
-        // The suite runs the CLI as a user does, so it needs the build the package publishes.
         if (!existsSync(CLI)) {
             const built = spawnSync("npm", ["run", "build"], { cwd: ROOT, encoding: "utf8" });
             expect(built.status, `building the CLI failed:\n${built.stdout}${built.stderr}`).toBe(0);
@@ -165,12 +159,6 @@ describe("create-app", () => {
         });
     });
 
-    // The CLI does not template the OCCT architecture in. 32-bit writes nothing, and for "64" and
-    // "64-mt" it rewrites the scaffolded src/main.ts with one regex that assumes
-    // `enableManifold: true,` is the LAST property of the InitBitByBitOptions literal. String.replace
-    // on a pattern that misses returns the text unchanged, so a template that reorders or renames
-    // that property leaves the CLI reporting success while the user silently gets the 32-bit kernel
-    // they did not choose. These cases pin that coupling for every engine template it can patch.
     describe("the OCCT architecture patch", () => {
         const mismatchHint = (engine: string): string =>
             `templates/vite/${engine}/typescript/src/main.ts no longer matches the regex the CLI rewrites it with. ` +
@@ -197,7 +185,6 @@ describe("create-app", () => {
         });
 
         it("should stop matching once that options object is reordered", () => {
-            // Arrange - one template with its last two properties swapped, in memory only.
             const [first] = engineTemplates();
             if (!first) throw new Error(`no engine templates under ${ENGINE_TEMPLATES_DIR} - there is nothing left to patch`);
             const template = readFileSync(first.mainTs, "utf8");
@@ -206,7 +193,6 @@ describe("create-app", () => {
             // Act
             const matched = cliOptionsPattern().test(reordered);
 
-            // Assert - the fixture is genuinely broken, and the pattern genuinely notices.
             expect(reordered, "the swap changed nothing, so this case proves nothing").not.toBe(template);
             expect(matched).toBe(false);
         });

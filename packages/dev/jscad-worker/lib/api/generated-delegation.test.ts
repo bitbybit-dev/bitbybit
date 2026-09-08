@@ -13,15 +13,8 @@ import { JSCADShapes } from "./shapes";
 import { JSCADText } from "./text";
 import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 
-// The API layer under lib/api is generated from the kernel: every method is one call posting its own
-// dotted path to the worker. check:worker-api pins what is generated and check:worker-parity pins the
-// set of paths, but neither runs a line of it. This suite does.
-
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
 
-// The worker the manager talks to, recording what reaches it instead of running anything. It is the
-// stand-in the package itself ships, with the one method under test replaced, so the suite is typed
-// against the same contract a host would satisfy.
 class RecordingWorker extends JSCADWorkerMock {
     readonly posted: PostedCall[] = [];
 
@@ -35,15 +28,9 @@ class RecordingWorker extends JSCADWorkerMock {
 const CUBE_SIZE = 2;
 const ORIGIN: Inputs.Base.Point3 = [0, 0, 0];
 
-// One object stands in for every method's inputs. Each method hands its argument straight to the
-// manager without reading it, so what the argument is cannot matter - only that the same object
-// arrives on the wire. It is declared opaque and handed to each method as whatever that method
-// takes, which is the one thing about it the test does not want checked.
 const SENTINEL_INPUTS: unknown = { sentinel: "delegation" };
 const asInputs = <T>(): T => SENTINEL_INPUTS as T;
 
-// Every generated method, with the path it must post. A method missing here is a method no test
-// runs; a path spelled wrong here fails against the kernel the generator read.
 const DELEGATIONS: [string, (jscad: JSCAD) => unknown][] = [
     ["booleans.intersect", (j) => j.booleans.intersect(asInputs())],
     ["booleans.subtract", (j) => j.booleans.subtract(asInputs())],

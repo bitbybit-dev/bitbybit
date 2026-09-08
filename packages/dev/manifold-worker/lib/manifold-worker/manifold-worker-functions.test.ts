@@ -1,19 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
 
-// The same message loop as manifold-worker.test.ts, but over the real kernel wrapper and the real
-// cache rather than stand-ins: what is asserted here is that a call arrives at a kernel method and
-// comes back as a pointer to a cached shape, and that two identical calls are answered from the cache
-// rather than run twice.
-
 type Pointer = { hash: string | number; type: string };
 type Answer = { uid: string; result?: Pointer; error?: string };
 type Message = "busy" | Answer;
 
 const A_CUBE = { size: [1, 1, 1], center: false };
 
-// A kernel shape as embind hands one over: the marker the cache recognises it by, and the members
-// the calls below reach for. Each transform answers with a new shape, as the kernel's do.
 const createShape = (): Record<string, unknown> => ({
     $$: Math.floor(Math.random() * 10000) + 1,
     delete: vi.fn(),
@@ -23,7 +16,6 @@ const createShape = (): Record<string, unknown> => ({
     getMesh: vi.fn(() => ({ vertProperties: new Float32Array([]), triVerts: new Uint32Array([]), numProp: 3 })),
 });
 
-// The wasm module the wrapper is built over, with only the entry points these calls reach.
 const createKernel = () => ({
     Manifold: {
         cube: vi.fn(() => createShape()),

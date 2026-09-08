@@ -9,12 +9,13 @@ import noLooseComments from "./eslint-rules/no-loose-comments.mjs";
 // The lint of this repository, self-contained: it runs from a bare clone with nothing above it.
 //
 // What is deliberately NOT here: eslint-plugin-no-comments. The JSDoc on the public API is a
-// functional input - the visual editors are generated from its tags (@default,
-// @optional, @step and the rest, thousands of them) to build editor controls - and that rule is
-// auto-fixable with an allow-list that REPLACES its defaults, so one --fix run with it pointed at
-// packages/dev would delete the corpus. The ban on free-form comments that it would have provided
-// is here all the same, as the local `bitbybit/no-loose-comments` below: it allows JSDoc and tool
-// directives, reports the rest, and has no fixer at all, so nothing it says can rewrite a file.
+// functional input - tooling reads its tags (@default, @optional, @step and the rest, thousands of
+// them) to generate from - and that rule is auto-fixable with an allow-list that REPLACES its
+// defaults, so one --fix run with it pointed at packages/dev would delete the corpus. The ban on
+// free-form comments that it would have provided is here all the same, as the local
+// `bitbybit/no-loose-comments` below: it allows JSDoc and tool directives, reports the rest, and has
+// no fixer at all, so nothing it says can rewrite a file. In a test it allows the three step markers
+// of arrange, act and assert as well, and nothing else.
 //
 // The rule set is the recommended sets - including the type-aware one, which reads the type graph
 // rather than one file at a time - plus the house style the packages already followed. Every
@@ -126,14 +127,14 @@ export default defineConfig([
         files: ["packages/dev/core/lib/api/bitbybit/json.ts"],
         rules: { "@typescript-eslint/no-explicit-any": "off" },
     },
-    // Comments in the packages' own source. JSDoc stays - it is the component generator's input, not
-    // commentary - and so do tool directives; a free-form note beside the logic does not, because it
-    // is a second description that nothing checks and it drifts away from the code it sits next to.
-    // The rule carries no fixer, so no `--fix` can reach that JSDoc.
+    // Comments in the packages' own source. JSDoc stays - tooling reads its tags, so it is an input
+    // rather than commentary - and so do tool directives; a free-form note beside the logic does not,
+    // because it is a second description that nothing checks and it drifts away from the code it sits
+    // next to. The rule carries no fixer, so no `--fix` can reach that JSDoc.
     //
-    // Four trees are out of its way. Specs and the fixtures beside them explain a decision that the
-    // assertions cannot state, which is the same allowance the studio's own suites get. The rest are
-    // not commentary at all but input or output: a worker package's lib/api is emitted by
+    // The trees below are out of its way. A test is not: it is covered by the block at the end of
+    // this file, which allows the three step markers and nothing else. The rest here are not
+    // commentary at all but input or output: a worker package's lib/api is emitted by
     // scripts/gen-worker-api.mjs and check:worker-api compares it byte for byte, so an edit there is
     // undone by the next regeneration and fails a gate in the meantime. The SDK's generated types and
     // request schemas are written by the API's own generators, and their banner is not a note but a
@@ -164,6 +165,18 @@ export default defineConfig([
         files: ["**/*.test.ts", "**/__mocks__/**"],
         languageOptions: {
             globals: { ...globals.vitest },
+        },
+    },
+    // A test says what it is about in the name of its `it`, and marks which step each line belongs to
+    // with `// Arrange`, `// Act` and `// Assert`. Those markers are structure, and they are all a
+    // test may carry: a note explaining a value belongs in the name of that value, and a note
+    // explaining what a suite covers belongs in the names of the tests that cover it. The mocks are
+    // out of scope here - they are stand-ins with no steps to mark, and the ordinary rule above
+    // already ignores them.
+    {
+        files: ["packages/dev/**/*.test.ts"],
+        rules: {
+            "bitbybit/no-loose-comments": ["error", { allowArrangeActAssert: true }],
         },
     },
 ]);

@@ -4,17 +4,11 @@ import { OCCTIO } from "./io";
 import { AnchorRecord, AnsweringWorker, recordDownloads } from "../__mocks__/test-helpers";
 import { Inputs } from "@bitbybit-dev/occt";
 
-// The save and dxf members are hand-written: the worker answers with the file's text and this side
-// decides whether the browser is asked to download it, and under what name. Everything else in the
-// class only forwards, and the delegation suite runs those.
-
 const A_SHAPE: Inputs.OCCT.TopoDSShapePointer = { hash: 1, type: "occ-shape" };
 const STEP_TEXT = "ISO-10303-21;";
 const STL_TEXT = "solid part";
 const DXF_TEXT = "0\nSECTION";
 
-// The dxf and conversion DTOs carry a long tail of format settings these tests do not touch; each
-// starts from the defaults the DTO itself declares and states only what the case is about.
 const dxfInputs = (over: Partial<Inputs.OCCT.DxfPathsPartsListDto>): Inputs.OCCT.DxfPathsPartsListDto =>
     Object.assign(new Inputs.OCCT.DxfPathsPartsListDto(), over);
 const gltfInputs = (over: Partial<Inputs.OCCT.ConvertStepToGltfDto>): Inputs.OCCT.ConvertStepToGltfDto =>

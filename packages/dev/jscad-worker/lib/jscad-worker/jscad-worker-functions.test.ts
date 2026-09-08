@@ -1,18 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
 
-// The same message loop as jscad-worker.test.ts, but over the real kernel wrapper and the real cache
-// rather than stand-ins: what is asserted here is that a call arrives at a kernel method and comes
-// back hashed, and that two identical calls are answered from the cache rather than run twice.
-
 type Answer = { uid: string; result?: { hash?: string | number }; error?: string };
 type Message = "busy" | Answer;
 
 const SQUARE: [number, number][] = [[0, 0], [1, 0], [1, 1], [0, 1]];
 
-// The kernel the wrapper is built over. Only the members these calls reach are here, and each hands
-// back something the cache will treat as a kernel object. A fresh one per test, because the worker
-// holds the kernel and its cache in module state that would otherwise carry between tests.
 const createKernel = () => ({
     primitives: {
         circle: vi.fn(() => ({ delete: vi.fn() })),

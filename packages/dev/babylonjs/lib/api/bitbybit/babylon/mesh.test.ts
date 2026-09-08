@@ -4,11 +4,6 @@ import { Context } from "../../context";
 import { BabylonMesh } from "./mesh";
 import * as Inputs from "../../inputs";
 
-// Everything a script does to a mesh once it has one: hide it, move it, name it, clone it, ask what
-// it holds. Each of these is a thin pass to the engine's own mesh, so the suite runs against a real
-// BabylonJS scene on the headless engine the library ships for exactly this, and asserts what the
-// engine ends up holding rather than which call was made.
-
 const ORIGIN: Inputs.Base.Point3 = [0, 0, 0];
 
 describe("BabylonMesh", () => {
@@ -459,7 +454,6 @@ describe("BabylonMesh", () => {
             // Act
             meshService.rotateAroundAxisWithPosition(new Inputs.BabylonMesh.RotateAroundAxisNodeDto(box, [10, 0, 0], [0, 1, 0], 180));
 
-            // Assert - half a turn about the point takes it to the far side of it
             expect(box.position.x).toBeCloseTo(20, 5);
         });
     });
@@ -575,7 +569,6 @@ describe("BabylonMesh", () => {
             // Act
             const flat = meshService.convertToFlatShadedMesh(new Inputs.BabylonMesh.BabylonMeshDto(box));
 
-            // Assert - a box of twelve triangles becomes thirty six vertices
             expect(flat.getTotalVertices()).toBe(36);
         });
     });
@@ -585,7 +578,6 @@ describe("BabylonMesh", () => {
             // Act
             const polygons = meshService.getVerticesAsPolygonPoints(new Inputs.BabylonMesh.BabylonMeshDto(box));
 
-            // Assert - a box is twelve triangles
             expect(polygons).toHaveLength(12);
             expect(polygons[0]).toHaveLength(3);
         });
@@ -598,6 +590,263 @@ describe("BabylonMesh", () => {
 
             // Assert
             expect(instance).toBeDefined();
+        });
+
+        it("should hold one instance per child where the mesh has children", () => {
+            // Act
+            const container = meshService.createMeshInstance(new Inputs.BabylonMesh.MeshInstanceDto(box));
+
+            // Assert
+            expect(container.getChildMeshes()).toHaveLength(1);
+        });
+
+        it("should hold a single instance where the mesh has no children", () => {
+            // Arrange
+            const lone = BABYLON.MeshBuilder.CreateBox("lone", { size: 1 }, scene);
+
+            // Act
+            const container = meshService.createMeshInstance(new Inputs.BabylonMesh.MeshInstanceDto(lone));
+
+            // Assert
+            expect(container.getChildMeshes()).toHaveLength(1);
+        });
+
+        it("should let go of whatever parent the mesh had, so the instances stand on their own", () => {
+            // Arrange
+            const parent = new BABYLON.TransformNode("holder", scene);
+            box.parent = parent;
+
+            // Act
+            meshService.createMeshInstance(new Inputs.BabylonMesh.MeshInstanceDto(box));
+
+            // Assert
+            expect(box.parent).toBeNull();
+        });
+
+        it("should sign the container and its instances up to the scene's shadow generators", () => {
+            // Arrange
+            const light = new BABYLON.PointLight("light", new BABYLON.Vector3(0, 5, 0), scene);
+            const generator = new BABYLON.ShadowGenerator(64, light);
+            scene.metadata.shadowGenerators.push(generator);
+
+            // Act
+            const container = meshService.createMeshInstance(new Inputs.BabylonMesh.MeshInstanceDto(box));
+
+            // Assert
+            const casters = generator.getShadowMap()!.renderList ?? [];
+            expect(casters).toContain(container);
+            expect(container.receiveShadows).toBe(true);
+        });
+
+        it("should leave a mesh marked as casting no shadows out of the shadow generators", () => {
+            // Arrange
+            const light = new BABYLON.PointLight("light", new BABYLON.Vector3(0, 5, 0), scene);
+            const generator = new BABYLON.ShadowGenerator(64, light);
+            scene.metadata.shadowGenerators.push(generator);
+            box.metadata = { shadows: false };
+
+            // Act
+            const container = meshService.createMeshInstance(new Inputs.BabylonMesh.MeshInstanceDto(box));
+
+            // Assert
+            const casters = generator.getShadowMap()!.renderList ?? [];
+            expect(casters).not.toContain(container);
+        });
+
+        it("should build nothing at all when it was given no mesh", () => {
+            // Act
+            const container = meshService.createMeshInstance(new Inputs.BabylonMesh.MeshInstanceDto());
+
+            // Assert
+            expect(container).toBeUndefined();
+        });
+    });
+
+    describe("getSideOrientation", () => {
+        it.each([
+            [Inputs.BabylonMesh.sideOrientationEnum.frontside, BABYLON.Mesh.FRONTSIDE],
+            [Inputs.BabylonMesh.sideOrientationEnum.backside, BABYLON.Mesh.BACKSIDE],
+            [Inputs.BabylonMesh.sideOrientationEnum.doubleside, BABYLON.Mesh.DOUBLESIDE],
+        ])("should turn %s into the engine's own constant", (orientation, expected) => {
+            // Assert
+            expect(meshService.getSideOrientation(orientation)).toBe(expected);
+        });
+
+        it("should draw the front side of anything it does not recognise", () => {
+            // Arrange
+            const unknown = "sideways" as Inputs.BabylonMesh.sideOrientationEnum;
+
+            // Assert
+            expect(meshService.getSideOrientation(unknown)).toBe(BABYLON.Mesh.FRONTSIDE);
+        });
+    });
+
+    describe("updateDrawn", () => {
+        const drawn = (mesh: BABYLON.Mesh, type: Inputs.Draw.drawingTypes): BABYLON.Mesh => {
+            mesh.metadata = { type };
+            return mesh;
+        };
+
+        it("should move, turn and scale the mesh as it was told", () => {
+            // Arrange
+            const mesh = drawn(BABYLON.MeshBuilder.CreateBox("drawn", { size: 1 }, scene), Inputs.Draw.drawingTypes.occt);
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                mesh, [1, 2, 3], [0.1, 0.2, 0.3], [2, 2, 2], "#ff0000"));
+
+            // Assert
+            expect(mesh.position.asArray()).toEqual([1, 2, 3]);
+            expect(mesh.rotation.asArray()).toEqual([0.1, 0.2, 0.3]);
+            expect(mesh.scaling.asArray()).toEqual([2, 2, 2]);
+        });
+
+        it("should colour a mesh that has no children with the single colour it was given", () => {
+            // Arrange
+            const mesh = drawn(BABYLON.MeshBuilder.CreateBox("drawn", { size: 1 }, scene), Inputs.Draw.drawingTypes.occt);
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("mat", scene);
+            mesh.material = material;
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                mesh, ORIGIN, ORIGIN, [1, 1, 1], "#ff0000"));
+
+            // Assert
+            expect(material.baseColor.toHexString()).toBe("#FF0000");
+        });
+
+        it("should give each child its own colour where it was given one colour per child", () => {
+            // Arrange
+            const parent = drawn(new BABYLON.Mesh("parent", scene), Inputs.Draw.drawingTypes.occt);
+            const first = BABYLON.MeshBuilder.CreateBox("first", { size: 1 }, scene);
+            const second = BABYLON.MeshBuilder.CreateBox("second", { size: 1 }, scene);
+            const firstMaterial = new BABYLON.PBRMetallicRoughnessMaterial("first", scene);
+            const secondMaterial = new BABYLON.PBRMetallicRoughnessMaterial("second", scene);
+            first.material = firstMaterial;
+            second.material = secondMaterial;
+            first.parent = parent;
+            second.parent = parent;
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                parent, ORIGIN, ORIGIN, [1, 1, 1], ["#ff0000", "#00ff00"]));
+
+            // Assert
+            expect(firstMaterial.baseColor.toHexString()).toBe("#FF0000");
+            expect(secondMaterial.baseColor.toHexString()).toBe("#00FF00");
+        });
+
+        it("should give every child the first colour where the count does not match", () => {
+            // Arrange
+            const parent = drawn(new BABYLON.Mesh("parent", scene), Inputs.Draw.drawingTypes.occt);
+            const first = BABYLON.MeshBuilder.CreateBox("first", { size: 1 }, scene);
+            const second = BABYLON.MeshBuilder.CreateBox("second", { size: 1 }, scene);
+            const firstMaterial = new BABYLON.PBRMetallicRoughnessMaterial("first", scene);
+            const secondMaterial = new BABYLON.PBRMetallicRoughnessMaterial("second", scene);
+            first.material = firstMaterial;
+            second.material = secondMaterial;
+            first.parent = parent;
+            second.parent = parent;
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                parent, ORIGIN, ORIGIN, [1, 1, 1], ["#0000ff"]));
+
+            // Assert
+            expect(firstMaterial.baseColor.toHexString()).toBe("#0000FF");
+            expect(secondMaterial.baseColor.toHexString()).toBe("#0000FF");
+        });
+
+        it("should give every child the same colour where it was given only one", () => {
+            // Arrange
+            const parent = drawn(new BABYLON.Mesh("parent", scene), Inputs.Draw.drawingTypes.occt);
+            const only = BABYLON.MeshBuilder.CreateBox("only", { size: 1 }, scene);
+            const material = new BABYLON.StandardMaterial("mat", scene);
+            only.material = material;
+            only.parent = parent;
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                parent, ORIGIN, ORIGIN, [1, 1, 1], "#00ff00"));
+
+            // Assert
+            expect(material.diffuseColor.toHexString()).toBe("#00FF00");
+        });
+
+        it("should colour the edges of a mesh that draws them", () => {
+            // Arrange
+            const mesh = drawn(BABYLON.MeshBuilder.CreateBox("drawn", { size: 1 }, scene), Inputs.Draw.drawingTypes.occt);
+            mesh.enableEdgesRendering();
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                mesh, ORIGIN, ORIGIN, [1, 1, 1], "#ff0000"));
+
+            // Assert
+            expect(mesh.edgesColor.toHexString()).toBe("#FF0000FF");
+        });
+
+        it("should paint the vertices of a line one colour per vertex where it was given that many", () => {
+            // Arrange
+            const lines = drawn(BABYLON.MeshBuilder.CreateLines("lines", {
+                points: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 0, 0)],
+                colors: [new BABYLON.Color4(1, 1, 1, 1), new BABYLON.Color4(1, 1, 1, 1)],
+            }, scene), Inputs.Draw.drawingTypes.polyline);
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                lines, ORIGIN, ORIGIN, [1, 1, 1], ["#ff0000", "#00ff00"]));
+
+            // Assert
+            const colors = lines.getVerticesData(BABYLON.VertexBuffer.ColorKind)!;
+            expect([colors[0], colors[1], colors[2]]).toEqual([1, 0, 0]);
+            expect([colors[4], colors[5], colors[6]]).toEqual([0, 1, 0]);
+        });
+
+        it("should paint every vertex the first colour where the count does not match", () => {
+            // Arrange
+            const lines = drawn(BABYLON.MeshBuilder.CreateLines("lines", {
+                points: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 0, 0)],
+                colors: [new BABYLON.Color4(1, 1, 1, 1), new BABYLON.Color4(1, 1, 1, 1)],
+            }, scene), Inputs.Draw.drawingTypes.polyline);
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                lines, ORIGIN, ORIGIN, [1, 1, 1], ["#0000ff"]));
+
+            // Assert
+            const colors = lines.getVerticesData(BABYLON.VertexBuffer.ColorKind)!;
+            expect([colors[0], colors[1], colors[2]]).toEqual([0, 0, 1]);
+            expect([colors[4], colors[5], colors[6]]).toEqual([0, 0, 1]);
+        });
+
+        it("should paint every vertex the same colour where it was given only one", () => {
+            // Arrange
+            const lines = drawn(BABYLON.MeshBuilder.CreateLines("lines", {
+                points: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 0, 0)],
+                colors: [new BABYLON.Color4(1, 1, 1, 1), new BABYLON.Color4(1, 1, 1, 1)],
+            }, scene), Inputs.Draw.drawingTypes.polyline);
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                lines, ORIGIN, ORIGIN, [1, 1, 1], "#00ff00"));
+
+            // Assert
+            const colors = lines.getVerticesData(BABYLON.VertexBuffer.ColorKind)!;
+            expect([colors[0], colors[1], colors[2]]).toEqual([0, 1, 0]);
+            expect([colors[4], colors[5], colors[6]]).toEqual([0, 1, 0]);
+        });
+
+        it("should leave the vertex colours of a surface alone", () => {
+            // Arrange
+            const mesh = drawn(BABYLON.MeshBuilder.CreateBox("drawn", { size: 1 }, scene), Inputs.Draw.drawingTypes.occt);
+
+            // Act
+            meshService.updateDrawn(new Inputs.BabylonMesh.UpdateDrawnBabylonMesh(
+                mesh, ORIGIN, ORIGIN, [1, 1, 1], "#ff0000"));
+
+            // Assert
+            expect(mesh.getVerticesData(BABYLON.VertexBuffer.ColorKind)).toBeNull();
         });
     });
 
@@ -618,6 +867,93 @@ describe("BabylonMesh", () => {
 
             // Assert
             expect(container.getChildMeshes()[0]!.position.asArray()).toEqual([1, 2, 3]);
+        });
+
+        it("should turn the instances by the degrees it was given, whether the mesh has children or not", () => {
+            // Arrange
+            const lone = BABYLON.MeshBuilder.CreateBox("lone", { size: 1 }, scene);
+
+            // Act
+            const withChildren = meshService.createMeshInstanceAndTransform(
+                new Inputs.BabylonMesh.MeshInstanceAndTransformDto(box, ORIGIN, [90, 0, 0], [1, 1, 1]));
+            const withoutChildren = meshService.createMeshInstanceAndTransform(
+                new Inputs.BabylonMesh.MeshInstanceAndTransformDto(lone, ORIGIN, [90, 0, 0], [1, 1, 1]));
+
+            // Assert
+            expect(withChildren.getChildMeshes()[0]!.rotation.x).toBeCloseTo(Math.PI / 2, 10);
+            expect(withoutChildren.getChildMeshes()[0]!.rotation.x).toBeCloseTo(Math.PI / 2, 10);
+        });
+
+        it("should scale the instances as it was told", () => {
+            // Act
+            const container = meshService.createMeshInstanceAndTransform(
+                new Inputs.BabylonMesh.MeshInstanceAndTransformDto(box, ORIGIN, ORIGIN, [2, 3, 4]));
+
+            // Assert
+            expect(container.getChildMeshes()[0]!.scaling.asArray()).toEqual([2, 3, 4]);
+        });
+
+        it("should hide the mesh it made instances of, so only the instances are drawn", () => {
+            // Act
+            meshService.createMeshInstanceAndTransform(
+                new Inputs.BabylonMesh.MeshInstanceAndTransformDto(box, ORIGIN, ORIGIN, [1, 1, 1]));
+
+            // Assert
+            expect(box.isVisible).toBe(false);
+        });
+
+        it("should sign the instances up to the shadow generators the scene carries", () => {
+            // Arrange
+            const light = new BABYLON.PointLight("light", new BABYLON.Vector3(0, 5, 0), scene);
+            const generator = new BABYLON.ShadowGenerator(64, light);
+            scene.metadata.shadowGenerators.push(generator);
+
+            // Act
+            const container = meshService.createMeshInstanceAndTransform(
+                new Inputs.BabylonMesh.MeshInstanceAndTransformDto(box, ORIGIN, ORIGIN, [1, 1, 1]));
+
+            // Assert
+            const casters = generator.getShadowMap()!.renderList ?? [];
+            expect(casters).toContain(container.getChildMeshes()[0]);
+        });
+
+        it("should leave a mesh marked as casting no shadows out of the shadow generators", () => {
+            // Arrange
+            const light = new BABYLON.PointLight("light", new BABYLON.Vector3(0, 5, 0), scene);
+            const generator = new BABYLON.ShadowGenerator(64, light);
+            scene.metadata.shadowGenerators.push(generator);
+            box.metadata = { shadows: false };
+
+            // Act
+            const container = meshService.createMeshInstanceAndTransform(
+                new Inputs.BabylonMesh.MeshInstanceAndTransformDto(box, ORIGIN, ORIGIN, [1, 1, 1]));
+
+            // Assert
+            const casters = generator.getShadowMap()!.renderList ?? [];
+            expect(casters).not.toContain(container.getChildMeshes()[0]);
+        });
+
+        it("should carry the mesh's own metadata onto the container it built", () => {
+            // Arrange
+            box.metadata = { type: "solid" };
+
+            // Act
+            const container = meshService.createMeshInstanceAndTransform(
+                new Inputs.BabylonMesh.MeshInstanceAndTransformDto(box, ORIGIN, ORIGIN, [1, 1, 1]));
+
+            // Assert
+            expect(container.metadata).toEqual({ type: "solid" });
+        });
+
+        it("should hand back an empty container when it was given no mesh at all", () => {
+            // Arrange
+            const inputs = new Inputs.BabylonMesh.MeshInstanceAndTransformDto(undefined, ORIGIN, ORIGIN, [1, 1, 1]);
+
+            // Act
+            const container = meshService.createMeshInstanceAndTransform(inputs);
+
+            // Assert
+            expect(container.getChildMeshes()).toEqual([]);
         });
     });
 

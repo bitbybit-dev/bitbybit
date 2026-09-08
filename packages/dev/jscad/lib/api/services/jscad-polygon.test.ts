@@ -7,7 +7,6 @@ import * as Inputs from "../inputs";
 const CENTRE: Inputs.Base.Point2 = [0, 0];
 const CIRCLE_RADIUS = 2;
 const CIRCLE_SEGMENTS = 128;
-// A regular polygon of n sides is inscribed in its circle, so its area falls short of pi r^2.
 const CIRCLE_AREA_TOLERANCE = 0.01;
 const SQUARE_SIZE = 3;
 const SQUARE_AREA = 9;
@@ -163,7 +162,6 @@ describe("JSCADPolygon", () => {
 
     describe("createFromCurve", () => {
         it("should build a region through the points the curve tessellates into", () => {
-            // Arrange - anything that tessellates will do; the API asks only for that
             const curve = { tessellate: (): Inputs.Base.Point3[] => [[0, 0, 0], [3, 0, 0], [3, 3, 0], [0, 3, 0]] };
 
             // Act

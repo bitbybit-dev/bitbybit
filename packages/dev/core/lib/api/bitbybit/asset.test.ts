@@ -2,10 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { Asset } from "./asset";
 import { AssetManager } from "../../asset-manager";
 
-// The asset API is the boundary between a script and the files around it: the project's own assets,
-// which the asset manager fetches, the network, and the browser's file types. Nothing here computes
-// anything, so what is asserted is what each member asks for and what it hands back.
-
 const A_URL = "https://example.test/parts/dada.png";
 const CONTENT = "hello";
 

@@ -756,8 +756,6 @@ describe("CSV unit tests", () => {
         });
     });
 
-    // The branches the suites above leave untaken: empty input, the defaults each option falls back
-    // to, and the two ways a number column can be read.
     describe("boundaries and defaults", () => {
         it("should parse empty text to no rows at all", () => {
             expect(csv.parseToJson({ csv: "", rowSeparator: "\n", columnSeparator: "," })).toEqual([]);

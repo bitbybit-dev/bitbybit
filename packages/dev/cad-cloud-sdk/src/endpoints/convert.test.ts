@@ -72,8 +72,6 @@ describe("ConvertEndpoint", () => {
         });
     });
 
-    // The four "and poll" members are the same three steps in a row: submit, poll the task until it
-    // is done, then ask for every download the task produced.
     describe("stepToGltfAndPoll", () => {
         it("submits, polls until the task completes, and returns its downloads", async () => {
             // Arrange

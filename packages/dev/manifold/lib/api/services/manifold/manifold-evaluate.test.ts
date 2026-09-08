@@ -7,7 +7,6 @@ import * as Inputs from "../../inputs";
 const CUBE_SIZE = 2;
 const CUBE_VERTICES = 8;
 const CUBE_TRIANGLES = 12;
-// Euler's formula for a closed surface of genus 0: V - E + F = 2, so E = V + F - 2.
 const CUBE_EDGES = CUBE_VERTICES + CUBE_TRIANGLES - 2;
 const GENUS_OF_A_BALL = 0;
 const GAP = 3;
@@ -39,7 +38,6 @@ describe("ManifoldEvaluate", () => {
         });
 
         it("should report no properties on a plain solid", () => {
-            // Act, Assert
             expect(manifold.manifold.evaluate.numProp(measure)).toBe(NO_PROPERTIES);
             expect(manifold.manifold.evaluate.numPropVert(measure)).toBe(CUBE_VERTICES);
         });
@@ -53,7 +51,6 @@ describe("ManifoldEvaluate", () => {
                 manifold.manifold.transforms.translateXYZ(new Inputs.Manifold.TranslateXYZDto(cube, 100, 0, 0)),
             ));
 
-            // Act, Assert
             expect(manifold.manifold.evaluate.isEmpty(measure)).toBe(false);
             expect(manifold.manifold.evaluate.isEmpty(new Inputs.Manifold.ManifoldDto(nothing))).toBe(true);
         });

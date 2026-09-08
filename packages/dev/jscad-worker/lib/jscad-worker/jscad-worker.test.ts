@@ -1,16 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
 
-// The worker's own message loop, with the cache and the kernel standing in for the real ones. Both
-// are mocked here so that every path the loop can take is reachable: a hash that is in the cache and
-// one that is not, the three shapes an input can arrive in, and the two dotted-path depths. The
-// suite beside this one runs the same loop against the real kernel.
-
 type Deletable = { delete: () => void };
 
-// The cache the worker builds for itself, replaced by one this suite can set up and read back. It is
-// declared before the mock so that the mock factory, which is hoisted above the imports, can reach
-// it: whatever the worker constructs lands in `latest`.
 const { FakeCacheHelper, latest } = vi.hoisted(() => {
     class FakeCacheHelper {
         usedHashes: Record<string, string | number> = {};
@@ -61,8 +53,6 @@ describe("the worker message loop", () => {
     let answers: unknown[];
     let posted: unknown[];
 
-    // A call as it arrives from the manager. The two members are optional here and not in the type the
-    // worker declares, because what the worker does with a call that names neither is under test.
     const run = (action: { functionName?: string; inputs?: unknown }, uid = "uid-1"): void => {
         onMessageInput({ action, uid } as DataInput, (message: unknown) => answers.push(message));
     };

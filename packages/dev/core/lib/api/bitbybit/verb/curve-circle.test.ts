@@ -5,9 +5,6 @@ import { ContextBase } from "../../context";
 import { VerbCurveCircle } from "./curve-circle";
 import * as Inputs from "../../inputs";
 
-// Circles and arcs as verb builds them, read back through this API. Angles cross the boundary in
-// degrees and are held in radians, which is the one conversion this class does.
-
 const RADIUS = 5;
 const CENTER: Inputs.Base.Point3 = [1, 2, 3];
 const X_AXIS: Inputs.Base.Vector3 = [1, 0, 0];
@@ -58,7 +55,6 @@ describe("VerbCurveCircle", () => {
             // Act
             const start = arc.point(0);
 
-            // Assert - 30 degrees around a circle of radius 5, offset by the centre
             expect(start[0]).toBeCloseTo(CENTER[0] + RADIUS * Math.cos(Math.PI / 6), 5);
             expect(start[1]).toBeCloseTo(CENTER[1] + RADIUS * Math.sin(Math.PI / 6), 5);
         });

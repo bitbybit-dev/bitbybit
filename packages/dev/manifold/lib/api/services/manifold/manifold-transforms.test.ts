@@ -80,7 +80,6 @@ describe("ManifoldTransforms", () => {
             // Assert
             expect(volumeOf(turned)).toBeCloseTo(volumeOf(oblong), 6);
             const [afterMin, afterMax] = boxOf(turned) as [Inputs.Base.Vector3, Inputs.Base.Vector3];
-            // Turning about X swaps what Y and Z span.
             expect(afterMax[1] - afterMin[1]).toBeCloseTo(beforeMax[2] - beforeMin[2], 6);
             expect(afterMax[2] - afterMin[2]).toBeCloseTo(beforeMax[1] - beforeMin[1], 6);
         });
@@ -103,9 +102,6 @@ describe("ManifoldTransforms", () => {
         });
     });
 
-    // The forms that take a vector where the ones above take three numbers, and the two that apply a
-    // matrix. Each is the same movement stated differently, so each is checked against what it did to
-    // the solid rather than against the call it made.
     describe("scale", () => {
         it("should scale each axis by its own factor", () => {
             // Act
@@ -153,22 +149,18 @@ describe("ManifoldTransforms", () => {
 
     describe("rotate", () => {
         it("should turn the solid by the angles the vector holds", () => {
-            // Arrange - an oblong, so that a quarter turn is visible
             const oblong = manifold.manifold.transforms.scale(new Inputs.Manifold.Scale3DDto(cube, OBLONG));
 
             // Act
             const turned = manifold.manifold.transforms.rotate(new Inputs.Manifold.RotateDto(oblong, [0, 0, QUARTER_TURN_DEGREES]));
             const [min, max] = boxOf(turned) as [Inputs.Base.Vector3, Inputs.Base.Vector3];
 
-            // Assert - what was the x span is now the y span
             expect(max[1] - min[1]).toBeCloseTo(CUBE_SIZE * OBLONG[0], 6);
         });
     });
 
     describe("transform", () => {
         it("should apply the matrix it was given", () => {
-            // Arrange - the kernel reads the matrix in column order, so the translation is the last
-            // column and the row after it is ignored
             const translate: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, SHIFT, 0, 0, 1];
 
             // Act

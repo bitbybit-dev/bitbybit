@@ -12,11 +12,6 @@ import {
     isShapeReference,
 } from "./constants";
 
-// These are the protocol between the main thread and the worker: the two message names, the reserved
-// function names, and the two reference shapes a kernel object crosses a postMessage as. Users' saved
-// scripts and the worker both spell them out, so a value changing here is a breaking change.
-// The handlers behind the reserved names have their own suite, in command-handlers.test.ts.
-
 describe("the worker protocol constants", () => {
     describe("WorkerMessages", () => {
         it("should announce initialisation under the name the manager listens for", () => {

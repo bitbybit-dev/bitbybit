@@ -3,9 +3,6 @@ import { OCCTWorkerMock } from "./occ-worker-mock";
 import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
 import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
-// The mock stands where a real Worker would for consumers that run the kernel on the main thread.
-// It has to behave like one from the outside: a message posted in comes back out on onmessage, and
-// the "busy" notice a real worker sends to itself is not a call to run anything.
 vi.mock("./occ-worker", () => ({
     initializationComplete: vi.fn(),
     onMessageInput: vi.fn(),

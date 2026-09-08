@@ -9,7 +9,6 @@ const SQUARE_SIZE = 4;
 const SQUARE_AREA = 16;
 const DELTA = 1;
 const SEGMENTS = 32;
-// Expanding a square by d adds a border of d around it: the four sides plus four rounded corners.
 const EXPANDED_AREA = SQUARE_AREA + 4 * SQUARE_SIZE * DELTA + Math.PI * DELTA ** 2;
 
 describe("JSCADExpansions", () => {
@@ -73,7 +72,6 @@ describe("JSCADExpansions", () => {
             // Act
             const expanded = jscad.expansions.expand({ geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto);
 
-            // Assert - a rounded corner is many segments where an edged one is a single point
             expect(kernel.measurements.measureArea(expanded)).toBeGreaterThan(16);
         });
 
@@ -85,7 +83,6 @@ describe("JSCADExpansions", () => {
             const rounded = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16, corners: Inputs.JSCAD.solidCornerTypeEnum.round });
             const edged = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto);
 
-            // Assert - the edged corner reaches further out than the rounded one
             expect(kernel.measurements.measureArea(edged)).toBeGreaterThan(kernel.measurements.measureArea(rounded));
         });
     });

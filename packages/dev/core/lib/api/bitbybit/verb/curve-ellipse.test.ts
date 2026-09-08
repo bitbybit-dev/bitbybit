@@ -5,9 +5,6 @@ import { ContextBase } from "../../context";
 import { VerbCurveEllipse } from "./curve-ellipse";
 import * as Inputs from "../../inputs";
 
-// Ellipses and their arcs as verb builds them. The two axes carry the radii - a longer x axis makes a
-// wider ellipse - and the arc angles cross the boundary in degrees.
-
 const CENTER: Inputs.Base.Point3 = [1, 2, 3];
 const X_AXIS: Inputs.Base.Vector3 = [4, 0, 0];
 const Y_AXIS: Inputs.Base.Vector3 = [0, 2, 0];

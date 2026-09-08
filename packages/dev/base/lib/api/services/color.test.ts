@@ -86,9 +86,6 @@ describe("Color unit tests", () => {
         expect(res).toEqual("#000000");
     });
 
-    // The six readers that hand a colour straight back are what a visual editor's colour control
-    // produces, so each is checked for what it hands on and, where it builds an object, for what that
-    // object holds.
     describe("the colour readers", () => {
         it("should hand back the rgb colour it was given in 0 to 255", () => {
             // Arrange

@@ -363,7 +363,6 @@ describe("IO unit tests", () => {
 
             const result = io.dxf.dxfCreate(model);
 
-            // Extract only entity handles from ENTITIES section
             const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
             expect(entitiesSection).toBeDefined();
             
@@ -395,9 +394,8 @@ describe("IO unit tests", () => {
 
             const result = io.dxf.dxfCreate(model);
 
-            // Should use true color format: 62 = 256 (by entity), 420 = RGB decimal value
             expect(result).toContain("62\n256");
-            expect(result).toContain("420\n16711680"); // #FF0000 = 16711680 in decimal
+            expect(result).toContain("420\n16711680");
         });
 
         it("should convert hex color #FF0000 to true color format in line when specified", () => {
@@ -407,7 +405,6 @@ describe("IO unit tests", () => {
             const model = new Inputs.IO.DxfModelDto([part], "truecolor");
 
             const result = io.dxf.dxfCreate(model);
-            // Should convert #FF0000 to true color format
             expect(result).toContain("62\n256");
             expect(result).toContain("420\n16711680");
         });
@@ -419,7 +416,6 @@ describe("IO unit tests", () => {
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
-            // Should convert #FF0000 to nearest ACI color (1 = red)
             expect(result).toContain("62\n1");
         });
 
@@ -430,7 +426,6 @@ describe("IO unit tests", () => {
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
-            // Should convert #0000FF to nearest ACI color (5 = blue)
             expect(result).toContain("62\n5");
         });
         it("should handle invalid color by using default ACI 7", () => {
@@ -440,7 +435,6 @@ describe("IO unit tests", () => {
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
-            // Should handle invalid color gracefully (defaults to ACI 7 - white/black)
             expect(result).toContain("62\n7");
         });        it("should auto-detect closed polyline from matching points", () => {
             const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]];
@@ -503,7 +497,7 @@ describe("IO unit tests", () => {
 
             const result = io.dxf.dxfCreate(model);
 
-            expect(result).toContain("70\n9"); // 9 = closed (1) + planar (8)
+            expect(result).toContain("70\n9");
         });
 
         it("should generate spline with degree 2", () => {
@@ -553,11 +547,10 @@ describe("IO unit tests", () => {
                 expect(result).toContain(section);
             });
 
-            // AC1009 format (default) does not include $LASTSAVEDBY
-            expect(result).toContain("0\nTABLE\n2\nLTYPE"); // Line type table
+            expect(result).toContain("0\nTABLE\n2\nLTYPE");
             expect(result).toContain("0\nTABLE\n2\nLAYER");
-            expect(result).toContain("0\nTABLE\n2\nSTYLE"); // Text style table
-            expect(result).toContain("0\nTABLE\n2\nVPORT"); // AC1009 includes VPORT
+            expect(result).toContain("0\nTABLE\n2\nSTYLE");
+            expect(result).toContain("0\nTABLE\n2\nVPORT");
             expect(result).toContain("2\nWALLS");
             expect(result).toContain("0\nLINE");
             expect(result).toContain("8\nWALLS");
@@ -574,7 +567,6 @@ describe("IO unit tests", () => {
 
             expect(result).toContain("$ACADVER\n1\nAC1015");
             expect(result).toContain("$LASTSAVEDBY\n1\nbitbybit.dev");
-            // AC1015 should not have VPORT table
             expect(result).not.toContain("0\nTABLE\n2\nVPORT");
         });
     });

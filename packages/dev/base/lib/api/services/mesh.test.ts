@@ -37,17 +37,15 @@ describe("Mesh unit tests", () => {
         meshBitByBit = new MeshBitByBit(vector, polyline);
     });
 
-    // Simple plane definitions
-    const xyPlane: Inputs.Base.TrianglePlane3 = { normal: [0, 0, 1], d: 0 }; // Z=0 plane
-    const xyPlaneOffset: Inputs.Base.TrianglePlane3 = { normal: [0, 0, 1], d: 5 }; // Z=5 plane
-    const slantedPlane: Inputs.Base.TrianglePlane3 = { normal: uh.vector.normalized({ vector: [1, 1, 1] }) as Inputs.Base.Vector3, d: 0 }; // X+Y+Z=0 plane through origin
+    const xyPlane: Inputs.Base.TrianglePlane3 = { normal: [0, 0, 1], d: 0 };
+    const xyPlaneOffset: Inputs.Base.TrianglePlane3 = { normal: [0, 0, 1], d: 5 };
+    const slantedPlane: Inputs.Base.TrianglePlane3 = { normal: uh.vector.normalized({ vector: [1, 1, 1] }) as Inputs.Base.Vector3, d: 0 };
 
-    // Simple triangles
-    const triXY1: Inputs.Base.Triangle3 = [[0, 0, 0], [1, 0, 0], [0, 1, 0]]; // On XY plane, normal ~[0,0,1]
-    const triXY2: Inputs.Base.Triangle3 = [[2, 0, 0], [3, 0, 0], [2, 1, 0]]; // On XY plane, normal ~[0,0,1]
-    const triXYOffset: Inputs.Base.Triangle3 = [[0, 0, 5], [1, 0, 5], [0, 1, 5]]; // On Z=5 plane, normal ~[0,0,1]
-    const triXZ: Inputs.Base.Triangle3 = [[0, 0, 0], [1, 0, 0], [0, 0, 1]]; // On XZ plane, normal ~[0,-1,0]
-    const triSlanted: Inputs.Base.Triangle3 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]; // On X+Y+Z=1 plane
+    const triXY1: Inputs.Base.Triangle3 = [[0, 0, 0], [1, 0, 0], [0, 1, 0]];
+    const triXY2: Inputs.Base.Triangle3 = [[2, 0, 0], [3, 0, 0], [2, 1, 0]];
+    const triXYOffset: Inputs.Base.Triangle3 = [[0, 0, 5], [1, 0, 5], [0, 1, 5]];
+    const triXZ: Inputs.Base.Triangle3 = [[0, 0, 0], [1, 0, 0], [0, 0, 1]];
+    const triSlanted: Inputs.Base.Triangle3 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     const triDegenerateCollinear: Inputs.Base.Triangle3 = [[0, 0, 0], [1, 1, 1], [2, 2, 2]];
     const triDegenerateCoincident: Inputs.Base.Triangle3 = [[0, 0, 0], [0, 0, 0], [1, 1, 1]];
 
@@ -120,10 +118,10 @@ describe("Mesh unit tests", () => {
 
         it("should return undefined for triangle degenerate within tolerance", () => {
             const tolerance = 1e-7;
-            const smallDist = tolerance * 0.1; // Make it smaller than tolerance
+            const smallDist = tolerance * 0.1;
             const triDegenWithinTol: Inputs.Base.Triangle3 = [[0, 0, 0], [1, 0, 0], [2, smallDist, 0]];
             const planeDegen = meshBitByBit.calculateTrianglePlane({ triangle: triDegenWithinTol, tolerance: tolerance });
-            expect(planeDegen).toBeUndefined(); // Expect undefined because it IS degenerate within tolerance
+            expect(planeDegen).toBeUndefined();
         });
 
         it("should calculate plane for triangle near-degenerate but outside tolerance", () => {
@@ -198,14 +196,14 @@ describe("Mesh unit tests", () => {
         });
 
         it("should return correct segment for shifted orthogonal intersection", () => {
-            const triXZ_Shifted: Inputs.Base.Triangle3 = [[0.5, 0, 0], [1.5, 0, 0], [0.5, 0, 1]]; // Y=0 plane, X from 0.5 to 1.5
+            const triXZ_Shifted: Inputs.Base.Triangle3 = [[0.5, 0, 0], [1.5, 0, 0], [0.5, 0, 1]];
             const expectedSegment: Inputs.Base.Segment3 = [[0.5, 0, 0], [1.0, 0, 0]];
             const result = meshBitByBit.triangleTriangleIntersection({ triangle1: triXY1, triangle2: triXZ_Shifted });
             uh.expectSegmentCloseTo(result, expectedSegment);
         });
 
         it("should return correct segment for piercing intersection", () => {
-            const triPiercing: Inputs.Base.Triangle3 = [[1, -1, -1], [1, 1, 1], [1, 3, -1]]; // On X=1 plane
+            const triPiercing: Inputs.Base.Triangle3 = [[1, -1, -1], [1, 1, 1], [1, 3, -1]];
             const expectedSegment: Inputs.Base.Segment3 = [[1, 0, 0], [1, 1, 0]];
             const result = meshBitByBit.triangleTriangleIntersection({ triangle1: [[0, 0, 0], [2, 0, 0], [0, 2, 0]], triangle2: triPiercing });
             uh.expectSegmentCloseTo(result, expectedSegment);
@@ -213,7 +211,6 @@ describe("Mesh unit tests", () => {
 
     });
 
-    // Cube 1 centered at origin, side 2 (-1 to 1)
     const cube1Tris: Inputs.Base.Triangle3[] = [
         [[1, -1, -1], [1, 1, -1], [1, 1, 1]], [[1, -1, -1], [1, 1, 1], [1, -1, 1]],
         [[-1, -1, -1], [-1, -1, 1], [-1, 1, 1]], [[-1, -1, -1], [-1, 1, 1], [-1, 1, -1]],
@@ -222,9 +219,7 @@ describe("Mesh unit tests", () => {
         [[-1, 1, -1], [-1, 1, 1], [1, 1, 1]], [[-1, 1, -1], [1, 1, 1], [1, 1, -1]],
         [[-1, -1, -1], [1, -1, -1], [1, -1, 1]], [[-1, -1, -1], [1, -1, 1], [-1, -1, 1]],
     ];
-    // Cube 2 centered at (1.5, 0, 0), side 2 (0.5 to 2.5) - Intersects cube1
     const cube2Tris: Inputs.Base.Triangle3[] = cube1Tris.map(tri => tri.map(p => [p[0] + 1.5, p[1], p[2]]) as Inputs.Base.Triangle3);
-    // Non-intersecting cube
     const cube3Tris: Inputs.Base.Triangle3[] = cube1Tris.map(tri => tri.map(p => [p[0] + 5, p[1], p[2]]) as Inputs.Base.Triangle3);
 
     describe("meshMeshIntersectionSegments", () => {
@@ -283,7 +278,6 @@ describe("Mesh unit tests", () => {
 
         it("should return intersection points for intersecting meshes", () => {
             const result = meshBitByBit.meshMeshIntersectionPoints({ mesh1: cube1Tris, mesh2: cube2Tris });
-            // Should return 4 polylines worth of points (same as polylines count)
             expect(result.length).toBe(4);
             expect(result).toEqual([
                 [
@@ -313,11 +307,9 @@ describe("Mesh unit tests", () => {
 
         it("should return arrays of points for each polyline", () => {
             const result = meshBitByBit.meshMeshIntersectionPoints({ mesh1: cube1Tris, mesh2: cube2Tris });
-            // Each element should be an array of points
             result.forEach(pointArray => {
                 expect(Array.isArray(pointArray)).toBe(true);
                 expect(pointArray.length).toBeGreaterThan(0);
-                // Each point should be a 3D coordinate
                 pointArray.forEach(point => {
                     expect(point.length).toBe(3);
                     expect(typeof point[0]).toBe("number");
@@ -329,17 +321,14 @@ describe("Mesh unit tests", () => {
 
         it("should include closing point for closed polylines", () => {
             const result = meshBitByBit.meshMeshIntersectionPoints({ mesh1: cube1Tris, mesh2: cube2Tris });
-            // For closed polylines, first and last point should be the same
             result.forEach(pointArray => {
                 if (pointArray.length > 1) {
                     const firstPoint = pointArray[0]!;
                     const lastPoint = pointArray[pointArray.length - 1]!;
-                    // Check if the polyline is closed (first equals last)
                     const isClosed =
                         Math.abs(firstPoint[0] - lastPoint[0]) < intersectionTolerance &&
                         Math.abs(firstPoint[1] - lastPoint[1]) < intersectionTolerance &&
                         Math.abs(firstPoint[2] - lastPoint[2]) < intersectionTolerance;
-                    // Cube-cube intersection should produce closed loops
                     expect(isClosed).toBe(true);
                 }
             });
@@ -356,11 +345,8 @@ describe("Mesh unit tests", () => {
 
         it("should return points that lie on intersection plane X=0.5", () => {
             const result = meshBitByBit.meshMeshIntersectionPoints({ mesh1: cube1Tris, mesh2: cube2Tris });
-            // Cube1 is from -1 to 1, Cube2 is from 0.5 to 2.5
-            // Intersection should be at X=0.5 or X=1 depending on the faces
             result.forEach(pointArray => {
                 pointArray.forEach(point => {
-                    // Points should be at X=0.5 (left face of cube2) or X=1 (right face of cube1)
                     const xIsValid = Math.abs(point[0] - 0.5) < 0.01 || Math.abs(point[0] - 1) < 0.01;
                     expect(xIsValid).toBe(true);
                 });
@@ -371,7 +357,6 @@ describe("Mesh unit tests", () => {
             const result = meshBitByBit.meshMeshIntersectionPoints({ mesh1: cube1Tris, mesh2: cube2Tris });
             result.forEach(pointArray => {
                 pointArray.forEach(point => {
-                    // Y and Z should be within [-1, 1] range (shared by both cubes)
                     expect(point[1]).toBeGreaterThanOrEqual(-1 - intersectionTolerance);
                     expect(point[1]).toBeLessThanOrEqual(1 + intersectionTolerance);
                     expect(point[2]).toBeGreaterThanOrEqual(-1 - intersectionTolerance);
@@ -386,7 +371,6 @@ describe("Mesh unit tests", () => {
 
             expect(points.length).toBe(polylines.length);
 
-            // For closed polylines, points array should have one more point than polyline.points
             for (let i = 0; i < polylines.length; i++) {
                 if (polylines[i]!.isClosed) {
                     expect(points[i]!.length).toBe(polylines[i]!.points.length + 1);
@@ -397,11 +381,11 @@ describe("Mesh unit tests", () => {
         });
 
         it("should handle single triangle meshes that intersect", () => {
-            const singleTri1: Inputs.Base.Triangle3[] = [[[0, 0, 0], [2, 0, 0], [0, 2, 0]]]; // XY plane
-            const singleTri2: Inputs.Base.Triangle3[] = [[[0, 0, 0], [2, 0, 0], [0, 0, 2]]]; // XZ plane
+            const singleTri1: Inputs.Base.Triangle3[] = [[[0, 0, 0], [2, 0, 0], [0, 2, 0]]];
+            const singleTri2: Inputs.Base.Triangle3[] = [[[0, 0, 0], [2, 0, 0], [0, 0, 2]]];
             const result = meshBitByBit.meshMeshIntersectionPoints({ mesh1: singleTri1, mesh2: singleTri2 });
             expect(result.length).toBe(1);
-            expect(result[0]!.length).toBe(2); // Open polyline with 2 points
+            expect(result[0]!.length).toBe(2);
         });
 
         it("should return points as valid 3D coordinates", () => {
@@ -421,7 +405,6 @@ describe("Mesh unit tests", () => {
 
     describe("two triangles that cannot cross", () => {
         it("should find no segment between two triangles on parallel planes", () => {
-            // Arrange - the same triangle, one unit higher
             const lower: Inputs.Base.Triangle3 = [[0, 0, 0], [4, 0, 0], [0, 4, 0]];
             const upper: Inputs.Base.Triangle3 = [[0, 0, 1], [4, 0, 1], [0, 4, 1]];
 
@@ -433,7 +416,6 @@ describe("Mesh unit tests", () => {
         });
 
         it("should find no segment between two triangles lying in the same plane", () => {
-            // Arrange - overlapping triangles on one plane have no line of intersection to give
             const first: Inputs.Base.Triangle3 = [[0, 0, 0], [4, 0, 0], [0, 4, 0]];
             const second: Inputs.Base.Triangle3 = [[1, 1, 0], [5, 1, 0], [1, 5, 0]];
 
@@ -445,7 +427,6 @@ describe("Mesh unit tests", () => {
         });
 
         it("should find no segment where two triangles only touch at a point", () => {
-            // Arrange - two triangles meeting at one corner only
             const first: Inputs.Base.Triangle3 = [[0, 0, 0], [4, 0, 0], [0, 4, 0]];
             const second: Inputs.Base.Triangle3 = [[0, 0, 0], [0, 0, 4], [-4, 0, 0]];
 

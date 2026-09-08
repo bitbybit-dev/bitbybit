@@ -3,11 +3,8 @@ import { verbCurve } from "../../__test__/verb";
 import type { VerbCurve } from "./curve";
 import * as Inputs from "../../inputs";
 
-// verb's curve objects have no type on the API today, so the suite names the one the API returns.
-// When those signatures tighten, this tightens with them rather than pinning `any` in place.
 type Curve = ReturnType<VerbCurve["createBezierCurve"]>;
 
-// A straight line of length 10 along X, expressed as a degree-1 curve through two points.
 const START: Inputs.Base.Point3 = [0, 0, 0];
 const END: Inputs.Base.Point3 = [10, 0, 0];
 const LINE_LENGTH = 10;
@@ -15,7 +12,6 @@ const LINEAR_DEGREE = 1;
 const MIDPOINT: Inputs.Base.Point3 = [5, 0, 0];
 const HALFWAY = 0.5;
 
-// A quadratic Bezier arching over the same span; it is longer than the chord it spans.
 const BEZIER_POINTS: Inputs.Base.Point3[] = [[0, 0, 0], [5, 5, 0], [10, 0, 0]];
 const SUBDIVISIONS = 4;
 const OFF_CURVE_POINT: Inputs.Base.Point3 = [5, 20, 0];
@@ -176,9 +172,6 @@ describe("VerbCurve", () => {
         });
     });
 
-    // The rest of the class: the other ways a curve can be made, the readers of what it is made of,
-    // the plural forms that map over a list, and the transform, which rebuilds a curve from moved
-    // control points rather than asking verb to move it.
     describe("createCurveByKnotsControlPointsWeights", () => {
         it("should build the same line as one built through its points", () => {
             // Arrange
@@ -417,7 +410,6 @@ describe("VerbCurve", () => {
 
     describe("transform", () => {
         it("should move the curve by the transformation it was given", () => {
-            // Arrange - a translation of 10 along Y
             const translation: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 10, 0, 1]];
 
             // Act

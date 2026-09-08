@@ -447,13 +447,6 @@ describe("Lists unit tests", () => {
         expect(result).toEqual([[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10]]);
     });
 
-    // TODO this still needs to be implemented
-    // it.only('should group nth and keep remainder on certain level', () => {
-    //     const result = lists.groupNth({ list: [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9, 10]], nrElements: 2, keepRemainder: true });
-    //     console.log(result);
-    //     expect(result).toEqual([[[0, 1], [2, 3], [4]], [[5, 6], [7, 8], [9, 10]]]);
-    // });
-
     it("should find the depth of the deepest level count in the list with one level", () => {
         const result = lists.getListDepth({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } as Inputs.Lists.ListCloneDto<any>);
         expect(result).toBe(1);
@@ -831,4 +824,3 @@ describe("Lists unit tests", () => {
     });
 
 });
-

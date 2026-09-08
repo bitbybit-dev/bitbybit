@@ -227,8 +227,6 @@ describe("OCCT wire unit tests", () => {
         return new Promise((resolve, reject) => {
             try {
                 onMessageInput({
-                    // What the worker receives has been through a structured clone, which flattens a
-                    // DTO instance into a plain record; the spread is what stands in for that here.
                     action: {
                         functionName,
                         inputs: { ...inputs } as Record<string, unknown>
@@ -269,4 +267,3 @@ async function createLoft(callAction: <T>(functionName: string, inputs: T) => an
     const loft = await callAction<Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSShapePointer>>("operations.loftAdvanced", ldto);
     return loft;
 }
-

@@ -50,7 +50,6 @@ describe("OCCT face unit tests", () => {
         const f = face.createFaceFromWire({ shape: w, planar: false });
         const area = face.getFaceArea({ shape: f });
         expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.FACE);
-        //TODO check how to test validity of a face later
         expect(area).toBeLessThan(0);
         w.delete();
         f.delete();
@@ -783,10 +782,7 @@ describe("OCCT face unit tests", () => {
     });
 
     it("should not create ellipse face when radius major is smaller then minor", () => {
-        // When minor > major, the ellipse creation will return a null shape or swap the radii
-        // This is expected behavior - the test verifies the function doesn't crash
         const f = face.createEllipseFace({ center: [0, 0, 0], radiusMinor: 2, radiusMajor: 1, direction: [0, 1, 0] });
-        // Either null or a valid face with swapped radii
         if (f && !f.IsNull()) {
             f.delete();
         }
@@ -1722,7 +1718,6 @@ describe("OCCT face unit tests", () => {
             const f = face.createFaceFromWiresOnFace(dto);
             const area = face.getFaceArea({ shape: f });
             expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.FACE);
-            // Combined area of both circles: π*3² + π*1² = 9π + π = 10π
             expect(area).toBeCloseTo(Math.PI * 10);
             baseFace.delete();
             outerWire.delete();
@@ -1816,6 +1811,55 @@ describe("OCCT face unit tests", () => {
                 }
                 w.delete();
             });
+            f.delete();
+        });
+
+        it("should round the rectangles a fillet pattern asks for, wrapping when it runs out", () => {
+            // Arrange
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToRectangleWiresDto(f, 2, 2, undefined, undefined, [0.5, 0]);
+
+            // Act
+            const wires = face.subdivideToRectangleWires(dto);
+
+            const lengths = wires.map(w => wire.getWireLength({ shape: w }));
+            expect(lengths[0]).toBeLessThan(lengths[1]!);
+
+            wires.forEach(w => w.delete());
+            f.delete();
+        });
+
+        it("should leave out the rectangles an inclusion pattern says to skip", () => {
+            // Arrange
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const all = new OCCT.FaceSubdivideToRectangleWiresDto(f, 2, 2);
+            const some = new OCCT.FaceSubdivideToRectangleWiresDto(
+                f, 2, 2, undefined, undefined, undefined, [true, false]);
+
+            // Act
+            const everyRectangle = face.subdivideToRectangleWires(all);
+            const everyOther = face.subdivideToRectangleWires(some);
+
+            // Assert
+            expect(everyOther.length).toBeLessThan(everyRectangle.length);
+
+            everyRectangle.forEach(w => w.delete());
+            everyOther.forEach(w => w.delete());
+            f.delete();
+        });
+
+        it("should round the rectangles by the shorter of their two sides", () => {
+            const f = face.createRectangleFace({ width: 20, length: 5, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToRectangleWiresDto(f, 2, 2, undefined, undefined, [0.5]);
+
+            // Act
+            const wires = face.subdivideToRectangleWires(dto);
+
+            // Assert
+            expect(wires.length).toBeGreaterThan(0);
+            wires.forEach(w => expect(wire.getWireLength({ shape: w })).toBeGreaterThan(0));
+
+            wires.forEach(w => w.delete());
             f.delete();
         });
 
@@ -2047,4 +2091,63 @@ describe("OCCT face unit tests", () => {
         });
     });
 
+    describe("the guard every face reader begins with", () => {
+        const noFace = (): TopoDS_Face => undefined!;
+
+        it.each([
+            ["pointOnUV", (): unknown => face.pointOnUV({ shape: noFace(), paramU: 0.5, paramV: 0.5 })],
+            ["pointsOnUVs", (): unknown => face.pointsOnUVs({ shape: noFace(), paramsUV: [[0.5, 0.5]] })],
+            ["normalOnUV", (): unknown => face.normalOnUV({ shape: noFace(), paramU: 0.5, paramV: 0.5 })],
+            ["normalsOnUVs", (): unknown => face.normalsOnUVs({ shape: noFace(), paramsUV: [[0.5, 0.5]] })],
+            ["uvOnFace", (): unknown => face.uvOnFace({ shape: noFace(), paramU: 0.5, paramV: 0.5 })],
+            ["subdivideToPoints", (): unknown =>
+                face.subdivideToPoints(new OCCT.FaceSubdivisionDto(noFace(), 2, 2))],
+            ["subdivideToNormals", (): unknown =>
+                face.subdivideToNormals(new OCCT.FaceSubdivisionDto(noFace(), 2, 2))],
+            ["subdivideToUV", (): unknown =>
+                face.subdivideToUV(new OCCT.FaceSubdivisionDto(noFace(), 2, 2))],
+            ["subdivideToWires", (): unknown => face.subdivideToWires({
+                shape: noFace(), nrDivisions: 2, isU: true, shiftHalfStep: false,
+                removeStart: false, removeEnd: false,
+            })],
+            ["subdivideToRectangleWires", (): unknown => face.subdivideToRectangleWires({
+                shape: noFace(), nrRectanglesU: 2, nrRectanglesV: 2, scalePatternU: [1], scalePatternV: [1],
+                filletPattern: [0], inclusionPattern: [true], offsetFromBorderU: 0, offsetFromBorderV: 0,
+            })],
+            ["subdivideToHexagonWires", (): unknown => face.subdivideToHexagonWires({
+                shape: noFace(), nrHexagonsU: 2, nrHexagonsV: 2, flatU: false,
+                scalePatternU: [1], scalePatternV: [1], filletPattern: [0], inclusionPattern: [true],
+            })],
+            ["wireAlongParam", (): unknown => face.wireAlongParam({ shape: noFace(), param: 0.5, isU: true })],
+            ["wiresAlongParams", (): unknown => face.wiresAlongParams({ shape: noFace(), params: [0.5], isU: true })],
+        ])("should refuse %s when it was given no face", (_name, act) => {
+            // Assert
+            expect(act).toThrow(/Face not defined/);
+        });
+    });
+
+    describe("subdividing a face into wires along one direction", () => {
+        it("should shift the wires half a step in when it was asked to", () => {
+            // Arrange
+            const rectangle = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const straight = face.subdivideToWires({
+                shape: rectangle, nrDivisions: 3, isU: true, shiftHalfStep: false,
+                removeStart: false, removeEnd: false,
+            });
+            const shifted = face.subdivideToWires({
+                shape: rectangle, nrDivisions: 3, isU: true, shiftHalfStep: true,
+                removeStart: false, removeEnd: false,
+            });
+
+            expect(shifted).toHaveLength(straight.length);
+            const midOf = (w: TopoDS_Wire): Base.Point3 => wire.midPointOnWire({ shape: w });
+            expect(midOf(shifted[0]!)).not.toEqual(midOf(straight[0]!));
+
+            straight.forEach(w => w.delete());
+            shifted.forEach(w => w.delete());
+            rectangle.delete();
+        });
+    });
 });

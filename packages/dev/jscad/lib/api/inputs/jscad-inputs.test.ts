@@ -1,14 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as Inputs from "./index";
 
-// Every parameter object the JSCAD kernel accepts. These carry no behaviour beyond two things, and
-// both are load-bearing: the defaults they declare are what the visual editors are generated from,
-// and each constructor argument has to land on the property of the same name - a constructor whose
-// parameters slipped out of order would build the wrong shape silently.
-//
-// The table below is every DTO the namespace exports. A class missing from it is a class no test
-// constructs; the two cases below then run against all of them.
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyDto = new (...args: any[]) => object;
 
@@ -77,8 +69,6 @@ const DTOS: [string, AnyDto][] = [
     ["FromPolygonPoints", Inputs.JSCAD.FromPolygonPoints],
 ];
 
-// Distinct values, one per constructor parameter, so that a parameter landing on the wrong property
-// is visible: every one of them has to appear on the object that comes back.
 const sentinels = (count: number): unknown[] => Array.from({ length: count }, (_, index) => ({ argument: index }));
 
 describe("the JSCAD input DTOs", () => {

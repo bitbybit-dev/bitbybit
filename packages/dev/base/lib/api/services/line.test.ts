@@ -22,7 +22,6 @@ describe("Line unit tests", () => {
     let transforms: Transforms;
 
 
-    // Precision for floating point comparisons
     const TOLERANCE = 1e-7;
 
 
@@ -58,8 +57,6 @@ describe("Line unit tests", () => {
 
         describe("length", () => {
             it("should calculate the length of the line", () => {
-                // start: [1, 2, 3], end: [4, 6, 8] -> dx=3, dy=4, dz=5
-                // length = sqrt(3^2 + 4^2 + 5^2) = sqrt(9 + 16 + 25) = sqrt(50)
                 const expectedLength = Math.sqrt(50);
                 const result = line.length({ line: sampleLine });
                 expect(result).toBeCloseTo(expectedLength, TOLERANCE);
@@ -76,7 +73,6 @@ describe("Line unit tests", () => {
                 const result = line.reverse({ line: sampleLine });
                 const expectedReversedLine: Inputs.Base.Line3 = { start: sampleLine.end, end: sampleLine.start };
                 expect(result).toEqual(expectedReversedLine);
-                // Ensure it returns a new object
                 expect(result).not.toBe(sampleLine);
             });
         });
@@ -103,7 +99,7 @@ describe("Line unit tests", () => {
                 const transformation = [transforms.identity()];
                 const result = line.transformLine({ line: inputLine, transformation });
                 expect(result).not.toBe(inputLine);
-                expect(result.start).not.toBe(inputLine.start); // transformControlPoints likely creates new points/arrays
+                expect(result.start).not.toBe(inputLine.start);
                 expect(result.end).not.toBe(inputLine.end);
             });
         });
@@ -115,13 +111,13 @@ describe("Line unit tests", () => {
                     { start: [5, 5, 5], end: [5, 6, 5] }
                 ];
                 const transformations = [
-                    transforms.translationXYZ({ translation: [0, 10, 0] }), // Translate line 1
-                    transforms.rotationCenterAxis({ center: [5, 5, 5], axis: [1, 0, 0], angle: 90 }) // Rotate line 2 around its start
+                    transforms.translationXYZ({ translation: [0, 10, 0] }),
+                    transforms.rotationCenterAxis({ center: [5, 5, 5], axis: [1, 0, 0], angle: 90 })
                 ];
                 const result = line.transformsForLines({ lines: inputLines, transformation: transformations });
                 const expectedLines: Inputs.Base.Line3[] = [
                     { start: [0, 10, 0], end: [1, 10, 0] },
-                    { start: [5, 5, 5], end: [5, 5, 6] } // Rotation around X maps Y=1 -> Z=1
+                    { start: [5, 5, 5], end: [5, 5, 6] }
                 ];
                 uh.expectLinesCloseTo(result, expectedLines);
             });
@@ -131,9 +127,6 @@ describe("Line unit tests", () => {
                 expect(result).toEqual([]);
             });
 
-            // Note: This method does not check for mismatched array lengths, unlike Point.transformsForPoints
-            // Adding such a check might be a good idea in the Line class itself.
-            // Testing the current behavior (likely error or incorrect result) is less useful than testing intended logic.
         });
 
         describe("create", () => {
@@ -248,14 +241,12 @@ describe("Line unit tests", () => {
 
             it("should extrapolate backward when param is < 0", () => {
                 const result = line.getPointOnLine({ line: testLine, param: -0.5 });
-                // Direction = [10, 20, -30]. Start + (-0.5)*Dir = [0,0,0] + [-5, -10, 15]
                 const expectedPoint: Inputs.Base.Point3 = [-5, -10, 15];
                 uh.expectPointCloseTo(result, expectedPoint);
             });
 
             it("should extrapolate forward when param is > 1", () => {
                 const result = line.getPointOnLine({ line: testLine, param: 1.2 });
-                // Start + (1.2)*Dir = [0,0,0] + [12, 24, -36]
                 const expectedPoint: Inputs.Base.Point3 = [12, 24, -36];
                 uh.expectPointCloseTo(result, expectedPoint);
             });
@@ -308,7 +299,7 @@ describe("Line unit tests", () => {
 
             it("should filter out zero-length lines", () => {
                 const starts: Inputs.Base.Point3[] = [[0, 0, 0], [5, 5, 5], [1, 2, 3]];
-                const ends: Inputs.Base.Point3[] = [[10, 0, 0], [5, 5, 5], [4, 5, 6]]; // Middle line is zero-length
+                const ends: Inputs.Base.Point3[] = [[10, 0, 0], [5, 5, 5], [4, 5, 6]];
                 const result = line.linesBetweenStartAndEndPoints({ startPoints: starts, endPoints: ends });
                 const expectedLines: Inputs.Base.Line3[] = [
                     { start: [0, 0, 0], end: [10, 0, 0] },
@@ -322,7 +313,6 @@ describe("Line unit tests", () => {
                 expect(result).toEqual([]);
             });
 
-            // Note: Like transformsForLines, assumes lists are the same length. Mismatched lengths aren't explicitly handled.
         });
 
         describe("lineToSegment", () => {
@@ -386,38 +376,30 @@ describe("Line unit tests", () => {
 
     describe("lineLineIntersection", () => {
 
-        // --- Test Data ---
         const ORIGIN: Inputs.Base.Point3 = [0, 0, 0];
 
-        // Basic intersecting lines (X and Y axes)
         const lineX: Inputs.Base.Line3 = { start: [-5, 0, 0], end: [5, 0, 0] };
         const lineY: Inputs.Base.Line3 = { start: [0, -5, 0], end: [0, 5, 0] };
         const expectedXYIntersect: Inputs.Base.Point3 = [0, 0, 0];
 
-        // Lines intersecting outside segments
         const lineXshort: Inputs.Base.Line3 = { start: [1, 0, 0], end: [5, 0, 0] };
         const lineYshort: Inputs.Base.Line3 = { start: [0, 1, 0], end: [0, 5, 0] };
 
-        // Lines intersecting at endpoint
         const lineXoriginEnd: Inputs.Base.Line3 = { start: [-5, 0, 0], end: [0, 0, 0] };
         const lineYoriginStart: Inputs.Base.Line3 = { start: [0, 0, 0], end: [0, 5, 0] };
 
-        // Skew lines
         const lineXoffsetY: Inputs.Base.Line3 = { start: [-5, 1, 0], end: [5, 1, 0] };
         const lineY_offsetZ: Inputs.Base.Line3 = { start: [0, -5, 1], end: [0, 5, 1] };
         const lineSkewDiag: Inputs.Base.Line3 = { start: [-5, -5, 5], end: [5, 5, 10] };
 
-        // Parallel non-collinear lines
         const lineXoffsetZ: Inputs.Base.Line3 = { start: [-5, 0, 1], end: [5, 0, 1] };
 
-        // Collinear lines
         const lineX_0_10: Inputs.Base.Line3 = { start: [0, 0, 0], end: [10, 0, 0] };
         const lineX_5_15: Inputs.Base.Line3 = { start: [5, 0, 0], end: [15, 0, 0] };
         const lineX_10_20: Inputs.Base.Line3 = { start: [10, 0, 0], end: [20, 0, 0] };
         const lineX_11_20: Inputs.Base.Line3 = { start: [11, 0, 0], end: [20, 0, 0] };
         const lineX_neg10_neg5: Inputs.Base.Line3 = { start: [-10, 0, 0], end: [-5, 0, 0] };
 
-        // Zero length line
         const zeroLine: Inputs.Base.Line3 = { start: [1, 1, 1], end: [1, 1, 1] };
 
         describe("Intersecting Lines", () => {
@@ -448,12 +430,12 @@ describe("Line unit tests", () => {
 
             it("should find intersection when outside segments (checkSegmentsOnly = false)", () => {
                 const result = line.lineLineIntersection({ line1: lineXshort, line2: lineYshort, checkSegmentsOnly: false });
-                uh.expectPointCloseTo(result, ORIGIN); // The intersection of infinite lines is origin
+                uh.expectPointCloseTo(result, ORIGIN);
             });
 
             it("should handle near-zero results by clipping them", () => {
-                const line1: Inputs.Base.Line3 = { start: [-1, 1e-10, 0], end: [1, -1e-10, 0] }; // Crosses Y=0 at X=0
-                const line2: Inputs.Base.Line3 = { start: [0, -1, 0], end: [0, 1, 0] }; // Y axis
+                const line1: Inputs.Base.Line3 = { start: [-1, 1e-10, 0], end: [1, -1e-10, 0] };
+                const line2: Inputs.Base.Line3 = { start: [0, -1, 0], end: [0, 1, 0] };
                 const expected: Inputs.Base.Point3 = [0, 0, 0];
                 const result = line.lineLineIntersection({ line1, line2, checkSegmentsOnly: true, tolerance: 1e-8 });
                 uh.expectPointCloseTo(result, expected);
@@ -463,7 +445,6 @@ describe("Line unit tests", () => {
                 const line1: Inputs.Base.Line3 = { start: [-5, 0, 0], end: [5, 0, 0] };
                 const line2: Inputs.Base.Line3 = { start: [0, -5, 1e-10], end: [0, 5, 1e-10] };
                 const expected: Inputs.Base.Point3 = [0, 0, 0];
-                // Keep in mind that we use epsilon cubes for tolerance - otherwise this case would be considered skewed
                 const result = line.lineLineIntersection({ line1, line2, checkSegmentsOnly: true, tolerance: 1e-2 });
                 uh.expectPointCloseTo(result, expected);
             });
@@ -517,7 +498,7 @@ describe("Line unit tests", () => {
 
             it("should return undefined for overlapping collinear segments (checkSegmentsOnly = true)", () => {
                 const result = line.lineLineIntersection({ line1: lineX_0_10, line2: lineX_5_15, checkSegmentsOnly: true });
-                expect(result).toBeUndefined(); // Intersection is a segment [5,0,0] to [10,0,0]
+                expect(result).toBeUndefined();
             });
             it("should return undefined for fully contained collinear segments (checkSegmentsOnly = true)", () => {
                 const result = line.lineLineIntersection({ line1: lineX_0_10, line2: { start: [2, 0, 0], end: [8, 0, 0] }, checkSegmentsOnly: true });
@@ -616,7 +597,6 @@ describe("Line unit tests", () => {
         });
 
         it("should refuse a point that is not in three dimensions", () => {
-            // Arrange - a two dimensional point is what a script gets from a 2D construction
             const consoleError = console.error;
             console.error = () => undefined;
             const flat: Inputs.Base.Point3 = [0, 0, 0];

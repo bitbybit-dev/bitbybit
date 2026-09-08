@@ -1,15 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
 
-// The worker's own message loop, with the cache and the kernel standing in for the real ones. Both
-// are mocked here so that every path the loop can take is reachable: the reserved commands it answers
-// itself, the three dotted-path depths, a hash that is in the cache and one that is not, and the
-// three shapes a kernel answer can arrive in. The suite beside this one runs the same loop against
-// the real kernel wrapper.
-
-// The cache the worker builds for itself, replaced by one this suite can set up and read back. It is
-// declared before the mock so that the mock factory, which is hoisted above the imports, can reach
-// it: whatever the worker constructs lands in `latest`.
 const { FakeCacheHelper, latest, kernelCalls } = vi.hoisted(() => {
     class FakeCacheHelper {
         usedHashes: Record<string, string | number> = {};
@@ -62,9 +53,6 @@ vi.mock("./cache-helper", () => ({
     },
 }));
 
-// The kernel wrapper, answering with whatever the test set up for the path that was called. A kernel
-// built without plugin support is one the worker has to tolerate, so whether this one carries any is
-// something a test can decide before it constructs one.
 const { answers, kernel } = vi.hoisted(() => {
     const kernel: { hasPlugins: boolean; dependencies: Record<string, string> } = { hasPlugins: true, dependencies: {} };
     return { answers: new Map<string, unknown>(), kernel };

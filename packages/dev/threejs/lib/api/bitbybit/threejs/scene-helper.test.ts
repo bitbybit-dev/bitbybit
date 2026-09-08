@@ -2,13 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
 import { hexToRgb } from "../../__mocks__/test-helpers";
-// Mock three module using centralized mocks
 vi.mock("three", async () => {
     const { createThreeJSMock } = await vi.importActual<typeof import("../../__mocks__/threejs.mock")>("../../__mocks__/threejs.mock");
     return createThreeJSMock();
 });
 
-// Mock the orbit-camera module using centralized mock factory
 vi.mock("./orbit-camera", async () => {
     const { createMockOrbitCameraResult } = await vi.importActual<typeof import("../../__mocks__/threejs.mock")>("../../__mocks__/threejs.mock");
     return {
@@ -16,30 +14,25 @@ vi.mock("./orbit-camera", async () => {
     };
 });
 
-// Import after mocks are defined
 import { initThreeJS } from "./scene-helper";
 
 describe("initThreeJS unit tests", () => {
     let mockCanvas: HTMLCanvasElement;
 
     beforeEach(() => {
-        // Create a mock canvas element
         mockCanvas = document.createElement("canvas");
         mockCanvas.id = "test-canvas";
         document.body.appendChild(mockCanvas);
 
-        // Mock window properties
         Object.defineProperty(window, "innerWidth", { value: 1920, writable: true });
         Object.defineProperty(window, "innerHeight", { value: 1080, writable: true });
         Object.defineProperty(window, "devicePixelRatio", { value: 1, writable: true });
     });
 
     afterEach(() => {
-        // Clean up DOM
         if (mockCanvas && mockCanvas.parentNode) {
             mockCanvas.parentNode.removeChild(mockCanvas);
         }
-        // Clean up any canvases created by tests
         document.querySelectorAll("canvas").forEach(canvas => {
             if (canvas.parentNode) {
                 canvas.parentNode.removeChild(canvas);
@@ -62,7 +55,6 @@ describe("initThreeJS unit tests", () => {
             expect(typeof result.startAnimationLoop).toBe("function");
             expect(typeof result.dispose).toBe("function");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -78,7 +70,6 @@ describe("initThreeJS unit tests", () => {
             expect(Math.abs(background.g - expectedColor.g)).toBeLessThan(0.01);
             expect(Math.abs(background.b - expectedColor.b)).toBeLessThan(0.01);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -94,7 +85,6 @@ describe("initThreeJS unit tests", () => {
             const expectedHeight = defaultDto.sceneSize * 0.75;
             expect(result.hemisphereLight.position.y).toBeCloseTo(expectedHeight, 5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -113,7 +103,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.directionalLight.position.y).toBeCloseTo(expectedHeight, 5);
             expect(result.directionalLight.position.z).toBeCloseTo(expectedOffset, 5);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -130,7 +119,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(result.renderer.domElement).toBe(mockCanvas);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -147,13 +135,11 @@ describe("initThreeJS unit tests", () => {
             // Arrange & Act
             const result = initThreeJS();
 
-            // Assert - canvas should be appended to document.body
             expect(result.renderer.domElement).not.toBe(mockCanvas);
             expect(result.renderer.domElement.style.width).toBe("100%");
             expect(result.renderer.domElement.style.height).toBe("100%");
             expect(result.renderer.domElement.style.display).toBe("block");
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -170,10 +156,9 @@ describe("initThreeJS unit tests", () => {
 
             // Assert
             expect(result.renderer.shadowMap.enabled).toBe(true);
-            expect(result.renderer.shadowMap.type).toBe(2); // VSMShadowMap
+            expect(result.renderer.shadowMap.type).toBe(2);
             expect(result.directionalLight.castShadow).toBe(true);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -190,7 +175,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.renderer.shadowMap.enabled).toBe(false);
             expect(result.directionalLight.castShadow).toBe(false);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -213,7 +197,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.directionalLight.shadow.camera.bottom).toBe(-shadowCameraSize / 2);
             expect(result.directionalLight.shadow.camera.far).toBe(config.sceneSize * 3);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -231,7 +214,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.directionalLight.shadow.mapSize.width).toBe(4096);
             expect(result.directionalLight.shadow.mapSize.height).toBe(4096);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -250,7 +232,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.ground).toBeDefined();
             expect(result.ground).not.toBeNull();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -266,7 +247,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(result.ground).toBeNull();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -285,7 +265,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.ground?.position.y).toBe(-2);
             expect(result.ground?.position.z).toBe(10);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -301,7 +280,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(result.ground?.rotation.x).toBeCloseTo(-Math.PI / 2, 5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -322,7 +300,6 @@ describe("initThreeJS unit tests", () => {
             expect(Math.abs(material.color.g - expectedColor.g)).toBeLessThan(0.01);
             expect(Math.abs(material.color.b - expectedColor.b)).toBeLessThan(0.01);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -341,7 +318,6 @@ describe("initThreeJS unit tests", () => {
             expect(material.transparent).toBe(true);
             expect(material.opacity).toBe(0.5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -358,7 +334,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(result.ground?.receiveShadow).toBe(true);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -377,7 +352,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.orbitCamera).not.toBeNull();
             expect(result.orbitCamera?.camera).toBeDefined();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -393,7 +367,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(result.orbitCamera).toBeNull();
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -409,14 +382,13 @@ describe("initThreeJS unit tests", () => {
             const result = initThreeJS(config);
 
             // Assert
-            const expectedHeight = config.sceneSize * 0.75; // 75
-            const expectedOffset = config.sceneSize * 0.5; // 50
+            const expectedHeight = config.sceneSize * 0.75;
+            const expectedOffset = config.sceneSize * 0.5;
             expect(result.hemisphereLight.position.y).toBeCloseTo(expectedHeight, 5);
             expect(result.directionalLight.position.x).toBeCloseTo(expectedOffset, 5);
             expect(result.directionalLight.position.y).toBeCloseTo(expectedHeight, 5);
             expect(result.directionalLight.position.z).toBeCloseTo(expectedOffset, 5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -433,11 +405,10 @@ describe("initThreeJS unit tests", () => {
 
             // Assert
             const geometry = result.ground?.geometry as unknown as { parameters: { width: number; height: number } };
-            const expectedSize = config.sceneSize * config.groundScaleFactor; // 150
+            const expectedSize = config.sceneSize * config.groundScaleFactor;
             expect(geometry.parameters.width).toBe(expectedSize);
             expect(geometry.parameters.height).toBe(expectedSize);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -458,7 +429,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.hemisphereLight.color.g).toBeCloseTo(expectedColor.g, 2);
             expect(result.hemisphereLight.color.b).toBeCloseTo(expectedColor.b, 2);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -477,7 +447,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.hemisphereLight.groundColor.g).toBeCloseTo(expectedColor.g, 2);
             expect(result.hemisphereLight.groundColor.b).toBeCloseTo(expectedColor.b, 2);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -496,7 +465,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.directionalLight.color.g).toBeCloseTo(expectedColor.g, 2);
             expect(result.directionalLight.color.b).toBeCloseTo(expectedColor.b, 2);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -514,7 +482,6 @@ describe("initThreeJS unit tests", () => {
             expect(result.hemisphereLight.intensity).toBe(2.5);
             expect(result.directionalLight.intensity).toBe(3.0);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -531,7 +498,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(removeEventListenerSpy).toHaveBeenCalledWith("resize", expect.any(Function));
 
-            // Cleanup
             removeEventListenerSpy.mockRestore();
         });
 
@@ -604,7 +570,6 @@ describe("initThreeJS unit tests", () => {
         });
 
         it("should remove created canvas from DOM on dispose", () => {
-            // Arrange - no canvasId means a new canvas is created
             const result = initThreeJS();
             const canvas = result.renderer.domElement;
             expect(canvas.parentNode).toBe(document.body);
@@ -625,7 +590,6 @@ describe("initThreeJS unit tests", () => {
             // Act
             result.dispose();
 
-            // Assert - canvas should still be in DOM
             expect(mockCanvas.parentNode).toBe(document.body);
         });
     });
@@ -642,7 +606,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(setAnimationLoopSpy).toHaveBeenCalledWith(expect.any(Function));
 
-            // Cleanup
             result.dispose();
         });
 
@@ -658,7 +621,6 @@ describe("initThreeJS unit tests", () => {
 
             // Act
             result.startAnimationLoop(onRenderMock);
-            // Simulate one frame
             if (animateCallback) {
                 (animateCallback as (time: number) => void)(0);
             }
@@ -666,7 +628,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(onRenderMock).toHaveBeenCalledWith(expect.any(Number));
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -674,8 +635,6 @@ describe("initThreeJS unit tests", () => {
     describe("frame delta measurement", () => {
         const SIXTY_HZ_DELTA = 1 / 60;
 
-        // The loop is driven by hand: setAnimationLoop is replaced with a spy that keeps the frame
-        // callback, which is then called with the timestamps a real display would deliver.
         const runFrames = (
             result: InitThreeJSResult,
             frameTimesMs: number[]
@@ -705,8 +664,6 @@ describe("initThreeJS unit tests", () => {
             return { onRenderDeltas, cameraDeltas };
         };
 
-        // noUncheckedIndexedAccess makes every index read optional, so the read is narrowed here
-        // rather than at each assertion.
         const deltaAt = (deltas: number[], index: number): number => {
             const delta = deltas[index];
             if (delta === undefined) {
@@ -726,7 +683,6 @@ describe("initThreeJS unit tests", () => {
             expect(onRenderDeltas).toHaveLength(1);
             expect(deltaAt(onRenderDeltas, 0)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -742,7 +698,6 @@ describe("initThreeJS unit tests", () => {
             expect(deltaAt(onRenderDeltas, 2)).toBeCloseTo(0.0083333333, 8);
             expect(deltaAt(onRenderDeltas, 1)).not.toBeCloseTo(0.016, 4);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -757,7 +712,6 @@ describe("initThreeJS unit tests", () => {
             expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(0.0333333333, 8);
             expect(deltaAt(onRenderDeltas, 2)).toBeCloseTo(0.0333333333, 8);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -765,13 +719,11 @@ describe("initThreeJS unit tests", () => {
             // Arrange
             const result = initThreeJS();
 
-            // Act - five seconds away from the tab
             const { onRenderDeltas } = runFrames(result, [1000, 6000]);
 
             // Assert
             expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(6 / 60, 10);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -782,11 +734,9 @@ describe("initThreeJS unit tests", () => {
             // Act
             const { onRenderDeltas } = runFrames(result, [1000, 6000, 6020]);
 
-            // Assert - the clamp caps what is reported, it does not shift the clock
             expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(6 / 60, 10);
             expect(deltaAt(onRenderDeltas, 2)).toBeCloseTo(0.02, 10);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -800,7 +750,6 @@ describe("initThreeJS unit tests", () => {
             // Assert
             expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -815,7 +764,6 @@ describe("initThreeJS unit tests", () => {
             expect(deltaAt(onRenderDeltas, 1)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
             expect(deltaAt(onRenderDeltas, 1)).toBeGreaterThan(0);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -823,7 +771,6 @@ describe("initThreeJS unit tests", () => {
             // Arrange
             const result = initThreeJS();
 
-            // Act - a NaN timestamp must not poison this frame nor the one after it
             const { onRenderDeltas } = runFrames(result, [1000, NaN, 1050]);
 
             // Assert
@@ -831,7 +778,6 @@ describe("initThreeJS unit tests", () => {
             expect(deltaAt(onRenderDeltas, 2)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
             expect(onRenderDeltas.every((delta) => Number.isFinite(delta))).toBe(true);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -848,7 +794,6 @@ describe("initThreeJS unit tests", () => {
             expect(deltaAt(cameraDeltas, 1)).toBeCloseTo(0.02, 10);
             expect(deltaAt(cameraDeltas, 2)).toBeCloseTo(0.025, 10);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -857,13 +802,11 @@ describe("initThreeJS unit tests", () => {
             const result = initThreeJS();
             runFrames(result, [1000, 1020]);
 
-            // Act - a second startAnimationLoop, whose first timestamp is far from the previous one
             const restarted = runFrames(result, [90000]);
 
             // Assert
             expect(deltaAt(restarted.onRenderDeltas, 0)).toBeCloseTo(SIXTY_HZ_DELTA, 10);
 
-            // Cleanup
             result.dispose();
         });
     });

@@ -17,8 +17,6 @@ import { Context } from "../context";
 import * as Inputs from "../inputs";
 import { MockScene, MockMesh } from "../__mocks__/babylonjs.mock";
 
-// A minimal JSCAD solid. The dispatcher narrows the entity before handing it to a handler, so these
-// suites, which call the handlers directly, pass it the same way the dispatcher would.
 const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -28,9 +26,7 @@ const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
 const jscadSolid = (): Inputs.JSCAD.JSCADGeom3 => ({ polygons: [], transforms: IDENTITY_TRANSFORM });
 
 
-// Type definitions for Draw private methods (for type-safe testing)
 type DrawPrivateMethods = {
-    // Detector methods
     detectLine: (entity: unknown) => boolean;
     detectPoint: (entity: unknown) => boolean;
     detectPolyline: (entity: unknown) => boolean;
@@ -51,7 +47,6 @@ type DrawPrivateMethods = {
     detectJscadMeshes: (entity: unknown) => boolean;
     detectManifoldShape: (entity: unknown) => boolean;
     detectManifoldShapes: (entity: unknown) => boolean;
-    // Handler methods
     
     handleLine: (inputs: any) => BABYLON.Mesh | undefined;
     
@@ -115,15 +110,15 @@ type SpyManager = {
 
 describe("Draw unit tests", () => {
     let draw: Draw;
-    let drawPrivate: DrawPrivateMethods; // Type-safe access to private methods for testing
+    let drawPrivate: DrawPrivateMethods;
     let mockDrawHelper: DrawHelper;
+    let handleDecomposedMeshMock: Mock;
     let mockNode: BabylonNode;
     let mockTag: Tag;
     let mockContext: Context;
     let mockScene: BABYLON.Scene;
     let spyManager: SpyManager;
 
-    // Mock factory functions
     function createMockMesh(name: string, withChildren = false): BABYLON.Mesh {
         
         const mesh = new MockMesh(name, mockScene as any) as unknown as BABYLON.Mesh;
@@ -146,6 +141,7 @@ describe("Draw unit tests", () => {
         mockScene = new MockScene() as unknown as BABYLON.Scene;
         mockScene.metadata = { shadowGenerators: [] };
         
+        handleDecomposedMeshMock = vi.fn();
         mockDrawHelper = {
             drawPoints: vi.fn(),
             drawPoint: vi.fn(),
@@ -171,6 +167,7 @@ describe("Draw unit tests", () => {
             drawOcctShapeAsync: vi.fn(),
             drawShape: vi.fn(),
             drawShapes: vi.fn(),
+            handleDecomposedMesh: handleDecomposedMeshMock,
             dispose: vi.fn(),
             
         } as any;
@@ -195,9 +192,8 @@ describe("Draw unit tests", () => {
         } as any;
 
         draw = new Draw(mockDrawHelper, mockNode, mockTag, mockContext);
-        drawPrivate = draw as unknown as DrawPrivateMethods; // Type-safe cast for testing private methods
+        drawPrivate = draw as unknown as DrawPrivateMethods;
 
-        // Initialize SpyManager
         spyManager = {
             spies: new Map(),
 
@@ -215,8 +211,6 @@ describe("Draw unit tests", () => {
                 );
 
                 detectors.forEach(detector => {
-                    // spyOn over the union of every private method's key produces a type too large
-                    // for the compiler to represent, so the spy is named at the shape used here.
                     const spy = vi.spyOn(drawPrivate, `detect${detector}` as keyof DrawPrivateMethods) as unknown as MockInstance<() => boolean>;
                     spy.mockReturnValue(activeSet.has(detector));
                     this.spies.set(`detect${detector}`, spy);
@@ -224,8 +218,6 @@ describe("Draw unit tests", () => {
             },
 
             setupHandler<T = unknown>(handler: string, returnValue: T): MockInstance<() => T> {
-                // spyOn over the union of every private method's key produces a type too large for
-                // the compiler to represent, so the spy is named at the shape this helper hands back.
                 const spy = vi.spyOn(drawPrivate, handler as keyof DrawPrivateMethods) as unknown as MockInstance<() => T>;
                 spy.mockReturnValue(returnValue);
                 this.spies.set(handler, spy);
@@ -380,6 +372,97 @@ describe("Draw unit tests", () => {
             
             expect(spyManager.getHandlerSpy("handleManifoldShapes")).toHaveBeenCalled();
             expect(result).toBe(mockMesh);
+        });
+    });
+
+    describe("drawing a mesh that has already been decomposed", () => {
+        const decomposedMesh = (): Inputs.OCCT.DecomposedMeshDto => ({
+            faceList: [],
+            edgeList: [],
+            pointsList: [],
+        });
+
+        it("should hand a single decomposed mesh to the draw helper", async () => {
+            // Arrange
+            const mesh = createMockMesh("decomposed");
+            handleDecomposedMeshMock.mockResolvedValue(mesh);
+
+            // Act
+            const result = await draw.drawAnyAsync({ entity: decomposedMesh() });
+
+            // Assert
+            expect(handleDecomposedMeshMock).toHaveBeenCalledTimes(1);
+            expect(result).toBe(mesh);
+        });
+
+        it("should mark what it drew as having come from the kernel", async () => {
+            // Arrange
+            const mesh = createMockMesh("decomposed");
+            handleDecomposedMeshMock.mockResolvedValue(mesh);
+
+            // Act
+            const result = await draw.drawAnyAsync({ entity: decomposedMesh() });
+
+            // Assert
+            expect(result.metadata.type).toBe(Inputs.Draw.drawingTypes.occt);
+        });
+
+        it("should draw every mesh of a list and hang them off one container", async () => {
+            // Arrange
+            const first = createMockMesh("first");
+            const second = createMockMesh("second");
+            handleDecomposedMeshMock
+                .mockResolvedValueOnce(first)
+                .mockResolvedValueOnce(second);
+
+            // Act
+            const container = await draw.drawAnyAsync({ entity: [decomposedMesh(), decomposedMesh()] });
+
+            // Assert
+            expect(handleDecomposedMeshMock).toHaveBeenCalledTimes(2);
+            expect(first.parent).toBe(container);
+            expect(second.parent).toBe(container);
+        });
+
+        it("should keep that container itself out of sight, since only its contents are drawn", async () => {
+            // Arrange
+            handleDecomposedMeshMock.mockResolvedValue(createMockMesh("one"));
+
+            // Act
+            const container = await draw.drawAnyAsync({ entity: [decomposedMesh()] });
+
+            // Assert
+            expect(container.isVisible).toBe(false);
+            expect(container.name).toContain("decomposedMeshesContainer");
+        });
+
+        it("should give each container a name of its own", async () => {
+            // Arrange
+            handleDecomposedMeshMock.mockResolvedValue(createMockMesh("one"));
+
+            // Act
+            const first = await draw.drawAnyAsync({ entity: [decomposedMesh()] });
+            const second = await draw.drawAnyAsync({ entity: [decomposedMesh()] });
+
+            // Assert
+            expect(first.name).not.toBe(second.name);
+        });
+
+        it("should take the drawing options off the mesh it is redrawing where it was given none", async () => {
+            // Arrange
+            const mesh = createMockMesh("decomposed");
+            handleDecomposedMeshMock.mockResolvedValue(mesh);
+            const previous = createMockMesh("previous");
+            previous.metadata = { options: { faceColour: "#123456" } };
+
+            // Act
+            await draw.drawAnyAsync({ entity: decomposedMesh(), babylonMesh: previous });
+
+            // Assert
+            expect(handleDecomposedMeshMock).toHaveBeenCalledWith(
+                expect.objectContaining({ faceColour: "#123456" }),
+                expect.anything(),
+                expect.objectContaining({ faceColour: "#123456" }));
         });
     });
 
@@ -724,7 +807,6 @@ describe("Draw unit tests", () => {
                 lineColor: new BABYLON.Color3(0, 0, 0),
                 opacity: 1,
             };
-            // A function, not an arrow: the code under test reaches this through `new GridMaterial(...)`.
             (GridMaterial as unknown as Mock).mockImplementation(function () { return mockGridMaterial; });
 
             const mockGroundMesh = createMockMesh("ground");
@@ -756,7 +838,6 @@ describe("Draw unit tests", () => {
 
             const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
             
-            // Mock CreateGround to still return a mesh in error case
             const errorMesh = createMockMesh("error-ground");
             BABYLON.MeshBuilder.CreateGround = vi.fn().mockReturnValue(errorMesh);
             
@@ -791,7 +872,6 @@ describe("Draw unit tests", () => {
                 lineColor: new BABYLON.Color3(0, 0, 0),
                 opacity: 1,
             };
-            // A function, not an arrow: the code under test reaches this through `new GridMaterial(...)`.
             (GridMaterial as unknown as Mock).mockImplementation(function () { return mockGridMaterial; });
 
             const mockGroundMesh = createMockMesh("ground");
@@ -991,8 +1071,6 @@ describe("Draw unit tests", () => {
         it("handleNodes should call node.drawNodes", () => {
             const mockNodes = [[1, 2, 3], [4, 5, 6]];
             mockNode.drawNodes = vi.fn();
-            
-            // Mock the applyGlobalSettingsAndMetadataAndShadowCasting to avoid getChildMeshes call
             
             vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
@@ -2574,19 +2652,16 @@ describe("Draw unit tests", () => {
         });
 
         it("should apply alpha modes correctly", () => {
-            // Arrange & Act & Assert - opaque
             const opaqueInputs = new Inputs.Draw.GenericPBRMaterialDto();
             opaqueInputs.alphaMode = Inputs.Draw.alphaModeEnum.opaque;
             const opaqueMat = draw.createPBRMaterial(opaqueInputs);
             expect(opaqueMat.transparencyMode).toBe(BABYLON.PBRMaterial.PBRMATERIAL_OPAQUE);
 
-            // Arrange & Act & Assert - mask
             const maskInputs = new Inputs.Draw.GenericPBRMaterialDto();
             maskInputs.alphaMode = Inputs.Draw.alphaModeEnum.mask;
             const maskMat = draw.createPBRMaterial(maskInputs);
             expect(maskMat.transparencyMode).toBe(BABYLON.PBRMaterial.PBRMATERIAL_ALPHATEST);
 
-            // Arrange & Act & Assert - blend
             const blendInputs = new Inputs.Draw.GenericPBRMaterialDto();
             blendInputs.alphaMode = Inputs.Draw.alphaModeEnum.blend;
             const blendMat = draw.createPBRMaterial(blendInputs);

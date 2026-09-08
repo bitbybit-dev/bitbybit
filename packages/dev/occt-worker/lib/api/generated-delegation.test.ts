@@ -3,15 +3,8 @@ import { OCCTWorkerManager } from "../occ-worker/occ-worker-manager";
 import { OCCT } from "./occt/occt";
 import * as Inputs from "@bitbybit-dev/occt/lib/api/inputs";
 
-// The API layer under lib/api is generated from the kernel: every method is one call posting its own
-// dotted path to the worker. What is generated is pinned byte for byte by check:worker-api, and the
-// set of paths by check:worker-parity - but neither of those runs a single line of it. This suite
-// does, across the shapes of method the generator emits, so a generator change that produced valid
-// code doing the wrong thing fails here.
-
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
 
-// The worker the manager talks to, recording what reaches it instead of running anything.
 class RecordingWorker extends EventTarget implements Worker {
     readonly posted: PostedCall[] = [];
     onmessage: Worker["onmessage"] = null;
@@ -30,16 +23,9 @@ class RecordingWorker extends EventTarget implements Worker {
 const SPHERE_RADIUS = 5;
 const WIRE_POINTER: Inputs.OCCT.TopoDSWirePointer = { hash: 1, type: "occ-shape" };
 
-// One object stands in for every method's inputs. Each method hands its argument straight to the
-// manager without reading it, so what the argument is cannot matter - only that the same object
-// arrives on the wire. It is declared opaque and handed to each method as whatever that method
-// takes, which is the one thing about it the test does not want checked.
 const SENTINEL_INPUTS: unknown = { sentinel: "delegation" };
 const asInputs = <T>(): T => SENTINEL_INPUTS as T;
 
-// Every generated method whose body is one call, with the path it must post. A method missing here is
-// a method no test runs; a path spelled wrong here fails against the kernel the generator read. The
-// seven methods that do more than post - the downloads and the text wires - have their own suites.
 const DELEGATIONS: [string, (occt: OCCT) => unknown][] = [
     ["assembly.manager.buildAssemblyDocument", (o) => o.assembly.manager.buildAssemblyDocument(asInputs())],
     ["assembly.manager.combineStructure", (o) => o.assembly.manager.combineStructure(asInputs())],

@@ -3,10 +3,8 @@ import { verbSurface } from "../../__test__/verb";
 import type { VerbSurface } from "./surface";
 import * as Inputs from "../../inputs";
 
-// verb's surface objects have no type on the API today, so the suite names the one the API returns.
 type Surface = ReturnType<VerbSurface["createSurfaceByCorners"]>;
 
-// A flat 10 x 6 rectangle in the XY plane, given by its four corners.
 const CORNER_A: Inputs.Base.Point3 = [0, 0, 0];
 const CORNER_B: Inputs.Base.Point3 = [10, 0, 0];
 const CORNER_C: Inputs.Base.Point3 = [10, 6, 0];
@@ -14,7 +12,6 @@ const CORNER_D: Inputs.Base.Point3 = [0, 6, 0];
 const WIDTH = 10;
 const LENGTH = 6;
 const MIDDLE = 0.5;
-// verb builds a corner surface as a cubic patch even when the four corners are coplanar.
 const CORNER_SURFACE_DEGREE = 3;
 const UP: Inputs.Base.Vector3 = [0, 0, 1];
 const ISOCURVES = 4;
@@ -134,12 +131,8 @@ describe("VerbSurface", () => {
         });
     });
 
-    // The rest of the class: the other ways a surface can be made, the readers of what it is made of,
-    // the isocurve families, and the transform, which rebuilds the surface from moved control points
-    // rather than asking verb to move it.
     describe("createSurfaceByKnotsControlPointsWeights", () => {
         it("should build a flat patch spanning the control points it was given", () => {
-            // Arrange - a bilinear patch over the same rectangle
             const points = [[CORNER_A, CORNER_D], [CORNER_B, CORNER_C]];
             const weights = [[1, 1], [1, 1]];
 
@@ -184,7 +177,6 @@ describe("VerbSurface", () => {
             // Act
             const uv = surfaceService.closestParam(new Inputs.Verb.SurfaceParamDto(flat, [WIDTH / 2, LENGTH / 2, 5]));
 
-            // Assert - verb answers with the pair as an array; the API declares a UVDto and returns one
             expect(uv.u).toBeCloseTo(MIDDLE, 4);
             expect(uv.v).toBeCloseTo(MIDDLE, 4);
         });
@@ -246,7 +238,6 @@ describe("VerbSurface", () => {
             // Act
             const isocurve = surfaceService.isocurve(new Inputs.Verb.SurfaceParameterDto(flat, MIDDLE, false));
 
-            // Assert - the curve runs the length of the patch at half its width
             expect(isocurve.point(0)[0]).toBeCloseTo(WIDTH / 2, 6);
             expect(isocurve.point(1)[1]).toBeCloseTo(LENGTH, 6);
         });
@@ -290,7 +281,6 @@ describe("VerbSurface", () => {
 
     describe("transformSurface", () => {
         it("should move the patch by the transformation it was given", () => {
-            // Arrange - a translation of 10 along Z
             const translation: Inputs.Base.TransformMatrixes = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1]];
 
             // Act
