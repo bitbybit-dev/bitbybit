@@ -337,6 +337,18 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
     };
 }
 
+/**
+ * npm strips every file named .gitignore out of a package tarball, so the templates carry theirs as
+ * _gitignore and each copied template restores the name here. Without it a scaffolded backend
+ * arrives with the .env this CLI writes for it and nothing ignoring that file.
+ */
+async function restoreTemplateDotfiles(dir: string): Promise<void> {
+    const staged = path.join(dir, "_gitignore");
+    if (await fs.pathExists(staged)) {
+        await fs.move(staged, path.join(dir, ".gitignore"), { overwrite: true });
+    }
+}
+
 async function createProject(options: ProjectOptions): Promise<void> {
     const { projectName, engine, bundler, language, occtArchitecture } = options;
     const targetDir = path.resolve(process.cwd(), projectName);
@@ -397,6 +409,7 @@ async function createProject(options: ProjectOptions): Promise<void> {
         }
 
         await fs.copy(templateDir, targetDir);
+        await restoreTemplateDotfiles(targetDir);
         spinner.succeed("Project structure created");
 
         const packageJsonPath = path.join(targetDir, "package.json");
@@ -703,6 +716,7 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
         const frontendTemplateDir = path.join(cloudTemplatesDir, "frontend");
         const frontendTargetDir = path.join(targetDir, "frontend");
         await fs.copy(frontendTemplateDir, frontendTargetDir);
+        await restoreTemplateDotfiles(frontendTargetDir);
 
         const frontendPackageJsonPath = path.join(frontendTargetDir, "package.json");
         if (fs.existsSync(frontendPackageJsonPath)) {
@@ -714,6 +728,7 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
         const backendTemplateDir = path.join(cloudTemplatesDir, "backends", backend);
         const backendTargetDir = path.join(targetDir, "backend");
         await fs.copy(backendTemplateDir, backendTargetDir);
+        await restoreTemplateDotfiles(backendTargetDir);
 
         const backendPackageJsonPath = path.join(backendTargetDir, "package.json");
         if (fs.existsSync(backendPackageJsonPath)) {

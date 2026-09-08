@@ -76,9 +76,11 @@ jobs:
       - run: npm run check:references
       - run: npm run rebuild-all-packages
       - run: npm test
-      - run: npm run check:tarballs
       - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
       - run: pnpm --filter @bitbybit-dev/create-app run build
+      # after both root-published packages are built: it packs them too, and a package it cannot
+      # find reads as one that was never staged
+      - run: npm run check:tarballs
       - run: npm run check:openapi
 
       - name: Publish in dependency order
