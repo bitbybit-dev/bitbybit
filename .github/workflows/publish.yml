@@ -62,8 +62,11 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: pnpm
 
-      # trusted publishing needs npm 11.5.1 or newer; Node 22 bundles an older npm
-      - run: npm install -g npm@latest && npm --version
+      # Trusted publishing needs npm 11.5.1 or newer and Node 22 bundles an older one, so npm is
+      # installed here - pinned, because `@latest` silently took whatever npm shipped that morning
+      # and a change to `npm pack --json`'s output shape then failed a release mid-run. Moving this
+      # pin is a deliberate change with the gates re-run, not something a release discovers.
+      - run: npm install -g npm@11.6.2 && npm --version
 
       - run: pnpm install --frozen-lockfile
 
