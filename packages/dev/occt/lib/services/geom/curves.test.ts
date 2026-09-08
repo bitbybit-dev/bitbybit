@@ -72,7 +72,6 @@ describe("OCCT edge unit tests", () => {
             param: circle.LastParameter()
         });
 
-        // Use toBeCloseTo for near-zero floating-point values
         expect(point[0]).toBeCloseTo(0, 10);
         expect(point[1]).toBeCloseTo(10, 10);
         expect(point2[0]).toBeCloseTo(0, 10);

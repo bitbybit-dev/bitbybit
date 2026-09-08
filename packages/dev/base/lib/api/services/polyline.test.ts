@@ -47,27 +47,25 @@ describe("Polyline unit tests", () => {
 
     describe("length", () => {
         it("should calculate the length of a simple open polyline", () => {
-            const p: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [3, 0, 0], [3, 4, 0]] }; // Length 3 + 4 = 7
+            const p: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [3, 0, 0], [3, 4, 0]] };
             const result = polyline.length({ polyline: p });
             expect(result).toBeCloseTo(7, TOLERANCE);
         });
 
         it("should calculate the length of a closed polyline (sum of segments)", () => {
-            // Note: Implementation sums segment lengths, doesn't automatically add closing segment length
             const p: Inputs.Base.Polyline3 = {
-                points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 0]], // Explicitly closed square
+                points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 0]],
                 isClosed: true
-            }; // Length 1 + 1 + 1 + 1 = 4
+            };
             const result = polyline.length({ polyline: p });
             expect(result).toBeCloseTo(4, TOLERANCE);
         });
 
         it("should calculate length correctly even if isClosed=true but points dont form loop", () => {
-            // The isClosed flag doesn't affect the length calculation based on the code
             const p: Inputs.Base.Polyline3 = {
-                points: [[0, 0, 0], [3, 0, 0], [3, 4, 0]], // Same as open L-shape
+                points: [[0, 0, 0], [3, 0, 0], [3, 4, 0]],
                 isClosed: true
-            }; // Length 3 + 4 = 7
+            };
             const result = polyline.length({ polyline: p });
             expect(result).toBeCloseTo(7, TOLERANCE);
         });
@@ -127,7 +125,7 @@ describe("Polyline unit tests", () => {
     describe("reverse", () => {
         it("should reverse the order of points in the polyline", () => {
             const initialPoints: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1], [2, 2, 2]];
-            const p: Inputs.Base.Polyline3 = { points: [...initialPoints] }; // Pass a copy
+            const p: Inputs.Base.Polyline3 = { points: [...initialPoints] };
             const result = polyline.reverse({ polyline: p });
             const expectedPoints: Inputs.Base.Point3[] = [[2, 2, 2], [1, 1, 1], [0, 0, 0]];
             expect(result.points).toEqual(expectedPoints);
@@ -171,7 +169,7 @@ describe("Polyline unit tests", () => {
                 center: [0, 0, 0], axis: [0, 0, 1], angle: 90
             });
             const result = polyline.transformPolyline({ polyline: p, transformation });
-            const expectedPoints: Inputs.Base.Point3[] = [[0, 1, 0], [0, 2, 5]]; // Rotated points
+            const expectedPoints: Inputs.Base.Point3[] = [[0, 1, 0], [0, 2, 5]];
             uh.expectPointsCloseTo(result.points, expectedPoints);
         });
 
@@ -254,21 +252,21 @@ describe("Polyline unit tests", () => {
 
         it("should connect multiple segments in scrambled order", () => {
             const segments: Inputs.Base.Segment3[] = [
-                [[1, 0, 0], [1, 1, 0]], // Middle
-                [[1, 1, 0], [0, 1, 0]], // End
-                [[0, 0, 0], [1, 0, 0]], // Start
+                [[1, 0, 0], [1, 1, 0]],
+                [[1, 1, 0], [0, 1, 0]],
+                [[0, 0, 0], [1, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]); // Check the most likely order based on implementation finding index 0 first
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]);
             expect(result[0]!.isClosed).toBe(false);
         });
 
         it("should connect multiple segments in scrambled order starting from the middle", () => {
             const segments: Inputs.Base.Segment3[] = [
-                [[2, 2, 0], [3, 2, 0]], // segment 2 (tail)
-                [[0, 2, 0], [1, 2, 0]], // segment 0 (head)
-                [[1, 2, 0], [2, 2, 0]], // segment 1 (middle, processed first)
+                [[2, 2, 0], [3, 2, 0]],
+                [[0, 2, 0], [1, 2, 0]],
+                [[1, 2, 0], [2, 2, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
@@ -282,11 +280,11 @@ describe("Polyline unit tests", () => {
                 [[0, 0, 0], [1, 0, 0]],
                 [[1, 0, 0], [1, 1, 0]],
                 [[1, 1, 0], [0, 1, 0]],
-                [[0, 1, 0], [0, 0, 0]], // Closing segment
+                [[0, 1, 0], [0, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]); // Closed loop, last point removed
+            expect(result[0]!.points).toEqual([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]);
             expect(result[0]!.isClosed).toBe(true);
         });
 
@@ -321,7 +319,7 @@ describe("Polyline unit tests", () => {
             const tolerance = 0.1;
             const segments: Inputs.Base.Segment3[] = [
                 [[0, 0, 0], [1, 0, 0]],
-                [[1.05, 0, 0], [1, 1, 0]], // Connects within tolerance
+                [[1.05, 0, 0], [1, 1, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments, tolerance });
             expect(result).toHaveLength(1);
@@ -333,7 +331,7 @@ describe("Polyline unit tests", () => {
             const tolerance = 0.01;
             const segments: Inputs.Base.Segment3[] = [
                 [[0, 0, 0], [1, 0, 0]],
-                [[1.05, 0, 0], [1, 1, 0]], // Does NOT connect within tolerance
+                [[1.05, 0, 0], [1, 1, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments, tolerance });
             const sortedResult = uh.sortPolylinesForComparison(result);
@@ -348,9 +346,9 @@ describe("Polyline unit tests", () => {
         it("should ignore degenerate segments", () => {
             const segments: Inputs.Base.Segment3[] = [
                 [[0, 0, 0], [1, 0, 0]],
-                [[1, 0, 0], [1, 0, 0]], // Degenerate
+                [[1, 0, 0], [1, 0, 0]],
                 [[1, 0, 0], [1, 1, 0]],
-                [[2, 2, 2], [2, 2, 2 + 1e-9]] // Degenerate within default tolerance
+                [[2, 2, 2], [2, 2, 2 + 1e-9]]
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
@@ -362,7 +360,7 @@ describe("Polyline unit tests", () => {
             const tolerance = 0.1;
             const segments: Inputs.Base.Segment3[] = [
                 [[0, 0, 0], [1, 0, 0]],
-                [[1, 0, 0], [1.05, 0, 0]], // Degenerate within custom tolerance
+                [[1, 0, 0], [1.05, 0, 0]],
                 [[1, 0, 0], [1, 1, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments, tolerance });
@@ -373,10 +371,8 @@ describe("Polyline unit tests", () => {
 
         it("should handle multiple distinct polylines", () => {
             const segments: Inputs.Base.Segment3[] = [
-                // Polyline 1 (Open)
                 [[0, 0, 0], [1, 0, 0]],
                 [[1, 0, 0], [1, 1, 0]],
-                // Polyline 2 (Closed)
                 [[5, 5, 5], [6, 5, 5]],
                 [[6, 6, 5], [5, 6, 5]],
                 [[6, 5, 5], [6, 6, 5]],
@@ -394,11 +390,11 @@ describe("Polyline unit tests", () => {
             expect(sortedResult[1]!.isClosed).toBe(true);
         });
 
-        it("should chain through junctions using greedy approach", () => { // Rename for clarity
+        it("should chain through junctions using greedy approach", () => {
             const segments: Inputs.Base.Segment3[] = [
-                [[0, 0, 0], [1, 1, 1]], // Seg 0: A -> J
-                [[2, 2, 2], [1, 1, 1]], // Seg 1: B -> J
-                [[1, 1, 1], [0, 0, 2]], // Seg 2: J -> C
+                [[0, 0, 0], [1, 1, 1]],
+                [[2, 2, 2], [1, 1, 1]],
+                [[1, 1, 1], [0, 0, 2]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             const sortedResult = uh.sortPolylinesForComparison(result);
@@ -416,7 +412,7 @@ describe("Polyline unit tests", () => {
         it("should handle reversed segment forming a 2-point closed loop", () => {
             const segments: Inputs.Base.Segment3[] = [
                 [[0, 0, 0], [1, 1, 1]],
-                [[1, 1, 1], [0, 0, 0]], // Reversed
+                [[1, 1, 1], [0, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
@@ -428,7 +424,7 @@ describe("Polyline unit tests", () => {
             const segments: Inputs.Base.Segment3[] = [
                 [[0, 0, 0], [1, 0, 0]],
                 [[1, 0, 0], [1, 1, 0]],
-                [[0, 0, 0], [1, 0, 0]], // Duplicate of the first segment
+                [[0, 0, 0], [1, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
@@ -452,14 +448,14 @@ describe("Polyline unit tests", () => {
             const tolerance = 0.1;
 
             const segments: Inputs.Base.Segment3[] = [
-                [[0, 0, 0], [0.99, 0, 0]],      // Seg 0
-                [[1.08, 0, 0], [2, 0, 0]],      // Seg 1
-                [[1.21, 0, 0], [3, 0, 0]],      // Seg 2 (unconnected)
+                [[0, 0, 0], [0.99, 0, 0]],
+                [[1.08, 0, 0], [2, 0, 0]],
+                [[1.21, 0, 0], [3, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments, tolerance });
             const sortedResult = uh.sortPolylinesForComparison(result);
             expect(sortedResult).toHaveLength(2);
-            expect(sortedResult[0]!.points).toEqual([[0, 0, 0], [0.99, 0, 0], [2, 0, 0]]); // Points from original segments
+            expect(sortedResult[0]!.points).toEqual([[0, 0, 0], [0.99, 0, 0], [2, 0, 0]]);
             expect(sortedResult[0]!.isClosed).toBe(false);
             expect(sortedResult[1]!.points).toEqual([[1.21, 0, 0], [3, 0, 0]]);
             expect(sortedResult[1]!.isClosed).toBe(false);
@@ -467,8 +463,8 @@ describe("Polyline unit tests", () => {
 
         it("should connect two segments meeting end-to-end (reversed second segment)", () => {
             const segments: Inputs.Base.Segment3[] = [
-                [[0, 0, 0], [1, 0, 0]], // A -> B
-                [[2, 0, 0], [1, 0, 0]], // C -> B (Reversed connection)
+                [[0, 0, 0], [1, 0, 0]],
+                [[2, 0, 0], [1, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
@@ -478,9 +474,9 @@ describe("Polyline unit tests", () => {
 
         it("should connect multiple segments with mixed directions", () => {
             const segments: Inputs.Base.Segment3[] = [
-                [[1, 0, 0], [2, 0, 0]], // B -> C
-                [[0, 0, 0], [1, 0, 0]], // A -> B
-                [[3, 0, 0], [2, 0, 0]], // D -> C (Reversed)
+                [[1, 0, 0], [2, 0, 0]],
+                [[0, 0, 0], [1, 0, 0]],
+                [[3, 0, 0], [2, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
@@ -490,10 +486,10 @@ describe("Polyline unit tests", () => {
 
         it("should form a closed loop with mixed directions", () => {
             const segments: Inputs.Base.Segment3[] = [
-                [[1, 1, 0], [0, 1, 0]], // C -> B
-                [[0, 0, 0], [1, 0, 0]], // A -> D
-                [[1, 0, 0], [1, 1, 0]], // D -> C
-                [[0, 1, 0], [0, 0, 0]], // B -> A (Closes loop)
+                [[1, 1, 0], [0, 1, 0]],
+                [[0, 0, 0], [1, 0, 0]],
+                [[1, 0, 0], [1, 1, 0]],
+                [[0, 1, 0], [0, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
@@ -503,22 +499,22 @@ describe("Polyline unit tests", () => {
 
         it("should connect segments meeting start-to-start", () => {
             const segments: Inputs.Base.Segment3[] = [
-                [[1, 0, 0], [0, 0, 0]], // B -> A
-                [[1, 0, 0], [2, 0, 0]], // B -> C
+                [[1, 0, 0], [0, 0, 0]],
+                [[1, 0, 0], [2, 0, 0]],
             ];
             const result = polyline.sortSegmentsIntoPolylines({ segments });
             expect(result).toHaveLength(1);
-            expect(result[0]!.points).toEqual([[2, 0, 0], [1, 0, 0], [0, 0, 0]]); // Order depends on chaining direction
+            expect(result[0]!.points).toEqual([[2, 0, 0], [1, 0, 0], [0, 0, 0]]);
             expect(result[0]!.isClosed).toBe(false);
         });
     });
 
     describe("polylineSelfIntersection", () => {
         it("should return empty array for polylines with less than 3 segments", () => {
-            const polyline1: Inputs.Base.Polyline3 = { points: [[0, 0, 0]], isClosed: false }; // 0 segments
-            const polyline2: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 1, 1]], isClosed: false }; // 1 segment
-            const polyline3: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 1, 1]], isClosed: true }; // 1 segment (closed)
-            const polyline4: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 1, 1], [2, 0, 0]], isClosed: false }; // 2 segments
+            const polyline1: Inputs.Base.Polyline3 = { points: [[0, 0, 0]], isClosed: false };
+            const polyline2: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 1, 1]], isClosed: false };
+            const polyline3: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 1, 1]], isClosed: true };
+            const polyline4: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 1, 1], [2, 0, 0]], isClosed: false };
 
             expect(polyline.polylineSelfIntersection({ polyline: polyline1 })).toEqual([]);
             expect(polyline.polylineSelfIntersection({ polyline: polyline2 })).toEqual([]);
@@ -527,7 +523,7 @@ describe("Polyline unit tests", () => {
         });
 
         it("should return empty array for non-intersecting simple open polyline", () => {
-            const pln: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], isClosed: false }; // Open Square shape
+            const pln: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], isClosed: false };
             expect(polyline.polylineSelfIntersection({ polyline: pln })).toEqual([]);
         });
 
@@ -742,8 +738,6 @@ describe("Polyline unit tests", () => {
                 const plnLineV_Zoffset: Inputs.Base.Polyline3 = { points: [[0, -5, 1e-11], [0, 5, 1e-11]], isClosed: false };
                 const resultDefault = polyline.twoPolylineIntersection({ polyline1: plnLineH, polyline2: plnLineV_Zoffset });
                 expect(resultDefault).toEqual([]);
-                // With larger tolerance (e.g., 1e-3), should be considered intersecting near origin keep in mind that it's because we use
-                // tolerance based epsilon cube for determining if segments are skewed
                 const resultLoose = polyline.twoPolylineIntersection({ polyline1: plnLineH, polyline2: plnLineV_Zoffset, tolerance: 1e-3 });
                 uh.expectPointArraysCloseTo(resultLoose, [ORIGIN], 1e-3);
             });
@@ -759,7 +753,7 @@ describe("Polyline unit tests", () => {
         });
 
         it("should calculate fillet for the single corner of a 3-point open polyline", () => {
-            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [5, 3, 0]]; // 90 deg corner at [5,0,0]
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [5, 3, 0]];
             const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: false } };
             const expectedRadii = [1.5];
 
@@ -777,7 +771,7 @@ describe("Polyline unit tests", () => {
         });
 
         it("should calculate fillets for all 3 corners of a 3-point closed polyline (triangle)", () => {
-            const points: Inputs.Base.Point3[] = [[0,0,0], [4,0,0], [0,3,0]]; // Right-angle triangle
+            const points: Inputs.Base.Point3[] = [[0,0,0], [4,0,0], [0,3,0]];
             const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: true } };
             const expectedRadii = [2/3, 1.5, 0.75];
 
@@ -786,7 +780,7 @@ describe("Polyline unit tests", () => {
         });
 
         it("should calculate fillets for all 4 corners of a 4-point closed polyline (rectangle)", () => {
-            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [5, 3, 0], [0, 3, 0]]; // Rectangle
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [5, 3, 0], [0, 3, 0]];
             const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: true } };
             const expectedRadii = [1.5, 1.5, 1.5, 1.5];
 
@@ -795,7 +789,7 @@ describe("Polyline unit tests", () => {
         });
 
         it("should return 0 for corners where segments are collinear", () => {
-            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [10, 0, 0], [10, 3, 0]]; // Collinear segment P0-P1-P2
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [10, 0, 0], [10, 3, 0]];
             const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: false } };
             const expectedRadii = [0.0, 1.5];
 
@@ -843,5 +837,22 @@ describe("Polyline unit tests", () => {
         });
     });
 
-});
 
+    describe("create without saying whether the polyline closes", () => {
+        it("should leave it open", () => {
+            expect(polyline.create({ points: [[0, 0, 0], [1, 0, 0]] }).isClosed).toBe(false);
+        });
+    });
+
+    describe("the segments of a closed polyline that already returns to its start", () => {
+        it("should not add a segment of no length to close it again", () => {
+            const closed = { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 0, 0]] as Inputs.Base.Point3[], isClosed: true };
+
+            // Act
+            const segments = polyline.polylineToSegments({ polyline: closed });
+
+            // Assert
+            expect(segments).toHaveLength(3);
+        });
+    });
+});

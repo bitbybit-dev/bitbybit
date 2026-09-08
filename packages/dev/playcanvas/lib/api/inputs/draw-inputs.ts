@@ -13,8 +13,8 @@ import * as pc from "playcanvas";
 export namespace Draw {
 
     export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
-    export type Entity = number[] | [number, number, number] | Base.Point3 | Base.Vector3 | Base.Line3  | Base.Segment3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto | { type: string, name?: string, entityName?: string } |
-       number[][] | Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Segment3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[] | { type: string[], name?: string, entityName?: string };
+    export type Entity = number[] | [number, number, number] | Base.Point3 | Base.Vector3 | Base.Line3  | Base.Segment3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.JSCAD.JSCADEntity | Inputs.OCCT.DecomposedMeshDto | Inputs.Tag.TagDto | { type: string, name?: string, entityName?: string } |
+       number[][] | Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Segment3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.JSCAD.JSCADEntity[] | Inputs.OCCT.DecomposedMeshDto[] | Inputs.Tag.TagDto[] | { type: string[], name?: string, entityName?: string } | { type: string, name?: string, entityName?: string }[];
        
     /**
      * Metadata stored on drawn entities to track their type and options for updates

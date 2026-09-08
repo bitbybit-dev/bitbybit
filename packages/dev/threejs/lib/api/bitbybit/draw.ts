@@ -29,15 +29,14 @@ export class Draw extends DrawCore {
         if (entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
             return Promise.resolve(undefined);
         }
-        // we start with async ones
         if (this.detectJscadMesh(entity)) {
-            return this.handleJscadMesh(inputs);
+            return this.handleJscadMesh(inputs, entity);
         } else if (this.detectOcctShape(entity)) {
             return this.handleOcctShape(inputs);
         } else if (this.detectOcctShapes(entity)) {
             return this.handleOcctShapes(inputs);
         } else if (this.detectJscadMeshes(entity)) {
-            return this.handleJscadMeshes(inputs);
+            return this.handleJscadMeshes(inputs, entity);
         } else if (this.detectManifoldShape(entity)) {
             return this.handleManifoldShape(inputs);
         } else if (this.detectManifoldShapes(entity)) {
@@ -47,7 +46,6 @@ export class Draw extends DrawCore {
         } else if (this.detectDecomposedMesh(entity)) {
             return this.handleDecomposedMeshShape(inputs);
         } else {
-            // here we have all sync drawer functions
             return Promise.resolve(this.drawAny(inputs));
         }
     }
@@ -56,7 +54,7 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
             return this.drawHelper.handleDecomposedMesh(
-                merged as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>,
+                merged,
                 inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
                 merged
             );
@@ -115,7 +113,6 @@ export class Draw extends DrawCore {
                 result = this.handleTags(inputs);
             }
         } else {
-            // here types are marked on group metadata so it is not necessary to check their type
             result = this.updateAny(inputs);
         }
         return result;
@@ -160,11 +157,10 @@ export class Draw extends DrawCore {
         texture.repeat.set(inputs.uScale, inputs.vScale);
         texture.offset.set(inputs.uOffset, inputs.vOffset);
         texture.rotation = inputs.wAng;
-        texture.flipY = !inputs.invertY; // ThreeJS default is flipY=true, so invert the logic
+        texture.flipY = !inputs.invertY;
         texture.wrapS = THREEJS.RepeatWrapping;
         texture.wrapT = THREEJS.RepeatWrapping;
         
-        // Sampling mode
         switch (inputs.samplingMode) {
             case Inputs.Draw.samplingModeEnum.nearest:
                 texture.minFilter = THREEJS.NearestFilter;
@@ -205,20 +201,17 @@ export class Draw extends DrawCore {
             wireframe: inputs.wireframe,
         });
         
-        // Emissive
         if (inputs.emissiveColor) {
             mat.emissive = new THREEJS.Color(inputs.emissiveColor);
             mat.emissiveIntensity = inputs.emissiveIntensity;
         }
         
-        // Z offset (polygonOffset in ThreeJS)
         if (inputs.zOffset !== 0 || inputs.zOffsetUnits !== 0) {
             mat.polygonOffset = true;
             mat.polygonOffsetFactor = inputs.zOffset;
             mat.polygonOffsetUnits = inputs.zOffsetUnits;
         }
         
-        // Textures
         if (inputs.baseColorTexture) {
             mat.map = inputs.baseColorTexture as THREEJS.Texture;
         }
@@ -236,7 +229,6 @@ export class Draw extends DrawCore {
             mat.aoMap = inputs.occlusionTexture as THREEJS.Texture;
         }
         
-        // Alpha mode
         switch (inputs.alphaMode) {
             case Inputs.Draw.alphaModeEnum.opaque:
                 mat.transparent = false;
@@ -252,7 +244,6 @@ export class Draw extends DrawCore {
                 break;
         }
         
-        // Flat shading for unlit effect (ThreeJS doesn't have true unlit in MeshStandardMaterial)
         if (inputs.unlit) {
             mat.emissive = new THREEJS.Color(inputs.baseColor);
             mat.emissiveIntensity = 1;
@@ -262,21 +253,21 @@ export class Draw extends DrawCore {
         return mat;
     }
 
-    private handleJscadMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+    private handleJscadMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({
                 jscadMesh: inputs.group,
-                mesh: inputs.entity,
+                mesh,
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMesh);
     }
 
-    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMeshes({
                 jscadMesh: inputs.group,
-                meshes: inputs.entity as any[],
+                meshes,
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMeshes);
@@ -327,9 +318,9 @@ export class Draw extends DrawCore {
             const line = inputs.entity as Inputs.Base.Line3 | Inputs.Base.Segment3;
             const pts: Inputs.Base.Point3[] = [];
             if (line && "start" in line) {
-                pts.push((line as Inputs.Base.Line3).start, (line as Inputs.Base.Line3).end);
+                pts.push((line).start, (line).end);
             } else {
-                pts.push(...line as Inputs.Base.Segment3);
+                pts.push(...line);
             }
             return this.drawHelper.drawPolylinesWithColours({
                 polylinesMesh: inputs.group,

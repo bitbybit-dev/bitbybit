@@ -6,10 +6,8 @@ import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 import { GEOMETRY_DEFAULTS, DEFAULT_COLORS } from "../constants";
 
-// Type alias for entity with bitbybitMeta property
 type BitByBitEntity = Inputs.Draw.BitByBitEntity;
 
-// Interface for texture UV transformation data stored on textures
 interface TextureTransformData {
     uScale: number;
     vScale: number;
@@ -19,7 +17,6 @@ interface TextureTransformData {
     invertZ: boolean;
 }
 
-// Type for textures with optional BitByBit transform metadata
 type TextureWithTransform = pc.Texture & { _bitbybitTransform?: TextureTransformData };
 
 export class Draw extends DrawCore {
@@ -44,15 +41,14 @@ export class Draw extends DrawCore {
         }
         
         const entity = inputs.entity;
-        // we start with async ones
         if (this.detectJscadMesh(entity)) {
-            return this.handleJscadMesh(inputs);
+            return this.handleJscadMesh(inputs, entity);
         } else if (this.detectOcctShape(entity)) {
             return this.handleOcctShape(inputs);
         } else if (this.detectOcctShapes(entity)) {
             return this.handleOcctShapes(inputs);
         } else if (this.detectJscadMeshes(entity)) {
-            return this.handleJscadMeshes(inputs);
+            return this.handleJscadMeshes(inputs, entity);
         } else if (this.detectManifoldShape(entity)) {
             return this.handleManifoldShape(inputs);
         } else if (this.detectManifoldShapes(entity)) {
@@ -62,7 +58,6 @@ export class Draw extends DrawCore {
         } else if (this.detectDecomposedMesh(entity)) {
             return this.handleDecomposedMeshShape(inputs);
         } else {
-            // here we have all sync drawer functions
             return Promise.resolve(this.drawAny(inputs));
         }
     }
@@ -71,7 +66,7 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
             return this.drawHelper.handleDecomposedMesh(
-                merged as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>,
+                merged,
                 inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
                 merged
             );
@@ -133,7 +128,6 @@ export class Draw extends DrawCore {
                 result = this.handleTags(inputs);
             }
         } else {
-            // here types are marked on group metadata so it is not necessary to check their type
             result = this.updateAny(inputs);
         }
         return result;
@@ -175,19 +169,13 @@ export class Draw extends DrawCore {
     createTexture(inputs: Inputs.Draw.GenericTextureDto): pc.Texture {
         const app = this.context.app;
         
-        // Create a new texture
         const texture = new pc.Texture(app.graphicsDevice, {
             name: inputs.name,
             addressU: pc.ADDRESS_REPEAT,
             addressV: pc.ADDRESS_REPEAT,
-            // PlayCanvas flipY is applied during upload - default is true for WebGL convention
-            // We invert since our API's invertY=false means "don't flip" (standard image orientation)
             flipY: !inputs.invertY,
         });
         
-        // Store UV transformation data as metadata on the texture
-        // PlayCanvas handles UV transforms at the material level, so we attach this data
-        // to be applied when the texture is used in createPBRMaterial
         (texture as pc.Texture & { _bitbybitTransform?: TextureTransformData })._bitbybitTransform = {
             uScale: inputs.uScale,
             vScale: inputs.vScale,
@@ -197,13 +185,11 @@ export class Draw extends DrawCore {
             invertZ: inputs.invertZ,
         };
         
-        // Load the image asynchronously
         const image = new Image();
         image.crossOrigin = "anonymous";
         image.onload = () => {
             texture.setSource(image);
             
-            // Apply sampling mode after source is set
             switch (inputs.samplingMode) {
                 case Inputs.Draw.samplingModeEnum.nearest:
                     texture.minFilter = pc.FILTER_NEAREST;
@@ -239,33 +225,27 @@ export class Draw extends DrawCore {
         const mat = new pc.StandardMaterial();
         mat.name = inputs.name;
         
-        // Parse hex color to RGB
         const baseColor = this.hexToRgb(inputs.baseColor);
         mat.diffuse = new pc.Color(baseColor.r, baseColor.g, baseColor.b);
         
-        // PBR properties
         mat.metalness = inputs.metallic;
-        mat.gloss = 1 - inputs.roughness; // PlayCanvas uses gloss (inverse of roughness)
+        mat.gloss = 1 - inputs.roughness;
         mat.useMetalness = true;
         mat.opacity = inputs.alpha;
         
-        // Emissive
         if (inputs.emissiveColor) {
             const emissive = this.hexToRgb(inputs.emissiveColor);
             mat.emissive = new pc.Color(emissive.r, emissive.g, emissive.b);
             mat.emissiveIntensity = inputs.emissiveIntensity;
         }
         
-        // Back face culling
         mat.cull = inputs.doubleSided ? pc.CULLFACE_NONE : pc.CULLFACE_BACK;
         
-        // Z offset (depth bias in PlayCanvas)
         if (inputs.zOffset !== 0) {
             mat.depthBias = inputs.zOffset;
             mat.slopeDepthBias = inputs.zOffsetUnits;
         }
         
-        // Textures with UV transform support
         if (inputs.baseColorTexture) {
             mat.diffuseMap = inputs.baseColorTexture as pc.Texture;
             this.applyTextureTransform(mat, inputs.baseColorTexture as TextureWithTransform, "diffuseMap");
@@ -274,7 +254,6 @@ export class Draw extends DrawCore {
             mat.metalnessMap = inputs.metallicRoughnessTexture as pc.Texture;
             mat.glossMap = inputs.metallicRoughnessTexture as pc.Texture;
             this.applyTextureTransform(mat, inputs.metallicRoughnessTexture as TextureWithTransform, "metalnessMap");
-            // Note: glossMap shares the same texture, PlayCanvas will use the same UV transforms
         }
         if (inputs.normalTexture) {
             mat.normalMap = inputs.normalTexture as pc.Texture;
@@ -289,7 +268,6 @@ export class Draw extends DrawCore {
             this.applyTextureTransform(mat, inputs.occlusionTexture as TextureWithTransform, "aoMap");
         }
         
-        // Alpha mode
         switch (inputs.alphaMode) {
             case Inputs.Draw.alphaModeEnum.opaque:
                 mat.blendType = pc.BLEND_NONE;
@@ -324,8 +302,6 @@ export class Draw extends DrawCore {
             return;
         }
 
-        // Map texture slot names to their corresponding material property prefixes
-        // PlayCanvas uses properties like diffuseMapTiling, normalMapOffset, etc.
         const propertyMap: Record<string, string> = {
             "diffuseMap": "diffuseMap",
             "normalMap": "normalMap",
@@ -339,21 +315,17 @@ export class Draw extends DrawCore {
             return;
         }
 
-        // Apply tiling (scale) - PlayCanvas uses Vec2 for tiling
-        // invertZ affects V scale (flips texture vertically in UV space)
         const vScaleMultiplier = transform.invertZ ? -1 : 1;
         (mat as unknown as Record<string, pc.Vec2>)[`${prefix}Tiling`] = new pc.Vec2(
             transform.uScale, 
             transform.vScale * vScaleMultiplier
         );
         
-        // Apply offset - PlayCanvas uses Vec2 for offset
         (mat as unknown as Record<string, pc.Vec2>)[`${prefix}Offset`] = new pc.Vec2(
             transform.uOffset, 
             transform.vOffset
         );
         
-        // Apply rotation (wAng) - PlayCanvas supports texture rotation in radians
         (mat as unknown as Record<string, number>)[`${prefix}Rotation`] = transform.wAng;
     }
 
@@ -369,24 +341,24 @@ export class Draw extends DrawCore {
                 b: parseInt(result[3]!, 16) / 255
             };
         }
-        return { r: 0, g: 0, b: 1 }; // Default blue
+        return { r: 0, g: 0, b: 1 };
     }
 
-    private handleJscadMesh(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
+    private handleJscadMesh(inputs: Inputs.Draw.DrawAny<pc.Entity>, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3): Promise<pc.Entity> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({
                 jscadMesh: inputs.group,
-                mesh: inputs.entity,
+                mesh,
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMesh);
     }
 
-    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
+    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<pc.Entity>, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]): Promise<pc.Entity> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMeshes({
                 jscadMesh: inputs.group,
-                meshes: inputs.entity as Inputs.JSCAD.JSCADEntity[],
+                meshes,
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMeshes);
@@ -437,9 +409,9 @@ export class Draw extends DrawCore {
             const line = inputs.entity as Inputs.Base.Line3 | Inputs.Base.Segment3;
             const pts: Inputs.Base.Point3[] = [];
             if (line && "start" in line) {
-                pts.push((line as Inputs.Base.Line3).start, (line as Inputs.Base.Line3).end);
+                pts.push((line).start, (line).end);
             } else {
-                pts.push(...line as Inputs.Base.Segment3);
+                pts.push(...line);
             }
             return this.drawHelper.drawPolylinesWithColours({
                 polylinesMesh: inputs.group,
@@ -553,7 +525,6 @@ export class Draw extends DrawCore {
     private handleTag(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
         const options = this.resolveDrawOptions(inputs, { ...this.defaultBasicOptions, updatable: false });
         
-        // Validate entity is a TagDto
         if (!this.isTagDto(inputs.entity)) {
             throw new Error("Entity must be a TagDto for drawTag operation");
         }
@@ -570,7 +541,6 @@ export class Draw extends DrawCore {
     private handleTags(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
         const options = this.resolveDrawOptions(inputs, { ...this.defaultBasicOptions, updatable: false });
         
-        // Validate entity is a TagDto array
         if (!this.isTagDtoArray(inputs.entity)) {
             throw new Error("Entity must be a TagDto array for drawTags operation");
         }
@@ -588,7 +558,7 @@ export class Draw extends DrawCore {
         let result;
         const group = inputs.group as BitByBitEntity;
         if (group && group.bitbybitMeta) {
-            const type = group.bitbybitMeta.type as Inputs.Draw.drawingTypes;
+            const type = group.bitbybitMeta.type;
             switch (type) {
                 case Inputs.Draw.drawingTypes.point:
                     result = this.handlePoint(inputs);
@@ -659,7 +629,7 @@ export class Draw extends DrawCore {
         } catch (error) {
             const typeName = Inputs.Draw.drawingTypes[type];
             console.error(`Error in sync draw operation for ${typeName}:`, error);
-            throw error; // Re-throw for sync operations
+            throw error;
         }
     }
 
@@ -692,7 +662,6 @@ export class Draw extends DrawCore {
             const typeName = Inputs.Draw.drawingTypes[type];
             console.error(`Error in async draw operation for ${typeName}:`, error);
             
-            // Include more context in error message
             const errorMessage = error instanceof Error ? error.message : String(error);
             throw new Error(`Failed to draw ${typeName}: ${errorMessage}`, { cause: error });
         }
@@ -725,18 +694,15 @@ export class Draw extends DrawCore {
         inputs: Inputs.Draw.DrawAny<pc.Entity>,
         defaultOptions: Inputs.Draw.DrawOptions
     ): Inputs.Draw.DrawOptions {
-        // Priority 1: Explicit options provided
         if (inputs.options) {
             return inputs.options;
         }
         
-        // Priority 2: Options from existing group metadata
         const group = inputs.group as BitByBitEntity;
         if (group?.bitbybitMeta?.options) {
             return group.bitbybitMeta.options;
         }
         
-        // Priority 3: Default options
         return defaultOptions;
     }
 

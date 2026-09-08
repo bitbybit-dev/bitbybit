@@ -6,8 +6,8 @@ import { Context } from "../../context";
 import * as Inputs from "../../inputs";
 import * as pc from "playcanvas";
 import { createOrbitCameraMocks } from "../../__mocks__/test-helpers";
+import { MockApp } from "../../__mocks__/playcanvas.mock";
 
-// Mock the entire playcanvas module
 vi.mock("playcanvas", async () => {
     const { createPlayCanvasMock } = await vi.importActual<typeof import("../../__mocks__/playcanvas.mock")>("../../__mocks__/playcanvas.mock");
     return await createPlayCanvasMock();
@@ -16,24 +16,19 @@ vi.mock("playcanvas", async () => {
 describe("PlayCanvasOrbitCamera unit tests", () => {
     let orbitCamera: PlayCanvasOrbitCamera;
     let mockContext: Context;
-    let mockApp: any;
-    let mockScene: any;
+    let mockApp: MockApp;
 
     beforeEach(() => {
         const mocks = createOrbitCameraMocks();
         mockApp = mocks.mockApp;
-        mockScene = mocks.mockScene;
-        mockContext = {
-            app: mockApp as any,
-            scene: mockScene as any,
-        } as Context;
+        mockContext = mocks.mockContext;
 
         orbitCamera = new PlayCanvasOrbitCamera(mockContext);
     });
 
     afterEach(() => {
         vi.clearAllMocks();
-        delete (global as any).window;
+        delete (globalThis as { window?: unknown }).window;
     });
 
     describe("Constructor initialization", () => {
@@ -43,7 +38,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
         });
 
         it("should have context reference", () => {
-            expect((orbitCamera as any).context).toBe(mockContext);
+            expect(orbitCamera["context"]).toBe(mockContext);
         });
     });
 
@@ -147,19 +142,19 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
         });
 
         it("should return null for mouse input when mouse is not available", () => {
-            mockApp.mouse = null as any;
+            mockApp.mouse = null;
             const controller = orbitCamera.create(defaultInputs);
             expect(controller.mouseInput).toBeNull();
         });
 
         it("should return null for touch input when touch is not available", () => {
-            mockApp.touch = null as any;
+            mockApp.touch = null;
             const controller = orbitCamera.create(defaultInputs);
             expect(controller.touchInput).toBeNull();
         });
 
         it("should handle focus entity when provided", () => {
-            const focusEntity = new pc.Entity() as any;
+            const focusEntity = new pc.Entity();
             const inputs = { ...defaultInputs, focusEntity, frameOnStart: true };
             
             const controller = orbitCamera.create(inputs);
@@ -167,7 +162,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
         });
 
         it("should not focus on entity when frameOnStart is false", () => {
-            const focusEntity = new pc.Entity() as any;
+            const focusEntity = new pc.Entity();
             const inputs = { ...defaultInputs, focusEntity, frameOnStart: false };
             
             const controller = orbitCamera.create(inputs);
@@ -262,7 +257,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             };
 
             const controller = orbitCamera.create(defaultInputs);
-            const mockEntity = new pc.Entity() as any;
+            const mockEntity = new pc.Entity();
             
             controller.orbitCamera.focus = vi.fn();
 
@@ -481,7 +476,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            expect(mockApp.mouse.on).toHaveBeenCalledWith(pc.EVENT_MOUSEDOWN, expect.any(Function));
+            expect(mockApp.mouse!.on).toHaveBeenCalledWith(pc.EVENT_MOUSEDOWN, expect.any(Function));
         });
 
         it("should handle mouse up event", () => {
@@ -504,7 +499,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            expect(mockApp.mouse.on).toHaveBeenCalledWith(pc.EVENT_MOUSEUP, expect.any(Function));
+            expect(mockApp.mouse!.on).toHaveBeenCalledWith(pc.EVENT_MOUSEUP, expect.any(Function));
         });
 
         it("should handle mouse move event", () => {
@@ -527,7 +522,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            expect(mockApp.mouse.on).toHaveBeenCalledWith(pc.EVENT_MOUSEMOVE, expect.any(Function));
+            expect(mockApp.mouse!.on).toHaveBeenCalledWith(pc.EVENT_MOUSEMOVE, expect.any(Function));
         });
 
         it("should handle mouse wheel event", () => {
@@ -550,7 +545,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            expect(mockApp.mouse.on).toHaveBeenCalledWith(pc.EVENT_MOUSEWHEEL, expect.any(Function));
+            expect(mockApp.mouse!.on).toHaveBeenCalledWith(pc.EVENT_MOUSEWHEEL, expect.any(Function));
         });
 
         it("should cleanup mouse handlers on destroy", () => {
@@ -574,10 +569,10 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             const controller = orbitCamera.create(defaultInputs);
             controller.destroy();
             
-            expect(mockApp.mouse.off).toHaveBeenCalledWith(pc.EVENT_MOUSEDOWN, expect.any(Function));
-            expect(mockApp.mouse.off).toHaveBeenCalledWith(pc.EVENT_MOUSEUP, expect.any(Function));
-            expect(mockApp.mouse.off).toHaveBeenCalledWith(pc.EVENT_MOUSEMOVE, expect.any(Function));
-            expect(mockApp.mouse.off).toHaveBeenCalledWith(pc.EVENT_MOUSEWHEEL, expect.any(Function));
+            expect(mockApp.mouse!.off).toHaveBeenCalledWith(pc.EVENT_MOUSEDOWN, expect.any(Function));
+            expect(mockApp.mouse!.off).toHaveBeenCalledWith(pc.EVENT_MOUSEUP, expect.any(Function));
+            expect(mockApp.mouse!.off).toHaveBeenCalledWith(pc.EVENT_MOUSEMOVE, expect.any(Function));
+            expect(mockApp.mouse!.off).toHaveBeenCalledWith(pc.EVENT_MOUSEWHEEL, expect.any(Function));
         });
     });
 
@@ -602,7 +597,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            expect(mockApp.touch.on).toHaveBeenCalledWith("touchstart", expect.any(Function));
+            expect(mockApp.touch!.on).toHaveBeenCalledWith("touchstart", expect.any(Function));
         });
 
         it("should handle touch end event", () => {
@@ -625,7 +620,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            expect(mockApp.touch.on).toHaveBeenCalledWith("touchend", expect.any(Function));
+            expect(mockApp.touch!.on).toHaveBeenCalledWith("touchend", expect.any(Function));
         });
 
         it("should handle touch cancel event", () => {
@@ -648,7 +643,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            expect(mockApp.touch.on).toHaveBeenCalledWith("touchcancel", expect.any(Function));
+            expect(mockApp.touch!.on).toHaveBeenCalledWith("touchcancel", expect.any(Function));
         });
 
         it("should handle touch move event", () => {
@@ -671,7 +666,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            expect(mockApp.touch.on).toHaveBeenCalledWith("touchmove", expect.any(Function));
+            expect(mockApp.touch!.on).toHaveBeenCalledWith("touchmove", expect.any(Function));
         });
 
         it("should cleanup touch handlers on destroy", () => {
@@ -695,10 +690,10 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             const controller = orbitCamera.create(defaultInputs);
             controller.destroy();
             
-            expect(mockApp.touch.off).toHaveBeenCalledWith("touchstart", expect.any(Function));
-            expect(mockApp.touch.off).toHaveBeenCalledWith("touchend", expect.any(Function));
-            expect(mockApp.touch.off).toHaveBeenCalledWith("touchcancel", expect.any(Function));
-            expect(mockApp.touch.off).toHaveBeenCalledWith("touchmove", expect.any(Function));
+            expect(mockApp.touch!.off).toHaveBeenCalledWith("touchstart", expect.any(Function));
+            expect(mockApp.touch!.off).toHaveBeenCalledWith("touchend", expect.any(Function));
+            expect(mockApp.touch!.off).toHaveBeenCalledWith("touchcancel", expect.any(Function));
+            expect(mockApp.touch!.off).toHaveBeenCalledWith("touchmove", expect.any(Function));
         });
     });
 
@@ -723,19 +718,16 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            // Get the touchstart handler
-            const touchStartCall = mockApp.touch.on.mock.calls.find(
-                (call: any[]) => call[0] === "touchstart"
+            const touchStartCall = mockApp.touch!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === "touchstart"
             );
             expect(touchStartCall).toBeDefined();
-            const onTouchStart = touchStartCall[1];
+            const onTouchStart = touchStartCall![1];
 
-            // Simulate single touch event
             const touchEvent = {
                 touches: [{ x: 100, y: 150 }]
             };
 
-            // Call the handler - this tests onTouchStartEndCancel with single touch
             expect(() => onTouchStart(touchEvent)).not.toThrow();
         });
 
@@ -759,13 +751,11 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            // Get the touchstart handler
-            const touchStartCall = mockApp.touch.on.mock.calls.find(
-                (call: any[]) => call[0] === "touchstart"
+            const touchStartCall = mockApp.touch!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === "touchstart"
             );
-            const onTouchStart = touchStartCall[1];
+            const onTouchStart = touchStartCall![1];
 
-            // Simulate two-finger touch - this tests getPinchDistance and calcMidPoint
             const touchEvent = {
                 touches: [
                     { x: 100, y: 100 },
@@ -796,27 +786,23 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
             
-            // Get handlers
-            const touchStartCall = mockApp.touch.on.mock.calls.find(
-                (call: any[]) => call[0] === "touchstart"
+            const touchStartCall = mockApp.touch!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === "touchstart"
             );
-            const touchMoveCall = mockApp.touch.on.mock.calls.find(
-                (call: any[]) => call[0] === "touchmove"
+            const touchMoveCall = mockApp.touch!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === "touchmove"
             );
             
-            const onTouchStart = touchStartCall[1];
-            const onTouchMove = touchMoveCall[1];
+            const onTouchStart = touchStartCall![1];
+            const onTouchMove = touchMoveCall![1];
 
-            // Start with initial touch
             onTouchStart({ touches: [{ x: 100, y: 100 }] });
 
             const initialPitch = controller.orbitCamera.pitch;
             const initialYaw = controller.orbitCamera.yaw;
 
-            // Move touch - this tests onTouchMove with single touch
             onTouchMove({ touches: [{ x: 110, y: 120 }] });
 
-            // Verify camera orientation changed
             expect(controller.orbitCamera.pitch).not.toBe(initialPitch);
             expect(controller.orbitCamera.yaw).not.toBe(initialYaw);
         });
@@ -841,25 +827,23 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
             
-            // Add mock screenToWorld to camera
             if (controller.cameraEntity.camera) {
-                controller.cameraEntity.camera.screenToWorld = vi.fn((x: number, y: number, distance: number, result: any) => {
+                controller.cameraEntity.camera.screenToWorld = vi.fn((x: number, y: number, distance: number, result: pc.Vec3) => {
                     result.set(x / 100, y / 100, distance);
                     return result;
                 });
             }
 
-            const touchStartCall = mockApp.touch.on.mock.calls.find(
-                (call: any[]) => call[0] === "touchstart"
+            const touchStartCall = mockApp.touch!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === "touchstart"
             );
-            const touchMoveCall = mockApp.touch.on.mock.calls.find(
-                (call: any[]) => call[0] === "touchmove"
+            const touchMoveCall = mockApp.touch!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === "touchmove"
             );
             
-            const onTouchStart = touchStartCall[1];
-            const onTouchMove = touchMoveCall[1];
+            const onTouchStart = touchStartCall![1];
+            const onTouchMove = touchMoveCall![1];
 
-            // Start with two fingers close together
             onTouchStart({
                 touches: [
                     { x: 100, y: 100 },
@@ -869,7 +853,6 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const initialDistance = controller.orbitCamera.distance;
 
-            // Move fingers apart (zoom in) - this tests getPinchDistance, calcMidPoint, and pan
             onTouchMove({
                 touches: [
                     { x: 90, y: 90 },
@@ -877,7 +860,6 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 ]
             });
 
-            // Verify distance changed
             expect(controller.orbitCamera.distance).not.toBe(initialDistance);
         });
 
@@ -901,12 +883,11 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            const touchEndCall = mockApp.touch.on.mock.calls.find(
-                (call: any[]) => call[0] === "touchend"
+            const touchEndCall = mockApp.touch!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === "touchend"
             );
-            const onTouchEnd = touchEndCall[1];
+            const onTouchEnd = touchEndCall![1];
 
-            // Should not throw when handling touch end
             expect(() => onTouchEnd({ touches: [] })).not.toThrow();
         });
 
@@ -930,12 +911,11 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            const touchCancelCall = mockApp.touch.on.mock.calls.find(
-                (call: any[]) => call[0] === "touchcancel"
+            const touchCancelCall = mockApp.touch!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === "touchcancel"
             );
-            const onTouchCancel = touchCancelCall[1];
+            const onTouchCancel = touchCancelCall![1];
 
-            // Should not throw when handling touch cancel
             expect(() => onTouchCancel({ touches: [] })).not.toThrow();
         });
     });
@@ -961,12 +941,11 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            const mouseDownCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEDOWN
+            const mouseDownCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEDOWN
             );
-            const onMouseDown = mouseDownCall[1];
+            const onMouseDown = mouseDownCall![1];
 
-            // Simulate left button press
             const leftButtonEvent = { button: pc.MOUSEBUTTON_LEFT };
             expect(() => onMouseDown(leftButtonEvent)).not.toThrow();
         });
@@ -991,12 +970,11 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            const mouseDownCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEDOWN
+            const mouseDownCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEDOWN
             );
-            const onMouseDown = mouseDownCall[1];
+            const onMouseDown = mouseDownCall![1];
 
-            // Simulate middle button press
             const middleButtonEvent = { button: pc.MOUSEBUTTON_MIDDLE };
             expect(() => onMouseDown(middleButtonEvent)).not.toThrow();
         });
@@ -1021,12 +999,11 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            const mouseDownCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEDOWN
+            const mouseDownCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEDOWN
             );
-            const onMouseDown = mouseDownCall[1];
+            const onMouseDown = mouseDownCall![1];
 
-            // Simulate right button press
             const rightButtonEvent = { button: pc.MOUSEBUTTON_RIGHT };
             expect(() => onMouseDown(rightButtonEvent)).not.toThrow();
         });
@@ -1051,12 +1028,11 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             orbitCamera.create(defaultInputs);
             
-            const mouseUpCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEUP
+            const mouseUpCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEUP
             );
-            const onMouseUp = mouseUpCall[1];
+            const onMouseUp = mouseUpCall![1];
 
-            // Simulate button release
             const leftButtonUpEvent = { button: pc.MOUSEBUTTON_LEFT };
             expect(() => onMouseUp(leftButtonUpEvent)).not.toThrow();
         });
@@ -1081,26 +1057,23 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
             
-            const mouseDownCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEDOWN
+            const mouseDownCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEDOWN
             );
-            const mouseMoveCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEMOVE
+            const mouseMoveCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEMOVE
             );
             
-            const onMouseDown = mouseDownCall[1];
-            const onMouseMove = mouseMoveCall[1];
+            const onMouseDown = mouseDownCall![1];
+            const onMouseMove = mouseMoveCall![1];
 
-            // Press left button
             onMouseDown({ button: pc.MOUSEBUTTON_LEFT });
 
             const initialPitch = controller.orbitCamera.pitch;
             const initialYaw = controller.orbitCamera.yaw;
 
-            // Move mouse
             onMouseMove({ dx: 10, dy: 5, x: 100, y: 100 });
 
-            // Verify camera orientation changed
             expect(controller.orbitCamera.pitch).not.toBe(initialPitch);
             expect(controller.orbitCamera.yaw).not.toBe(initialYaw);
         });
@@ -1125,31 +1098,27 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
             
-            // Add mock screenToWorld to camera
             if (controller.cameraEntity.camera) {
-                controller.cameraEntity.camera.screenToWorld = vi.fn((x: number, y: number, distance: number, result: any) => {
+                controller.cameraEntity.camera.screenToWorld = vi.fn((x: number, y: number, distance: number, result: pc.Vec3) => {
                     result.set(x / 100, y / 100, distance);
                     return result;
                 });
             }
 
-            const mouseDownCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEDOWN
+            const mouseDownCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEDOWN
             );
-            const mouseMoveCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEMOVE
+            const mouseMoveCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEMOVE
             );
             
-            const onMouseDown = mouseDownCall[1];
-            const onMouseMove = mouseMoveCall[1];
+            const onMouseDown = mouseDownCall![1];
+            const onMouseMove = mouseMoveCall![1];
 
-            // Press middle button
             onMouseDown({ button: pc.MOUSEBUTTON_MIDDLE });
 
-            // Move mouse - this tests the pan function
             onMouseMove({ dx: 10, dy: 5, x: 110, y: 105 });
 
-            // Verify pan was called (camera should have screenToWorld invoked)
             expect(controller.cameraEntity.camera?.screenToWorld).toHaveBeenCalled();
         });
 
@@ -1173,21 +1142,19 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
             
-            const mouseWheelCall = mockApp.mouse.on.mock.calls.find(
-                (call: any[]) => call[0] === pc.EVENT_MOUSEWHEEL
+            const mouseWheelCall = mockApp.mouse!.on.mock.calls.find(
+                (call: unknown[]) => call[0] === pc.EVENT_MOUSEWHEEL
             );
-            const onMouseWheel = mouseWheelCall[1];
+            const onMouseWheel = mouseWheelCall![1];
 
             const initialDistance = controller.orbitCamera.distance;
 
-            // Simulate mouse wheel scroll
             const mockPreventDefault = vi.fn();
             onMouseWheel({ 
                 wheelDelta: -1, 
                 event: { preventDefault: mockPreventDefault } 
             });
 
-            // Verify distance changed
             expect(controller.orbitCamera.distance).not.toBe(initialDistance);
             expect(mockPreventDefault).toHaveBeenCalled();
         });
@@ -1214,7 +1181,6 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(customInputs);
             
-            // Verify controller is created with custom settings
             expect(controller).toBeDefined();
             expect(controller.mouseInput).toBeDefined();
         });
@@ -1239,7 +1205,6 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(customInputs);
             
-            // Verify controller is created with custom settings
             expect(controller).toBeDefined();
             expect(controller.mouseInput).toBeDefined();
         });

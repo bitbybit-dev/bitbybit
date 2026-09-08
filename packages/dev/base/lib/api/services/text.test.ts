@@ -13,36 +13,28 @@ import { VectorFont } from "../models/simplex";
 describe("Text unit tests", () => {
     let text: TextBitByBit;
 
-    // Mock Font Data Structure (simplified)
-    // Uses character code as key.
-    // First element is width, then pairs of [x, y] relative coords. `undefined` signifies path break.
     const mockFont: VectorFont = {
-        // Height of the font design coordinate space
-        height: 100, // Example height
-        // Glyph for 'A' (char code 65) - simple triangle
+        height: 100,
         65: [
-            50, // width
-            0, 0, // path 1 start
+            50,
+            0, 0,
             25, 80,
             50, 0,
-            0, 0, // close path 1
+            0, 0,
         ],
-        // Glyph for 'B' (char code 66) - two paths (e.g., two vertical lines)
         66: [
-            40, // width
-            0, 0,  // path 1
+            40,
+            0, 0,
             0, 80,
-            undefined, // path break
-            30, 0, // path 2
+            undefined,
+            30, 0,
             30, 80,
         ],
-        // Glyph for ' ' (space) (char code 32) - just width
         32: [
-            20, // width (no geometry needed, but width matters)
+            20,
         ],
-        // Glyph for '?' (fallback, char code 63) - simple square
         63: [
-            45, // width
+            45,
             0, 0,
             45, 0,
             45, 70,
@@ -56,7 +48,7 @@ describe("Text unit tests", () => {
         expected: Inputs.Base.Point3 | Inputs.Base.Vector3
     ) => {
         expect(received).toBeDefined();
-        if (!received) return; // Guard for TS
+        if (!received) return;
         expect(received.length).toEqual(expected.length);
         expect(received[0]).toBeCloseTo(expected[0], TOLERANCE);
         expect(received[1]).toBeCloseTo(expected[1], TOLERANCE);
@@ -385,10 +377,10 @@ describe("Text unit tests", () => {
 
         it("should use fallback character (?) for unknown characters", () => {
             const char = "Z";
-            const fallbackCode = 63; // '?'
+            const fallbackCode = 63;
             const targetHeight = 10;
-            const fallbackGlyphWidth = mockFont[fallbackCode]![0] as number; // 45
-            const expectedWidth = fallbackGlyphWidth * (targetHeight / mockFont.height); // 45 * 0.1 = 4.5
+            const fallbackGlyphWidth = mockFont[fallbackCode]![0] as number;
+            const expectedWidth = fallbackGlyphWidth * (targetHeight / mockFont.height);
 
             const result = text.vectorChar({ char: char, height: targetHeight, font: mockFont } as Mocked<Inputs.Text.VectorCharDto>);
 
@@ -408,8 +400,8 @@ describe("Text unit tests", () => {
         it("should handle space character (width only)", () => {
             const char = " ";
             const targetHeight = 10;
-            const spaceGlyphWidth = mockFont[char.charCodeAt(0)]![0] as number; // 20
-            const expectedWidth = spaceGlyphWidth * (targetHeight / mockFont.height); // 20 * 0.1 = 2
+            const spaceGlyphWidth = mockFont[char.charCodeAt(0)]![0] as number;
+            const expectedWidth = spaceGlyphWidth * (targetHeight / mockFont.height);
 
             const result = text.vectorChar({ char: char, height: targetHeight, font: mockFont } as Mocked<Inputs.Text.VectorCharDto>);
 
@@ -535,4 +527,3 @@ describe("Text unit tests", () => {
 
     });
 });
-

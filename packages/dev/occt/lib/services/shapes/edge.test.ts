@@ -94,8 +94,6 @@ describe("OCCT edge unit tests", () => {
         const length = edge.getEdgeLength({ shape: e });
         expect(length).toBeCloseTo(12.56637061435917, 10);
         e.delete();
-        // Note: elipse2d and cylinderSrf may be internally managed by the edge
-        // Deleting them separately can cause issues with reference counting
     });
 
     it("should make ellipse edge", async () => {
@@ -106,10 +104,7 @@ describe("OCCT edge unit tests", () => {
     });
 
     it("should not make ellipse edge when minor radius is larger than major radius", async () => {
-        // When minor > major, the ellipse creation will return a null edge or swap the radii
-        // This is expected behavior - the test verifies the function doesn't crash
         const e = edge.createEllipseEdge({ radiusMinor: 3, radiusMajor: 2, center: [0, 0, 0], direction: [0, 0, 1] });
-        // Either null or a valid edge with swapped radii
         if (e && !e.IsNull()) {
             e.delete();
         }
@@ -1283,7 +1278,6 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     };
 
-    // fromBaseLine tests
     it("should create an edge from base line", async () => {
         const line: Inputs.Base.Line3 = { start: [0, 0, 0], end: [1, 1, 1] };
         const e = edge.fromBaseLine({ line });
@@ -1292,7 +1286,6 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    // fromBaseLines tests
     it("should create edges from base lines", async () => {
         const lines: Inputs.Base.Line3[] = [
             { start: [0, 0, 0], end: [1, 0, 0] },
@@ -1308,7 +1301,6 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    // fromBaseSegment tests
     it("should create an edge from base segment", async () => {
         const segment: Inputs.Base.Segment3 = [[0, 0, 0], [2, 2, 2]];
         const e = edge.fromBaseSegment({ segment });
@@ -1317,7 +1309,6 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    // fromBaseSegments tests
     it("should create edges from base segments", async () => {
         const segments: Inputs.Base.Segment3[] = [
             [[0, 0, 0], [1, 0, 0]],
@@ -1333,7 +1324,6 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    // fromPoints tests
     it("should create edges from points", async () => {
         const points: Inputs.Base.Point3[] = [
             [0, 0, 0],
@@ -1356,7 +1346,6 @@ describe("OCCT edge unit tests", () => {
         expect(edges.length).toBe(0);
     });
 
-    // fromBasePolyline tests
     it("should create edges from open polyline", async () => {
         const polyline: Inputs.Base.Polyline3 = {
             points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
@@ -1379,7 +1368,6 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    // fromBaseTriangle tests
     it("should create edges from triangle", async () => {
         const triangle: Inputs.Base.Triangle3 = [
             [0, 0, 0],
@@ -1391,18 +1379,16 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    // fromBaseMesh tests
     it("should create edges from mesh", async () => {
         const mesh: Inputs.Base.Mesh3 = [
             [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]],
             [[1, 0, 0], [2, 0, 0], [1.5, 1, 0]]
         ];
         const edges = edge.fromBaseMesh({ mesh });
-        expect(edges.length).toBe(6); // 2 triangles * 3 edges each
+        expect(edges.length).toBe(6);
         edges.forEach(e => e.delete());
     });
 
-    // pointsOnEdgesAtParam tests
     it("should get points on multiple edges at param", async () => {
         const e1 = edge.line({ start: [0, 0, 0], end: [2, 0, 0] });
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
@@ -1417,13 +1403,11 @@ describe("OCCT edge unit tests", () => {
         e3.delete();
     });
 
-    // tangentsOnEdgesAtParam tests
     it("should get tangents on multiple edges at param", async () => {
         const e1 = edge.line({ start: [0, 0, 0], end: [2, 0, 0] });
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
         const tangents = edge.tangentsOnEdgesAtParam({ shapes: [e1, e2], param: 0.5 });
         expect(tangents.length).toBe(2);
-        // Tangent on a line points in direction of the line (normalized unit vectors)
         expect(tangents[0]![0]).toBeCloseTo(1, closeToNr);
         expect(tangents[0]![1]).toBeCloseTo(0, closeToNr);
         expect(tangents[0]![2]).toBeCloseTo(0, closeToNr);
@@ -1434,7 +1418,6 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    // startPointsOnEdges tests
     it("should get start points on multiple edges", async () => {
         const e1 = edge.line({ start: [1, 2, 3], end: [4, 5, 6] });
         const e2 = edge.line({ start: [7, 8, 9], end: [10, 11, 12] });
@@ -1446,7 +1429,6 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    // endPointsOnEdges tests
     it("should get end points on multiple edges", async () => {
         const e1 = edge.line({ start: [1, 2, 3], end: [4, 5, 6] });
         const e2 = edge.line({ start: [7, 8, 9], end: [10, 11, 12] });
@@ -1458,7 +1440,6 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    // pointsOnEdgesAtLength tests
     it("should get points on multiple edges at length", async () => {
         const e1 = edge.line({ start: [0, 0, 0], end: [4, 0, 0] });
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
@@ -1472,7 +1453,6 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    // tangentsOnEdgesAtLength tests
     it("should get tangents on multiple edges at length", async () => {
         const e1 = edge.line({ start: [0, 0, 0], end: [4, 0, 0] });
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
@@ -1486,7 +1466,6 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    // divideEdgesByParamsToPoints tests
     it("should divide multiple edges by params to points", async () => {
         const e1 = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const e2 = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
@@ -1503,7 +1482,6 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    // divideEdgesByEqualDistanceToPoints tests
     it("should divide multiple edges by equal distance to points", async () => {
         const e1 = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const e2 = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
@@ -1520,7 +1498,6 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    // isEdgeLinear tests
     it("should return true for linear edge", async () => {
         const e = edge.line({ start: [0, 0, 0], end: [1, 1, 1] });
         const isLinear = edge.isEdgeLinear({ shape: e });
@@ -1542,7 +1519,6 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    // isEdgeCircular tests
     it("should return true for circular edge", async () => {
         const e = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const isCircular = edge.isEdgeCircular({ shape: e });
@@ -1564,12 +1540,10 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    // getEdgeLengthsOfShape tests
     it("should get edge lengths of a box shape", async () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 3, 4, [0, 0, 0]);
         const lengths = edge.getEdgeLengthsOfShape({ shape: box });
         expect(lengths.length).toBe(12);
-        // Box has 4 edges of each dimension
         const sortedLengths = lengths.sort((a, b) => a - b);
         expect(sortedLengths[0]).toBeCloseTo(2, closeToNr);
         expect(sortedLengths[4]).toBeCloseTo(3, closeToNr);
@@ -1581,11 +1555,62 @@ describe("OCCT edge unit tests", () => {
         const cylinder = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 1, 2, Math.PI * 2);
         const lengths = edge.getEdgeLengthsOfShape({ shape: cylinder });
         expect(lengths.length).toBe(3);
-        // Cylinder has 2 circular edges and 1 linear edge (seam)
         const sortedLengths = lengths.sort((a, b) => a - b);
-        expect(sortedLengths[0]).toBeCloseTo(2, closeToNr); // height
-        expect(sortedLengths[1]).toBeCloseTo(2 * Math.PI, closeToNr); // circumference
-        expect(sortedLengths[2]).toBeCloseTo(2 * Math.PI, closeToNr); // circumference
+        expect(sortedLengths[0]).toBeCloseTo(2, closeToNr);
+        expect(sortedLengths[1]).toBeCloseTo(2 * Math.PI, closeToNr);
+        expect(sortedLengths[2]).toBeCloseTo(2 * Math.PI, closeToNr);
         cylinder.delete();
+    });
+    describe("createSymmetricPeriodicBSplineEdge", () => {
+        it("should close the curve back on itself", () => {
+            // Act
+            const created = edge.createSymmetricPeriodicBSplineEdge({
+                points: [[10, 0, 0], [0, 0, 10], [-10, 0, 0], [0, 0, -10]],
+                periodic: true, tolerance: 1e-7
+            });
+
+            // Assert
+            const start = edge.startPointOnEdge({ shape: created });
+            const end = edge.endPointOnEdge({ shape: created });
+            expect(start[0]).toBeCloseTo(end[0], 5);
+            expect(start[1]).toBeCloseTo(end[1], 5);
+            expect(start[2]).toBeCloseTo(end[2], 5);
+
+            created.delete();
+        });
+
+        it("should come out the same length whichever corner it starts from", () => {
+            // Act
+            const fromOne = edge.createSymmetricPeriodicBSplineEdge({
+                points: [[10, 0, 0], [0, 0, 10], [-10, 0, 0], [0, 0, -10]],
+                periodic: true, tolerance: 1e-7
+            });
+            const fromAnother = edge.createSymmetricPeriodicBSplineEdge({
+                points: [[0, 0, 10], [-10, 0, 0], [0, 0, -10], [10, 0, 0]],
+                periodic: true, tolerance: 1e-7
+            });
+
+            // Assert
+            expect(edge.getEdgeLength({ shape: fromOne }))
+                .toBeCloseTo(edge.getEdgeLength({ shape: fromAnother }), 5);
+
+            fromOne.delete();
+            fromAnother.delete();
+        });
+    });
+
+    describe("asking a straight edge for something only a circle has", () => {
+        it("should say the edge is not circular rather than fault", () => {
+            // Arrange
+            const line = edge.line({ start: [0, 0, 0], end: [10, 0, 0] });
+
+            // Act
+            const act = (): unknown => occHelper.edgesService.getGpCircle2dFromEdge({ shape: line });
+
+            // Assert
+            expect(act).toThrow(/not a circular edge/);
+
+            line.delete();
+        });
     });
 });

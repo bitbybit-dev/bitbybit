@@ -3,7 +3,6 @@ import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
 
-// Re-export Handle_TDocStd_Document for convenience
 export type { Handle_TDocStd_Document };
 
 /**
@@ -262,7 +261,6 @@ export class OCCTAssemblyManager {
         const shapes: TopoDS_Shape[] = [];
         const partsJson: { id: string; shapeIndex: number; name: string; colorRgba?: Inputs.Base.ColorRGBA | undefined }[] = [];
         
-        // Add new parts to shapes array
         for (const part of structure.parts) {
             partsJson.push({
                 id: part.id,
@@ -273,7 +271,6 @@ export class OCCTAssemblyManager {
             shapes.push(part.shape);
         }
         
-        // Process partUpdates - add their shapes to the shapes array and reference by index
         const partUpdatesJson: { label: string; shapeIndex?: number | undefined; name?: string | undefined; colorRgba?: Inputs.Base.ColorRGBA | undefined }[] = [];
         if (structure.partUpdates) {
             for (const update of structure.partUpdates) {
@@ -294,7 +291,6 @@ export class OCCTAssemblyManager {
             }
         }
         
-        // Imported parts reference source documents by index; they carry no shape payload.
         const loadedPartsJson = structure.loadedParts && structure.loadedParts.length > 0
             ? structure.loadedParts.map(p => ({
                 id: p.id,
@@ -305,9 +301,6 @@ export class OCCTAssemblyManager {
             }))
             : undefined;
 
-        // Native placement expects `matrix` as a flat row-major 3x4 (12 values). The
-        // public API uses column-major matrices (Base.TransformMatrix) and also accepts
-        // an ordered list, so fold + transpose here at the boundary.
         const nodesJson = structure.nodes.map(node => {
             if (node.matrix === undefined || node.matrix === null) {
                 return node;
@@ -359,7 +352,7 @@ export class OCCTAssemblyManager {
      * ```
      */
     loadStepToDoc(inputs: Inputs.OCCT.LoadStepToDocDto): Handle_TDocStd_Document {
-        const document = this.occ.LoadStepToDoc(inputs.stepData as Uint8Array);
+        const document = this.occ.LoadStepToDoc(inputs.stepData);
         
         if (document.IsNull()) {
             throw new Error("Failed to load STEP file");

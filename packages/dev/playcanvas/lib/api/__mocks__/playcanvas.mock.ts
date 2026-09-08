@@ -92,6 +92,12 @@ export class MockVec3 {
         this.z = from.z + (to.z - from.z) * t;
         return this;
     }
+    clone() {
+        return new MockVec3(this.x, this.y, this.z);
+    }
+    equals(other: MockVec3) {
+        return this.x === other.x && this.y === other.y && this.z === other.z;
+    }
 }
 
 export class MockQuat {
@@ -108,7 +114,7 @@ export class MockQuat {
     setFromEulerAngles(_x: number, _y: number, _z: number) {
         return this;
     }
-    setFromMat4(_mat: any) {
+    setFromMat4(_mat: { data: Float32Array | number[] }) {
         // Simplified matrix to quaternion conversion for testing
         // This is a mock implementation that just sets identity quaternion
         this.x = 0;
@@ -151,8 +157,24 @@ export class MockColor {
 
 export class MockCameraComponent {
     fov = 45;
+    // The engine works this out from the viewport it renders into; a camera that has never rendered
+    // still answers with a number, and a square one keeps the arithmetic that reads it honest.
+    aspectRatio = 1;
     farClip = 10000;
     nearClip = 0.1;
+
+    /**
+     * The engine's own projection of a screen point onto a plane at the given depth. A camera that
+     * has never rendered has no viewport to project through, so this stands the point up in world
+     * space unchanged, which is enough for the pans that only need the difference between two of them.
+     */
+    screenToWorld(x: number, y: number, z: number, result?: MockVec3): MockVec3 {
+        const world = result ?? new MockVec3();
+        world.x = x;
+        world.y = y;
+        world.z = z;
+        return world;
+    }
 }
 
 export class MockEntity {
@@ -235,7 +257,7 @@ export class MockEntity {
         entity.parent = this;
         this.children.push(entity); 
     }
-    addComponent(type: string, options?: any) {
+    addComponent(type: string, options?: Record<string, unknown>) {
         if (type === "camera") {
             this.camera = new MockCameraComponent();
             if (options) {
@@ -245,7 +267,7 @@ export class MockEntity {
         }
         // Mock implementation for other component types
         const mockComponent = { type, ...options };
-        (this as any)[type] = mockComponent;
+        (this as unknown as Record<string, unknown>)[type] = mockComponent;
         return mockComponent;
     }
 }
@@ -253,11 +275,11 @@ export class MockEntity {
 export class MockGraphNode { }
 
 export class MockScene {
-    _children: any[] = [];
-    findOne(_callback: (node: any) => boolean) {
+    _children: MockEntity[] = [];
+    findOne(_callback: (node: MockEntity) => boolean): MockEntity | null {
         return null;
     }
-    addChild(entity: any) {
+    addChild(entity: MockEntity) {
         this._children.push(entity);
     }
 }
@@ -274,9 +296,10 @@ export class MockTouch {
 }
 
 export class MockApp {
-    root: any;
-    mouse = new MockMouse();
-    touch = new MockTouch();
+    root!: MockEntity;
+    // A device the browser did not give us is absent, and the camera has to cope with that.
+    mouse: MockMouse | null = new MockMouse();
+    touch: MockTouch | null = new MockTouch();
     on: Mock = vi.fn();
     off: Mock = vi.fn();
     graphicsDevice = {
@@ -373,6 +396,24 @@ export interface MockAppType {
     _canvas: HTMLCanvasElement | null;
     _started: boolean;
     _updateCallbacks: ((dt: number) => void)[];
+    // The devices the engine reads input from. A browser may hand over neither, which is why the
+    // application declares them as optional, and the camera has to cope with their absence.
+    mouse: MockMouse | null;
+    touch: MockTouch | null;
+    root: MockEntity;
+}
+
+/**
+ * Reads a value the engine's types describe as one of its own as the stand-in it actually is. The
+ * suites hold engine-typed handles - an application, an entity - that the mocked module built, and
+ * the members they need to read are the recording ones these classes add.
+ */
+export function asMockApp(app: unknown): MockAppType {
+    return app as MockAppType;
+}
+
+export function asMockEntity(entity: unknown): MockEntityType {
+    return entity as MockEntityType;
 }
 
 /**
@@ -460,19 +501,19 @@ export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
             addressV: number;
             minFilter: number;
             magFilter: number;
-            device: any;
-            _source: any;
+            device: unknown;
+            _source: unknown;
             
-            constructor(graphicsDevice: any, options?: any) {
+            constructor(graphicsDevice: unknown, options?: { name?: string; addressU?: number; addressV?: number }) {
                 this.device = graphicsDevice;
                 this.name = options?.name || "Texture";
-                this.addressU = options?.addressU ?? actual["ADDRESS_REPEAT"];
-                this.addressV = options?.addressV ?? actual["ADDRESS_REPEAT"];
+                this.addressU = options?.addressU ?? (actual["ADDRESS_REPEAT"] as number);
+                this.addressV = options?.addressV ?? (actual["ADDRESS_REPEAT"] as number);
                 this.minFilter = actual["FILTER_NEAREST"] as number;
                 this.magFilter = actual["FILTER_NEAREST"] as number;
             }
             
-            setSource(source: any) {
+            setSource(source: unknown) {
                 this._source = source;
             }
             
@@ -481,35 +522,37 @@ export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
             }
         },
         Mesh: class MockMesh extends (actual["Mesh"] as typeof import("playcanvas").Mesh) {
-            constructor(graphicsDevice?: any) {
-                const mockDevice = graphicsDevice || mockGraphicsDevice;
+            constructor(graphicsDevice?: import("playcanvas").GraphicsDevice) {
+                // The stand-in device carries only the members the real Mesh constructor
+                // reaches for, so this is where a partial stand-in meets a full signature.
+                const mockDevice = graphicsDevice ?? (mockGraphicsDevice as unknown as import("playcanvas").GraphicsDevice);
                 super(mockDevice);
             }
             override update() {
                 return this;
             }
             // Mock fromGeometry static method for GPU instancing
-            static override fromGeometry(graphicsDevice: any, _geometry: any) {
+            static override fromGeometry(graphicsDevice: import("playcanvas").GraphicsDevice, _geometry: unknown) {
                 return new MockMesh(graphicsDevice);
             }
         },
         // Mock SphereGeometry for point rendering
         SphereGeometry: class MockSphereGeometry {
-            constructor(_options?: any) {
+            constructor(_options?: Record<string, unknown>) {
                 // Store options for potential validation
             }
         },
         // Mock VertexFormat for instancing
         VertexFormat: class MockVertexFormat {
             constructor() {}
-            static getDefaultInstancingFormat(_graphicsDevice: any) {
+            static getDefaultInstancingFormat(_graphicsDevice: unknown) {
                 return new MockVertexFormat();
             }
         },
         // Mock VertexBuffer for instancing
         VertexBuffer: class MockVertexBuffer {
             private data: ArrayBuffer;
-            constructor(_graphicsDevice: any, _format: any, numVertices: number, _options?: any) {
+            constructor(_graphicsDevice: unknown, _format: unknown, numVertices: number, _options?: Record<string, unknown>) {
                 // Allocate buffer for instance data (16 floats per instance for Mat4)
                 this.data = new ArrayBuffer(numVertices * 16 * 4); // 4 bytes per float
             }
@@ -526,13 +569,13 @@ export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
         },
         // A function expression, not an arrow: the code under test reaches this through
         // `new pc.MeshInstance(...)`, and only a function can be constructed.
-        MeshInstance: vi.fn(function (mesh: any, material: any, node: any = mockNode) {
+        MeshInstance: vi.fn(function (mesh: unknown, material: unknown, node: unknown = mockNode) {
             return {
                 mesh,
                 material,
                 node,
                 // Mock setInstancing method for GPU instancing
-                setInstancing: vi.fn((_vertexBuffer: any) => {}),
+                setInstancing: vi.fn((_vertexBuffer: unknown) => {}),
             };
         }),
         math: {

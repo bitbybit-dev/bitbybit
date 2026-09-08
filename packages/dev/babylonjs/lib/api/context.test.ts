@@ -23,7 +23,6 @@ describe("Context unit tests", () => {
         });
 
         it("should be able to have scene property assigned", () => {
-            // Properties are not initialized in constructor, but can be assigned
             const mockScene = new MockScene() as unknown as BABYLON.Scene;
             context.scene = mockScene;
             expect(context.scene).toBe(mockScene);
@@ -50,7 +49,6 @@ describe("Context unit tests", () => {
 
     describe("getSamplingMode", () => {
         beforeEach(() => {
-            // Initialize scene for testing
             context.scene = new MockScene() as unknown as BABYLON.Scene;
         });
 
@@ -70,7 +68,6 @@ describe("Context unit tests", () => {
         });
 
         it("should return NEAREST_SAMPLINGMODE as default", () => {
-            // Pass an invalid value to test default case
             const result = context.getSamplingMode("invalid" as any);
             expect(result).toBe(BABYLON.Texture.NEAREST_SAMPLINGMODE);
         });
@@ -140,9 +137,7 @@ describe("Context unit tests", () => {
 
     describe("Context inheritance", () => {
         it("should inherit from ContextBase", () => {
-            // ContextBase properties should be accessible
             expect(context).toBeDefined();
-            // Context should be able to have additional properties assigned
             const mockScene = new MockScene() as unknown as BABYLON.Scene;
             context.scene = mockScene;
             expect(context.scene).toBe(mockScene);

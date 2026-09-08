@@ -49,7 +49,6 @@ export class PathBuilder {
             center: [o.origin[0] + sx * arc.center[0], o.origin[1] + sy * arc.center[1]],
             rx: arc.rx * o.scale,
             ry: arc.ry * o.scale,
-            // A reflection across X negates the rotation and the angles (incl. sweep).
             xAxisRotation: flip ? -arc.xAxisRotation : arc.xAxisRotation,
             startAngle: flip ? -arc.startAngle : arc.startAngle,
             deltaAngle: flip ? -arc.deltaAngle : arc.deltaAngle,
@@ -141,11 +140,10 @@ export class PathBuilder {
             return groups.map((): BuiltElement | undefined => undefined);
         }
 
-        // Decode: one child per group, in order. The child's shape type tells wire-vs-face.
         const out: (BuiltElement | undefined)[] = new Array(groups.length).fill(undefined);
         this.och.iteratorService.forEachShapeInCompound(compound, (i: number, child: TopoDS_Shape) => {
             if (i >= groups.length) { try { child.delete(); } catch { /* noop */ } return; }
-            const typed = this.och.converterService.getActualTypeOfShape(child) as TopoDS_Shape;
+            const typed = this.och.converterService.getActualTypeOfShape(child);
             if (typed !== child) { try { child.delete(); } catch { /* noop */ } }
             const isFace = this.och.enumService.getShapeTypeEnum(typed) === Inputs.OCCT.shapeTypeEnum.face;
             out[i] = { shape: typed, isFace };

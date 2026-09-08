@@ -44,7 +44,7 @@ export class BabylonIO {
      * @shortname asset
      */
     async loadAssetIntoSceneNoReturn(inputs: Inputs.Asset.AssetFileDto): Promise<void> {
-        this.loadAssetIntoScene(inputs);
+        await this.loadAssetIntoScene(inputs);
     }
 
     /**
@@ -77,7 +77,7 @@ export class BabylonIO {
      * @shortname asset from url
      */
     async loadAssetIntoSceneFromRootUrlNoReturn(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<void> {
-        this.loadAssetIntoSceneFromRootUrl(inputs);
+        await this.loadAssetIntoSceneFromRootUrl(inputs);
     }
     /**
      * Loads GLB binary data directly into the scene from a Uint8Array.
@@ -89,7 +89,6 @@ export class BabylonIO {
      * @drawable true
      */
     async loadGlbFromArrayBuffer(inputs: Inputs.Asset.AssetGlbDataDto): Promise<BABYLON.Mesh> {
-        // Create a copy to ensure we have a regular ArrayBuffer (not SharedArrayBuffer)
         const buffer = inputs.glbData.buffer.slice(inputs.glbData.byteOffset, inputs.glbData.byteOffset + inputs.glbData.byteLength) as ArrayBuffer;
         const blob = new Blob([buffer], { type: "model/gltf-binary" });
         const file = new File([blob], inputs.fileName, { type: "model/gltf-binary" });
@@ -105,7 +104,7 @@ export class BabylonIO {
      * @drawable true
      */
     async loadGlbFromArrayBufferNoReturn(inputs: Inputs.Asset.AssetGlbDataDto): Promise<void> {
-        this.loadGlbFromArrayBuffer(inputs);
+        await this.loadGlbFromArrayBuffer(inputs);
     }
 
     /**
@@ -121,9 +120,12 @@ export class BabylonIO {
             window.URL.revokeObjectURL(this.objectUrl);
         }
 
-        const serializedScene = BABYLON.SceneSerializer.Serialize(this.context.scene);
-        this.context.scene.metadata = metadata;
-        const strScene = JSON.stringify(serializedScene);
+        let strScene: string;
+        try {
+            strScene = JSON.stringify(BABYLON.SceneSerializer.Serialize(this.context.scene));
+        } finally {
+            this.context.scene.metadata = metadata;
+        }
 
         let filename = inputs.fileName;
         if (filename.toLowerCase().lastIndexOf(".babylon") !== filename.length - 8 || filename.length < 9) {
@@ -132,7 +134,6 @@ export class BabylonIO {
 
         const blob = new Blob([strScene], { type: "octet/stream" });
 
-        // turn blob into an object URL; saved as a member, so can be cleaned out later
         this.objectUrl = (window.webkitURL || window.URL).createObjectURL(blob);
 
         const fileLink = document.createElement("a");
@@ -150,24 +151,15 @@ export class BabylonIO {
      * @shortname gltf scene
      */
     exportGLB(inputs: Inputs.BabylonIO.ExportSceneGlbDto): void {
-        let options;
+        const options: SERIALIZERS.IExportOptions = {
+            metadataSelector: (metadata: { gltf?: { extras?: unknown } } | undefined) => metadata?.gltf?.extras,
+        };
         if (inputs.discardSkyboxAndGrid) {
-            options = {
-                shouldExportNode: (m: BABYLON.Node) => {
-                    if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground")) {
-                        return true;
-                    }
-                    return false;
-                }
-            };
+            options.shouldExportNode = (m: BABYLON.Node) => m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground");
         }
-        // we need to handle metadata otherwise gltf files may fail due to circular JSON structures
-        const metadata = this.context.scene.metadata;
-        delete this.context.scene.metadata;
-        SERIALIZERS.GLTF2Export.GLBAsync(this.context.scene, inputs.fileName, options).then((glb) => {
-            glb.downloadFiles();
-            this.context.scene.metadata = metadata;
-        });
+        SERIALIZERS.GLTF2Export.GLBAsync(this.context.scene, inputs.fileName, options)
+            .then((glb) => glb.downloadFiles())
+            .catch((error: unknown) => console.error(`Failed to export the scene to ${inputs.fileName}:`, error));
     }
 
     /**
@@ -184,7 +176,7 @@ export class BabylonIO {
         }
         let meshes: BABYLON.Mesh[] = [inputs.mesh, ...childrenMeshes];
         meshes = meshes.filter(m => m.isVisible);
-        SERIALIZERS.STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
+        SERIALIZERS.STLExport.CreateSTL(meshes, true, inputs.fileName, true, true, true);
         return Promise.resolve({});
     }
 
@@ -208,7 +200,7 @@ export class BabylonIO {
             }
         });
 
-        SERIALIZERS.STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
+        SERIALIZERS.STLExport.CreateSTL(meshes, true, inputs.fileName, true, true, true);
         return Promise.resolve({});
     }
 

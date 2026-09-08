@@ -147,9 +147,11 @@ export class ManifoldBooleans {
     }
 
     /**
-     * Split manifold by plane on various offsets
+     * Split manifold by plane on various offsets. Each cut takes the part below the plane as a
+     * finished piece and carries the part above it to the next, larger offset, so a run of n offsets
+     * yields n + 1 pieces and accounts for the whole of the solid.
      * @param inputs manifold, plane and the list of offsets
-     * @returns splitted manifolds
+     * @returns splitted manifolds, one more than the offsets given
      * @group split
      * @shortname split by plane on offsets
      * @drawable true

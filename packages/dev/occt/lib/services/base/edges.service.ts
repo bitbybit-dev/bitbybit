@@ -33,17 +33,12 @@ export class EdgesService {
         const edges = this.shapeGettersService.getEdges(inputs);
         let points: Inputs.Base.Point3[] = [];
         edges.forEach((edge) => {
-            // Use the new API: GetEdgeCurve returns a Handle_Geom_Curve wrapper
-            // which already has Value() method - no need to call .get()
             const crvHandle = this.occ.GetEdgeCurve(edge);
 
             try {
-                // Check if handle is null using IsNull() method
                 if (crvHandle && !crvHandle.IsNull()) {
-                    // Get parameter bounds from the edge
                     const edgeParams = this.occ.BRep_Tool_GetEdgeParameters(edge);
                     if (edgeParams.IsValid) {
-                        // Value() is directly on the handle wrapper
                         const pt1 = crvHandle.Value(edgeParams.First);
                         const pt2 = crvHandle.Value(edgeParams.Last);
                         const pt1g: Inputs.Base.Point3 = [pt1.X(), pt1.Y(), pt1.Z()];
@@ -93,7 +88,6 @@ export class EdgesService {
         this.iteratorService.forEachEdgeAlongWire(inputs.shape, (_i, edge) => {
             edges.push(edge);
         });
-        // rebuilding wire from edges along wire fixes edge directions
         return this.converterService.combineEdgesAndWiresIntoAWire({ shapes: edges });
     }
 
@@ -182,7 +176,6 @@ export class EdgesService {
         } else {
             edges = this.shapeGettersService.getEdges({ shape: inputs.shape });
         }
-        // Reuse edgeToPoints for each edge to ensure consistent direction handling
         const allEdgePoints: Base.Point3[][] = edges.map(edge => {
             return this.edgeToPoints({ ...inputs, shape: edge });
         });
@@ -235,18 +228,14 @@ export class EdgesService {
         adaptorCurve.delete();
         tangDef.delete();
         
-        // Ensure tessellation matches edge direction
-        // The tessellation might be in reverse order relative to the edge's start->end direction
         if (edgePoints.length > 1) {
             const edgeStart = this.startPointOnEdge({ shape: inputs.shape });
             const tessStart = edgePoints[0]!;
             const tessEnd = edgePoints[edgePoints.length - 1]!;
             
-            // Check if first tessellation point is closer to edge start or end
             const distStartToStart = this.vecHelper.distanceBetweenPoints(tessStart, edgeStart);
             const distEndToStart = this.vecHelper.distanceBetweenPoints(tessEnd, edgeStart);
             
-            // If the last tessellation point is closer to the edge start, the array is reversed
             if (distEndToStart < distStartToStart) {
                 edgePoints.reverse();
             }
@@ -738,7 +727,7 @@ export class EdgesService {
     private reconstructCircleAndAlignBack(sol: gp_Circ2d, alignOpt: Inputs.OCCT.AlignDto<TopoDS_Shape>, dir: Base.Vector3, pos: Base.Point3) {
         const locationStart = sol.Location();
         const startPoint = [locationStart.X(), locationStart.Y(), 0] as Inputs.Base.Point3;
-        const circle = this.entitiesService.createCircle(sol.Radius(), startPoint, [0, 0, 1], Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;
+        const circle = this.entitiesService.createCircle(sol.Radius(), startPoint, [0, 0, 1], Inputs.OCCT.typeSpecificityEnum.edge);
         alignOpt.fromDirection = [0, 0, 1];
         alignOpt.toDirection = dir;
         alignOpt.fromOrigin = [0, 0, 0];
@@ -826,7 +815,6 @@ export class EdgesService {
 
     tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Vector3 {
         const edge = inputs.shape;
-        // C++ function expects normalized [0,1] parameter and does its own remapping
         const result = this.occ.GetDerivativesOnEdgeAtParam(edge, inputs.param);
         if (result && result.isValid) {
             return [result.d1x, result.d1y, result.d1z];
@@ -879,7 +867,6 @@ export class EdgesService {
      * @returns Symmetric periodic BSpline edge
      */
     createSymmetricPeriodicBSplineEdge(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Edge {
-        // Create flat array of coordinates for the new API
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
             coords.push_back(pt[0]);

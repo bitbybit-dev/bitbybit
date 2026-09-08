@@ -666,8 +666,7 @@ describe("OCCT operations unit tests", () => {
                 joinType: Inputs.OCCT.joinTypeEnum.arc,
                 removeIntEdges: false
             });
-            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
-            // Original perimeter is 8, offset by 0.2 outward adds arc corners
+            const length = wire.getWireLength({ shape: offsetRes });
             expect(length).toBeGreaterThan(8);
             squareWire.delete();
             offsetRes.delete();
@@ -682,8 +681,7 @@ describe("OCCT operations unit tests", () => {
                 joinType: Inputs.OCCT.joinTypeEnum.intersection,
                 removeIntEdges: false
             });
-            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
-            // Intersection join type preserves sharp corners, so perimeter scales linearly
+            const length = wire.getWireLength({ shape: offsetRes });
             expect(length).toBeCloseTo(9.6, 1);
             squareWire.delete();
             offsetRes.delete();
@@ -698,8 +696,7 @@ describe("OCCT operations unit tests", () => {
                 joinType: Inputs.OCCT.joinTypeEnum.arc,
                 removeIntEdges: false
             });
-            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
-            // Inward offset reduces perimeter
+            const length = wire.getWireLength({ shape: offsetRes });
             expect(length).toBeLessThan(8);
             squareWire.delete();
             offsetRes.delete();
@@ -727,7 +724,7 @@ describe("OCCT operations unit tests", () => {
             const fRev = transforms.mirrorAlongNormal({ shape: f, origin: [0, 0, 0], normal: [1, 0, 0] });
             const offsetRes = operations.offsetAdv({
                 shape: circleWire,
-                face: fRev as TopoDS_Face,
+                face: fRev,
                 distance: 0.2,
                 tolerance: 1e-7,
                 joinType: Inputs.OCCT.joinTypeEnum.arc,
@@ -735,7 +732,6 @@ describe("OCCT operations unit tests", () => {
             });
             const wires = wire.getWires({ shape: offsetRes });
             const length = wire.getWireLength({ shape: wires[0]! });
-            // Original circumference is 2*PI*1 ≈ 6.28, offset outward by 0.2 gives 2*PI*1.2 ≈ 7.54
             expect(length).toBeCloseTo(2 * Math.PI * 1.2, 1);
             circleWire.delete();
             f.delete();
@@ -753,7 +749,6 @@ describe("OCCT operations unit tests", () => {
                 joinType: Inputs.OCCT.joinTypeEnum.arc,
                 removeIntEdges: false
             });
-            // When distance is 0, it should return the original shape
             expect(offsetRes).toBe(squareWire);
             squareWire.delete();
         });
@@ -769,7 +764,6 @@ describe("OCCT operations unit tests", () => {
             });
             const volumeOriginal = solid.getSolidVolume({ shape: box });
             const volumeOffset = solid.getSolidVolume({ shape: offsetRes });
-            // Offset outward should increase volume
             expect(volumeOffset).toBeGreaterThan(volumeOriginal);
             box.delete();
             offsetRes.delete();
@@ -817,86 +811,71 @@ describe("OCCT operations unit tests", () => {
     });
 
     it("should create rotated extrusion with shape positioned above Y=0", () => {
-        // Test with a shape positioned at Y=5
         const squareWire = wire.createSquareWire({ center: [0.5, 5, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        // Volume should be the same as the ground-level test since the algorithm should work correctly now
         expect(vol).toBeCloseTo(9.998477588675833, 5);
         
-        // Check bounding box to ensure the result is positioned correctly
         const bbox = operations.boundingBoxOfShape({ shape: res });
-        expect(bbox.min[1]).toBeCloseTo(5, 1); // Bottom should be at Y=5
-        expect(bbox.max[1]).toBeCloseTo(15, 1); // Top should be at Y=15
+        expect(bbox.min[1]).toBeCloseTo(5, 1);
+        expect(bbox.max[1]).toBeCloseTo(15, 1);
         
         squareWire.delete();
         res.delete();
     });
 
     it("should create rotated extrusion with shape positioned below Y=0", () => {
-        // Test with a shape positioned at Y=-3
         const squareWire = wire.createSquareWire({ center: [0.5, -3, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        // Volume should be the same as the ground-level test
         expect(vol).toBeCloseTo(9.998477588675744, 5);
         
-        // Check bounding box to ensure the result is positioned correctly
         const bbox = operations.boundingBoxOfShape({ shape: res });
-        expect(bbox.min[1]).toBeCloseTo(-3, 1); // Bottom should be at Y=-3
-        expect(bbox.max[1]).toBeCloseTo(7, 1); // Top should be at Y=7
+        expect(bbox.min[1]).toBeCloseTo(-3, 1);
+        expect(bbox.max[1]).toBeCloseTo(7, 1);
         
         squareWire.delete();
         res.delete();
     });
 
     it("should create rotated extrusion with shape at arbitrary Y position", () => {
-        // Test with a shape positioned at Y=25.7 (arbitrary high position)
         const squareWire = wire.createSquareWire({ center: [0.5, 25.7, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 5, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        // Volume should be proportional to height (5 instead of 10)
         expect(vol).toBeCloseTo(5.0, 1);
         
-        // Check bounding box to ensure the result is positioned correctly
         const bbox = operations.boundingBoxOfShape({ shape: res });
-        expect(bbox.min[1]).toBeCloseTo(25.7, 1); // Bottom should be at Y=25.7
-        expect(bbox.max[1]).toBeCloseTo(30.7, 1); // Top should be at Y=30.7
+        expect(bbox.min[1]).toBeCloseTo(25.7, 1);
+        expect(bbox.max[1]).toBeCloseTo(30.7, 1);
         
         squareWire.delete();
         res.delete();
     });
 
     it("should create rotated extrusion with partial rotation at elevated position", () => {
-        // Test with partial rotation (180 degrees) at Y=10
         const squareWire = wire.createSquareWire({ center: [0.5, 10, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 180, height: 8, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        // Volume should be half of a full rotation
         expect(vol).toBeCloseTo(7.999990663583383, 1);
         
-        // Check bounding box to ensure the result is positioned correctly
         const bbox = operations.boundingBoxOfShape({ shape: res });
-        expect(bbox.min[1]).toBeCloseTo(10, 1); // Bottom should be at Y=10
-        expect(bbox.max[1]).toBeCloseTo(18, 1); // Top should be at Y=18
+        expect(bbox.min[1]).toBeCloseTo(10, 1);
+        expect(bbox.max[1]).toBeCloseTo(18, 1);
         
         squareWire.delete();
         res.delete();
     });
 
     it("should create rotated extrusion as surface (not solid) at elevated position", () => {
-        // Test with makeSolid=false at Y=7
         const squareWire = wire.createSquareWire({ center: [0.5, 7, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 6, makeSolid: false });
         
-        // Check that it's not a solid but a shell/surface
         const faces = face.getFaces({ shape: res });
         expect(faces.length).toBeGreaterThan(0);
         
-        // Check bounding box to ensure the result is positioned correctly
         const bbox = operations.boundingBoxOfShape({ shape: res });
-        expect(bbox.min[1]).toBeCloseTo(7, 1); // Bottom should be at Y=7
-        expect(bbox.max[1]).toBeCloseTo(13, 1); // Top should be at Y=13
+        expect(bbox.min[1]).toBeCloseTo(7, 1);
+        expect(bbox.max[1]).toBeCloseTo(13, 1);
         
         squareWire.delete();
         res.delete();
@@ -904,17 +883,14 @@ describe("OCCT operations unit tests", () => {
     });
 
     it("should create rotated extrusion with circle wire at negative Y position", () => {
-        // Test with a different shape type (circle) at Y=-8
         const circleWire = wire.createCircleWire({ center: [2, -8, 0], radius: 0.5, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: circleWire, angle: 270, height: 12, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        // Volume should be proportional to the circle area and 3/4 rotation
         expect(vol).toBeCloseTo(9.424769481063818, 1);
         
-        // Check bounding box to ensure the result is positioned correctly
         const bbox = operations.boundingBoxOfShape({ shape: res });
-        expect(bbox.min[1]).toBeCloseTo(-8, 1); // Bottom should be at Y=-8
-        expect(bbox.max[1]).toBeCloseTo(4, 1); // Top should be at Y=4
+        expect(bbox.min[1]).toBeCloseTo(-8, 1);
+        expect(bbox.max[1]).toBeCloseTo(4, 1);
         
         circleWire.delete();
         res.delete();
@@ -1042,9 +1018,8 @@ describe("OCCT operations unit tests", () => {
         it("should split a face with a wire", () => {
             const squareFace = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
             const circleWire = wire.createCircleWire({ center: [0, 0, 0], radius: 1, direction: [0, 1, 0] });
-            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [circleWire as TopoDS_Shape]);
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace, [circleWire]);
             const results = operations.splitShapeWithShapes(splitDto);
-            // Split should return multiple shapes (the face pieces)
             expect(results.length).toBe(3);
             squareFace.delete();
             circleWire.delete();
@@ -1055,9 +1030,8 @@ describe("OCCT operations unit tests", () => {
             const squareFace = face.createSquareFace({ size: 6, center: [0, 0, 0], direction: [0, 1, 0] });
             const circleWire1 = wire.createCircleWire({ center: [-1, 0, 0], radius: 0.5, direction: [0, 1, 0] });
             const circleWire2 = wire.createCircleWire({ center: [1, 0, 0], radius: 0.5, direction: [0, 1, 0] });
-            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [circleWire1 as TopoDS_Shape, circleWire2 as TopoDS_Shape]);
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace, [circleWire1, circleWire2]);
             const results = operations.splitShapeWithShapes(splitDto);
-            // Split with 2 wires should return more pieces
             expect(results.length).toBe(5);
             squareFace.delete();
             circleWire1.delete();
@@ -1068,7 +1042,7 @@ describe("OCCT operations unit tests", () => {
         it("should return results when splitting shapes", () => {
             const squareFace = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
             const lineWire = wire.createLineWire({ start: [-3, 0, 0], end: [3, 0, 0] });
-            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [lineWire as TopoDS_Shape]);
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace, [lineWire]);
             const results = operations.splitShapeWithShapes(splitDto);
             expect(results.length).toBe(3);
             squareFace.delete();
@@ -1081,11 +1055,10 @@ describe("OCCT operations unit tests", () => {
         it("should make thick solid from a solid by removing a face", () => {
             const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
             const boxFaces = face.getFaces({ shape: box });
-            const topFace = boxFaces[boxFaces.length - 1]; // Get top face to remove
+            const topFace = boxFaces[boxFaces.length - 1];
             const thickDto = new Inputs.OCCT.ThickSolidByJoinDto(box, [topFace as TopoDS_Shape], 0.2, 1e-3);
             const result = operations.makeThickSolidByJoin(thickDto);
             const vol = solid.getSolidVolume({ shape: result });
-            // Original box is 8, thick solid should be larger due to offset
             expect(vol).toBeCloseTo(4.519409997776157);
             box.delete();
             boxFaces.forEach(f => f.delete());
@@ -1095,7 +1068,7 @@ describe("OCCT operations unit tests", () => {
         it("should make thick solid with arc join type", () => {
             const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
             const boxFaces = face.getFaces({ shape: box });
-            const topFace = boxFaces[boxFaces.length - 1]; // Get top face to remove
+            const topFace = boxFaces[boxFaces.length - 1];
             const thickDto = new Inputs.OCCT.ThickSolidByJoinDto(
                 box, [topFace as TopoDS_Shape], 0.3, 1e-3, false, false, Inputs.OCCT.joinTypeEnum.arc, false
             );
@@ -1111,7 +1084,7 @@ describe("OCCT operations unit tests", () => {
         it("should make thick solid with intersection join type", () => {
             const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
             const boxFaces = face.getFaces({ shape: box });
-            const topFace = boxFaces[boxFaces.length - 1]; // Get top face to remove
+            const topFace = boxFaces[boxFaces.length - 1];
             const thickDto = new Inputs.OCCT.ThickSolidByJoinDto(
                 box, [topFace as TopoDS_Shape], 0.3, 1e-3, false, false, Inputs.OCCT.joinTypeEnum.intersection, false
             );
@@ -1203,7 +1176,6 @@ describe("OCCT operations unit tests", () => {
             const volume = solid.getSolidVolume({ shape: bboxShape });
             const bbox = operations.boundingBoxOfShape({ shape: polyWire });
             
-            // Volume should be width * height * depth
             const expectedVolume = bbox.size[0] * bbox.size[1] * bbox.size[2];
             expect(volume).toBeCloseTo(expectedVolume, 5);
             
@@ -1273,7 +1245,6 @@ describe("OCCT operations unit tests", () => {
             const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
             const bsphere = operations.boundingSphereOfShape({ shape: box });
             
-            // Box is centered at [0,0,0], bounding sphere center is at bbox center
             expect(bsphere.center[0]).toBeCloseTo(0, 5);
             expect(bsphere.center[1]).toBeCloseTo(0, 5);
             expect(bsphere.center[2]).toBeCloseTo(0, 5);
@@ -1297,9 +1268,6 @@ describe("OCCT operations unit tests", () => {
             const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 3, 8, 360);
             const radius = operations.boundingSphereRadiusOfShape({ shape: cyl });
             
-            // For a cylinder with radius 3 and height 8, the bounding sphere radius is
-            // the distance from center (0, 4, 0) to corner (3, 8, 0) or (3, 0, 0)
-            // = sqrt(3^2 + 4^2 + 3^2) = sqrt(34) ≈ 5.83
             expect(radius).toBeCloseTo(Math.sqrt(34), 2);
             
             cyl.delete();
@@ -1312,7 +1280,6 @@ describe("OCCT operations unit tests", () => {
             const bsphereShape = operations.boundingSphereShapeOfShape({ shape: torus });
             const bsphere = operations.boundingSphereOfShape({ shape: torus });
             
-            // Get the volume of the bounding sphere
             const volume = solid.getSolidVolume({ shape: bsphereShape });
             const expectedVolume = (4 / 3) * Math.PI * Math.pow(bsphere.radius, 3);
             
@@ -1330,7 +1297,6 @@ describe("OCCT operations unit tests", () => {
             
             const bsphere = operations.boundingSphereOfShape({ shape: compound });
             
-            // Center should be at midpoint of bounding box
             expect(bsphere.center[0]).toBeCloseTo(5, 5);
             expect(bsphere.center[1]).toBeCloseTo(0, 5);
             expect(bsphere.center[2]).toBeCloseTo(0, 5);
@@ -1368,7 +1334,6 @@ describe("OCCT operations unit tests", () => {
             const bboxVolume = solid.getSolidVolume({ shape: bboxShape });
             const bsphereVolume = solid.getSolidVolume({ shape: bsphereShape });
             
-            // Bounding sphere should always have larger volume than bounding box for a cube
             expect(bsphereVolume).toBeGreaterThan(bboxVolume);
             expect(bboxVolume).toBeCloseTo(64, 4);
             
@@ -1380,5 +1345,3 @@ describe("OCCT operations unit tests", () => {
 
 
 });
-
-

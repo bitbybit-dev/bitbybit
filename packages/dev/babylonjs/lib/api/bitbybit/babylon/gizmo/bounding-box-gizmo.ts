@@ -249,7 +249,7 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname get axis factor
      */
     getAxisFactor(inputs: Inputs.BabylonGizmo.BoundingBoxGizmoDto): Inputs.Base.Vector3 {
-        return inputs.boundingBoxGizmo?.axisFactor?.asArray() as Inputs.Base.Vector3;
+        return inputs.boundingBoxGizmo?.axisFactor?.asArray();
     }
 
     /**

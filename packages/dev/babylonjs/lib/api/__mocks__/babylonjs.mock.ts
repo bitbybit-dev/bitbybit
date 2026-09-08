@@ -265,16 +265,35 @@ export class MockTexture {
     }
 }
 
+/**
+ * What the package attaches to a mesh. Babylon treats `metadata` as free user data typed `any`, so
+ * this is not the engine's shape - it is the set this package actually writes there and reads back,
+ * which is what a mock should describe.
+ */
+export type MockMeshMetadata = {
+    options?: unknown;
+    shadowGenerators?: unknown;
+    type?: unknown;
+    shadows?: unknown;
+    linesForRenderLengths?: unknown;
+    xr?: unknown;
+    guiManager?: unknown;
+    pointIndices?: unknown;
+    matricesData?: unknown;
+    thinInstanceBuffer?: unknown;
+    existingProp?: unknown;
+};
+
 export class MockPBRMetallicRoughnessMaterial extends MockMaterial {
     baseColor: MockColor3 = new MockColor3(1, 1, 1);
     metallic = 1.0;
     roughness = 0.6;
     emissiveColor: MockColor3 = new MockColor3(0, 0, 0);
-    baseTexture: any = null;
-    metallicRoughnessTexture: any = null;
-    normalTexture: any = null;
-    emissiveTexture: any = null;
-    occlusionTexture: any = null;
+    baseTexture: MockTexture | null = null;
+    metallicRoughnessTexture: MockTexture | null = null;
+    normalTexture: MockTexture | null = null;
+    emissiveTexture: MockTexture | null = null;
+    occlusionTexture: MockTexture | null = null;
     alphaCutOff = 0.5;
     transparencyMode: number | null = null;
     disableLighting = false;
@@ -298,7 +317,7 @@ export class MockMesh {
     isPickable = true;
     position: MockVector3 = new MockVector3();
     scaling: MockVector3 = new MockVector3(1, 1, 1);
-    metadata: any = null;
+    metadata: MockMeshMetadata | null = null;
     _vertexData: MockVertexData | null = null;
     edgesWidth = 0;
     edgesColor: MockColor4 | null = null;
@@ -325,20 +344,23 @@ export class MockMesh {
         }
     }
     
+    declare _parent: MockMesh | null;
+    declare _scene: MockScene | null;
+
     get parent(): MockMesh | null {
-        return (this as any)._parent;
+        return this._parent;
     }
     
     set parent(value: MockMesh | null) {
         // Remove from old parent
-        const oldParent = (this as any)._parent;
+        const oldParent = this._parent;
         if (oldParent) {
             const index = oldParent.children.indexOf(this);
             if (index > -1) {
                 oldParent.children.splice(index, 1);
             }
         }
-        (this as any)._parent = value;
+        this._parent = value;
         // Add to new parent
         if (value && !value.children.includes(this)) {
             value.children.push(this);
@@ -347,7 +369,7 @@ export class MockMesh {
     
     dispose() {
         // Remove from parent
-        const parent = (this as any)._parent;
+        const parent = this._parent;
         if (parent) {
             const index = parent.children.indexOf(this);
             if (index > -1) {
@@ -359,7 +381,7 @@ export class MockMesh {
         childrenCopy.forEach(child => child.dispose());
         this.children = [];
         // Remove from scene
-        const scene = (this as any)._scene;
+        const scene = this._scene;
         if (scene) {
             const index = scene._meshes.indexOf(this);
             if (index > -1) {
@@ -411,7 +433,7 @@ export class MockMesh {
         const index = this.children.indexOf(child);
         if (index > -1) {
             this.children.splice(index, 1);
-            (child as any)._parent = null;
+            child._parent = null;
         }
     }
     
@@ -469,12 +491,12 @@ export class MockScene {
 }
 
 export class MockMeshBuilder {
-    static CreateSphere(name: string, _options: any, scene?: MockScene | null) {
+    static CreateSphere(name: string, _options: Record<string, unknown>, scene?: MockScene | null) {
         const mesh = new MockMesh(name, scene);
         return mesh;
     }
     
-    static CreateBox(name: string, _options: any, scene?: MockScene | null) {
+    static CreateBox(name: string, _options: Record<string, unknown>, scene?: MockScene | null) {
         const mesh = new MockMesh(name, scene);
         return mesh;
     }

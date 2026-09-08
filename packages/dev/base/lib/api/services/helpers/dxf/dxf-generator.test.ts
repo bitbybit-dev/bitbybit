@@ -22,8 +22,8 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nLINE");
             expect(result).toContain("8\nLayer1");
-            expect(result).toContain("10\n0.000000\n20\n0.000000"); // Start point
-            expect(result).toContain("11\n10.000000\n21\n10.000000"); // End point
+            expect(result).toContain("10\n0.000000\n20\n0.000000");
+            expect(result).toContain("11\n10.000000\n21\n10.000000");
         });
 
         it("should generate multiple LINE entities in a single path", () => {
@@ -52,8 +52,8 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nCIRCLE");
             expect(result).toContain("8\nCircles");
-            expect(result).toContain("10\n50.000000\n20\n50.000000"); // Center point
-            expect(result).toContain("40\n25.000000"); // Radius
+            expect(result).toContain("10\n50.000000\n20\n50.000000");
+            expect(result).toContain("40\n25.000000");
         });
 
         it("should generate multiple circles", () => {
@@ -86,10 +86,10 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nARC");
             expect(result).toContain("8\nArcs");
-            expect(result).toContain("10\n100.000000\n20\n100.000000"); // Center point
-            expect(result).toContain("40\n50.000000"); // Radius
-            expect(result).toContain("50\n0.000000"); // Start angle
-            expect(result).toContain("51\n90.000000"); // End angle
+            expect(result).toContain("10\n100.000000\n20\n100.000000");
+            expect(result).toContain("40\n50.000000");
+            expect(result).toContain("50\n0.000000");
+            expect(result).toContain("51\n90.000000");
         });
 
         it("should generate arc with 180 degree sweep", () => {
@@ -131,8 +131,8 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nLWPOLYLINE");
             expect(result).toContain("8\nPolylines");
-            expect(result).toContain("90\n5"); // Number of vertices
-            expect(result).toContain("70\n1"); // Closed flag
+            expect(result).toContain("90\n5");
+            expect(result).toContain("70\n1");
         });
 
         it("should generate an open polyline", () => {
@@ -145,7 +145,7 @@ describe("DxfGenerator unit tests", () => {
             const result = generator.generateDxf(model);
 
             expect(result).toContain("90\n3");
-            expect(result).toContain("70\n0"); // Open flag
+            expect(result).toContain("70\n0");
         });
 
         it("should auto-detect closed polyline", () => {
@@ -157,7 +157,7 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            expect(result).toContain("70\n1"); // Should detect as closed
+            expect(result).toContain("70\n1");
         });
     });
 
@@ -174,8 +174,8 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nSPLINE");
             expect(result).toContain("8\nSplines");
-            expect(result).toContain("71\n3"); // Degree
-            expect(result).toContain("73\n4"); // Number of control points
+            expect(result).toContain("71\n3");
+            expect(result).toContain("73\n4");
         });
 
         it("should generate closed spline", () => {
@@ -187,7 +187,7 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            expect(result).toContain("70\n1"); // Closed flag
+            expect(result).toContain("70\n1");
         });
 
         it("should generate spline with degree 2", () => {
@@ -199,7 +199,7 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            expect(result).toContain("71\n2"); // Degree 2
+            expect(result).toContain("71\n2");
         });
 
         it("should use default degree if not specified", () => {
@@ -211,7 +211,7 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            expect(result).toContain("71\n3"); // Default degree 3
+            expect(result).toContain("71\n3");
         });
     });
 
@@ -256,7 +256,6 @@ describe("DxfGenerator unit tests", () => {
         });
 
         it("should generate multiple lines and arcs forming a connected wire", () => {
-            // Create a rounded rectangle using lines and arcs
             const bottomLine = new Inputs.IO.DxfLineSegmentDto([5, 0], [15, 0]);
             const bottomRightArc = new Inputs.IO.DxfArcSegmentDto([15, 5], 5, -90, 0);
             const rightLine = new Inputs.IO.DxfLineSegmentDto([20, 5], [20, 15]);
@@ -339,10 +338,10 @@ describe("DxfGenerator unit tests", () => {
             expect(result).toContain("$ACADVER\n1\nAC1009");
             expect(result).toContain("$DWGCODEPAGE\n3\nascii");
             expect(result).toContain("0\nSECTION\n2\nTABLES");
-            expect(result).toContain("0\nTABLE\n2\nVPORT"); // AC1009 includes VPORT
-            expect(result).toContain("0\nTABLE\n2\nVIEW"); // AC1009 includes VIEW
-            expect(result).toContain("0\nTABLE\n2\nUCS"); // AC1009 includes UCS
-            expect(result).toContain("0\nTABLE\n2\nAPPID"); // AC1009 includes APPID
+            expect(result).toContain("0\nTABLE\n2\nVPORT");
+            expect(result).toContain("0\nTABLE\n2\nVIEW");
+            expect(result).toContain("0\nTABLE\n2\nUCS");
+            expect(result).toContain("0\nTABLE\n2\nAPPID");
             expect(result).toContain("0\nSECTION\n2\nENTITIES");
             expect(result).toContain("0\nEOF");
         });
@@ -362,7 +361,6 @@ describe("DxfGenerator unit tests", () => {
             expect(result).toContain("0\nSECTION\n2\nTABLES");
             expect(result).toContain("0\nSECTION\n2\nENTITIES");
             expect(result).toContain("0\nEOF");
-            // AC1015 should not have VPORT table
             expect(result).not.toContain("0\nTABLE\n2\nVPORT");
         });
 
@@ -374,10 +372,8 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            // AC1009 should not have AcDb subclass markers
             expect(result).not.toContain("100\nAcDbEntity");
             expect(result).not.toContain("100\nAcDbLine");
-            // Should have layer directly after entity type
             expect(result).toContain("0\nLINE\n8\nTestLayer");
         });
 
@@ -389,7 +385,6 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            // AC1015 should have AcDb subclass markers
             expect(result).toContain("100\nAcDbEntity");
             expect(result).toContain("100\nAcDbLine");
         });
@@ -406,7 +401,6 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            // Extract only entity handles from ENTITIES section
             const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
             expect(entitiesSection).toBeDefined();
             
@@ -428,7 +422,7 @@ describe("DxfGenerator unit tests", () => {
             expect(result).toContain("0\nSECTION\n2\nTABLES");
             expect(result).toContain("0\nSECTION\n2\nENTITIES");
             expect(result).toContain("0\nEOF");
-            expect(result).toContain("2\n0"); // Default layer
+            expect(result).toContain("2\n0");
         });
     });
 
@@ -464,10 +458,9 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            // AC1009 arcs should have simpler structure
             const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
             expect(entitiesSection).toContain("0\nARC\n8\n0");
-            expect(entitiesSection).toContain("6\n "); // Empty linetype field for AC1009
+            expect(entitiesSection).toContain("6\n ");
         });
 
         it("should generate more complex entities in AC1015 format", () => {
@@ -478,8 +471,7 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            // AC1015 should have entity handles and subclass markers
-            expect(result).toContain("5\n"); // Handle code
+            expect(result).toContain("5\n");
             expect(result).toContain("100\nAcDbEntity");
             expect(result).toContain("100\nAcDbCircle");
             expect(result).toContain("100\nAcDbArc");
@@ -498,7 +490,6 @@ describe("DxfGenerator unit tests", () => {
             expect(result).toContain("0\nLINE");
             expect(result).toContain("0\nCIRCLE");
             expect(result).toContain("0\nARC");
-            // All entities should be in simple format
             const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
             expect(entitiesSection).not.toContain("100\nAcDbEntity");
         });
@@ -527,7 +518,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // AC1009 uses $HANDSEED with value 0 (not 20000 like AC1015)
                 expect(result).toContain("$HANDSEED\n5\n0");
                 expect(result).not.toContain("$HANDSEED\n5\n20000");
             });
@@ -615,7 +605,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // Extract LTYPE table section
                 const ltypeStart = result.indexOf("TABLE\n2\nLTYPE");
                 const ltypeEnd = result.indexOf("ENDTAB", ltypeStart);
                 const ltypeSection = result.substring(ltypeStart, ltypeEnd);
@@ -643,7 +632,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // Extract LTYPE table section
                 const ltypeStart = result.indexOf("TABLE\n2\nLTYPE");
                 const ltypeEnd = result.indexOf("ENDTAB", ltypeStart);
                 const ltypeSection = result.substring(ltypeStart, ltypeEnd);
@@ -663,7 +651,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // Extract STYLE table section
                 const styleStart = result.indexOf("TABLE\n2\nSTYLE");
                 const styleEnd = result.indexOf("ENDTAB", styleStart);
                 const styleSection = result.substring(styleStart, styleEnd);
@@ -704,7 +691,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // Extract LAYER table section
                 const layerStart = result.indexOf("TABLE\n2\nLAYER");
                 const layerEnd = result.indexOf("ENDTAB", layerStart);
                 const layerSection = result.substring(layerStart, layerEnd);
@@ -731,12 +717,10 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // Extract LAYER table section
                 const layerStart = result.indexOf("TABLE\n2\nLAYER");
                 const layerEnd = result.indexOf("ENDTAB", layerStart);
                 const layerSection = result.substring(layerStart, layerEnd);
 
-                // Should have handle code "5" with hex value
                 expect(layerSection).toContain("5\n2");
             });
 
@@ -762,7 +746,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // Both layers should have AcDbLayerTableRecord
                 const matches = result.match(/100\nAcDbLayerTableRecord/g);
                 expect(matches?.length).toBeGreaterThanOrEqual(2);
             });
@@ -858,13 +841,12 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // Extract ENTITIES section and count entity handles
                 const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
                 expect(entitiesSection).toBeDefined();
                 
                 const handleMatches = entitiesSection?.match(/5\n[A-F0-9]+/g);
                 expect(handleMatches).toBeDefined();
-                expect(handleMatches?.length).toBeGreaterThanOrEqual(5); // At least 5 entities
+                expect(handleMatches?.length).toBeGreaterThanOrEqual(5);
             });
         });
 
@@ -878,7 +860,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // AC1015 uses "0.0" for Z coordinate
                 expect(result).toContain("30\n0.0");
             });
 
@@ -890,8 +871,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // AC1009 uses empty string for Z coordinate ("30\n" followed by "\n40")
-                // This means after code 30, there's an empty line, then code 40 for radius
                 expect(result).toContain("30\n\n40");
                 expect(result).not.toContain("30\n0.0");
             });
@@ -904,7 +883,6 @@ describe("DxfGenerator unit tests", () => {
 
                 const result = generator.generateDxf(model);
 
-                // AC1009 includes "6\n " (empty linetype)
                 const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
                 expect(entitiesSection).toContain("6\n ");
             });
@@ -932,8 +910,7 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            // Should use ACI color format by default (better compatibility)
-            expect(result).toContain("62\n1"); // Red = ACI 1
+            expect(result).toContain("62\n1");
         });
 
         it("should convert hex color to true color format when specified", () => {
@@ -944,9 +921,53 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            // Should use true color format: 62 = 256 (by entity), 420 = RGB decimal value
             expect(result).toContain("62\n256");
-            expect(result).toContain("420\n16711680"); // #FF0000 = 16711680 in decimal
+            expect(result).toContain("420\n16711680");
+        });
+    });
+
+    describe("Polyline bulges", () => {
+        it("should write the bulge of a vertex that has one", () => {
+            const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10]];
+            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false, [0.5, 0, 0]);
+            const model = new Inputs.IO.DxfModelDto([
+                new Inputs.IO.DxfPathsPartDto("Polylines", "3", [new Inputs.IO.DxfPathDto([polylineSegment])]),
+            ]);
+
+            // Act
+            const result = generator.generateDxf(model);
+
+            // Assert
+            expect(result).toContain("42\n0.500000");
+        });
+
+        it("should leave out the bulge of a vertex that has none", () => {
+            // Arrange
+            const points: Inputs.Base.Point2[] = [[0, 0], [10, 0]];
+            const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false, [0, 0]);
+            const model = new Inputs.IO.DxfModelDto([
+                new Inputs.IO.DxfPathsPartDto("Polylines", "3", [new Inputs.IO.DxfPathDto([polylineSegment])]),
+            ]);
+
+            // Act
+            const result = generator.generateDxf(model);
+
+            expect(result).not.toContain("42\n0.000000");
+        });
+    });
+
+    describe("a segment of a kind the writer does not know", () => {
+        it("should write no entity for it", () => {
+            const unknown: Inputs.IO.DxfLineSegmentDto = new Inputs.IO.DxfLineSegmentDto();
+            const model = new Inputs.IO.DxfModelDto([
+                new Inputs.IO.DxfPathsPartDto("Unknown", "3", [new Inputs.IO.DxfPathDto([unknown])]),
+            ]);
+
+            // Act
+            const result = generator.generateDxf(model);
+
+            expect(result).toContain("0\nSECTION");
+            expect(result).not.toContain("8\nUnknown");
         });
     });
 });

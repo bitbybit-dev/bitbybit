@@ -5,7 +5,6 @@ import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
 import { getCommandHandler, CommandContext } from "./command-handlers";
 
-// Module-level state
 let openCascade: OCCTService;
 let cacheHelper: CacheHelper;
 let shapeResolver: ShapeResolver;
@@ -50,31 +49,24 @@ export const initializationComplete = (
     plugins: any,
     doNotPost?: boolean
 ): CacheHelper => {
-    // Initialize cache helper
     cacheHelper = new CacheHelper(occ);
 
-    // Initialize helper services
     const vecService = new VectorHelperService();
     const shapesService = new ShapesHelperService();
 
-    // Initialize OpenCascade service
     openCascade = new OCCTService(occ, new OccHelper(vecService, shapesService, occ));
 
-    // Initialize resolver utilities
     shapeResolver = new ShapeResolver(cacheHelper);
     resultSerializer = new ResultSerializer(cacheHelper);
     functionPathResolver = new FunctionPathResolver();
 
-    // Set up plugins if provided
     if (plugins) {
         openCascade.plugins = plugins;
-        // Add any pending dependencies that were registered before initialization
         Object.entries(pendingDependencies).forEach(([key, value]) => {
             plugins.dependencies[key] = value;
         });
     }
 
-    // Notify that initialization is complete
     if (!doNotPost) {
         postMessage(WorkerMessages.INITIALIZED);
     }
@@ -107,15 +99,12 @@ function createCommandContext(): CommandContext {
 function executeStandardFunction(
     action: DataInput["action"]
 ): unknown {
-    // Recursively resolve all shape references in inputs
     const resolvedInputs = shapeResolver.resolveShapeReferences(action.inputs);
 
-    // Execute with caching - the cache helper will return cached result if available
     const res = cacheHelper.cacheOp(action, () => {
         return functionPathResolver.callFunction(openCascade, action.functionName, resolvedInputs);
     });
 
-    // Serialize the result for transmission back to main thread
     return resultSerializer.serializeResult(res);
 }
 
@@ -123,7 +112,6 @@ function executeStandardFunction(
  * Formats error information for transmission.
  */
 function formatError(error: unknown, action: DataInput["action"]): string {
-    // Extract meaningful error message
     let errorMessage: string;
     if (error instanceof Error) {
         errorMessage = error.stack || `${error.name}: ${error.message}`;
@@ -141,7 +129,6 @@ function formatError(error: unknown, action: DataInput["action"]): string {
     if (action?.inputs) {
         const inputDetails = Object.entries(action.inputs)
             .map(([key, value]) => {
-                // Don't stringify large binary data — it can crash V8
                 if (ArrayBuffer.isView(value)) {
                     return `${key}: [${value.constructor.name} length=${(value as Uint8Array).byteLength}]`;
                 }
@@ -150,7 +137,6 @@ function formatError(error: unknown, action: DataInput["action"]): string {
                 }
                 try {
                     const str = JSON.stringify(value);
-                    // Truncate very long values to avoid bloating the error message
                     return str.length > 200
                         ? `${key}: ${str.slice(0, 200)}…(truncated)`
                         : `${key}: ${str}`;
@@ -180,7 +166,6 @@ export const onMessageInput = (
     d: DataInput,
     postMessage: (message: unknown) => void
 ): void => {
-    // Notify that processing has started
     postMessage(WorkerMessages.BUSY);
 
     let result: unknown;
@@ -188,25 +173,20 @@ export const onMessageInput = (
     try {
         const { functionName, inputs } = d.action;
 
-        // Check if this is a reserved function with special handling
         const commandHandler = getCommandHandler(functionName);
 
         if (commandHandler) {
-            // Execute special command handler
             const commandResult = commandHandler(inputs, createCommandContext());
             result = commandResult.result;
         } else if (!NON_CACHEABLE_FUNCTIONS.has(functionName)) {
-            // Execute standard cacheable function
             result = executeStandardFunction(d.action);
         }
 
-        // Send successful response
         postMessage({
             uid: d.uid,
             result,
         });
     } catch (e) {
-        // Send error response — wrapped in its own try/catch to guarantee we always reply
         try {
             postMessage({
                 uid: d.uid,
@@ -214,7 +194,6 @@ export const onMessageInput = (
                 error: formatError(e, d.action),
             });
         } catch (fmtErr) {
-            // formatError itself failed (should not happen, but be defensive)
             postMessage({
                 uid: d.uid,
                 result: undefined,

@@ -95,12 +95,10 @@ export function parseTransform(value: string | undefined | null): Matrix {
 
 /** Exact affine transform of a center-parametrized elliptical arc. */
 function transformArc(m: Matrix, arc: SvgArcSegment): SvgArcSegment {
-    const [a, b, c, d] = m; // linear (2x2) part: columns (a,b) and (c,d)
+    const [a, b, c, d] = m;
     const cosP = Math.cos(arc.xAxisRotation);
     const sinP = Math.sin(arc.xAxisRotation);
 
-    // M = L * Rot(phi) * diag(rx, ry) maps the unit circle to the new ellipse.
-    // L = [[a, c],[b, d]]; Rot(phi) = [[cosP, -sinP],[sinP, cosP]].
     const r00 = cosP * arc.rx;
     const r10 = sinP * arc.rx;
     const r01 = -sinP * arc.ry;
@@ -110,30 +108,26 @@ function transformArc(m: Matrix, arc: SvgArcSegment): SvgArcSegment {
     const m01 = a * r01 + c * r11;
     const m11 = b * r01 + d * r11;
 
-    // SVD of the 2x2 [[m00, m01],[m10, m11]] to recover axes and radii.
     const e = (m00 + m11) / 2;
     const f = (m00 - m11) / 2;
     const g = (m10 + m01) / 2;
     const h = (m10 - m01) / 2;
     const q = Math.hypot(e, h);
     const r = Math.hypot(f, g);
-    const sx = q + r; // larger singular value
+    const sx = q + r;
     const sy = Math.abs(q - r);
     const a1 = Math.atan2(g, f);
     const a2 = Math.atan2(h, e);
-    const theta = (a2 - a1) / 2; // rotation of the major axis
+    const theta = (a2 - a1) / 2;
 
     const newCenter = applyToPoint(m, arc.center);
     const det = a * d - b * c;
 
-    // Map start/end angles into the new ellipse frame.
     const cosT = Math.cos(theta);
     const sinT = Math.sin(theta);
     const toNewAngle = (ang: number): number => {
-        // image of unit-circle point under M, relative to new center
         const px = m00 * Math.cos(ang) + m01 * Math.sin(ang);
         const py = m10 * Math.cos(ang) + m11 * Math.sin(ang);
-        // express in axis frame, normalize by radii
         const lx = (cosT * px + sinT * py) / (sx || 1);
         const ly = (-sinT * px + cosT * py) / (sy || 1);
         return Math.atan2(ly, lx);
@@ -142,7 +136,6 @@ function transformArc(m: Matrix, arc: SvgArcSegment): SvgArcSegment {
     const newStart = toNewAngle(arc.startAngle);
     const newEnd = toNewAngle(arc.startAngle + arc.deltaAngle);
     let newDelta = newEnd - newStart;
-    // Preserve sweep magnitude/direction; reflection (det<0) flips orientation.
     const sweepSign = det < 0 ? -Math.sign(arc.deltaAngle) : Math.sign(arc.deltaAngle);
     if (sweepSign > 0 && newDelta < 0) { newDelta += 2 * Math.PI; }
     if (sweepSign < 0 && newDelta > 0) { newDelta -= 2 * Math.PI; }

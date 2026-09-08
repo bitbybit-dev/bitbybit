@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type * as Modeling from "@jscad/modeling";
-import { getJscad } from "../__test__/kernel";
+import { asOne, expectSolid, getJscad } from "../__test__/kernel";
 import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
@@ -25,10 +25,10 @@ describe("JSCADColors", () => {
             const inputs = new Inputs.JSCAD.ColorizeDto(cube, RED);
 
             // Act
-            const coloured = jscad.colors.colorize(inputs);
+            const coloured = expectSolid(asOne(jscad.colors.colorize(inputs)));
 
             // Assert
-            expect(Array.from(coloured.color).slice(0, RED_CHANNELS.length)).toEqual(RED_CHANNELS);
+            expect(Array.from(coloured.color!).slice(0, RED_CHANNELS.length)).toEqual(RED_CHANNELS);
             expect(kernel.measurements.measureVolume(coloured)).toBeCloseTo(CUBE_VOLUME, 6);
         });
     });

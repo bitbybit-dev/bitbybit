@@ -19,7 +19,7 @@ export class OCCTIO {
      * @drawable false
      */
     async saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
-        this.saveSTEP(inputs);
+        await this.saveSTEP(inputs);
     }
 
     /**
@@ -41,7 +41,7 @@ export class OCCTIO {
      * @drawable false
      */
     async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
-        this.saveStl(inputs);
+        await this.saveStl(inputs);
     }
 
     /**
@@ -56,7 +56,7 @@ export class OCCTIO {
     }
 
     private saveSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
-        return this.occWorkerManager.genericCallToWorkerPromise("io.saveShapeSTEP", inputs).then(s => {
+        return this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapeSTEP", inputs).then(s => {
             if (inputs.tryDownload && document) {
                 const blob = new Blob([s], { type: "text/plain" });
                 const blobUrl = URL.createObjectURL(blob);
@@ -77,7 +77,7 @@ export class OCCTIO {
     }
 
     private saveStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
-        return this.occWorkerManager.genericCallToWorkerPromise("io.saveShapeStl", inputs).then(s => {
+        return this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapeStl", inputs).then(s => {
             if (inputs.tryDownload && document) {
                 const blob = new Blob([s], { type: "application/stl" });
                 const blobUrl = URL.createObjectURL(blob);
@@ -128,7 +128,7 @@ export class OCCTIO {
      * @drawable false
      */
     dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): Promise<string> {
-        return this.occWorkerManager.genericCallToWorkerPromise("io.dxfCreate", inputs).then(s => {
+        return this.occWorkerManager.genericCallToWorkerPromise<string>("io.dxfCreate", inputs).then(s => {
             if (inputs.tryDownload && document) {
                 const blob = new Blob([s], { type: "application/stl" });
                 const blobUrl = URL.createObjectURL(blob);

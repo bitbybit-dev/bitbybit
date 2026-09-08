@@ -20,7 +20,6 @@ export type DataInput = {
         functionName: string;
         inputs: any;
     }
-    // Uid is used to know to which promise to resolve when answering
     uid: string;
 };
 
@@ -32,10 +31,6 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
 
     let result;
     try {
-        // Ok, so this is baked in memoization as all Manifold computations are potentially expensive
-        // we can always return already computed entity hashes. On UI side we only deal with hashes as long
-        // as we don't need to render things and when we do need, we call tessellation methods with these hashes
-        // and receive real objects. This cache is useful in modeling operations throughout 'run' sessions.
         if (d.action.functionName !== "manifoldToMesh" &&
             d.action.functionName !== "manifoldsToMeshes" &&
             d.action.functionName !== "deleteManifoldOrCrossSection" &&
@@ -44,9 +39,6 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             d.action.functionName !== "startedTheRun" &&
             d.action.functionName !== "cleanAllCache" &&
             d.action.functionName !== "addManifoldPluginDependency") {
-            // if inputs have manifold or manifolds properties, these are hashes on which the operations need to be performed.
-            // We thus replace these hashes to real objects from the cache before functions are called,
-            // this probably looks like smth generic but isn't, so will need to check if it works
             Object.keys(d.action.inputs).forEach(key => {
                 const val = d.action.inputs[key];
                 if (val && val.type && val.type === "manifold-shape" && val.hash) {
@@ -98,7 +90,7 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
                 }
             }
             else if (Array.isArray(res)) {
-                result = res.map(r => ({ hash: r.hash, type: "manifold-shape" })); // if we return multiple shapes we should return array of cached hashes
+                result = res.map(r => ({ hash: r.hash, type: "manifold-shape" }));
             } else {
                 result = { hash: res.hash, type: "manifold-shape" };
             }
@@ -151,9 +143,7 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             d.action.inputs.manifoldsOrCrossSections.forEach((manifold: HashedManifold) => cacheHelper.cleanCacheForHash(manifold.hash));
             result = {};
         }
-        // Only the cache that was created in previous run has to be kept, the rest needs to go
         if (d.action.functionName === "startedTheRun") {
-            // if certain threshold is reacherd we clean all the cache
             if (cacheHelper && Object.keys(cacheHelper.usedHashes).length > 10000) {
                 cacheHelper.cleanAllCache();
             }
@@ -165,8 +155,6 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             result = {};
         }
 
-        // Returns only the hash as main process can't receive pointers
-        // But with hash reference we can always initiate further computations
         postMessage({
             uid: d.uid,
             result

@@ -4,7 +4,6 @@ import { BabylonJSScene } from "../../inputs/babylon-scene-helper-inputs";
 import { BabylonCamera } from "../../inputs/babylon-camera-inputs";
 import { MockMeshType } from "../../__mocks__/babylonjs.mock";
 
-// Mock BabylonJS core module using centralized mocks
 vi.mock("@babylonjs/core", async () => {
     const { createSceneHelperMock } = await vi.importActual<typeof import("../../__mocks__/babylonjs.mock")>("../../__mocks__/babylonjs.mock");
     return createSceneHelperMock();
@@ -14,22 +13,18 @@ describe("initBabylonJS unit tests", () => {
     let mockCanvas: HTMLCanvasElement;
 
     beforeEach(() => {
-        // Create a mock canvas element
         mockCanvas = document.createElement("canvas");
         mockCanvas.id = "test-canvas";
         document.body.appendChild(mockCanvas);
 
-        // Mock window properties
         Object.defineProperty(window, "innerWidth", { value: 1920, writable: true });
         Object.defineProperty(window, "innerHeight", { value: 1080, writable: true });
     });
 
     afterEach(() => {
-        // Clean up DOM
         if (mockCanvas && mockCanvas.parentNode) {
             mockCanvas.parentNode.removeChild(mockCanvas);
         }
-        // Clean up any canvases created by tests
         document.querySelectorAll("canvas").forEach(canvas => {
             if (canvas.parentNode) {
                 canvas.parentNode.removeChild(canvas);
@@ -52,7 +47,6 @@ describe("initBabylonJS unit tests", () => {
             expect(typeof result.startRenderLoop).toBe("function");
             expect(typeof result.dispose).toBe("function");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -69,7 +63,6 @@ describe("initBabylonJS unit tests", () => {
             expect(result.scene.metadata).toBeDefined();
             expect(result.scene.metadata.shadowGenerators).toEqual([]);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -80,7 +73,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(result.hemisphericLight.name).toBe("hemisphericLight");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -91,7 +83,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(result.directionalLight.name).toBe("directionalLight");
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -105,10 +96,8 @@ describe("initBabylonJS unit tests", () => {
             // Act
             const result = initBabylonJS(config);
 
-            // Assert - engine should be created with the existing canvas
             expect(result.engine).toBeDefined();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -125,10 +114,8 @@ describe("initBabylonJS unit tests", () => {
             // Arrange & Act
             const result = initBabylonJS();
 
-            // Assert - a new canvas should have been created
             expect(result.engine).toBeDefined();
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -146,7 +133,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(result.scene.metadata.shadowGenerators.length).toBe(1);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -162,7 +148,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(result.scene.metadata.shadowGenerators.length).toBe(0);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -181,7 +166,6 @@ describe("initBabylonJS unit tests", () => {
             expect(shadowGenerator.blurKernel).toBe(32);
             expect(shadowGenerator.darkness).toBe(0.3);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -200,7 +184,6 @@ describe("initBabylonJS unit tests", () => {
             expect(result.ground).not.toBeNull();
             expect(result.ground?.name).toBe("ground");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -216,7 +199,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(result.ground).toBeNull();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -235,7 +217,6 @@ describe("initBabylonJS unit tests", () => {
             expect(result.ground?.position.y).toBe(-2);
             expect(result.ground?.position.z).toBe(10);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -251,11 +232,10 @@ describe("initBabylonJS unit tests", () => {
             const result = initBabylonJS(config);
 
             // Assert
-            const expectedSize = config.sceneSize * config.groundScaleFactor; // 150
+            const expectedSize = config.sceneSize * config.groundScaleFactor;
             expect((result.ground as unknown as MockMeshType)._groundWidth).toBe(expectedSize);
             expect((result.ground as unknown as MockMeshType)._groundHeight).toBe(expectedSize);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -274,7 +254,6 @@ describe("initBabylonJS unit tests", () => {
             expect(material).toBeDefined();
             expect(material?.name).toBe("groundMaterial");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -292,7 +271,6 @@ describe("initBabylonJS unit tests", () => {
             const material = result.ground?.material;
             expect(material?.alpha).toBe(0.5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -309,7 +287,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect((result.ground as unknown as MockMeshType).receiveShadows).toBe(true);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -328,7 +305,6 @@ describe("initBabylonJS unit tests", () => {
             expect(result.arcRotateCamera).not.toBeNull();
             expect(result.arcRotateCamera?.name).toBe("arcRotateCamera");
 
-            // Cleanup
             result.dispose();
         });
 
@@ -344,7 +320,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(result.arcRotateCamera).toBeNull();
 
-            // Cleanup
             result.dispose();
         });
 
@@ -362,7 +337,6 @@ describe("initBabylonJS unit tests", () => {
             const expectedRadius = config.sceneSize * Math.sqrt(2);
             expect(result.arcRotateCamera?.radius).toBeCloseTo(expectedRadius, 5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -381,11 +355,9 @@ describe("initBabylonJS unit tests", () => {
 
             // Assert
             expect(result.arcRotateCamera?.radius).toBe(100);
-            // Alpha and beta are converted to radians
-            expect(result.arcRotateCamera?.alpha).toBeCloseTo(Math.PI / 2, 5); // 90 degrees
-            expect(result.arcRotateCamera?.beta).toBeCloseTo(Math.PI / 3, 5); // 60 degrees
+            expect(result.arcRotateCamera?.alpha).toBeCloseTo(Math.PI / 2, 5);
+            expect(result.arcRotateCamera?.beta).toBeCloseTo(Math.PI / 3, 5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -404,7 +376,6 @@ describe("initBabylonJS unit tests", () => {
             expect(result.arcRotateCamera?.upperRadiusLimit).toBeCloseTo(config.sceneSize * 10, 5);
             expect(result.arcRotateCamera?.maxZ).toBeCloseTo(config.sceneSize * 50, 5);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -420,13 +391,12 @@ describe("initBabylonJS unit tests", () => {
             const result = initBabylonJS(config);
 
             // Assert
-            const expectedHeight = config.sceneSize * 0.75; // 75
-            const expectedOffset = config.sceneSize * 0.5; // 50
+            const expectedHeight = config.sceneSize * 0.75;
+            const expectedOffset = config.sceneSize * 0.5;
             expect(result.directionalLight.position.x).toBeCloseTo(expectedOffset, 5);
             expect(result.directionalLight.position.y).toBeCloseTo(expectedHeight, 5);
             expect(result.directionalLight.position.z).toBeCloseTo(expectedOffset, 5);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -444,7 +414,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(result.hemisphericLight.intensity).toBe(2.5);
 
-            // Cleanup
             result.dispose();
         });
 
@@ -460,7 +429,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(result.directionalLight.intensity).toBe(3.0);
 
-            // Cleanup
             result.dispose();
         });
     });
@@ -477,7 +445,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(removeEventListenerSpy).toHaveBeenCalledWith("resize", expect.any(Function));
 
-            // Cleanup
             removeEventListenerSpy.mockRestore();
         });
 
@@ -545,14 +512,12 @@ describe("initBabylonJS unit tests", () => {
         });
 
         it("should remove created canvas from DOM on dispose", () => {
-            // Arrange - no canvasId means a new canvas is created
             const result = initBabylonJS();
             const canvasCount = document.querySelectorAll("canvas").length;
 
             // Act
             result.dispose();
 
-            // Assert - there should be one less canvas (only the mock test canvas remains)
             const newCanvasCount = document.querySelectorAll("canvas").length;
             expect(newCanvasCount).toBeLessThan(canvasCount);
         });
@@ -566,7 +531,6 @@ describe("initBabylonJS unit tests", () => {
             // Act
             result.dispose();
 
-            // Assert - canvas should still be in DOM
             expect(mockCanvas.parentNode).toBe(document.body);
         });
     });
@@ -583,7 +547,6 @@ describe("initBabylonJS unit tests", () => {
             // Assert
             expect(runRenderLoopSpy).toHaveBeenCalledWith(expect.any(Function));
 
-            // Cleanup
             result.dispose();
         });
 
@@ -591,7 +554,7 @@ describe("initBabylonJS unit tests", () => {
             // Arrange
             const config = new BabylonJSScene.InitBabylonJSDto();
             config.canvasId = "test-canvas";
-            config.enableArcRotateCamera = true; // Need active camera for render
+            config.enableArcRotateCamera = true;
             const result = initBabylonJS(config);
             const onRenderMock = vi.fn();
             let renderCallback: (() => void) | null = null;
@@ -602,13 +565,65 @@ describe("initBabylonJS unit tests", () => {
 
             // Act
             result.startRenderLoop(onRenderMock);
-            // Simulate one frame
             (renderCallback as (() => void) | null)?.();
 
             // Assert
             expect(onRenderMock).toHaveBeenCalled();
 
-            // Cleanup
+            result.dispose();
+        });
+    });
+    describe("the limits an orbiting camera is given", () => {
+        it("should hold the camera between the two alpha limits it was given", () => {
+            // Arrange
+            const config = new BabylonJSScene.InitBabylonJSDto();
+            config.canvasId = "test-canvas";
+            config.arcRotateCameraOptions = new BabylonCamera.ArcRotateCameraDto();
+            config.arcRotateCameraOptions.lowerAlphaLimit = 0;
+            config.arcRotateCameraOptions.upperAlphaLimit = 180;
+
+            // Act
+            const result = initBabylonJS(config);
+
+            // Assert
+            const camera = result.arcRotateCamera!;
+            expect(camera.lowerAlphaLimit).toBeCloseTo(0, 10);
+            expect(camera.upperAlphaLimit).toBeCloseTo(Math.PI, 10);
+
+            result.dispose();
+        });
+
+        it("should leave the camera free to orbit right round where no alpha limits were given", () => {
+            // Arrange
+            const config = new BabylonJSScene.InitBabylonJSDto();
+            config.canvasId = "test-canvas";
+
+            // Act
+            const result = initBabylonJS(config);
+
+            // Assert
+            const camera = result.arcRotateCamera!;
+            expect(camera.lowerAlphaLimit).toBeNull();
+            expect(camera.upperAlphaLimit).toBeNull();
+
+            result.dispose();
+        });
+    });
+
+    describe("resizing the window", () => {
+        it("should tell the engine to resize when the window does", () => {
+            // Arrange
+            const config = new BabylonJSScene.InitBabylonJSDto();
+            config.canvasId = "test-canvas";
+            const result = initBabylonJS(config);
+            const resize = vi.spyOn(result.engine, "resize");
+
+            // Act
+            window.dispatchEvent(new Event("resize"));
+
+            // Assert
+            expect(resize).toHaveBeenCalled();
+
             result.dispose();
         });
     });

@@ -53,7 +53,7 @@ export class IteratorService {
         const edgeHashes: Record<number, number> = {};
         let edgeIndex = 0;
         const anExplorer = new this.occ.BRepTools_WireExplorer(shape);
-        for (/* initialized in constructor */; anExplorer.More(); anExplorer.Next()) {
+        for (; anExplorer.More(); anExplorer.Next()) {
             const edge = this.occ.CastToEdge(anExplorer.Current());
             const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
             if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
@@ -165,7 +165,7 @@ export class IteratorService {
         let shapeIndex = 0;
         const iterator = new this.occ.TopoDS_Iterator(shape);
 
-        for (/* initialized in constructor */; iterator.More(); iterator.Next()) {
+        for (; iterator.More(); iterator.Next()) {
             callback(shapeIndex++, iterator.Value());
         }
         iterator.delete();

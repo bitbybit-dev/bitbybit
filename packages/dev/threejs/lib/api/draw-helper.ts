@@ -12,13 +12,10 @@ import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
 
 export class DrawHelper extends DrawHelperCore {
 
-    // Map-based material cache for better performance (MeshPhysicalMaterial for lit surfaces)
     private readonly materialCache = new Map<string, THREEJS.MeshPhysicalMaterial>();
 
-    // Separate cache for unlit materials (MeshBasicMaterial for points/lines)
     private readonly unlitMaterialCache = new Map<string, THREEJS.MeshBasicMaterial>();
 
-    // Entity ID generation
     private entityIdCounter = 0;
     private readonly instanceId = `three-${Date.now()}`;
 
@@ -46,7 +43,6 @@ export class DrawHelper extends DrawHelperCore {
      * Should be called when the DrawHelper instance is no longer needed
      */
     public dispose(): void {
-        // Dispose cached PBR materials
         this.materialCache.forEach((material, key) => {
             try {
                 if (material.dispose) {
@@ -58,7 +54,6 @@ export class DrawHelper extends DrawHelperCore {
         });
         this.materialCache.clear();
 
-        // Dispose cached unlit materials (MeshBasicMaterial for points)
         this.unlitMaterialCache.forEach((material, key) => {
             try {
                 if (material.dispose) {
@@ -70,7 +65,6 @@ export class DrawHelper extends DrawHelperCore {
         });
         this.unlitMaterialCache.clear();
 
-        // Reset counters
         this.entityIdCounter = 0;
 
         console.log("DrawHelper disposed successfully");
@@ -149,7 +143,6 @@ export class DrawHelper extends DrawHelperCore {
                 transforms: [],
             } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
 
-            // Validate worker response
             if (!res || !res.positions || !res.indices || !res.transforms) {
                 console.warn("Corrupted worker response, returning empty mesh");
                 const emptyMesh = new THREEJS.Group();
@@ -168,7 +161,6 @@ export class DrawHelper extends DrawHelperCore {
             }
             let colour;
             if (inputs.mesh.color && inputs.mesh.color.length > 0) {
-                // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
                 const c = inputs.mesh.color;
                 colour = "#" + new THREEJS.Color(c[0], c[1], c[2]).getHexString();
             } else {
@@ -250,16 +242,9 @@ export class DrawHelper extends DrawHelperCore {
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
 
         const points = inputs.polylines.map((s, index) => {
-            // Closing copies rather than appending to the caller's array: a configurator that holds
-            // its polylines and redraws them grew one duplicate point per redraw, which also defeated
-            // the update fast-path below, since a point count that changes every call never matches.
             const pts = s.isClosed ? [...s.points, s.points[0]!] : s.points;
-            // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
             if (s.color) {
                 if (!Array.isArray(colours)) {
-                    // Seeded with the shared colour rather than empty: starting from an empty array
-                    // dropped it, and the colour resolution then filled every polyline that carried
-                    // no colour of its own with the last one that did.
                     const shared = colours ?? "#444444";
                     colours = inputs.polylines.map(() => shared);
                 }
@@ -289,10 +274,6 @@ export class DrawHelper extends DrawHelperCore {
         );
         if (inputs.polylinesMesh && inputs.updatable) {
             if (inputs.polylinesMesh.children[0]!.name !== polylines!.name) {
-                // The line segments were rebuilt, so the group's contents are replaced rather than a
-                // second group being added beside it: building a new one left the caller's group in
-                // the scene on every redraw whose point counts changed. Clearing alone would detach
-                // the old segments without freeing what they hold on the GPU.
                 inputs.polylinesMesh.children.forEach(child => {
                     if (child instanceof THREEJS.LineSegments) {
                         child.geometry.dispose();
@@ -327,7 +308,6 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<THREEJS.Group> & { arrowSize?: number, arrowAngle?: number }): THREEJS.Group {
-        // A copy, not a push: appending here grew the caller's own array on every redraw.
         const points = inputs.polyline.isClosed
             ? [...inputs.polyline.points, inputs.polyline.points[0]!]
             : inputs.polyline.points;
@@ -378,22 +358,19 @@ export class DrawHelper extends DrawHelperCore {
         const vectorPoints = inputs.points;
         const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
 
-        // Resolve colors for all points using the color mapping strategy
         const coloursHex = this.resolveAllColors(inputs.colours, vectorPoints.length, strategy);
 
         if (inputs.pointsMesh && inputs.updatable) {
-            // Calculate the total number of points currently in the mesh
             const currentPointCount = inputs.pointsMesh.children.reduce((sum, child) => {
                 if (child instanceof THREEJS.InstancedMesh) {
                     return sum + child.count;
                 }
-                return sum + 1; // Regular mesh counts as 1 point
+                return sum + 1;
             }, 0);
 
             if (currentPointCount === vectorPoints.length) {
                 this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
             } else {
-                // Dispose old geometries before recreating
                 inputs.pointsMesh.children.forEach(child => {
                     if (child instanceof THREEJS.Mesh || child instanceof THREEJS.InstancedMesh) {
                         child.geometry?.dispose();
@@ -420,17 +397,13 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     updatePointsInstances(group: THREEJS.Group, positions: Inputs.Base.Point3[]): void {
-        // The group contains InstancedMesh children, each handling multiple points of the same color
-        // We need to update the instance matrices based on the new positions
         const children = group.children as THREEJS.InstancedMesh[];
 
-        // Build a map of original index to new position
         const positionMap = new Map<number, THREEJS.Vector3>();
         positions.forEach((pos, index) => {
             positionMap.set(index, new THREEJS.Vector3(pos[0], pos[1], pos[2]));
         });
 
-        // Each InstancedMesh has metadata with the original indices of points it contains
         children.forEach((instancedMesh: THREEJS.InstancedMesh) => {
             const indices = instancedMesh.userData["pointIndices"] as number[];
             if (indices) {
@@ -486,7 +459,6 @@ export class DrawHelper extends DrawHelperCore {
         group: THREEJS.Group | undefined, updatable: boolean, material: THREEJS.MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
     ): THREEJS.Group {
         const createMesh = () => {
-            // Merge all geometries into one
             const totalPositions: number[] = [];
             let totalNormals: number[] = [];
             const totalIndices: number[] = [];
@@ -494,7 +466,6 @@ export class DrawHelper extends DrawHelperCore {
             let indexOffset = 0;
 
             meshDataConverted.forEach(meshItem => {
-                // Validate mesh data structure
                 if (!meshItem || !meshItem.positions || !meshItem.indices) {
                     console.warn("Skipping corrupted mesh item");
                     return;
@@ -506,13 +477,11 @@ export class DrawHelper extends DrawHelperCore {
                 if (meshItem.uvs) {
                     totalUvs.push(...meshItem.uvs);
                 }
-                // Offset indices
                 const offsetIndices = meshItem.indices.map(i => i + indexOffset);
                 totalIndices.push(...offsetIndices);
                 indexOffset += meshItem.positions.length / 3;
             });
 
-            // Compute normals if they're missing
             if (totalNormals.length === 0 && totalPositions.length > 0) {
                 totalNormals = Array.from(this.computeNormals(totalPositions, totalIndices));
             }
@@ -594,7 +563,6 @@ export class DrawHelper extends DrawHelperCore {
             mat.metalness = MATERIAL_DEFAULTS.METALNESS.SURFACE;
             mat.roughness = MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
             mat.opacity = inputs.opacity;
-            // Enable transparency for semi-transparent materials
             if (inputs.opacity < 1) {
                 mat.transparent = true;
             }
@@ -610,7 +578,6 @@ export class DrawHelper extends DrawHelperCore {
             inputs.hidden,
         );
 
-        // Draw back faces with different color when two-sided rendering is enabled
         if (inputs.drawTwoSided !== false) {
             const backFaceMesh = this.createBackFaceMesh(
                 [meshDataConverted],
@@ -654,8 +621,6 @@ export class DrawHelper extends DrawHelperCore {
 
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable, pbr);
 
-        // Draw back faces with different color when two-sided rendering is enabled
-        // Default is true (when undefined), explicitly set to false for single-sided
         if (inputs.drawTwoSided !== false) {
             const meshData: MeshData[] = [{
                 positions: res.positions,
@@ -681,7 +646,6 @@ export class DrawHelper extends DrawHelperCore {
     private createMesh(
         positions: number[], indices: number[], _normals: number[], jscadMesh: THREEJS.Group, transforms: number[], _updatable: boolean, material: THREEJS.MeshPhysicalMaterial
     ): void {
-        // Validate worker response
         if (!positions || !indices || !transforms) {
             console.warn("Corrupted worker response, creating empty mesh");
             return;
@@ -742,7 +706,6 @@ export class DrawHelper extends DrawHelperCore {
             const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
             shapeGroup.add(mesh);
 
-            // Draw back faces with different color when two-sided rendering is enabled
             if (inputs.drawTwoSided !== false) {
                 const backFaceMesh = this.createBackFaceMesh(
                     meshData,
@@ -808,7 +771,6 @@ export class DrawHelper extends DrawHelperCore {
                     return movedOnPosition as Inputs.Base.Vector3[];
                 });
 
-                // texts.forEach(te => textPolylines.push(te));
                 return texts;
             });
             const textPolylines = await Promise.all(promises);
@@ -941,9 +903,7 @@ export class DrawHelper extends DrawHelperCore {
         arrowSize = 0, arrowAngle = 30) {
         if (polylinesPoints && polylinesPoints.length > 0) {
             const lineVertices: THREEJS.Vector3[] = [];
-            // Track how many line segments (pairs of vertices) each polyline/arrow has
             const polylineSegmentCounts: number[] = [];
-            // Track colors in order of segments (polyline, then its arrows, then next polyline, etc.)
             const allColors: string[] = [];
 
             polylinesPoints.forEach((pts, polylineIndex) => {
@@ -968,14 +928,13 @@ export class DrawHelper extends DrawHelperCore {
                 polylineSegmentCounts.push(segmentCount);
                 allColors.push(polylineColor);
 
-                // Compute arrow head lines if arrowSize > 0
                 if (arrowSize > 0 && pts.length >= 2) {
-                    const arrowLines = this.computeArrowHeadLines(pts as Inputs.Base.Point3[], arrowSize, arrowAngle);
+                    const arrowLines = this.computeArrowHeadLines(pts, arrowSize, arrowAngle);
                     arrowLines.forEach(arrowLine => {
                         lineVertices.push(new THREEJS.Vector3(arrowLine[0]![0], arrowLine[0]![1], arrowLine[0]![2]));
                         lineVertices.push(new THREEJS.Vector3(arrowLine[1]![0], arrowLine[1]![1], arrowLine[1]![2]));
-                        polylineSegmentCounts.push(1); // Each arrow line is 1 segment
-                        allColors.push(polylineColor); // Arrow uses same color as its parent polyline
+                        polylineSegmentCounts.push(1);
+                        allColors.push(polylineColor);
                     });
                 }
             });
@@ -985,7 +944,6 @@ export class DrawHelper extends DrawHelperCore {
                 if (lineSegments?.userData?.["linesForRenderLengths"] === polylinesPoints.map(l => l.length).toString()) {
                     lineSegments.geometry.clearGroups();
                     lineSegments.geometry.setFromPoints(lineVertices);
-                    // Update colors when updating geometry
                     const lineColors = this.computePolylineColorsWithExplicit(polylineSegmentCounts, allColors);
                     lineSegments.geometry.setAttribute("color", new THREEJS.Float32BufferAttribute(lineColors, 3));
                     return lineSegments;
@@ -1020,11 +978,9 @@ export class DrawHelper extends DrawHelperCore {
         const totalPolylines = polylineSegmentCounts.length;
 
         polylineSegmentCounts.forEach((segmentCount, polylineIndex) => {
-            // Get the color for this polyline using the strategy
             const colorHex = this.resolveColorForEntity(colours, polylineIndex, totalPolylines, colorMapStrategy);
             const color = new THREEJS.Color(colorHex);
 
-            // Each segment has 2 vertices, apply the same color to both
             for (let i = 0; i < segmentCount * 2; i++) {
                 lineColors.push(color.r, color.g, color.b);
             }
@@ -1049,7 +1005,6 @@ export class DrawHelper extends DrawHelperCore {
             const colorHex = explicitColors[index] || explicitColors[0] || "#ff0000";
             const color = new THREEJS.Color(colorHex);
 
-            // Each segment has 2 vertices, apply the same color to both
             for (let i = 0; i < segmentCount * 2; i++) {
                 lineColors.push(color.r, color.g, color.b);
             }
@@ -1070,13 +1025,10 @@ export class DrawHelper extends DrawHelperCore {
 
         let lineColors: number[];
         if (explicitColors && explicitColors.length > 0) {
-            // Use explicit colors when provided (includes arrow colors)
             lineColors = this.computePolylineColorsWithExplicit(polylineSegmentCounts, explicitColors);
         } else if (polylineSegmentCounts.length > 0) {
-            // Use per-polyline coloring with the specified strategy
             lineColors = this.computePolylineColors(colours, polylineSegmentCounts, colorMapStrategy);
         } else {
-            // Fallback: single color for all vertices
             const color = Array.isArray(colours) ? new THREEJS.Color(colours[0]) : new THREEJS.Color(colours);
             lineColors = [];
             for (let i = 0; i < lineVertices.length; i++) {
@@ -1131,13 +1083,10 @@ export class DrawHelper extends DrawHelperCore {
                 mesh.receiveShadow = true;
                 group.add(mesh);
 
-                // Draw back faces with different color when two-sided rendering is enabled
                 if (options.drawTwoSided !== false) {
-                    // Prepare mesh data for back face mesh creation
                     const positions = Array.from(decomposedMesh.vertProperties);
                     const indices = Array.from(decomposedMesh.triVerts);
 
-                    // Get normals from the geometry (they were computed above)
                     const normalAttribute = geometry.getAttribute("normal");
                     const normals = normalAttribute ? Array.from(normalAttribute.array as Float32Array) : [];
 
@@ -1190,12 +1139,10 @@ export class DrawHelper extends DrawHelperCore {
 
     }
 
-    // Creates a shallow copy of inputs without the faceMaterial property for safe worker communication
-    // Workers cannot handle complex circular objects like Three.js materials
     private getSafeWorkerOptions<T extends { faceMaterial?: THREEJS.Material | undefined }>(inputs: T): Omit<T, "faceMaterial"> {
 
         const { faceMaterial, ...safeOptions } = inputs;
-        return safeOptions as Omit<T, "faceMaterial">;
+        return safeOptions;
     }
 
     /**
@@ -1228,13 +1175,11 @@ export class DrawHelper extends DrawHelperCore {
     ): THREEJS.MeshPhysicalMaterial {
         const key = this.getMaterialKey(hex, alpha, zOffset, unlit);
 
-        // Check cache first
         const cached = this.materialCache.get(key);
         if (cached) {
             return cached;
         }
 
-        // Evict oldest if at capacity (simple FIFO)
         if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
             const firstKey = this.materialCache.keys().next().value!;
             const material = this.materialCache.get(firstKey);
@@ -1245,7 +1190,6 @@ export class DrawHelper extends DrawHelperCore {
             console.warn(`Material cache full, evicted: ${firstKey}`);
         }
 
-        // Create new material
         const material = createFn();
         this.materialCache.set(key, material);
         return material;
@@ -1264,15 +1208,13 @@ export class DrawHelper extends DrawHelperCore {
         alpha: number,
         createFn: () => THREEJS.MeshBasicMaterial
     ): THREEJS.MeshBasicMaterial {
-        const key = this.getMaterialKey(hex, alpha, 0, true); // unlit=true, zOffset=0
+        const key = this.getMaterialKey(hex, alpha, 0, true);
 
-        // Check cache first
         const cached = this.unlitMaterialCache.get(key);
         if (cached) {
             return cached;
         }
 
-        // Evict oldest if at capacity (simple FIFO)
         if (this.unlitMaterialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
             const firstKey = this.unlitMaterialCache.keys().next().value!;
             const material = this.unlitMaterialCache.get(firstKey);
@@ -1283,7 +1225,6 @@ export class DrawHelper extends DrawHelperCore {
             console.warn(`Unlit material cache full, evicted: ${firstKey}`);
         }
 
-        // Create new material
         const material = createFn();
         this.unlitMaterialCache.set(key, material);
         return material;
@@ -1304,7 +1245,6 @@ export class DrawHelper extends DrawHelperCore {
         backFaceOpacity: number,
         zOffset: number
     ): THREEJS.Group {
-        // Create material for back face using the caching system
         const backMaterial = this.getOrCreateMaterial(backFaceColour + "-back", backFaceOpacity, zOffset + 0.1, () => {
             const mat = new THREEJS.MeshPhysicalMaterial();
             mat.name = this.generateEntityId("backFaceMaterial");
@@ -1317,11 +1257,8 @@ export class DrawHelper extends DrawHelperCore {
             return mat;
         });
 
-        // Use base class to prepare back face mesh data (flip normals, reverse winding)
-        // prepareBackFaceMeshData merges all mesh data into one combined mesh
         const backFaceMeshData = this.prepareBackFaceMeshData(meshDataConverted);
 
-        // Create geometry from the combined mesh data
         const geometry = new THREEJS.BufferGeometry();
         geometry.setAttribute("position", new THREEJS.BufferAttribute(Float32Array.from(backFaceMeshData.positions), 3));
         geometry.setAttribute("normal", new THREEJS.BufferAttribute(Float32Array.from(backFaceMeshData.normals), 3));
@@ -1353,7 +1290,6 @@ export class DrawHelper extends DrawHelperCore {
 
         const colorSet = Array.from(new Set(colors));
         const materialSet = colorSet.map((colour) => {
-            // Use cached unlit material for points
             const mat = this.getOrCreateUnlitMaterial(colour, opacity, () => {
                 const material = new THREEJS.MeshBasicMaterial({ name: this.generateEntityId("pointMaterial") });
                 material.opacity = opacity;
@@ -1370,20 +1306,16 @@ export class DrawHelper extends DrawHelperCore {
         pointsGroup.name = meshName;
         this.context.scene.add(pointsGroup);
 
-        // Create one InstancedMesh per unique color for efficient rendering
         materialSet.forEach(ms => {
             const pointCount = ms.positions.length;
             if (pointCount === 0) return;
 
-            // Use fewer segments for large point counts to improve performance
             const segments = pointCount > 1000 ? 1 : 6;
             const geom = new THREEJS.SphereGeometry(size, segments, segments);
 
-            // Create a single InstancedMesh for all points of this color
             const instancedMesh = new THREEJS.InstancedMesh(geom, ms.material, pointCount);
             instancedMesh.name = this.generateEntityId(`points-${ms.hex}`);
 
-            // Store the original point indices for updating later
             const pointIndices: number[] = [];
             const matrix = new THREEJS.Matrix4();
 

@@ -16,7 +16,6 @@ export interface InitBitByBitOptions extends WorkerOptions {
     workers?: WorkerInstances | undefined;
 }
 
-// Re-export types for convenience
 export { type InitKernelsResult, type WorkerInstances, type WorkerOptions };
 
 /**
@@ -56,10 +55,8 @@ export async function initBitByBit(
     bitbybit: BitByBitBase,
     options: InitBitByBitOptions
 ): Promise<InitKernelsResult & { bitbybit: BitByBitBase }> {
-    // Get or create workers
     const workers = getOrCreateWorkers(options);
 
-    // Initialize bitbybit with app, scene and workers
     bitbybit.init(
         app,
         scene,
@@ -68,7 +65,6 @@ export async function initBitByBit(
         workers.manifoldWorker
     );
 
-    // Wait for kernel initialization
     const result = await waitForKernelInitialization(bitbybit, options);
 
     return {

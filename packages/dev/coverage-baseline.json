@@ -1,6 +1,6 @@
 {
-    "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers a ratio that sits above 50% even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
-    "measured": "2026-09-07",
+    "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers the ratio whatever it stands at, because taking k from both sides of C/T gives (C-k)/(T-k), which is smaller for any T greater than C - so this bites at 35% exactly as it does at 85%, even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
+    "measured": "2026-09-08",
     "history": [
         {
             "measured": "2026-09-07",
@@ -9,121 +9,161 @@
             "branches": 51.95,
             "functions": 57.82,
             "statements": 65.59
+        },
+        {
+            "measured": "2026-09-07",
+            "tests": 4004,
+            "lines": 68.32,
+            "branches": 52.03,
+            "functions": 57.92,
+            "statements": 65.62
+        },
+        {
+            "measured": "2026-09-07",
+            "tests": 4008,
+            "lines": 68.39,
+            "branches": 52.14,
+            "functions": 58,
+            "statements": 65.69
+        },
+        {
+            "measured": "2026-09-08",
+            "tests": 6981,
+            "lines": 89.15,
+            "branches": 82.36,
+            "functions": 88.69,
+            "statements": 89.76
+        },
+        {
+            "measured": "2026-09-08",
+            "tests": 6986,
+            "lines": 89.16,
+            "branches": 82.36,
+            "functions": 88.68,
+            "statements": 89.77
+        },
+        {
+            "measured": "2026-09-08",
+            "tests": 7657,
+            "lines": 97.38,
+            "branches": 89.97,
+            "functions": 98.57,
+            "statements": 97.31
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 453,
-            "suites": 7,
-            "lines": 35.11,
-            "branches": 26.64,
-            "functions": 25.42,
-            "statements": 30.96
+            "tests": 1901,
+            "suites": 54,
+            "lines": 98.51,
+            "branches": 93.7,
+            "functions": 98.5,
+            "statements": 98.69
         },
         "base": {
             "runner": "vitest",
-            "tests": 1081,
+            "tests": 1166,
             "suites": 15,
-            "lines": 95.64,
-            "branches": 85.75,
-            "functions": 98.26,
-            "statements": 94.92
+            "lines": 99.39,
+            "branches": 94.57,
+            "functions": 100,
+            "statements": 99.39
         },
         "cad-cloud-sdk": {
             "runner": "vitest",
-            "tests": 78,
+            "tests": 105,
             "suites": 11,
-            "lines": 69.79,
-            "branches": 78.66,
-            "functions": 75,
-            "statements": 70.38
+            "lines": 100,
+            "branches": 98.7,
+            "functions": 100,
+            "statements": 100
         },
         "core": {
             "runner": "vitest",
-            "tests": 114,
-            "suites": 6,
-            "lines": 58.78,
-            "branches": 71.42,
-            "functions": 38.29,
-            "statements": 55.89
+            "tests": 256,
+            "suites": 11,
+            "lines": 100,
+            "branches": 100,
+            "functions": 100,
+            "statements": 100
         },
         "create-app": {
             "runner": "vitest",
-            "tests": 11,
+            "tests": 21,
             "suites": 1
         },
         "jscad": {
             "runner": "vitest",
-            "tests": 47,
-            "suites": 9,
-            "lines": 45.95,
-            "branches": 22.66,
-            "functions": 49.45,
-            "statements": 42.52
+            "tests": 299,
+            "suites": 13,
+            "lines": 99.85,
+            "branches": 99.61,
+            "functions": 100,
+            "statements": 99.88
         },
         "jscad-worker": {
             "runner": "vitest",
-            "tests": 65,
-            "suites": 3,
-            "lines": 63.31,
-            "branches": 72.78,
-            "functions": 36.13,
-            "statements": 63.75
+            "tests": 263,
+            "suites": 8,
+            "lines": 100,
+            "branches": 100,
+            "functions": 100,
+            "statements": 100
         },
         "manifold": {
             "runner": "vitest",
-            "tests": 39,
-            "suites": 7,
-            "lines": 37.06,
-            "branches": 13.51,
-            "functions": 43.11,
-            "statements": 35.13
+            "tests": 341,
+            "suites": 9,
+            "lines": 99.3,
+            "branches": 99.24,
+            "functions": 100,
+            "statements": 99.46
         },
         "manifold-worker": {
             "runner": "vitest",
-            "tests": 68,
-            "suites": 3,
-            "lines": 53.95,
-            "branches": 66.83,
-            "functions": 26.34,
-            "statements": 54.04
+            "tests": 390,
+            "suites": 7,
+            "lines": 100,
+            "branches": 100,
+            "functions": 100,
+            "statements": 100
         },
         "occt": {
             "runner": "vitest",
-            "tests": 1067,
-            "suites": 31,
-            "lines": 88.78,
-            "branches": 62.69,
-            "functions": 92.64,
-            "statements": 88.83
+            "tests": 1234,
+            "suites": 32,
+            "lines": 95.46,
+            "branches": 78.31,
+            "functions": 97.22,
+            "statements": 95.32
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 154,
-            "suites": 6,
-            "lines": 39.12,
-            "branches": 59.33,
-            "functions": 17.69,
-            "statements": 39.65
+            "tests": 754,
+            "suites": 14,
+            "lines": 100,
+            "branches": 99.47,
+            "functions": 100,
+            "statements": 100
         },
         "playcanvas": {
             "runner": "vitest",
-            "tests": 461,
-            "suites": 9,
-            "lines": 83.55,
-            "branches": 74.41,
-            "functions": 83.02,
-            "statements": 83.09
+            "tests": 501,
+            "suites": 10,
+            "lines": 93.35,
+            "branches": 81.33,
+            "functions": 94.09,
+            "statements": 92.23
         },
         "threejs": {
             "runner": "vitest",
-            "tests": 353,
-            "suites": 8,
-            "lines": 82.46,
-            "branches": 77.18,
-            "functions": 82.84,
-            "statements": 82.8
+            "tests": 426,
+            "suites": 9,
+            "lines": 97.21,
+            "branches": 87.42,
+            "functions": 97.91,
+            "statements": 96.59
         }
     }
 }

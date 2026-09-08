@@ -36,7 +36,7 @@ We are committed to open-sourcing the foundational elements that empower develop
         *   `bitbybit.dates`
         *   `bitbybit.json`
         *   `bitbybit.csv`
-        *   `bitbybit.verb`
+        *   `bitbybit.verb` (deprecated - removed in the next major version)
         *   `bitbybit.tag`
         *   `bitbybit.time`
         *   `bitbybit.occt`

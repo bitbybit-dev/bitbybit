@@ -76,8 +76,29 @@ npm run lint
   verifying what is present (`npm run kernels:fetch` at the root does the same). A build that skips
   it produces a package that resolves but cannot run. The tarball also carries `NOTICE` and the
   OCCT and Draco license texts.
-- `cad-cloud-sdk` is different from its siblings: it uses **Vitest**, and part of its `src/types/`
-  is **generated** from the CAD Cloud API's schemas rather than hand-written. Do not edit those by hand.
+- `cad-cloud-sdk` and `create-app` compile as **NodeNext at ES2022** where their siblings target a
+  browser bundle - the only compiler settings either states on top of the shared base. Part of the
+  SDK's `src/types/` is **generated** from the CAD Cloud API's schemas; do not edit those by hand.
+- **A JSCAD entity is one of three unrelated shapes, and the types say so.** `JSCADEntity` is
+  `JSCADGeom2 | JSCADGeom3 | JSCADPath2` - a 2D region held as its edges, a solid held as its
+  polygons, and a path. They share only a transform, so narrow before reading: `"polygons" in x` for
+  a solid, `"isClosed" in x` for a path, `"sides" in x` for a region. Those types are structural
+  mirrors of the library's own rather than imports of them, so the published declarations need
+  nothing from `@jscad/modeling` to be read; `jscad-entity.test.ts` asserts each is assignable to the
+  library's type and back, so a change upstream fails the build instead of rotting. Where an
+  operation needs one kind, `jscad/lib/api/services/entity-narrowing.ts` is what says so - and it is also the one
+  place that bridges to the kernel's per-kind overloads, which refuse a mixed list.
+- **`bitbybit.verb` is deprecated and comes out in the next major.** Verbnurbs is unmaintained
+  upstream: its last release is from 2022, its own typings are two competing files that disagree, and
+  the successor release ships none at all. It is also not a kernel like OCCT, JSCAD or Manifold -
+  there is no `@bitbybit-dev/verb` package and no worker, just an API class in `core` calling a
+  library the renderer packages inject into `Context`. Its entry points and its eleven API classes
+  carry `@deprecated`, which reaches the TypeScript editor and changes nothing else: the tag is not
+  one the component generators read, so the visual components and every saved script are untouched
+  until the removal. Until then, **do not invest in it** - it holds two thirds of the `any` in the
+  published declarations, and typing those would mint sockets for an area that is going away. Drawing
+  does not depend on the library: `Base.VerbCurve` and `Base.VerbSurface` are `{ tessellate }`
+  structural types, so anything that tessellates still draws.
 - `create-app` is the `npx @bitbybit-dev/create-app` scaffolder, not a library.
 - **The `repository` field is load-bearing.** npm's provenance check compares the published manifest's
   `repository.url` with the repository the publish workflow runs in, so every package declares
@@ -94,5 +115,5 @@ npm run lint
   `delete-mocks` step during packaging.
 
 Four packages carry their own `CLAUDE.md` because they genuinely differ: `occt` (ships wasm),
-`babylonjs` (peer-dependency engine), `cad-cloud-sdk` (Vitest, generated types) and
+`babylonjs` (peer-dependency engine), `cad-cloud-sdk` (generated types) and
 `create-app` (a CLI). The rest follow this file.

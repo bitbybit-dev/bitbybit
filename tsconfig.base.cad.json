@@ -1,8 +1,9 @@
 {
-    // The compiler options every published CAD package shares, the whole strict set included. Each
+    // The compiler options every published package shares, the whole strict set included. Each
     // package's tsconfig.json (the editor and test view) and tsconfig.bitbybit.json (what build-p
     // compiles) extends this and keeps only what differs there: outDir, paths into the sibling dists,
-    // exclusions, and for the occt NodeNext build its module settings. The strict flags arrived one
+    // exclusions, and for the two Node packages - the SDK and the scaffolder - their NodeNext module
+    // settings and the maps their consumers step through. The strict flags arrived one
     // package at a time, held by a per-package baseline until each reached zero; when the last package
     // was through, the flags moved here from the leaves with a zero-change proof (`tsc --showConfig`
     // compared before and after for every config), so the packages compile exactly as they did.

@@ -1,186 +1,187 @@
 {
-  "name": "@bitbybit-dev/babylonjs",
-  "version": "1.1.1",
-  "description": "Bit By Bit Developers BABYLONJS CAD Library to Program Geometry",
-  "homepage": "https://docs.bitbybit.dev/classes/Bit.Babylon",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
-    "directory": "packages/dev/babylonjs"
-  },
-  "keywords": [
-    "Bit By Bit Developers",
-    "bitbybit",
-    "bitbybit.dev",
-    "Geometry",
-    "CAD",
-    "3D",
-    "JSCAD",
-    "OCCT",
-    "OpenCascade",
-    "Creative coding",
-    "BabylonJS",
-    "WebGL",
-    "WebGPU",
-    "Parametric",
-    "Modeling",
-    "Browser CAD",
-    "3D algorithms",
-    "3D modeling",
-    "3D printing",
-    "3D printing algorithms",
-    "3D software",
-    "OpenCascade Technology",
-    "AEC",
-    "Automotive",
-    "Engineering",
-    "CAE",
-    "CAM"
-  ],
-  "directories": {
-    "lib": "lib"
-  },
-  "scripts": {
-    "build": "tsc -b tsconfig.bitbybit.json",
-    "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
-    "clean-dist": "shx rm -rf dist",
-    "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
-    "copy-package": "node ../../../scripts/dist-manifest.mjs",
-    "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
-    "delete-coverage": "shx rm -rf ./dist/coverage || true",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
-    "api:check": "api-extractor run",
-    "api:update": "api-extractor run --local"
-  },
-  "author": "Bit by bit developers",
-  "license": "MIT",
-  "funding": {
-    "type": "corporate",
-    "url": "https://bitbybit.dev/auth/pick-plan"
-  },
-  "types": "./index.d.ts",
-  "exports": {
-    ".": {
-      "@bitbybit-dev/source": "./index.ts",
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+    "name": "@bitbybit-dev/babylonjs",
+    "version": "1.1.1",
+    "description": "Bit By Bit Developers BABYLONJS CAD Library to Program Geometry",
+    "homepage": "https://docs.bitbybit.dev/classes/Bit.Babylon",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+        "directory": "packages/dev/babylonjs"
     },
-    "./lib": {
-      "@bitbybit-dev/source": "./lib/index.ts",
-      "types": "./dist/lib/index.d.ts",
-      "default": "./dist/lib/index.js"
+    "keywords": [
+        "Bit By Bit Developers",
+        "bitbybit",
+        "bitbybit.dev",
+        "Geometry",
+        "CAD",
+        "3D",
+        "JSCAD",
+        "OCCT",
+        "OpenCascade",
+        "Creative coding",
+        "BabylonJS",
+        "WebGL",
+        "WebGPU",
+        "Parametric",
+        "Modeling",
+        "Browser CAD",
+        "3D algorithms",
+        "3D modeling",
+        "3D printing",
+        "3D printing algorithms",
+        "3D software",
+        "OpenCascade Technology",
+        "AEC",
+        "Automotive",
+        "Engineering",
+        "CAE",
+        "CAM"
+    ],
+    "directories": {
+        "lib": "lib"
     },
-    "./lib/api": {
-      "@bitbybit-dev/source": "./lib/api/index.ts",
-      "types": "./dist/lib/api/index.d.ts",
-      "default": "./dist/lib/api/index.js"
+    "scripts": {
+        "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
+        "typecheck:tests": "tsc -p tsconfig.json --noEmit --pretty false",
+        "clean-dist": "shx rm -rf dist",
+        "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
+        "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
+        "delete-coverage": "shx rm -rf ./dist/coverage || true",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest",
+        "api:check": "api-extractor run",
+        "api:update": "api-extractor run --local"
     },
-    "./lib/api/bitbybit": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/index.ts",
-      "types": "./dist/lib/api/bitbybit/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/index.js"
+    "author": "Bit by bit developers",
+    "license": "MIT",
+    "funding": {
+        "type": "corporate",
+        "url": "https://bitbybit.dev/auth/pick-plan"
     },
-    "./lib/api/bitbybit/babylon": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/index.js"
+    "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "@bitbybit-dev/source": "./index.ts",
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/api/bitbybit": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/index.ts",
+            "types": "./dist/lib/api/bitbybit/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/index.js"
+        },
+        "./lib/api/bitbybit/babylon": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/index.js"
+        },
+        "./lib/api/bitbybit/babylon/camera": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/camera/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/camera/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/camera/index.js"
+        },
+        "./lib/api/bitbybit/babylon/decal": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/decal/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/decal/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/decal/index.js"
+        },
+        "./lib/api/bitbybit/babylon/gizmo": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/gizmo/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/gizmo/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/gizmo/index.js"
+        },
+        "./lib/api/bitbybit/babylon/gltf": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/gltf/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/gltf/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/gltf/index.js"
+        },
+        "./lib/api/bitbybit/babylon/gui": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/gui/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/gui/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/gui/index.js"
+        },
+        "./lib/api/bitbybit/babylon/lights": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/lights/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/lights/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/lights/index.js"
+        },
+        "./lib/api/bitbybit/babylon/material": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/material/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/material/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/material/index.js"
+        },
+        "./lib/api/bitbybit/babylon/web-xr": {
+            "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/web-xr/index.ts",
+            "types": "./dist/lib/api/bitbybit/babylon/web-xr/index.d.ts",
+            "default": "./dist/lib/api/bitbybit/babylon/web-xr/index.js"
+        },
+        "./lib/api/inputs": {
+            "@bitbybit-dev/source": "./lib/api/inputs/index.ts",
+            "types": "./dist/lib/api/inputs/index.d.ts",
+            "default": "./dist/lib/api/inputs/index.js"
+        },
+        "./lib/api/models": {
+            "@bitbybit-dev/source": "./lib/api/models/index.ts",
+            "types": "./dist/lib/api/models/index.d.ts",
+            "default": "./dist/lib/api/models/index.js"
+        },
+        "./lib/models": {
+            "@bitbybit-dev/source": "./lib/models/index.ts",
+            "types": "./dist/lib/models/index.d.ts",
+            "default": "./dist/lib/models/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
+        "./*": {
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        }
     },
-    "./lib/api/bitbybit/babylon/camera": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/camera/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/camera/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/camera/index.js"
+    "type": "module",
+    "dependencies": {
+        "@bitbybit-dev/base": "1.1.1",
+        "@bitbybit-dev/core": "1.1.1",
+        "@bitbybit-dev/jscad-worker": "1.1.1",
+        "@bitbybit-dev/manifold-worker": "1.1.1",
+        "@bitbybit-dev/occt-worker": "1.1.1",
+        "jsonpath-plus": "10.3.0",
+        "verb-nurbs-web": "2.1.3"
     },
-    "./lib/api/bitbybit/babylon/decal": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/decal/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/decal/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/decal/index.js"
+    "peerDependencies": {
+        "@babylonjs/core": "9.13.0",
+        "@babylonjs/gui": "9.13.0",
+        "@babylonjs/havok": "1.3.13",
+        "@babylonjs/loaders": "9.13.0",
+        "@babylonjs/materials": "9.13.0",
+        "@babylonjs/serializers": "9.13.0",
+        "earcut": "3.0.2"
     },
-    "./lib/api/bitbybit/babylon/gizmo": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/gizmo/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/gizmo/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/gizmo/index.js"
-    },
-    "./lib/api/bitbybit/babylon/gltf": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/gltf/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/gltf/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/gltf/index.js"
-    },
-    "./lib/api/bitbybit/babylon/gui": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/gui/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/gui/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/gui/index.js"
-    },
-    "./lib/api/bitbybit/babylon/lights": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/lights/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/lights/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/lights/index.js"
-    },
-    "./lib/api/bitbybit/babylon/material": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/material/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/material/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/material/index.js"
-    },
-    "./lib/api/bitbybit/babylon/web-xr": {
-      "@bitbybit-dev/source": "./lib/api/bitbybit/babylon/web-xr/index.ts",
-      "types": "./dist/lib/api/bitbybit/babylon/web-xr/index.d.ts",
-      "default": "./dist/lib/api/bitbybit/babylon/web-xr/index.js"
-    },
-    "./lib/api/inputs": {
-      "@bitbybit-dev/source": "./lib/api/inputs/index.ts",
-      "types": "./dist/lib/api/inputs/index.d.ts",
-      "default": "./dist/lib/api/inputs/index.js"
-    },
-    "./lib/api/models": {
-      "@bitbybit-dev/source": "./lib/api/models/index.ts",
-      "types": "./dist/lib/api/models/index.d.ts",
-      "default": "./dist/lib/api/models/index.js"
-    },
-    "./lib/models": {
-      "@bitbybit-dev/source": "./lib/models/index.ts",
-      "types": "./dist/lib/models/index.d.ts",
-      "default": "./dist/lib/models/index.js"
-    },
-    "./package.json": "./package.json",
-    "./*.js": {
-      "@bitbybit-dev/source": "./*.js",
-      "types": "./dist/*.d.ts",
-      "default": "./dist/*.js"
-    },
-    "./*": {
-      "@bitbybit-dev/source": "./*.ts",
-      "types": "./dist/*.d.ts",
-      "default": "./dist/*.js"
+    "devDependencies": {
+        "@microsoft/api-extractor": "7.59.0",
+        "@types/earcut": "3.0.0",
+        "@vitest/coverage-v8": "4.1.7",
+        "jsdom": "29.0.1",
+        "shx": "0.4.0",
+        "typescript": "5.9.3",
+        "vitest": "4.1.7"
     }
-  },
-  "type": "module",
-  "dependencies": {
-    "@bitbybit-dev/base": "1.1.1",
-    "@bitbybit-dev/core": "1.1.1",
-    "@bitbybit-dev/jscad-worker": "1.1.1",
-    "@bitbybit-dev/manifold-worker": "1.1.1",
-    "@bitbybit-dev/occt-worker": "1.1.1",
-    "jsonpath-plus": "10.3.0",
-    "verb-nurbs-web": "2.1.3"
-  },
-  "peerDependencies": {
-    "@babylonjs/core": "9.13.0",
-    "@babylonjs/gui": "9.13.0",
-    "@babylonjs/havok": "1.3.13",
-    "@babylonjs/loaders": "9.13.0",
-    "@babylonjs/materials": "9.13.0",
-    "@babylonjs/serializers": "9.13.0",
-    "earcut": "3.0.2"
-  },
-  "devDependencies": {
-    "@microsoft/api-extractor": "7.59.0",
-    "@types/earcut": "3.0.0",
-    "@vitest/coverage-v8": "4.1.7",
-    "jsdom": "29.0.1",
-    "shx": "0.4.0",
-    "typescript": "5.9.3",
-    "vitest": "4.1.7"
-  }
 }

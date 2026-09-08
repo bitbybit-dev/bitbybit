@@ -1,17 +1,18 @@
+// The editor and test view of this package. It extends the shared CAD base like every other package,
+// so the whole strict set applies here too, and states only what genuinely differs: this one is a
+// Node library rather than a browser bundle, so it compiles as NodeNext at ES2022, and it ships
+// source maps and declaration maps because its consumers step into it.
 {
+    "extends": "../../../tsconfig.base.cad.json",
     "compilerOptions": {
         "target": "ES2022",
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
-        "strict": true,
-        "skipLibCheck": true,
         "lib": ["ES2022", "DOM"],
         "outDir": "dist",
         "rootDir": "src",
         "resolveJsonModule": true,
-        "isolatedModules": true,
         "esModuleInterop": true,
-        "declaration": true,
         "declarationMap": true,
         "sourceMap": true
     },

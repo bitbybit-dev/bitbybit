@@ -13,6 +13,10 @@ import { VerbSurfaceSweep } from "./surface-sweep";
  * Contains various functions for Nurbs surfaces.
  * These functions wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
+ *
+ * @deprecated Verbnurbs is not maintained upstream and this API is removed in the next major
+ * version. Use the OpenCascade (occt) NURBS operations instead. Existing scripts keep working
+ * until the removal.
  */
 
 export class VerbSurface {
@@ -94,7 +98,8 @@ export class VerbSurface {
      * @returns UV parameters
      */
     closestParam(inputs: Inputs.Verb.SurfaceParamDto): BaseTypes.UVDto {
-        return inputs.surface.closestParam(inputs.point);
+        const [u, v] = inputs.surface.closestParam(inputs.point) as [number, number];
+        return { u, v };
     }
 
     /**

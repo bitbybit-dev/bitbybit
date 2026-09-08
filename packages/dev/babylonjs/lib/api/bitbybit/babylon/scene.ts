@@ -217,7 +217,6 @@ export class BabylonScene {
 
         light.diffuse = BABYLON.Color3.FromHexString(inputs.diffuse);
         light.specular = BABYLON.Color3.FromHexString(inputs.specular);
-        // light.intensityMode = Light.INTENSITYMODE_LUMINOUSPOWER;
         light.intensity = inputs.intensity;
         light.shadowMaxZ = inputs.shadowMaxZ;
         return light;
@@ -336,7 +335,8 @@ export class BabylonScene {
                     (scene.metadata.guiManager as GUI.GUI3DManager).dispose();
                 }
             }
-            scene.transformNodes = [scene.getTransformNodeByName("root")!];
+            const root = scene.getTransformNodeByName("root");
+            scene.transformNodes = root ? [root] : [];
 
             if (scene.activeCamera && scene.activeCamera.name !== "Camera") {
                 scene.cameras.forEach(cam => cam.dispose());
@@ -386,19 +386,16 @@ export class BabylonScene {
         if (inputs.textureUrl) {
             let texture: BABYLON.CubeTexture | BABYLON.HDRCubeTexture;
             const textureUrl = inputs.textureUrl;
-            const textureSize = inputs.textureSize || 512; // Default size
+            const textureSize = inputs.textureSize || 512;
 
-            // Better URL parsing to handle query strings
             const urlPath = textureUrl.split("?")[0]!.toLowerCase();
 
             if (urlPath.endsWith(".hdr")) {
-                // Use HDRCubeTexture for .hdr files
                 texture = new BABYLON.HDRCubeTexture(textureUrl, this.context.scene, textureSize, false, true, false, true);
             } else if (urlPath.endsWith(".env")) {
                 texture = BABYLON.CubeTexture.CreateFromPrefilteredData(inputs.textureUrl,
                     this.context.scene, false, false);
             } else {
-                // Fallback to CubeTexture for other formats
                 texture = new BABYLON.CubeTexture(textureUrl, this.context.scene);
             }
 
@@ -616,7 +613,6 @@ export class BabylonScene {
         this.context.scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colour));
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
         if (canvas) {
-            // Reset all background properties to ensure no conflicts with gradients/images
             canvas.style.backgroundImage = "none";
             canvas.style.backgroundRepeat = "repeat";
             canvas.style.backgroundSize = "auto";
@@ -628,11 +624,7 @@ export class BabylonScene {
     }
 
     private getRadians(degrees: number): number {
-        let angle = BABYLON.Angle.FromDegrees(degrees).radians();
-        if (degrees < 0) {
-            angle = -angle;
-        }
-        return angle;
+        return BABYLON.Tools.ToRadians(degrees);
     }
 
     private createSkyboxMesh(texture: BABYLON.BaseTexture | undefined, size: number, blur: number, hideSkybox: boolean, environmentIntensity: number) {

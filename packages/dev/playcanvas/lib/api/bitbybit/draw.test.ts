@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-// Mock PlayCanvas with GPU instancing support
 vi.mock("playcanvas", async () => {
     const { createPlayCanvasMock } = await vi.importActual<typeof import("../__mocks__/playcanvas.mock")>("../__mocks__/playcanvas.mock");
     return await createPlayCanvasMock();
@@ -47,7 +46,6 @@ describe("Draw unit tests", () => {
         const drawHelper = new DrawHelper(context, solidText, vector, jscadWorkerManager, manifoldWorkerManager, occtWorkerManager);
         context.scene = new pc.Entity("root");
 
-        // Create a mock graphics device with the required methods and vram tracking
         const mockGraphicsDevice = {
             createVertexBufferImpl: vi.fn(),
             createIndexBufferImpl: vi.fn(),
@@ -69,7 +67,7 @@ describe("Draw unit tests", () => {
             },
             buffers: [],
             indexBuffers: [],
-            _textureRegistry: []  // Required by PlayCanvas Texture constructor
+            _textureRegistry: []
         };
 
         context.app = {
@@ -92,9 +90,8 @@ describe("Draw unit tests", () => {
             expect(res.name).toContain("pointMesh");
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
 
-            // Validate structure - with GPU instancing, children represent color groups
             expect(res).toBeInstanceOf(pc.Entity);
-            expect(res.children.length).toBe(1); // Single color group
+            expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
         });
 
@@ -102,7 +99,6 @@ describe("Draw unit tests", () => {
             const res = draw.drawAny({ entity: [-1, 2, -3] }) as DrawnEntity;
             expect(res.name).toContain("pointMesh");
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
-            // With GPU instancing, children represent color groups, not individual points
             expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
         });
@@ -118,7 +114,6 @@ describe("Draw unit tests", () => {
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
 
             expect(res.name).toContain("pointMesh");
-            // With GPU instancing, verify structure but not individual positions
             expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
         });
@@ -138,7 +133,6 @@ describe("Draw unit tests", () => {
 
             expect(res2.name).toContain("pointMesh");
             expect(res2.name).toEqual(res.name);
-            // With GPU instancing, verify the entity is reused but skip position checks
             expect(res2.children.length).toBe(1);
             expect(res2.children[0]).toBeDefined();
         });
@@ -158,7 +152,6 @@ describe("Draw unit tests", () => {
 
             expect(res2.name).toContain("pointMesh");
             expect(res2.name).toEqual(res.name);
-            // With GPU instancing, verify structure
             expect(res2.children.length).toBe(1);
             expect(res2.children[0]).toBeDefined();
             res2.children.forEach((child, index) => {
@@ -169,7 +162,6 @@ describe("Draw unit tests", () => {
         it("should draw a points via draw any async without options", async () => {
             const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]] }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.points);
-            // With GPU instancing, children represent color groups (all points have same default color = 1 group)
             expect(res.children.length).toBe(1);
             expect(res.name).toContain("pointsMesh");
             expect(res.children[0]).toBeDefined();
@@ -188,14 +180,10 @@ describe("Draw unit tests", () => {
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.points);
             expect(res2.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.points);
 
-            // With GPU instancing, all points with same color are in one group
             expect(res2.children.length).toBeGreaterThan(0);
             expect(res.name).toContain("pointsMesh");
 
-            // With GPU instancing and same point count, update should reuse entity
-            // Note: names might differ if implementation recreates the mesh
             expect(res2.name).toContain("pointsMesh");
-            // Verify structure is maintained in update
             expect(res2.children[0]).toBeDefined();
         });
 
@@ -213,9 +201,7 @@ describe("Draw unit tests", () => {
             expect(res2.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.points);
 
             expect(res.name).toContain("pointsMesh");
-            // New mesh created due to different point count
             expect(res.name).not.toEqual(res2.name);
-            // With GPU instancing, verify structure exists
             expect(res2.children.length).toBeGreaterThan(0);
             expect(res2.children[0]).toBeDefined();
         });
@@ -266,8 +252,6 @@ describe("Draw unit tests", () => {
             };
             const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options }) as DrawnEntity;
 
-            // With GPU instancing and color map strategy, points are grouped by color
-            // With 3 points and 2 colors, using firstColorForAll (default), all points get first color = 1 group
             expect(res.children.length).toBeGreaterThan(0);
             expect(res.children[0]).toBeDefined();
         });
@@ -410,7 +394,6 @@ describe("Draw unit tests", () => {
             expect(lineSegments1.name).toBeDefined();
         });
 
-        // TODO enable when fixed
         it("should update a polyline via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
@@ -560,7 +543,6 @@ describe("Draw unit tests", () => {
             const lineSegments2 = res2.children[0]!;
             expect(lineSegments1).toBeDefined();
             expect(lineSegments2).toBeDefined();
-            // Verb curves create line segments
             expect(lineSegments1.name).toBeDefined();
             expect(lineSegments2.name).toBeDefined();
         });
@@ -689,8 +671,6 @@ describe("Draw unit tests", () => {
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
-            // PlayCanvas may structure entities differently
-            // expect(res.children.length).toBe(4);
         });
 
         it("should draw multiple cubes mesh with default options", async () => {
@@ -844,8 +824,6 @@ describe("Draw unit tests", () => {
         });
 
         it("should return undefined for undefined entity via drawAny", () => {
-            // drawAny doesn't handle undefined entities gracefully - detectLine will throw
-            // Testing that result is undefined when detection functions don't match
             const res = draw.drawAny({ entity: { unknownType: true } as any }) as DrawnEntity;
             expect(res).toBeUndefined();
         });
@@ -886,7 +864,6 @@ describe("Draw unit tests", () => {
 
             const res2 = draw.drawAny({ entity: [4, 5, 6], options, group: res }) as DrawnEntity;
             expect(res.name).toEqual(res2.name);
-            // With GPU instancing, verify structure exists but skip position validation
             expect(res2.children.length).toBe(1);
             expect(res2.children[0]).toBeDefined();
         });
@@ -897,8 +874,6 @@ describe("Draw unit tests", () => {
                 updatable: true,
             };
             const res = draw.drawAny({ entity: [[1, 2, 3], [4, 5, 6]], options }) as DrawnEntity;
-            // Array of two 3D points could be detected as a line (segment) or points
-            // The actual type depends on detection order in drawAny
             expect(res.bitbybitMeta.type).toBeDefined();
 
             const res2 = draw.drawAny({ entity: [[7, 8, 9], [10, 11, 12]], options, group: res }) as DrawnEntity;
@@ -972,7 +947,6 @@ describe("Draw unit tests", () => {
             };
             const res = draw.drawAny({ entity: [1, 2, 3], options: originalOptions }) as DrawnEntity;
 
-            // Now update without providing options - should use stored options from userData
             const res2 = draw.drawAny({ entity: [4, 5, 6], group: res }) as DrawnEntity;
             expect(res.name).toEqual(res2.name);
         });
@@ -1024,29 +998,25 @@ describe("Draw unit tests", () => {
 
         it("should handle invalid point coordinates with NaN", () => {
             const invalidCoords = [NaN, 2, 3];
-            const res = draw.drawAny({ entity: invalidCoords } as any) as DrawnEntity;
+            const res = draw.drawAny({ entity: invalidCoords }) as DrawnEntity;
 
-            // NaN coordinates may result in undefined or a valid entity
-            // depending on implementation - just verify no crash
             expect(res).toBeUndefined();
         });
 
         it("should handle Infinity in coordinates", () => {
             const invalidCoords = [Infinity, 2, 3];
-            const res = draw.drawAny({ entity: invalidCoords } as any) as DrawnEntity;
+            const res = draw.drawAny({ entity: invalidCoords }) as DrawnEntity;
 
             expect(res).toBeDefined();
             expect(res.children.length).toBe(1);
-            // With GPU instancing, positions are in instance buffer, not entity position
             expect(res.children[0]).toBeDefined();
         });
 
         it("should handle very large coordinate values", () => {
             const largeCoords = [1e10, 2e10, 3e10];
-            const res = draw.drawAny({ entity: largeCoords } as any) as DrawnEntity;
+            const res = draw.drawAny({ entity: largeCoords }) as DrawnEntity;
 
             expect(res).toBeDefined();
-            // With GPU instancing, positions are in instance buffer
             expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
         });
@@ -1152,7 +1122,6 @@ describe("Draw unit tests", () => {
             });
 
             const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
-            // Use the correct type string for manifold detection
             const res = await draw.drawAnyAsync({ entity: { type: "manifold-shape", id: 123 }, options } as any) as DrawnEntity;
             expect(res).toBeDefined();
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occt);
@@ -1171,7 +1140,6 @@ describe("Draw unit tests", () => {
             ]);
 
             const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
-            // Use correct type string "manifold-shape" for detection
             const res = await draw.drawAnyAsync({
                 entity: [
                     { type: "manifold-shape", id: 123 } as any,
@@ -1265,7 +1233,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: "#00ff00",
             };
-            const res = await draw.drawAnyAsync({ entity: segments, options } as any) as DrawnEntity;
+            const res = await draw.drawAnyAsync({ entity: segments, options }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.lines);
         });
 
@@ -1287,7 +1255,6 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle mixed line formats in array", async () => {
-            // If first element has 'start' property, all are treated as Line3
             const lines: Inputs.Base.Line3[] = [
                 { start: [0, 0, 0], end: [1, 0, 0] },
                 { start: [1, 0, 0], end: [1, 1, 0] },
@@ -1408,9 +1375,6 @@ describe("Draw unit tests", () => {
     });
 
     describe("Draw tags", () => {
-        // Tags require DOM (document) for full implementation
-        // We test that the correct tag methods are called via spies
-
         it("should call tag.drawTag for a single tag entity", () => {
             const mockGroup = new pc.Entity();
             (mockGroup as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options: {} };
@@ -1469,7 +1433,6 @@ describe("Draw unit tests", () => {
                 size: 2,
                 adaptDepth: false,
             };
-            // Simulate update by passing existing group
             void draw.drawAny({ entity: tagEntity, group: mockGroup });
             expect(drawTagSpy).toHaveBeenCalled();
             drawTagSpy.mockRestore();
@@ -1503,7 +1466,6 @@ describe("Draw unit tests", () => {
                 { text: "Tag C", position: [2, 2, 2], colour: "#0000ff", size: 2, adaptDepth: false },
                 { text: "Tag D", position: [3, 3, 3], colour: "#ffff00", size: 2, adaptDepth: false },
             ];
-            // Simulate update by passing existing group
             void draw.drawAny({ entity: tagsEntity, group: mockGroup });
             expect(drawTagsSpy).toHaveBeenCalled();
             drawTagsSpy.mockRestore();
@@ -1628,10 +1590,8 @@ describe("Draw unit tests", () => {
         };
 
         it("should correctly identify pc.Entity instances", () => {
-            // Using drawAny to test internal type guard behavior
             const result = draw.drawAny({ entity: [1, 2, 3], options }) as DrawnEntity;
 
-            // Result should be a valid Entity
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.name).toBeDefined();
         });
@@ -1639,7 +1599,6 @@ describe("Draw unit tests", () => {
         it("should correctly identify BitByBit entities with metadata", () => {
             const entity = draw.drawAny({ entity: [1, 2, 3], options }) as DrawnEntity;
 
-            // Should have bitbybitMeta attached
             expect(entity.bitbybitMeta).toBeDefined();
             expect(entity.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
         });
@@ -1652,7 +1611,6 @@ describe("Draw unit tests", () => {
                 colour: "#ff0000"
             } as any;
 
-            // Tag should be recognized and handled
             expect(tagDto.text).toBe("Test Tag");
             expect(tagDto.position).toEqual([1, 2, 3]);
         });
@@ -1665,7 +1623,6 @@ describe("Draw unit tests", () => {
             }) as DrawnEntity;
 
             expect(singlePoint.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.point);
-            // Multiple points could be interpreted as polylines depending on structure
             expect(multiplePoints.bitbybitMeta).toBeDefined();
             expect(multiplePoints.bitbybitMeta.type).toBeDefined();
         });
@@ -1700,7 +1657,6 @@ describe("Draw unit tests", () => {
             const initial = draw.drawAny({ entity: [1, 2, 3], options }) as DrawnEntity;
             const updated = draw.drawAny({ entity: [4, 5, 6], options, group: initial }) as DrawnEntity;
 
-            // Should reuse the same entity
             expect(initial.name).toEqual(updated.name);
             expect(updated.bitbybitMeta).toBeDefined();
         });
@@ -1719,7 +1675,7 @@ describe("Draw unit tests", () => {
             expect(result).toBeInstanceOf(pc.StandardMaterial);
             expect(result.name).toBe(inputs.name);
             expect(result.metalness).toBe(0.5);
-            expect(result.gloss).toBe(0.5); // PlayCanvas uses gloss (1 - roughness)
+            expect(result.gloss).toBe(0.5);
         });
 
         it("should create PBR material with custom properties", () => {
@@ -1742,20 +1698,18 @@ describe("Draw unit tests", () => {
             expect(result).toBeInstanceOf(pc.StandardMaterial);
             expect(result.name).toBe("CustomMaterial");
             expect(result.metalness).toBe(0.8);
-            expect(result.gloss).toBe(0.7); // 1 - 0.3
+            expect(result.gloss).toBe(0.7);
             expect(result.opacity).toBe(0.7);
             expect(result.emissiveIntensity).toBe(2);
             expect(result.cull).toBe(pc.CULLFACE_NONE);
         });
 
         it("should apply alpha modes correctly", () => {
-            // Arrange & Act & Assert - opaque
             const opaqueInputs = new Inputs.Draw.GenericPBRMaterialDto();
             opaqueInputs.alphaMode = Inputs.Draw.alphaModeEnum.opaque;
             const opaqueMat = draw.createPBRMaterial(opaqueInputs);
             expect(opaqueMat.blendType).toBe(pc.BLEND_NONE);
 
-            // Arrange & Act & Assert - mask
             const maskInputs = new Inputs.Draw.GenericPBRMaterialDto();
             maskInputs.alphaMode = Inputs.Draw.alphaModeEnum.mask;
             maskInputs.alphaCutoff = 0.5;
@@ -1763,7 +1717,6 @@ describe("Draw unit tests", () => {
             expect(maskMat.blendType).toBe(pc.BLEND_NONE);
             expect(maskMat.alphaTest).toBe(0.5);
 
-            // Arrange & Act & Assert - blend
             const blendInputs = new Inputs.Draw.GenericPBRMaterialDto();
             blendInputs.alphaMode = Inputs.Draw.alphaModeEnum.blend;
             const blendMat = draw.createPBRMaterial(blendInputs);
@@ -1807,18 +1760,15 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle back face culling modes", () => {
-            // Arrange & Act - default (no back face culling by default)
             const defaultInputs = new Inputs.Draw.GenericPBRMaterialDto();
             const defaultMat = draw.createPBRMaterial(defaultInputs);
             expect(defaultMat.cull).toBe(pc.CULLFACE_BACK);
 
-            // Arrange & Act - double sided
             const doubleSidedInputs = new Inputs.Draw.GenericPBRMaterialDto();
             doubleSidedInputs.doubleSided = true;
             const doubleSidedMat = draw.createPBRMaterial(doubleSidedInputs);
             expect(doubleSidedMat.cull).toBe(pc.CULLFACE_NONE);
 
-            // Arrange & Act - with back face culling enabled
             const backFaceCullingInputs = new Inputs.Draw.GenericPBRMaterialDto();
             backFaceCullingInputs.doubleSided = false;
             const backFaceCullingMat = draw.createPBRMaterial(backFaceCullingInputs);
@@ -1827,7 +1777,6 @@ describe("Draw unit tests", () => {
     });
 
     describe("createTexture", () => {
-        // Store original Image constructor
         let originalImage: typeof Image;
         let mockImageInstances: any[];
 
@@ -1835,7 +1784,6 @@ describe("Draw unit tests", () => {
             mockImageInstances = [];
             originalImage = global.Image;
 
-            // Mock Image constructor to capture onload callbacks
             (global as any).Image = class MockImage {
                 crossOrigin = "";
                 src = "";
@@ -1865,7 +1813,7 @@ describe("Draw unit tests", () => {
             // Assert
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Texture);
-            expect(result.name).toBe("Texture"); // default name
+            expect(result.name).toBe("Texture");
             expect(result.addressU).toBe(pc.ADDRESS_REPEAT);
             expect(result.addressV).toBe(pc.ADDRESS_REPEAT);
         });
@@ -1919,7 +1867,6 @@ describe("Draw unit tests", () => {
             // Act
             const texture = draw.createTexture(inputs);
 
-            // Simulate image load
             expect(mockImageInstances.length).toBe(1);
             mockImageInstances[0].onload();
 
@@ -1937,7 +1884,6 @@ describe("Draw unit tests", () => {
             // Act
             const texture = draw.createTexture(inputs);
 
-            // Simulate image load
             expect(mockImageInstances.length).toBe(1);
             mockImageInstances[0].onload();
 
@@ -1955,7 +1901,6 @@ describe("Draw unit tests", () => {
             // Act
             const texture = draw.createTexture(inputs);
 
-            // Simulate image load
             expect(mockImageInstances.length).toBe(1);
             mockImageInstances[0].onload();
 
@@ -1973,7 +1918,6 @@ describe("Draw unit tests", () => {
             const texture = draw.createTexture(inputs);
             const setSourceSpy = vi.spyOn(texture, "setSource");
 
-            // Simulate image load
             expect(mockImageInstances.length).toBe(1);
             const mockImage = mockImageInstances[0];
             mockImage.onload();
@@ -1990,10 +1934,8 @@ describe("Draw unit tests", () => {
             // Act
             const texture = draw.createTexture(inputs);
 
-            // Assert - texture should be returned even before image loads
             expect(texture).toBeDefined();
             expect(texture).toBeInstanceOf(pc.Texture);
-            // Image load hasn't happened yet
             expect(mockImageInstances[0].onload).toBeDefined();
         });
 
@@ -2013,7 +1955,6 @@ describe("Draw unit tests", () => {
             const texture1 = draw.createTexture(inputs1);
             const texture2 = draw.createTexture(inputs2);
 
-            // Simulate both images loading
             mockImageInstances[0].onload();
             mockImageInstances[1].onload();
 
@@ -2034,7 +1975,6 @@ describe("Draw unit tests", () => {
 
             // Assert
             expect(texture).toBeDefined();
-            // The texture should have been created using the mock graphics device
             expect(texture.device).toBeDefined();
         });
 
@@ -2042,15 +1982,12 @@ describe("Draw unit tests", () => {
             // Arrange
             const inputs = new Inputs.Draw.GenericTextureDto();
             inputs.url = "https://example.com/texture.png";
-            // samplingMode defaults to 'nearest'
 
             // Act
             const texture = draw.createTexture(inputs);
 
-            // Simulate image load
             mockImageInstances[0].onload();
 
-            // Assert - default is 'nearest'
             expect(texture.minFilter).toBe(pc.FILTER_NEAREST);
             expect(texture.magFilter).toBe(pc.FILTER_NEAREST);
         });

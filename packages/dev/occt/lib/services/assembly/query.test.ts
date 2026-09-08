@@ -43,7 +43,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const parts = query.getDocumentParts({ document: document! });
+            const parts = query.getDocumentParts({ document: document });
 
             // Assert
             expect(parts).toEqual([]);
@@ -53,7 +53,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             // Arrange
             const box = solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
             shapesToClean.push(box);
-            const expectedVolume = 10 * 10 * 10; // 1000
+            const expectedVolume = 10 * 10 * 10;
 
             const part = manager.createPart({ id: "box", shape: box, name: "SinglePart" });
             const inst = manager.createInstanceNode({ id: "i", partId: "box", name: "Instance" });
@@ -61,9 +61,8 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const parts = query.getDocumentParts({ document: document! });
+            const parts = query.getDocumentParts({ document: document });
 
-            // Assert - at least 1 part with correct properties
             expect(parts.length).toBeGreaterThanOrEqual(1);
             const singlePart = parts.find(p => p.name === "SinglePart");
             expect(singlePart).toBeDefined();
@@ -71,8 +70,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             expect(singlePart!.instanceCount).toBe(1);
             expect(singlePart!.type).toBe("part");
             
-            // Verify geometry
-            const shape = query.getShapeFromLabel({ document: document!, label: singlePart!.label });
+            const shape = query.getShapeFromLabel({ document: document, label: singlePart!.label });
             expect(solid.getSolidVolume({ shape })).toBeCloseTo(expectedVolume, 0);
             shape.delete();
         });
@@ -84,9 +82,9 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const cylinder = solid.createCylinder({ radius: 3, height: 10, direction: [0, 1, 0], center: [0, 0, 0] });
             shapesToClean.push(box, sphere, cylinder);
 
-            const boxVolume = 10 * 10 * 10; // 1000
-            const sphereVolume = (4 / 3) * Math.PI * Math.pow(5, 3); // ~523.6
-            const cylinderVolume = Math.PI * 3 * 3 * 10; // ~282.7
+            const boxVolume = 10 * 10 * 10;
+            const sphereVolume = (4 / 3) * Math.PI * Math.pow(5, 3);
+            const cylinderVolume = Math.PI * 3 * 3 * 10;
 
             const parts = [
                 manager.createPart({ id: "box", shape: box, name: "Box" }),
@@ -102,9 +100,8 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
 
-            // Assert - at least 3 parts with specific names
             expect(docParts.length).toBeGreaterThanOrEqual(3);
             
             const boxPart = docParts.find(p => p.name === "Box");
@@ -115,15 +112,13 @@ describe("OCCTAssemblyQuery unit tests", () => {
             expect(spherePart).toBeDefined();
             expect(cylinderPart).toBeDefined();
             
-            // Verify each part has exactly 1 instance
             expect(boxPart!.instanceCount).toBe(1);
             expect(spherePart!.instanceCount).toBe(1);
             expect(cylinderPart!.instanceCount).toBe(1);
             
-            // Verify volumes
-            const boxShape = query.getShapeFromLabel({ document: document!, label: boxPart!.label });
-            const sphereShape = query.getShapeFromLabel({ document: document!, label: spherePart!.label });
-            const cylinderShape = query.getShapeFromLabel({ document: document!, label: cylinderPart!.label });
+            const boxShape = query.getShapeFromLabel({ document: document, label: boxPart!.label });
+            const sphereShape = query.getShapeFromLabel({ document: document, label: spherePart!.label });
+            const cylinderShape = query.getShapeFromLabel({ document: document, label: cylinderPart!.label });
             
             expect(solid.getSolidVolume({ shape: boxShape })).toBeCloseTo(boxVolume, 0);
             expect(solid.getSolidVolume({ shape: sphereShape })).toBeCloseTo(sphereVolume, 0);
@@ -145,7 +140,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const labelTestPart = docParts.find(p => p.name === "LabelTest");
 
             // Assert
@@ -165,7 +160,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "TypeTest");
 
             // Assert
@@ -189,7 +184,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "CountTest");
 
             // Assert
@@ -213,7 +208,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const coloredPart = docParts.find(p => p.name === "ColoredPart");
 
             // Assert
@@ -249,18 +244,17 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "ShapeTest");
             expect(partInfo).toBeDefined();
 
             // Act
-            const shape = query.getShapeFromLabel({ document: document!, label: partInfo!.label });
+            const shape = query.getShapeFromLabel({ document: document, label: partInfo!.label });
 
             // Assert
             expect(shape).toBeDefined();
             expect(shape.IsNull()).toBe(false);
 
-            // Verify it's the correct shape by checking volume
             const volume = solid.getSolidVolume({ shape });
             const originalVolume = solid.getSolidVolume({ shape: box });
             expect(volume).toBeCloseTo(originalVolume, 1);
@@ -278,11 +272,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "SphereGeom");
 
             // Act
-            const shape = query.getShapeFromLabel({ document: document!, label: partInfo!.label });
+            const shape = query.getShapeFromLabel({ document: document, label: partInfo!.label });
 
             // Assert
             const volume = solid.getSolidVolume({ shape });
@@ -321,11 +315,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "ColorQuery");
 
             // Act
-            const colorInfo = query.getLabelColor({ document: document!, label: partInfo!.label });
+            const colorInfo = query.getLabelColor({ document: document, label: partInfo!.label });
 
             // Assert
             expect(colorInfo.hasColor).toBe(true);
@@ -344,11 +338,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "NoColor");
 
             // Act
-            const colorInfo = query.getLabelColor({ document: document!, label: partInfo!.label });
+            const colorInfo = query.getLabelColor({ document: document, label: partInfo!.label });
 
             // Assert
             expect(colorInfo.hasColor).toBe(false);
@@ -364,18 +358,17 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "SetColorTest");
 
-            // Set color
             manager.setLabelColor({
-                document: document!,
+                document: document,
                 label: partInfo!.label,
                 r: 1, g: 0, b: 1, a: 1
             });
 
             // Act
-            const colorInfo = query.getLabelColor({ document: document!, label: partInfo!.label });
+            const colorInfo = query.getLabelColor({ document: document, label: partInfo!.label });
 
             // Assert
             expect(colorInfo.hasColor).toBe(true);
@@ -414,12 +407,12 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const instNode = hierarchy.nodes.find(n => n.name === "NoTransform");
             expect(instNode).toBeDefined();
 
             // Act
-            const transform = query.getLabelTransform({ document: document!, label: instNode!.label });
+            const transform = query.getLabelTransform({ document: document, label: instNode!.label });
 
             // Assert
             expect(transform.translation).toEqual([0, 0, 0]);
@@ -441,12 +434,12 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const instNode = hierarchy.nodes.find(n => n.name === "Translated");
             expect(instNode).toBeDefined();
 
             // Act
-            const transform = query.getLabelTransform({ document: document!, label: instNode!.label });
+            const transform = query.getLabelTransform({ document: document, label: instNode!.label });
 
             // Assert
             expect(transform.translation[0]).toBeCloseTo(10, 1);
@@ -469,11 +462,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const instNode = hierarchy.nodes.find(n => n.name === "MatrixTest");
 
             // Act
-            const transform = query.getLabelTransform({ document: document!, label: instNode!.label });
+            const transform = query.getLabelTransform({ document: document, label: instNode!.label });
 
             // Assert
             expect(transform.matrix).toBeDefined();
@@ -495,11 +488,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const instNode = hierarchy.nodes.find(n => n.name === "QuatTest");
 
             // Act
-            const transform = query.getLabelTransform({ document: document!, label: instNode!.label });
+            const transform = query.getLabelTransform({ document: document, label: instNode!.label });
 
             // Assert
             expect(transform.quaternion).toBeDefined();
@@ -530,11 +523,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "InfoTest");
 
             // Act
-            const labelInfo = query.getLabelInfo({ document: document!, label: partInfo!.label });
+            const labelInfo = query.getLabelInfo({ document: document, label: partInfo!.label });
 
             // Assert
             expect(labelInfo.label).toBe(partInfo!.label);
@@ -552,13 +545,12 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "ShapeTypeTest");
 
             // Act
-            const labelInfo = query.getLabelInfo({ document: document!, label: partInfo!.label });
+            const labelInfo = query.getLabelInfo({ document: document, label: partInfo!.label });
 
-            // Assert - shapeType may or may not be present depending on the OCCT version
             expect(labelInfo).toBeDefined();
             expect(labelInfo.label).toBe(partInfo!.label);
         });
@@ -574,11 +566,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [rootAsm, inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const asmNode = hierarchy.nodes.find(n => n.name === "ParentAsm");
 
             // Act
-            const labelInfo = query.getLabelInfo({ document: document!, label: asmNode!.label });
+            const labelInfo = query.getLabelInfo({ document: document, label: asmNode!.label });
 
             // Assert
             if (labelInfo.isAssembly && labelInfo.children) {
@@ -611,7 +603,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
 
             // Assert
             expect(hierarchy.version).toBe("2.0");
@@ -632,13 +624,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
 
-            // Assert - at least 3 instances
             expect(hierarchy.totalNodes).toBeGreaterThanOrEqual(3);
             expect(hierarchy.nodes.length).toBeGreaterThanOrEqual(3);
             
-            // Verify each named instance exists
             expect(hierarchy.nodes.find(n => n.name === "Inst1")).toBeDefined();
             expect(hierarchy.nodes.find(n => n.name === "Inst2")).toBeDefined();
             expect(hierarchy.nodes.find(n => n.name === "Inst3")).toBeDefined();
@@ -655,7 +645,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const testNode = hierarchy.nodes.find(n => n.name === "TestNode");
 
             // Assert
@@ -680,17 +670,14 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             
-            // Assert - at least 1 hierarchy node
             expect(hierarchy.nodes.length).toBeGreaterThanOrEqual(1);
             
-            // OCCT may not expose all assembly nodes, but should have depth hierarchy
             const depths = [...new Set(hierarchy.nodes.map(n => n.depth))];
             expect(depths.length).toBeGreaterThanOrEqual(1);
             
-            // Verify the part can be retrieved regardless of hierarchy exposure
-            const docParts = query.getDocumentParts({ document: document! });
+            const docParts = query.getDocumentParts({ document: document });
             const boxPart = docParts.find(p => p.name === "Box");
             expect(boxPart).toBeDefined();
         });
@@ -707,7 +694,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const childNode = hierarchy.nodes.find(n => n.name === "ChildInst");
 
             // Assert
@@ -729,7 +716,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
             const assemblyHierNode = hierarchy.nodes.find(n => n.name === "AssemblyNode");
             const instanceHierNode = hierarchy.nodes.find(n => n.name === "InstanceNode");
 
@@ -749,7 +736,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
 
             // Assert
             const nodesWithGeom = hierarchy.nodes.filter(n => n.hasGeometry);
@@ -767,12 +754,11 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
 
             // Assert
             const nodesWithShapeType = hierarchy.nodes.filter(n => n.shapeType !== undefined);
             expect(nodesWithShapeType.length).toBeGreaterThan(0);
-            // Box is a solid
             const solidNode = nodesWithShapeType.find(n => n.shapeType === "solid");
             expect(solidNode).toBeDefined();
         });
@@ -800,13 +786,10 @@ describe("OCCTAssemblyQuery unit tests", () => {
             document = manager.buildAssemblyDocument({ structure });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
 
-            // Assert - verify hierarchical structure was created
             expect(hierarchy.nodes.length).toBeGreaterThan(0);
-            // Should have some nodes representing the hierarchy
             const nodeNames = hierarchy.nodes.map(n => n.name);
-            // At least some of our defined nodes should be present
             const hasRoot = nodeNames.includes("Root") || hierarchy.nodes.some(n => n.isAssembly);
             expect(hasRoot).toBe(true);
         });
@@ -826,13 +809,12 @@ describe("OCCTAssemblyQuery unit tests", () => {
         });
 
         it("should preserve parts after STEP export and import", () => {
-            // Arrange - Create document with multiple parts
             const box = solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
             const sphere = solid.createSphere({ radius: 5, center: [20, 0, 0] });
             shapesToClean.push(box, sphere);
 
-            const boxVolume = 10 * 10 * 10; // 1000
-            const sphereVolume = (4 / 3) * Math.PI * Math.pow(5, 3); // ~523.6
+            const boxVolume = 10 * 10 * 10;
+            const sphereVolume = (4 / 3) * Math.PI * Math.pow(5, 3);
 
             const parts = [
                 manager.createPart({ id: "box", shape: box, name: "ExportBox", colorRgba: { r: 1, g: 0, b: 0, a: 1 } }),
@@ -845,20 +827,16 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts, nodes, clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            // Export to STEP
-            const stepData = manager.exportDocumentToStep({ document: document!, fileName: "roundtrip.step", author: "Test Author", organization: "Test Org", compress: false, tryDownload: false });
+            const stepData = manager.exportDocumentToStep({ document: document, fileName: "roundtrip.step", author: "Test Author", organization: "Test Org", compress: false, tryDownload: false });
             document.delete();
 
-            // Import from STEP
             document = manager.loadStepToDoc({ stepData });
 
             // Act
-            const loadedParts = query.getDocumentParts({ document: document! });
+            const loadedParts = query.getDocumentParts({ document: document });
 
-            // Assert - at least 2 parts should be preserved
             expect(loadedParts.length).toBeGreaterThanOrEqual(2);
             
-            // Verify geometry is preserved by checking volumes
             const volumes = loadedParts.map(p => {
                 const shape = query.getShapeFromLabel({ document: document!, label: p.label });
                 const vol = solid.getSolidVolume({ shape });
@@ -866,7 +844,6 @@ describe("OCCTAssemblyQuery unit tests", () => {
                 return vol;
             });
             
-            // One should be close to box volume, one close to sphere volume
             const hasBoxVolume = volumes.some(v => Math.abs(v - boxVolume) < 1);
             const hasSphereVolume = volumes.some(v => Math.abs(v - sphereVolume) < 1);
             expect(hasBoxVolume).toBe(true);
@@ -877,7 +854,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             // Arrange
             const box = solid.createBox({ width: 5, height: 5, length: 5, center: [0, 0, 0] });
             shapesToClean.push(box);
-            const boxVolume = 5 * 5 * 5; // 125
+            const boxVolume = 5 * 5 * 5;
 
             const part = manager.createPart({ id: "box", shape: box, name: "Box" });
             const rootAsm = manager.createAssemblyNode({ id: "root", name: "RootAssembly" });
@@ -886,30 +863,24 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const structure = manager.combineStructure({ parts: [part], nodes: [rootAsm, subAsm, inst], clearDocument: false });
             document = manager.buildAssemblyDocument({ structure });
 
-            // Export to STEP
-            const stepData = manager.exportDocumentToStep({ document: document!, fileName: "hierarchy.step", author: "Test Author", organization: "Test Org", compress: false, tryDownload: false });
+            const stepData = manager.exportDocumentToStep({ document: document, fileName: "hierarchy.step", author: "Test Author", organization: "Test Org", compress: false, tryDownload: false });
             document.delete();
 
-            // Import from STEP
             document = manager.loadStepToDoc({ stepData });
 
             // Act
-            const hierarchy = query.getAssemblyHierarchy({ document: document! });
+            const hierarchy = query.getAssemblyHierarchy({ document: document });
 
-            // Assert - hierarchy should have at least 3 nodes (root, sub, instance)
             expect(hierarchy.nodes.length).toBe(3);
             
-            // Verify some hierarchy structure exists
             expect(hierarchy.nodes.length).toBeGreaterThanOrEqual(1);
             
-            // Verify geometry is preserved - at least one part with the correct volume
-            const parts = query.getDocumentParts({ document: document! });
+            const parts = query.getDocumentParts({ document: document });
             expect(parts.length).toBeGreaterThanOrEqual(1);
             
-            // Find the box by volume
             let foundBoxVolume = false;
             for (const part of parts) {
-                const shape = query.getShapeFromLabel({ document: document!, label: part.label });
+                const shape = query.getShapeFromLabel({ document: document, label: part.label });
                 const vol = solid.getSolidVolume({ shape });
                 shape.delete();
                 if (Math.abs(vol - boxVolume) < 1) {

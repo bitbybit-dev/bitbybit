@@ -1,6 +1,5 @@
 
 import { ContextBase } from "../../context";
-// import { DrawHelper } from "../../draw-helper";
 import { OCCTWIO } from "./io";
 import { OCCTWorkerManager, OCCT } from "@bitbybit-dev/occt-worker";
 
@@ -13,7 +12,6 @@ export class OCCTW extends OCCT {
     constructor(
         readonly context: ContextBase,
         override readonly occWorkerManager: OCCTWorkerManager,
-        // readonly drawHelper: DrawHelper,
     ) {
         super(occWorkerManager);
         this.io = new OCCTWIO(occWorkerManager, context);

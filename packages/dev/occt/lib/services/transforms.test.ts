@@ -803,10 +803,8 @@ describe("OCCT transforms unit tests", () => {
         });
 
         it("should transpose a column-major translation to the native row-major 3x4 form", () => {
-            // column-major translation matrix: translation at indices 12,13,14
             const cm = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 4, 5, 6, 1] as Inputs.Base.TransformMatrix;
             const rm12 = occHelper.transformsService.foldToRowMajor12(cm);
-            // row-major 3x4: translation is the 4th value of each row (indices 3,7,11)
             expect(rm12).toEqual([1, 0, 0, 4, 0, 1, 0, 5, 0, 0, 1, 6]);
         });
 
@@ -821,4 +819,129 @@ describe("OCCT transforms unit tests", () => {
 
     });
 
+    describe("the matrix builders a script composes transforms from", () => {
+        const applyTo = (matrix: Inputs.Base.TransformMatrix, point: Inputs.Base.Point3): Inputs.Base.Point3 => {
+            const box = solid.createBox({ width: 0.001, height: 0.001, length: 0.001, center: point });
+            const moved = transforms.transformByMatrix({ shape: box, transformation: matrix });
+            const centre = solid.getSolidCenterOfMass({ shape: moved });
+            box.delete();
+            moved.delete();
+            return centre;
+        };
+
+        it("should build a matrix that scales about a centre of its own", () => {
+            // Act
+            const matrix = transforms.scaleUniformToMatrix({ factor: 2, center: [1, 0, 0] });
+
+            const centre = applyTo(matrix, [1, 0, 0]);
+            const moved = applyTo(matrix, [3, 0, 0]);
+            expect(centre[0]).toBeCloseTo(1, 5);
+            expect(moved[0]).toBeCloseTo(5, 5);
+        });
+
+        it("should scale about the origin when no centre was given", () => {
+            // Arrange
+            const inputs = { factor: 2 } as Inputs.OCCT.ScaleUniformToMatrixDto;
+
+            // Act
+            const matrix = transforms.scaleUniformToMatrix(inputs);
+
+            // Assert
+            expect(applyTo(matrix, [3, 0, 0])[0]).toBeCloseTo(6, 5);
+        });
+
+        it("should build a matrix that mirrors through a point", () => {
+            // Act
+            const matrix = transforms.mirrorPointToMatrix({ point: [0, 0, 0] });
+
+            // Assert
+            const moved = applyTo(matrix, [2, 3, 4]);
+            expect(moved[0]).toBeCloseTo(-2, 5);
+            expect(moved[1]).toBeCloseTo(-3, 5);
+            expect(moved[2]).toBeCloseTo(-4, 5);
+        });
+
+        it("should build a matrix that mirrors about an axis", () => {
+            // Act
+            const matrix = transforms.mirrorAxisToMatrix({ origin: [0, 0, 0], direction: [1, 0, 0] });
+
+            const onAxis = applyTo(matrix, [5, 0, 0]);
+            const offAxis = applyTo(matrix, [0, 2, 3]);
+            expect(onAxis[0]).toBeCloseTo(5, 5);
+            expect(offAxis[1]).toBeCloseTo(-2, 5);
+            expect(offAxis[2]).toBeCloseTo(-3, 5);
+        });
+
+        it("should build a matrix that mirrors about a plane", () => {
+            // Act
+            const matrix = transforms.mirrorPlaneToMatrix({ origin: [0, 0, 0], normal: [0, 1, 0] });
+
+            const moved = applyTo(matrix, [2, 3, 4]);
+            expect(moved[0]).toBeCloseTo(2, 5);
+            expect(moved[1]).toBeCloseTo(-3, 5);
+            expect(moved[2]).toBeCloseTo(4, 5);
+        });
+
+        it("should fold a single matrix handed to it on its own", () => {
+            // Arrange
+            const translation = transforms.translationToMatrix({ translation: [1, 2, 3] });
+
+            // Act
+            const matrix = transforms.multiplyTransforms({ transformation: translation });
+
+            // Assert
+            expect(matrix).toEqual(translation);
+        });
+
+        it("should fold an ordered list into the one matrix that does all of it", () => {
+            // Arrange
+            const move = transforms.translationToMatrix({ translation: [1, 0, 0] });
+            const scale = transforms.scaleUniformToMatrix({ factor: 2, center: [0, 0, 0] });
+
+            // Act
+            const matrix = transforms.multiplyTransforms({ transformation: [move, scale] });
+
+            expect(applyTo(matrix, [0, 0, 0])[0]).toBeCloseTo(2, 5);
+        });
+
+        it("should apply one matrix to every shape it was given", () => {
+            // Arrange
+            const first = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
+            const second = solid.createBox({ width: 1, height: 1, length: 1, center: [5, 0, 0] });
+            const matrix = transforms.translationToMatrix({ translation: [0, 10, 0] });
+
+            // Act
+            const moved = transforms.transformShapesByMatrix({ shapes: [first, second], transformation: matrix });
+
+            // Assert
+            expect(moved).toHaveLength(2);
+            expect(solid.getSolidCenterOfMass({ shape: moved[0]! })[1]).toBeCloseTo(10, 5);
+            expect(solid.getSolidCenterOfMass({ shape: moved[1]! })[1]).toBeCloseTo(10, 5);
+
+            first.delete();
+            second.delete();
+            moved.forEach(m => m.delete());
+        });
+    });
+
+    describe("reading a rotation back out of a shape's placement", () => {
+        it("should read the identity off a turned shape, because a turn is baked into its geometry", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, height: 4, length: 6, center: [0, 0, 0] });
+
+            // Act
+            const turned = transforms.rotate({ shape: box, axis: [1, 0, 0], angle: 90 });
+            const info = transforms.getShapeTransform({ shape: turned });
+
+            // Assert
+            expect(info.scale).toBeCloseTo(1);
+            expect(info.quaternion[3]).toBeCloseTo(1);
+            const before = occHelper.operationsService.boundingBoxOfShape({ shape: box }).size;
+            const after = occHelper.operationsService.boundingBoxOfShape({ shape: turned }).size;
+            expect(after[1]).toBeCloseTo(before[2], 5);
+
+            box.delete();
+            turned.delete();
+        });
+    });
 });

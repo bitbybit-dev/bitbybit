@@ -173,7 +173,7 @@ export class BabylonTransforms {
      * @drawable false
     */
     translationsXYZ(inputs: Inputs.BabylonTransforms.TranslationsXYZDto): Base.TransformMatrixes[] {
-        return inputs.translations.map(translation => [[...BABYLON.Matrix.Translation(translation[0], translation[1], translation[2]).asArray()]]) as Base.TransformMatrixes[];
+        return inputs.translations.map(translation => [[...BABYLON.Matrix.Translation(translation[0], translation[1], translation[2]).asArray()]]);
     }
 
 }

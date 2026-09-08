@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { BitbybitClient } from "./client.js";
 
-// Mock global fetch for health() and request()
 const fetchMock = vi.fn();
 
 describe("BitbybitClient", () => {
@@ -65,12 +64,12 @@ describe("BitbybitClient", () => {
 
             // Assert
             const [getArgs, postArgs] = fetchMock.mock.calls;
-            expect(getArgs[1].headers["x-api-key"]).toBe("bbk_mykey");
-            expect(getArgs[1].headers["Content-Type"]).toBeUndefined();
-            expect(getArgs[1].body).toBeUndefined();
-            expect(postArgs[1].headers["x-api-key"]).toBe("bbk_mykey");
-            expect(postArgs[1].headers["Content-Type"]).toBe("application/json");
-            expect(postArgs[1].body).toBe(JSON.stringify({ kind: "probe" }));
+            expect(getArgs![1].headers["x-api-key"]).toBe("bbk_mykey");
+            expect(getArgs![1].headers["Content-Type"]).toBeUndefined();
+            expect(getArgs![1].body).toBeUndefined();
+            expect(postArgs![1].headers["x-api-key"]).toBe("bbk_mykey");
+            expect(postArgs![1].headers["Content-Type"]).toBe("application/json");
+            expect(postArgs![1].body).toBe(JSON.stringify({ kind: "probe" }));
         });
 
         it("sends JSON body for POST requests", async () => {
@@ -83,7 +82,7 @@ describe("BitbybitClient", () => {
             await client.request("POST", "/api/v1/cad/execute", body);
 
             // Assert
-            expect(fetchMock.mock.calls[0][1].body).toBe(JSON.stringify(body));
+            expect(fetchMock.mock.calls[0]![1].body).toBe(JSON.stringify(body));
         });
 
         it("does not send body for GET requests", async () => {
@@ -95,7 +94,7 @@ describe("BitbybitClient", () => {
             await client.request("GET", "/api/v1/tasks");
 
             // Assert
-            expect(fetchMock.mock.calls[0][1].body).toBe(undefined);
+            expect(fetchMock.mock.calls[0]![1].body).toBe(undefined);
         });
 
         it("uses default base URL when none provided", async () => {
@@ -107,16 +106,15 @@ describe("BitbybitClient", () => {
             await client.request("GET", "/api/v1/tasks");
 
             // Assert
-            expect(fetchMock.mock.calls[0][0]).toBe("https://api.bitbybit.dev/api/v1/tasks");
+            expect(fetchMock.mock.calls[0]![0]).toBe("https://api.bitbybit.dev/api/v1/tasks");
         });
 
         it("skips validation when validate is false", async () => {
             // Arrange
             const client = new BitbybitClient({ apiKey: "bbk_test", validate: false });
             fetchMock.mockResolvedValueOnce(new Response("{}", { status: 200 }));
-            const invalidBody = {}; // missing required fields
+            const invalidBody = {};
 
-            // Act & Assert (should not throw validation error)
             await expect(client.request("POST", "/api/v1/cad/execute", invalidBody)).resolves.toBeInstanceOf(Response);
         });
 
@@ -125,7 +123,6 @@ describe("BitbybitClient", () => {
             const client = new BitbybitClient({ apiKey: "bbk_test", validate: true });
             fetchMock.mockResolvedValueOnce(new Response("{}", { status: 200 }));
 
-            // Act & Assert (GET with body should not trigger validation)
             await expect(client.request("GET", "/api/v1/tasks", {})).resolves.toBeInstanceOf(Response);
         });
     });
@@ -143,8 +140,67 @@ describe("BitbybitClient", () => {
             const result = await client.health();
 
             // Assert
-            expect(fetchMock.mock.calls[0][0]).toBe("https://api.bitbybit.dev/health");
+            expect(fetchMock.mock.calls[0]![0]).toBe("https://api.bitbybit.dev/health");
             expect(result).toStrictEqual(healthData);
+        });
+    });
+
+    describe("request validation by path", () => {
+        it("refuses a body the endpoint's schema rejects", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/cad/execute", {})).rejects.toThrow();
+        });
+
+        it("checks a model with a schema of its own against that schema", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/models/dragon-cup", { params: { height: "tall" } })).rejects.toThrow();
+        });
+
+        it("checks a model with no schema of its own against the generic one", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/models/no-such-model", { outputs: 7 })).rejects.toThrow();
+        });
+
+        it("checks a batch submission against the batch schema", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/models/dragon-cup/batch", { variations: "many" })).rejects.toThrow();
+        });
+
+        it("sends a body on a path no schema covers without checking it", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test" });
+            fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+
+            // Act & Assert
+            await expect(client.request("POST", "/api/v1/something/new", { anything: true })).resolves.toBeInstanceOf(Response);
+        });
+
+        it("trims a trailing slash from the base url it was given", async () => {
+            // Arrange
+            const client = new BitbybitClient({ apiKey: "bbk_test", baseUrl: "https://staging.example.test/" });
+            fetchMock.mockResolvedValueOnce(new Response("{}", { status: 200 }));
+
+            // Act
+            await client.request("GET", "/api/v1/tasks");
+
+            // Assert
+            expect(fetchMock.mock.calls[0]![0]).toBe("https://staging.example.test/api/v1/tasks");
         });
     });
 });

@@ -1,6 +1,7 @@
 
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
+import { asKind } from "./entity-narrowing";
 
 /**
  * Contains various functions for Solid booleans from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -21,7 +22,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Inputs.JSCAD.JSCADEntity {
-        return this.jscad.booleans.intersect(...inputs.meshes);
+        return this.jscad.booleans.intersect(...asKind<Inputs.JSCAD.JSCADGeom3>(inputs.meshes));
     }
 
     /**
@@ -33,7 +34,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Inputs.JSCAD.JSCADEntity {
-        return this.jscad.booleans.subtract(...inputs.meshes);
+        return this.jscad.booleans.subtract(...asKind<Inputs.JSCAD.JSCADGeom3>(inputs.meshes));
     }
 
     /**
@@ -45,7 +46,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     union(inputs: Inputs.JSCAD.BooleanObjectsDto): Inputs.JSCAD.JSCADEntity {
-        return this.jscad.booleans.union(...inputs.meshes);
+        return this.jscad.booleans.union(...asKind<Inputs.JSCAD.JSCADGeom3>(inputs.meshes));
     }
 
     /**
@@ -57,7 +58,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     intersectTwo(inputs: Inputs.JSCAD.BooleanTwoObjectsDto): Inputs.JSCAD.JSCADEntity {
-        const meshes = [inputs.first, inputs.second];
+        const meshes = asKind<Inputs.JSCAD.JSCADGeom3>([inputs.first, inputs.second]);
         return this.jscad.booleans.intersect(...meshes);
     }
 
@@ -70,7 +71,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     subtractTwo(inputs: Inputs.JSCAD.BooleanTwoObjectsDto): Inputs.JSCAD.JSCADEntity {
-        const meshes = [inputs.first, inputs.second];
+        const meshes = asKind<Inputs.JSCAD.JSCADGeom3>([inputs.first, inputs.second]);
         return this.jscad.booleans.subtract(...meshes);
     }
 
@@ -83,7 +84,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     unionTwo(inputs: Inputs.JSCAD.BooleanTwoObjectsDto): Inputs.JSCAD.JSCADEntity {
-        const meshes = [inputs.first, inputs.second];
+        const meshes = asKind<Inputs.JSCAD.JSCADGeom3>([inputs.first, inputs.second]);
         return this.jscad.booleans.union(...meshes);
     }
 
@@ -96,7 +97,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     subtractFrom(inputs: Inputs.JSCAD.BooleanObjectsFromDto): Inputs.JSCAD.JSCADEntity {
-        const meshes = [inputs.from, ...inputs.meshes];
+        const meshes = asKind<Inputs.JSCAD.JSCADGeom3>([inputs.from, ...inputs.meshes]);
         return this.jscad.booleans.subtract(...meshes);
     }
 }

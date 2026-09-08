@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import { createSurfaceMock, createSurfaceMock2, mockOCCTBoxDecomposedMesh, mockJSCADBoxDecomposedMesh } from "../__mocks__/test-data";
 import { Tag } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -12,6 +12,19 @@ import { Group, InstancedMesh, LineSegments, Mesh, MeshBasicMaterial, MeshPhongM
 import * as THREE from "three";
 import * as Inputs from "../inputs";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+
+const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+];
+const jscadSolid = (color?: Inputs.JSCAD.JSCADColor): Inputs.JSCAD.JSCADGeom3 =>
+    color === undefined
+        ? { polygons: [], transforms: IDENTITY_TRANSFORM }
+        : { polygons: [], transforms: IDENTITY_TRANSFORM, color };
+const manifoldShape = (hash: number): Inputs.Manifold.ManifoldPointer => ({ hash, type: "manifold-shape" });
+
 
 describe("Draw unit tests", () => {
     let draw: Draw;
@@ -47,7 +60,6 @@ describe("Draw unit tests", () => {
             const res = await draw.drawAnyAsync({ entity: [1, -2, 3] }) as THREE.Group;
             expect(res.name).toContain("pointMesh");
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
-            // With GPU instancing, children represent color groups, not individual points
             expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
             expect(res.children[0] instanceof InstancedMesh).toBe(true);
@@ -57,7 +69,6 @@ describe("Draw unit tests", () => {
             const res = draw.drawAny({ entity: [-1, 2, -3] }) as THREE.Group;
             expect(res.name).toContain("pointMesh");
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
-            // With GPU instancing, children represent color groups, not individual points
             expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
             expect(res.children[0] instanceof InstancedMesh).toBe(true);
@@ -74,7 +85,6 @@ describe("Draw unit tests", () => {
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
             expect(res.name).toContain("pointMesh");
             
-            // With GPU instancing, verify structure but not individual positions
             expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
             expect(res.children[0] instanceof InstancedMesh).toBe(true);
@@ -99,7 +109,6 @@ describe("Draw unit tests", () => {
             expect(res2.name).toContain("pointMesh");
             expect(res2.name).toEqual(res.name);
             
-            // With GPU instancing, verify the entity is reused but skip position checks
             expect(res2.children.length).toBe(1);
             expect(res2.children[0]).toBeDefined();
             expect(res2.children[0] instanceof InstancedMesh).toBe(true);
@@ -124,7 +133,6 @@ describe("Draw unit tests", () => {
             expect(res2.name).toContain("pointMesh");
             expect(res2.name).toEqual(res.name);
             
-            // With GPU instancing, verify structure
             expect(res2.children.length).toBe(1);
             expect(res2.children[0]).toBeDefined();
             expect(res2.children[0] instanceof InstancedMesh).toBe(true);
@@ -144,11 +152,9 @@ describe("Draw unit tests", () => {
             const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]] }) as THREE.Group;
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.points);
             expect(res.name).toContain("pointsMesh");
-            // With GPU instancing, all points with same default color are in one InstancedMesh
             expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
             expect(res.children[0] instanceof InstancedMesh).toBe(true);
-            // Verify that we have 3 instances in the InstancedMesh
             const instancedMesh = res.children[0]! as InstancedMesh;
             expect(instancedMesh.count).toBe(3);
         });
@@ -168,7 +174,6 @@ describe("Draw unit tests", () => {
             expect(res.name).toContain("pointsMesh");
             expect(res.name).toEqual(res2.name);
             
-            // With GPU instancing and same point count, all points are in one InstancedMesh
             expect(res.children.length).toBe(1);
             expect(res2.children.length).toBe(1);
             expect(res.children[0] instanceof InstancedMesh).toBe(true);
@@ -194,11 +199,9 @@ describe("Draw unit tests", () => {
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.points);
             expect(res.name).toContain("pointsMesh");
             
-            // With GPU instancing, all points are in one InstancedMesh per color
             expect(res.children.length).toBe(1);
             expect(res2.children.length).toBe(1);
             
-            // Different point counts should create new mesh
             expect(res.name).not.toEqual(res2.name);
             const instancedMesh = res.children[0]! as InstancedMesh;
             const instancedMesh2 = res2.children[0]! as InstancedMesh;
@@ -240,7 +243,6 @@ describe("Draw unit tests", () => {
                 colours: ["#0000ff", "#ff0000", "#00ff00"]
             };
             const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options }) as THREE.Group;
-            // With GPU instancing, 3 colors = 3 InstancedMesh children
             expect(res.children.length).toBe(3);
             const mat1 = (res.children[0]! as InstancedMesh).material as MeshBasicMaterial;
             const mat2 = (res.children[1] as InstancedMesh).material as MeshBasicMaterial;
@@ -258,8 +260,6 @@ describe("Draw unit tests", () => {
             };
             const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options }) as THREE.Group;
 
-            // With colorMapStrategy lastColorRemainder and 3 points with 2 colors:
-            // Points get grouped by color, so we expect 2 InstancedMesh children
             expect(res.children.length).toBe(2);
             const mat1 = (res.children[0]! as InstancedMesh).material as MeshBasicMaterial;
             const mat2 = (res.children[1] as InstancedMesh).material as MeshBasicMaterial;
@@ -433,9 +433,6 @@ describe("Draw unit tests", () => {
             const res = draw.drawAny({ entity: [{ points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, { points: [[3, -3, 3], [4, -4, 5], [4, 6, 5]] }], options }) as THREE.Group;
             const res2 = draw.drawAny({ entity: [{ points: [[2, -4, 5], [1, -2, 3], [4, 6, 7], [3, 4, 6]] }, { points: [[9, -4, 2], [3, -3, 5], [6, 4, 3]] }], options, group: res }) as THREE.Group;
 
-            // An update keeps the group the caller passed in and replaces the segments inside it.
-            // Returning a second group instead left the first one in the scene on every redraw whose
-            // point counts changed.
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
             expect(res2).toBe(res);
             expect(res.children).toHaveLength(1);
@@ -569,7 +566,7 @@ describe("Draw unit tests", () => {
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurface);
             expect(res).toBeDefined();
             expect(res.name).toContain("surface");
-            expect(res.children.length).toBe(2); // Front face + back face
+            expect(res.children.length).toBe(2);
             const faceMesh = res.children[0]! as Mesh;
             const material = faceMesh.material as MeshPhongMaterial;
             expect(material.color.getHex()).toBe(0xff0000);
@@ -604,7 +601,7 @@ describe("Draw unit tests", () => {
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurface);
             expect(res).toBeDefined();
             expect(res.name).toContain("surface");
-            expect(res.children.length).toBe(2); // Front face + back face
+            expect(res.children.length).toBe(2);
             expect(res2.name).toEqual(res.name);
             const faceMesh = res.children[0]! as Mesh;
             const material = faceMesh.material as MeshPhongMaterial;
@@ -651,7 +648,7 @@ describe("Draw unit tests", () => {
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
-            expect(res.children.length).toBe(3); // Front faces + back faces + edges
+            expect(res.children.length).toBe(3);
         });
 
         it("should draw a cube mesh with custom material", async () => {
@@ -665,7 +662,7 @@ describe("Draw unit tests", () => {
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
-            expect(res.children.length).toBe(3); // Front faces + back faces + edges
+            expect(res.children.length).toBe(3);
             const face = res.children[0]!.children[0] as Mesh;
             const material = face.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("ff00ff");
@@ -677,14 +674,13 @@ describe("Draw unit tests", () => {
             options.drawEdgeIndexes = true;
             options.drawFaceIndexes = true;
             occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
-            // Mock createVectorText to return polyline data for edge/face index text
             vi.spyOn(solidText, "createVectorText").mockResolvedValue([[[0, 0], [0.5, 0], [0.5, 0.3], [0, 0.3]]]);
             vector.add = vi.fn().mockReturnValue([1, 2, 3]);
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options }) as THREE.Group;
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
-            expect(res.children.length).toBe(5); // Front faces + back faces + edges + vertices + edge indexes
+            expect(res.children.length).toBe(5);
         });
 
         it("should draw multiple cubes mesh with default options", async () => {
@@ -721,21 +717,21 @@ describe("Draw unit tests", () => {
         it("should draw a JSCAD mesh with default options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockJSCADBoxDecomposedMesh());
-            const res = await draw.drawAnyAsync({ entity: { polygons: [] } as any, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: jscadSolid(), options }) as THREE.Group;
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
-            expect(res.children.length).toBe(2); // Main mesh + back face
+            expect(res.children.length).toBe(2);
         });
 
         it("should draw a JSCAD mesh with specified color options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
-            const res = await draw.drawAnyAsync({ entity: { polygons: [], color: [0, 1, 0] } as any, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: jscadSolid([0, 1, 0]), options }) as THREE.Group;
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
-            expect(res.children.length).toBe(2); // Main mesh + back face
+            expect(res.children.length).toBe(2);
             const mesh = res.children[0]! as Mesh;
             const material = mesh.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("00ff00");
@@ -745,11 +741,11 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.colours = "#00ffff";
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
-            const res = await draw.drawAnyAsync({ entity: { polygons: [] } as any, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: jscadSolid(), options }) as THREE.Group;
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
-            expect(res.children.length).toBe(2); // Main mesh + back face
+            expect(res.children.length).toBe(2);
             const mesh = res.children[0]! as Mesh;
             const material = mesh.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("00ffff");
@@ -759,11 +755,11 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.colours = "#00ffff";
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
-            const res = await draw.drawAnyAsync({ entity: { polygons: [], color: [0, 0, 1] } as any, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: jscadSolid([0, 0, 1]), options }) as THREE.Group;
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
-            expect(res.children.length).toBe(2); // Main mesh + back face
+            expect(res.children.length).toBe(2);
             const mesh = res.children[0]! as Mesh;
             const material = mesh.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("0000ff");
@@ -772,7 +768,7 @@ describe("Draw unit tests", () => {
         it("should draw multiple JSCAD meshes with default options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), mockJSCADBoxDecomposedMesh()]);
-            const res = await draw.drawAnyAsync({ entity: [{ polygons: [] } as any, { polygons: [] } as any], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [jscadSolid(), jscadSolid()], options }) as THREE.Group;
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
@@ -782,7 +778,7 @@ describe("Draw unit tests", () => {
         it("should draw multiple JSCAD meshes with custom color", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), { ...mockJSCADBoxDecomposedMesh(), color: [0, 0, 1] }]);
-            const res = await draw.drawAnyAsync({ entity: [{ polygons: [] } as any, { polygons: [] } as any], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [jscadSolid(), jscadSolid()], options }) as THREE.Group;
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
@@ -837,9 +833,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should return undefined for undefined entity via drawAny", () => {
-            // drawAny doesn't handle undefined entities gracefully - detectLine will throw
-            // Testing that result is undefined when detection functions don't match
-            const res = draw.drawAny({ entity: { unknownType: true } as any }) as THREE.Group;
+            const res = draw.drawAny({ entity: { unknownType: true } as unknown as Inputs.Draw.Entity }) as THREE.Group;
             expect(res).toBeUndefined();
         });
     });
@@ -879,7 +873,6 @@ describe("Draw unit tests", () => {
             
             const res2 = draw.drawAny({ entity: [4, 5, 6], options, group: res }) as THREE.Group;
             expect(res.name).toEqual(res2.name);
-            // With GPU instancing, verify structure but skip position checks
             expect(res2.children.length).toBe(1);
             expect(res2.children[0] instanceof InstancedMesh).toBe(true);
         });
@@ -890,8 +883,6 @@ describe("Draw unit tests", () => {
                 updatable: true,
             };
             const res = draw.drawAny({ entity: [[1, 2, 3], [4, 5, 6]], options }) as THREE.Group;
-            // Array of two 3D points could be detected as a line (segment) or points
-            // The actual type depends on detection order in drawAny
             expect(res.userData["type"]).toBeDefined();
             
             const res2 = draw.drawAny({ entity: [[7, 8, 9], [10, 11, 12]], options, group: res }) as THREE.Group;
@@ -965,7 +956,6 @@ describe("Draw unit tests", () => {
             };
             const res = draw.drawAny({ entity: [1, 2, 3], options: originalOptions }) as THREE.Group;
             
-            // Now update without providing options - should use stored options from userData
             const res2 = draw.drawAny({ entity: [4, 5, 6], group: res }) as THREE.Group;
             expect(res.name).toEqual(res2.name);
         });
@@ -980,8 +970,7 @@ describe("Draw unit tests", () => {
             });
 
             const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
-            // Use the correct type string for manifold detection
-            const res = await draw.drawAnyAsync({ entity: { type: "manifold-shape", id: 123 } as any, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: manifoldShape(123), options }) as THREE.Group;
             expect(res).toBeDefined();
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
         });
@@ -999,11 +988,10 @@ describe("Draw unit tests", () => {
             ]);
 
             const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
-            // Use correct type string "manifold-shape" for detection
             const res = await draw.drawAnyAsync({ 
                 entity: [
-                    { type: "manifold-shape", id: 123 } as any,
-                    { type: "manifold-shape", id: 456 } as any
+                    manifoldShape(123),
+                    manifoldShape(456)
                 ], 
                 options 
             }) as THREE.Group;
@@ -1115,7 +1103,6 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle mixed line formats in array", async () => {
-            // If first element has 'start' property, all are treated as Line3
             const lines: Inputs.Base.Line3[] = [
                 { start: [0, 0, 0], end: [1, 0, 0] },
                 { start: [1, 0, 0], end: [1, 1, 0] },
@@ -1236,13 +1223,10 @@ describe("Draw unit tests", () => {
     });
 
     describe("Draw tags", () => {
-        // Tags require DOM (document) for full implementation
-        // We test that the correct tag methods are called via spies
-
         it("should call tag.drawTag for a single tag entity", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: {} };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto);
             
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Test Tag",
@@ -1263,7 +1247,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTag with custom options", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: {} };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto);
             
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Hello World",
@@ -1285,7 +1269,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTag when updating a tag with group", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto);
             
             const tagEntity: Inputs.Tag.TagDto = {
                 text: "Updated Tag",
@@ -1294,7 +1278,6 @@ describe("Draw unit tests", () => {
                 size: 2,
                 adaptDepth: false,
             };
-            // Simulate update by passing existing group
             draw.drawAny({ entity: tagEntity, group: mockGroup });
             expect(drawTagSpy).toHaveBeenCalled();
             drawTagSpy.mockRestore();
@@ -1303,7 +1286,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags for multiple tag entities", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: {} };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto[]);
             
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Tag 1", position: [0, 0, 0], colour: "#ff0000", size: 1, adaptDepth: false },
@@ -1322,13 +1305,12 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags when updating multiple tags with group", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto[]);
             
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Tag C", position: [2, 2, 2], colour: "#0000ff", size: 2, adaptDepth: false },
                 { text: "Tag D", position: [3, 3, 3], colour: "#ffff00", size: 2, adaptDepth: false },
             ];
-            // Simulate update by passing existing group
             draw.drawAny({ entity: tagsEntity, group: mockGroup });
             expect(drawTagsSpy).toHaveBeenCalled();
             drawTagsSpy.mockRestore();
@@ -1337,7 +1319,7 @@ describe("Draw unit tests", () => {
         it("should call tag.drawTags with custom options", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: {} };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto[]);
             
             const tagsEntity: Inputs.Tag.TagDto[] = [
                 { text: "Custom Tag", position: [5, 5, 5], colour: "#ffffff", size: 3, adaptDepth: false },
@@ -1414,7 +1396,7 @@ describe("Draw unit tests", () => {
         it("should update tag when group has tag type via spy", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
-            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto);
             
             const tag2: Inputs.Tag.TagDto = { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false };
             
@@ -1427,7 +1409,7 @@ describe("Draw unit tests", () => {
         it("should update tags when group has tags type via spy", () => {
             const mockGroup = new Group();
             mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
-            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            const drawTagsSpy = vi.spyOn(tag, "drawTags").mockReturnValue(mockGroup as unknown as Inputs.Tag.TagDto[]);
             
             const tags2: Inputs.Tag.TagDto[] = [{ text: "Tag B", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false }];
             
@@ -1440,97 +1422,79 @@ describe("Draw unit tests", () => {
         it("should return undefined when group userData type is unknown", () => {
             const mockGroup = {
                 userData: { type: "unknownType" },
-            } as any;
+            } as unknown as THREE.Group;
             const res = draw.drawAny({ entity: [1, 2, 3], group: mockGroup }) as THREE.Group;
             expect(res).toBeUndefined();
         });
     });
 
     describe("createTexture", () => {
-        it("should create texture with default properties", () => {
-            // Arrange
+        const textureFor = (adjust: (inputs: Inputs.Draw.GenericTextureDto) => void = () => undefined): THREE.Texture => {
             const inputs = new Inputs.Draw.GenericTextureDto();
             inputs.url = "test.png";
+            adjust(inputs);
+            return draw.createTexture(inputs);
+        };
 
-            // Mock TextureLoader to avoid DOM dependency
-            const mockTexture = {
-                name: "",
-                offset: { x: 0, y: 0 },
-                repeat: { x: 1, y: 1, set: vi.fn() },
-                rotation: 0,
-                flipY: true,
-                wrapS: 0,
-                wrapT: 0,
-                minFilter: 0,
-                magFilter: 0,
-            };
-            vi.spyOn(draw as any, "createTexture").mockImplementation(() => {
-                const texture = { ...mockTexture };
-                texture.name = inputs.name;
-                texture.repeat.set(inputs.uScale || 1, inputs.vScale || 1);
-                texture.offset.x = inputs.uOffset || 0;
-                texture.offset.y = inputs.vOffset || 0;
-                texture.rotation = inputs.wAng || 0;
-                texture.flipY = !inputs.invertY;
-                return texture;
-            });
-
-            // Act
-            const result = draw.createTexture(inputs);
-
-            // Assert
-            expect(result).toBeDefined();
-            expect(result.name).toBe(inputs.name);
-            expect(result.offset.x).toBe(0);
-            expect(result.offset.y).toBe(0);
-            expect(result.rotation).toBe(0);
+        it("should name the texture as it was asked to", () => {
+            expect(textureFor((inputs) => { inputs.name = "bricks"; }).name).toBe("bricks");
         });
 
-        it("should create texture with custom properties", () => {
-            // Arrange
-            const inputs = new Inputs.Draw.GenericTextureDto();
-            inputs.url = "custom.jpg";
-            inputs.name = "CustomTexture";
-            inputs.uOffset = 0.5;
-            inputs.vOffset = 0.25;
-            inputs.uScale = 2;
-            inputs.vScale = 3;
-            inputs.wAng = 1.57; // ~90 degrees in radians
-            inputs.invertY = false;
-
-            // Mock TextureLoader to avoid DOM dependency
-            const mockTexture = {
-                name: "",
-                offset: { x: 0, y: 0 },
-                repeat: { x: 1, y: 1, set: vi.fn() },
-                rotation: 0,
-                flipY: true,
-                wrapS: 0,
-                wrapT: 0,
-                minFilter: 0,
-                magFilter: 0,
-            };
-            vi.spyOn(draw as any, "createTexture").mockImplementation(() => {
-                const texture = { ...mockTexture };
-                texture.name = inputs.name;
-                texture.repeat.set(inputs.uScale || 1, inputs.vScale || 1);
-                texture.offset.x = inputs.uOffset || 0;
-                texture.offset.y = inputs.vOffset || 0;
-                texture.rotation = inputs.wAng || 0;
-                texture.flipY = !inputs.invertY;
-                return texture;
-            });
-
+        it("should scale the texture by the numbers it was given", () => {
             // Act
-            const result = draw.createTexture(inputs);
+            const texture = textureFor((inputs) => { inputs.uScale = 2; inputs.vScale = 3; });
 
             // Assert
-            expect(result).toBeDefined();
-            expect(result.name).toBe("CustomTexture");
-            expect(result.offset.x).toBe(0.5);
-            expect(result.offset.y).toBe(0.25);
-            expect(result.rotation).toBe(1.57);
-            expect(result.flipY).toBe(true);
+            expect([texture.repeat.x, texture.repeat.y]).toEqual([2, 3]);
+        });
+
+        it("should offset the texture by the numbers it was given", () => {
+            // Act
+            const texture = textureFor((inputs) => { inputs.uOffset = 0.25; inputs.vOffset = 0.5; });
+
+            // Assert
+            expect([texture.offset.x, texture.offset.y]).toEqual([0.25, 0.5]);
+        });
+
+        it("should turn the texture by the angle it was given", () => {
+            expect(textureFor((inputs) => { inputs.wAng = 1.5; }).rotation).toBe(1.5);
+        });
+
+        it("should flip the texture unless it was asked to invert it", () => {
+            expect(textureFor((inputs) => { inputs.invertY = false; }).flipY).toBe(true);
+            expect(textureFor((inputs) => { inputs.invertY = true; }).flipY).toBe(false);
+        });
+
+        it("should let the texture repeat across the surface", () => {
+            // Act
+            const texture = textureFor();
+
+            // Assert
+            expect([texture.wrapS, texture.wrapT]).toEqual([THREE.RepeatWrapping, THREE.RepeatWrapping]);
+        });
+
+        it("should sample nearest when asked for the sharpest reading", () => {
+            // Act
+            const texture = textureFor((inputs) => { inputs.samplingMode = Inputs.Draw.samplingModeEnum.nearest; });
+
+            // Assert
+            expect([texture.minFilter, texture.magFilter]).toEqual([THREE.NearestFilter, THREE.NearestFilter]);
+        });
+
+        it("should sample bilinear when asked to smooth within one level", () => {
+            // Act
+            const texture = textureFor((inputs) => { inputs.samplingMode = Inputs.Draw.samplingModeEnum.bilinear; });
+
+            // Assert
+            expect([texture.minFilter, texture.magFilter]).toEqual([THREE.LinearFilter, THREE.LinearFilter]);
+        });
+
+        it("should sample trilinear when asked to smooth between levels as well", () => {
+            // Act
+            const texture = textureFor((inputs) => { inputs.samplingMode = Inputs.Draw.samplingModeEnum.trilinear; });
+
+            // Assert
+            expect([texture.minFilter, texture.magFilter]).toEqual([THREE.LinearMipmapLinearFilter, THREE.LinearFilter]);
         });
     });
 
@@ -1576,14 +1540,12 @@ describe("Draw unit tests", () => {
         });
 
         it("should apply alpha modes correctly", () => {
-            // Arrange & Act & Assert - opaque
             const opaqueInputs = new Inputs.Draw.GenericPBRMaterialDto();
             opaqueInputs.alphaMode = Inputs.Draw.alphaModeEnum.opaque;
             const opaqueMat = draw.createPBRMaterial(opaqueInputs);
             expect(opaqueMat.transparent).toBe(false);
             expect(opaqueMat.alphaTest).toBe(0);
 
-            // Arrange & Act & Assert - mask
             const maskInputs = new Inputs.Draw.GenericPBRMaterialDto();
             maskInputs.alphaMode = Inputs.Draw.alphaModeEnum.mask;
             maskInputs.alphaCutoff = 0.5;
@@ -1591,7 +1553,6 @@ describe("Draw unit tests", () => {
             expect(maskMat.transparent).toBe(false);
             expect(maskMat.alphaTest).toBe(0.5);
 
-            // Arrange & Act & Assert - blend
             const blendInputs = new Inputs.Draw.GenericPBRMaterialDto();
             blendInputs.alphaMode = Inputs.Draw.alphaModeEnum.blend;
             const blendMat = draw.createPBRMaterial(blendInputs);
@@ -1601,7 +1562,7 @@ describe("Draw unit tests", () => {
 
         it("should apply textures when provided", () => {
             // Arrange
-            const mockTexture = {} as any;
+            const mockTexture = {} as unknown as THREE.Texture;
             const inputs = new Inputs.Draw.GenericPBRMaterialDto();
             inputs.baseColorTexture = mockTexture;
             inputs.metallicRoughnessTexture = mockTexture;
@@ -1637,73 +1598,66 @@ describe("Draw unit tests", () => {
         });
     });
 
-    describe("texture sampling modes", () => {
-        beforeEach(() => {
-            // Mock createTexture to test sampling modes
-            vi.spyOn(draw as any, "createTexture").mockImplementation((...args: unknown[]) => {
-                const inputs = args[0] as Inputs.Draw.GenericTextureDto;
-                const texture = new THREE.Texture();
-                
-                // Apply sampling mode logic
-                switch (inputs.samplingMode) {
-                    case Inputs.Draw.samplingModeEnum.nearest:
-                        texture.minFilter = THREE.NearestFilter;
-                        texture.magFilter = THREE.NearestFilter;
-                        break;
-                    case Inputs.Draw.samplingModeEnum.bilinear:
-                        texture.minFilter = THREE.LinearFilter;
-                        texture.magFilter = THREE.LinearFilter;
-                        break;
-                    case Inputs.Draw.samplingModeEnum.trilinear:
-                        texture.minFilter = THREE.LinearMipmapLinearFilter;
-                        texture.magFilter = THREE.LinearFilter;
-                        break;
-                }
-                
-                return texture;
-            });
-        });
 
-        it("should apply nearest sampling mode", () => {
+    describe("Draw decomposed meshes", () => {
+        const asEntity = (entity: unknown): Inputs.Draw.Entity => entity as Inputs.Draw.Entity;
+
+        it("should draw a decomposed mesh handed in directly", async () => {
             // Arrange
-            const inputs = new Inputs.Draw.GenericTextureDto();
-            inputs.url = "test.png";
-            inputs.samplingMode = Inputs.Draw.samplingModeEnum.nearest;
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
 
             // Act
-            const result = draw.createTexture(inputs);
+            const res = await draw.drawAnyAsync({ entity: asEntity(mockOCCTBoxDecomposedMesh()), options }) as THREE.Group;
 
             // Assert
-            expect(result.minFilter).toBe(THREE.NearestFilter);
-            expect(result.magFilter).toBe(THREE.NearestFilter);
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
+            expect(res.children.length).toBe(3);
         });
 
-        it("should apply bilinear sampling mode", () => {
+        it("should draw a list of decomposed meshes into one group", async () => {
             // Arrange
-            const inputs = new Inputs.Draw.GenericTextureDto();
-            inputs.url = "test.png";
-            inputs.samplingMode = Inputs.Draw.samplingModeEnum.bilinear;
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
 
             // Act
-            const result = draw.createTexture(inputs);
+            const res = await draw.drawAnyAsync({
+                entity: asEntity([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]),
+                options,
+            }) as THREE.Group;
 
             // Assert
-            expect(result.minFilter).toBe(THREE.LinearFilter);
-            expect(result.magFilter).toBe(THREE.LinearFilter);
+            expect(res.name).toBe("decomposedMeshesContainer");
+            expect(res.children).toHaveLength(2);
         });
 
-        it("should apply trilinear sampling mode", () => {
+        it("should add the group of decomposed meshes to the scene the first one landed in", async () => {
             // Arrange
-            const inputs = new Inputs.Draw.GenericTextureDto();
-            inputs.url = "test.png";
-            inputs.samplingMode = Inputs.Draw.samplingModeEnum.trilinear;
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
 
             // Act
-            const result = draw.createTexture(inputs);
+            const res = await draw.drawAnyAsync({
+                entity: asEntity([mockOCCTBoxDecomposedMesh()]),
+                options,
+            }) as THREE.Group;
 
             // Assert
-            expect(result.minFilter).toBe(THREE.LinearMipmapLinearFilter);
-            expect(result.magFilter).toBe(THREE.LinearFilter);
+            expect(res.parent).not.toBeNull();
+        });
+    });
+
+    describe("createPBRMaterial that does not take the light", () => {
+        it("should emit its own colour rather than reflect any", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericPBRMaterialDto();
+            inputs.baseColor = "#ff0000";
+            inputs.unlit = true;
+
+            // Act
+            const material = draw.createPBRMaterial(inputs);
+
+            // Assert
+            expect(material.emissive.getHexString()).toBe("ff0000");
+            expect(material.emissiveIntensity).toBe(1);
+            expect(material.color.getHexString()).toBe("000000");
         });
     });
 });

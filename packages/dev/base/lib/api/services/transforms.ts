@@ -350,7 +350,6 @@ export class Transforms {
     private stretchDirection(direction: Base.Vector3, scale: number): Base.TransformMatrix {
         const d = this.vector.normalized({ vector: direction });
 
-        // Handle potential zero vector after normalization (if input was zero)
         if (!d || isNaN(d[0]!) || (d[0] === 0 && d[1] === 0 && d[2] === 0)) {
             console.warn("Stretch direction vector is zero or invalid. Returning identity matrix.");
             return this.identity();
@@ -360,30 +359,23 @@ export class Transforms {
         const s = scale;
         const sMinus1 = s - 1.0;
 
-        // Calculate elements of the 3x3 directional scaling part
         const m11 = 1.0 + sMinus1 * dx * dx;
         const m12 = sMinus1 * dx * dy;
         const m13 = sMinus1 * dx * dz;
-        // m14 = 0
 
         const m21 = sMinus1 * dy * dx;
         const m22 = 1.0 + sMinus1 * dy * dy;
         const m23 = sMinus1 * dy * dz;
-        // m24 = 0
 
         const m31 = sMinus1 * dz * dx;
         const m32 = sMinus1 * dz * dy;
         const m33 = 1.0 + sMinus1 * dz * dz;
-        // m34 = 0
 
-        // m41, m42, m43 = 0, m44 = 1
-
-        // Assemble the 4x4 matrix in COLUMN-MAJOR order
         const m: Base.TransformMatrix = [
-            m11, m21, m31, 0.0, // Column 1
-            m12, m22, m32, 0.0, // Column 2
-            m13, m23, m33, 0.0, // Column 3
-            0.0, 0.0, 0.0, 1.0  // Column 4
+            m11, m21, m31, 0.0,
+            m12, m22, m32, 0.0,
+            m13, m23, m33, 0.0,
+            0.0, 0.0, 0.0, 1.0
         ];
 
         return m;

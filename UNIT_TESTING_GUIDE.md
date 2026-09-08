@@ -119,41 +119,97 @@ Structure every test using the AAA pattern:
 
 ```typescript
 it("should calculate distance between two points", () => {
-    // Arrange - set up test data
+    // Arrange
     const startPoint = [0, 0, 0];
     const endPoint = [3, 4, 0];
 
-    // Act - execute the code under test
+    // Act
     const result = bitByBit.point.distance({ startPoint, endPoint });
 
-    // Assert - verify expected outcome
+    // Assert
     expect(result).toBeCloseTo(5, 5);
+});
+```
+
+### The three markers are the only comments a test may carry
+
+`bitbybit/no-loose-comments` runs over every `*.test.ts`, and it allows exactly `// Arrange`,
+`// Act`, `// Assert` and `// Act & Assert` - the marker on its own, with nothing after it. Every
+other comment in a test file is an error, and there is no fixer, so the rule never rewrites your file.
+
+The markers are structure rather than description: they say which part of the test a line belongs to,
+and a marker cannot drift from the code because it makes no claim about it. A sentence explaining
+*why* can drift, and in a test it has somewhere better to go:
+
+| What you wanted to write in a comment | Where it goes instead |
+| --- | --- |
+| what this test proves | the name of the `it` |
+| what this group of tests is about | the name of the `describe` |
+| why this input, and not another | the name of the value: `const unevenlySpacedCorners = ...` |
+| what this arrangement is | a named helper: `const documentOfOneBox = () => ...` |
+| what a magic number means | a named constant: `const FULL_TURN_DEGREES = 360;` |
+| a caveat the code cannot express | the `it` name, as behaviour: `"should ... , because a turn is baked into the geometry"` |
+
+```typescript
+// Wrong - the note is a second description, and the name says nothing
+it("should subdivide", () => {
+    // a face longer than it is wide, so the two sides differ
+    const f = face.createRectangleFace({ width: 20, length: 5, center: [0, 0, 0], direction: [0, 0, 1] });
+    ...
+});
+
+// Right - the name carries the claim, the value carries the reason
+it("should round the rectangles by the shorter of their two sides", () => {
+    // Arrange
+    const longerThanItIsWide = face.createRectangleFace({ width: 20, length: 5, center: [0, 0, 0], direction: [0, 0, 1] });
+    ...
 });
 ```
 
 ## TypeScript Best Practices
 
-### Avoid `as any`
+### Avoid `as any`, and avoid `as unknown as T`
 
-Minimize use of `as any` type assertions. Instead:
+Both discard what the compiler knew. `as any` says nothing is checked; `as unknown as T` widens
+until nothing is left to check and then declares a type, so the declared type can be wrong in every
+way and the build stays green. The lint rule `bitbybit/no-double-assertion` fails a double assertion
+wherever it appears, tests included, so reach for one of these instead:
 
-1. **Create properly typed mocks** in the `__mocks__` folder
-2. **Use `as unknown as Type`** when casting is necessary (two-step cast is more explicit)
-3. **Define mock interfaces** that match the expected type contract
+1. **A mock class that satisfies the contract**, so no assertion is needed at all. Extending the
+   stand-in a package already ships is usually the shortest route: `class RecordingWorker extends
+   JSCADWorkerMock`, or `class RecordingWorker extends EventTarget implements Worker` where a whole
+   `Worker` is what the method declares.
+2. **A single `as` from a value declared opaque.** `unknown` converts to anything in one step, which
+   is honest about what the test is doing: `const SENTINEL: unknown = { ... }` and then
+   `SENTINEL as T` at the point of use.
+3. **`Partial<T> as T`** for a mock that carries only the members the code under test reaches.
+4. **A helper in `__mocks__` that reads an engine-typed handle as the stand-in it actually is**, so
+   the one assertion lives beside the mock rather than in every suite.
 
 ```typescript
-// ❌ Avoid
+// ❌ Avoid - nothing is checked
 const mockScene = {} as any;
 
-// ✅ Prefer typed mock
+// ❌ Avoid - the assertion is unfalsifiable, and lint fails it
 const mockScene = new MockScene() as unknown as BABYLON.Scene;
 
-// ✅ Or create a proper mock class
-export class MockScene {
-    meshes: MockMesh[] = [];
-    getMeshByName(name: string) { /* ... */ }
-}
+// ✅ A mock class that satisfies the contract, asserted once from Partial
+const mockScene: Partial<BABYLON.Scene> = { meshes: [] };
+const scene = mockScene as BABYLON.Scene;
+
+// ✅ Or, where the engine can run headless, no stand-in at all
+const engine = new BABYLON.NullEngine();
+const scene = new BABYLON.Scene(engine);
 ```
+
+### Prefer the real thing to a stand-in
+
+Where a library can run outside a browser, run it. BabylonJS ships `NullEngine` for exactly this, the
+OCCT, JSCAD and Manifold kernels load under the test runner, and verb is plain JavaScript. A suite
+over the real library asserts what the library ends up holding, which is what a user gets; a suite
+over a mock asserts which call was made, which is only what the code says it does. Stand something in
+when the real one cannot reach the case at all - a kernel that throws a string, a transport that
+refuses a message - and say so in the file.
 
 ## Assertion Best Practices
 
@@ -284,9 +340,10 @@ export function createMockWorkerManagers() {
 - [ ] File named `<source-file>.test.ts`
 - [ ] Reusable mocks in `__mocks__` folder
 - [ ] AAA pattern followed (Arrange-Act-Assert)
+- [ ] No comment in the file except those three markers, each on its own
 - [ ] Specific assertions used (not `toBeDefined`, `toBeGreaterThan(0)`)
 - [ ] Failure scenarios included
-- [ ] `as any` avoided (use typed mocks or `as unknown as Type`)
+- [ ] `as any` avoided, and `as unknown as T` too - `bitbybit/no-double-assertion` bans both
 - [ ] Each test is independent
 - [ ] Descriptive test names that explain expected behavior
 

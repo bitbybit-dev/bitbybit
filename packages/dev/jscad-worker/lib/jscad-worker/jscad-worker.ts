@@ -34,7 +34,6 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
         if (d.action.functionName !== "startedTheRun" &&
             d.action.functionName !== "cleanAllCache") {
 
-            // If inputs have geometry properties with hashes, replace them with cached objects
             Object.keys(d.action.inputs).forEach(key => {
                 const val = d.action.inputs[key];
                 if (val && val.type && val.type === "jscad-geometry" && val.hash) {
@@ -65,7 +64,6 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
                 }
             });
 
-            // this is service and path
             const path = d.action.functionName.split(".");
             if (path.length === 2) {
                 result = cacheHelper.cacheOp(d.action, () => (jscad as unknown as ServiceTable)[path[0]!]![path[1]!]!(d.action.inputs));
@@ -74,9 +72,7 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             }
         }
 
-        // Only the cache that was created in previous run has to be kept, the rest needs to go
         if (d.action.functionName === "startedTheRun") {
-            // if certain threshold is reacherd we clean all the cache
             if (cacheHelper && Object.keys(cacheHelper.usedHashes).length > 10000) {
                 cacheHelper.cleanAllCache();
             }
@@ -88,8 +84,6 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             result = {};
         }
 
-        // Returns only the hash as main process can't receive pointers
-        // But with hash reference we can always initiate further computations
         postMessage({
             uid: d.uid,
             result

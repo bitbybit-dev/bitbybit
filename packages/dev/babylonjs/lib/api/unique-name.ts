@@ -1,6 +1,3 @@
-// A discriminator for this JavaScript context, drawn once. Base 36 of a random fraction, with the
-// leading "0." removed, so it carries no decimal point and no separator of its own. The padding
-// covers the vanishingly rare short string a small random number produces.
 const SESSION = Math.random().toString(36).slice(2, 10).padEnd(8, "0");
 let counter = 0;
 

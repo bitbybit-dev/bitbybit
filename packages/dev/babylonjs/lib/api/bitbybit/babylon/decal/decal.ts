@@ -31,14 +31,13 @@ export class BabylonDecal {
         });
 
         const material = new BABYLON.StandardMaterial(uniqueName("DecalMaterial"), this.context.scene);
-        material.diffuseTexture = inputs.texture as BABYLON.Texture;
+        material.diffuseTexture = inputs.texture;
         material.diffuseTexture.hasAlpha = true;
         material.useAlphaFromDiffuseTexture = true;
         material.zOffset = inputs.zOffset;
         material.backFaceCulling = inputs.cullBackFaces;
         decal.material = material;
 
-        // keep the decal glued to the source mesh as it moves
         decal.setParent(inputs.sourceMesh);
         decal.isPickable = false;
         decal.metadata = { shadows: false };
@@ -61,7 +60,6 @@ export class BabylonDecal {
             height: inputs.height,
         });
         inputs.mesh.decalMap = renderer;
-        // the material decal map plugin reads the map produced by the renderer and blends it in the shader
         const material = inputs.material as BABYLON.Material & { decalMap?: { isEnabled: boolean } };
         if (material.decalMap) {
             material.decalMap.isEnabled = true;

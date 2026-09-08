@@ -223,7 +223,7 @@ export class BabylonMesh {
         if (inputs.includeChildren) {
             const children = inputs.babylonMesh.getChildMeshes();
             children.forEach(child => {
-                child.enablePointerMoveEvents = false;
+                child.enablePointerMoveEvents = true;
             });
         }
     }
@@ -435,7 +435,6 @@ export class BabylonMesh {
     getVerticesAsPolygonPoints(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3[][] {
         const vertices = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.PositionKind)!;
         const indices = inputs.babylonMesh.getIndices()!;
-        // this method implies that mesh is triangulated
         const res: Base.Point3[][] = [];
         for (let i = 0; i < indices.length; i += 3) {
             const p1 = indices[i]!;
@@ -744,7 +743,10 @@ export class BabylonMesh {
                     child.disableEdgesRendering();
                     const newInstance = child.createInstance(uniqueName("InstanceMesh"));
                     newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-                    newInstance.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
+                    newInstance.rotation = new BABYLON.Vector3(
+                        BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians(),
+                        BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians(),
+                        BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians());
                     newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
 
                     if (!inputs.mesh.metadata || (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false)) {

@@ -143,7 +143,6 @@ export function normalizeSvg(svg: string): SvgScene {
         for (const child of node.children) { walk(child, matrix, props); }
     };
 
-    // Root <svg> may itself carry a transform; start the cascade from its props.
     const rootMatrix = multiply(IDENTITY, parseTransform(svgRoot.attrs["transform"]));
     const rootProps = resolveStyleProps(svgRoot, {});
     for (const child of svgRoot.children) { walk(child, rootMatrix, rootProps); }

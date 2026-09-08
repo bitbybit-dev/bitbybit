@@ -2,6 +2,7 @@ import { GeometryHelper } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";
+import { asPath } from "./entity-narrowing";
 
 /**
  * Contains various functions for Polygon from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -42,7 +43,6 @@ export class JSCADPolygon {
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
 
-    // TODO conversions between various CAD kernels should happen on higher levels of abstraction (this was meant to create jscad polygons from VERB-NURBS curves)
     /**
      * Create a 2D polygon from a curve
      * @param inputs Nurbs curve
@@ -65,7 +65,7 @@ export class JSCADPolygon {
      * @drawable true
      */
     createFromPath(inputs: Inputs.JSCAD.PathDto): Inputs.JSCAD.JSCADEntity {
-        return this.removeDuplicatesAndCreateFromPoints(inputs.path.points);
+        return this.removeDuplicatesAndCreateFromPoints(asPath(inputs.path, "createFromPath").points);
     }
 
     /**

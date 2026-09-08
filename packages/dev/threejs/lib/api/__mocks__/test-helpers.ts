@@ -11,6 +11,15 @@ import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Vector } from "@bitbybit-dev/base";
+import * as Inputs from "../inputs";
+
+/**
+ * A test double implements the part of `T` that the test actually exercises. The assertion is
+ * single and from `Partial<T>`, not through `unknown`, so every member supplied is checked against
+ * the real type: one that is renamed or retyped upstream fails here, instead of passing through an
+ * assertion that had erased it.
+ */
+const partialMock = <T>(members: Partial<T>): T => members as T;
 
 /**
  * Creates a basic mock context with scene
@@ -26,39 +35,37 @@ export function createMockContext(): Context {
  * Creates a simple mock context without scene
  */
 export function createSimpleMockContext(): Context {
-    return {
-        scene: null,
-    } as unknown as Context;
+    return new Context();
 }
 
 /**
  * Creates mock worker managers for testing
  */
 export function createMockWorkerManagers() {
-    const mockJscadWorkerManager = {
+    const mockJscadWorkerManager = partialMock<JSCADWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [],
             normals: [],
             indices: [],
             transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
         })
-    } as unknown as JSCADWorkerManager;
+    });
 
-    const mockManifoldWorkerManager = {
+    const mockManifoldWorkerManager = partialMock<ManifoldWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             positions: [],
             normals: [],
             indices: []
         })
-    } as unknown as ManifoldWorkerManager;
+    });
 
-    const mockOccWorkerManager = {
+    const mockOccWorkerManager = partialMock<OCCTWorkerManager>({
         genericCallToWorkerPromise: vi.fn().mockResolvedValue({
             faceList: [],
             edgeList: [],
             pointsList: []
         })
-    } as unknown as OCCTWorkerManager;
+    });
 
     return {
         mockJscadWorkerManager,
@@ -71,16 +78,16 @@ export function createMockWorkerManagers() {
  * Creates a mock JSCADText service
  */
 export function createMockJSCADText(): JSCADText {
-    return {
+    return partialMock<JSCADText>({
         createVectorText: vi.fn().mockResolvedValue([])
-    } as unknown as JSCADText;
+    });
 }
 
 /**
  * Creates a mock Vector service
  */
 export function createMockVector(): Vector {
-    return {
+    return partialMock<Vector>({
         add: vi.fn().mockReturnValue([0, 0, 0]),
         lerp: vi.fn().mockImplementation(({ first, second, fraction }) => {
             return [
@@ -89,7 +96,7 @@ export function createMockVector(): Vector {
                 first[2] + (second[2] - first[2]) * fraction
             ];
         })
-    } as unknown as Vector;
+    });
 }
 
 /**
@@ -108,7 +115,7 @@ export function createDrawHelperMocks() {
         mockJscadWorkerManager,
         mockManifoldWorkerManager,
         mockOccWorkerManager,
-        mockScene: mockContext.scene as THREEJS.Scene
+        mockScene: mockContext.scene
     };
 }
 
@@ -161,10 +168,18 @@ export function getMaterialFromMesh(mesh: THREEJS.Mesh | THREEJS.LineSegments | 
 /**
  * Creates mock JSCAD mesh data for testing
  */
-export function createMockJSCADMesh(overrides = {}) {
+export function createMockJSCADMesh(overrides: Partial<Inputs.JSCAD.JSCADGeom3> = {}): Inputs.JSCAD.JSCADGeom3 {
+    // A minimal JSCAD solid. These suites mock the worker manager, so nothing reads the geometry -
+    // but it should be the shape the API says it is. What stood here was `{ type: "occ-shape" }`,
+    // which is an OCCT pointer's shape, not a JSCAD one.
     return {
-        type: "occ-shape" as const,
         polygons: [],
+        transforms: [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        ],
         ...overrides
     };
 }

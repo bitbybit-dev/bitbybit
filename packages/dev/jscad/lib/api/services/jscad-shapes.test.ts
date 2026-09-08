@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type * as Modeling from "@jscad/modeling";
-import { getJscad } from "../__test__/kernel";
+import { expectSolid, getJscad } from "../__test__/kernel";
 import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
@@ -16,7 +16,6 @@ const CUBOID_VOLUME = 48;
 
 const SPHERE_RADIUS = 1;
 const SPHERE_SEGMENTS = 64;
-// A polyhedral sphere is inscribed in the true one, so it is a little smaller than 4/3 pi r^3.
 const SPHERE_VOLUME_TOLERANCE = 0.05;
 
 const CYLINDER_RADIUS = 2;
@@ -93,8 +92,6 @@ describe("JSCADShapes", () => {
 
             // Assert
             expect(kernel.measurements.measureVolume(cuboid)).toBeCloseTo(CUBOID_VOLUME, 6);
-            // Height is the Y span and length the Z span: these primitives are built to stand on
-            // the ground plane, so depth runs along Z.
             const [min, max] = kernel.measurements.measureBoundingBox(cuboid);
             expect(max[0] - min[0]).toBeCloseTo(CUBOID_WIDTH, 6);
             expect(max[1] - min[1]).toBeCloseTo(CUBOID_HEIGHT, 6);
@@ -163,17 +160,162 @@ describe("JSCADShapes", () => {
             };
 
             // Act
-            const coarseSphere = jscad.shapes.geodesicSphere(coarse);
-            const fineSphere = jscad.shapes.geodesicSphere(fine);
+            const coarseSphere = expectSolid(jscad.shapes.geodesicSphere(coarse));
+            const fineSphere = expectSolid(jscad.shapes.geodesicSphere(fine));
 
             // Assert
             expect(fineSphere.polygons.length).toBeGreaterThan(coarseSphere.polygons.length);
             expect(coarseSphere.polygons.length).toBeGreaterThan(CUBE_FACES);
-            // Both are polyhedra inscribed in the sphere, so neither can be wider than the
-            // diameter - and the finer one is the closer of the two.
             expect(spanOf(coarseSphere)).toBeLessThan(diameter);
             expect(spanOf(fineSphere)).toBeLessThanOrEqual(diameter);
             expect(spanOf(fineSphere)).toBeGreaterThan(spanOf(coarseSphere));
+        });
+    });
+
+    describe("the remaining primitives", () => {
+        it("should build an elliptic cylinder wider in one direction than the other", () => {
+            // Act
+            const shape = expectSolid(jscad.shapes.cylinderElliptic(
+                new Inputs.JSCAD.CylidnerEllipticDto([0, 0, 0], CYLINDER_HEIGHT, [4, 2], [4, 2], 32)));
+            const [min, max] = kernel.measurements.measureBoundingBox(shape);
+
+            expect(max[0] - min[0]).toBeCloseTo(8, 1);
+            expect(max[1] - min[1]).toBeCloseTo(4, 1);
+            expect(max[2] - min[2]).toBeCloseTo(CYLINDER_HEIGHT, 5);
+        });
+
+        it("should build an ellipsoid wider in one direction than the other", () => {
+            // Act
+            const shape = expectSolid(jscad.shapes.ellipsoid(new Inputs.JSCAD.EllipsoidDto([0, 0, 0], [4, 2, 2], 32)));
+            const [min, max] = kernel.measurements.measureBoundingBox(shape);
+
+            // Assert
+            expect(max[0] - min[0]).toBeGreaterThan(max[1] - min[1]);
+        });
+
+        it("should build a rounded cuboid that stays within the box it was given", () => {
+            // Act
+            const shape = expectSolid(jscad.shapes.roundedCuboid(
+                new Inputs.JSCAD.RoundedCuboidDto([0, 0, 0], 0.5, CUBOID_WIDTH, CUBOID_LENGTH, CUBOID_HEIGHT, 8)));
+            const [min, max] = kernel.measurements.measureBoundingBox(shape);
+
+            // Assert
+            expect(max[0] - min[0]).toBeCloseTo(CUBOID_WIDTH, 5);
+            expect(kernel.measurements.measureVolume(shape)).toBeLessThan(CUBOID_VOLUME);
+        });
+
+        it("should build a rounded cylinder of less volume than the square edged one", () => {
+            // Act
+            const rounded = expectSolid(jscad.shapes.roundedCylinder(
+                new Inputs.JSCAD.RoundedCylidnerDto([0, 0, 0], 0.5, CYLINDER_HEIGHT, CYLINDER_RADIUS, 32)));
+            const square = expectSolid(jscad.shapes.cylinder(
+                new Inputs.JSCAD.CylidnerDto([0, 0, 0], CYLINDER_HEIGHT, CYLINDER_RADIUS, 32)));
+
+            // Assert
+            expect(kernel.measurements.measureVolume(rounded)).toBeLessThan(kernel.measurements.measureVolume(square));
+        });
+
+        it("should build a solid from the polygon points it was given", () => {
+            const points: Inputs.Base.Point3[][] = [
+                [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                [[0, 0, 0], [0, 1, 0], [0, 0, 1]],
+                [[0, 0, 0], [0, 0, 1], [1, 0, 0]],
+                [[1, 0, 0], [0, 0, 1], [0, 1, 0]],
+            ];
+
+            // Act
+            const shape = expectSolid(jscad.shapes.fromPolygonPoints(new Inputs.JSCAD.FromPolygonPoints(points)));
+
+            // Assert
+            expect(shape.polygons).toHaveLength(4);
+        });
+    });
+
+    describe("the primitives placed on centre points", () => {
+        it("should build one cuboid per centre", () => {
+            // Act
+            const shapes = jscad.shapes.cuboidsOnCenterPoints(
+                new Inputs.JSCAD.CuboidCentersDto(CENTRES, CUBOID_WIDTH, CUBOID_LENGTH, CUBOID_HEIGHT));
+
+            // Assert
+            expect(shapes).toHaveLength(CENTRES.length);
+            expect(kernel.measurements.measureVolume(expectSolid(shapes[0]!))).toBeCloseTo(CUBOID_VOLUME, 5);
+        });
+
+        it("should build one elliptic cylinder per centre", () => {
+            // Act
+            const shapes = jscad.shapes.cylinderEllipticOnCenterPoints(
+                new Inputs.JSCAD.CylidnerCentersEllipticDto(CENTRES, CYLINDER_HEIGHT, [4, 2], [4, 2], 32));
+
+            // Assert
+            expect(shapes).toHaveLength(CENTRES.length);
+        });
+
+        it("should build one cylinder per centre", () => {
+            // Act
+            const shapes = jscad.shapes.cylindersOnCenterPoints(
+                new Inputs.JSCAD.CylidnerCentersDto(CENTRES, CYLINDER_HEIGHT, CYLINDER_RADIUS, 32));
+
+            // Assert
+            expect(shapes).toHaveLength(CENTRES.length);
+        });
+
+        it("should build one ellipsoid per centre", () => {
+            // Act
+            const shapes = jscad.shapes.ellipsoidsOnCenterPoints(
+                new Inputs.JSCAD.EllipsoidCentersDto(CENTRES, [4, 2, 2], 32));
+
+            // Assert
+            expect(shapes).toHaveLength(CENTRES.length);
+        });
+
+        it("should build one geodesic sphere per centre", () => {
+            // Act
+            const shapes = jscad.shapes.geodesicSpheresOnCenterPoints(
+                new Inputs.JSCAD.GeodesicSphereCentersDto(CENTRES, SPHERE_RADIUS, GEODESIC_FREQUENCY));
+
+            // Assert
+            expect(shapes).toHaveLength(CENTRES.length);
+        });
+
+        it("should build one rounded cuboid per centre", () => {
+            // Act
+            const shapes = jscad.shapes.roundedCuboidsOnCenterPoints(
+                new Inputs.JSCAD.RoundedCuboidCentersDto(CENTRES, 0.5, CUBOID_WIDTH, CUBOID_LENGTH, CUBOID_HEIGHT, 8));
+
+            // Assert
+            expect(shapes).toHaveLength(CENTRES.length);
+        });
+
+        it("should build one rounded cylinder per centre", () => {
+            // Act
+            const shapes = jscad.shapes.roundedCylindersOnCenterPoints(
+                new Inputs.JSCAD.RoundedCylidnerCentersDto(CENTRES, 0.5, CYLINDER_HEIGHT, CYLINDER_RADIUS, 32));
+
+            // Assert
+            expect(shapes).toHaveLength(CENTRES.length);
+        });
+
+        it("should build one sphere per centre", () => {
+            // Act
+            const shapes = jscad.shapes.spheresOnCenterPoints(
+                new Inputs.JSCAD.SphereCentersDto(CENTRES, SPHERE_RADIUS, SPHERE_SEGMENTS));
+
+            // Assert
+            expect(shapes).toHaveLength(CENTRES.length);
+        });
+
+        it("should place each shape at the centre it was given", () => {
+            // Act
+            const shapes = jscad.shapes.spheresOnCenterPoints(
+                new Inputs.JSCAD.SphereCentersDto(CENTRES, SPHERE_RADIUS, SPHERE_SEGMENTS));
+            const centres = shapes.map((shape) => {
+                const [min, max] = kernel.measurements.measureBoundingBox(shape);
+                return (min[0] + max[0]) / 2;
+            });
+
+            // Assert
+            expect(centres.map((x) => Math.round(x))).toEqual(CENTRES.map((centre) => centre[0]));
         });
     });
 });

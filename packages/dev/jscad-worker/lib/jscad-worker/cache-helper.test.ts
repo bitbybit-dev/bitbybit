@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { CacheHelper } from "./cache-helper";
 
 describe("CacheHelper unit tests", () => {
@@ -179,10 +179,8 @@ describe("CacheHelper unit tests", () => {
             
             cacheHelper.addToCache(hash, obj);
             
-            // Simulate deletion by removing delete property
             delete (obj as Partial<typeof obj>).delete;
             
-            // Should return null because object is invalid
             const cached = cacheHelper.checkCache(hash);
             expect(cached).toBeNull();
         });
@@ -196,10 +194,8 @@ describe("CacheHelper unit tests", () => {
             
             cacheHelper.addToCache(hash, objects);
             
-            // Simulate deletion by removing delete property from one object
             delete (obj1 as Partial<typeof obj1>).delete;
             
-            // Should return null because one object is invalid
             const cached = cacheHelper.checkCache(hash);
             expect(cached).toBeNull();
         });
@@ -230,11 +226,9 @@ describe("CacheHelper unit tests", () => {
                 return mockResult;
             };
             
-            // First call - should call cacheMiss
             cacheHelper.cacheOp(args, cacheMiss);
             expect(cacheMissCallCount).toBe(1);
             
-            // Second call - should use cache
             let cacheMiss2Called = false;
             const cacheMiss2 = () => {
                 cacheMiss2Called = true;
@@ -260,7 +254,6 @@ describe("CacheHelper unit tests", () => {
             expect(result.hash).toBeDefined();
             expect(cacheMissCallCount).toBe(1);
             
-            // Second call should use cache
             let cacheMiss2Called = false;
             const cacheMiss2 = () => {
                 cacheMiss2Called = true;
@@ -296,14 +289,11 @@ describe("CacheHelper unit tests", () => {
                 return obj1;
             };
             
-            // First call - creates and caches
             cacheHelper.cacheOp(args, cacheMiss1);
             expect(cacheMiss1CallCount).toBe(1);
             
-            // Simulate deletion
             delete (obj1 as Partial<typeof obj1>).delete;
             
-            // Second call - should detect invalid object and call cacheMiss again
             const obj2 = { delete: () => {}, data: "test2" };
             let cacheMiss2CallCount = 0;
             const cacheMiss2 = () => {
@@ -419,10 +409,8 @@ describe("CacheHelper unit tests", () => {
         it("should clean all entries from argCache not just usedHashes", () => {
             const obj = { delete: () => {}, data: "test" };
             
-            // Add to cache through cacheOp
             cacheHelper.cacheOp({ test: 1 }, () => obj);
             
-            // Manually add another entry that's not in usedHashes
             cacheHelper.argCache["manual-hash"] = obj;
             
             cacheHelper.cleanAllCache();
@@ -449,21 +437,17 @@ describe("CacheHelper unit tests", () => {
             const args2 = { test: 2 };
             const value = { data: "test" };
             
-            // First run - cache both
             cacheHelper.cacheOp(args1, () => value);
             cacheHelper.cacheOp(args2, () => value);
             
             const hash1 = cacheHelper.computeHash(args1);
             const hash2 = cacheHelper.computeHash(args2);
             
-            // Mark this as previous run
             cacheHelper.cleanUpCache();
             
-            // Second run - only use first argument
             cacheHelper.usedHashes = {};
             cacheHelper.cacheOp(args1, () => value);
             
-            // Clean up should remove unused hash2
             cacheHelper.cleanUpCache();
             
             expect(cacheHelper.checkCache(hash1)).toBeDefined();
@@ -479,22 +463,18 @@ describe("CacheHelper unit tests", () => {
             const args1 = { test: 1 };
             const args2 = { test: 2 };
             
-            // First run - cache both
             cacheHelper.cacheOp(args1, () => obj1);
             cacheHelper.cacheOp(args2, () => obj2);
             
-            // Mark this as previous run
             cacheHelper.cleanUpCache();
             
-            // Second run - only use first argument
             cacheHelper.usedHashes = {};
             cacheHelper.cacheOp(args1, () => obj1);
             
-            // Clean up should delete obj2
             cacheHelper.cleanUpCache();
             
-            expect(delete1Called).toBe(false); // obj1 still in use
-            expect(delete2Called).toBe(true);  // obj2 was cleaned
+            expect(delete1Called).toBe(false);
+            expect(delete2Called).toBe(true);
         });
 
         it("should handle arrays of JSCAD objects during cleanup", () => {
@@ -506,23 +486,17 @@ describe("CacheHelper unit tests", () => {
             
             const args = { test: 1 };
             
-            // First run - cache array
-            // When caching arrays, each element gets its own hash with index
             cacheHelper.cacheOp(args, () => objects);
             
-            // Verify that individual elements were cached with index-based hashes
             const hash0 = cacheHelper.computeHash({ ...args, index: 0 });
             const hash1 = cacheHelper.computeHash({ ...args, index: 1 });
             expect(cacheHelper.checkCache(hash0)).toBeDefined();
             expect(cacheHelper.checkCache(hash1)).toBeDefined();
             
-            // Mark this as previous run
             cacheHelper.cleanUpCache();
             
-            // Second run - don't use this cache
             cacheHelper.usedHashes = {};
             
-            // Clean up should delete both objects
             cacheHelper.cleanUpCache();
             
             expect(delete1Called).toBe(true);
@@ -533,11 +507,9 @@ describe("CacheHelper unit tests", () => {
             const args = { test: 1 };
             const value = { data: "test" };
             
-            // First run
             cacheHelper.cacheOp(args, () => value);
             cacheHelper.cleanUpCache();
             
-            // Second run - still using same args
             cacheHelper.cacheOp(args, () => value);
             cacheHelper.cleanUpCache();
             
@@ -549,12 +521,10 @@ describe("CacheHelper unit tests", () => {
             const args = { test: 1 };
             const value = { data: "test" };
             
-            // Clean up with no previous run
             expect(() => {
                 cacheHelper.cleanUpCache();
             }).not.toThrow();
             
-            // Add some cache and clean up
             cacheHelper.cacheOp(args, () => value);
             expect(() => {
                 cacheHelper.cleanUpCache();
@@ -582,16 +552,12 @@ describe("CacheHelper unit tests", () => {
             const obj = { delete: () => { throw new Error("Already deleted"); }, data: "test" };
             const args = { test: 1 };
             
-            // First run - cache object
             cacheHelper.cacheOp(args, () => obj);
             
-            // Mark this as previous run
             cacheHelper.cleanUpCache();
             
-            // Second run - don't use this cache
             cacheHelper.usedHashes = {};
             
-            // Clean up should handle the error gracefully
             expect(() => {
                 cacheHelper.cleanUpCache();
             }).not.toThrow();
@@ -619,13 +585,9 @@ describe("CacheHelper unit tests", () => {
             const obj3 = { hash: "hash3", ptr: 300, data: "test3" };
             const array = [obj1, obj2, obj3];
             
-            // Try to remove with same ptr but different hash
-            // The remove logic uses OR: keep if (hash !== hash OR ptr !== ptr)
-            // So removal only happens when BOTH hash AND ptr match
             const objToRemove = { hash: "different", ptr: 200 };
             const result = cacheHelper.remove(array, objToRemove);
             
-            // Since hash is different, obj2 should NOT be removed
             expect(result.length).toBe(3);
             expect(result).toContain(obj1);
             expect(result).toContain(obj2);
@@ -660,7 +622,6 @@ describe("CacheHelper unit tests", () => {
             const obj2 = { delete: () => {}, data: "obj2" };
             const obj3 = { delete: () => {}, data: "obj3" };
             
-            // Cache multiple objects with different args
             const result1 = cacheHelper.cacheOp({ op: "create", id: 1 }, () => obj1);
             const result2 = cacheHelper.cacheOp({ op: "create", id: 2 }, () => obj2);
             const result3 = cacheHelper.cacheOp({ op: "create", id: 3 }, () => obj3);
@@ -670,17 +631,14 @@ describe("CacheHelper unit tests", () => {
             expect(result3.hash).toBeDefined();
             expect(result1.hash).not.toBe(result2.hash);
             
-            // Retrieve from cache
             const cached1 = cacheHelper.cacheOp({ op: "create", id: 1 }, () => obj1);
             expect(cached1.hash).toBe(result1.hash);
             
-            // Clean up cache
             cacheHelper.cleanUpCache();
             cacheHelper.usedHashes = {};
-            cacheHelper.cacheOp({ op: "create", id: 1 }, () => obj1); // Only use obj1
+            cacheHelper.cacheOp({ op: "create", id: 1 }, () => obj1);
             cacheHelper.cleanUpCache();
             
-            // obj2 and obj3 should be cleaned
             const hash2 = cacheHelper.computeHash({ op: "create", id: 2 });
             const hash3 = cacheHelper.computeHash({ op: "create", id: 3 });
             expect(cacheHelper.checkCache(hash2)).toBeNull();
@@ -696,6 +654,235 @@ describe("CacheHelper unit tests", () => {
             const hash = cacheHelper.computeHash(args);
             expect(cacheHelper.usedHashes[hash]).toBeDefined();
             expect(cacheHelper.hashesFromPreviousRun[hash]).toBeDefined();
+        });
+    });
+
+    describe("cleaning an entry that holds an array", () => {
+        type Deletable = { delete: () => void; data: string };
+
+        const deletable = (data: string, deleted: string[]): Deletable => ({
+            data,
+            delete: () => { deleted.push(data); },
+        });
+
+        it("should delete every kernel object the entry holds when the hash is cleaned", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("array-hash", [deletable("first", deleted), deletable("second", deleted)]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("array-hash");
+
+            // Assert
+            expect(deleted).toEqual(["first", "second"]);
+        });
+
+        it("should keep deleting the rest when one object refuses", () => {
+            // Arrange
+            const deleted: string[] = [];
+            const refusing = { data: "refusing", delete: () => { throw new Error("already gone"); } };
+            cacheHelper.addToCache("array-hash", [refusing, deletable("second", deleted)]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("array-hash");
+
+            // Assert
+            expect(deleted).toEqual(["second"]);
+        });
+
+        it("should forget the entry once it is cleaned", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("array-hash", [deletable("first", deleted)]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("array-hash");
+
+            // Assert
+            expect(cacheHelper.checkCache("array-hash")).toBeNull();
+        });
+
+        it("should delete every kernel object the entry holds when the run no longer uses it", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("array-hash", [deletable("first", deleted), deletable("second", deleted)]);
+            cacheHelper.usedHashes = { "array-hash": "array-hash" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(deleted).toEqual(["first", "second"]);
+        });
+
+        it("should keep deleting the rest of an unused entry when one object refuses", () => {
+            // Arrange
+            const deleted: string[] = [];
+            const refusing = { data: "refusing", delete: () => { throw new Error("already gone"); } };
+            cacheHelper.addToCache("array-hash", [refusing, deletable("second", deleted)]);
+            cacheHelper.usedHashes = { "array-hash": "array-hash" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(deleted).toEqual(["second"]);
+        });
+
+        it("should delete every kernel object the entry holds when the whole cache is dropped", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("array-hash", [deletable("first", deleted), deletable("second", deleted)]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(deleted).toEqual(["first", "second"]);
+        });
+    });
+
+    describe("computeHash and stray pointers", () => {
+        let reported: unknown[];
+
+        beforeEach(() => {
+            reported = [];
+            vi.spyOn(console, "error").mockImplementation((message: unknown) => { reported.push(message); });
+        });
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should say so when a pointer survives the strip", () => {
+            // Act
+            cacheHelper.computeHash({ ptrCount: 3 });
+
+            // Assert
+            expect(reported).toEqual(["YOU DONE MESSED UP YOUR REGEX."]);
+        });
+
+        it("should stay quiet for arguments carrying a pointer the strip catches", () => {
+            // Act
+            cacheHelper.computeHash({ ptr: 140, radius: 3 });
+
+            // Assert
+            expect(reported).toEqual([]);
+        });
+    });
+
+    describe("entries that are not live kernel objects", () => {
+        it("should skip an entry that holds nothing when the whole cache is dropped", () => {
+            // Arrange
+            cacheHelper.argCache["empty"] = null;
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should leave an object whose delete has been taken away alone", () => {
+            // Arrange
+            cacheHelper.addToCache("no-delete", { delete: null, data: "kept" });
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should leave an object whose delete has been taken away alone when its hash is cleaned", () => {
+            // Arrange
+            cacheHelper.addToCache("no-delete", { delete: null, data: "kept" });
+
+            // Act
+            cacheHelper.cleanCacheForHash("no-delete");
+
+            // Assert
+            expect(cacheHelper.checkCache("no-delete")).toBeNull();
+        });
+
+        it("should leave an object whose delete has been taken away alone when the run stops using it", () => {
+            // Arrange
+            cacheHelper.addToCache("no-delete", { delete: null, data: "kept" });
+            cacheHelper.usedHashes = { "no-delete": "no-delete" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should delete only the members of a list that are kernel objects", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("mixed", [{ delete: () => { deleted.push("first"); } }, { data: "plain" }]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(deleted).toEqual(["first"]);
+        });
+
+        it("should delete only the kernel objects of a list when its hash is cleaned", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("mixed", [{ delete: () => { deleted.push("first"); } }, { data: "plain" }]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("mixed");
+
+            // Assert
+            expect(deleted).toEqual(["first"]);
+        });
+
+        it("should delete only the kernel objects of a list the run stopped using", () => {
+            // Arrange
+            const deleted: string[] = [];
+            cacheHelper.addToCache("mixed", [{ delete: () => { deleted.push("first"); } }, { data: "plain" }]);
+            cacheHelper.usedHashes = { mixed: "mixed" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(deleted).toEqual(["first"]);
+        });
+
+        it("should hand back the same empty result on the second call rather than running it again", () => {
+            // Arrange
+            const args = { radius: 1 };
+            let calls = 0;
+            cacheHelper.cacheOp(args, () => { calls += 1; return null; });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return null; });
+
+            // Assert
+            expect(second).toBeNull();
+            expect(calls).toBe(1);
+        });
+
+        it("should cache a value that is not an object without stamping a hash onto it", () => {
+            // Act
+            const hash = cacheHelper.addToCache("primitive", 42);
+
+            // Assert
+            expect(hash).toBe("primitive");
+            expect(cacheHelper.argCache["primitive"]).toBe(42);
         });
     });
 });

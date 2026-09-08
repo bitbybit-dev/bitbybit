@@ -127,8 +127,6 @@ export class Color {
         let g = inputs.g;
         let b = inputs.b;
 
-        // sometimes rgb values are in 0 - 100 or 0 - 1 ranges
-        // so we need to remap them to 0 - 255
         if (inputs.max !== 255) {
             r = Math.round(this.math.remap({ number: r, fromLow: inputs.min, fromHigh: inputs.max, toLow: 0, toHigh: 255 }));
             g = Math.round(this.math.remap({ number: g, fromLow: inputs.min, fromHigh: inputs.max, toLow: 0, toHigh: 255 }));

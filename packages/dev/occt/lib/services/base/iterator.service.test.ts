@@ -89,7 +89,6 @@ describe("OCCT iterator service unit tests", () => {
 
     describe("forEachEdgeAlongWire", () => {
         it("should iterate over edges in order along the wire", () => {
-            // Use explicit edges to have control over the count
             const edge1 = occHelper.edgesService.lineEdge({ start: [0, 0, 0], end: [1, 0, 0] });
             const edge2 = occHelper.edgesService.lineEdge({ start: [1, 0, 0], end: [1, 1, 0] });
             const wire = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge1, edge2] });
@@ -100,7 +99,6 @@ describe("OCCT iterator service unit tests", () => {
             });
             expect(edges.length).toBe(2);
 
-            // Check that edges are in correct order
             const edge1Start = occHelper.edgesService.startPointOnEdge({ shape: edges[0]! });
             const edge1End = occHelper.edgesService.endPointOnEdge({ shape: edges[0]! });
             const edge2Start = occHelper.edgesService.startPointOnEdge({ shape: edges[1]! });
@@ -193,13 +191,11 @@ describe("OCCT iterator service unit tests", () => {
         });
 
         it("should iterate over vertices in a triangle wire counting shared vertices", () => {
-            // A closed triangle has 3 edges but TopExp_Explorer finds all vertices including shared ones
             const wire = occHelper.wiresService.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]] });
             const vertices: TopoDS_Vertex[] = [];
             iteratorService.forEachVertex(wire, (_index, vertex) => {
                 vertices.push(vertex);
             });
-            // Each edge has 2 vertices, 3 edges = 6 vertices found (vertices are shared at corners)
             expect(vertices.length).toBe(6);
             wire.delete();
             vertices.forEach(v => v.delete());
@@ -278,8 +274,6 @@ describe("OCCT iterator service unit tests", () => {
             iteratorService.forEachCompound(outerCompound, (_index, shape) => {
                 compounds.push(shape);
             });
-            // TopExp_Explorer finds the outer compound itself when iterating for COMPOUND type
-            // The inner compound is a child but explorer behavior may vary
             expect(compounds.length).toBeGreaterThanOrEqual(1);
 
             box1.delete();
@@ -313,7 +307,6 @@ describe("OCCT iterator service unit tests", () => {
         });
 
         it("should return no compsolids for a compound of solids", () => {
-            // A compound of solids is not the same as a compsolid
             const box1 = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
             const box2 = solid.createBox({ width: 1, height: 1, length: 1, center: [5, 0, 0] });
             const comp = compoundService.makeCompound({ shapes: [box1, box2] });
@@ -379,7 +372,6 @@ describe("OCCT iterator service unit tests", () => {
             iteratorService.forEachShapeInCompound(outerCompound, (_index, shape) => {
                 shapes.push(shape);
             });
-            // Should only find the direct children: innerCompound and box3
             expect(shapes.length).toBe(2);
 
             box1.delete();
@@ -391,4 +383,3 @@ describe("OCCT iterator service unit tests", () => {
         });
     });
 });
-

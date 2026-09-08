@@ -5,6 +5,10 @@ import * as Inputs from "../../inputs";
  * Sweep surface functions.
  * These functions wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
+ *
+ * @deprecated Verbnurbs is not maintained upstream and this API is removed in the next major
+ * version. Use the OpenCascade (occt) NURBS operations instead. Existing scripts keep working
+ * until the removal.
  */
 
 export class VerbSurfaceSweep {

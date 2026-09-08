@@ -177,4 +177,18 @@ describe("pollTask", () => {
         expect(error!.code).toBe("POLL_ABORTED");
         expect(fetcher).not.toHaveBeenCalled();
     });
+
+    describe("defaults", () => {
+        it("gives up before the first check when no attempts are allowed", async () => {
+            const calls: string[] = [];
+            const fetcher = (_method: string, path: string): Promise<Response> => {
+                calls.push(path);
+                return Promise.resolve(new Response("{}"));
+            };
+
+            // Act & Assert
+            await expect(pollTask(fetcher, "t-1", { maxAttempts: 0 })).rejects.toThrow("did not complete within 0 polls");
+            expect(calls).toHaveLength(0);
+        });
+    });
 });

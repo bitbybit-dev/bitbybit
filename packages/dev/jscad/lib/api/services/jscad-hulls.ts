@@ -1,5 +1,6 @@
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
+import { asKind } from "./entity-narrowing";
 
 /**
  * Contains various functions for Solid hulls from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -21,7 +22,7 @@ export class JSCADHulls {
      * @drawable true
      */
     hullChain(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity {
-        return this.jscad.hulls.hullChain(...inputs.meshes);
+        return this.jscad.hulls.hullChain(...asKind<Inputs.JSCAD.JSCADGeom3>(inputs.meshes));
     }
 
     /**
@@ -34,6 +35,6 @@ export class JSCADHulls {
      * @drawable true
      */
     hull(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity  {
-        return this.jscad.hulls.hull(...inputs.meshes);
+        return this.jscad.hulls.hull(...asKind<Inputs.JSCAD.JSCADGeom3>(inputs.meshes));
     }
 }

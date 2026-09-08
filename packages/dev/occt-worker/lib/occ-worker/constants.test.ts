@@ -1,263 +1,137 @@
 import { describe, it, expect } from "vitest";
-import { WorkerMessages, ReservedFunctions, NON_CACHEABLE_FUNCTIONS, CACHE_THRESHOLD, SHAPE_TYPE_IDENTIFIER } from "./constants";
+import {
+    CACHE_THRESHOLD,
+    ENTITY_TYPE_IDENTIFIER,
+    NON_CACHEABLE_FUNCTIONS,
+    ReservedFunctions,
+    SHAPE_TYPE_IDENTIFIER,
+    WorkerMessages,
+    createEntityReference,
+    createShapeReference,
+    isEntityReference,
+    isShapeReference,
+} from "./constants";
 
-describe("Constants Unit Tests", () => {
+describe("the worker protocol constants", () => {
     describe("WorkerMessages", () => {
-        it("should have correct INITIALIZED message", () => {
+        it("should announce initialisation under the name the manager listens for", () => {
             expect(WorkerMessages.INITIALIZED).toBe("occ-initialised");
         });
 
-        it("should have correct BUSY message", () => {
+        it("should announce work under the name the manager listens for", () => {
             expect(WorkerMessages.BUSY).toBe("busy");
         });
     });
 
     describe("ReservedFunctions", () => {
-        it("should have all expected reserved function names", () => {
-            expect(ReservedFunctions.SHAPE_TO_MESH).toBe("shapeToMesh");
-            expect(ReservedFunctions.SHAPES_TO_MESHES).toBe("shapesToMeshes");
-            expect(ReservedFunctions.DELETE_SHAPE).toBe("deleteShape");
-            expect(ReservedFunctions.DELETE_SHAPES).toBe("deleteShapes");
-            expect(ReservedFunctions.STARTED_THE_RUN).toBe("startedTheRun");
-            expect(ReservedFunctions.CLEAN_ALL_CACHE).toBe("cleanAllCache");
-            expect(ReservedFunctions.ADD_OC).toBe("addOc");
-            expect(ReservedFunctions.SAVE_SHAPE_STEP).toBe("saveShapeSTEP");
+        it("should name every command the worker answers itself", () => {
+            expect(ReservedFunctions).toEqual({
+                SHAPE_TO_MESH: "shapeToMesh",
+                SHAPES_TO_MESHES: "shapesToMeshes",
+                DOC_TO_MESH: "docToMesh",
+                DOC_TO_MESHES: "docToMeshes",
+                DELETE_SHAPE: "deleteShape",
+                DELETE_SHAPES: "deleteShapes",
+                DELETE_DOCUMENT: "deleteDocument",
+                STARTED_THE_RUN: "startedTheRun",
+                CLEAN_ALL_CACHE: "cleanAllCache",
+                ADD_OC: "addOc",
+                SAVE_SHAPE_STEP: "saveShapeSTEP",
+            });
         });
     });
 
     describe("NON_CACHEABLE_FUNCTIONS", () => {
-        it("should be a Set containing all reserved functions", () => {
-            expect(NON_CACHEABLE_FUNCTIONS).toBeInstanceOf(Set);
-            expect(NON_CACHEABLE_FUNCTIONS.has(ReservedFunctions.SHAPE_TO_MESH)).toBe(true);
-            expect(NON_CACHEABLE_FUNCTIONS.has(ReservedFunctions.SHAPES_TO_MESHES)).toBe(true);
-            expect(NON_CACHEABLE_FUNCTIONS.has(ReservedFunctions.DELETE_SHAPE)).toBe(true);
-            expect(NON_CACHEABLE_FUNCTIONS.has(ReservedFunctions.DELETE_SHAPES)).toBe(true);
-            expect(NON_CACHEABLE_FUNCTIONS.has(ReservedFunctions.STARTED_THE_RUN)).toBe(true);
-            expect(NON_CACHEABLE_FUNCTIONS.has(ReservedFunctions.CLEAN_ALL_CACHE)).toBe(true);
-            expect(NON_CACHEABLE_FUNCTIONS.has(ReservedFunctions.ADD_OC)).toBe(true);
-            expect(NON_CACHEABLE_FUNCTIONS.has(ReservedFunctions.SAVE_SHAPE_STEP)).toBe(true);
+        it("should hold every reserved command but the two mesh conversions of a document", () => {
+            expect([...NON_CACHEABLE_FUNCTIONS].sort()).toEqual([
+                "addOc",
+                "cleanAllCache",
+                "deleteDocument",
+                "deleteShape",
+                "deleteShapes",
+                "docToMesh",
+                "docToMeshes",
+                "saveShapeSTEP",
+                "shapeToMesh",
+                "shapesToMeshes",
+                "startedTheRun",
+            ]);
         });
 
-        it("should return false for non-reserved functions", () => {
+        it("should not hold a kernel method", () => {
             expect(NON_CACHEABLE_FUNCTIONS.has("shapes.wire.createCircleWire")).toBe(false);
-            expect(NON_CACHEABLE_FUNCTIONS.has("operations.loftAdvanced")).toBe(false);
         });
     });
 
     describe("CACHE_THRESHOLD", () => {
-        it("should be a positive number", () => {
-            expect(CACHE_THRESHOLD).toBeGreaterThan(0);
+        it("should be the number of hashes a run may hold before the cache is dropped", () => {
             expect(CACHE_THRESHOLD).toBe(10000);
         });
     });
 
-    describe("SHAPE_TYPE_IDENTIFIER", () => {
-        it("should be the correct string", () => {
+    describe("the type identifiers", () => {
+        it("should name a shape as saved scripts spell it", () => {
             expect(SHAPE_TYPE_IDENTIFIER).toBe("occ-shape");
         });
-    });
-});
 
-describe("Command Handlers Unit Tests", () => {
-    // Import dynamically to avoid issues with module loading
-    describe("getCommandHandler", () => {
-        it("should return handler for reserved functions", async () => {
-            const { getCommandHandler } = await import("./command-handlers");
-            
-            expect(getCommandHandler(ReservedFunctions.SHAPE_TO_MESH)).toBeDefined();
-            expect(getCommandHandler(ReservedFunctions.SHAPES_TO_MESHES)).toBeDefined();
-            expect(getCommandHandler(ReservedFunctions.DELETE_SHAPE)).toBeDefined();
-            expect(getCommandHandler(ReservedFunctions.DELETE_SHAPES)).toBeDefined();
-            expect(getCommandHandler(ReservedFunctions.STARTED_THE_RUN)).toBeDefined();
-            expect(getCommandHandler(ReservedFunctions.CLEAN_ALL_CACHE)).toBeDefined();
-            expect(getCommandHandler(ReservedFunctions.ADD_OC)).toBeDefined();
-            expect(getCommandHandler(ReservedFunctions.SAVE_SHAPE_STEP)).toBeDefined();
-        });
-
-        it("should return undefined for non-reserved functions", async () => {
-            const { getCommandHandler } = await import("./command-handlers");
-            
-            expect(getCommandHandler("shapes.wire.createCircleWire")).toBeUndefined();
-            expect(getCommandHandler("operations.loftAdvanced")).toBeUndefined();
-            expect(getCommandHandler("randomFunction")).toBeUndefined();
+        it("should name an entity as saved scripts spell it", () => {
+            expect(ENTITY_TYPE_IDENTIFIER).toBe("occ-entity");
         });
     });
 
-    describe("DELETE_SHAPE handler", () => {
-        it("should call cleanCacheForHash with the shape hash", async () => {
-            const { CommandHandlers } = await import("./command-handlers");
-            
-            const mockCleanCacheForHash = createTrackingFn();
-            const mockContext = {
-                cacheHelper: {
-                    cleanCacheForHash: mockCleanCacheForHash.fn,
-                },
-            } as any;
-
-            const result = CommandHandlers[ReservedFunctions.DELETE_SHAPE](
-                { shape: { hash: 12345 } },
-                mockContext
-            );
-
-            expect(result.handled).toBe(true);
-            expect(result.result).toEqual({});
-            expect(mockCleanCacheForHash.calls[0][0]).toBe(12345);
+    describe("createShapeReference", () => {
+        it("should stamp the hash with the shape identifier", () => {
+            expect(createShapeReference(42)).toEqual({ type: "occ-shape", hash: 42 });
         });
     });
 
-    describe("DELETE_SHAPES handler", () => {
-        it("should call cleanCacheForHash for each shape", async () => {
-            const { CommandHandlers } = await import("./command-handlers");
-            
-            const mockCleanCacheForHash = createTrackingFn();
-            const mockContext = {
-                cacheHelper: {
-                    cleanCacheForHash: mockCleanCacheForHash.fn,
-                },
-            } as any;
+    describe("isShapeReference", () => {
+        it("should recognise what createShapeReference makes", () => {
+            expect(isShapeReference(createShapeReference(42))).toBe(true);
+        });
 
-            const result = CommandHandlers[ReservedFunctions.DELETE_SHAPES](
-                { shapes: [{ hash: 111 }, { hash: 222 }, { hash: 333 }] },
-                mockContext
-            );
+        it("should not mistake an entity reference for a shape", () => {
+            expect(isShapeReference(createEntityReference(42))).toBe(false);
+        });
 
-            expect(result.handled).toBe(true);
-            expect(result.result).toEqual({});
-            expect(mockCleanCacheForHash.calls.length).toBe(3);
-            expect(mockCleanCacheForHash.calls[0][0]).toBe(111);
-            expect(mockCleanCacheForHash.calls[1][0]).toBe(222);
-            expect(mockCleanCacheForHash.calls[2][0]).toBe(333);
+        it("should not mistake an object without a hash for a shape", () => {
+            expect(isShapeReference({ type: "occ-shape" })).toBe(false);
+        });
+
+        it("should not mistake nothing for a shape", () => {
+            expect(isShapeReference(null)).toBe(false);
+        });
+
+        it("should not mistake a number for a shape", () => {
+            expect(isShapeReference(42)).toBe(false);
         });
     });
 
-    describe("CLEAN_ALL_CACHE handler", () => {
-        it("should call cleanAllCache", async () => {
-            const { CommandHandlers } = await import("./command-handlers");
-            
-            const mockCleanAllCache = createTrackingFn();
-            const mockContext = {
-                cacheHelper: {
-                    cleanAllCache: mockCleanAllCache.fn,
-                },
-            } as any;
-
-            const result = CommandHandlers[ReservedFunctions.CLEAN_ALL_CACHE]({}, mockContext);
-
-            expect(result.handled).toBe(true);
-            expect(result.result).toEqual({});
-            expect(mockCleanAllCache.calls.length).toBe(1);
+    describe("createEntityReference", () => {
+        it("should stamp the hash with the entity identifier", () => {
+            expect(createEntityReference("doc-1")).toEqual({ type: "occ-entity", hash: "doc-1" });
         });
     });
 
-    describe("STARTED_THE_RUN handler", () => {
-        it("should not clean cache when below threshold", async () => {
-            const { CommandHandlers } = await import("./command-handlers");
-            
-            const mockCleanAllCache = createTrackingFn();
-            const mockContext = {
-                cacheHelper: {
-                    usedHashes: { a: 1, b: 2 }, // Only 2 items
-                    cleanAllCache: mockCleanAllCache.fn,
-                },
-            } as any;
-
-            const result = CommandHandlers[ReservedFunctions.STARTED_THE_RUN]({}, mockContext);
-
-            expect(result.handled).toBe(true);
-            expect(result.result).toEqual({});
-            expect(mockCleanAllCache.calls.length).toBe(0);
+    describe("isEntityReference", () => {
+        it("should recognise what createEntityReference makes", () => {
+            expect(isEntityReference(createEntityReference("doc-1"))).toBe(true);
         });
 
-        it("should clean cache when above threshold", async () => {
-            const { CommandHandlers } = await import("./command-handlers");
-            
-            const mockCleanAllCache = createTrackingFn();
-            // Create an object with more than CACHE_THRESHOLD keys
-            const usedHashes: Record<string, number> = {};
-            for (let i = 0; i < CACHE_THRESHOLD + 1; i++) {
-                usedHashes[`key${i}`] = i;
-            }
-            
-            const mockContext = {
-                cacheHelper: {
-                    usedHashes,
-                    cleanAllCache: mockCleanAllCache.fn,
-                },
-            } as any;
-
-            const result = CommandHandlers[ReservedFunctions.STARTED_THE_RUN]({}, mockContext);
-
-            expect(result.handled).toBe(true);
-            expect(result.result).toEqual({});
-            expect(mockCleanAllCache.calls.length).toBe(1);
-        });
-    });
-
-    describe("ADD_OC handler", () => {
-        it("should add dependencies to plugins when available", async () => {
-            const { CommandHandlers } = await import("./command-handlers");
-            
-            const mockContext = {
-                openCascade: {
-                    plugins: {
-                        dependencies: {} as Record<string, unknown>,
-                    },
-                },
-                addPendingDependency: createTrackingFn().fn,
-            } as any;
-
-            const result = CommandHandlers[ReservedFunctions.ADD_OC](
-                { dep1: "value1", dep2: "value2" },
-                mockContext
-            );
-
-            expect(result.handled).toBe(true);
-            expect(mockContext.openCascade.plugins.dependencies.dep1).toBe("value1");
-            expect(mockContext.openCascade.plugins.dependencies.dep2).toBe("value2");
+        it("should not mistake a shape reference for an entity", () => {
+            expect(isEntityReference(createShapeReference(42))).toBe(false);
         });
 
-        it("should use addPendingDependency when plugins not available", async () => {
-            const { CommandHandlers } = await import("./command-handlers");
-            
-            const mockAddPending = createTrackingFn();
-            const mockContext = {
-                openCascade: null,
-                addPendingDependency: mockAddPending.fn,
-            } as any;
-
-            const result = CommandHandlers[ReservedFunctions.ADD_OC](
-                { dep1: "value1" },
-                mockContext
-            );
-
-            expect(result.handled).toBe(true);
-            expect(mockAddPending.calls[0]).toEqual(["dep1", "value1"]);
+        it("should not mistake an object without a hash for an entity", () => {
+            expect(isEntityReference({ type: "occ-entity" })).toBe(false);
         });
-    });
 
-    describe("SHAPES_TO_MESHES handler", () => {
-        it("should throw error when no shapes provided", async () => {
-            const { CommandHandlers } = await import("./command-handlers");
-            
-            const mockContext = {} as any;
+        it("should not mistake nothing for an entity", () => {
+            expect(isEntityReference(null)).toBe(false);
+        });
 
-            expect(() => {
-                CommandHandlers[ReservedFunctions.SHAPES_TO_MESHES]({ shapes: [] }, mockContext);
-            }).toThrow("No shapes detected");
-
-            expect(() => {
-                CommandHandlers[ReservedFunctions.SHAPES_TO_MESHES]({}, mockContext);
-            }).toThrow("No shapes detected");
+        it("should not mistake a number for an entity", () => {
+            expect(isEntityReference(42)).toBe(false);
         });
     });
 });
-
-// A hand-rolled spy: these assertions want the recorded arguments, not a mock's behaviour.
-function createTrackingFn<T = unknown>(): { fn: (...args: unknown[]) => T; calls: unknown[][] } {
-    const calls: unknown[][] = [];
-    const fn = (...args: unknown[]): T => {
-        calls.push(args);
-        return undefined as T;
-    };
-    return { fn, calls };
-}

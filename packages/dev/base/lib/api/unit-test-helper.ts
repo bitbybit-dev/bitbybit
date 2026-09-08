@@ -105,7 +105,6 @@ export class UnitTestHelper {
         expected: Inputs.Base.Point3[],
         tolerance = 1e-6
     ) {
-        // Use expectPointsClose helper for individual point comparison if needed
         const expectPointsClose = (act: Inputs.Base.Point3 | undefined, exp: Inputs.Base.Point3 | undefined, tol = 1e-6) => {
             const precision = Math.max(0, Math.ceil(-Math.log10(tol)) - 1);
             if (exp === undefined) {
@@ -122,11 +121,9 @@ export class UnitTestHelper {
 
         expect(actual).toBeDefined();
 
-        // Proceed only if actual is defined
         if (actual) {
             expect(actual.length).toEqual(expected.length);
 
-            // Sort both arrays to compare independent of order
             const sortedActual = this.sortPoints(actual);
             const sortedExpected = this.sortPoints(expected);
 

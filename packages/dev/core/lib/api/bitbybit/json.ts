@@ -1,6 +1,17 @@
 import { ContextBase } from "../context";
 import * as Inputs from "../inputs";
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+    typeof value === "object" && value !== null;
+
+const asJsonInput = (value: unknown): null | boolean | number | string | object => {
+    if (value === null || typeof value === "object" || typeof value === "string"
+        || typeof value === "number" || typeof value === "boolean") {
+        return value;
+    }
+    return null;
+};
+
 /**
  * Contains various json path methods.
  * <div>
@@ -44,7 +55,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     query(inputs: Inputs.JSON.QueryDto): any {
-        return this.context.jsonpath({ path: inputs.query, json: inputs.json });
+        return this.context.jsonpath({ path: inputs.query, json: asJsonInput(inputs.json) });
     }
 
     /**
@@ -56,8 +67,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     setValueOnProp(inputs: Inputs.JSON.SetValueOnPropDto): any {
-        // must be an object
-        const clonedJson = { ...structuredClone(inputs.json) };
+        const clonedJson = { ...structuredClone(inputs.json) as Record<string, unknown> };
         clonedJson[inputs.property] = inputs.value;
         return clonedJson;
     }
@@ -72,7 +82,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     getJsonFromArrayByFirstPropMatch(inputs: Inputs.JSON.GetJsonFromArrayByFirstPropMatchDto): any {
-        return inputs.jsonArray.find(j => j[inputs.property] === inputs.match);
+        return inputs.jsonArray.find(j => isRecord(j) && j[inputs.property] === inputs.match);
     }
 
     /**
@@ -84,12 +94,11 @@ export class JSONBitByBit {
      * @drawable false
      */
     getValueOnProp(inputs: Inputs.JSON.GetValueOnPropDto): any {
-        // must be an object
         try {
-            const clonedJson = { ...structuredClone(inputs.json) };
+            const clonedJson = { ...structuredClone(inputs.json) as Record<string, unknown> };
             return clonedJson[inputs.property];
         } catch {
-            return inputs.json[inputs.property];
+            return (inputs.json as Record<string, unknown>)[inputs.property];
         }
     }
 
@@ -102,7 +111,6 @@ export class JSONBitByBit {
      * @drawable false
      */
     setValue(inputs: Inputs.JSON.SetValueDto): any {
-        // must be an object
         if (inputs.json instanceof Object) {
             const clonedJson = { ...structuredClone(inputs.json) };
 
@@ -131,8 +139,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     setValuesOnPaths(inputs: Inputs.JSON.SetValuesOnPathsDto): any {
-        // must be an object
-        let clonedJson = { ...structuredClone(inputs.json) };
+        let clonedJson = { ...structuredClone(inputs.json) as Record<string, unknown> };
         inputs.paths.forEach((path, index) => {
             clonedJson = this.setValue({ json: clonedJson, path, value: inputs.values[index], prop: inputs.props[index]! });
         });
@@ -148,7 +155,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     paths(inputs: Inputs.JSON.PathsDto): any {
-        const paths = this.context.jsonpath({ json: inputs.json, path: inputs.query, resultType: "path" });
+        const paths = this.context.jsonpath({ json: asJsonInput(inputs.json), path: inputs.query, resultType: "path" });
         return paths;
     }
 

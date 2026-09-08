@@ -6,14 +6,14 @@
 export namespace JSON {
 
     export class StringifyDto {
-        constructor(json?: any) {
+        constructor(json?: unknown) {
             if (json !== undefined) { this.json = json; }
         }
         /**
          * Stringify value
          * @default undefined
          */
-        json: any;
+        json: unknown;
     }
     export class ParseDto {
         constructor(text?: string) {
@@ -26,7 +26,7 @@ export namespace JSON {
         text = "[0, 0, 0]";
     }
     export class QueryDto {
-        constructor(json?: any, query?: string) {
+        constructor(json?: unknown, query?: string) {
             if (json !== undefined) { this.json = json; }
             if (query !== undefined) { this.query = query; }
         }
@@ -34,7 +34,7 @@ export namespace JSON {
          * query json structure
          * @default undefined
          */
-        json: any;
+        json: unknown;
         /**
          * query path
          * @default undefined
@@ -43,7 +43,7 @@ export namespace JSON {
     }
 
     export class SetValueOnPropDto {
-        constructor(json?: any, value?: any, property?: string) {
+        constructor(json?: unknown, value?: unknown, property?: string) {
             if (json !== undefined) { this.json = json; }
             if (value !== undefined) { this.value = value; }
             if (property !== undefined) { this.property = property; }
@@ -52,12 +52,12 @@ export namespace JSON {
         * query json structure
         * @default undefined
         */
-        json: any;
+        json: unknown;
         /**
          * value to be set
          * @default undefined
          */
-        value: any;
+        value: unknown;
         /**
          * query json structure
          * @default propName
@@ -66,7 +66,7 @@ export namespace JSON {
     }
 
     export class GetJsonFromArrayByFirstPropMatchDto {
-        constructor(jsonArray?: any[], property?: string, match?: any) {
+        constructor(jsonArray?: unknown[], property?: string, match?: unknown) {
             if (jsonArray !== undefined) { this.jsonArray = jsonArray; }
             if (property !== undefined) { this.property = property; }
             if (match !== undefined) { this.match = match; }
@@ -75,7 +75,7 @@ export namespace JSON {
          * Array
          * @default undefined
          */
-        jsonArray!: any[];
+        jsonArray!: unknown[];
         /**
          * property to check
          * @default propName
@@ -85,11 +85,11 @@ export namespace JSON {
          * Value to match for the property
          * @default undefined
          */
-        match: any;
+        match: unknown;
     }
 
     export class GetValueOnPropDto {
-        constructor(json?: any, property?: string) {
+        constructor(json?: unknown, property?: string) {
             if (json !== undefined) { this.json = json; }
             if (property !== undefined) { this.property = property; }
         }
@@ -97,7 +97,7 @@ export namespace JSON {
         * query json structure
         * @default undefined
         */
-        json: any;
+        json: unknown;
         /**
          * query json structure
          * @default propName
@@ -106,7 +106,7 @@ export namespace JSON {
     }
 
     export class SetValueDto {
-        constructor(json?: any, value?: any, path?: string, prop?: string) {
+        constructor(json?: unknown, value?: unknown, path?: string, prop?: string) {
             if (json !== undefined) { this.json = json; }
             if (value !== undefined) { this.value = value; }
             if (path !== undefined) { this.path = path; }
@@ -116,12 +116,12 @@ export namespace JSON {
         * query json structure
         * @default undefined
         */
-        json: any;
+        json: unknown;
         /**
          * value to be set
          * @default undefined
          */
-        value: any;
+        value: unknown;
         /**
          * query to json structure elements on which given prop has to be updated
          * @default $.pathToParent
@@ -135,7 +135,7 @@ export namespace JSON {
     }
 
     export class SetValuesOnPathsDto {
-        constructor(json?: any, values?: any[], paths?: string[], props?: []) {
+        constructor(json?: unknown, values?: unknown[], paths?: string[], props?: string[]) {
             if (json !== undefined) { this.json = json; }
             if (values !== undefined) { this.values = values; }
             if (paths !== undefined) { this.paths = paths; }
@@ -145,12 +145,12 @@ export namespace JSON {
         * query json structure
         * @default undefined
         */
-        json: any;
+        json: unknown;
         /**
          * values to be set
          * @default undefined
          */
-        values!: any[];
+        values!: unknown[];
         /**
          * query json structures
          * @default undefined
@@ -163,7 +163,7 @@ export namespace JSON {
         props!: string[];
     }
     export class PathsDto {
-        constructor(json?: any, query?: string) {
+        constructor(json?: unknown, query?: string) {
             if (json !== undefined) { this.json = json; }
             if (query !== undefined) { this.query = query; }
         }
@@ -171,7 +171,7 @@ export namespace JSON {
          * query json structure
          * @default undefined
          */
-        json: any;
+        json: unknown;
         /**
          * query path 
          * @default undefined
@@ -180,13 +180,13 @@ export namespace JSON {
     }
 
     export class JsonDto {
-        constructor(json?: any) {
+        constructor(json?: unknown) {
             if (json !== undefined) { this.json = json; }
         }
         /**
          * json value
          * @default undefined
          */
-        json: any;
+        json: unknown;
     }
 }

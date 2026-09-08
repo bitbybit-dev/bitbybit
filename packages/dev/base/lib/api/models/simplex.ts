@@ -1,8 +1,23 @@
+/*
+ * Hershey vector font data, taken from http://paulbourke.net/dataformats/hershey/ by way of the
+ * OpenJSCAD project (https://github.com/jscad/OpenJSCAD.org), which publishes it under the MIT
+ * License. The notice travels with the data.
+ */
 
-// -- data source from from http://paulbourke.net/dataformats/hershey/
-// -- original source form openjscad github repo https://github.com/jscad/OpenJSCAD.org (MIT License)
-// { [ascii code]: [width, x, y, ...] } - undefined value as path separator
-
+/**
+ * A Hershey vector font: `height` is the design height every stroke coordinate is expressed
+ * against - it is the divisor that scales a glyph to a requested character height - and every other
+ * key is a character's code point mapped to its stroke data.
+ *
+ * The stroke array opens with the character's advance width and continues as `x, y` pairs, each
+ * pair a point on the current stroke. `undefined` is the path separator: it ends the stroke before
+ * it and begins a new one, so a character drawn in several disconnected strokes - the two bars of
+ * an equals sign, the dot of an `i` - is one array rather than several. Consecutive points are
+ * joined; points either side of an `undefined` are not.
+ *
+ * Keys are code points, not indices, so the map is sparse and reaches past ASCII: 176 is the degree
+ * symbol. A code point the font does not carry has no entry, which is why lookups are optional.
+ */
 export type VectorFont = { height: number } & { [code: number]: (number | undefined)[] };
 
 export const simplex: VectorFont = {
@@ -103,90 +118,60 @@ export const simplex: VectorFont = {
     125: [14, 5, 25, 7, 24, 8, 23, 9, 21, 9, 19, 8, 17, 7, 16, 6, 14, 6, 12, 8, 10, undefined, 7, 24, 8, 22, 8, 20, 7, 18, 6, 17, 5, 15, 5, 13, 6, 11, 10, 9, 6, 7, 5, 5, 5, 3, 6, 1, 7, 0, 8, -2, 8, -4, 7, -6, undefined, 8, 8, 6, 6, 6, 4, 7, 2, 8, 1, 9, -1, 9, -3, 8, -5, 7, -6, 5, -7],
     126: [24, 3, 6, 3, 8, 4, 11, 6, 12, 8, 12, 10, 11, 14, 8, 16, 7, 18, 7, 20, 8, 21, 10, undefined, 3, 8, 4, 10, 6, 11, 8, 11, 10, 10, 14, 7, 16, 6, 18, 6, 20, 7, 21, 10, 21, 12],
     
-    // Extended characters for units and measurements
-    // 176: ° (degree symbol)
     176: [14, 7, 21, 5, 20, 4, 18, 4, 16, 5, 14, 7, 13, 9, 14, 10, 16, 10, 18, 9, 20, 7, 21],
     
-    // 178: ² (superscript 2) - positioned at top, same size as other superscripts
     178: [14, 5, 17, 5, 18, 6, 19, 7, 20, 9, 21, 10, 21, 11, 20, 12, 19, 12, 18, 11, 17, 10, 16, 6, 14, 12, 14],
     
-    // 179: ³ (superscript 3) - cleaner design matching ²
     179: [14, 5, 21, 11, 21, 8, 18, 9, 18, 10, 17, 11, 16, 11, 15, 10, 14, 8, 14, 6, 15, 5, 16],
     
-    // 181: µ (micro symbol)
     181: [19, 4, 14, 4, -7, undefined, 4, 14, 4, 4, 5, 1, 7, 0, 10, 0, 12, 1, 15, 4, undefined, 15, 14, 15, 0],
     
-    // 185: ¹ (superscript 1) - same size and position as ²
     185: [14, 7, 19, 8, 20, 10, 21, 10, 14],
     
-    // 188: ¼ (one quarter) - slash going / direction (bottom-left to top-right)
     188: [26, 4, 19, 5, 20, 7, 21, 7, 14, undefined, 6, 0, 18, 21, undefined, 16, 11, 16, 7, 22, 7, undefined, 18, 11, 18, 0, undefined, 16, 0, 22, 0],
     
-    // 189: ½ (one half) - slash going / direction (bottom-left to top-right)
     189: [26, 4, 19, 5, 20, 7, 21, 7, 14, undefined, 6, 0, 18, 21, undefined, 15, 4, 15, 5, 16, 6, 17, 7, 19, 7, 20, 6, 20, 5, 19, 4, 17, 2, 15, 0, 21, 0],
     
-    // 190: ¾ (three quarters) - slash going / direction (bottom-left to top-right)
     190: [26, 4, 21, 10, 21, 8, 18, 9, 18, 10, 17, 11, 16, 11, 15, 10, 14, 8, 14, 6, 15, 5, 16, undefined, 6, 0, 18, 21, undefined, 16, 11, 16, 7, 22, 7, undefined, 18, 11, 18, 0, undefined, 16, 0, 22, 0],
     
-    // 215: × (multiplication sign)
     215: [18, 3, 15, 15, 3, undefined, 15, 15, 3, 3],
     
-    // 247: ÷ (division sign)
     247: [22, 4, 9, 18, 9, undefined, 11, 15, 10, 14, 11, 13, 12, 14, 11, 15, undefined, 11, 5, 10, 4, 11, 3, 12, 4, 11, 5],
     
-    // Additional useful characters
-    // 177: ± (plus-minus) - better proportions
     177: [26, 13, 18, 13, 6, undefined, 4, 12, 22, 12, undefined, 4, 3, 22, 3],
     
-    // 8304: ⁰ (superscript 0) - same size and position as other superscripts
     8304: [14, 8, 21, 7, 20, 6, 19, 5, 17, 5, 15, 6, 14, 8, 14, 9, 14, 11, 15, 12, 17, 12, 19, 11, 20, 9, 21, 8, 21],
     
-    // 8308: ⁴ (superscript 4) - same size and position
     8308: [14, 10, 21, 6, 17, 12, 17, undefined, 10, 21, 10, 14],
     
-    // 8309: ⁵ (superscript 5) - cleaner design
     8309: [14, 11, 21, 6, 21, 5, 17, 6, 17, 7, 18, 9, 18, 10, 17, 11, 16, 11, 15, 10, 14, 8, 14, 6, 15, 5, 16],
     
-    // 8310: ⁶ (superscript 6) - same size and position
     8310: [14, 11, 19, 10, 20, 9, 21, 7, 21, 6, 20, 5, 18, 5, 15, 6, 14, 8, 14, 9, 14, 10, 15, 11, 16, 11, 17, 10, 18, 9, 18, 8, 17, 7, 16, 6, 15],
     
-    // 8311: ⁷ (superscript 7) - same size and position
     8311: [14, 11, 21, 7, 14, undefined, 5, 21, 11, 21],
     
-    // 8312: ⁸ (superscript 8) - same size and position
     8312: [14, 8, 21, 7, 20, 6, 19, 6, 18, 7, 17, 8, 17, 9, 18, 10, 19, 10, 20, 9, 21, 8, 21, 7, 20, undefined, 8, 17, 7, 16, 6, 15, 6, 14, 7, 13, 8, 13, 9, 14, 10, 15, 10, 16, 9, 17],
     
-    // 8313: ⁹ (superscript 9) - same size and position
     8313: [14, 10, 17, 9, 16, 8, 16, 7, 17, 6, 18, 6, 19, 7, 20, 8, 20, 9, 19, 10, 18, 10, 15, 9, 14, 7, 14, 6, 15, 5, 16],
     
-    // 8320: ₀ (subscript 0)
     8320: [14, 8, 7, 7, 6, 6, 5, 5, 3, 5, 1, 6, 0, 8, 0, 9, 0, 11, 1, 12, 3, 12, 5, 11, 6, 9, 7, 8, 7],
     
-    // 8321: ₁ (subscript 1)
     8321: [14, 7, 5, 8, 6, 10, 7, 10, 0],
     
-    // 8322: ₂ (subscript 2)
     8322: [14, 5, 4, 5, 5, 6, 6, 7, 7, 9, 7, 10, 6, 11, 5, 11, 4, 10, 3, 9, 2, 6, 0, 12, 0],
     
-    // 8323: ₃ (subscript 3)
     8323: [14, 5, 7, 11, 7, 8, 4, 10, 4, 11, 3, 12, 2, 12, 1, 11, 0, 9, 0, 7, 1, 6, 2, 5, 3],
     
-    // 8324: ₄ (subscript 4)
     8324: [14, 10, 7, 6, 3, 12, 3, undefined, 10, 7, 10, 0],
     
-    // 8776: ≈ (approximately equal)
     8776: [24, 3, 11, 4, 13, 6, 14, 8, 14, 10, 13, 14, 10, 16, 9, 18, 9, 20, 10, 21, 12, undefined, 3, 5, 4, 7, 6, 8, 8, 8, 10, 7, 14, 4, 16, 3, 18, 3, 20, 4, 21, 6],
     
-    // 8730: √ (square root) - fixed to look like a proper check mark with extension
     8730: [20, 4, 12, 6, 8, 8, 0, undefined, 8, 0, 10, 21, undefined, 10, 21, 20, 21],
     
-    // 8731: ∛ (cube root) - with cleaner 3 indicator
     8731: [24, 2, 21, 5, 21, 4, 19, 5, 18, 6, 17, 6, 16, 5, 15, 3, 15, 2, 16, undefined, 8, 12, 10, 8, 12, 0, undefined, 12, 0, 14, 21, undefined, 14, 21, 24, 21],
     
-    // 8732: ∜ (fourth root) - with 4 indicator same size as 3
     8732: [24, 5, 21, 3, 18, 6, 18, undefined, 5, 21, 5, 15, undefined, 8, 12, 10, 8, 12, 0, undefined, 12, 0, 14, 21, undefined, 14, 21, 24, 21],
     
-    // 8960: ⌀ (diameter symbol) - circle with diagonal slash
     8960: [22, 9, 21, 7, 20, 5, 18, 4, 16, 3, 13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0, 13, 0, 15, 1, 17, 3, 18, 5, 19, 8, 19, 13, 18, 16, 17, 18, 15, 20, 13, 21, 9, 21, undefined, 6, 3, 16, 18]
 };
 
@@ -196,8 +181,8 @@ export const defaultsVectorParams = {
     input: "?",
     align: "left",
     font: simplex,
-    height: 21, // == old vector_xxx simplex font height
-    lineSpacing: 2.142857142857143, // == 30/14 == old vector_xxx ratio
+    height: 21,
+    lineSpacing: 2.142857142857143,
     letterSpacing: 1,
     extrudeOffset: 0
 };

@@ -1,0 +1,7 @@
+// What `tsc` emits the published CLI from. It is the editor view minus the specs: everything else
+// - the NodeNext module setting, the strict base, the source maps - comes from there, so the two
+// cannot drift apart.
+{
+    "extends": "./tsconfig.json",
+    "exclude": ["node_modules", "dist", "templates", "src/**/*.test.ts", "vitest.config.ts"]
+}

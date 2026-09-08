@@ -64,7 +64,14 @@ export class ManifoldWorkerManager {
         this.promisesMade = [];
     }
 
-    genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any> {
+    /**
+     * The one call across to the worker. `T` is what the worker answers with, and it arrives here by
+     * inference from the API method that declares it; a call that declares nothing gets `unknown`
+     * and has to say what it expects. Nothing can check the answer - it crossed a postMessage - so
+     * the assertion below is where an untyped wire value becomes the caller's declared type, and a
+     * wrong `T` is a wrong declaration rather than a cast that failed.
+     */
+    genericCallToWorkerPromise<T = unknown>(functionName: string, inputs: unknown): Promise<T> {
         const uid = `call${Math.random()}${Date.now()}`;
         const obj: PendingCall = { uid };
         const prom = new Promise((resolve, reject) => {
@@ -80,7 +87,7 @@ export class ManifoldWorkerManager {
             uid,
         });
 
-        return prom;
+        return prom as Promise<T>;
     }
 
     /**
@@ -88,7 +95,7 @@ export class ManifoldWorkerManager {
      * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
      * In this way it is possible to hace the cache of manageable size
      */
-    startedTheRun(): Promise<any> {
+    startedTheRun(): Promise<void> {
         return this.genericCallToWorkerPromise("startedTheRun", {});
     }
 
@@ -97,7 +104,7 @@ export class ManifoldWorkerManager {
      * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
      * In this way it is possible to hace the cache of manageable size
      */
-    cleanAllCache(): Promise<any> {
+    cleanAllCache(): Promise<void> {
         return this.genericCallToWorkerPromise("cleanAllCache", {});
     }
 

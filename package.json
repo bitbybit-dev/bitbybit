@@ -29,6 +29,7 @@
         "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
         "lint:fix": "eslint --cache --cache-location ./node_modules/.cache/eslint . --fix",
         "typecheck:strict": "pnpm -r run typecheck:strict",
+        "typecheck:tests": "pnpm -r run typecheck:tests",
         "check:strict-baselines": "node scripts/check-strict-baselines.mjs",
         "check:worker-parity": "node scripts/worker-parity.mjs",
         "gen:worker-api": "node scripts/gen-worker-api.mjs",
@@ -76,6 +77,7 @@
     "homepage": "https://bitbybit.dev",
     "devDependencies": {
         "@eslint/js": "10.0.1",
+        "@types/node": "22.20.1",
         "eslint": "10.10.0",
         "globals": "17.12.0",
         "shx": "^0.4.0",

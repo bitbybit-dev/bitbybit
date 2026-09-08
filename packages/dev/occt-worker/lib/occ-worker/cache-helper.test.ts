@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { CacheHelper } from "./cache-helper";
 
@@ -140,7 +140,6 @@ describe("CacheHelper unit tests", () => {
             expect(digest).toBeDefined();
             expect(digest.length).toBe(LARGE.length);
             expect(typeof digest.__largeStringDigest__).toBe("number");
-            // Identical content -> identical digest, different content -> different digest
             expect(cacheHelper.digestIfLargeOrBinary("x".repeat(LARGE.length))).toEqual(digest);
             const other = cacheHelper.digestIfLargeOrBinary("y".repeat(LARGE.length));
             expect(other.__largeStringDigest__).not.toBe(digest.__largeStringDigest__);
@@ -155,7 +154,6 @@ describe("CacheHelper unit tests", () => {
             expect(typeof da.__binaryDigest__).toBe("number");
             expect(cacheHelper.digestIfLargeOrBinary(b)).toEqual(da);
             expect(cacheHelper.digestIfLargeOrBinary(c).__binaryDigest__).not.toBe(da.__binaryDigest__);
-            // ArrayBuffer is digested the same way as its view
             expect(cacheHelper.digestIfLargeOrBinary(a.buffer).__binaryDigest__).toBe(da.__binaryDigest__);
         });
 
@@ -170,7 +168,6 @@ describe("CacheHelper unit tests", () => {
             expect(hashable).not.toBe(args);
             expect(hashable.inputs.stepData.__largeStringDigest__).toBeDefined();
             expect(hashable.inputs.scale).toBe(2);
-            // original args are not mutated
             expect(args.inputs.stepData).toBe(LARGE);
         });
 
@@ -180,8 +177,8 @@ describe("CacheHelper unit tests", () => {
             const c = { functionName: "loadStep", inputs: { stepData: "y".repeat(LARGE.length) } };
             const ha = cacheHelper.computeHash(a);
             expect(typeof ha).toBe("number");
-            expect(cacheHelper.computeHash(b)).toBe(ha); // same content -> same hash
-            expect(cacheHelper.computeHash(c)).not.toBe(ha); // different content -> different hash
+            expect(cacheHelper.computeHash(b)).toBe(ha);
+            expect(cacheHelper.computeHash(c)).not.toBe(ha);
         });
 
         it("cacheOp caches results of large-input ops and serves them on re-run", () => {
@@ -195,12 +192,10 @@ describe("CacheHelper unit tests", () => {
             expect(missCount).toBe(1);
             expect(result.hash).toBeDefined();
 
-            // Re-run with identical large input -> cache hit, cacheMiss not called
             const result2 = cacheHelper.cacheOp(args, () => { missCount++; return shape; });
             expect(missCount).toBe(1);
             expect(result2.hash).toBe(result.hash);
 
-            // Different large content -> different hash -> cache miss
             const argsOther = { functionName: "loadStep", inputs: { stepData: "z".repeat(LARGE.length) } };
             cacheHelper.cacheOp(argsOther, () => { missCount++; return shape; });
             expect(missCount).toBe(2);
@@ -230,12 +225,10 @@ describe("CacheHelper unit tests", () => {
                 warnings: [],
             }));
 
-            // Every nested shape gets a unique hash...
             expect(result.shapes[0].shape.hash).toBeDefined();
             expect(result.shapes[1].shape.hash).toBeDefined();
             expect(result.shapes[0].shape.hash).not.toBe(result.shapes[1].shape.hash);
 
-            // ...and is resolvable from the cache by that hash (what the input resolver relies on).
             expect(cacheHelper.checkCache(result.shapes[0].shape.hash)).toBeTruthy();
             expect(cacheHelper.checkCache(result.shapes[1].shape.hash)).toBeTruthy();
 
@@ -313,10 +306,8 @@ describe("CacheHelper unit tests", () => {
             const hash = "test-hash-deleted";
             cacheHelper.addToCache(hash, shape);
             
-            // Delete the shape
             shape.delete();
             
-            // Should return null because shape is deleted
             const cached = cacheHelper.checkCache(hash);
             expect(cached).toBeNull();
             
@@ -365,10 +356,8 @@ describe("CacheHelper unit tests", () => {
             
             cacheHelper.addToCache(hash, shapes);
             
-            // Delete one shape
             shape1.delete();
             
-            // Should return null because one shape is deleted
             const cached = cacheHelper.checkCache(hash);
             expect(cached).toBeNull();
             
@@ -405,11 +394,9 @@ describe("CacheHelper unit tests", () => {
                 return mockResult;
             };
             
-            // First call - should call cacheMiss
             cacheHelper.cacheOp(args, cacheMiss);
             expect(cacheMissCallCount).toBe(1);
             
-            // Second call - should use cache
             let cacheMiss2Called = false;
             const cacheMiss2 = () => {
                 cacheMiss2Called = true;
@@ -438,7 +425,6 @@ describe("CacheHelper unit tests", () => {
             expect(result.hash).toBeDefined();
             expect(cacheMissCallCount).toBe(1);
             
-            // Second call should use cache
             let cacheMiss2Called = false;
             const cacheMiss2 = () => {
                 cacheMiss2Called = true;
@@ -493,14 +479,11 @@ describe("CacheHelper unit tests", () => {
                 return shape1;
             };
             
-            // First call - creates and caches
             cacheHelper.cacheOp(args, cacheMiss1);
             expect(cacheMiss1CallCount).toBe(1);
             
-            // Delete the shape
             shape1.delete();
             
-            // Second call - should detect deleted shape and call cacheMiss again
             const point2 = new occt.gp_Pnt(0, 0, 0);
             const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
             const shape2 = vertex2.Vertex();
@@ -545,7 +528,6 @@ describe("CacheHelper unit tests", () => {
             cacheHelper.cleanCacheForHash(hash);
             expect(cacheHelper.checkCache(hash)).toBeNull();
             
-            // Clean up remaining objects
             vertex.delete();
             point.delete();
         });
@@ -591,7 +573,6 @@ describe("CacheHelper unit tests", () => {
             expect(cacheHelper.checkCache("hash1")).toBeNull();
             expect(cacheHelper.checkCache("hash2")).toBeNull();
             
-            // Clean up remaining objects
             vertex1.delete();
             vertex2.delete();
             point1.delete();
@@ -611,14 +592,12 @@ describe("CacheHelper unit tests", () => {
             expect(cacheHelper.checkCache("value-hash")).toBeDefined();
             expect(cacheHelper.checkCache("number-hash")).toBeDefined();
             
-            // Should clean all without errors
             expect(() => cacheHelper.cleanAllCache()).not.toThrow();
             
             expect(cacheHelper.checkCache("shape-hash")).toBeNull();
             expect(cacheHelper.checkCache("value-hash")).toBeNull();
             expect(cacheHelper.checkCache("number-hash")).toBeNull();
             
-            // Clean up remaining objects
             vertex1.delete();
             point1.delete();
         });
@@ -637,7 +616,6 @@ describe("CacheHelper unit tests", () => {
             expect(() => cacheHelper.cleanAllCache()).not.toThrow();
             expect(cacheHelper.checkCache("array-hash")).toBeNull();
             
-            // Clean up remaining objects
             vertex1.delete();
             vertex2.delete();
             point1.delete();
@@ -645,7 +623,6 @@ describe("CacheHelper unit tests", () => {
         });
 
         it("should clean all entries from argCache not just usedHashes", () => {
-            // Manually add to argCache without going through cacheOp
             cacheHelper.argCache["manual-hash"] = { value: "manual" };
             cacheHelper.usedHashes["used-hash"] = "used-hash";
             cacheHelper.argCache["used-hash"] = { value: "used" };
@@ -655,7 +632,6 @@ describe("CacheHelper unit tests", () => {
             
             cacheHelper.cleanAllCache();
             
-            // Both should be cleaned, not just usedHashes
             expect(cacheHelper.checkCache("manual-hash")).toBeNull();
             expect(cacheHelper.checkCache("used-hash")).toBeNull();
         });
@@ -669,7 +645,6 @@ describe("CacheHelper unit tests", () => {
             cacheHelper.cacheOp(args, cacheMiss);
             cacheHelper.cleanAllCache();
             
-            // After clean, should call cacheMiss again
             let cacheMiss2CallCount = 0;
             const cacheMiss2 = () => {
                 cacheMiss2CallCount++;
@@ -687,28 +662,22 @@ describe("CacheHelper unit tests", () => {
             const value1 = { data: "value1" };
             const value2 = { data: "value2" };
             
-            // First run - cache both operations
             cacheHelper.cacheOp(args1, () => value1);
             cacheHelper.cacheOp(args2, () => value2);
             
             const hash1 = cacheHelper.computeHash(args1);
             const hash2 = cacheHelper.computeHash(args2);
             
-            // Both should be in cache
             expect(cacheHelper.checkCache(hash1)).toBeDefined();
             expect(cacheHelper.checkCache(hash2)).toBeDefined();
             
-            // Clean up cache - this updates hashesFromPreviousRun
             cacheHelper.cleanUpCache();
             
-            // Second run - only use args1
-            cacheHelper.usedHashes = {}; // Reset used hashes to simulate new run
+            cacheHelper.usedHashes = {};
             cacheHelper.cacheOp(args1, () => value1);
             
-            // Clean up - should remove hash2 as it wasn't used in second run
             cacheHelper.cleanUpCache();
             
-            // hash1 should still be there, hash2 should be removed
             expect(cacheHelper.checkCache(hash1)).toBeDefined();
             expect(cacheHelper.checkCache(hash2)).toBeNull();
         });
@@ -725,27 +694,22 @@ describe("CacheHelper unit tests", () => {
             const args1 = { functionName: "createVertex", point: [0, 0, 0] };
             const args2 = { functionName: "createVertex", point: [1, 1, 1] };
             
-            // First run - cache both shapes
             cacheHelper.cacheOp(args1, () => shape1);
             cacheHelper.cacheOp(args2, () => shape2);
             
             const hash1 = cacheHelper.computeHash(args1);
             const hash2 = cacheHelper.computeHash(args2);
             
-            // First cleanup - sets up hashesFromPreviousRun
             cacheHelper.cleanUpCache();
             
-            // Second run - only use shape1
             cacheHelper.usedHashes = {};
             cacheHelper.cacheOp(args1, () => shape1);
             
-            // Second cleanup - should remove shape2
             cacheHelper.cleanUpCache();
             
             expect(cacheHelper.checkCache(hash1)).toBeDefined();
             expect(cacheHelper.checkCache(hash2)).toBeNull();
             
-            // Clean up remaining objects
             vertex1.delete();
             vertex2.delete();
             point1.delete();
@@ -764,20 +728,16 @@ describe("CacheHelper unit tests", () => {
             const shapes = [shape1, shape2];
             const args = { functionName: "createVertices" };
             
-            // Cache array of shapes
             cacheHelper.cacheOp(args, () => shapes);
             cacheHelper.cleanUpCache();
             
-            // Simulate new run without using this cache
             cacheHelper.usedHashes = {};
             
-            // Should clean up the array
             cacheHelper.cleanUpCache();
             
             const hash = cacheHelper.computeHash(args);
             expect(cacheHelper.checkCache(hash)).toBeNull();
             
-            // Clean up remaining objects
             vertex1.delete();
             vertex2.delete();
             point1.delete();
@@ -788,16 +748,13 @@ describe("CacheHelper unit tests", () => {
             const args = { functionName: "test" };
             const value = { data: "test" };
             
-            // First run
             cacheHelper.cacheOp(args, () => value);
             cacheHelper.cleanUpCache();
             
-            // Second run - use same cache
             cacheHelper.usedHashes = {};
             cacheHelper.cacheOp(args, () => value);
             cacheHelper.cleanUpCache();
             
-            // Should still be in cache
             const hash = cacheHelper.computeHash(args);
             expect(cacheHelper.checkCache(hash)).toBeDefined();
         });
@@ -806,10 +763,8 @@ describe("CacheHelper unit tests", () => {
             const args = { functionName: "test" };
             const value = { data: "test" };
             
-            // Clean up with no previous run
             expect(() => cacheHelper.cleanUpCache()).not.toThrow();
             
-            // Now add something and clean up
             cacheHelper.cacheOp(args, () => value);
             expect(() => cacheHelper.cleanUpCache()).not.toThrow();
             
@@ -821,7 +776,6 @@ describe("CacheHelper unit tests", () => {
             const args1 = { functionName: "test1" };
             const args2 = { functionName: "test2" };
             
-            // First run
             cacheHelper.cacheOp(args1, () => ({ value: 1 }));
             cacheHelper.cacheOp(args2, () => ({ value: 2 }));
             
@@ -833,7 +787,6 @@ describe("CacheHelper unit tests", () => {
             
             cacheHelper.cleanUpCache();
             
-            // After cleanup, hashesFromPreviousRun should have both
             expect(cacheHelper.hashesFromPreviousRun[hash1]).toBe(hash1);
             expect(cacheHelper.hashesFromPreviousRun[hash2]).toBe(hash2);
         });
@@ -845,25 +798,19 @@ describe("CacheHelper unit tests", () => {
             
             const args1 = { functionName: "createVertex" };
             
-            // Cache the shape
             cacheHelper.cacheOp(args1, () => shape1);
             const hash1 = cacheHelper.computeHash(args1);
             
-            // First cleanup
             cacheHelper.cleanUpCache();
             
-            // Manually delete the shape
             shape1.delete();
             
-            // Second run without using this cache
             cacheHelper.usedHashes = {};
             
-            // Cleanup should handle already deleted shape gracefully
             expect(() => cacheHelper.cleanUpCache()).not.toThrow();
             
             expect(cacheHelper.checkCache(hash1)).toBeNull();
             
-            // Clean up remaining objects
             vertex1.delete();
             point1.delete();
         });
@@ -890,9 +837,6 @@ describe("CacheHelper unit tests", () => {
             const obj3 = { hash: "hash3", ptr: 789 };
             
             const array = [obj1, obj2, obj3];
-            // To remove by ptr when hash is different, both hash AND ptr must differ for an element to be kept
-            // The implementation uses OR logic: keep if (hash !== hash OR ptr !== ptr)
-            // This means an object is removed only if BOTH hash AND ptr match
             const toRemove = { hash: "hash2", ptr: 456 };
             const result = cacheHelper.remove(array, toRemove);
             
@@ -925,7 +869,6 @@ describe("CacheHelper unit tests", () => {
 
     describe("integration tests", () => {
         it("should handle complex caching scenario with multiple shapes", () => {
-            // Create multiple shapes
             const point1 = new occt.gp_Pnt(0, 0, 0);
             const vertex1Builder = new occt.BRepBuilderAPI_MakeVertex(point1);
             const shape1 = vertex1Builder.Vertex();
@@ -934,7 +877,6 @@ describe("CacheHelper unit tests", () => {
             const vertex2Builder = new occt.BRepBuilderAPI_MakeVertex(point2);
             const shape2 = vertex2Builder.Vertex();
             
-            // Cache them
             const args1 = { functionName: "createVertex", point: [0, 0, 0] };
             const args2 = { functionName: "createVertex", point: [1, 1, 1] };
             
@@ -945,14 +887,12 @@ describe("CacheHelper unit tests", () => {
             expect(result2.hash).toBeDefined();
             expect(result1.hash).not.toBe(result2.hash);
             
-            // Verify they're cached
             const cached1 = cacheHelper.cacheOp(args1, () => { throw new Error("Should not be called"); });
             const cached2 = cacheHelper.cacheOp(args2, () => { throw new Error("Should not be called"); });
             
             expect(cached1.hash).toBe(result1.hash);
             expect(cached2.hash).toBe(result2.hash);
             
-            // Clean up
             shape1.delete();
             shape2.delete();
             vertex1Builder.delete();
@@ -970,6 +910,466 @@ describe("CacheHelper unit tests", () => {
             
             expect(cacheHelper.usedHashes[hash]).toBe(hash);
             expect(cacheHelper.hashesFromPreviousRun[hash]).toBe(hash);
+        });
+    });
+
+    describe("cleaning an entry that holds a list", () => {
+        const makeShape = () => {
+            const point = new occt.gp_Pnt(0, 0, 0);
+            const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
+            const shape = vertex.Vertex();
+            vertex.delete();
+            point.delete();
+            return shape;
+        };
+
+        it("should free every shape of the list when the hash is cleaned", () => {
+            // Arrange
+            const shapes = [makeShape(), makeShape()];
+            cacheHelper.addToCache("list-hash", shapes);
+
+            // Act
+            cacheHelper.cleanCacheForHash("list-hash");
+
+            // Assert
+            expect(cacheHelper.checkCache("list-hash")).toBeNull();
+        });
+
+        it("should free every shape of the list when the whole cache is dropped", () => {
+            // Arrange
+            cacheHelper.addToCache("list-hash", [makeShape(), makeShape()]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should free every shape of a list the run no longer uses", () => {
+            // Arrange
+            cacheHelper.addToCache("list-hash", [makeShape()]);
+            cacheHelper.usedHashes = { "list-hash": "list-hash" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should keep going when a member of the list has already gone", () => {
+            // Arrange
+            const gone = makeShape();
+            const alive = makeShape();
+            cacheHelper.addToCache("list-hash", [gone, alive]);
+            gone.delete();
+
+            // Act & Assert
+            expect(() => cacheHelper.cleanCacheForHash("list-hash")).not.toThrow();
+        });
+
+        it("should skip an entry that holds nothing", () => {
+            // Arrange
+            cacheHelper.argCache["empty"] = null;
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+    });
+
+    describe("answers that carry kernel objects inside them", () => {
+        const makeShape = () => {
+            const point = new occt.gp_Pnt(0, 0, 0);
+            const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
+            const shape = vertex.Vertex();
+            vertex.delete();
+            point.delete();
+            return shape;
+        };
+
+        it("should hash the compound and every shape of an object definition", () => {
+            // Arrange
+            const compound = makeShape();
+            const part = makeShape();
+            const args = { functionName: "shapes.wire.textWiresWithData", inputs: { text: "AB" } };
+
+            // Act
+            const result = cacheHelper.cacheOp(args, () => ({
+                compound,
+                data: { type: "text", name: "AB" },
+                shapes: [{ id: "letter-a", shape: part }],
+            }));
+
+            // Assert
+            expect(result.compound.hash).toBeDefined();
+            expect(result.shapes[0].shape.hash).toBeDefined();
+        });
+
+        it("should serve an object definition from the cache on the second call", () => {
+            // Arrange
+            const args = { functionName: "shapes.wire.textWiresWithData", inputs: { text: "AB" } };
+            let calls = 0;
+            const first = cacheHelper.cacheOp(args, () => {
+                calls += 1;
+                return { compound: makeShape(), data: { type: "text" }, shapes: [{ id: "a", shape: makeShape() }] };
+            });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return null; });
+
+            // Assert
+            expect(calls).toBe(1);
+            expect(second.compound.hash).toBe(first.compound.hash);
+        });
+
+        it("should hash the handle an answer reports success with", () => {
+            const document = new occt.gp_Pnt(0, 0, 0);
+            const args = { functionName: "assembly.manager.loadStepToDoc", inputs: { stepData: "ISO-10303-21;" } };
+
+            // Act
+            const result = cacheHelper.cacheOp(args, () => ({ success: true, document }));
+
+            // Assert
+            expect(result.document.hash).toBeDefined();
+            expect(cacheHelper.checkCache(result.document.hash)).toBeTruthy();
+        });
+    });
+
+    describe("checking a cache entry that is no longer valid", () => {
+        it("should drop a shape that reports itself null", () => {
+            // Arrange
+            const empty = new occt.TopoDS_Shape();
+            cacheHelper.addToCache("null-shape", empty);
+
+            // Act
+            const result = cacheHelper.checkCache("null-shape");
+
+            // Assert
+            expect(result).toBeNull();
+        });
+
+        it("should drop a list holding a shape that reports itself null", () => {
+            // Arrange
+            const empty = new occt.TopoDS_Shape();
+            cacheHelper.addToCache("null-list", [empty]);
+
+            // Act
+            const result = cacheHelper.checkCache("null-list");
+
+            // Assert
+            expect(result).toBeNull();
+        });
+    });
+
+    describe("large and binary inputs", () => {
+        const LARGE_TEXT = "x".repeat(CacheHelper.LARGE_STRING_THRESHOLD + 1);
+
+        describe("hasLargeOrBinaryInput", () => {
+            it("should see a large string among the inputs", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { stepData: LARGE_TEXT } })).toBe(true);
+            });
+
+            it("should see bytes among the inputs", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { stepData: new Uint8Array([1, 2]) } })).toBe(true);
+            });
+
+            it("should see a buffer among the inputs", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { stepData: new ArrayBuffer(8) } })).toBe(true);
+            });
+
+            it("should see a blob among the inputs", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { stepData: new Blob(["a"]) } })).toBe(true);
+            });
+
+            it("should read the arguments themselves when they carry no inputs wrapper", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ stepData: LARGE_TEXT })).toBe(true);
+            });
+
+            it("should say no for an ordinary short string", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { fileName: "part.step" } })).toBe(false);
+            });
+
+            it("should say no for a number", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { radius: 5 } })).toBe(false);
+            });
+
+            it("should say no for an input that is not set", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { shape: null, other: undefined } })).toBe(false);
+            });
+
+            it("should say no for a plain object", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput({ inputs: { point: { x: 1 } } })).toBe(false);
+            });
+
+            it("should say no when there are no arguments at all", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput(null)).toBe(false);
+            });
+
+            it("should say no when the arguments are not an object", () => {
+                expect(cacheHelper.hasLargeOrBinaryInput("shapes.solid.createSphere")).toBe(false);
+            });
+        });
+
+        describe("toHashableArgs", () => {
+            it("should replace a large string with a digest of it", () => {
+                // Act
+                const result = cacheHelper.toHashableArgs({ functionName: "loadStep", inputs: { stepData: LARGE_TEXT } });
+
+                // Assert
+                expect(result.inputs.stepData).toMatchObject({ length: LARGE_TEXT.length });
+            });
+
+            it("should leave ordinary arguments exactly as they are", () => {
+                // Arrange
+                const args = { functionName: "shapes.solid.createSphere", inputs: { radius: 5 } };
+
+                // Act
+                const result = cacheHelper.toHashableArgs(args);
+
+                // Assert
+                expect(result).toBe(args);
+            });
+
+            it("should replace a payload sitting directly in the arguments", () => {
+                // Act
+                const result = cacheHelper.toHashableArgs({ stepData: new Uint8Array([1, 2, 3]) });
+
+                // Assert
+                expect(result.stepData).toMatchObject({ byteLength: 3 });
+            });
+
+            it("should hand back a value that is not an object as it stands", () => {
+                expect(cacheHelper.toHashableArgs("createSphere")).toBe("createSphere");
+            });
+        });
+
+        describe("digestIfLargeOrBinary", () => {
+            it("should digest a buffer by its content and length", () => {
+                // Act
+                const digest = cacheHelper.digestIfLargeOrBinary(new Uint8Array([1, 2, 3]).buffer);
+
+                // Assert
+                expect(digest).toMatchObject({ byteLength: 3 });
+            });
+
+            it("should digest bytes by their content and length", () => {
+                // Act
+                const digest = cacheHelper.digestIfLargeOrBinary(new Uint8Array([1, 2, 3]));
+
+                // Assert
+                expect(digest).toMatchObject({ byteLength: 3 });
+            });
+
+            it("should give two different payloads two different digests", () => {
+                // Act
+                const first = cacheHelper.digestIfLargeOrBinary(new Uint8Array([1, 2, 3]));
+                const second = cacheHelper.digestIfLargeOrBinary(new Uint8Array([3, 2, 1]));
+
+                // Assert
+                expect(second.__binaryDigest__).not.toBe(first.__binaryDigest__);
+            });
+
+            it("should describe a blob by its size and type, which is all that can be read of it", () => {
+                // Act
+                const digest = cacheHelper.digestIfLargeOrBinary(new Blob(["abc"], { type: "text/plain" }));
+
+                // Assert
+                expect(digest).toEqual({ __blobDigest__: true, size: 3, type: "text/plain" });
+            });
+
+            it("should describe a file by its name as well", () => {
+                // Act
+                const digest = cacheHelper.digestIfLargeOrBinary(new File(["abc"], "part.step", { lastModified: 1000 }));
+
+                // Assert
+                expect(digest).toMatchObject({ __blobDigest__: true, name: "part.step", lastModified: 1000 });
+            });
+
+            it("should say nothing for a short string", () => {
+                expect(cacheHelper.digestIfLargeOrBinary("part.step")).toBeUndefined();
+            });
+
+            it("should say nothing for a number", () => {
+                expect(cacheHelper.digestIfLargeOrBinary(5)).toBeUndefined();
+            });
+
+            it("should say nothing for a value that is not set", () => {
+                expect(cacheHelper.digestIfLargeOrBinary(null)).toBeUndefined();
+            });
+
+            it("should say nothing for a plain object", () => {
+                expect(cacheHelper.digestIfLargeOrBinary({ radius: 5 })).toBeUndefined();
+            });
+        });
+
+        describe("bytesToHash", () => {
+            it("should hash the same bytes to the same number", () => {
+                expect(cacheHelper.bytesToHash(new Uint8Array([1, 2, 3]))).toBe(cacheHelper.bytesToHash(new Uint8Array([1, 2, 3])));
+            });
+
+            it("should hash different bytes to different numbers", () => {
+                expect(cacheHelper.bytesToHash(new Uint8Array([1, 2, 3]))).not.toBe(cacheHelper.bytesToHash(new Uint8Array([3, 2, 1])));
+            });
+
+            it("should hash no bytes to zero", () => {
+                expect(cacheHelper.bytesToHash(new Uint8Array([]))).toBe(0);
+            });
+        });
+    });
+
+    describe("computeHash and stray pointers", () => {
+        it("should say so when a pointer survives the strip", () => {
+            // Arrange
+            const reported: unknown[] = [];
+            vi.spyOn(console, "error").mockImplementation((message: unknown) => { reported.push(message); });
+
+            // Act
+            cacheHelper.computeHash({ ptrCount: 3 });
+
+            // Assert
+            expect(reported).toEqual(["YOU DONE MESSED UP YOUR REGEX."]);
+            vi.restoreAllMocks();
+        });
+
+        it("should stay quiet for arguments carrying a pointer the strip catches", () => {
+            // Arrange
+            const reported: unknown[] = [];
+            vi.spyOn(console, "error").mockImplementation((message: unknown) => { reported.push(message); });
+
+            // Act
+            cacheHelper.computeHash({ ptr: 140, radius: 3 });
+
+            // Assert
+            expect(reported).toEqual([]);
+            vi.restoreAllMocks();
+        });
+
+        it("should digest a payload sitting in a list of arguments", () => {
+            // Arrange
+            const large = "x".repeat(CacheHelper.LARGE_STRING_THRESHOLD + 1);
+
+            // Act
+            const result = cacheHelper.toHashableArgs([large]);
+
+            // Assert
+            expect(result[0]).toMatchObject({ length: large.length });
+        });
+    });
+
+    describe("entries that are handles rather than shapes", () => {
+        it("should delete a handle without trying to free a triangulation when the hash is cleaned", () => {
+            // Arrange
+            cacheHelper.addToCache("handle", new occt.gp_Pnt(0, 0, 0));
+
+            // Act
+            cacheHelper.cleanCacheForHash("handle");
+
+            // Assert
+            expect(cacheHelper.argCache["handle"]).toBeUndefined();
+        });
+
+        it("should delete a handle when the whole cache is dropped", () => {
+            // Arrange
+            cacheHelper.addToCache("handle", new occt.gp_Pnt(0, 0, 0));
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should delete a handle the run no longer uses", () => {
+            // Arrange
+            cacheHelper.addToCache("handle", new occt.gp_Pnt(0, 0, 0));
+            cacheHelper.usedHashes = { handle: "handle" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should delete a list of handles when the hash is cleaned", () => {
+            // Arrange
+            cacheHelper.addToCache("handles", [new occt.gp_Pnt(0, 0, 0), new occt.gp_Pnt(1, 1, 1)]);
+
+            // Act
+            cacheHelper.cleanCacheForHash("handles");
+
+            // Assert
+            expect(cacheHelper.argCache["handles"]).toBeUndefined();
+        });
+
+        it("should delete a list of handles when the whole cache is dropped", () => {
+            // Arrange
+            cacheHelper.addToCache("handles", [new occt.gp_Pnt(0, 0, 0)]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should delete a list of handles the run no longer uses", () => {
+            // Arrange
+            cacheHelper.addToCache("handles", [new occt.gp_Pnt(0, 0, 0)]);
+            cacheHelper.usedHashes = { handles: "handles" };
+            cacheHelper.cleanUpCache();
+            cacheHelper.usedHashes = {};
+
+            // Act
+            cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(cacheHelper.argCache).toEqual({});
+        });
+
+        it("should hand back the same plain value on the second call rather than running it again", () => {
+            // Arrange
+            const args = { functionName: "shapes.face.getFaceArea", inputs: { shape: 1 } };
+            let calls = 0;
+            cacheHelper.cacheOp(args, () => { calls += 1; return 12.5; });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return 0; });
+
+            // Assert
+            expect(second).toBe(12.5);
+            expect(calls).toBe(1);
+        });
+
+        it("should leave a handle nested in an answer unhashed, having nothing to draw with it", () => {
+            // Arrange
+            const args = { functionName: "svg.loadSVG", inputs: { svg: "<svg/>" } };
+
+            // Act
+            const result = cacheHelper.cacheOp(args, () => ({ handles: [new occt.gp_Pnt(0, 0, 0)] }));
+
+            // Assert
+            expect(result.handles[0].hash).toBeUndefined();
+        });
+
+        it("should digest every payload the arguments carry, not only the first", () => {
+            // Arrange
+            const large = "x".repeat(CacheHelper.LARGE_STRING_THRESHOLD + 1);
+
+            // Act
+            const result = cacheHelper.toHashableArgs({ inputs: { first: large, second: new Uint8Array([1, 2]) } });
+
+            // Assert
+            expect(result.inputs.first).toMatchObject({ length: large.length });
+            expect(result.inputs.second).toMatchObject({ byteLength: 2 });
         });
     });
 });

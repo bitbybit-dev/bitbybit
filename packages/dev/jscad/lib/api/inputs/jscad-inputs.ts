@@ -13,12 +13,73 @@ import { Base } from "./base-inputs";
  * kernels: the CircleDto here is not the one in Inputs.OCCT.
  */
 export namespace JSCAD {
+    /** A 2D point or vector, `[x, y]`. */
+    export type JSCADVec2 = [number, number];
+
+    /** A 3D point or vector, `[x, y, z]`. */
+    export type JSCADVec3 = [number, number, number];
+
+    /** A 4x4 transformation matrix, in column-major order. */
+    export type JSCADMat4 = [
+        number, number, number, number,
+        number, number, number, number,
+        number, number, number, number,
+        number, number, number, number,
+    ];
+
+    /** A plane, `[normalX, normalY, normalZ, distanceFromOrigin]`. */
+    export type JSCADPlane = [number, number, number, number];
+
+    /** A colour, either `[r, g, b]` or `[r, g, b, a]`, each channel from 0 to 1. */
+    export type JSCADColor = [number, number, number] | [number, number, number, number];
+
+    /** A convex polygon in 3D - the face of a solid. */
+    export type JSCADPoly3 = {
+        vertices: JSCADVec3[];
+        color?: JSCADColor;
+        plane?: JSCADPlane;
+    };
+
+    /** 2D geometry: a closed region, held as the edges that bound it. */
+    export type JSCADGeom2 = {
+        sides: [JSCADVec2, JSCADVec2][];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+
+    /** 3D geometry: a solid, held as the polygons that enclose it. */
+    export type JSCADGeom3 = {
+        polygons: JSCADPoly3[];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+
+    /** A 2D path: an open or closed sequence of points, with no enclosed area. */
+    export type JSCADPath2 = {
+        points: JSCADVec2[];
+        isClosed: boolean;
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+
     /**
-     * A JSCAD geometry object. Deliberately untyped because JSCAD returns several different internal
-     * shapes - 2D geometry, 3D geometry and paths - that share no common interface. Treat it as an
-     * opaque value to pass between JSCAD calls.
+     * Anything JSCAD hands back: a 2D region, a 3D solid, or a 2D path. The three share no members
+     * beyond their transform, so narrow on the one you want - `"polygons" in entity` for a solid,
+     * `"isClosed" in entity` for a path, `"sides" in entity` for a 2D region.
+     *
+     * These are structural mirrors of the library's own types rather than imports of them, so the
+     * published declarations stay self-contained; jscad-entity.test.ts fails the build if the two
+     * ever stop matching.
      */
-    export type JSCADEntity = any;
+    export type JSCADEntity = JSCADGeom2 | JSCADGeom3 | JSCADPath2;
+
+    /** A geometry flattened for rendering: triangle positions, normals, indices and its transform. */
+    export type JSCADMeshData = {
+        positions: number[];
+        normals: number[];
+        indices: number[];
+        transforms: JSCADMat4;
+    };
 
     export class PolylinePropertiesDto {
         /**
@@ -82,7 +143,7 @@ export namespace JSCAD {
         /**
         * Solid Jscad mesh
         */
-        mesh: JSCADEntity;
+        mesh!: JSCADEntity;
     }
 
     export class MeshesDto {
@@ -112,7 +173,7 @@ export namespace JSCAD {
         /**
          * Solid Jscad mesh
          */
-        mesh: JSCADEntity;
+        mesh!: JSCADEntity;
         /**
          * Value between 0 and 1
          * @default 1
@@ -248,7 +309,7 @@ export namespace JSCAD {
          * 2D Path to draw         
          * @default undefined
          */
-        path: JSCADEntity;
+        path!: JSCADEntity;
         /**
          * Colour of the path
          * @default #444444
@@ -308,7 +369,7 @@ export namespace JSCAD {
          * Solid to be transformed
          * @default undefined
          */
-        mesh: JSCADEntity;
+        mesh!: JSCADEntity;
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
@@ -324,7 +385,7 @@ export namespace JSCAD {
          * Solid to be downloaded
          * @default undefined
          */
-        mesh: JSCADEntity;
+        mesh!: JSCADEntity;
         /**
          * File name
          * @default undefined
@@ -341,7 +402,7 @@ export namespace JSCAD {
          * Solid or path to be downloaded, also supports multiple geometries in array
          * @default undefined
          */
-        geometry: JSCADEntity | JSCADEntity[];
+        geometry!: JSCADEntity | JSCADEntity[];
         /**
          * File name
          * @default jscad-geometry
@@ -379,7 +440,7 @@ export namespace JSCAD {
          * Solid to be colorized
          * @default undefined
          */
-        geometry: JSCADEntity | JSCADEntity[];
+        geometry!: JSCADEntity | JSCADEntity[];
         /**
          * Hex color string
          * @default #0000ff
@@ -405,12 +466,12 @@ export namespace JSCAD {
          * Contains Jscad Solid
          * @default undefined
          */
-        first: JSCADEntity;
+        first!: JSCADEntity;
         /**
          * Contains Jscad Solid
          * @default undefined
          */
-        second: JSCADEntity;
+        second!: JSCADEntity;
     }
     export class BooleanObjectsFromDto {
         constructor(from?: JSCADEntity, meshes?: JSCADEntity[]) {
@@ -421,7 +482,7 @@ export namespace JSCAD {
          * Contains Jscad Solid
          * @default undefined
          */
-        from: JSCADEntity;
+        from!: JSCADEntity;
         /**
          * Contains Jscad Solid
          * @default undefined
@@ -439,7 +500,7 @@ export namespace JSCAD {
          * Can contain various Jscad entities from Solid category
          * @default undefined
          */
-        geometry: JSCADEntity;
+        geometry!: JSCADEntity;
         /**
          * Delta (+/-) of expansion
          * @default 0.1
@@ -473,7 +534,7 @@ export namespace JSCAD {
          * Can contain various Jscad entities from Solid category
          * @default undefined
          */
-        geometry: JSCADEntity;
+        geometry!: JSCADEntity;
         /**
          * Delta (+/-) of offset
          * @default 0.1
@@ -507,7 +568,7 @@ export namespace JSCAD {
          * Geometry to extrude
          * @default undefined
          */
-        geometry: JSCADEntity;
+        geometry!: JSCADEntity;
         /**
          * Height of linear extrude
          * @default 1
@@ -554,7 +615,7 @@ export namespace JSCAD {
          * Geometry to extrude
          * @default undefined
          */
-        geometry: JSCADEntity;
+        geometry!: JSCADEntity;
         /**
          * Height of linear extrude
          * @default 1
@@ -611,7 +672,7 @@ export namespace JSCAD {
          * Polygon to extrude
          * @default undefined
          */
-        polygon: JSCADEntity;
+        polygon!: JSCADEntity;
         /**
          * Angle in degrees
          * @default 90
@@ -672,7 +733,7 @@ export namespace JSCAD {
          * 2D path
          * @default undefined
          */
-        path: JSCADEntity;
+        path!: JSCADEntity;
     }
     export class PathFromPointsDto {
         constructor(points?: Base.Point2[], closed?: boolean) {
@@ -725,12 +786,12 @@ export namespace JSCAD {
          * Verb Nurbs curve
          * @default undefined
          */
-        curve: JSCADEntity;
+        curve!: JSCADEntity;
         /**
          * Path to append the curve to
          * @default undefined
          */
-        path: JSCADEntity;
+        path!: JSCADEntity;
     }
     export class PathAppendPointsDto {
         constructor(points?: Base.Point2[], path?: JSCADEntity) {
@@ -746,7 +807,7 @@ export namespace JSCAD {
          * Path to append the points to
          * @default undefined
          */
-        path: JSCADEntity;
+        path!: JSCADEntity;
     }
     export class PathAppendPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, path?: JSCADEntity) {
@@ -762,7 +823,7 @@ export namespace JSCAD {
          * Path to append the polyline to
          * @default undefined
          */
-        path: JSCADEntity;
+        path!: JSCADEntity;
     }
     export class PathAppendArcDto {
         constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number) {
@@ -779,7 +840,7 @@ export namespace JSCAD {
          * Path to append the arc to
          * @default undefined
          */
-        path: JSCADEntity;
+        path!: JSCADEntity;
         /**
          * End point of an arc
          * @default [1, 1]

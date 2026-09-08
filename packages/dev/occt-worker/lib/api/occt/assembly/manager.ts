@@ -311,7 +311,7 @@ export class OCCTAssemblyManager {
      * ```
      */
     async exportDocumentToStep(inputs: Inputs.OCCT.ExportDocumentToStepDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Uint8Array> {
-        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.exportDocumentToStep", inputs).then((s: Uint8Array) => {
+        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToStep", inputs).then((s: Uint8Array) => {
             if (inputs.tryDownload && typeof document !== "undefined") {
                 const blob = new Blob([s.buffer as ArrayBuffer], { type: "application/step" });
                 const blobUrl = URL.createObjectURL(blob);
@@ -349,7 +349,7 @@ export class OCCTAssemblyManager {
      * ```
      */
     async exportDocumentToGltf(inputs: Inputs.OCCT.ExportDocumentToGltfDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Uint8Array> {
-        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.exportDocumentToGltf", inputs).then((s: Uint8Array) => {
+        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToGltf", inputs).then((s: Uint8Array) => {
             if (inputs.tryDownload && typeof document !== "undefined") {
                 const blob = new Blob([s.buffer as ArrayBuffer], { type: "model/gltf-binary" });
                 const blobUrl = URL.createObjectURL(blob);
@@ -390,7 +390,7 @@ export class OCCTAssemblyManager {
      * ```
      */
     async exportDocumentToGltfWithDraco(inputs: Inputs.OCCT.ExportDocumentToGltfWithDracoDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Uint8Array> {
-        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.exportDocumentToGltfWithDraco", inputs).then((s: Uint8Array) => {
+        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToGltfWithDraco", inputs).then((s: Uint8Array) => {
             if (inputs.tryDownload && typeof document !== "undefined") {
                 const blob = new Blob([s.buffer as ArrayBuffer], { type: "model/gltf-binary" });
                 const blobUrl = URL.createObjectURL(blob);

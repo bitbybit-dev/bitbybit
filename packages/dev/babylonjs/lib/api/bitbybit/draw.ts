@@ -52,7 +52,7 @@ export class Draw extends DrawCore {
      * @drawable true
      */
     async drawAnyAsyncNoReturn(inputs: Inputs.Draw.DrawAny): Promise<void> {
-        this.drawAnyAsync(inputs);
+        await this.drawAnyAsync(inputs);
     }
 
     /**
@@ -67,18 +67,16 @@ export class Draw extends DrawCore {
     async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
         const entity = inputs.entity;
         if (entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
-            // Nothing to draw. The declared mesh type is the contract the drawn-entity API keeps for scripts.
             return Promise.resolve(undefined as unknown as BABYLON.Mesh);
         }
-        // we start with async ones
         if (this.detectJscadMesh(entity)) {
-            return this.handleJscadMesh(inputs);
+            return this.handleJscadMesh(inputs, entity);
         } else if (this.detectOcctShape(entity)) {
             return this.handleOcctShape(inputs);
         } else if (this.detectOcctShapes(entity)) {
             return this.handleOcctShapes(inputs);
         } else if (this.detectJscadMeshes(entity)) {
-            return this.handleJscadMeshes(inputs);
+            return this.handleJscadMeshes(inputs, entity);
         } else if (this.detectManifoldShape(entity)) {
             return this.handleManifoldShape(inputs);
         } else if (this.detectManifoldShapes(entity)) {
@@ -88,7 +86,6 @@ export class Draw extends DrawCore {
         } else if (this.detectDecomposedMesh(entity)) {
             return this.handleDecomposedMeshShape(inputs);
         } else {
-            // here we have all sync drawer functions
             return Promise.resolve(this.drawAny(inputs));
         }
     }
@@ -234,7 +231,6 @@ export class Draw extends DrawCore {
                 result = this.handleTags(inputs);
             }
         } else {
-            // here types are marked on mesh metadata
             result = this.updateAny(inputs);
         }
         return result as BABYLON.Mesh;
@@ -397,7 +393,6 @@ export class Draw extends DrawCore {
     createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): BABYLON.PBRMetallicRoughnessMaterial {
         const mat = new BABYLON.PBRMetallicRoughnessMaterial(inputs.name, this.context.scene);
 
-        // Base properties
         if (inputs.baseColor) {
             mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor);
         }
@@ -405,7 +400,6 @@ export class Draw extends DrawCore {
         mat.roughness = inputs.roughness || 1;
         mat.alpha = inputs.alpha;
 
-        // Emissive properties
         if (inputs.emissiveColor) {
             const emissive = BABYLON.Color3.FromHexString(inputs.emissiveColor);
             if (inputs.emissiveIntensity !== undefined) {
@@ -415,7 +409,6 @@ export class Draw extends DrawCore {
             }
         }
 
-        // Textures
         if (inputs.baseColorTexture) {
             mat.baseTexture = inputs.baseColorTexture as BABYLON.BaseTexture;
         }
@@ -432,12 +425,10 @@ export class Draw extends DrawCore {
             mat.occlusionTexture = inputs.occlusionTexture as BABYLON.BaseTexture;
         }
 
-        // Alpha cutoff for mask/transparency
         if (inputs.alphaCutoff !== undefined) {
             mat.alphaCutOff = inputs.alphaCutoff;
         }
 
-        // Alpha mode handling
         if (inputs.alphaMode !== undefined) {
             switch (inputs.alphaMode) {
                 case Inputs.Draw.alphaModeEnum.opaque:
@@ -452,12 +443,10 @@ export class Draw extends DrawCore {
             }
         }
 
-        // Double sided rendering (two sided lighting support)
         if (inputs.doubleSided !== undefined) {
             mat.doubleSided = inputs.doubleSided;
         }
 
-        // Unlit mode - disable lighting to simulate unlit material
         if (inputs.unlit) {
             mat.disableLighting = true;
         }
@@ -482,7 +471,6 @@ export class Draw extends DrawCore {
         const options = inputs.options ? inputs.options : {
             updatable: false,
         };
-        // TODO look into this, seems like a bad idea to use babylon mesh for tag updates
         const result = this.tag.drawTags({
             tagsVariable: inputs.babylonMesh as any,
             tags: inputs.entity as Inputs.Tag.TagDto[],
@@ -490,7 +478,6 @@ export class Draw extends DrawCore {
         });
 
         (result as any).metadata = { type: Inputs.Draw.drawingTypes.tags, options } as any;
-        // Drawn in place; the entity itself is handed back under the drawn-entity API's mesh contract.
         return result as unknown as BABYLON.Mesh;
     }
 
@@ -507,7 +494,6 @@ export class Draw extends DrawCore {
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         (result as any).metadata = { type: Inputs.Draw.drawingTypes.tag, options } as any;
-        // Drawn in place; the entity itself is handed back under the drawn-entity API's mesh contract.
         return result as unknown as BABYLON.Mesh;
     }
 
@@ -552,7 +538,6 @@ export class Draw extends DrawCore {
             ...options as Inputs.Draw.DrawNodeOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.nodes, options, result as any);
-        // Drawn in place; the entity itself is handed back under the drawn-entity API's mesh contract.
         return result as unknown as BABYLON.Mesh;
     }
 
@@ -648,7 +633,6 @@ export class Draw extends DrawCore {
             ...options as Inputs.Draw.DrawNodeOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.node, options, result as any);
-        // Drawn in place; the entity itself is handed back under the drawn-entity API's mesh contract.
         return result as unknown as BABYLON.Mesh;
     }
 
@@ -688,9 +672,9 @@ export class Draw extends DrawCore {
         const line = inputs.entity as Inputs.Base.Line3 | Inputs.Base.Segment3;
         const pts: Inputs.Base.Point3[] = [];
         if (line && "start" in line) {
-            pts.push((line as Inputs.Base.Line3).start, (line as Inputs.Base.Line3).end);
+            pts.push((line).start, (line).end);
         } else {
-            pts.push(...line as Inputs.Base.Segment3);
+            pts.push(...line);
         }
         const result = this.drawHelper.drawPolylinesWithColours({
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
@@ -701,14 +685,14 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny) {
+    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]) {
         let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawSolidOrPolygonMeshes({
             jscadMesh: inputs.babylonMesh,
-            meshes: inputs.entity as any,
+            meshes,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMeshes, options, r);
@@ -727,7 +711,6 @@ export class Draw extends DrawCore {
             ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, r);
-            // An empty manifold draws nothing; the drawn-entity API keeps its mesh contract.
             return r as BABYLON.Mesh;
         });
     }
@@ -777,14 +760,14 @@ export class Draw extends DrawCore {
         });
     }
 
-    private handleJscadMesh(inputs: Inputs.Draw.DrawAny) {
+    private handleJscadMesh(inputs: Inputs.Draw.DrawAny, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3) {
         let options = inputs.options ? inputs.options : this.defaultBasicOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawSolidOrPolygonMesh({
             jscadMesh: inputs.babylonMesh,
-            mesh: inputs.entity,
+            mesh,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMesh, options, r);

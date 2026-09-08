@@ -1,5 +1,5 @@
 export interface PrintSaveInterface {
-    text: string;
+    text: unknown;
     isJson: boolean;
     hidden: boolean;
 }

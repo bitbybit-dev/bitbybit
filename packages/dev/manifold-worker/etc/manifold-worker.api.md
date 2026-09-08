@@ -107,13 +107,12 @@ export class ManifoldWithId<U> {
 
 // @public
 export class ManifoldWorkerManager {
-    cleanAllCache(): Promise<any>;
+    cleanAllCache(): Promise<void>;
     // (undocumented)
     cleanPromisesMade(): void;
     // (undocumented)
     errorCallback: (err: string) => void;
-    // (undocumented)
-    genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any>;
+    genericCallToWorkerPromise<T = unknown>(functionName: string, inputs: unknown): Promise<T>;
     // (undocumented)
     manifoldWorkerAlreadyInitialised(): boolean;
     // (undocumented)
@@ -122,7 +121,7 @@ export class ManifoldWorkerManager {
     //
     // (undocumented)
     setManifoldWorker(worker: Worker | ManifoldWorkerMock): void;
-    startedTheRun(): Promise<any>;
+    startedTheRun(): Promise<void>;
 }
 
 // @public (undocumented)

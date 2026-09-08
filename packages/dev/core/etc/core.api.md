@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { JSONPath } from 'jsonpath-plus';
 import { Subject } from 'rxjs';
 
 // @public (undocumented)
@@ -336,8 +337,7 @@ namespace Color {
 
 // @public (undocumented)
 export class ContextBase {
-    // (undocumented)
-    blocklyWorkspace: any;
+    blocklyWorkspace: unknown;
     // (undocumented)
     canvasZoneClass: string;
     // (undocumented)
@@ -346,8 +346,7 @@ export class ContextBase {
     getFile(file: File): Promise<string | ArrayBuffer>;
     // (undocumented)
     intervalBag: number[];
-    // (undocumented)
-    jsonpath: any;
+    jsonpath: typeof JSONPath;
     // (undocumented)
     keyDownBag: ({
         key: string;
@@ -363,8 +362,7 @@ export class ContextBase {
         key: string;
         fn: () => void;
     })[];
-    // (undocumented)
-    occ: any;
+    occ: unknown;
     // (undocumented)
     promptPreviewAssemblyHierarchy: (data: PreviewAssemblyHierarchyInterface) => void;
     // (undocumented)
@@ -384,12 +382,12 @@ export class ContextBase {
     // (undocumented)
     snapTolerance: number;
     // (undocumented)
-    tagBag: any[];
+    tagBag: Tag_2.TagDto[];
     // (undocumented)
     timeoutBag: number[];
     // (undocumented)
     tolerance: number;
-    // (undocumented)
+    // @deprecated (undocumented)
     verb: any;
 }
 
@@ -631,9 +629,9 @@ export class DrawCore {
     // (undocumented)
     detectDecomposedMeshes(entity: unknown): boolean;
     // (undocumented)
-    detectJscadMesh(entity: unknown): boolean;
+    detectJscadMesh(entity: unknown): entity is Inputs_3.JSCAD.JSCADGeom2 | Inputs_3.JSCAD.JSCADGeom3;
     // (undocumented)
-    detectJscadMeshes(entity: unknown): boolean;
+    detectJscadMeshes(entity: unknown): entity is (Inputs_3.JSCAD.JSCADGeom2 | Inputs_3.JSCAD.JSCADGeom3)[];
     // (undocumented)
     detectLine(entity: unknown): boolean;
     // (undocumented)
@@ -1090,12 +1088,61 @@ namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
-    type JSCADEntity = any;
+    type JSCADColor = [number, number, number] | [number, number, number, number];
+    type JSCADEntity = JSCADGeom2 | JSCADGeom3 | JSCADPath2;
+    type JSCADGeom2 = {
+        sides: [JSCADVec2, JSCADVec2][];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADGeom3 = {
+        polygons: JSCADPoly3[];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADMat4 = [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number
+    ];
+    type JSCADMeshData = {
+        positions: number[];
+        normals: number[];
+        indices: number[];
+        transforms: JSCADMat4;
+    };
+    type JSCADPath2 = {
+        points: JSCADVec2[];
+        isClosed: boolean;
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADPlane = [number, number, number, number];
+    type JSCADPoly3 = {
+        vertices: JSCADVec3[];
+        color?: JSCADColor;
+        plane?: JSCADPlane;
+    };
     enum jscadTextAlignEnum {
         center = "center",
         left = "left",
         right = "right"
     }
+    type JSCADVec2 = [number, number];
+    type JSCADVec3 = [number, number, number];
     // (undocumented)
     class MeshDto {
         constructor(mesh?: JSCADEntity);
@@ -1329,21 +1376,21 @@ namespace JSCAD {
 namespace JSON_2 {
     // (undocumented)
     class GetJsonFromArrayByFirstPropMatchDto {
-        constructor(jsonArray?: any[], property?: string, match?: any);
-        jsonArray: any[];
-        match: any;
+        constructor(jsonArray?: unknown[], property?: string, match?: unknown);
+        jsonArray: unknown[];
+        match: unknown;
         property: string;
     }
     // (undocumented)
     class GetValueOnPropDto {
-        constructor(json?: any, property?: string);
-        json: any;
+        constructor(json?: unknown, property?: string);
+        json: unknown;
         property: string;
     }
     // (undocumented)
     class JsonDto {
-        constructor(json?: any);
-        json: any;
+        constructor(json?: unknown);
+        json: unknown;
     }
     // (undocumented)
     class ParseDto {
@@ -1352,43 +1399,43 @@ namespace JSON_2 {
     }
     // (undocumented)
     class PathsDto {
-        constructor(json?: any, query?: string);
-        json: any;
+        constructor(json?: unknown, query?: string);
+        json: unknown;
         query: string;
     }
     // (undocumented)
     class QueryDto {
-        constructor(json?: any, query?: string);
-        json: any;
+        constructor(json?: unknown, query?: string);
+        json: unknown;
         query: string;
     }
     // (undocumented)
     class SetValueDto {
-        constructor(json?: any, value?: any, path?: string, prop?: string);
-        json: any;
+        constructor(json?: unknown, value?: unknown, path?: string, prop?: string);
+        json: unknown;
         path: string;
         prop: string;
-        value: any;
+        value: unknown;
     }
     // (undocumented)
     class SetValueOnPropDto {
-        constructor(json?: any, value?: any, property?: string);
-        json: any;
+        constructor(json?: unknown, value?: unknown, property?: string);
+        json: unknown;
         property: string;
-        value: any;
+        value: unknown;
     }
     // (undocumented)
     class SetValuesOnPathsDto {
-        constructor(json?: any, values?: any[], paths?: string[], props?: []);
-        json: any;
+        constructor(json?: unknown, values?: unknown[], paths?: string[], props?: string[]);
+        json: unknown;
         paths: string[];
         props: string[];
-        values: any[];
+        values: unknown[];
     }
     // (undocumented)
     class StringifyDto {
-        constructor(json?: any);
-        json: any;
+        constructor(json?: unknown);
+        json: unknown;
     }
 }
 
@@ -5698,7 +5745,7 @@ namespace Polyline {
 // @public (undocumented)
 export interface PreviewAssemblyHierarchyInterface {
     // (undocumented)
-    data: any;
+    data: unknown;
     // (undocumented)
     hidden?: boolean | undefined;
 }
@@ -5708,7 +5755,7 @@ export interface PreviewCSVInterface {
     // (undocumented)
     columnSeparator?: string | undefined;
     // (undocumented)
-    data: string | any[][];
+    data: string | unknown[][];
     // (undocumented)
     hidden?: boolean | undefined;
     // (undocumented)
@@ -5722,7 +5769,7 @@ export interface PreviewCSVInterface {
 // @public (undocumented)
 export interface PreviewDataInterface {
     // (undocumented)
-    data: any;
+    data: unknown;
     // (undocumented)
     hidden?: boolean | undefined;
     // (undocumented)
@@ -5736,7 +5783,7 @@ export interface PrintSaveInterface {
     // (undocumented)
     isJson: boolean;
     // (undocumented)
-    text: string;
+    text: unknown;
 }
 
 // @public
@@ -6118,7 +6165,7 @@ namespace Vector {
     }
 }
 
-// @public
+// @public @deprecated
 export class Verb {
     // Warning: (ae-forgotten-export) The symbol "GeometryHelper" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "MathBitByBit" needs to be exported by the entry point index.d.ts
@@ -6548,7 +6595,7 @@ namespace Verb_2 {
     }
 }
 
-// @public
+// @public @deprecated
 export class VerbCurve {
     constructor(context: ContextBase, geometryHelper: GeometryHelper, math: MathBitByBit);
     // (undocumented)
@@ -6596,7 +6643,7 @@ export class VerbCurve {
     weights(inputs: Inputs_3.Verb.CurveDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbCurveCircle {
     constructor(context: ContextBase, math: MathBitByBit);
     center(inputs: Inputs_3.Verb.CircleDto): number[];
@@ -6609,7 +6656,7 @@ export class VerbCurveCircle {
     yAxis(inputs: Inputs_3.Verb.CircleDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbCurveEllipse {
     constructor(context: ContextBase, math: MathBitByBit);
     center(inputs: Inputs_3.Verb.EllipseDto): number[];
@@ -6621,7 +6668,7 @@ export class VerbCurveEllipse {
     yAxis(inputs: Inputs_3.Verb.EllipseDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbIntersect {
     constructor(context: ContextBase, _geometryHelper: GeometryHelper);
     curveAndSurface(inputs: Inputs_3.Verb.CurveSurfaceDto): BaseTypes.CurveSurfaceIntersection[];
@@ -6637,7 +6684,7 @@ export class VerbIntersect {
     surfaces(inputs: Inputs_3.Verb.SurfaceSurfaceDto): any[];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurface {
     constructor(context: ContextBase, geometryHelper: GeometryHelper, math: MathBitByBit);
     boundaries(inputs: Inputs_3.Verb.SurfaceDto): any[];
@@ -6678,7 +6725,7 @@ export class VerbSurface {
     weights(inputs: Inputs_3.Verb.SurfaceDto): number[][];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceConical {
     constructor(context: ContextBase);
     axis(inputs: Inputs_3.Verb.ConeDto): number[];
@@ -6689,7 +6736,7 @@ export class VerbSurfaceConical {
     xAxis(inputs: Inputs_3.Verb.ConeDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceCylindrical {
     constructor(context: ContextBase);
     axis(inputs: Inputs_3.Verb.CylinderDto): number[];
@@ -6700,7 +6747,7 @@ export class VerbSurfaceCylindrical {
     xAxis(inputs: Inputs_3.Verb.CylinderDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceExtrusion {
     constructor(context: ContextBase);
     create(inputs: Inputs_3.Verb.ExtrusionParametersDto): any;
@@ -6708,7 +6755,7 @@ export class VerbSurfaceExtrusion {
     profile(inputs: Inputs_3.Verb.ExtrusionDto): number[];
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceRevolved {
     constructor(context: ContextBase, math: MathBitByBit);
     angle(inputs: Inputs_3.Verb.RevolutionDto): number;
@@ -6718,7 +6765,7 @@ export class VerbSurfaceRevolved {
     profile(inputs: Inputs_3.Verb.RevolutionDto): any;
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceSpherical {
     constructor(context: ContextBase);
     center(inputs: Inputs_3.Verb.SphereDto): number[];
@@ -6726,7 +6773,7 @@ export class VerbSurfaceSpherical {
     radius(inputs: Inputs_3.Verb.SphereDto): number;
 }
 
-// @public
+// @public @deprecated
 export class VerbSurfaceSweep {
     constructor(context: ContextBase);
     create(inputs: Inputs_3.Verb.SweepParametersDto): any;

@@ -71,7 +71,6 @@ export function parseXml(input: string): XmlNode | undefined {
             continue;
         }
         if (input.startsWith("<!", i)) {
-            // DOCTYPE or similar; skip to matching '>'.
             const end = input.indexOf(">", i + 2);
             i = end === -1 ? n : end + 1;
             continue;
@@ -83,7 +82,6 @@ export function parseXml(input: string): XmlNode | undefined {
         i = gt + 1;
 
         if (inner.startsWith("/")) {
-            // Closing tag.
             if (stack.length > 1) { stack.pop(); }
             continue;
         }

@@ -72,11 +72,6 @@ export class OccHelper {
         this.edgesService = new EdgesService(occ, this.occRefReturns, this.shapeGettersService, this.entitiesService,
             this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
-        // Four services refer to each other in a ring - wires to operations and fillets, operations
-        // back to wires and faces, fillets back to operations and faces, faces back to wires and
-        // fillets - so no order builds them all with their collaborators already in hand. Each edge
-        // that closes a ring is passed as a supplier, read on use rather than at construction, and
-        // everything else is built in dependency order below. Nothing is assigned after the fact.
         this.wiresService = new WiresService(occ, this.occRefReturns, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
             this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper,
             () => this.filletsService, () => this.operationsService);

@@ -42,6 +42,7 @@
     "scripts": {
         "build": "tsc -b tsconfig.bitbybit.json",
         "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
+        "typecheck:tests": "tsc -p tsconfig.json --noEmit --pretty false",
         "clean-dist": "shx rm -rf dist",
         "build-p": "npm run fetch-kernels && npm run build && npm run copy-package && npm run copy-occt && npm run copy-readme-license && npm run delete-coverage && npm run delete-bak",
         "copy-package": "node ../../../scripts/dist-manifest.mjs",

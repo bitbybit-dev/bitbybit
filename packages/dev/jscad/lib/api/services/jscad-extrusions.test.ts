@@ -14,7 +14,6 @@ const TWIST_STEPS = 16;
 const QUARTER_TURN = Math.PI / 2;
 const WALL_SIZE = 0.25;
 const SQUARE_PERIMETER = 16;
-// The wall straddles the outline, so `size` is a half-thickness: it reaches that far to each side.
 const WALL_VOLUME = SQUARE_PERIMETER * 2 * WALL_SIZE * HEIGHT;
 
 describe("JSCADExtrusions", () => {
@@ -73,6 +72,46 @@ describe("JSCADExtrusions", () => {
             const volume = kernel.measurements.measureVolume(wall);
             expect(volume).toBeCloseTo(WALL_VOLUME, 6);
             expect(volume).toBeLessThan(SQUARE_AREA * HEIGHT);
+        });
+    });
+
+    describe("extrudeRectangularPoints", () => {
+        it("should raise a wall along the points it was given", () => {
+            // Arrange
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]];
+
+            // Act
+            const solid = jscad.extrusions.extrudeRectangularPoints(
+                new Inputs.JSCAD.ExtrudeRectangularPointsDto(points, HEIGHT, WALL_SIZE));
+            const [min, max] = kernel.measurements.measureBoundingBox(solid);
+
+            // Assert
+            expect(max[2] - min[2]).toBeCloseTo(HEIGHT, 5);
+            expect(kernel.measurements.measureVolume(solid)).toBeGreaterThan(0);
+        });
+    });
+
+    describe("extrudeRotate", () => {
+        it("should sweep the outline into a solid of revolution", () => {
+            const outline = jscad.polygon.rectangle(new Inputs.JSCAD.RectangleDto([4, 0], 1, 1));
+
+            // Act
+            const solid = jscad.extrusions.extrudeRotate(new Inputs.JSCAD.ExtrudeRotateDto(outline, 360, 0, 32));
+
+            // Assert
+            expect(kernel.measurements.measureVolume(solid)).toBeGreaterThan(0);
+        });
+
+        it("should sweep only as far as the angle it was given", () => {
+            // Arrange
+            const outline = jscad.polygon.rectangle(new Inputs.JSCAD.RectangleDto([4, 0], 1, 1));
+
+            // Act
+            const whole = jscad.extrusions.extrudeRotate(new Inputs.JSCAD.ExtrudeRotateDto(outline, 360, 0, 32));
+            const quarter = jscad.extrusions.extrudeRotate(new Inputs.JSCAD.ExtrudeRotateDto(outline, 90, 0, 32));
+
+            // Assert
+            expect(kernel.measurements.measureVolume(quarter)).toBeLessThan(kernel.measurements.measureVolume(whole));
         });
     });
 });

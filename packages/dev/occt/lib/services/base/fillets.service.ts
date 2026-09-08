@@ -393,7 +393,7 @@ export class FilletsService {
             face = this.converterService.getActualTypeOfShape(inputs.shape);
             isShapeFace = true;
         } else if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
-            const faceShape = this.occ.MakeFaceFromWireOnlyPlane(inputs.shape as TopoDS_Wire, true);
+            const faceShape = this.occ.MakeFaceFromWireOnlyPlane(inputs.shape, true);
             face = this.converterService.getActualTypeOfShape(faceShape);
             faceShape.delete();
         } else {
@@ -416,7 +416,7 @@ export class FilletsService {
             i++;
         }
         if (!isShapeFace) {
-            const wire = inputs.shape as TopoDS_Wire;
+            const wire = inputs.shape;
             if (!wire.Closed()) {
                 cornerVertices.pop();
             }
@@ -444,7 +444,6 @@ export class FilletsService {
                 }
             }
             else {
-                // Previous algorithm fails if the wire is not made up of circular or straight edges. This algorithm is a failover.
                 const normal = this.facesService.faceNormalOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
                 result = this.fillet3DWire({ shape: inputs.shape, radius: inputs.radius, radiusList: inputs.radiusList, indexes: inputs.indexes, direction: normal });
             }
@@ -468,14 +467,6 @@ export class FilletsService {
             }
         }
 
-        // the goal is to make this fillet the same corner indices as fillet 2d command does with the same radius list.
-        // This makes this algorithm quite complex when counting which actual edge indices need to be rounded as it is based on
-        // extrusion, which creates specific index definitions.
-
-        // let adjustedRadiusList = [...inputs.radiusList];
-        // radius list does not need to be adjusted
-
-        // Closed shapes start corners differently on the connection of the first corner, so we need to readjust the edges
         let wireTouse: TopoDS_Wire;
         if (useRadiusList && inputs.shape.Closed()) {
             const edgesOfWire = this.edgesService.getEdgesAlongWire({ shape: inputs.shape });
@@ -492,12 +483,6 @@ export class FilletsService {
 
         let adjustedIndexes = inputs.indexes;
         if (useRadiusList) {
-            // So original indexes are based on the number of corners between edges. These corner indexes are used as an input, but extrusion creates 3D edges
-            // with different indexes, so we need to adjust the indexes to match the 3D edges.
-
-            // the original indexes are [2, 3, 4, 5, 6, 7, 8, 9, 10, ...] (0-based corner indexes >= 2)
-            // the order is [4, 7, 10, 13, 16, 19, 22, 25, 28, ...] (0-based edge indexes on extruded shape)
-            // this is needed because of the way edge indexes are made on such shapes
             const filteredEnd = (inputs.indexes ?? []).filter(i => i > 1);
             const maxNr = Math.max(...filteredEnd);
 
@@ -525,13 +510,11 @@ export class FilletsService {
             });
         }
 
-        const filletShape = this.filletEdges({ shape: extrusion, radius: inputs.radius, indexes: adjustedIndexes, radiusList: inputs.radiusList }) as TopoDS_Shape;
+        const filletShape = this.filletEdges({ shape: extrusion, radius: inputs.radius, indexes: adjustedIndexes, radiusList: inputs.radiusList });
 
         const faceEdges: TopoDS_Edge[] = [];
         const faces = this.shapeGettersService.getFaces({ shape: filletShape });
         faces.forEach((f, _i) => {
-            // due to reversal of wire in the beginning this is stable index now
-            // also we need to translate these edges back along direction
             const edgeToAdd = this.shapeGettersService.getEdges({ shape: f })[3]!;
             faceEdges.push(edgeToAdd);
         });
@@ -558,11 +541,11 @@ export class FilletsService {
         let face: TopoDS_Face;
         let isShapeFace = false;
         if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.FACE) {
-            face = this.converterService.getActualTypeOfShape(inputs.shape) as TopoDS_Face;
+            face = this.converterService.getActualTypeOfShape(inputs.shape);
             isShapeFace = true;
         } else if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
-            const faceShape = this.occ.MakeFaceFromWireOnlyPlane(inputs.shape as TopoDS_Wire, true);
-            face = this.converterService.getActualTypeOfShape(faceShape) as TopoDS_Face;
+            const faceShape = this.occ.MakeFaceFromWireOnlyPlane(inputs.shape, true);
+            face = this.converterService.getActualTypeOfShape(faceShape);
             faceShape.delete();
         } else {
             throw new Error("You can only chamfer a 2d wire or a 2d face.");
@@ -586,7 +569,7 @@ export class FilletsService {
 
         let result: TopoDS_Face | TopoDS_Wire;
         if (isShapeFace) {
-            result = this.converterService.getActualTypeOfShape(filletMaker.Shape()) as TopoDS_Face;
+            result = this.converterService.getActualTypeOfShape(filletMaker.Shape());
         } else {
             const wires = this.shapeGettersService.getWires({ shape: filletMaker.Shape() });
             result = wires[0]!;
@@ -612,7 +595,7 @@ export class FilletsService {
             i++;
         }
         explorer.delete();
-        if (!isShapeFace && !(shape as TopoDS_Wire).Closed()) {
+        if (!isShapeFace && !(shape).Closed()) {
             const popped = cornerVertices.pop();
             popped?.delete();
         }

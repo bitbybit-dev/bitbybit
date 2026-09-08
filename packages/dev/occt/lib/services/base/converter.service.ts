@@ -39,9 +39,9 @@ export class ConverterService {
         const makeWire = new this.occ.BRepBuilderAPI_MakeWire();
         inputs.shapes.forEach((shape: TopoDS_Shape) => {
             if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.EDGE) {
-                makeWire.AddEdge(shape as TopoDS_Edge);
+                makeWire.AddEdge(shape);
             } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
-                makeWire.AddWire(shape as TopoDS_Wire);
+                makeWire.AddWire(shape);
             }
         });
         if (makeWire.IsDone()) {

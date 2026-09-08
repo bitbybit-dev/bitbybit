@@ -56,6 +56,13 @@ export class BitByBitBase {
     public transforms: Transforms;
     public polyline: Polyline;
     public draw: Draw;
+    /**
+     * NURBS curves and surfaces.
+     *
+     * @deprecated Verbnurbs is not maintained upstream and this API is removed in the next major
+     * version. Use the OpenCascade (occt) NURBS operations instead. Existing scripts keep working
+     * until the removal.
+     */
     public verb: Verb;
     public jscad: JSCAD;
     public manifold: ManifoldBitByBit;
@@ -70,8 +77,6 @@ export class BitByBitBase {
 
     constructor() {
         this.context = new Context();
-        // Every service that is not about the renderer is wired in one place, shared by all three
-        // renderer packages; only the engine facade and what draws through it are built here.
         const shared = createSharedServices(this.context);
         this.jscadWorkerManager = shared.jscadWorkerManager;
         this.manifoldWorkerManager = shared.manifoldWorkerManager;

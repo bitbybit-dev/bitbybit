@@ -11,20 +11,16 @@ export class CacheHelper {
     constructor(private readonly occ: BitbybitOcctModule) { }
 
     cleanAllCache(): void {
-        // Clean all entries in argCache, not just usedHashes
         const allCacheKeys = Object.keys(this.argCache);
 
         allCacheKeys.forEach(hash => {
             if (this.argCache[hash]) {
                 try {
                     const cachedItem = this.argCache[hash];
-                    // Only attempt to clean and delete OCCT objects
                     if (this.isOCCTObject(cachedItem)) {
-                        // Handle arrays of OCCT objects
                         if (Array.isArray(cachedItem)) {
                             cachedItem.forEach(item => {
                                 try {
-                                    // Shape-specific cleanup only for TopoDS_Shape objects
                                     if (this.isShape(item)) {
                                         this.occ.BRepTools_Clean_Force(item, true);
                                         this.occ.BRepTools_CleanGeometry(item);
@@ -35,7 +31,6 @@ export class CacheHelper {
                                 }
                             });
                         } else {
-                            // Shape-specific cleanup only for TopoDS_Shape objects
                             if (this.isShape(cachedItem)) {
                                 this.occ.BRepTools_Clean_Force(cachedItem, true);
                                 this.occ.BRepTools_CleanGeometry(cachedItem);
@@ -59,13 +54,10 @@ export class CacheHelper {
         if (this.argCache[hash]) {
             try {
                 const cachedItem = this.argCache[hash];
-                // Only attempt to clean and delete OCCT objects
                 if (this.isOCCTObject(cachedItem)) {
-                    // Handle arrays of OCCT objects
                     if (Array.isArray(cachedItem)) {
                         cachedItem.forEach(item => {
                             try {
-                                // Shape-specific cleanup only for TopoDS_Shape objects
                                 if (this.isShape(item)) {
                                     this.occ.BRepTools_Clean_Force(item, true);
                                     this.occ.BRepTools_CleanGeometry(item);
@@ -76,7 +68,6 @@ export class CacheHelper {
                             }
                         });
                     } else {
-                        // Shape-specific cleanup only for TopoDS_Shape objects
                         if (this.isShape(cachedItem)) {
                             this.occ.BRepTools_Clean_Force(cachedItem, true);
                             this.occ.BRepTools_CleanGeometry(cachedItem);
@@ -95,32 +86,23 @@ export class CacheHelper {
     }
 
     cleanUpCache(): void {
-        // Clean up cache entries that were used in previous run but not in current run
-        // This helps manage memory by removing unused cached shapes
-
         const usedHashKeys = Object.keys(this.usedHashes);
         const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
 
-        // Find hashes that exist in previous run but not in current run
-        // These are the ones we should clean up
         let hashesToDelete: string[] = [];
         if (hashesFromPreviousRunKeys.length > 0) {
             hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
         }
 
-        // Delete unused objects and clean them from cache
         if (hashesToDelete.length > 0) {
             hashesToDelete.forEach(hash => {
                 if (this.argCache[hash]) {
                     try {
                         const cachedItem = this.argCache[hash];
-                        // Only try to clean and delete if it's an OCCT object
                         if (this.isOCCTObject(cachedItem)) {
-                            // Handle arrays of OCCT objects
                             if (Array.isArray(cachedItem)) {
                                 cachedItem.forEach(item => {
                                     try {
-                                        // Shape-specific cleanup only for TopoDS_Shape objects
                                         if (this.isShape(item)) {
                                             this.occ.BRepTools_Clean_Force(item, true);
                                             this.occ.BRepTools_CleanGeometry(item);
@@ -131,7 +113,6 @@ export class CacheHelper {
                                     }
                                 });
                             } else {
-                                // Shape-specific cleanup only for TopoDS_Shape objects
                                 if (this.isShape(cachedItem)) {
                                     this.occ.BRepTools_Clean_Force(cachedItem, true);
                                     this.occ.BRepTools_CleanGeometry(cachedItem);
@@ -148,7 +129,6 @@ export class CacheHelper {
             });
         }
 
-        // Update hashesFromPreviousRun to be current usedHashes for next cleanup cycle
         this.hashesFromPreviousRun = { ...this.usedHashes };
     }
 
@@ -180,7 +160,7 @@ export class CacheHelper {
         return obj !== undefined && 
                obj !== null && 
                obj.$$ !== undefined && 
-               typeof obj.ShapeType !== "function"; // Key differentiator: entities don't have ShapeType
+               typeof obj.ShapeType !== "function";
     }
 
     /** Hashes input arguments and checks the cache for that hash.
@@ -200,8 +180,6 @@ export class CacheHelper {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cacheOp(args: any, cacheMiss: () => any): any {
         let toReturn = null;
-        // Replace any large/binary payloads with a compact digest before hashing
-        // so huge STEP/IGES inputs can still participate in the cache.
         const hashableArgs = this.toHashableArgs(args);
         const curHash = this.computeHash(hashableArgs);
         this.usedHashes[curHash] = curHash;
@@ -227,7 +205,6 @@ export class CacheHelper {
                     toReturn.hash = curHash;
                     this.addToCache(curHash, toReturn);
                 } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
-                    // Handle ObjectDefinition structure
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
                     const compoundHash = this.computeHash({ ...hashableArgs, index: "compound" });
@@ -240,18 +217,12 @@ export class CacheHelper {
                     });
                     this.addToCache(curHash, { value: objDef });
                 } else if (toReturn && typeof toReturn === "object" && "success" in toReturn && "document" in toReturn && this.isEntityHandle(toReturn.document)) {
-                    // Handle AssemblyDocumentResult structure - cache the document separately
                     const docHash = this.computeHash({ ...hashableArgs, index: "document" });
                     toReturn.document.hash = docHash;
                     this.addToCache(docHash, toReturn.document);
                     this.addToCache(curHash, { value: toReturn });
                 }
                 else {
-                    // Some other structure (e.g. the SVG importer returns
-                    // { shapes: [{ shape, ...metadata }], viewBox, warnings }). Recursively hash and
-                    // cache every shape nested at any depth so they get valid hashes - the result
-                    // serializer turns hashed shapes into references and the input resolver restores
-                    // them. Mirrors the per-shape handling of the ObjectDefinition branch above.
                     this.hashNestedShapes(toReturn, hashableArgs, "result");
                     this.addToCache(curHash, { value: toReturn });
                 }
@@ -273,7 +244,6 @@ export class CacheHelper {
         if (value === null || value === undefined || typeof value !== "object") {
             return;
         }
-        // An embind object (shape or entity handle): hash shapes, never recurse into its internals.
         if (value.$$ !== undefined) {
             if (this.isShape(value) && value.hash === undefined) {
                 const itemHash = this.computeHash({ ...hashableArgs, path });
@@ -299,37 +269,26 @@ export class CacheHelper {
             return null;
         }
 
-        // Check if the cached shape is still valid (not deleted)
         if (this.isOCCTObject(cachedShape)) {
-            // Handle arrays of OCCT objects
             if (Array.isArray(cachedShape)) {
-                // Check if any shape in the array has been deleted
                 for (const shape of cachedShape) {
                     try {
                         if (shape.IsNull && shape.IsNull()) {
-                            // One of the shapes is null, invalidate entire cache entry
                             delete this.argCache[hash];
                             return null;
                         }
                     } catch {
-                        // If calling IsNull() throws an error, the object has been deleted
                         delete this.argCache[hash];
                         return null;
                     }
                 }
             } else {
-                // Handle single OCCT object
                 try {
-                    // Check if the shape has been deleted by checking if IsNull() can be called
-                    // and if the shape is null or invalid
                     if (cachedShape.IsNull && cachedShape.IsNull()) {
-                        // Shape is null, remove from cache and return null
                         delete this.argCache[hash];
                         return null;
                     }
                 } catch {
-                    // If calling IsNull() throws an error, the object has been deleted
-                    // Remove from cache and return null
                     delete this.argCache[hash];
                     return null;
                 }
@@ -342,9 +301,8 @@ export class CacheHelper {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addToCache(hash: string | number, shape: any): string | number {
         const cacheShape = shape;
-        // Only set hash property on objects, not primitives
         if (cacheShape !== null && typeof cacheShape === "object") {
-            cacheShape.hash = hash; // This is the cached version of the object
+            cacheShape.hash = hash;
         }
         this.argCache[hash] = cacheShape;
         return hash;
@@ -413,7 +371,6 @@ export class CacheHelper {
         if (!args || typeof args !== "object") return args;
         const hasInputsWrapper = args.inputs && typeof args.inputs === "object";
         const source = hasInputsWrapper ? args.inputs : args;
-        if (!source || typeof source !== "object") return args;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let sanitized: any = null;
         for (const key of Object.keys(source)) {
@@ -470,9 +427,7 @@ export class CacheHelper {
         let hash = 0;
         if (bytes.length === 0) { return hash; }
         for (let i = 0; i < bytes.length; i++) {
-            // tslint:disable-next-line: no-bitwise
             hash = ((hash << 5) - hash) + bytes[i]!;
-            // tslint:disable-next-line: no-bitwise
             hash = hash & hash;
         }
         return hash;
@@ -484,9 +439,7 @@ export class CacheHelper {
         if (str.length === 0) { return hash; }
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
-            // tslint:disable-next-line: no-bitwise
             hash = ((hash << 5) - hash) + char;
-            // tslint:disable-next-line: no-bitwise
             hash = hash & hash;
         }
         return hash;

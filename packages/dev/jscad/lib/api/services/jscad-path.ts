@@ -3,6 +3,7 @@ import { Base } from "../inputs";
 import * as Inputs from "../inputs/jscad-inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";
+import { asPath } from "./entity-narrowing";
 
 /**
  * Contains various functions for Path from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -81,7 +82,7 @@ export class JSCADPath {
      * @drawable true
      */
     close(inputs: Inputs.JSCAD.PathDto): Inputs.JSCAD.JSCADEntity {
-        return this.jscad.geometries.path2.close(inputs.path);
+        return this.jscad.geometries.path2.close(asPath(inputs.path, "path operations"));
     }
 
     /**
@@ -95,7 +96,7 @@ export class JSCADPath {
     appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
         const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveVectorDuplicates(twoDimensionalPoints);
-        return this.jscad.geometries.path2.appendPoints(duplicatePointsRemoved as JSCAD.maths.vec2.Vec2[], inputs.path);
+        return this.jscad.geometries.path2.appendPoints(duplicatePointsRemoved as JSCAD.maths.vec2.Vec2[], asPath(inputs.path, "path operations"));
     }
 
     /**
@@ -129,7 +130,7 @@ export class JSCADPath {
             clockwise: inputs.clockwise,
             large: inputs.large,
             segments: inputs.segments,
-        }, inputs.path);
+        }, asPath(inputs.path, "path operations"));
     }
 
     private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][], closed: boolean): any {

@@ -2,8 +2,10 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
 import { SHAPE_TYPE_IDENTIFIER, isShapeReference, createShapeReference } from "./constants";
 import { CacheHelper } from "./cache-helper";
+import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
-// Helper to create a mock function that tracks calls
+const NO_MODULE: BitbybitOcctModule = {} as BitbybitOcctModule;
+
 function createMockFn<T = unknown>(): { fn: (...args: unknown[]) => T; calls: unknown[][]; returnValue: T | undefined; mockReturnValue: (val: T) => void; mockImplementation: (impl: (...args: unknown[]) => T) => void } {
     let returnValue: T | undefined;
     let implementation: ((...args: unknown[]) => T) | undefined;
@@ -94,7 +96,7 @@ describe("Shape Resolver Unit Tests", () => {
             const result = shapeResolver.resolveShapeReferences(input);
             
             expect(mockCheckCache.calls.length).toBeGreaterThan(0);
-            expect(mockCheckCache.calls[0][0]).toBe(123);
+            expect(mockCheckCache.calls[0]![0]).toBe(123);
             expect(result).toEqual({ ...mockShape, hash: 123 });
         });
 
@@ -238,22 +240,20 @@ describe("Result Serializer Unit Tests", () => {
             mockIsShape = createMockFn<boolean>();
             mockIsEntityHandle = createMockFn<boolean>();
             
-            // Default: isShape checks for $$ property and ShapeType method
             mockIsShape.mockImplementation((obj: unknown) => {
                 if (obj === null || obj === undefined || typeof obj !== "object") {
                     return false;
                 }
                 const o = obj as Record<string, unknown>;
-                return "$$" in o && typeof o.ShapeType === "function";
+                return "$$" in o && typeof o["ShapeType"] === "function";
             });
             
-            // Default: isEntityHandle checks for $$ but NOT ShapeType
             mockIsEntityHandle.mockImplementation((obj: unknown) => {
                 if (obj === null || obj === undefined || typeof obj !== "object") {
                     return false;
                 }
                 const o = obj as Record<string, unknown>;
-                return "$$" in o && typeof o.ShapeType !== "function";
+                return "$$" in o && typeof o["ShapeType"] !== "function";
             });
             
             mockCacheHelper = {
@@ -275,7 +275,6 @@ describe("Result Serializer Unit Tests", () => {
         it("should serialize single OCCT object to shape reference", () => {
             mockIsOCCTObject.mockReturnValue(true);
             
-            // Mock shape with ShapeType function to be detected as a shape (not entity)
             const shape = { $$: {}, hash: 12345, ShapeType: () => 0 };
             const result = resultSerializer.serializeResult(shape);
             
@@ -298,8 +297,6 @@ describe("Result Serializer Unit Tests", () => {
         });
 
         it("should serialize ObjectDefinition structure", () => {
-            // Note: ObjectDefinition compound is handled specially via isObjectDefinition check,
-            // so it doesn't need ShapeType. The individual shapes inside do need ShapeType.
             const objDef = {
                 compound: { $$: {}, hash: 100, ShapeType: () => 0 },
                 data: { someData: "value" },
@@ -321,8 +318,6 @@ describe("Result Serializer Unit Tests", () => {
         });
 
         it("should recursively serialize OCCT objects nested in plain objects (AssemblyPartDef-like)", () => {
-            // This tests the scenario where createPart returns { id, shape, name, colorRgba }
-            // The shape property contains an OCCT object that needs to be serialized
             const assemblyPart = {
                 id: "box",
                 shape: { $$: {}, hash: 12345, ShapeType: () => 0 },
@@ -363,7 +358,6 @@ describe("Result Serializer Unit Tests", () => {
         });
 
         it("should recursively serialize arrays containing objects with OCCT shapes", () => {
-            // This tests combineStructure scenario - parts array with shapes inside
             const parts = [
                 { id: "part1", shape: { $$: {}, hash: 111, ShapeType: () => 0 }, name: "Part 1" },
                 { id: "part2", shape: { $$: {}, hash: 222, ShapeType: () => 0 }, name: "Part 2" }
@@ -421,10 +415,9 @@ describe("Result Serializer Unit Tests", () => {
         it("should preserve Uint8Array (binary data) without converting to plain object", () => {
             mockIsOCCTObject.mockReturnValue(false);
             
-            const binaryData = new Uint8Array([71, 76, 84, 70, 2, 0, 0, 0]); // glTF magic bytes
+            const binaryData = new Uint8Array([71, 76, 84, 70, 2, 0, 0, 0]);
             const result = resultSerializer.serializeResult(binaryData);
             
-            // Should return the same Uint8Array, not a plain object
             expect(result).toBeInstanceOf(Uint8Array);
             expect(result).toBe(binaryData);
             expect((result as Uint8Array).length).toBe(8);
@@ -562,3 +555,90 @@ describe("Function Path Resolver Unit Tests", () => {
     });
 });
 
+describe("Shape Resolver edge cases", () => {
+    let cacheHelper: CacheHelper;
+
+    beforeEach(() => {
+        cacheHelper = new CacheHelper(NO_MODULE);
+    });
+
+    describe("resolveShapeReferences", () => {
+        it("should hand bytes through untouched rather than walking them", () => {
+            // Arrange
+            const resolver = new ShapeResolver(cacheHelper);
+            const bytes = new Uint8Array([1, 2, 3]);
+
+            // Act
+            const result = resolver.resolveShapeReferences({ stepData: bytes });
+
+            // Assert
+            expect(result.stepData).toBe(bytes);
+        });
+
+        it("should hand a buffer through untouched rather than walking it", () => {
+            // Arrange
+            const resolver = new ShapeResolver(cacheHelper);
+            const buffer = new ArrayBuffer(8);
+
+            // Act
+            const result = resolver.resolveShapeReferences({ stepData: buffer });
+
+            // Assert
+            expect(result.stepData).toBe(buffer);
+        });
+
+        it("should refuse a Blob, which cannot cross a postMessage and should have been read already", () => {
+            // Arrange
+            const resolver = new ShapeResolver(cacheHelper);
+
+            // Act & Assert
+            expect(() => resolver.resolveShapeReferences({ stepData: new Blob(["a"]) }))
+                .toThrow("File/Blob objects cannot be passed directly to the worker");
+        });
+
+        it("should say which entity is missing when its hash is not in the cache", () => {
+            // Arrange
+            const resolver = new ShapeResolver(cacheHelper);
+
+            // Act & Assert
+            expect(() => resolver.resolveShapeReferences({ document: { type: "occ-entity", hash: 999 } }))
+                .toThrow("Entity with hash 999 not found in cache");
+        });
+    });
+
+    describe("serializeResult", () => {
+        it("should send an assembly document back as an entity reference", () => {
+            // Arrange
+            const serializer = new ResultSerializer(cacheHelper);
+            const handle = { $$: {}, hash: "doc-1" };
+
+            // Act
+            const result = serializer.serializeResult(handle);
+
+            // Assert
+            expect(result).toEqual({ type: "occ-entity", hash: "doc-1" });
+        });
+
+        it("should not mistake a plain object for an object definition", () => {
+            // Arrange
+            const serializer = new ResultSerializer(cacheHelper);
+
+            // Act
+            const result = serializer.serializeResult({ compound: null, data: 1 });
+
+            // Assert
+            expect(result).toEqual({ compound: null, data: 1 });
+        });
+    });
+
+    describe("callFunction", () => {
+        it("should say so when the path names a parent that is not there", () => {
+            // Arrange
+            const resolver = new FunctionPathResolver();
+
+            // Act & Assert
+            expect(() => resolver.callFunction({ shapes: null }, "shapes.createSphere", {}))
+                .toThrow("Cannot resolve path \"shapes.createSphere\"");
+        });
+    });
+});

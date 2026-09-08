@@ -1,19 +1,15 @@
-// ---------------------------------------------------------------------------
-// SDK error class
-// ---------------------------------------------------------------------------
-
 export class BitbybitApiError extends Error {
     readonly code: string;
     readonly statusCode: number;
-    readonly details?: unknown;
-    readonly requestId?: string;
+    readonly details?: unknown | undefined;
+    readonly requestId?: string | undefined;
 
     constructor(opts: {
         code: string;
         message: string;
         statusCode: number;
-        details?: unknown;
-        requestId?: string;
+        details?: unknown | undefined;
+        requestId?: string | undefined;
     }) {
         super(opts.message);
         this.name = "BitbybitApiError";

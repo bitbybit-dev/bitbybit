@@ -27,9 +27,6 @@ export class FacesService {
         private readonly transformsService: TransformsService,
         private readonly vectorService: VectorHelperService,
         private readonly base: BaseBitByBit,
-        // Fillets reaches back into faces, so the two cannot both be built before each other. It
-        // arrives as a supplier and is read when a method needs it, rather than being assigned onto
-        // this one afterwards.
         private readonly fillets: () => FilletsService,
     ) { }
 
@@ -58,12 +55,10 @@ export class FacesService {
             result = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, inputs.planar);
             wire.delete();
         } else {
-            // Use BRepFill_Filling for non-planar face creation
             const wire = this.occ.CastToWire(inputs.shape);
             const edges = this.shapeGettersService.getEdges({ shape: wire });
             const filling = new this.occ.BRepFill_Filling();
             try {
-                // Add all edges as boundary constraints (order 0 = C0 continuity)
                 for (const edge of edges) {
                     this.occ.BRepFill_Filling_AddEdge(filling, edge, 0, true);
                     edge.delete();
@@ -133,7 +128,6 @@ export class FacesService {
                 const state = classifier.State();
                 const stateValue = state.value;
                 
-                // TopAbs_State: IN=0, OUT=1, ON=2, UNKNOWN=3
                 if ((stateValue === 0 && keepIn) ||
                     (stateValue === 1 && keepOut) ||
                     (stateValue === 2 && keepOn)) {
@@ -220,7 +214,6 @@ export class FacesService {
         const faces: TopoDS_Face[] = [];
         if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
             for (let i = 0; i < listsOfCircles.length; i++) {
-                // lists of circles is a 2D array of circular wires
                 const currentCirclesList = listsOfCircles[i]!;
                 const nextCirclesList = listsOfCircles[(i + 1)];
                 if (nextCirclesList) {
@@ -263,7 +256,6 @@ export class FacesService {
                 }
             }
         } else if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed) {
-            // check if all lists are of the same length
             for (let i = 0; i < listsOfCircles.length; i++) {
                 if (listsOfCircles[i]!.length !== listsOfCircles[0]!.length) {
                     throw new Error("All lists of circles must have the same length in order to use inOrderClosed strategy.");
@@ -533,7 +525,6 @@ export class FacesService {
             paramsV.push(pV);
         }
 
-        // figure out actual parametric scale
         const line1 = this.wiresService.createLineWire({
             start: [0, 0, 0],
             end: [1, 0, 0],
@@ -557,8 +548,6 @@ export class FacesService {
         let currentInclusionPatternIndex = 0;
         let currentFilletPatternIndex = 0;
 
-        // potentially each rectangle can have unique fillets and scale factors due to patterns applied
-        // we can though optimise this by using cached rectangles to speed up the algorithm
         const cachedRectangles: { id: string, shape: TopoDS_Wire }[] = [];
 
         for (let i = 0; i < paramsU.length; i++) {
@@ -686,7 +675,6 @@ export class FacesService {
     }
 
     subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
-        // default should be smaller then 1 as that can't punch holes or create faces nicely.
         if (inputs.scalePatternU === undefined) {
             inputs.scalePatternU = [0.5];
         }
@@ -702,7 +690,6 @@ export class FacesService {
         const listOfWires = [longestFaceWire, ...revWires];
         const newFace = this.createFaceFromWiresOnFace({ wires: listOfWires, face: inputs.shape, inside: true });
 
-        // check if the normals are the same, if not reverse the face
         const normalOriginal = this.faceNormalOnUV({ shape: inputs.shape, paramU: 0, paramV: 0 });
         const normalNew = this.faceNormalOnUV({ shape: newFace, paramU: 0, paramV: 0 });
 
@@ -740,7 +727,6 @@ export class FacesService {
         const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
-        // Calculate parametric range
         const scaleU = uMax - uMin;
         const scaleV = vMax - vMin;
 
@@ -751,7 +737,6 @@ export class FacesService {
 
         const offsetFromBorderU = inputs.offsetFromBorderU ?? 0;
         const offsetFromBorderV = inputs.offsetFromBorderV ?? 0;
-        // Calculate target parametric dimensions and origin for the grid
         const gridHeightU = scaleU * (1 - offsetFromBorderU * 2);
         const gridWidthV = scaleV * (1 - offsetFromBorderV * 2);
 
@@ -763,7 +748,6 @@ export class FacesService {
             return [];
         }
 
-        // Generate hexagon grid in local 2D space (assuming X maps to V, Z maps to U)
         const hex = this.base.point.hexGridScaledToFit({
             width: gridWidthV,
             height: gridHeightU,
@@ -778,7 +762,6 @@ export class FacesService {
             extendRight: inputs.extendVUp,
         });
 
-        // Create wires in local 2D space
         const localHexWires = hex.hexagons.map(hexPoints => {
             return this.wiresService.createPolygonWire({
                 points: hexPoints
@@ -786,10 +769,8 @@ export class FacesService {
         });
         shapesToDelete.push(...localHexWires);
 
-        // Define the translation vector to map local grid origin to parametric grid origin
         const uvTranslation = [gridOriginV, 0, gridOriginU] as Base.Vector3;
 
-        // Translate wires to parametric UV space
         const uvHexWires = localHexWires.map(h => {
             return this.transformsService.translate({
                 shape: h,
@@ -798,7 +779,6 @@ export class FacesService {
         });
         shapesToDelete.push(...uvHexWires);
 
-        // Translate centers to parametric UV space
         const uvHexCenters = this.base.point.translatePoints({
             points: hex.centers,
             translation: uvTranslation
@@ -813,19 +793,16 @@ export class FacesService {
 
         const nrHexagonsU = inputs.nrHexagonsU ?? 10;
         const nrHexagonsV = inputs.nrHexagonsV ?? 10;
-        // Ensure we have enough hexagons generated for the loop counts
         const totalHexagons = nrHexagonsU * nrHexagonsV;
         if (uvHexWires.length !== totalHexagons || uvHexCenters.length !== totalHexagons) {
             console.error(`Generated ${uvHexWires.length} hexagons, but expected ${totalHexagons}. Check hexGridScaledToFit logic.`);
             return [];
         }
 
-        // Process each hexagon (scale, fillet, place)
         for (let i = 0; i < nrHexagonsU; i++) {
             for (let j = 0; j < nrHexagonsV; j++) {
                 const hexIndex = i * nrHexagonsV + j;
 
-                // Get scale/inclusion/fillet values from patterns
                 let scaleFromPatternU = 1;
                 if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
                     scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length]!;
@@ -855,7 +832,6 @@ export class FacesService {
                     const uvCenter = uvHexCenters[hexIndex]!;
 
                     let shapeToScale = uvHexagon;
-                    // Apply Fillet (using the factor)
                     const filletRadius = (hex.maxFilletRadius ?? 0) * filletFactor;
                     if (filletRadius > 1e-6) {
                         const filletedHex = this.filletsService.fillet2d({
@@ -866,9 +842,7 @@ export class FacesService {
                         shapeToScale = filletedHex;
                     }
 
-                    // Apply Scaling (around the correct UV center)
                     let shapeToPlace = shapeToScale;
-                    // Scaling vector maps to V
                     const scaleVec = [scaleFromPatternV, 1, scaleFromPatternU] as Base.Vector3;
                     if (Math.abs(scaleFromPatternU - 1.0) > 1e-6 || Math.abs(scaleFromPatternV - 1.0) > 1e-6) {
                         const scaledHex = this.transformsService.scale3d({
@@ -880,7 +854,6 @@ export class FacesService {
                         shapeToPlace = scaledHex;
                     }
 
-                    // Place the final processed wire onto the surface
                     const placedWire = this.wiresService.placeWire(shapeToPlace, surface);
                     finalPlacedWires.push(placedWire);
 
@@ -911,7 +884,6 @@ export class FacesService {
         const listOfWires = [longestFaceWire, ...revWires];
         const newFace = this.createFaceFromWiresOnFace({ wires: listOfWires, face: inputs.shape, inside: true });
 
-        // check if the normals are the same, if not reverse the face
         const normalOriginal = this.faceNormalOnUV({ shape: inputs.shape, paramU: 0, paramV: 0 });
         const normalNew = this.faceNormalOnUV({ shape: newFace, paramU: 0, paramV: 0 });
 
@@ -966,7 +938,6 @@ export class FacesService {
                 const v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
                 const gpUv = this.entitiesService.gpPnt2d([u, v]);
                 const gpDir = this.occ.GeomLib_NormEstim(surface, gpUv, 1e-7);
-                // Sometimes face gets reversed and its original surface is not reversed, thus we need to adjust for such situation.
                 if (face.Orientation() === this.occ.TopAbs_Orientation.REVERSED) {
                     gpDir.Reverse();
                 }

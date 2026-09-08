@@ -293,7 +293,7 @@ describe("OCCT shapes helper unit tests", () => {
             alignments.forEach(alignment => {
                 const res = service.beamIProfile(10, 20, 2, 3, alignment);
                 expect(res).toBeDefined();
-                expect(res.length).toBe(12); // I-beam has 12 points
+                expect(res.length).toBe(12);
             });
         });
 
@@ -311,13 +311,11 @@ describe("OCCT shapes helper unit tests", () => {
 
         it("should verify topLeft alignment places top-left corner at origin", () => {
             const iBeam = service.beamIProfile(10, 20, 2, 3, Inputs.Base.basicAlignmentEnum.topLeft);
-            // First point should be at or near origin (0, 0, 0) for topLeft
             expect(iBeam[0]).toEqual([0, 0, 0]);
         });
 
         it("should verify bottomRight alignment places bottom-right corner at origin", () => {
             const iBeam = service.beamIProfile(10, 20, 2, 3, Inputs.Base.basicAlignmentEnum.bottomRight);
-            // Point at index 6 should be at or near origin (0, 0, 0) for bottomRight
             expect(iBeam[6]).toEqual([0, 0, 0]);
         });
     });

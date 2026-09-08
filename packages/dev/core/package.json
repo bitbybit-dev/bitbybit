@@ -44,6 +44,7 @@
     "scripts": {
         "build": "tsc -b tsconfig.bitbybit.json",
         "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
+        "typecheck:tests": "tsc -p tsconfig.json --noEmit --pretty false",
         "clean-dist": "shx rm -rf dist",
         "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
         "copy-package": "node ../../../scripts/dist-manifest.mjs",
@@ -136,6 +137,7 @@
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.0",
         "@vitest/coverage-v8": "4.1.7",
+        "jsdom": "29.0.1",
         "shx": "0.4.0",
         "typescript": "5.9.3",
         "vitest": "4.1.7"

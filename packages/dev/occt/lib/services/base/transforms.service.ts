@@ -41,7 +41,7 @@ export class TransformsService {
         transformation.SetVectorialPart(mat);
         let result;
         try {
-            const gtrans = new this.occ.BRepBuilderAPI_GTransform(shapeTranslated as TopoDS_Shape, transformation);
+            const gtrans = new this.occ.BRepBuilderAPI_GTransform(shapeTranslated, transformation);
             const scaledShape = gtrans.Shape();
             result = this.translate({ shape: scaledShape, translation: inputs.center });
             gtrans.delete();
@@ -252,8 +252,8 @@ export class TransformsService {
         const vec = new this.occ.gp_Vec(translation[0], translation[1], translation[2]);
         t.SetTranslation(vec);
 
-        const rs = rot.Multiplied(s);          // R * S
-        const trs = t.Multiplied(rs);           // T * R * S
+        const rs = rot.Multiplied(s);
+        const trs = t.Multiplied(rs);
         const matrix = this.trsfToMatrix(trs);
 
         origin.delete();
@@ -340,7 +340,6 @@ export class TransformsService {
         const xx = x * x, yy = y * y, zz = z * z;
         const xy = x * y, xz = x * z, yz = y * z;
         const wx = w * x, wy = w * y, wz = w * z;
-        // column-major, p' = M * p
         return [
             1 - 2 * (yy + zz), 2 * (xy + wz), 2 * (xz - wy), 0,
             2 * (xy - wz), 1 - 2 * (xx + zz), 2 * (yz + wx), 0,
@@ -378,8 +377,8 @@ export class TransformsService {
         const rx = make([1, 0, 0], rotation[0]);
         const ry = make([0, 1, 0], rotation[1]);
         const rz = make([0, 0, 1], rotation[2]);
-        const ryz = ry.Multiplied(rz);     // Ry * Rz
-        const rxyz = rx.Multiplied(ryz);   // Rx * Ry * Rz
+        const ryz = ry.Multiplied(rz);
+        const rxyz = rx.Multiplied(ryz);
         rx.delete();
         ry.delete();
         rz.delete();
@@ -433,7 +432,7 @@ export class TransformsService {
         }
         let acc = list[0]!;
         for (let i = 1; i < list.length; i++) {
-            acc = this.multiplyMatricesColumnMajor(list[i]!, acc); // apply acc first, then list[i]
+            acc = this.multiplyMatricesColumnMajor(list[i]!, acc);
         }
         return acc;
     }

@@ -9,25 +9,25 @@ export class JSCAD {
 
     // replaces downloadSolidSTL
     async downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadSolidSTL", inputs);
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadSolidSTL", inputs);
         this.downloadFile(res.blob, inputs.fileName, "stl");
     }
 
     // replaces downloadSolidsSTL
     async downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadSolidsSTL", inputs);
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadSolidsSTL", inputs);
         this.downloadFile(res.blob, inputs.fileName, "stl");
     }
 
     // replaces downloadGeometryDxf
     async downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadGeometryDxf", inputs);
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometryDxf", inputs);
         this.downloadFile(res.blob, inputs.fileName, "dxf");
     }
 
     // replaces downloadGeometry3MF
     async downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadGeometry3MF", inputs);
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometry3MF", inputs);
         this.downloadFile(res.blob, inputs.fileName, "3mf");
     }
 

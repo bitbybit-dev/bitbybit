@@ -251,7 +251,6 @@ describe("OCCTAssembly unit tests", () => {
             // Assert
             expect(gltfData).toBeDefined();
             expect(gltfData.length).toBeGreaterThan(0);
-            // GLB files start with 'glTF' magic bytes
             const magic = new TextDecoder().decode(gltfData.slice(0, 4));
             expect(magic).toBe("glTF");
         });

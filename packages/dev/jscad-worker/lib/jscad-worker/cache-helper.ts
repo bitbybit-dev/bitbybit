@@ -5,27 +5,24 @@ export class CacheHelper {
     usedHashes: Record<string, string | number> = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
-    jscadObjectHashes = new Set<string | number>(); // Track which hashes contain JSCAD objects
+    jscadObjectHashes = new Set<string | number>();
 
     cleanAllCache(): void {
-        // Clean all entries in argCache, not just usedHashes
         const allCacheKeys = Object.keys(this.argCache);
 
         allCacheKeys.forEach(hash => {
             if (this.argCache[hash]) {
                 try {
                     const cachedItem = this.argCache[hash];
-                    // Only attempt to delete JSCAD objects
                     if (this.isJSCADObject(cachedItem)) {
-                        // Handle arrays of JSCAD objects
                         if (Array.isArray(cachedItem)) {
                             cachedItem.forEach(obj => {
                                 try {
                                     if (obj.delete) {
                                         obj.delete();
                                     }
+                                // eslint-disable-next-line no-empty
                                 } catch {
-                                    // Ignore errors for already deleted objects
                                 }
                             });
                         } else {
@@ -35,8 +32,8 @@ export class CacheHelper {
                         }
                     }
                 }
+                // eslint-disable-next-line no-empty
                 catch {
-                    // Ignore errors when cleaning objects that may already be deleted
                 }
             }
         });
@@ -51,17 +48,15 @@ export class CacheHelper {
         if (this.argCache[hash]) {
             try {
                 const cachedItem = this.argCache[hash];
-                // Only attempt to delete JSCAD objects
                 if (this.isJSCADObject(cachedItem)) {
-                    // Handle arrays of JSCAD objects
                     if (Array.isArray(cachedItem)) {
                         cachedItem.forEach(obj => {
                             try {
                                 if (obj.delete) {
                                     obj.delete();
                                 }
+                            // eslint-disable-next-line no-empty
                             } catch {
-                                // Ignore errors for already deleted objects
                             }
                         });
                     } else {
@@ -71,8 +66,8 @@ export class CacheHelper {
                     }
                 }
             }
+            // eslint-disable-next-line no-empty
             catch {
-                // Ignore errors when cleaning objects that may already be deleted
             }
         }
         delete this.argCache[hash];
@@ -82,36 +77,28 @@ export class CacheHelper {
     }
 
     cleanUpCache(): void {
-        // Clean up cache entries that were used in previous run but not in current run
-        // This helps manage memory by removing unused cached objects
-        
         const usedHashKeys = Object.keys(this.usedHashes);
         const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
         
-        // Find hashes that exist in previous run but not in current run
-        // These are the ones we should clean up
         let hashesToDelete: string[] = [];
         if (hashesFromPreviousRunKeys.length > 0) {
             hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
         }
         
-        // Delete unused objects and clean them from cache
         if (hashesToDelete.length > 0) {
             hashesToDelete.forEach(hash => {
                 if (this.argCache[hash]) {
                     try {
                         const obj = this.argCache[hash];
-                        // Only try to delete if it's a JSCAD object
                         if (this.isJSCADObject(obj)) {
-                            // Handle arrays of JSCAD objects
                             if (Array.isArray(obj)) {
                                 obj.forEach(o => {
                                     try {
                                         if (o.delete) {
                                             o.delete();
                                         }
+                                    // eslint-disable-next-line no-empty
                                     } catch {
-                                        // Ignore errors for already deleted objects
                                     }
                                 });
                             } else {
@@ -120,8 +107,8 @@ export class CacheHelper {
                                 }
                             }
                         }
+                    // eslint-disable-next-line no-empty
                     } catch {
-                        // Ignore errors for already deleted or invalid objects
                     }
                     delete this.argCache[hash];
                 }
@@ -130,14 +117,11 @@ export class CacheHelper {
             });
         }
         
-        // Update hashesFromPreviousRun to be current usedHashes for next cleanup cycle
         this.hashesFromPreviousRun = { ...this.usedHashes };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isJSCADObject(obj: any): boolean {
-        // JSCAD objects typically have specific properties or methods
-        // Check for common JSCAD object characteristics
         return obj !== undefined && obj !== null && (
             (!Array.isArray(obj) && typeof obj === "object" && obj.delete !== undefined) ||
             (Array.isArray(obj) && obj.length > 0 && typeof obj[0] === "object" && obj[0].delete !== undefined)
@@ -170,7 +154,6 @@ export class CacheHelper {
                     const itemHash = this.computeHash({ ...args, index });
                     r.hash = itemHash;
                     this.addToCache(itemHash, r);
-                    // Track individual element hashes so they can be cleaned up
                     this.usedHashes[itemHash] = itemHash;
                     this.hashesFromPreviousRun[itemHash] = itemHash;
                 });
@@ -194,16 +177,13 @@ export class CacheHelper {
             return null;
         }
         
-        // For wrapped values (non-JSCAD objects stored as { value: ... })
         if (cachedObject.value !== undefined && !this.isJSCADObject(cachedObject)) {
             return cachedObject;
         }
         
-        // If this hash was tracked as a JSCAD object, verify it's still valid
         if (this.jscadObjectHashes.has(hash)) {
             const isStillValid = this.isJSCADObject(cachedObject);
             if (!isStillValid) {
-                // Object was a JSCAD object but is no longer valid
                 delete this.argCache[hash];
                 this.jscadObjectHashes.delete(hash);
                 return null;
@@ -216,13 +196,11 @@ export class CacheHelper {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addToCache(hash: string | number, object: any): string | number {
         const cacheObject = object;
-        // Only set hash property on objects, not primitives
         if (cacheObject !== null && typeof cacheObject === "object") {
             cacheObject.hash = hash;
         }
         this.argCache[hash] = cacheObject;
         
-        // Track if this is a JSCAD object
         if (this.isJSCADObject(cacheObject)) {
             this.jscadObjectHashes.add(hash);
         }
@@ -250,9 +228,7 @@ export class CacheHelper {
         if (str.length === 0) { return hash; }
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
-            // tslint:disable-next-line: no-bitwise
             hash = ((hash << 5) - hash) + char;
-            // tslint:disable-next-line: no-bitwise
             hash = hash & hash;
         }
         return hash;
@@ -262,8 +238,6 @@ export class CacheHelper {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     remove(inputArray: any[], objectToRemove: any): any[] {
         return inputArray.filter((el) => {
-            // Keep elements where hash is different OR ptr is different
-            // (remove only when BOTH hash AND ptr match)
             return el.hash !== objectToRemove.hash ||
                 el.ptr !== objectToRemove.ptr;
         });

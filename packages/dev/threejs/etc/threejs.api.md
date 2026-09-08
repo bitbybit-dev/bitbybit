@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { JSONPath } from 'jsonpath-plus';
 import { Scene } from 'three';
 import { Subject } from 'rxjs';
 import * as THREEJS from 'three';
@@ -272,7 +273,7 @@ export class BitByBitBase {
     vector: Vector_2;
     // Warning: (ae-forgotten-export) The symbol "Verb_2" needs to be exported by the entry point index.d.ts
     //
-    // (undocumented)
+    // @deprecated
     verb: Verb_2;
 }
 
@@ -717,15 +718,19 @@ namespace Draw_2 {
     // (undocumented)
     type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
     // (undocumented)
-    type Entity = number[] | [number, number, number] | Base_3.Point3 | Base_3.Vector3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.Tag.TagDto | {
+    type Entity = number[] | [number, number, number] | Base_3.Point3 | Base_3.Vector3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Tag.TagDto | {
         type: string;
         name?: string;
         entityName?: string;
-    } | number[][] | Base_3.Point3[] | Base_3.Vector3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.Tag.TagDto[] | {
+    } | number[][] | Base_3.Point3[] | Base_3.Vector3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Tag.TagDto[] | {
         type: string[];
         name?: string;
         entityName?: string;
-    };
+    } | {
+        type: string;
+        name?: string;
+        entityName?: string;
+    }[];
     class GenericPBRMaterialDto {
         constructor(name?: string, baseColor?: Base_3.Color, metallic?: number, roughness?: number, alpha?: number, emissiveColor?: Base_3.Color, emissiveIntensity?: number, zOffset?: number, zOffsetUnits?: number, baseColorTexture?: Base_3.Texture, metallicRoughnessTexture?: Base_3.Texture, normalTexture?: Base_3.Texture, emissiveTexture?: Base_3.Texture, occlusionTexture?: Base_3.Texture, alphaMode?: alphaModeEnum, alphaCutoff?: number, doubleSided?: boolean, wireframe?: boolean, unlit?: boolean);
         alpha: number;
@@ -1222,12 +1227,61 @@ namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
-    type JSCADEntity = any;
+    type JSCADColor = [number, number, number] | [number, number, number, number];
+    type JSCADEntity = JSCADGeom2 | JSCADGeom3 | JSCADPath2;
+    type JSCADGeom2 = {
+        sides: [JSCADVec2, JSCADVec2][];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADGeom3 = {
+        polygons: JSCADPoly3[];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADMat4 = [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number
+    ];
+    type JSCADMeshData = {
+        positions: number[];
+        normals: number[];
+        indices: number[];
+        transforms: JSCADMat4;
+    };
+    type JSCADPath2 = {
+        points: JSCADVec2[];
+        isClosed: boolean;
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    type JSCADPlane = [number, number, number, number];
+    type JSCADPoly3 = {
+        vertices: JSCADVec3[];
+        color?: JSCADColor;
+        plane?: JSCADPlane;
+    };
     enum jscadTextAlignEnum {
         center = "center",
         left = "left",
         right = "right"
     }
+    type JSCADVec2 = [number, number];
+    type JSCADVec3 = [number, number, number];
     // (undocumented)
     class MeshDto {
         constructor(mesh?: JSCADEntity);
@@ -1461,21 +1515,21 @@ namespace JSCAD {
 namespace JSON_2 {
     // (undocumented)
     class GetJsonFromArrayByFirstPropMatchDto {
-        constructor(jsonArray?: any[], property?: string, match?: any);
-        jsonArray: any[];
-        match: any;
+        constructor(jsonArray?: unknown[], property?: string, match?: unknown);
+        jsonArray: unknown[];
+        match: unknown;
         property: string;
     }
     // (undocumented)
     class GetValueOnPropDto {
-        constructor(json?: any, property?: string);
-        json: any;
+        constructor(json?: unknown, property?: string);
+        json: unknown;
         property: string;
     }
     // (undocumented)
     class JsonDto {
-        constructor(json?: any);
-        json: any;
+        constructor(json?: unknown);
+        json: unknown;
     }
     // (undocumented)
     class ParseDto {
@@ -1484,43 +1538,43 @@ namespace JSON_2 {
     }
     // (undocumented)
     class PathsDto {
-        constructor(json?: any, query?: string);
-        json: any;
+        constructor(json?: unknown, query?: string);
+        json: unknown;
         query: string;
     }
     // (undocumented)
     class QueryDto {
-        constructor(json?: any, query?: string);
-        json: any;
+        constructor(json?: unknown, query?: string);
+        json: unknown;
         query: string;
     }
     // (undocumented)
     class SetValueDto {
-        constructor(json?: any, value?: any, path?: string, prop?: string);
-        json: any;
+        constructor(json?: unknown, value?: unknown, path?: string, prop?: string);
+        json: unknown;
         path: string;
         prop: string;
-        value: any;
+        value: unknown;
     }
     // (undocumented)
     class SetValueOnPropDto {
-        constructor(json?: any, value?: any, property?: string);
-        json: any;
+        constructor(json?: unknown, value?: unknown, property?: string);
+        json: unknown;
         property: string;
-        value: any;
+        value: unknown;
     }
     // (undocumented)
     class SetValuesOnPathsDto {
-        constructor(json?: any, values?: any[], paths?: string[], props?: []);
-        json: any;
+        constructor(json?: unknown, values?: unknown[], paths?: string[], props?: string[]);
+        json: unknown;
         paths: string[];
         props: string[];
-        values: any[];
+        values: unknown[];
     }
     // (undocumented)
     class StringifyDto {
-        constructor(json?: any);
-        json: any;
+        constructor(json?: unknown);
+        json: unknown;
     }
 }
 

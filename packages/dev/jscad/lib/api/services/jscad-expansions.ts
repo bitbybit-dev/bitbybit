@@ -1,5 +1,6 @@
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
+import { asEntity, asKind, oneOrMany } from "./entity-narrowing";
 
 /**
  * Contains various functions for Solid expansions from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -20,7 +21,7 @@ export class JSCADExpansions {
      * @drawable true
      */
     expand(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
-        const geometry = inputs.geometry.length && inputs.geometry.length > 0 ? inputs.geometry : [inputs.geometry];
+        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
         if (!inputs.corners) {
             inputs.corners = Inputs.JSCAD.solidCornerTypeEnum.round;
         }
@@ -29,7 +30,7 @@ export class JSCADExpansions {
             corners: inputs.corners,
             segments: inputs.segments,
         }, ...geometry);
-        return result;
+        return asEntity(result);
     }
 
     /**
@@ -41,7 +42,7 @@ export class JSCADExpansions {
      * @drawable true
      */
     offset(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
-        const geometry = inputs.geometry.length && inputs.geometry.length > 0 ? inputs.geometry : [inputs.geometry];
+        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
         if (!inputs.corners) {
             inputs.corners = Inputs.JSCAD.solidCornerTypeEnum.edge;
         }
@@ -50,6 +51,6 @@ export class JSCADExpansions {
             corners: inputs.corners,
             segments: inputs.segments,
         }, ...geometry);
-        return result;
+        return asEntity(result);
     }
 }

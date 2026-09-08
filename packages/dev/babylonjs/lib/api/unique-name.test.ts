@@ -3,7 +3,6 @@ import { uniqueName } from "./unique-name";
 
 const PREFIX = "BabylonMesh";
 const SAMPLE_SIZE = 100;
-// The shape a glTF importer must not be able to read as a duplicate counter: a dot, then digits.
 const A_SESSION_AND_COUNTER = /^BabylonMesh-[0-9a-z]{8}-\d+$/;
 const A_DUPLICATE_COUNTER_SUFFIX = /\.\d+$/;
 
@@ -42,8 +41,6 @@ describe("uniqueName", () => {
     });
 
     it("should not collide with a name minted by another session", () => {
-        // Arrange - what an imported model, or another tab, would carry: the same prefix and
-        // counter, a different session part.
         const ours = uniqueName(PREFIX);
         const [prefix, , count] = ours.split("-");
         const theirs = `${prefix}-00000000-${count}`;

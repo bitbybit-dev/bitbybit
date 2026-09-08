@@ -3,6 +3,21 @@ import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inpu
 import { OrbitCameraController, ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
 import { createOrbitCamera } from "./orbit-camera";
 
+const SIXTY_HZ_FRAMES_PER_SECOND = 60;
+const FIRST_FRAME_DELTA_SECONDS = 1 / SIXTY_HZ_FRAMES_PER_SECOND;
+const MAX_FRAME_DELTA_SECONDS = 6 / SIXTY_HZ_FRAMES_PER_SECOND;
+
+function frameDeltaSeconds(previousFrameTimeMs: number | undefined, frameTimeMs: number): number {
+    if (previousFrameTimeMs === undefined) {
+        return FIRST_FRAME_DELTA_SECONDS;
+    }
+    const measuredSeconds = (frameTimeMs - previousFrameTimeMs) / 1000;
+    if (!Number.isFinite(measuredSeconds) || measuredSeconds <= 0) {
+        return FIRST_FRAME_DELTA_SECONDS;
+    }
+    return Math.min(measuredSeconds, MAX_FRAME_DELTA_SECONDS);
+}
+
 /**
  * Helper function to initialize a basic Three.js scene with lights, shadows, and optional ground plane.
  * This provides a quick setup for common use cases while remaining fully customizable.
@@ -28,7 +43,6 @@ import { createOrbitCamera } from "./orbit-camera";
 export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSResult {
     const config = inputs || new ThreeJSScene.InitThreeJSDto();
 
-    // Get or create canvas
     let canvas: HTMLCanvasElement;
     if (config.canvasId) {
         const existingCanvas = document.getElementById(config.canvasId) as HTMLCanvasElement;
@@ -44,15 +58,12 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
         document.body.appendChild(canvas);
     }
 
-    // Create scene
     const scene = new THREEJS.Scene();
     scene.background = new THREEJS.Color(config.backgroundColor);
 
-    // Calculate positions based on scene size
     const lightHeight = config.sceneSize * 0.75;
     const lightOffset = config.sceneSize * 0.5;
 
-    // Create hemisphere light (ambient-like lighting from sky and ground)
     const hemisphereLight = new THREEJS.HemisphereLight(
         new THREEJS.Color(config.hemisphereLightSkyColor),
         new THREEJS.Color(config.hemisphereLightGroundColor),
@@ -61,7 +72,6 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
     hemisphereLight.position.set(0, lightHeight, 0);
     scene.add(hemisphereLight);
 
-    // Create directional light (sun-like light with shadows)
     const directionalLight = new THREEJS.DirectionalLight(
         new THREEJS.Color(config.directionalLightColor),
         config.directionalLightIntensity
@@ -71,7 +81,6 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
     scene.add(directionalLight);
     scene.add(directionalLight.target);
 
-    // Create renderer
     const renderer = new THREEJS.WebGLRenderer({
         antialias: true,
         canvas: canvas
@@ -79,15 +88,12 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    // Configure shadows
     if (config.enableShadows) {
         renderer.shadowMap.enabled = true;
-        // Use VSM for softer, more natural-looking shadows
         renderer.shadowMap.type = THREEJS.VSMShadowMap;
 
         directionalLight.castShadow = true;
 
-        // Configure shadow camera based on scene size
         const shadowCameraSize = config.sceneSize * config.groundScaleFactor;
         directionalLight.shadow.camera.left = -shadowCameraSize / 2;
         directionalLight.shadow.camera.right = shadowCameraSize / 2;
@@ -99,20 +105,14 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
         directionalLight.shadow.mapSize.width = config.shadowMapSize;
         directionalLight.shadow.mapSize.height = config.shadowMapSize;
         
-        // VSM shadow map settings for soft shadows
-        // Radius controls the blur amount - higher values = softer shadows
         directionalLight.shadow.radius = 4;
-        // Blur samples for VSM - more samples = smoother but slower
         directionalLight.shadow.blurSamples = 8;
         
-        // Compute shadow bias values based on scene size for optimal results
-        // VSM requires smaller bias values than PCF
         const shadowCameraSizeComputed = config.sceneSize * config.groundScaleFactor;
         directionalLight.shadow.bias = -0.0001 * (shadowCameraSizeComputed / 40);
         directionalLight.shadow.normalBias = 0.01 * (shadowCameraSizeComputed / 40);
     }
 
-    // Create ground plane
     let ground: THREEJS.Mesh | null = null;
     if (config.enableGround) {
         const groundSize = config.sceneSize * config.groundScaleFactor;
@@ -126,7 +126,7 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
             side: THREEJS.DoubleSide
         });
         ground = new THREEJS.Mesh(groundGeometry, groundMaterial);
-        ground.rotation.x = -Math.PI / 2; // Rotate to be horizontal
+        ground.rotation.x = -Math.PI / 2;
         ground.position.set(
             config.groundCenter[0],
             config.groundCenter[1],
@@ -136,18 +136,13 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
         scene.add(ground);
     }
 
-    // Create orbit camera if enabled
     let orbitCamera: OrbitCameraController | null = null;
     if (config.enableOrbitCamera) {
-        // Use provided camera options or create new DTO with defaults as single source of truth
         const camOpts = config.orbitCameraOptions ?? new ThreeJSCamera.OrbitCameraDto();
         
-        // Compute scene-aware overrides for values that should scale with scene size
-        // Reference scene size of 20 units is used as baseline for sensitivity calculations
         const referenceSize = 20;
         const sizeRatio = config.sceneSize / referenceSize;
         
-        // Only override these values if user didn't provide custom camera options
         const userProvidedCameraOptions = config.orbitCameraOptions !== undefined;
         const effectiveDistance = userProvidedCameraOptions ? camOpts.distance : config.sceneSize * Math.sqrt(2);
         const effectiveDistanceMin = userProvidedCameraOptions ? camOpts.distanceMin : config.sceneSize * 0.05;
@@ -155,7 +150,6 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
         const effectiveDistanceSensitivity = userProvidedCameraOptions ? camOpts.distanceSensitivity : camOpts.distanceSensitivity * sizeRatio;
         const effectivePanSensitivity = userProvidedCameraOptions ? camOpts.panSensitivity : camOpts.panSensitivity * sizeRatio;
         
-        // Create orbit camera using DTO defaults with scene-aware overrides
         orbitCamera = createOrbitCamera({
             pivotPoint: camOpts.pivotPoint,
             distance: effectiveDistance,
@@ -178,7 +172,6 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
         });
     }
 
-    // Handle window resize
     const onWindowResize = (): void => {
         if (orbitCamera) {
             orbitCamera.camera.aspect = window.innerWidth / window.innerHeight;
@@ -188,10 +181,11 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
     };
     window.addEventListener("resize", onWindowResize, false);
 
-    // Start animation loop helper
     const startAnimationLoop = (onRender?: (deltaTime: number) => void): void => {
-        const animate = (): void => {
-            const deltaTime = 0.016; // ~60fps
+        let previousFrameTimeMs: number | undefined = undefined;
+        const animate = (frameTimeMs: number): void => {
+            const deltaTime = frameDeltaSeconds(previousFrameTimeMs, frameTimeMs);
+            previousFrameTimeMs = frameTimeMs;
             if (orbitCamera) {
                 orbitCamera.update(deltaTime);
                 renderer.render(scene, orbitCamera.camera);
@@ -203,7 +197,6 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
         renderer.setAnimationLoop(animate);
     };
 
-    // Dispose function to clean up resources
     const dispose = (): void => {
         window.removeEventListener("resize", onWindowResize);
         renderer.setAnimationLoop(null);
@@ -224,7 +217,6 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
         
         renderer.dispose();
         
-        // Remove canvas if we created it
         if (!config.canvasId && canvas.parentNode) {
             canvas.parentNode.removeChild(canvas);
         }

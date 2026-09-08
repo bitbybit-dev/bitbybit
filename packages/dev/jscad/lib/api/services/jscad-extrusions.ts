@@ -2,6 +2,7 @@ import { GeometryHelper } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/jscad-inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";
+import { asKind, asRegion, oneOrMany } from "./entity-narrowing";
 
 /**
  * Contains various functions for Solid extrusions from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -24,8 +25,7 @@ export class JSCADExtrusions {
      * @drawable true
      */
     extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Inputs.JSCAD.JSCADEntity {
-        const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
-        const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
+        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
 
         const extrusions = this.jscad.extrusions.extrudeLinear({
             height: inputs.height,
@@ -45,8 +45,7 @@ export class JSCADExtrusions {
      * @drawable true
      */
     extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Inputs.JSCAD.JSCADEntity {
-        const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
-        const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
+        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
 
         const extrusions = this.jscad.extrusions.extrudeRectangular({ height: inputs.height, size: inputs.size }, ...geometry);
        
@@ -84,7 +83,7 @@ export class JSCADExtrusions {
             overflow: "cap",
             segments: inputs.segments
         };
-        const extrusion = this.jscad.extrusions.extrudeRotate(options as any, inputs.polygon);
+        const extrusion = this.jscad.extrusions.extrudeRotate(options as any, asRegion(inputs.polygon, "extrudeRotate"));
         return extrusion;
     }
 

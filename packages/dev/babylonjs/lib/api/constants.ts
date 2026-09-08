@@ -3,7 +3,6 @@
  * Re-exports shared constants from core and adds BabylonJS-specific values.
  */
 
-// Re-export shared constants from core
 export {
     MATERIAL_DEFAULTS,
     GEOMETRY_DEFAULTS,

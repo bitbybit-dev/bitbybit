@@ -32,7 +32,6 @@ export interface AssemblyHierarchyNode {
     /** Node name */
     name: string;
     
-    // Core type flags (matching original interface)
     /** Whether this label IS an assembly container (not just references one) */
     isAssembly: boolean;
     /** Whether this is an instance (reference to a part/assembly) */
@@ -40,13 +39,11 @@ export interface AssemblyHierarchyNode {
     /** Definition ID (for instances - the label of the referenced part/assembly) */
     definitionId?: string | undefined;
     
-    // For instances: what type does this instance reference?
     /** True if this instance references an assembly (only present for instances) */
     refersToAssembly?: boolean | undefined;
     /** True if this instance references a part (only present for instances) */
     refersToPart?: boolean | undefined;
     
-    // Extended type information
     /** 
      * Detailed node type:
      * - "assembly": An assembly container
@@ -71,7 +68,6 @@ export interface AssemblyHierarchyNode {
     /** Whether this is a compound shape */
     isCompound: boolean;
     
-    // Geometry information
     /** Whether this node has associated geometry */
     hasGeometry: boolean;
     /** Shape type if has geometry: "solid", "compound", "shell", "face", "wire", "edge", "vertex", "shape", "none" */
@@ -79,7 +75,6 @@ export interface AssemblyHierarchyNode {
     /** Sub-shape counts (for compounds and assemblies) */
     subShapeCounts?: SubShapeCounts | undefined;
     
-    // Display properties
     /** Whether node is visible */
     visible: boolean;
     /** Color if set (RGBA, values 0-1) */

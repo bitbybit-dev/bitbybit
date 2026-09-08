@@ -1,223 +1,152 @@
-import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { initializationComplete, onMessageInput } from "./jscad-worker";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
 
-describe("JSCAD Worker Functions Tests", () => {
-    let mockJscad: any;
+type Answer = { uid: string; result?: { hash?: string | number }; error?: string };
+type Message = "busy" | Answer;
 
-    beforeAll(() => {
-        // Create a minimal mock of the JSCAD WASM library for testing
-        // The Jscad service expects the raw JSCAD library with primitives, booleans, etc.
-        mockJscad = {
-            primitives: {
-                circle: vi.fn(() => ({ delete: vi.fn() })),
-                cube: vi.fn(() => ({ delete: vi.fn() })),
-                polygon: vi.fn(() => ({ delete: vi.fn() }))
-            },
-            booleans: {
-                union: vi.fn(() => ({ delete: vi.fn() }))
-            },
-            expansions: {
-                expand: vi.fn(() => ({ delete: vi.fn() }))
-            }
-        };
-        
-        // Initialize once for all tests - creates new Jscad(mockJscad)
-        initializationComplete(mockJscad, undefined, true);
-    });
+const SQUARE: [number, number][] = [[0, 0], [1, 0], [1, 1], [0, 1]];
 
-    afterEach(() => {
-        // Clean cache after each test
-        const cleanInput = {
-            action: {
-                functionName: "cleanAllCache",
-                inputs: {}
-            },
-            uid: "clean"
-        };
-        const messages: any[] = [];
-        onMessageInput(cleanInput, (data: any) => messages.push(data));
+const createKernel = () => ({
+    primitives: {
+        circle: vi.fn(() => ({ delete: vi.fn() })),
+        cube: vi.fn(() => ({ delete: vi.fn() })),
+        polygon: vi.fn(() => ({ delete: vi.fn() })),
+    },
+    booleans: { union: vi.fn(() => ({ delete: vi.fn() })) },
+    expansions: { expand: vi.fn(() => ({ delete: vi.fn() })) },
+});
+
+describe("the worker message loop over the real kernel", () => {
+    const collect = (action: DataInput["action"], uid = "uid-1"): Message[] => {
+        const messages: Message[] = [];
+        onMessageInput({ action, uid }, (message: unknown) => { messages.push(message as Message); });
+        return messages;
+    };
+
+    const answerTo = (action: DataInput["action"], uid = "uid-1"): Answer => collect(action, uid)[1] as Answer;
+
+    beforeEach(() => {
+        initializationComplete(createKernel(), undefined, true);
     });
 
     describe("initializationComplete", () => {
-        it("should initialize jscad worker", () => {
-            expect(() => initializationComplete(mockJscad, undefined, true)).not.toThrow();
+        it("should take a kernel with no plugins", () => {
+            expect(() => initializationComplete(createKernel(), undefined, true)).not.toThrow();
         });
 
-        it("should initialize with plugins", () => {
+        it("should take a kernel with plugins", () => {
+            // Arrange
             const plugins = { dependencies: { testDep: "testValue" } };
-            expect(() => initializationComplete(mockJscad, plugins, true)).not.toThrow();
+
+            // Act & Assert
+            expect(() => initializationComplete(createKernel(), plugins, true)).not.toThrow();
         });
     });
 
-    describe("onMessageInput - basic operations", () => {
-        it("should post busy message then result", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "polygon.createFromPoints",
-                    inputs: { points: [[0, 0], [1, 0], [1, 1], [0, 1]] }
-                },
-                uid: "test-uid"
-            }, (data: any) => messages.push(data));
-            
+    describe("answering a call", () => {
+        it("should say it is busy first and answer second", () => {
+            // Act
+            const messages = collect({ functionName: "polygon.createFromPoints", inputs: { points: SQUARE } });
+
+            // Assert
             expect(messages).toHaveLength(2);
             expect(messages[0]).toBe("busy");
-            expect(messages[1].uid).toBe("test-uid");
-            if (messages[1].error) {
-                console.error("Error in test:", messages[1].error);
-            }
-            expect(messages[1].error).toBeUndefined();
-            expect(messages[1].result).toBeDefined();
         });
 
-        it("should handle 2-level function paths", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "polygon.circle",
-                    inputs: { radius: 5, center: [0, 0], segments: 32 }
-                },
-                uid: "uid-1"
-            }, (data: any) => messages.push(data));
-            
-            expect(messages[1].result.hash).toBeDefined();
-            // Note: JSCAD worker doesn't wrap result with type property like Manifold worker does
+        it("should answer under the uid the call arrived with", () => {
+            // Act
+            const answer = answerTo({ functionName: "polygon.createFromPoints", inputs: { points: SQUARE } }, "uid-7");
+
+            // Assert
+            expect(answer.uid).toBe("uid-7");
+        });
+
+        it("should answer a two part path with a hashed geometry", () => {
+            // Act
+            const answer = answerTo({ functionName: "polygon.circle", inputs: { radius: 5, center: [0, 0], segments: 32 } });
+
+            // Assert
+            expect(answer.error).toBeUndefined();
+            expect(typeof answer.result?.hash).toBe("number");
         });
     });
 
-    describe("onMessageInput - cache validation", () => {
-        it("should throw error when geometry not found in cache", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "booleans.union",
-                    inputs: {
-                        geometries: [{ hash: 999999, type: "jscad-geometry" }]
-                    }
-                },
-                uid: "test-uid"
-            }, (data: any) => messages.push(data));
-            
-            expect(messages[1].error).toBeDefined();
-            expect(messages[1].error).toContain("not found in cache");
+    describe("resolving hashed geometry against the cache", () => {
+        it("should fail the call when the hash is not in the cache", () => {
+            // Act
+            const answer = answerTo({
+                functionName: "booleans.union",
+                inputs: { geometries: [{ hash: 999999, type: "jscad-geometry" }] },
+            });
+
+            // Assert
+            expect(answer.error).toContain("Geometry with hash 999999 not found in cache");
         });
 
-        it("should use cached geometry", () => {
-            // Create geometry
-            const messages1: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "polygon.createFromPoints",
-                    inputs: { points: [[0, 0], [1, 0], [1, 1], [0, 1]] }
-                },
-                uid: "uid-1"
-            }, (data: any) => messages1.push(data));
+        it("should run the call when the hash is one the cache holds", () => {
+            // Arrange
+            const hash = answerTo({ functionName: "polygon.createFromPoints", inputs: { points: SQUARE } }).result?.hash;
 
-            const hash = messages1[1].result.hash;
+            // Act
+            const answer = answerTo({
+                functionName: "expansions.expand",
+                inputs: { geometry: { hash, type: "jscad-geometry" }, delta: 0.1, corners: "round", segments: 16 },
+            }, "uid-2");
 
-            // Use cached geometry
-            const messages2: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "expansions.expand",
-                    inputs: {
-                        geometry: { hash, type: "jscad-geometry" },
-                        delta: 0.1,
-                        corners: "round",
-                        segments: 16
-                    }
-                },
-                uid: "uid-2"
-            }, (data: any) => messages2.push(data));
-
-            expect(messages2[1].result).toBeDefined();
+            // Assert
+            expect(answer.error).toBeUndefined();
+            expect(typeof answer.result?.hash).toBe("number");
         });
     });
 
-    describe("onMessageInput - special functions", () => {
-        it("should handle cleanAllCache", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "cleanAllCache",
-                    inputs: {}
-                },
-                uid: "uid-1"
-            }, (data: any) => messages.push(data));
+    describe("the run markers", () => {
+        it("should answer cleanAllCache with an empty result", () => {
+            // Act
+            const answer = answerTo({ functionName: "cleanAllCache", inputs: {} });
 
-            expect(messages[1].result).toEqual({});
+            // Assert
+            expect(answer.result).toEqual({});
         });
 
-        it("should handle startedTheRun", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "startedTheRun",
-                    inputs: {}
-                },
-                uid: "uid-1"
-            }, (data: any) => messages.push(data));
+        it("should answer startedTheRun with an empty result", () => {
+            // Act
+            const answer = answerTo({ functionName: "startedTheRun", inputs: {} });
 
-            expect(messages[1].result).toEqual({});
+            // Assert
+            expect(answer.result).toEqual({});
         });
     });
 
-    describe("onMessageInput - error handling", () => {
-        it("should provide detailed error messages", () => {
-            const messages: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "nonExistentFunction",
-                    inputs: { test: "data" }
-                },
-                uid: "test-uid"
-            }, (data: any) => messages.push(data));
+    describe("when the call names no kernel method", () => {
+        it("should answer with the failure rather than throw", () => {
+            // Act
+            const answer = answerTo({ functionName: "nonExistentFunction", inputs: { test: "data" } });
 
-            expect(messages[1].error).toBeDefined();
-            expect(messages[1].error).toContain("JSCAD computation failed");
+            // Assert
+            expect(answer.error).toContain("JSCAD computation failed when executing function - nonExistentFunction");
         });
     });
 
-    describe("onMessageInput - caching behavior", () => {
-        it("should cache operation results", () => {
-            const inputs = { points: [[0, 0], [1, 0], [1, 1], [0, 1]] };
-            
-            const messages1: any[] = [];
-            onMessageInput({
-                action: { functionName: "polygon.createFromPoints", inputs },
-                uid: "uid-1"
-            }, (data: any) => messages1.push(data));
+    describe("caching", () => {
+        it("should answer two identical calls with the same hash", () => {
+            // Arrange
+            const inputs = { points: SQUARE };
 
-            const messages2: any[] = [];
-            onMessageInput({
-                action: { functionName: "polygon.createFromPoints", inputs },
-                uid: "uid-2"
-            }, (data: any) => messages2.push(data));
+            // Act
+            const first = answerTo({ functionName: "polygon.createFromPoints", inputs }, "uid-1");
+            const second = answerTo({ functionName: "polygon.createFromPoints", inputs }, "uid-2");
 
-            expect(messages1[1].result.hash).toBe(messages2[1].result.hash);
+            // Assert
+            expect(second.result?.hash).toBe(first.result?.hash);
         });
 
-        it("should return different hashes for different inputs", () => {
-            const messages1: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "polygon.circle",
-                    inputs: { radius: 5, center: [0, 0], segments: 32 }
-                },
-                uid: "uid-1"
-            }, (data: any) => messages1.push(data));
+        it("should answer calls that differ with different hashes", () => {
+            // Act
+            const first = answerTo({ functionName: "polygon.circle", inputs: { radius: 5, center: [0, 0], segments: 32 } }, "uid-1");
+            const second = answerTo({ functionName: "polygon.circle", inputs: { radius: 10, center: [0, 0], segments: 32 } }, "uid-2");
 
-            const messages2: any[] = [];
-            onMessageInput({
-                action: {
-                    functionName: "polygon.circle",
-                    inputs: { radius: 10, center: [0, 0], segments: 32 }
-                },
-                uid: "uid-2"
-            }, (data: any) => messages2.push(data));
-
-            expect(messages1[1].result.hash).not.toBe(messages2[1].result.hash);
+            // Assert
+            expect(second.result?.hash).not.toBe(first.result?.hash);
         });
     });
 });

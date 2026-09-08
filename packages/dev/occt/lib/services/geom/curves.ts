@@ -18,8 +18,7 @@ export class OCCTCurves {
      * @shortname ellipse 2d
      */
     geom2dEllipse(inputs: Inputs.OCCT.Geom2dEllipseDto): Handle_Geom2d_Curve {
-        // Create axis with primary direction, perpendicular direction is computed internally
-        const dir2: Inputs.Base.Vector2 = [-inputs.direction[1], inputs.direction[0]]; // Perpendicular to direction
+        const dir2: Inputs.Base.Vector2 = [-inputs.direction[1], inputs.direction[0]];
         const axis2d = this.och.entitiesService.gpAx22d(inputs.center, inputs.direction, dir2);
         const res = this.occ.CreateGeom2d_Ellipse(axis2d, inputs.radiusMajor, inputs.radiusMinor);
         axis2d.delete();
@@ -27,8 +26,7 @@ export class OCCTCurves {
     }
 
     geom2dCircle(inputs: Inputs.OCCT.Geom2dCircleDto): Handle_Geom2d_Curve {
-        // Create axis with primary direction, perpendicular direction is computed internally
-        const dir2: Inputs.Base.Vector2 = [-inputs.direction[1], inputs.direction[0]]; // Perpendicular to direction
+        const dir2: Inputs.Base.Vector2 = [-inputs.direction[1], inputs.direction[0]];
         const axis2d = this.och.entitiesService.gpAx22d(inputs.center, inputs.direction, dir2);
         const res = this.occ.CreateGeom2d_Circle(axis2d, inputs.radius);
         axis2d.delete();
@@ -85,7 +83,7 @@ export class OCCTCurves {
      * @drawable false
      */
     geomCircleCurve(inputs: Inputs.OCCT.CircleDto): TopoDS_Wire {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire) as TopoDS_Wire;
+        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
     /**
@@ -97,7 +95,7 @@ export class OCCTCurves {
      * @drawable false
      */
     geomEllipseCurve(inputs: Inputs.OCCT.EllipseDto): TopoDS_Wire {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire) as TopoDS_Wire;
+        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
 }

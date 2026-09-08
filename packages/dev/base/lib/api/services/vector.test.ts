@@ -398,5 +398,33 @@ describe("Vector unit tests", () => {
         const res = vector.parseNumbers({ vector: [" 1 ", "  2.5", "3  "] });
         expect(res).toEqual([1, 2.5, 3]);
     });
-});
 
+    describe("vectorsTheSame", () => {
+        it("should call two vectors within the tolerance the same", () => {
+            expect(vector.vectorsTheSame({ vec1: [1, 0, 0], vec2: [1 + 1e-9, 0, 0], tolerance: 1e-7 })).toBe(true);
+        });
+
+        it("should call two vectors beyond the tolerance different", () => {
+            expect(vector.vectorsTheSame({ vec1: [1, 0, 0], vec2: [1.5, 0, 0], tolerance: 1e-7 })).toBe(false);
+        });
+    });
+
+    describe("positiveAngleBetween", () => {
+        it("should bring a turn measured the other way round into a full turn", () => {
+            const angle = vector.positiveAngleBetween({ first: [1, 0, 0], second: [0, 1, 0], reference: [0, 0, -1] });
+
+            // Assert
+            expect(angle).toBeCloseTo(270, 6);
+        });
+
+        it("should leave a turn already measured the right way alone", () => {
+            expect(vector.positiveAngleBetween({ first: [1, 0, 0], second: [0, 1, 0], reference: [0, 0, 1] })).toBeCloseTo(90, 6);
+        });
+    });
+
+    describe("normalized", () => {
+        it("should give a vector too short to have a direction no direction at all", () => {
+            expect(vector.normalized({ vector: [0, 0, 0] })).toBeUndefined();
+        });
+    });
+});

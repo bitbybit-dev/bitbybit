@@ -172,5 +172,31 @@ describe("JSON unit tests", () => {
         };
     };
 
-});
+    it("should query every kind of json value, and hand the engine null for one it has no case for", () => {
+        const queryable: { value: unknown, expected: unknown }[] = [
+            { value: { a: 1 }, expected: [{ a: 1 }] },
+            { value: [1, 2], expected: [[1, 2]] },
+            { value: "abc", expected: ["abc"] },
+            { value: 42, expected: [42] },
+            { value: true, expected: [true] },
+            { value: null, expected: undefined },
+            { value: undefined, expected: undefined },
+        ];
 
+        queryable.forEach(({ value, expected }) => {
+            expect(json.query({ json: value, query: "$" })).toEqual(expected);
+        });
+    });
+
+    describe("getValueOnProp for a value that cannot be cloned", () => {
+        it("should read the property from the object it was given", () => {
+            const value = { name: "part", build: () => undefined };
+
+            // Act
+            const result = json.getValueOnProp({ json: value, property: "name" });
+
+            // Assert
+            expect(result).toBe("part");
+        });
+    });
+});

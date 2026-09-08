@@ -9,6 +9,7 @@ const COLOUR = "#336699";
 const SIZE = 14;
 const CANVAS_ZONE_CLASS = "canvasZone";
 const SECOND_TEXT = "Corner B";
+const THIRD_TEXT = "Corner C";
 
 const aTag = (text = TEXT): Inputs.Tag.TagDto =>
     new Inputs.Tag.TagDto(text, POSITION, COLOUR, SIZE, true);
@@ -102,8 +103,8 @@ describe("Tag", () => {
 
             // Assert
             expect(context.tagBag).toHaveLength(1);
-            expect(context.tagBag[0].text).toBe(SECOND_TEXT);
-            expect(context.tagBag[0].needsUpdate).toBe(true);
+            expect(context.tagBag[0]!.text).toBe(SECOND_TEXT);
+            expect(context.tagBag[0]!.needsUpdate).toBe(true);
             expect(document.querySelectorAll(`.${CANVAS_ZONE_CLASS} span`)).toHaveLength(1);
         });
     });
@@ -121,6 +122,69 @@ describe("Tag", () => {
             expect(context.tagBag).toHaveLength(2);
             expect(document.querySelectorAll(`.${CANVAS_ZONE_CLASS} span`)).toHaveLength(2);
             expect(drawn.map((t) => t.text)).toEqual([TEXT, SECOND_TEXT]);
+        });
+
+        it("should update the recorded tags in place when handed the variable it drew before", () => {
+            // Arrange
+            const drawn = tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag(), aTag(SECOND_TEXT)]));
+            const replacements = [aTag(THIRD_TEXT), aTag(THIRD_TEXT)];
+
+            // Act
+            tag.drawTags(new Inputs.Tag.DrawTagsDto(replacements, true, drawn));
+
+            // Assert
+            expect(context.tagBag).toHaveLength(2);
+            expect(context.tagBag.map((t) => t.text)).toEqual([THIRD_TEXT, THIRD_TEXT]);
+            expect(document.querySelectorAll(`.${CANVAS_ZONE_CLASS} span`)).toHaveLength(2);
+        });
+
+        it("should take away the span of a tag the new list no longer has", () => {
+            // Arrange
+            const drawn = tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag(), aTag(SECOND_TEXT)]));
+
+            // Act
+            tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag(THIRD_TEXT)], true, drawn));
+
+            // Assert
+            expect(context.tagBag).toHaveLength(1);
+            expect(context.tagBag[0]!.text).toBe(THIRD_TEXT);
+            expect(document.querySelectorAll(`.${CANVAS_ZONE_CLASS} span`)).toHaveLength(1);
+        });
+
+        it("should drop a recorded tag that never got an identity, rather than fail on its missing span", () => {
+            // Arrange
+            const neverDrawn = aTag(SECOND_TEXT);
+            context.tagBag.push(neverDrawn);
+
+            // Act
+            tag.drawTags(new Inputs.Tag.DrawTagsDto([], true, [neverDrawn]));
+
+            // Assert
+            expect(context.tagBag).toHaveLength(0);
+        });
+    });
+
+    describe("drawTags with more tags than were drawn before", () => {
+        it("should draw a span for each tag the list has gained", () => {
+            // Arrange
+            const drawn = tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag()]));
+
+            // Act
+            tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag(), aTag(SECOND_TEXT), aTag(THIRD_TEXT)], true, drawn));
+
+            // Assert
+            expect(document.querySelectorAll(`.${CANVAS_ZONE_CLASS} span`)).toHaveLength(3);
+        });
+
+        it("should record every tag the list has gained", () => {
+            // Arrange
+            const drawn = tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag()]));
+
+            // Act
+            tag.drawTags(new Inputs.Tag.DrawTagsDto([aTag(), aTag(SECOND_TEXT), aTag(THIRD_TEXT)], true, drawn));
+
+            // Assert
+            expect(context.tagBag).toHaveLength(3);
         });
     });
 });

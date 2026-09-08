@@ -1,3 +1,5 @@
+import * as Inputs from "./inputs";
+
 /**
  * Base interface for draw options - engine-specific implementations extend this
  */
@@ -14,8 +16,6 @@ export interface DrawOptionsBase {
  * Contains entity detection methods and shared validation utilities.
  */
 export class DrawCore {
-
-    // ============== Entity Detection Methods ==============
 
     detectPoint(entity: unknown): boolean {
         return (Array.isArray(entity) && entity.length === 3 && this.checkIfElementsInArrayAreNumbers(entity));
@@ -86,13 +86,13 @@ export class DrawCore {
         return Array.isArray(entity) && !entity.some(el => !this.detectVerbSurface(el));
     }
 
-    detectJscadMesh(entity: unknown): boolean {
+    detectJscadMesh(entity: unknown): entity is Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3 {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
         return obj["sides"] !== undefined || obj["polygons"] !== undefined;
     }
 
-    detectJscadMeshes(entity: unknown): boolean {
+    detectJscadMeshes(entity: unknown): entity is (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[] {
         return Array.isArray(entity) && !entity.some(el => !this.detectJscadMesh(el));
     }
 
@@ -137,8 +137,6 @@ export class DrawCore {
         return Array.isArray(entity) && !entity.some(el => !this.detectTag(el));
     }
 
-    // ============== Array Validation Helpers ==============
-
     checkIfElementsInArrayAreNumbers(array: unknown[]): boolean {
         return !array.some(el => typeof el !== "number" || isNaN(el));
     }
@@ -155,20 +153,16 @@ export class DrawCore {
         return !array.some(el => el.length !== 3);
     }
 
-    // ============== Input Validation Methods ==============
-
     /**
      * Validate if draw input contains valid entity data
      * @param entity - Entity to validate
      * @returns True if valid, false otherwise
      */
     protected isValidDrawInput(entity: unknown): boolean {
-        // Null or undefined
         if (entity === null || entity === undefined) {
             return false;
         }
         
-        // Empty array
         if (Array.isArray(entity) && entity.length === 0) {
             return false;
         }
@@ -185,7 +179,7 @@ export class DrawCore {
         return value !== null && 
                value !== undefined && 
                typeof value === "object" && 
-               "text" in (value as object);
+               "text" in (value);
     }
 
     /**

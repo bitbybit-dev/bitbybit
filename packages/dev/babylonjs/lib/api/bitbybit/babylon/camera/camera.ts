@@ -96,11 +96,12 @@ export class BabylonCamera {
     /**
      * Gets the speed of a camera
      * @param inputs camera
+     * @returns speed of the camera
      * @group get
      * @shortname get camera speed
      */
-    getSpeed(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
-        return [inputs.camera.target.x, inputs.camera.target.y, inputs.camera.target.z];
+    getSpeed(inputs: Inputs.BabylonCamera.PositionDto): number {
+        return inputs.camera.speed;
     }
 
     /**

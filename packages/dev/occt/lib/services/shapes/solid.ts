@@ -282,16 +282,13 @@ export class OCCTSolid {
     }
 
     private extrudeFaceToSolid(face: TopoDS_Shape, lengthFront: number, lengthBack: number): TopoDS_Solid {
-        // Check if both lengths are 0
         if (lengthFront === 0 && lengthBack === 0) {
             face.delete();
             throw new Error("Cannot create solid: both extrusionLengthFront and extrusionLengthBack are 0");
         }
 
-        // Get the face normal to determine actual extrusion direction
         const faceCasted = this.occ.CastToFace(face);
         
-        // Use face service methods to get UV bounds and normal at center
         const uMin = this.och.facesService.getUMinBound({ shape: faceCasted });
         const uMax = this.och.facesService.getUMaxBound({ shape: faceCasted });
         const vMin = this.och.facesService.getVMinBound({ shape: faceCasted });
@@ -300,11 +297,9 @@ export class OCCTSolid {
         const uMid = (uMin + uMax) / 2;
         const vMid = (vMin + vMax) / 2;
         
-        // Normalize to 0-1 range for normalOnUV method
         const paramU = (uMid - uMin) / (uMax - uMin);
         const paramV = (vMid - vMin) / (vMax - vMin);
         
-        // Get face normal at the center using face service
         const normalizedDir = this.och.facesService.normalOnUV({ 
             shape: faceCasted, 
             paramU, 
@@ -313,41 +308,35 @@ export class OCCTSolid {
 
         let result: TopoDS_Shape | undefined;
 
-        // Create forward extrusion if lengthFront > 0
         if (lengthFront > 0) {
             const frontVec = new this.occ.gp_Vec(
                 normalizedDir[0] * lengthFront,
                 normalizedDir[1] * lengthFront,
                 normalizedDir[2] * lengthFront
             );
-            // Use 2-parameter constructor - the 4-parameter version has binding issues in new Emscripten bindings
             const frontPrism = new this.occ.BRepPrimAPI_MakePrism(face, frontVec);
             result = frontPrism.Shape();
             frontPrism.delete();
             frontVec.delete();
         }
 
-        // If there's backward extrusion, add it
         if (lengthBack > 0) {
             const backVec = new this.occ.gp_Vec(
                 -normalizedDir[0] * lengthBack,
                 -normalizedDir[1] * lengthBack,
                 -normalizedDir[2] * lengthBack
             );
-            // Use 2-parameter constructor - the 4-parameter version has binding issues in new Emscripten bindings
             const backPrism = new this.occ.BRepPrimAPI_MakePrism(face, backVec);
             const backShape = backPrism.Shape();
             backPrism.delete();
             backVec.delete();
 
-            // If we have a forward extrusion, fuse them
             if (result) {
                 const fused = this.och.booleansService.union({ shapes: [result, backShape], keepEdges: false });
                 result.delete();
                 backShape.delete();
                 result = fused;
             } else {
-                // Only backward extrusion exists
                 result = backShape;
             }
         }

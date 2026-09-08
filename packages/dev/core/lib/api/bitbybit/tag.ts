@@ -58,7 +58,6 @@ export class Tag {
     drawTags(inputs: Inputs.Tag.DrawTagsDto): Inputs.Tag.TagDto[] {
         if (inputs.tagsVariable && inputs.updatable) {
 
-            // check if list has grown, and add new empty tags to tags variable so that
             if (inputs.tagsVariable.length < inputs.tags.length) {
                 for (let i = inputs.tagsVariable.length - 1; i < inputs.tags.length - 1; i++) {
                     const tagToCreate = inputs.tags[i]!;
@@ -80,10 +79,12 @@ export class Tag {
                     Object.assign(tagToUpdate, tagToUpdateWith);
                     tagToUpdate.needsUpdate = true;
                 } else {
-                    // delete tag
                     this.context.tagBag = this.context.tagBag.filter(tag => tag.id !== tagToUpdate.id);
-                    const element = document.getElementById(tagToUpdate.id)!;
-                    element.parentNode!.removeChild(element);
+                    const id = tagToUpdate.id;
+                    if (id !== undefined) {
+                        const element = document.getElementById(id)!;
+                        element.parentNode!.removeChild(element);
+                    }
                 }
             });
         } else {

@@ -14,7 +14,6 @@ import { JSCADColors } from "./services/jscad-colors";
 import * as JSCAD from "@jscad/modeling";
 
 
-// Worker make an instance of this class itself
 /**
  * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -90,7 +89,6 @@ export class Jscad {
         const polygons: Base.Mesh3 = [];
         const numVertices = positions.length / 3;
 
-        // --- Triangle Reconstruction ---
         for (let i = 0; i < indices.length; i += 3) {
             const index1 = indices[i]!;
             const index2 = indices[i + 1]!;
@@ -110,24 +108,10 @@ export class Jscad {
             const point2: Base.Point3 = [positions[offset2]!, positions[offset2 + 1]!, positions[offset2 + 2]!];
             const point3: Base.Point3 = [positions[offset3]!, positions[offset3 + 1]!, positions[offset3 + 2]!];
 
-            // We must bake the transformations as JSCAD uses those extensively
-            const transformation = inputs.mesh.transforms;
-            let transformedPoints = [point1, point2, point3];
-            if (this.getArrayDepth(transformation) === 2) {
-                transformation.forEach((transform: Base.TransformMatrix) => {
-                    transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [transform] });
-                });
-            }
-            else if (this.getArrayDepth(transformation) === 3) {
-                transformation.forEach((transforms: Base.TransformMatrixes) => {
-                    transforms.forEach((mat: Base.TransformMatrix) => {
-                        transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [mat] });
-                    });
-                });
-            }
-            else {
-                transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [transformation] });
-            }
+            const transformedPoints = this.point.transformPoints({
+                points: [point1, point2, point3],
+                transformation: [inputs.mesh.transforms],
+            });
 
             const triangle: Base.Triangle3 = transformedPoints as Base.Triangle3;
 
@@ -137,24 +121,25 @@ export class Jscad {
         return polygons;
     }
 
-    shapesToMeshes(inputs: Inputs.JSCAD.MeshesDto): { positions: number[], normals: number[], indices: number[], transforms: [] }[] {
+    shapesToMeshes(inputs: Inputs.JSCAD.MeshesDto): Inputs.JSCAD.JSCADMeshData[] {
         return inputs.meshes.map(mesh => {
             return this.shapeToMesh({ ...inputs, mesh });
         });
     }
 
-    shapeToMesh(inputs: Inputs.JSCAD.MeshDto): { positions: number[], normals: number[], indices: number[], transforms: [] } {
-        let polygons = [];
+    shapeToMesh(inputs: Inputs.JSCAD.MeshDto): Inputs.JSCAD.JSCADMeshData {
+        let polygons: Inputs.JSCAD.JSCADPoly3[] = [];
 
-        if (inputs.mesh.toPolygons) {
-            polygons = inputs.mesh.toPolygons();
-        } else if (inputs.mesh.polygons) {
+        if (this.legacyPolygons(inputs.mesh)) {
+            polygons = this.legacyPolygons(inputs.mesh)!();
+        } else if ("polygons" in inputs.mesh) {
             polygons = inputs.mesh.polygons;
-        } else if (inputs.mesh.sides || inputs.mesh.vertices) {
+        } else {
             const extrusion = this.extrusions.extrudeLinear({ height: 0.001, twistAngle: 0, twistSteps: 1, geometry: inputs.mesh });
-            if (extrusion.toPolygons) {
-                polygons = extrusion.toPolygons();
-            } else if (extrusion.polygons) {
+            const legacy = this.legacyPolygons(extrusion);
+            if (legacy) {
+                polygons = legacy();
+            } else if ("polygons" in extrusion) {
                 polygons = extrusion.polygons;
             }
         }
@@ -172,15 +157,15 @@ export class Jscad {
                     countIndices++;
                 });
             } else {
-                const triangles = [];
+                const triangles: Base.Triangle3[] = [];
                 const reversedVertices = polygon.vertices;
-                const firstVertex = reversedVertices[0];
+                const firstVertex = reversedVertices[0]!;
                 for (let i = reversedVertices.length - 3; i >= 0; i--) {
                     triangles.push(
                         [
                             firstVertex,
-                            reversedVertices[i + 1],
-                            reversedVertices[i + 2],
+                            reversedVertices[i + 1]!,
+                            reversedVertices[i + 2]!,
                         ]);
                 }
                 triangles.forEach((triangle, _index) => {
@@ -223,7 +208,7 @@ export class Jscad {
      */
     transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Inputs.JSCAD.JSCADEntity {
         const transformation = inputs.transformation;
-        let transformedMesh = this.jscad.geometries.geom3.clone(inputs.mesh);
+        let transformedMesh = this.asSolid(inputs.mesh, "transformSolid");
         if (this.getArrayDepth(transformation) === 2) {
             transformation.forEach((transform: Base.TransformMatrix) => {
                 transformedMesh = this.jscad.transforms.transform(transform, transformedMesh);
@@ -232,7 +217,7 @@ export class Jscad {
         else if (this.getArrayDepth(transformation) === 3) {
             (transformation as unknown as Base.TransformMatrixes[]).forEach((transforms) => {
                 transforms.forEach((mat: Base.TransformMatrix) => {
-                    transformedMesh = this.jscad.transforms.transform(mat as any, transformedMesh);
+                    transformedMesh = this.jscad.transforms.transform(mat, transformedMesh);
                 });
             });
         }
@@ -297,6 +282,28 @@ export class Jscad {
         );
         const madeBlob = new Blob(rawData);
         return { blob: madeBlob };
+    }
+
+    /**
+     * JSCAD v1 handed back objects that carried their own `toPolygons()`; a v2 geometry is plain
+     * data and the equivalent is a free function. Anything still arriving in the old shape is read
+     * the old way, which is why this asks the value rather than trusting the type.
+     */
+    private legacyPolygons(entity: Inputs.JSCAD.JSCADEntity): (() => Inputs.JSCAD.JSCADPoly3[]) | undefined {
+        const candidate = (entity as { toPolygons?: unknown }).toPolygons;
+        return typeof candidate === "function" ? (candidate as () => Inputs.JSCAD.JSCADPoly3[]).bind(entity) : undefined;
+    }
+
+    /**
+     * Narrows an entity to the solid an operation needs, and says which operation wanted one. The
+     * kernel's own failure for a 2D shape here is a property access on undefined, several frames
+     * deep, which tells a script author nothing.
+     */
+    private asSolid(entity: Inputs.JSCAD.JSCADEntity, operation: string): Inputs.JSCAD.JSCADGeom3 {
+        if (!("polygons" in entity)) {
+            throw new Error(`${operation} needs a 3D solid, but was given a 2D geometry or a path.`);
+        }
+        return entity;
     }
 
     private getArrayDepth = (value: unknown): number => {

@@ -592,12 +592,61 @@ export namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
-    export type JSCADEntity = any;
+    export type JSCADColor = [number, number, number] | [number, number, number, number];
+    export type JSCADEntity = JSCADGeom2 | JSCADGeom3 | JSCADPath2;
+    export type JSCADGeom2 = {
+        sides: [JSCADVec2, JSCADVec2][];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    export type JSCADGeom3 = {
+        polygons: JSCADPoly3[];
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    export type JSCADMat4 = [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number
+    ];
+    export type JSCADMeshData = {
+        positions: number[];
+        normals: number[];
+        indices: number[];
+        transforms: JSCADMat4;
+    };
+    export type JSCADPath2 = {
+        points: JSCADVec2[];
+        isClosed: boolean;
+        transforms: JSCADMat4;
+        color?: JSCADColor;
+    };
+    export type JSCADPlane = [number, number, number, number];
+    export type JSCADPoly3 = {
+        vertices: JSCADVec3[];
+        color?: JSCADColor;
+        plane?: JSCADPlane;
+    };
     export enum jscadTextAlignEnum {
         center = "center",
         left = "left",
         right = "right"
     }
+    export type JSCADVec2 = [number, number];
+    export type JSCADVec3 = [number, number, number];
     // (undocumented)
     export class MeshDto {
         constructor(mesh?: JSCADEntity);
@@ -875,19 +924,9 @@ export class Jscad {
     // (undocumented)
     shapes: JSCADShapes;
     // (undocumented)
-    shapesToMeshes(inputs: Inputs.JSCAD.MeshesDto): {
-        positions: number[];
-        normals: number[];
-        indices: number[];
-        transforms: [];
-    }[];
+    shapesToMeshes(inputs: Inputs.JSCAD.MeshesDto): Inputs.JSCAD.JSCADMeshData[];
     // (undocumented)
-    shapeToMesh(inputs: Inputs.JSCAD.MeshDto): {
-        positions: number[];
-        normals: number[];
-        indices: number[];
-        transforms: [];
-    };
+    shapeToMesh(inputs: Inputs.JSCAD.MeshDto): Inputs.JSCAD.JSCADMeshData;
     // Warning: (ae-forgotten-export) The symbol "JSCADText" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
