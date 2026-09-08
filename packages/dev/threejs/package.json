@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/threejs",
-    "version": "1.1.1",
+    "version": "1.2.0-rc.0",
     "description": "Bit By Bit Developers THREEJS CAD Library to Program Geometry",
     "homepage": "https://docs.bitbybit.dev/modules/Bit",
     "main": "index.js",
@@ -113,11 +113,11 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/core": "1.1.1",
-        "@bitbybit-dev/base": "1.1.1",
-        "@bitbybit-dev/occt-worker": "1.1.1",
-        "@bitbybit-dev/jscad-worker": "1.1.1",
-        "@bitbybit-dev/manifold-worker": "1.1.1",
+        "@bitbybit-dev/core": "1.2.0-rc.0",
+        "@bitbybit-dev/base": "1.2.0-rc.0",
+        "@bitbybit-dev/occt-worker": "1.2.0-rc.0",
+        "@bitbybit-dev/jscad-worker": "1.2.0-rc.0",
+        "@bitbybit-dev/manifold-worker": "1.2.0-rc.0",
         "three": "0.185.0",
         "jsonpath-plus": "10.3.0",
         "verb-nurbs-web": "2.1.3"
