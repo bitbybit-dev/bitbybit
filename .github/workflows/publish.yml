@@ -102,7 +102,11 @@ jobs:
           mkdir -p /tmp/smoke && cd /tmp/smoke && npm init -y > /dev/null
           npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps "@bitbybit-dev/threejs@$VERSION" "@bitbybit-dev/babylonjs@$VERSION" "@bitbybit-dev/playcanvas@$VERSION" "@bitbybit-dev/cad-cloud-sdk@$VERSION"
           for p in base occt occt-worker jscad jscad-worker manifold manifold-worker core threejs babylonjs playcanvas cad-cloud-sdk; do
-            test "$(node -p "require('@bitbybit-dev/$p/package.json').version")" = "$VERSION" || { echo "@bitbybit-dev/$p resolved to another version"; exit 1; }
+            # Read the manifest off disk, not through module resolution: a package with a correct
+            # exports map need not expose ./package.json, and asking for it through the resolver
+            # then fails on the packaging rather than on the version this is checking.
+            INSTALLED=$(node -p "JSON.parse(require('fs').readFileSync('node_modules/@bitbybit-dev/$p/package.json','utf8')).version")
+            test "$INSTALLED" = "$VERSION" || { echo "@bitbybit-dev/$p installed $INSTALLED, expected $VERSION"; exit 1; }
           done
           npm view "@bitbybit-dev/core@$VERSION" --json | node -e "const j=JSON.parse(require('fs').readFileSync(0,'utf8')); if (!j.dist || !j.dist.attestations) { console.error('no provenance attestation on core'); process.exit(1); } console.log('provenance:', j.dist.attestations.url)"
 

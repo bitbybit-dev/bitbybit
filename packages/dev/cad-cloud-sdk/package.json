@@ -19,7 +19,8 @@
         "./pipeline": {
             "types": "./dist/types/pipeline-operations.d.ts",
             "default": "./dist/types/pipeline-operations.js"
-        }
+        },
+        "./package.json": "./package.json"
     },
     "files": [
         "dist",

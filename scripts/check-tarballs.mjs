@@ -129,6 +129,12 @@ for (const { dir, fromDist } of [...distProjects, ...rootProjects]) {
             if (/^(workspace|link|file|portal):/.test(String(spec))) fail(`${manifest.name} ${field}.${name} = ${spec} would only resolve inside this workspace`);
         }
     }
+    // A published exports map is a closed door: every subpath not named in it is refused. Tooling
+    // reads a package's own manifest as a matter of course - the install smoke does - so a map that
+    // omits ./package.json breaks consumers in a way no import of the package itself reveals.
+    if (manifest.exports && typeof manifest.exports === "object" && !("./package.json" in manifest.exports)) {
+        fail(`${manifest.name} publishes an exports map without "./package.json", so anything reading its manifest - tooling, the install smoke - fails with ERR_PACKAGE_PATH_NOT_EXPORTED. Add "./package.json": "./package.json" to it.`);
+    }
     checkNothingSilentlyStripped(manifest.name, publishDir, fromDist ? ["."] : (manifest.files ?? ["."]));
     // npm 11.6 answers with an array of one entry; a later npm answers with the entry itself, and
     // destructuring the second as the first throws "object is not iterable" halfway through a
