@@ -1967,6 +1967,25 @@ describe("Point unit tests", () => {
         });
     });
 
+    describe("maxFilletRadius at a corner too small for the vectors to have a direction", () => {
+        it("should give no radius when a tolerance below the direction threshold lets a tiny corner through", () => {
+            // Arrange - the length check passes at this tolerance, but normalising a vector shorter
+            // than 1e-8 gives no direction at all
+            const inputs = new Inputs.Point.ThreePointsToleranceDto([5e-9, 0, 0], [0, 5e-9, 0], [0, 0, 0], 1e-12);
+
+            // Act & Assert
+            expect(point.maxFilletRadius(inputs)).toBe(0);
+        });
+
+        it("should give no radius from the half line reader either", () => {
+            // Arrange
+            const inputs = new Inputs.Point.ThreePointsToleranceDto([5e-9, 0, 0], [0, 5e-9, 0], [0, 0, 0], 1e-12);
+
+            // Act & Assert
+            expect(point.maxFilletRadiusHalfLine(inputs)).toBe(0);
+        });
+    });
+
     describe("twoPointsAlmostEqual without a tolerance of its own", () => {
         it("should call two points a hair apart the same", () => {
             expect(point.twoPointsAlmostEqual({ point1: [1, 0, 0], point2: [1 + 1e-9, 0, 0] })).toBe(true);

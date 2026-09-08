@@ -371,7 +371,6 @@ export class CacheHelper {
         if (!args || typeof args !== "object") return args;
         const hasInputsWrapper = args.inputs && typeof args.inputs === "object";
         const source = hasInputsWrapper ? args.inputs : args;
-        if (!source || typeof source !== "object") return args;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let sanitized: any = null;
         for (const key of Object.keys(source)) {

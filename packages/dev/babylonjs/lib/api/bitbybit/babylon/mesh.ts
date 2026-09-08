@@ -223,7 +223,7 @@ export class BabylonMesh {
         if (inputs.includeChildren) {
             const children = inputs.babylonMesh.getChildMeshes();
             children.forEach(child => {
-                child.enablePointerMoveEvents = false;
+                child.enablePointerMoveEvents = true;
             });
         }
     }

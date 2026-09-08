@@ -164,13 +164,13 @@ describe("ManifoldBooleans", () => {
     });
 
     describe("splitByPlaneOnOffsets", () => {
-        it("should give back one piece per offset it was given", () => {
+        it("should give back one more piece than the offsets it was given", () => {
             // Act
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-BIG_SIZE / 4, 0, BIG_SIZE / 4]));
 
-            // Assert
-            expect(pieces).toHaveLength(3);
+            // Assert - three planes cut a solid into four
+            expect(pieces).toHaveLength(4);
         });
 
         it("should cut each piece at the offset that follows it", () => {
@@ -178,7 +178,7 @@ describe("ManifoldBooleans", () => {
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-BIG_SIZE / 4, 0, BIG_SIZE / 4]));
 
-            // Assert - a 4 wide cube cut at -1, 0 and 1 gives three slabs of one unit each
+            // Assert - a 4 wide cube cut at -1, 0 and 1 gives four slabs of one unit each
             expect(pieces.map((piece) => volumeOf(piece))).toEqual(pieces.map(() => expect.closeTo(BIG_VOLUME / 4, 5)));
         });
 
@@ -192,14 +192,15 @@ describe("ManifoldBooleans", () => {
             expect(volumeOf(pieces[0]!)).toBeCloseTo(BIG_VOLUME, 5);
         });
 
-        it("should give back nothing for an offset that lies before all of the solid", () => {
-            // Act - a plane far back along the normal leaves nothing on the near side of it, and what
-            // is on the far side is the remainder, which is released rather than returned
+        it("should give back the whole solid for an offset that lies before all of it", () => {
+            // Act - a plane far back along the normal leaves nothing on the near side of it, so the
+            // solid comes back whole as the piece beyond the plane
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [-FAR]));
 
             // Assert
-            expect(pieces).toEqual([]);
+            expect(pieces).toHaveLength(1);
+            expect(volumeOf(pieces[0]!)).toBeCloseTo(BIG_VOLUME, 5);
         });
 
         it("should give back nothing when there is no solid to split", () => {
@@ -214,14 +215,35 @@ describe("ManifoldBooleans", () => {
             expect(pieces).toEqual([]);
         });
 
-        it("should not give back what lies beyond the last offset", () => {
+        it("should account for the whole of the solid it was given", () => {
             // Act
             const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
                 new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [0]));
 
-            // Assert - the half above the plane comes back; the half below it is the remainder, and
-            // the remainder is released rather than returned
-            expect(pieces.reduce((total, piece) => total + volumeOf(piece), 0)).toBeCloseTo(BIG_VOLUME / 2, 5);
+            // Assert - both halves come back, and together they are the solid that went in
+            expect(pieces).toHaveLength(2);
+            expect(pieces.reduce((total, piece) => total + volumeOf(piece), 0)).toBeCloseTo(BIG_VOLUME, 5);
+        });
+
+        it("should stop cutting once nothing is left to cut", () => {
+            // Act - the first plane lies beyond the solid, so everything is a finished piece and the
+            // offsets after it have nothing to work on
+            const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
+                new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], [FAR, FAR * 2]));
+
+            // Assert
+            expect(pieces).toHaveLength(1);
+            expect(volumeOf(pieces[0]!)).toBeCloseTo(BIG_VOLUME, 5);
+        });
+
+        it("should give back the solid whole when it was asked to cut it nowhere", () => {
+            // Act
+            const pieces = manifold.manifold.booleans.splitByPlaneOnOffsets(
+                new Inputs.Manifold.SplitByPlaneOnOffsetsDto(big, [1, 0, 0], []));
+
+            // Assert
+            expect(pieces).toHaveLength(1);
+            expect(volumeOf(pieces[0]!)).toBeCloseTo(BIG_VOLUME, 5);
         });
     });
 });

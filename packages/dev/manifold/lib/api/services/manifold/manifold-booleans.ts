@@ -158,38 +158,45 @@ export class ManifoldBooleans {
     }
 
     /**
-     * Split manifold by plane on various offsets
+     * Split manifold by plane on various offsets. Each cut takes the part below the plane as a
+     * finished piece and carries the part above it to the next, larger offset, so a run of n offsets
+     * yields n + 1 pieces and accounts for the whole of the solid.
      * @param inputs manifold, plane and the list of offsets
-     * @returns splitted manifolds
+     * @returns splitted manifolds, one more than the offsets given
      * @group split
      * @shortname split by plane on offsets
      * @drawable true
      */
     splitByPlaneOnOffsets(inputs: Inputs.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
         const pieces: Manifold3D.Manifold[] = [];
-
-        const clone = inputs.manifold.asOriginal();
-        const remainders = [clone];
         const junk: Manifold3D.Manifold[] = [];
 
-        inputs.originOffsets.forEach((s, i) => {
-            if (remainders[i]) {
-                const halfs = remainders[i].splitByPlane(inputs.normal, s);
-                if (!halfs[1].isEmpty() && !halfs[0].isEmpty()) {
-                    pieces.push(halfs[1]);
-                    remainders.push(halfs[0]);
-                } else if (halfs[1].isEmpty() && !halfs[0].isEmpty()) {
-                    remainders.push(halfs[0]);
-                    junk.push(halfs[1]);
-                } else if (!halfs[1].isEmpty() && halfs[0].isEmpty()) {
-                    pieces.push(halfs[1]);
-                    junk.push(halfs[0]);
-                } else if (halfs[0].isEmpty() && halfs[1].isEmpty()) {
-                    junk.push(...halfs);
-                }
+        let remainder: Manifold3D.Manifold | undefined = inputs.manifold.asOriginal();
+
+        inputs.originOffsets.forEach((offset) => {
+            if (!remainder) {
+                return;
+            }
+            const halfs = remainder.splitByPlane(inputs.normal, offset);
+            junk.push(remainder);
+            remainder = undefined;
+
+            if (halfs[1].isEmpty()) {
+                junk.push(halfs[1]);
+            } else {
+                pieces.push(halfs[1]);
+            }
+
+            if (halfs[0].isEmpty()) {
+                junk.push(halfs[0]);
+            } else {
+                remainder = halfs[0];
             }
         });
-        remainders.forEach(r => r.delete());
+
+        if (remainder) {
+            pieces.push(remainder);
+        }
         junk.forEach(j => j.delete());
         return pieces;
     }

@@ -169,11 +169,10 @@ export class ResultSerializer {
     /**
      * Type guard to check if value is an ObjectDefinition.
      * ObjectDefinition has compound, data, and shapes properties.
+     * Reached only from serializeRecursively, which has already established that the value is a
+     * non-null object, so there is nothing left here to check but the shape of it.
      */
     private isObjectDefinition(value: unknown): value is ObjectDefinitionLike {
-        if (value === null || typeof value !== "object") {
-            return false;
-        }
         const obj = value as Record<string, unknown>;
         return (
             "compound" in obj &&

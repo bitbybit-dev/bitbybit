@@ -192,16 +192,13 @@ describe("BabylonMesh", () => {
             expect(box.enablePointerMoveEvents).toBe(true);
         });
 
-        it("should turn the children off rather than on when asked to include them", () => {
-            // Asking to include the children switches them off: the loop writes false where the mesh
-            // itself was written true. This pins what the method does today rather than what its name
-            // suggests, so a correction to it shows up here.
+        it("should let the children follow the pointer too when asked to include them", () => {
             // Act
             meshService.enablePointerMoveEvents(new Inputs.BabylonMesh.PickableBabylonMeshDto(box, true, true));
 
             // Assert
             expect(box.enablePointerMoveEvents).toBe(true);
-            expect(child.enablePointerMoveEvents).toBe(false);
+            expect(child.enablePointerMoveEvents).toBe(true);
         });
 
         it("should stop the mesh following the pointer, and the children with it when asked", () => {

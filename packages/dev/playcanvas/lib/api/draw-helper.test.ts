@@ -3030,9 +3030,12 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should leave the back faces out when the shape is drawn one sided", async () => {
-            // Arrange - this drawing reads the two sided flag from the options rather than the inputs
+            // Arrange
+            const inputs = occtInputs();
+            inputs.drawTwoSided = false;
+
             // Act
-            const group = await drawHelper.handleDecomposedMeshIndividually(occtInputs(), A_DECOMPOSED_BOX, { drawTwoSided: false });
+            const group = await drawHelper.handleDecomposedMeshIndividually(inputs, A_DECOMPOSED_BOX, {});
 
             // Assert
             expect(group.children.some((child) => child.name.includes("backFace"))).toBe(false);

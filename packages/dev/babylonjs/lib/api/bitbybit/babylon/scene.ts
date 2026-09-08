@@ -335,7 +335,8 @@ export class BabylonScene {
                     (scene.metadata.guiManager as GUI.GUI3DManager).dispose();
                 }
             }
-            scene.transformNodes = [scene.getTransformNodeByName("root")!];
+            const root = scene.getTransformNodeByName("root");
+            scene.transformNodes = root ? [root] : [];
 
             if (scene.activeCamera && scene.activeCamera.name !== "Camera") {
                 scene.cameras.forEach(cam => cam.dispose());
@@ -623,11 +624,7 @@ export class BabylonScene {
     }
 
     private getRadians(degrees: number): number {
-        let angle = BABYLON.Angle.FromDegrees(degrees).radians();
-        if (degrees < 0) {
-            angle = -angle;
-        }
-        return angle;
+        return BABYLON.Tools.ToRadians(degrees);
     }
 
     private createSkyboxMesh(texture: BABYLON.BaseTexture | undefined, size: number, blur: number, hideSkybox: boolean, environmentIntensity: number) {

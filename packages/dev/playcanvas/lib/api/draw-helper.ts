@@ -684,11 +684,11 @@ export class DrawHelper extends DrawHelperCore {
             const mesh = this.createOrUpdateSurfacesMesh(meshData, undefined, false, pbr, false, false);
             shapeGroup.addChild(mesh);
 
-            if (options.drawTwoSided !== false) {
+            if (inputs.drawTwoSided !== false) {
                 const backFaceMesh = this.createBackFaceMesh(
                     meshData, 
-                    options.backFaceColour || DEFAULT_COLORS.BACK_FACE, 
-                    options.backFaceOpacity ?? options.faceOpacity ?? 1,
+                    inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE, 
+                    inputs.backFaceOpacity ?? inputs.faceOpacity ?? 1,
                     inputs.drawEdges ? 2 : 0
                 );
                 shapeGroup.addChild(backFaceMesh);
@@ -822,11 +822,11 @@ export class DrawHelper extends DrawHelperCore {
                     uvs: face.uvs ? [...face.uvs] : undefined,
                 }];
 
-                if (options.drawTwoSided !== false) {
+                if (inputs.drawTwoSided !== false) {
                     const backFaceMesh = this.createBackFaceMesh(
                         meshData,
-                        options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                        options.backFaceOpacity ?? options.faceOpacity ?? 1,
+                        inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                        inputs.backFaceOpacity ?? inputs.faceOpacity ?? 1,
                         zOffset
                     );
                     backFaceMesh.name = `face ${face.faceIndex} backFace`;

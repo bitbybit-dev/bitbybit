@@ -179,6 +179,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 4.1.7
         version: 4.1.7(vitest@4.1.7)
+      jsdom:
+        specifier: 29.0.1
+        version: 29.0.1(canvas@3.2.3)
       shx:
         specifier: 0.4.0
         version: 0.4.0

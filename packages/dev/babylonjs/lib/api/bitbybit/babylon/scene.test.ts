@@ -269,6 +269,7 @@ describe("BabylonScene", () => {
         it("should take the angle limits it was given, in radians", () => {
             // Act
             sceneService.adjustActiveArcRotateCamera(configuration((inputs) => {
+                inputs.lowerAlphaLimit = -90;
                 inputs.upperAlphaLimit = 90;
                 inputs.lowerBetaLimit = 10;
                 inputs.upperBetaLimit = 170;
@@ -276,21 +277,19 @@ describe("BabylonScene", () => {
             const camera = scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
 
             // Assert
+            expect(camera.lowerAlphaLimit).toBeCloseTo(-Math.PI / 2, 5);
             expect(camera.upperAlphaLimit).toBeCloseTo(Math.PI / 2, 5);
             expect(camera.lowerBetaLimit).toBeCloseTo(10 * Math.PI / 180, 5);
             expect(camera.upperBetaLimit).toBeCloseTo(170 * Math.PI / 180, 5);
         });
 
-        it("should turn a negative angle the long way round, as the engine measures it", () => {
-            // The conversion goes through the engine's own Angle, which reports a negative angle as
-            // the positive one that reaches the same place - 270 degrees for -90 - and this then
-            // negates that. A caller asking for -90 gets -270 degrees in radians.
+        it("should turn a negative angle into the negative radians it names", () => {
             // Act
             sceneService.adjustActiveArcRotateCamera(configuration((inputs) => { inputs.lowerAlphaLimit = -90; }));
             const camera = scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
 
             // Assert
-            expect(camera.lowerAlphaLimit).toBeCloseTo(-3 * Math.PI / 2, 5);
+            expect(camera.lowerAlphaLimit).toBeCloseTo(-Math.PI / 2, 5);
         });
 
         it("should take the sensitivities and the far plane it was given", () => {
@@ -522,6 +521,17 @@ describe("BabylonScene", () => {
     });
 
     describe("clearAllDrawn", () => {
+        it("should leave the transform nodes empty rather than holding nothing", () => {
+            // Arrange - a scene the host attached itself may carry no node called root
+            scene.getTransformNodeByName("root")!.dispose();
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.transformNodes).toEqual([]);
+        });
+
         it("should take every mesh out of the scene", () => {
             // Arrange
             BABYLON.MeshBuilder.CreateBox("box", { size: 1 }, scene);

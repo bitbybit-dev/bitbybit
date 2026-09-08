@@ -3266,11 +3266,11 @@ namespace Draw_2 {
         precision: number;
     }
     type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
-    type Entity = number[] | [number, number, number] | Base_3.Point3 | Base_3.Vector3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | {
+    type Entity = number[] | [number, number, number] | Base_3.Point3 | Base_3.Vector3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Tag.TagDto | {
         type: string;
         name?: string;
         entityName?: string;
-    } | number[][] | Base_3.Point3[] | Base_3.Vector3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[] | {
+    } | number[][] | Base_3.Point3[] | Base_3.Vector3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Tag.TagDto[] | {
         type: string[];
         name?: string;
         entityName?: string;

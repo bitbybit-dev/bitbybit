@@ -33,26 +33,34 @@
             "branches": 82.36,
             "functions": 88.69,
             "statements": 89.76
+        },
+        {
+            "measured": "2026-09-08",
+            "tests": 6986,
+            "lines": 89.16,
+            "branches": 82.36,
+            "functions": 88.68,
+            "statements": 89.77
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 1369,
+            "tests": 1370,
             "suites": 10,
-            "lines": 71.41,
+            "lines": 71.4,
             "branches": 80.38,
             "functions": 58.7,
-            "statements": 75.81
+            "statements": 75.8
         },
         "base": {
             "runner": "vitest",
-            "tests": 1164,
+            "tests": 1166,
             "suites": 15,
-            "lines": 99.3,
-            "branches": 94.37,
+            "lines": 99.39,
+            "branches": 94.57,
             "functions": 100,
-            "statements": 99.3
+            "statements": 99.39
         },
         "cad-cloud-sdk": {
             "runner": "vitest",
@@ -97,12 +105,12 @@
         },
         "manifold": {
             "runner": "vitest",
-            "tests": 339,
+            "tests": 341,
             "suites": 9,
-            "lines": 99.31,
-            "branches": 98.77,
+            "lines": 99.3,
+            "branches": 99.24,
             "functions": 100,
-            "statements": 99.47
+            "statements": 99.46
         },
         "manifold-worker": {
             "runner": "vitest",
@@ -126,17 +134,17 @@
             "runner": "vitest",
             "tests": 754,
             "suites": 14,
-            "lines": 99.9,
-            "branches": 98.97,
+            "lines": 100,
+            "branches": 99.47,
             "functions": 100,
-            "statements": 99.81
+            "statements": 100
         },
         "playcanvas": {
             "runner": "vitest",
             "tests": 501,
             "suites": 10,
             "lines": 93.35,
-            "branches": 81.69,
+            "branches": 81.33,
             "functions": 94.09,
             "statements": 92.23
         },

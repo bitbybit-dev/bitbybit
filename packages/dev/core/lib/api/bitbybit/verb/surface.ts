@@ -98,7 +98,8 @@ export class VerbSurface {
      * @returns UV parameters
      */
     closestParam(inputs: Inputs.Verb.SurfaceParamDto): BaseTypes.UVDto {
-        return inputs.surface.closestParam(inputs.point);
+        const [u, v] = inputs.surface.closestParam(inputs.point) as [number, number];
+        return { u, v };
     }
 
     /**

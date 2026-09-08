@@ -2,7 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { verbSurface } from "../../__test__/verb";
 import type { VerbSurface } from "./surface";
 import * as Inputs from "../../inputs";
-import { BaseTypes } from "../base-types";
 
 // verb's surface objects have no type on the API today, so the suite names the one the API returns.
 type Surface = ReturnType<VerbSurface["createSurfaceByCorners"]>;
@@ -182,16 +181,12 @@ describe("VerbSurface", () => {
 
     describe("closestParam", () => {
         it("should give the parameters nearest the point it was given", () => {
-            // The API declares a UVDto here, but verb answers with the pair as an array and this
-            // method hands back what verb gave it. The declared type is the one that is wrong, and
-            // this pins what a caller actually receives.
             // Act
-            const uv: BaseTypes.UVDto = surfaceService.closestParam(new Inputs.Verb.SurfaceParamDto(flat, [WIDTH / 2, LENGTH / 2, 5]));
-            const pair = Object.values(uv);
+            const uv = surfaceService.closestParam(new Inputs.Verb.SurfaceParamDto(flat, [WIDTH / 2, LENGTH / 2, 5]));
 
-            // Assert
-            expect(pair[0]).toBeCloseTo(MIDDLE, 4);
-            expect(pair[1]).toBeCloseTo(MIDDLE, 4);
+            // Assert - verb answers with the pair as an array; the API declares a UVDto and returns one
+            expect(uv.u).toBeCloseTo(MIDDLE, 4);
+            expect(uv.v).toBeCloseTo(MIDDLE, 4);
         });
     });
 
