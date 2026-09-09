@@ -6,7 +6,7 @@ import Version, { useBitbybitVersion } from "@site/src/components/Version";
  * VersionLink - A component for creating links with version numbers.
  * This allows dynamic version insertion in markdown links.
  * 
- * Usage: <VersionLink href="https://git-cdn.bitbybit.dev/v{version}/ai-context/file-v{version}.md">Link Text</VersionLink>
+ * Usage: <VersionLink href="https://git-cdn.bitbybit.dev/v{version}/ai-context/file.md">Link Text</VersionLink>
  */
 function VersionLink({ href, children }: { href: string; children: React.ReactNode }): JSX.Element {
     const version = useBitbybitVersion();

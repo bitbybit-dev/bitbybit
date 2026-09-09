@@ -333,22 +333,22 @@ Attach these files to your AI coding assistant for Bitbybit API knowledge.
 #### Beginner Context (Monaco Editor)
 
 For online TypeScript editor at bitbybit.dev:
-- Full Context (116k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-babylon-monaco-ai-context-v{{VERSION}}.md
+- Full Context (116k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-babylon-monaco-ai-context.md
 
 #### BabylonJS Context
 
-- Full (116k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-babylon-ai-context-v{{VERSION}}.md
-- Lite (114k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-babylon-no-comment-min-ai-v{{VERSION}}.md
+- Full (116k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-babylon-ai-context.md
+- Lite (114k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-babylon-no-comment-min-ai.md
 
 #### Three.js Context
 
-- Full (95k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-three-ai-context-v{{VERSION}}.md
-- Lite (82k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-three-no-comment-min-ai-v{{VERSION}}.md
+- Full (95k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-three-ai-context.md
+- Lite (82k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-three-no-comment-min-ai.md
 
 #### PlayCanvas Context
 
-- Full (94k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-playcanvas-ai-context-v{{VERSION}}.md
-- Lite (82k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-playcanvas-no-comment-min-ai-v{{VERSION}}.md
+- Full (94k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-playcanvas-ai-context.md
+- Lite (82k tokens): https://git-cdn.bitbybit.dev/v{{VERSION}}/ai-context/bitbybit-playcanvas-no-comment-min-ai.md
 
 ### Full API on Github
 - API with short explanations: https://github.com/bitbybit-dev/bitbybit/blob/master/docs/API.md
