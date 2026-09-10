@@ -37,8 +37,9 @@ import { fileURLToPath } from "node:url";
 export const SOURCE_CONDITION = "@bitbybit-dev/source";
 export const DROPPED_FIELDS = ["exports", "devDependencies", "scripts"];
 // The map a package's tree implies. Exact entries first (they win over patterns): the root, every
-// directory index under lib/, every JavaScript module with typings beside it (the kernels, the
-// generated jscad module), then the patterns for everything else.
+// directory index under lib/, every kernel module with typings committed beside it, every
+// JavaScript module at the package root (the generated jscad module), then the patterns for
+// everything else.
 export function expectedExports(dir) {
     const entry = (source, stem) => ({ [SOURCE_CONDITION]: source, types: `./dist/${stem}.d.ts`, default: `./dist/${stem}.js` });
     const map = { ".": entry("./index.ts", "index") };
@@ -50,14 +51,19 @@ export function expectedExports(dir) {
     };
     if (existsSync(join(dir, "lib"))) walk("lib");
     for (const rel of indexDirs.sort()) map[`./${rel}`] = entry(`./${rel}/index.ts`, `${rel}/index`);
-    const jsModules = (rel) => readdirSync(join(dir, rel)).filter((f) => f.endsWith(".js") && existsSync(join(dir, rel, f.replace(/\.js$/, ".d.ts")))).sort()
+    // A kernel directory holds compiled JavaScript beside hand-written typings, and only a pair
+    // counts. A module at the package root is asked for on its own: tsc emits its typings into
+    // dist/, which is where `types` points, so requiring a .d.ts beside the source would leave the
+    // extensionless subpath - the one scripts/check-tarballs.mjs holds the published tarball to -
+    // resolving under every condition but the source one.
+    const jsModules = (rel, typingsBeside = true) => readdirSync(join(dir, rel)).filter((f) => f.endsWith(".js") && (!typingsBeside || existsSync(join(dir, rel, f.replace(/\.js$/, ".d.ts"))))).sort()
         .map((f) => (rel === "." ? f.slice(0, -3) : `${rel}/${f.slice(0, -3)}`));
     const kernelDirs = existsSync(join(dir, "kernels.json")) ? JSON.parse(readFileSync(join(dir, "kernels.json"), "utf8")).kernels.map((k) => k.dir).sort() : [];
     for (const k of kernelDirs) {
         for (const stem of jsModules(k)) map[`./${stem}`] = { [SOURCE_CONDITION]: `./${stem}.js`, types: `./dist/${stem}.d.ts`, default: `./dist/${stem}.js` };
         map[`./${k}/*`] = { [SOURCE_CONDITION]: `./${k}/*`, types: `./dist/${k}/*`, default: `./dist/${k}/*` };
     }
-    for (const stem of jsModules(".")) map[`./${stem}`] = { [SOURCE_CONDITION]: `./${stem}.js`, types: `./dist/${stem}.d.ts`, default: `./dist/${stem}.js` };
+    for (const stem of jsModules(".", false)) map[`./${stem}`] = { [SOURCE_CONDITION]: `./${stem}.js`, types: `./dist/${stem}.d.ts`, default: `./dist/${stem}.js` };
     map["./package.json"] = "./package.json";
     map["./*.js"] = { [SOURCE_CONDITION]: "./*.js", types: "./dist/*.d.ts", default: "./dist/*.js" };
     map["./*"] = { [SOURCE_CONDITION]: "./*.ts", types: "./dist/*.d.ts", default: "./dist/*.js" };

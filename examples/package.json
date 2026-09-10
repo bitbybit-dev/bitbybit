@@ -9,7 +9,12 @@
         "install:all": "node scripts/examples.mjs install",
         "build:all": "node scripts/examples.mjs build",
         "audit:all": "node scripts/examples.mjs audit",
-        "refresh-lockfiles": "node scripts/examples.mjs refresh"
+        "refresh-lockfiles": "node scripts/examples.mjs refresh",
+        "status:local": "node scripts/local.mjs status",
+        "link:local": "node scripts/local.mjs link",
+        "unlink:local": "node scripts/local.mjs unlink",
+        "dev:local": "node scripts/local.mjs dev",
+        "build:local": "node scripts/local.mjs build"
     },
     "repository": {
         "type": "git",

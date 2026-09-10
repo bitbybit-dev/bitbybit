@@ -10,7 +10,7 @@ tests without it. Start with `README.md` for the overview, `CONTRIBUTING.md` bef
 |---|---|
 | `packages/dev/*` | the 13 published npm packages - see `packages/dev/CLAUDE.md` |
 | `docs/` | the Docusaurus site for learn.bitbybit.dev, including the generated API reference |
-| `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly, in examples.yml |
+| `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly from the registry, in examples.yml, and `examples/scripts/local.mjs` runs them against this repository's own packages instead |
 | `languages/` | i18n source JSON for the platform |
 
 ## Building the packages

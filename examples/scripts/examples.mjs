@@ -14,49 +14,23 @@
 // covers that gap and runs beside this one; neither replaces the other.
 //   node scripts/examples.mjs refresh [--only <part>]  move each lockfile to the newest versions its manifest allows, then apply audit fixes
 //
-// Examples are found by walking this directory for package.json files (generated output and
-// node_modules excluded). verify.config.json lists the ones to skip, each with a reason, and the
-// frameworks whose builds are too heavy for every run: those install on every run and build only
-// with --heavy. A run exits non-zero when any example failed; per-example logs go to .verify-logs/.
+// Examples are found by scripts/discover.mjs, which the local lane shares: any directory here with
+// a package.json, generated output and node_modules aside. verify.config.json lists the ones to
+// skip, each with a reason, and the frameworks whose builds are too heavy for every run: those
+// install on every run and build only with --heavy. A run exits non-zero when any example failed;
+// per-example logs go to .verify-logs/.
 import { spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { ROOT, selected } from "./discover.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LOGS = path.join(ROOT, ".verify-logs");
-const SKIP_DIRS = new Set(["node_modules", "dist", "build", ".next", ".nuxt", ".output", ".angular", ".verify-logs", "scripts", "bin", "obj"]);
-const config = JSON.parse(readFileSync(path.join(ROOT, "verify.config.json"), "utf8"));
 
 const args = process.argv.slice(2);
 const command = args[0];
-const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
 const heavy = args.includes("--heavy");
 
-function discover(dir, out = []) {
-    for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-        if (!entry.isDirectory() || SKIP_DIRS.has(entry.name)) continue;
-        const full = path.join(dir, entry.name);
-        if (existsSync(path.join(full, "package.json"))) out.push(path.relative(ROOT, full));
-        else discover(full, out);
-    }
-    return out;
-}
-
-function describe(rel) {
-    const manifest = JSON.parse(readFileSync(path.join(ROOT, rel, "package.json"), "utf8"));
-    const skip = config.skip.find((s) => s.path === rel);
-    const framework = rel.split("/")[0];
-    return {
-        path: rel,
-        lockfile: existsSync(path.join(ROOT, rel, "package-lock.json")),
-        build: Boolean(manifest.scripts && manifest.scripts.build),
-        heavy: config.buildOnlyWithHeavy.includes(framework),
-        skip: skip ? skip.reason : null,
-    };
-}
-
-const examples = discover(ROOT).map(describe).filter((e) => !only || e.path.includes(only));
+const examples = selected(args);
 
 function run(example, step, cmd, cmdArgs, { failureIsInformation = false } = {}) {
     const log = path.join(LOGS, `${example.path.replaceAll("/", "__")}.${step}.log`);

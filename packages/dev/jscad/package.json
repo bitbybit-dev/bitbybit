@@ -88,6 +88,11 @@
             "types": "./dist/lib/api/services/index.d.ts",
             "default": "./dist/lib/api/services/index.js"
         },
+        "./jscad-generated": {
+            "@bitbybit-dev/source": "./jscad-generated.js",
+            "types": "./dist/jscad-generated.d.ts",
+            "default": "./dist/jscad-generated.js"
+        },
         "./package.json": "./package.json",
         "./*.js": {
             "@bitbybit-dev/source": "./*.js",

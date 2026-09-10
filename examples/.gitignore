@@ -8,3 +8,11 @@ test-chainable-api
 
 # the example runner's per-example logs
 .verify-logs
+
+# the local lane: the Vite configuration it generates per example, and its index page and build logs
+vite.config.bitbybit-local.mts
+.local
+
+# next build writes these into the example it builds
+nextjs/babylonjs/simple/AGENTS.md
+nextjs/babylonjs/simple/CLAUDE.md
