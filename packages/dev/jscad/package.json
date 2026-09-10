@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/jscad",
-    "version": "1.2.0-rc.1",
+    "version": "1.2.0-rc.2",
     "description": "Bit By Bit Developers JSCAD based CAD Library to Program Geometry",
     "homepage": "https://docs.bitbybit.dev/classes/Bit.JSCAD",
     "main": "index.js",
@@ -107,7 +107,7 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/base": "1.2.0-rc.1",
+        "@bitbybit-dev/base": "1.2.0-rc.2",
         "@jscad/io-utils": "2.0.28",
         "@jscad/modeling": "2.12.3",
         "@jscad/stl-serializer": "2.1.18",

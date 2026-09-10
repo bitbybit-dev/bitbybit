@@ -1,6 +1,6 @@
 {
     "name": "bitbybit-api-hono-sdk-threejs",
-    "version": "1.2.0-rc.1",
+    "version": "1.2.0-rc.2",
     "private": true,
     "type": "module",
     "scripts": {
@@ -9,7 +9,7 @@
     },
     "dependencies": {
         "hono": "^4.7.0",
-        "@bitbybit-dev/cad-cloud-sdk": "1.2.0-rc.1"
+        "@bitbybit-dev/cad-cloud-sdk": "1.2.0-rc.2"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^5.20260903.1",
