@@ -10,7 +10,7 @@ tests without it. Start with `README.md` for the overview, `CONTRIBUTING.md` bef
 |---|---|
 | `packages/dev/*` | the 13 published npm packages - see `packages/dev/CLAUDE.md` |
 | `docs/` | the Docusaurus site for learn.bitbybit.dev, including the generated API reference |
-| `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly, in examples.yml |
+| `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly from the registry, in examples.yml, and `examples/scripts/local.mjs` runs them against this repository's own packages instead |
 | `languages/` | i18n source JSON for the platform |
 
 ## Building the packages
@@ -19,23 +19,21 @@ The packages form a dependency DAG, and the order has one source: each package's
 dependencies. `scripts/gen-ts-references.mjs` turns them into TypeScript project references -
 every `tsconfig.bitbybit.json` is a composite project that references the siblings its manifest
 declares, and `tsconfig.build.json` at the root references all eleven - so `tsc -b` orders the
-compiles itself and rebuilds only what changed. `npm run build-packages` is `pnpm -r run build-p`:
-pnpm orders the eleven stagings by the same manifests, and each `build-p` compiles with `tsc -b`
-(which builds the siblings it references first), then stages dist/ for publishing.
+compiles itself and rebuilds only what changed. `npm run build-packages` is `pnpm -r run build-p`: pnpm orders the eleven stagings by the same
+manifests, each `build-p` compiles with `tsc -b` and stages dist/ for publishing.
 `npm run rebuild-all-packages` empties every dist first; `tsc -b tsconfig.build.json --verbose`
 prints the order it derives and what it considered up to date.
 
 All three of a package's TypeScript configs are generated: the build config, the strict view, and the
 `tsconfig.json` an editor and a lint run pick up - the build config's base and sibling paths without
-its emit settings or its exclusions, so the tests and mocks are in the project there. After changing
-a dependency between packages, run `npm run gen:references` and commit the result;
-`npm run check:references`, the first step of `npm test`, fails when any of the three is out of date.
-Three things are placed on purpose: the build info sits in each dist/ (`tsc -b` trusts it over the
-outputs when it decides a project is up to date, so it has to vanish with the dist it describes, and
-the `.npmignore` that `copy-package` writes keeps it out of the tarball); every build config excludes
-`dist` and `coverage`, whose files TypeScript would otherwise read as inputs; and every config states
-its `outDir`, which is how TypeScript knows to keep that directory out of the project - a stale one
-reads the built `dist` back in as source, silently.
+its emit settings or exclusions, so the tests and mocks are in the project there. After changing a
+dependency between packages, run `npm run gen:references` and commit the result; `check:references`,
+the first step of `npm test`, fails when any of the three is out of date.
+Three things are placed on purpose: the build info sits in each dist/, because `tsc -b` trusts it
+over the outputs and it has to vanish with the dist it describes (`copy-package`'s `.npmignore` keeps
+it out of the tarball); every build config excludes `dist` and `coverage`, which TypeScript would
+otherwise read as inputs; and every config states its `outDir`, which is how TypeScript keeps that
+directory out of the project - a stale one reads the built `dist` back in as source, silently.
 
 ## The workspace
 
@@ -44,30 +42,28 @@ The thirteen packages under `packages/dev/` are one pnpm workspace (`pnpm-worksp
 all of them, and a sibling dependency whose exact pin matches the sibling's version becomes a symlink
 instead of a registry copy (`linkWorkspacePackages`). One `pnpm-lock.yaml` replaces the per-package
 npm locks; `npm run refresh-lockfile` rewrites it without touching node_modules. The manifests keep
-exact registry pins on purpose and never the `workspace:` protocol: `dist/` is what npm publishes,
-and `copy-package` derives its manifest through `scripts/dist-manifest.mjs`, which refuses a
-`workspace:`, `link:` or `file:` specifier. A dependency's install script runs only when `allowBuilds`
-lists it - pnpm refuses the install while one is unreviewed, so a new native dependency shows up as a
-decision, not a silent skip. Node comes from `.tool-versions` and pnpm from `packageManager`, which
-pins the exact version and which pnpm switches to on its own.
+exact registry pins on purpose and never the `workspace:` protocol: `dist/` is what npm publishes, and
+`copy-package` derives its manifest through `scripts/dist-manifest.mjs`, which refuses a `workspace:`,
+`link:` or `file:` specifier. A dependency's install script runs only when `allowBuilds` lists it, so
+a new native dependency shows up as a decision, not a silent skip. Node comes from `.tool-versions`
+and pnpm from `packageManager`, which pnpm switches to on its own.
 
 Every dist-published manifest also carries an `exports` map derived from its tree by `npm run
 gen:exports` (the root, every directory index under `lib/`, every kernel module, then patterns), with
 the `@bitbybit-dev/source` condition first in each entry: a consumer that declares the condition
 resolves the TypeScript sources - the shared test configuration does, through `resolve.conditions`,
 so a suite sees a sibling's edit without a rebuild - and one that does not resolves `dist/`. The map
-never reaches npm: `dist-manifest.mjs` drops it, with `devDependencies` and `scripts`, and a published
+never reaches npm: `dist-manifest.mjs` drops it with `devDependencies` and `scripts`, and a published
 package resolves through `main` and `types` as every version has, because an exports map in a tarball
-would refuse the extensionless deep imports the examples make. `npm run check:exports` (in `npm test`
-and verify.yml) holds every manifest to that shape and every built `dist/package.json` to the
-derivation; `check:tarballs` imports the packed packages the way the examples do.
+would refuse the extensionless deep imports the examples make. `npm run check:exports` holds every
+manifest to that shape and every built `dist/package.json` to the derivation.
 
 pnpm's layout is strict: a package resolves only what its own manifest declares, where npm's flat
 hoisting let it reach anything a sibling had installed. Every import in `lib/` must therefore be a
 dependency of that package - the engine packages import `@bitbybit-dev/base`, the three workers,
-`jsonpath-plus` and `verb-nurbs-web` directly, and declare them. Verify a build from a clone that
-sits outside your home directory: a stray `~/node_modules` above the checkout satisfies an
-undeclared import on your machine and nowhere else, which is how one reached CI.
+`jsonpath-plus` and `verb-nurbs-web` directly, and declare them. Verify a build from a clone outside
+your home directory: a stray `~/node_modules` above the checkout satisfies an undeclared import on
+your machine and nowhere else, which is how one reached CI.
 
 ## Lint and the strictness ratchet
 
@@ -75,10 +71,11 @@ undeclared import on your machine and nowhere else, which is how one reached CI.
 type-aware set (it reads the type graph, so it sees an unawaited promise), the house style, and two
 local rules in `eslint-rules/`, neither with a fixer - `no-double-assertion` (`x as unknown as T`
 widens until nothing is checked; use a type predicate) and `no-loose-comments` (JSDoc and directives
-stay, free-form comments do not; what the code cannot say belongs in JSDoc or a `CLAUDE.md`, and in a test in
-the name of the `it` - a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each on its own,
-and no other comment at all). Findings that predate a rule sit in `eslint-suppressions.json`; a new
-one fails, as does a stale suppression, so the count only falls. Never load `eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.
+stay, free-form comments do not; what the code cannot say belongs in JSDoc or a `CLAUDE.md`, and in a
+test in the name of the `it` - a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each on
+its own, and no other comment at all). Findings that predate a rule sit in `eslint-suppressions.json`;
+a new one fails, as does a stale suppression, so the count only falls. Never load
+`eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.
 
 Every package builds and typechecks under the whole strict set, and the flags live in one place:
 `tsconfig.base.cad.json`, which every package's `tsconfig.json` (the editor and test view) and
@@ -90,51 +87,55 @@ source. `npm run typecheck:strict` runs it and must print nothing; `npm run type
 the same over `tsconfig.json`, which keeps the tests and mocks - nothing else compiles those, the
 build configs excluding them and a runner not typechecking what it executes.
 `npm run check:strict-baselines`, which CI runs, holds the line: no package has a
-`.tsc-baseline.json` any more, so any strict error anywhere fails it. That ratchet - a typecheck-only
-overlay, per-package baselines shrunk to zero, each flag then moving into the shared base - is
-finished, the last move proved flag-neutral with `tsc --showConfig` before and after. Test support
-under `__mocks__` is excluded from the build configs: the test runner compiles it itself, so dist
-ships no mocks. `packages/dev/CLAUDE.md` records the shape each kind of DTO property takes.
+`.tsc-baseline.json` any more, so any strict error anywhere fails it, and any tsconfig move is proved
+flag-neutral with `tsc --showConfig` before and after. Test support under `__mocks__` is excluded
+from the build configs: the runner compiles it itself, so dist ships no mocks.
+`packages/dev/CLAUDE.md` records the shape each kind of DTO property takes.
 
 ## Continuous integration
 
+**Before you commit, run all four** - `npm test` alone is what leaves CI red after a green local run:
+
+```bash
+npm run lint                     # includes the AAA-only comment rule over every *.test.ts
+npm run typecheck:tests          # nothing else typechecks a test file
+npm test                         # the check:* gates and all eleven suites, with coverage
+npm run check:coverage-baseline  # reads what the npm test above it just measured
+```
+
+Only `typecheck:tests` compiles a `*.test.ts`, and every column of `coverage-baseline.json` is a floor: code that dilutes one brings its own tests, never a re-recorded floor.
+
 `.github/workflows/verify.yml` proves the repository builds and tests from a bare clone with nothing
-above it, on every push to `develop` and every pull request into `develop` or `master`: one frozen
-install, `lint`, `check:references`, `rebuild-all-packages`, `npm test`, `check:strict-baselines`,
-`typecheck:tests`, the SDK's typecheck, tests with coverage and build, the scaffolder's build,
-`check:openapi`, `api:check`, `check:tarballs`, and last - on a red run too - `test:report`, which
-puts every suite's results on the run's summary page. It needs no secrets and must never gain any.
-`nightly.yml` runs the build and tests on every Node line the packages should keep working on, on a
-schedule and by hand. Neither publishes.
+above it, on every push to `develop` and every pull request into `develop` or `master`: the four above
+plus `check:references`, `check:exports`, `rebuild-all-packages`, `check:strict-baselines`, the SDK's
+and the scaffolder's own builds and tests, `check:openapi`, `api:check`, `check:tarballs`, and last -
+on a red run too - `test:report`, which puts every suite's results on the summary page. It needs no
+secrets and must never gain any. `nightly.yml` runs the build and tests on every Node line the
+packages should keep working on. Neither publishes.
 
 `publish.yml` does, by hand-dispatch only, through npm trusted publishing: the job's OIDC token is
 exchanged for a short-lived publish token per package, so no npm token is stored anywhere and every
 version carries a provenance attestation naming this repository - which is why every manifest's
 `repository` field is exactly `git+https://github.com/bitbybit-dev/bitbybit.git` with the package's
 `directory` (`scripts/dist-manifest.mjs` refuses anything else). `scripts/publish-packages.mjs`
-(`npm run publish:packages`) derives the tiers from the manifests, skips versions the registry has
-(a failed run is re-run, never repaired by hand) and waits for the registry to resolve a tier before
-its dependents publish. The default dispatch publishes under `next` as a rehearsal; a second with
-`latest` releases. Each package needs a trusted publisher configured on npmjs.com.
+(`npm run publish:packages`) derives the tiers from the manifests, skips versions the registry has (a
+failed run is re-run, never repaired by hand) and waits for a tier to resolve before its dependents
+publish. The default dispatch publishes under `next` as a rehearsal; a second with `latest` releases.
 
-The OCCT kernels the `occt` package ships are not tracked: `packages/dev/occt/kernels.json` names
-the three content-hashed wasm files with their SHA-256 and the url each is published at, and
+The OCCT kernels the `occt` package ships are not tracked: `packages/dev/occt/kernels.json` names the
+three content-hashed wasm files with their SHA-256 and the url each is published at, and
 `npm run kernels:fetch` (run by both workflows after the install, and by the package's `build-p`)
-downloads what is missing and verifies what is present. A kernel rebuild writes the manifest; a
-kernel on disk that disagrees with it is an error, never overwritten.
+downloads what is missing and verifies what is present. A kernel on disk that disagrees with the
+manifest is an error, never overwritten.
 
 Two of those checks carry committed state. `api:check` runs api-extractor in every package that can
-carry a report - all but `occt-worker` - against its built `dist/index.d.ts`, and fails when the
-public surface differs from the report in that package's `etc/`: the dotted API is persisted in
-users' saved scripts, so a change to it lands only with a deliberate `npm run api:update` and the
-report diff in the same commit. `occt-worker` is the exception because `BitbybitOcctModule`, part of
-its public signature, is declared by the emscripten glue, whose thousands of ambient consts
-api-extractor cannot follow; its surface is pinned harder elsewhere, by `check:worker-api` (the whole
-API layer is generated from the kernel and must match byte for byte) and by `check:worker-parity`
-(the dotted paths, the signatures and the docs on both sides). `check:tarballs` packs all thirteen -
-the eleven staged dists and the two that publish from their own root - installs the library ones into
-an empty project and probes each as a consumer would, then reads what every tarball actually carries:
-a credential, an absolute build path, a source map naming sources it excludes, a file npm strips.
+carry a report - all but `occt-worker`, whose `BitbybitOcctModule` comes from emscripten glue it
+cannot follow, and which `check:worker-api` and `check:worker-parity` pin harder instead - against its
+built `dist/index.d.ts`, and fails when the public surface differs from the report in that package's
+`etc/`: the dotted API is persisted in users' saved scripts, so a change lands only with a deliberate
+`npm run api:update` and the report diff in the same commit. `check:tarballs` packs all thirteen,
+installs the library ones into an empty project and probes each as a consumer would, then reads what
+every tarball carries: a credential, an absolute build path, a source map naming excluded sources.
 
 ## The generated worker layer
 
@@ -191,10 +192,9 @@ from `docs/static/llms.template.txt` by `docs/scripts/generate-llms.js` on every
   `packages/dev/vitest.shared.ts` and states only what differs from it.
 - `UNIT_TESTING_GUIDE.md` at the root is the testing standard for this repository.
 - Kernel-heavy suites need a raised heap; the package scripts already set
-  `NODE_OPTIONS=--max-old-space-size=8192`. Keep that when adding one. They also run a process per
-  file (`pool: "forks"`): the kernel holds global state and two suites sharing one corrupt each other.
+  `NODE_OPTIONS=--max-old-space-size=8192`. Keep that when adding one. They also run a process per file
+  (`pool: "forks"`): the kernel holds global state and two suites sharing one corrupt each other.
 - Every package's tsconfigs extend `tsconfig.base.cad.json` and keep only what differs: outDir, paths
-  into sibling dists, exclusions, and for the SDK and the scaffolder their NodeNext module settings.
-  Change a flag for every package in the base; for one package in its leaf, and say so there, because
-  a base cannot be un-set by omission. Prove a change to the shape of these files flag-neutral with
-  `tsc --showConfig`, before against after, for every config.
+  into sibling dists, exclusions, and the SDK's and the scaffolder's NodeNext settings. Change a flag
+  for every package in the base, for one package in its leaf, and say so there: a base cannot be
+  un-set by omission.

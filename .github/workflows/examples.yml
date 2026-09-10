@@ -36,12 +36,25 @@ jobs:
         working-directory: examples
         run: node scripts/examples.mjs verify ${{ (inputs.heavy || github.event_name == 'push') && '--heavy' || '' }}
 
-      # The lockfiles are what Dependabot reads for this repository: a high or critical advisory
-      # in any of them fails here, and `npm run refresh-lockfiles` in examples/ is the fix.
-      - name: No high or critical advisories in the example lockfiles
+      # The lockfiles are what Dependabot reads for this repository: a moderate or worse advisory
+      # in any of them fails here, and `npm run refresh-lockfiles` in examples/ is the fix. This is
+      # npm's view of the advisory database only - the step below is the other half.
+      - name: No moderate or worse advisories in the example lockfiles
         if: always()
         working-directory: examples
         run: node scripts/examples.mjs audit
+
+      # The same question asked of the database Dependabot actually raises its alerts from, over
+      # every lockfile in the repository rather than only the examples - the docs site and the pnpm
+      # workspace had no gate at all before this. npm's feed and GitHub's have diverged, and the step
+      # above cannot see an advisory npm has not mirrored: sixteen multer alerts sat open for months
+      # behind a green audit. Findings that are unreachable or unfixable live in
+      # scripts/advisories.allow.json with the reason.
+      - name: No moderate or worse advisories in the GitHub Advisory Database
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npm run check:advisories
 
   create-app:
     runs-on: ubuntu-latest

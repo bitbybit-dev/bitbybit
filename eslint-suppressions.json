@@ -52,18 +52,18 @@
   },
   "packages/dev/babylonjs/lib/api/bitbybit/draw.test.ts": {
     "@typescript-eslint/unbound-method": {
-      "count": 72
+      "count": 69
     },
     "bitbybit/no-double-assertion": {
-      "count": 11
+      "count": 9
     }
   },
   "packages/dev/babylonjs/lib/api/bitbybit/draw.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
+      "count": 2
     },
     "bitbybit/no-double-assertion": {
-      "count": 9
+      "count": 2
     }
   },
   "packages/dev/babylonjs/lib/api/context.test.ts": {
@@ -632,7 +632,7 @@
   },
   "packages/dev/playcanvas/lib/api/bitbybit/draw.ts": {
     "bitbybit/no-double-assertion": {
-      "count": 10
+      "count": 5
     }
   },
   "packages/dev/playcanvas/lib/api/bitbybit/playcanvas.test.ts": {
@@ -710,7 +710,7 @@
       "count": 2
     },
     "bitbybit/no-double-assertion": {
-      "count": 3
+      "count": 2
     }
   },
   "packages/dev/threejs/lib/api/bitbybit/threejs/orbit-camera.test.ts": {

@@ -69,7 +69,7 @@ function component() {
     const createShape = async (bitbybit?: BitByBitBase, scene?: Scene) => {
         if (scene && bitbybit) {
             if (shapesToClean.length > 0) {
-                await bitbybit.manifold.deleteManifoldsOrCrossSections({ manifoldsOrCrossSections: shapesToClean });
+                await bitbybit.occt.deleteShapes({ shapes: shapesToClean });
             }
 
             const { occt } = bitbybit;

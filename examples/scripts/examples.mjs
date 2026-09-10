@@ -6,52 +6,31 @@
 //   node scripts/examples.mjs install [--only <part>]  npm ci in each (npm install where no lockfile)
 //   node scripts/examples.mjs build   [--only <part>]  npm run build in each that has a build script
 //   node scripts/examples.mjs verify  [--only <part>]  install, then build
-//   node scripts/examples.mjs audit   [--only <part>]  npm audit at the high level, lockfile only
+//   node scripts/examples.mjs audit   [--only <part>]  npm audit at the moderate level, lockfile only
+//
+// `audit` is npm's view and is not the whole picture: npm resolves advisories from its own feed,
+// which has diverged from the database Dependabot reads - multer@1.4.5-lts.2 reported "found 0
+// vulnerabilities" here while GitHub held fifteen advisories against it. ../scripts/check-advisories.mjs
+// covers that gap and runs beside this one; neither replaces the other.
 //   node scripts/examples.mjs refresh [--only <part>]  move each lockfile to the newest versions its manifest allows, then apply audit fixes
 //
-// Examples are found by walking this directory for package.json files (generated output and
-// node_modules excluded). verify.config.json lists the ones to skip, each with a reason, and the
-// frameworks whose builds are too heavy for every run: those install on every run and build only
-// with --heavy. A run exits non-zero when any example failed; per-example logs go to .verify-logs/.
+// Examples are found by scripts/discover.mjs, which the local lane shares: any directory here with
+// a package.json, generated output and node_modules aside. verify.config.json lists the ones to
+// skip, each with a reason, and the frameworks whose builds are too heavy for every run: those
+// install on every run and build only with --heavy. A run exits non-zero when any example failed;
+// per-example logs go to .verify-logs/.
 import { spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { ROOT, selected } from "./discover.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LOGS = path.join(ROOT, ".verify-logs");
-const SKIP_DIRS = new Set(["node_modules", "dist", "build", ".next", ".nuxt", ".output", ".angular", ".verify-logs", "scripts", "bin", "obj"]);
-const config = JSON.parse(readFileSync(path.join(ROOT, "verify.config.json"), "utf8"));
 
 const args = process.argv.slice(2);
 const command = args[0];
-const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
 const heavy = args.includes("--heavy");
 
-function discover(dir, out = []) {
-    for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-        if (!entry.isDirectory() || SKIP_DIRS.has(entry.name)) continue;
-        const full = path.join(dir, entry.name);
-        if (existsSync(path.join(full, "package.json"))) out.push(path.relative(ROOT, full));
-        else discover(full, out);
-    }
-    return out;
-}
-
-function describe(rel) {
-    const manifest = JSON.parse(readFileSync(path.join(ROOT, rel, "package.json"), "utf8"));
-    const skip = config.skip.find((s) => s.path === rel);
-    const framework = rel.split("/")[0];
-    return {
-        path: rel,
-        lockfile: existsSync(path.join(ROOT, rel, "package-lock.json")),
-        build: Boolean(manifest.scripts && manifest.scripts.build),
-        heavy: config.buildOnlyWithHeavy.includes(framework),
-        skip: skip ? skip.reason : null,
-    };
-}
-
-const examples = discover(ROOT).map(describe).filter((e) => !only || e.path.includes(only));
+const examples = selected(args);
 
 function run(example, step, cmd, cmdArgs, { failureIsInformation = false } = {}) {
     const log = path.join(LOGS, `${example.path.replaceAll("/", "__")}.${step}.log`);
@@ -75,7 +54,7 @@ const steps = {
     },
     audit: (e) => {
         if (!e.lockfile) return { example: e.path, step: "audit", ok: true, seconds: "0", note: "no lockfile" };
-        return run(e, "audit", "npm", ["audit", "--package-lock-only", "--audit-level=high"]);
+        return run(e, "audit", "npm", ["audit", "--package-lock-only", "--audit-level=moderate"]);
     },
     refresh: (e) => {
         if (!e.lockfile) return { example: e.path, step: "refresh", ok: true, seconds: "0", note: "no lockfile" };

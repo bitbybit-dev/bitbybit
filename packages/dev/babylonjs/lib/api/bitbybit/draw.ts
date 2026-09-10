@@ -58,39 +58,41 @@ export class Draw extends DrawCore {
     /**
      * Draws any kind of geometry and returns the babylon mesh
      * @param inputs Contains options and entities to be drawn
-     * @returns BabylonJS Mesh Promise. Resolves undefined when there is nothing to draw, which is the
-     * case for an undefined entity and for an empty list; a mesh is what every drawable output is
-     * declared as, so the empty case is not spelled in the type. Drawing a tag resolves the tag itself
-     * rather than a mesh, for the same reason.
+     * @returns What drawing the given entity produces: a mesh for geometry, the tag or tags for a
+     * tag, a disposable overlay for one a host application resolves, an axis triad's node for a
+     * node. Drawing an empty list draws nothing and resolves undefined; a literal `[]` is typed as
+     * that, a list variable that happens to be empty is not, because whether a list is empty is not
+     * something the type of the list says.
      * @group draw async
      * @shortname draw async
      * @drawable true
      * @disposableOutput true
      */
-    async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
+    async drawAnyAsync<E extends Inputs.Draw.Entity>(
+        inputs: Inputs.Draw.DrawAny<E>,
+    ): Promise<Inputs.Draw.Drawn<E, BABYLON.Mesh>> {
+        return await this.drawResolvedAsync(inputs) as Inputs.Draw.Drawn<E, BABYLON.Mesh>;
+    }
+
+    /**
+     * Every branch of the asynchronous dispatch, typed as what it can actually produce.
+     *
+     * A package that adds entity kinds overrides this rather than the public signature: two
+     * unresolved conditional types over the same `E` have no provable relation to each other, so a
+     * narrower override of `drawAnyAsync` cannot typecheck however correct it is.
+     * @ignore true
+     */
+    protected async drawResolvedAsync(inputs: Inputs.Draw.DrawAny): Promise<Inputs.Draw.DrawnAny<BABYLON.Mesh>> {
         const entity = inputs.entity;
         if (entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
-            return Promise.resolve(undefined as unknown as BABYLON.Mesh);
+            return Promise.resolve(undefined);
         }
-        if (this.detectJscadMesh(entity)) {
-            return this.handleJscadMesh(inputs, entity);
-        } else if (this.detectOcctShape(entity)) {
-            return this.handleOcctShape(inputs);
-        } else if (this.detectOcctShapes(entity)) {
-            return this.handleOcctShapes(inputs);
-        } else if (this.detectJscadMeshes(entity)) {
-            return this.handleJscadMeshes(inputs, entity);
-        } else if (this.detectManifoldShape(entity)) {
-            return this.handleManifoldShape(inputs);
-        } else if (this.detectManifoldShapes(entity)) {
-            return this.handleManifoldShapes(inputs);
-        } else if (this.detectDecomposedMeshes(entity)) {
-            return this.handleDecomposedMeshes(inputs);
-        } else if (this.detectDecomposedMesh(entity)) {
-            return this.handleDecomposedMeshShape(inputs);
-        } else {
-            return Promise.resolve(this.drawAny(inputs));
+        const handlers = this.asyncHandlers();
+        const kind = this.resolveDrawableKind(entity, "async", (k) => k in handlers);
+        if (kind) {
+            return handlers[kind]!(inputs, entity);
         }
+        return Promise.resolve(this.drawResolved(inputs));
     }
 
     private mergedOcctShapeOptions(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawOcctShapeOptions {
@@ -104,7 +106,7 @@ export class Draw extends DrawCore {
     private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
         return this.drawHelper.handleDecomposedMesh(
-            options as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>,
+            options,
             inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
             options
         ).then(r => {
@@ -117,7 +119,7 @@ export class Draw extends DrawCore {
         const options = this.mergedOcctShapeOptions(inputs);
         const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
         const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
-            options as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, dm, options)));
+            options, dm, options)));
         const container = new BABYLON.Mesh(`decomposedMeshesContainer-${++this.decomposedMeshesContainerCounter}`, this.context.scene);
         container.isVisible = false;
         drawn.forEach(mesh => { if (mesh) { mesh.parent = container; } });
@@ -127,8 +129,8 @@ export class Draw extends DrawCore {
 
     private decomposedMeshesContainerCounter = 0;
 
-    private updateAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
-        let result: BABYLON.Mesh | undefined;
+    private updateAny(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawnAny<BABYLON.Mesh> {
+        let result: Inputs.Draw.DrawnAny<BABYLON.Mesh>;
         if (inputs.babylonMesh && inputs.babylonMesh.metadata) {
 
             const type = inputs.babylonMesh.metadata.type as Inputs.Draw.drawingTypes;
@@ -150,6 +152,12 @@ export class Draw extends DrawCore {
                     break;
                 case Inputs.Draw.drawingTypes.polylines:
                     result = this.handlePolylines(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.jscadPath:
+                    result = this.handleJscadPath(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.jscadPaths:
+                    result = this.handleJscadPaths(inputs);
                     break;
                 case Inputs.Draw.drawingTypes.verbCurve:
                     result = this.handleVerbCurve(inputs);
@@ -179,7 +187,7 @@ export class Draw extends DrawCore {
                     break;
             }
         }
-        return result as BABYLON.Mesh;
+        return result;
     }
 
     /**
@@ -200,43 +208,102 @@ export class Draw extends DrawCore {
      * @group draw sync
      * @shortname draw sync
      */
-    drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
-        let result: BABYLON.Mesh | undefined;
+    drawAny<E extends Inputs.Draw.Entity>(
+        inputs: Inputs.Draw.DrawAny<E>,
+    ): Inputs.Draw.Drawn<E, BABYLON.Mesh> {
+        return this.drawResolved(inputs) as Inputs.Draw.Drawn<E, BABYLON.Mesh>;
+    }
+
+    private cachedSyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny) => Inputs.Draw.DrawnAny<BABYLON.Mesh>> | undefined;
+
+    /**
+     * What this renderer draws each synchronous kind with, keyed by the kind's name in the ordered
+     * table. A kind absent from here is one this renderer does not draw, and the walk skips it.
+     * @ignore true
+     */
+    private syncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny) => Inputs.Draw.DrawnAny<BABYLON.Mesh>> {
+        return this.cachedSyncHandlers ??= {
+            line: (i) => this.handleLine(i),
+            point: (i) => this.handlePoint(i),
+            jscadPath: (i) => this.handleJscadPath(i),
+            polyline: (i) => this.handlePolyline(i),
+            node: (i) => this.handleNode(i),
+            verbCurve: (i) => this.handleVerbCurve(i),
+            verbSurface: (i) => this.handleVerbSurface(i),
+            jscadPaths: (i) => this.handleJscadPaths(i),
+            polylines: (i) => this.handlePolylines(i),
+            lines: (i) => this.handleLines(i),
+            points: (i) => this.handlePoints(i),
+            nodes: (i) => this.handleNodes(i),
+            verbCurves: (i) => this.handleVerbCurves(i),
+            verbSurfaces: (i) => this.handleVerbSurfaces(i),
+            tag: (i) => this.handleTag(i),
+            tags: (i) => this.handleTags(i),
+        };
+    }
+
+    private cachedAsyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny, entity: unknown) => Promise<Inputs.Draw.DrawnAny<BABYLON.Mesh>>> | undefined;
+
+    /**
+     * The same for the kinds that have to cross to a worker and back.
+     *
+     * The two JSCAD entries ask their own check again rather than asserting: a handler that takes the
+     * narrowed entity can only be given one honestly, and re-running a check the table just ran is
+     * cheaper than a cast that could be wrong.
+     * @ignore true
+     */
+    private asyncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny, entity: unknown) => Promise<Inputs.Draw.DrawnAny<BABYLON.Mesh>>> {
+        return this.cachedAsyncHandlers ??= {
+            jscadMesh: (i, e) => this.detectJscadMesh(e) ? this.handleJscadMesh(i, e) : Promise.resolve(undefined),
+            occtShape: (i) => this.handleOcctShape(i),
+            occtShapes: (i) => this.handleOcctShapes(i),
+            jscadMeshes: (i, e) => this.detectJscadMeshes(e) ? this.handleJscadMeshes(i, e) : Promise.resolve(undefined),
+            manifoldShape: (i) => this.handleManifoldShape(i),
+            manifoldShapes: (i) => this.handleManifoldShapes(i),
+            decomposedMeshes: (i) => this.handleDecomposedMeshes(i),
+            decomposedMesh: (i) => this.handleDecomposedMeshShape(i),
+        };
+    }
+
+    /**
+     * Whether the entity is a node this renderer can draw an axis triad for.
+     *
+     * The engine-agnostic check this replaces asks whether `id` is a string containing "node", which
+     * any object can satisfy and most real nodes do not: it matched only the ones this library named
+     * itself, so a node from a loaded model, or one a script constructed, typechecked as drawable
+     * and then silently drew nothing. A node is a renderer's own concept, so the honest check lives
+     * beside the renderer that has the type to ask about.
+     * @ignore true
+     */
+    override detectNode(entity: unknown): entity is BABYLON.TransformNode {
+        return entity instanceof BABYLON.TransformNode;
+    }
+
+    /**
+     * @ignore true
+     */
+    override detectNodes(entity: unknown): entity is BABYLON.TransformNode[] {
+        return Array.isArray(entity) && entity.length > 0 && !entity.some(el => !this.detectNode(el));
+    }
+
+    /**
+     * Every branch of the synchronous dispatch, typed as what it can actually produce. Overridden
+     * instead of the public signature, for the reason given on its asynchronous twin.
+     * @ignore true
+     */
+    protected drawResolved(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawnAny<BABYLON.Mesh> {
+        let result: Inputs.Draw.DrawnAny<BABYLON.Mesh>;
         const entity = inputs.entity;
         if (!inputs.babylonMesh && !(entity instanceof BABYLON.Mesh)) {
-            if (this.detectLine(entity)) {
-                result = this.handleLine(inputs);
-            } else if (this.detectPoint(entity)) {
-                result = this.handlePoint(inputs);
-            } else if (this.detectPolyline(entity)) {
-                result = this.handlePolyline(inputs);
-            } else if (this.detectNode(entity)) {
-                result = this.handleNode(inputs);
-            } else if (this.detectVerbCurve(entity)) {
-                result = this.handleVerbCurve(inputs);
-            } else if (this.detectVerbSurface(entity)) {
-                result = this.handleVerbSurface(inputs);
-            } else if (this.detectPolylines(entity)) {
-                result = this.handlePolylines(inputs);
-            } else if (this.detectLines(entity)) {
-                result = this.handleLines(inputs);
-            } else if (this.detectPoints(entity)) {
-                result = this.handlePoints(inputs);
-            } else if (this.detectNodes(entity)) {
-                result = this.handleNodes(inputs);
-            } else if (this.detectVerbCurves(entity)) {
-                result = this.handleVerbCurves(inputs);
-            } else if (this.detectVerbSurfaces(entity)) {
-                result = this.handleVerbSurfaces(inputs);
-            } else if (this.detectTag(entity)) {
-                result = this.handleTag(inputs);
-            } else if (this.detectTags(entity)) {
-                result = this.handleTags(inputs);
+            const handlers = this.syncHandlers();
+            const kind = this.resolveDrawableKind(entity, "sync", (k) => k in handlers);
+            if (kind) {
+                result = handlers[kind]!(inputs);
             }
         } else {
             result = this.updateAny(inputs);
         }
-        return result as BABYLON.Mesh;
+        return result;
     }
 
     /**
@@ -470,7 +537,7 @@ export class Draw extends DrawCore {
         }
     }
 
-    private handleTags(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
+    private handleTags(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawnTags {
         const options = inputs.options ? inputs.options : {
             updatable: false,
         };
@@ -484,10 +551,10 @@ export class Draw extends DrawCore {
         const tagsMetadata = { type: Inputs.Draw.drawingTypes.tags, options };
         drawnTags.forEach(drawnTag => { drawnTag.metadata = tagsMetadata; });
         drawnTags.metadata = tagsMetadata;
-        return drawnTags as unknown as BABYLON.Mesh;
+        return drawnTags;
     }
 
-    private handleTag(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
+    private handleTag(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawnTag {
         let options = inputs.options ? inputs.options : {
             updatable: false,
         };
@@ -501,7 +568,7 @@ export class Draw extends DrawCore {
         });
         const drawnTag = result as Inputs.Draw.DrawnTag;
         drawnTag.metadata = { type: Inputs.Draw.drawingTypes.tag, options };
-        return drawnTag as unknown as BABYLON.Mesh;
+        return drawnTag;
     }
 
     private handleVerbSurfaces(inputs: Inputs.Draw.DrawAny) {
@@ -534,18 +601,23 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handleNodes(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
+    private handleNodes(inputs: Inputs.Draw.DrawAny): BABYLON.TransformNode[] {
         let options = inputs.options ? inputs.options : this.defaultNodeOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        const result = inputs.entity;
+        const result = inputs.entity as BABYLON.TransformNode[];
+        const existing = new Map(result.map(node => [node, new Set(node.getChildMeshes())]));
         this.node.drawNodes({
-            nodes: inputs.entity as any,
+            nodes: result,
             ...options as Inputs.Draw.DrawNodeOptions
         });
-        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.nodes, options, result as any);
-        return result as unknown as BABYLON.Mesh;
+        result.forEach(node => {
+            const before = existing.get(node)!;
+            const triad = node.getChildMeshes().filter(m => !before.has(m));
+            this.applyNodeSettingsAndMetadata(Inputs.Draw.drawingTypes.nodes, options, node, triad);
+        });
+        return result;
     }
 
     private handlePoints(inputs: Inputs.Draw.DrawAny) {
@@ -587,7 +659,7 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handlePolylines(inputs: Inputs.Draw.DrawAny) {
+    private handlePolylines(inputs: Inputs.Draw.DrawAny, type = Inputs.Draw.drawingTypes.polylines) {
         let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
@@ -597,7 +669,7 @@ export class Draw extends DrawCore {
             polylines: inputs.entity as Inputs.Base.Polyline3[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
-        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.polylines, options, result);
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
         return result;
     }
 
@@ -629,21 +701,41 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handleNode(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
+    private handleNode(inputs: Inputs.Draw.DrawAny): BABYLON.TransformNode {
         let options = inputs.options ? inputs.options : this.defaultNodeOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        const result = inputs.entity;
+        const result = inputs.entity as BABYLON.TransformNode;
+        const existing = new Set(result.getChildMeshes());
         this.node.drawNode({
-            node: inputs.entity as any,
+            node: result,
             ...options as Inputs.Draw.DrawNodeOptions
         });
-        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.node, options, result as any);
-        return result as unknown as BABYLON.Mesh;
+        const triad = result.getChildMeshes().filter(m => !existing.has(m));
+        this.applyNodeSettingsAndMetadata(Inputs.Draw.drawingTypes.node, options, result, triad);
+        return result;
     }
 
-    private handlePolyline(inputs: Inputs.Draw.DrawAny) {
+    /**
+     * A JSCAD path drawn as the polyline it is.
+     *
+     * The path's points are two-dimensional and its closing segment is implied by `isClosed`, so
+     * both are resolved before the polyline handler sees it - which then applies the same options,
+     * metadata and update handling every other polyline gets.
+     */
+    private handleJscadPath(inputs: Inputs.Draw.DrawAny) {
+        const points = this.pathToPolylinePoints(inputs.entity as Inputs.JSCAD.JSCADPath2);
+        return this.handlePolyline({ ...inputs, entity: { points } }, Inputs.Draw.drawingTypes.jscadPath);
+    }
+
+    private handleJscadPaths(inputs: Inputs.Draw.DrawAny) {
+        const paths = inputs.entity as Inputs.JSCAD.JSCADPath2[];
+        const polylines = paths.map(path => ({ points: this.pathToPolylinePoints(path) }));
+        return this.handlePolylines({ ...inputs, entity: polylines }, Inputs.Draw.drawingTypes.jscadPaths);
+    }
+
+    private handlePolyline(inputs: Inputs.Draw.DrawAny, type = Inputs.Draw.drawingTypes.polyline) {
         let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
@@ -653,7 +745,7 @@ export class Draw extends DrawCore {
             polyline: inputs.entity as Inputs.Base.Polyline3,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
-        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.polyline, options, result);
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
         return result;
     }
 
@@ -780,6 +872,37 @@ export class Draw extends DrawCore {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMesh, options, r);
             return r;
         });
+    }
+
+    /**
+     * The settings a drawn node can carry, which is not the set a drawn mesh can.
+     *
+     * Drawing a node parents an axis triad to it: the node itself is not geometry, so pickability,
+     * casting shadows and receiving them belong to the lines the triad is made of rather than to the
+     * node. Sending a node through the mesh path instead writes members onto an object that has none
+     * and registers a non-mesh as a shadow caster, which the shadow map then walks as geometry.
+     *
+     * The settings reach the triad only, which is why the caller passes it rather than letting this
+     * ask the node for its meshes. Any transform node can be drawn - a loaded model hangs its whole
+     * mesh tree off one - and asking the node would take the model with it, making every mesh in it
+     * unpickable and re-registering all of them as shadow casters, because a draw call was made
+     * about the node they happen to be parented to.
+     */
+    private applyNodeSettingsAndMetadata(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, node: BABYLON.TransformNode, meshes: BABYLON.AbstractMesh[]) {
+        const typemeta = { type, options };
+        const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
+
+        meshes.forEach(m => { m.isPickable = false; });
+
+        const shadowsEnabled = !(node.metadata && node.metadata.shadows === false);
+        if (shadowsEnabled && sgs.length > 0) {
+            meshes.forEach(m => {
+                m.receiveShadows = true;
+                sgs.forEach(sg => sg.addShadowCaster(m));
+            });
+        }
+
+        node.metadata = node.metadata ? { ...node.metadata, ...typemeta } : typemeta;
     }
 
     private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: BABYLON.Mesh | undefined) {

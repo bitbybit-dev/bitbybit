@@ -35,31 +35,97 @@ export class Draw extends DrawCore {
         super();
     }
 
-    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<Inputs.Draw.DrawnEntity | undefined> {
+    /**
+     * Draws any kind of geometry after all input promises are resolved. Inputs can also be non-promise like.
+     *
+     * What comes back depends on what went in, and the type says so: an OCCT, JSCAD or Manifold
+     * shape, a point, a line, a polyline or a mesh resolves to a PlayCanvas entity; a tag resolves to the drawn
+     * tag, and a list of tags to the list, because a tag renders as an HTML overlay positioned from
+     * the scene rather than as geometry in it; an entity a host application resolves into an overlay
+     * resolves to something whose only method is `dispose`. So a caller that knows what it is drawing
+     * does not have to narrow a union to use the result.
+     *
+     * Drawing an empty list draws nothing and resolves undefined. A literal `[]` is typed as that;
+     * a list variable that happens to be empty is not, because whether a list is empty is not
+     * something the type of the list says.
+     * @param inputs Contains options and entities to be drawn
+     * @returns What drawing the given entity produces - see above
+     */
+    async drawAnyAsync<E extends Inputs.Draw.Entity>(
+        inputs: Inputs.Draw.DrawAny<pc.Entity, E>,
+    ): Promise<Inputs.Draw.Drawn<E, Inputs.Draw.BitByBitEntity>> {
+        return await this.drawResolvedAsync(inputs) as Inputs.Draw.Drawn<E, Inputs.Draw.BitByBitEntity>;
+    }
+
+    /**
+     * Every branch of the asynchronous dispatch, typed as what it can actually produce.
+     *
+     * A package that adds entity kinds overrides this rather than the public signature: two
+     * unresolved conditional types over the same `E` have no provable relation to each other, so a
+     * narrower override of `drawAnyAsync` cannot typecheck however correct it is.
+     * @ignore true
+     */
+    private cachedSyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<pc.Entity>) => Inputs.Draw.DrawnEntity> | undefined;
+
+    /**
+     * What this renderer draws each synchronous kind with, keyed by the kind's name in the ordered
+     * table. A kind absent from here is one this renderer does not draw, and the walk skips it.
+     * @ignore true
+     */
+    private syncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny<pc.Entity>) => Inputs.Draw.DrawnEntity> {
+        return this.cachedSyncHandlers ??= {
+            line: (i) => this.handleLine(i),
+            point: (i) => this.handlePoint(i),
+            jscadPath: (i) => this.handleJscadPath(i),
+            polyline: (i) => this.handlePolyline(i),
+            verbCurve: (i) => this.handleVerbCurve(i),
+            verbSurface: (i) => this.handleVerbSurface(i),
+            jscadPaths: (i) => this.handleJscadPaths(i),
+            polylines: (i) => this.handlePolylines(i),
+            lines: (i) => this.handleLines(i),
+            points: (i) => this.handlePoints(i),
+            verbCurves: (i) => this.handleVerbCurves(i),
+            verbSurfaces: (i) => this.handleVerbSurfaces(i),
+            tag: (i) => this.handleTag(i),
+            tags: (i) => this.handleTags(i),
+        };
+    }
+
+    private cachedAsyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<pc.Entity>, entity: unknown) => Promise<Inputs.Draw.DrawnEntity>> | undefined;
+
+    /**
+     * The same for the kinds that have to cross to a worker and back.
+     *
+     * The two JSCAD entries ask their own check again rather than asserting: a handler that takes the
+     * narrowed entity can only be given one honestly, and re-running a check the table just ran is
+     * cheaper than a cast that could be wrong.
+     * @ignore true
+     */
+    private asyncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny<pc.Entity>, entity: unknown) => Promise<Inputs.Draw.DrawnEntity>> {
+        return this.cachedAsyncHandlers ??= {
+            jscadMesh: (i, e) => this.detectJscadMesh(e) ? this.handleJscadMesh(i, e) : Promise.resolve(undefined),
+            occtShape: (i) => this.handleOcctShape(i),
+            occtShapes: (i) => this.handleOcctShapes(i),
+            jscadMeshes: (i, e) => this.detectJscadMeshes(e) ? this.handleJscadMeshes(i, e) : Promise.resolve(undefined),
+            manifoldShape: (i) => this.handleManifoldShape(i),
+            manifoldShapes: (i) => this.handleManifoldShapes(i),
+            decomposedMeshes: (i) => this.handleDecomposedMeshes(i),
+            decomposedMesh: (i) => this.handleDecomposedMeshShape(i),
+        };
+    }
+
+    protected async drawResolvedAsync(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<Inputs.Draw.DrawnEntity> {
         if (!this.isValidDrawInput(inputs.entity)) {
             return Promise.resolve(undefined);
         }
         
         const entity = inputs.entity;
-        if (this.detectJscadMesh(entity)) {
-            return this.handleJscadMesh(inputs, entity);
-        } else if (this.detectOcctShape(entity)) {
-            return this.handleOcctShape(inputs);
-        } else if (this.detectOcctShapes(entity)) {
-            return this.handleOcctShapes(inputs);
-        } else if (this.detectJscadMeshes(entity)) {
-            return this.handleJscadMeshes(inputs, entity);
-        } else if (this.detectManifoldShape(entity)) {
-            return this.handleManifoldShape(inputs);
-        } else if (this.detectManifoldShapes(entity)) {
-            return this.handleManifoldShapes(inputs);
-        } else if (this.detectDecomposedMeshes(entity)) {
-            return this.handleDecomposedMeshes(inputs);
-        } else if (this.detectDecomposedMesh(entity)) {
-            return this.handleDecomposedMeshShape(inputs);
-        } else {
-            return Promise.resolve(this.drawAny(inputs));
+        const handlers = this.asyncHandlers();
+        const kind = this.resolveDrawableKind(entity, "async", (k) => k in handlers);
+        if (kind) {
+            return handlers[kind]!(inputs, entity);
         }
+        return Promise.resolve(this.drawResolved(inputs));
     }
 
     private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
@@ -78,7 +144,7 @@ export class Draw extends DrawCore {
             const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
             const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
             const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
-                merged as unknown as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, dm, merged)));
+                merged, dm, merged)));
             const container = new pc.Entity("decomposedMeshesContainer");
             const scene = drawn.find(entity => entity)?.parent;
             if (scene) { scene.addChild(container); }
@@ -90,11 +156,23 @@ export class Draw extends DrawCore {
     /**
      * Draws any kind of geometry that does not need asynchronous computing, thus it cant be used with shapes coming from occt or jscad
      * @param inputs Contains options and entities to be drawn
-     * @returns PlayCanvas Entity
+     * @returns What drawing the given entity produces: an entity for geometry, the tag or tags for
+     * a tag, a disposable overlay for one a host application resolves, nothing for an empty list.
      * @group draw sync
      * @shortname draw sync
      */
-    drawAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): Inputs.Draw.DrawnEntity | undefined {
+    drawAny<E extends Inputs.Draw.Entity>(
+        inputs: Inputs.Draw.DrawAny<pc.Entity, E>,
+    ): Inputs.Draw.Drawn<E, Inputs.Draw.BitByBitEntity> {
+        return this.drawResolved(inputs) as Inputs.Draw.Drawn<E, Inputs.Draw.BitByBitEntity>;
+    }
+
+    /**
+     * Every branch of the synchronous dispatch, typed as what it can actually produce. Overridden
+     * instead of the public signature, for the reason given on its asynchronous twin.
+     * @ignore true
+     */
+    protected drawResolved(inputs: Inputs.Draw.DrawAny<pc.Entity>): Inputs.Draw.DrawnEntity {
         if (!this.isValidDrawInput(inputs.entity)) {
             return undefined;
         }
@@ -102,30 +180,10 @@ export class Draw extends DrawCore {
         let result;
         const entity = inputs.entity;
         if (!inputs.group && !(inputs.entity instanceof pc.Entity)) {
-            if (this.detectLine(entity)) {
-                result = this.handleLine(inputs);
-            } else if (this.detectPoint(entity)) {
-                result = this.handlePoint(inputs);
-            } else if (this.detectPolyline(entity)) {
-                result = this.handlePolyline(inputs);
-            } else if (this.detectVerbCurve(entity)) {
-                result = this.handleVerbCurve(inputs);
-            } else if (this.detectVerbSurface(entity)) {
-                result = this.handleVerbSurface(inputs);
-            } else if (this.detectPolylines(entity)) {
-                result = this.handlePolylines(inputs);
-            } else if (this.detectLines(entity)) {
-                result = this.handleLines(inputs);
-            } else if (this.detectPoints(entity)) {
-                result = this.handlePoints(inputs);
-            } else if (this.detectVerbCurves(entity)) {
-                result = this.handleVerbCurves(inputs);
-            } else if (this.detectVerbSurfaces(entity)) {
-                result = this.handleVerbSurfaces(inputs);
-            } else if (this.detectTag(entity)) {
-                result = this.handleTag(inputs);
-            } else if (this.detectTags(entity)) {
-                result = this.handleTags(inputs);
+            const handlers = this.syncHandlers();
+            const kind = this.resolveDrawableKind(entity, "sync", (k) => k in handlers);
+            if (kind) {
+                result = handlers[kind]!(inputs);
             }
         } else {
             result = this.updateAny(inputs);
@@ -431,14 +489,32 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.point);
     }
 
-    private handlePolyline(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
+    /**
+     * A JSCAD path drawn as the polyline it is.
+     *
+     * The path's points are two-dimensional and its closing segment is implied by `isClosed`, so
+     * both are resolved before the polyline handler sees it - which then applies the same options,
+     * metadata and update handling every other polyline gets.
+     */
+    private handleJscadPath(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
+        const points = this.pathToPolylinePoints(inputs.entity as Inputs.JSCAD.JSCADPath2);
+        return this.handlePolyline({ ...inputs, entity: { points } }, Inputs.Draw.drawingTypes.jscadPath);
+    }
+
+    private handleJscadPaths(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
+        const paths = inputs.entity as Inputs.JSCAD.JSCADPath2[];
+        const polylines = paths.map(path => ({ points: this.pathToPolylinePoints(path) }));
+        return this.handlePolylines({ ...inputs, entity: polylines }, Inputs.Draw.drawingTypes.jscadPaths);
+    }
+
+    private handlePolyline(inputs: Inputs.Draw.DrawAny<pc.Entity>, type = Inputs.Draw.drawingTypes.polyline): pc.Entity {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylineClose({
                 polylineMesh: inputs.group,
                 polyline: inputs.entity as Inputs.Base.Polyline3,
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
-        }, Inputs.Draw.drawingTypes.polyline);
+        }, type);
     }
 
     private handleVerbCurve(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
@@ -461,14 +537,14 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
 
-    private handlePolylines(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
+    private handlePolylines(inputs: Inputs.Draw.DrawAny<pc.Entity>, type = Inputs.Draw.drawingTypes.polylines): pc.Entity {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylinesWithColours({
                 polylinesMesh: inputs.group,
                 polylines: inputs.entity as Inputs.Base.Polyline3[],
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
-        }, Inputs.Draw.drawingTypes.polylines);
+        }, type);
     }
 
     private handleLines(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
@@ -493,7 +569,7 @@ export class Draw extends DrawCore {
     }
 
     private handlePoints(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
-        return this.handle(inputs, this.defaultPolylineOptions, (options) => {
+        return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawPoints({
                 pointsMesh: inputs.group,
                 points: inputs.entity as Inputs.Base.Point3[],
@@ -530,8 +606,8 @@ export class Draw extends DrawCore {
         }
 
         const result = this.tag.drawTag({
-            tagVariable: inputs.group && this.isTagDto(inputs.group) ? inputs.group as unknown as Inputs.Tag.TagDto : undefined,
-            tag: inputs.entity as unknown as Inputs.Tag.TagDto,
+            tagVariable: inputs.group && this.isTagDto(inputs.group) ? inputs.group : undefined,
+            tag: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
@@ -546,8 +622,8 @@ export class Draw extends DrawCore {
         }
 
         const result = this.tag.drawTags({
-            tagsVariable: inputs.group && this.isTagDtoArray(inputs.group) ? inputs.group as unknown as Inputs.Tag.TagDto[] : undefined,
-            tags: inputs.entity as unknown as Inputs.Tag.TagDto[],
+            tagsVariable: inputs.group && this.isTagDtoArray(inputs.group) ? inputs.group : undefined,
+            tags: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
@@ -556,7 +632,7 @@ export class Draw extends DrawCore {
         return drawnTags;
     }
 
-    private updateAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): Inputs.Draw.DrawnEntity | undefined {
+    private updateAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): Inputs.Draw.DrawnEntity {
         let result;
         const group = inputs.group as BitByBitEntity;
         if (group && group.bitbybitMeta) {
@@ -579,6 +655,12 @@ export class Draw extends DrawCore {
                     break;
                 case Inputs.Draw.drawingTypes.polylines:
                     result = this.handlePolylines(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.jscadPath:
+                    result = this.handleJscadPath(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.jscadPaths:
+                    result = this.handleJscadPaths(inputs);
                     break;
                 case Inputs.Draw.drawingTypes.verbCurve:
                     result = this.handleVerbCurve(inputs);

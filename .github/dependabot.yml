@@ -1,0 +1,96 @@
+# Dependabot raises security alerts for this repository whether or not this file exists, but it
+# opens no pull request to fix one until an ecosystem here covers the manifest that carries it.
+# Without this file every advisory had to be found and fixed by hand, which is how a backlog of
+# roughly a hundred and fifty accumulated across the docs site, the examples and the templates.
+#
+# The repository holds thirty-odd npm manifests, so the shape below is chosen to keep that from
+# becoming thirty-odd pull requests a week: everything that is not a major update is grouped into
+# one pull request per area, and the areas that move slowest are checked monthly.
+version: 2
+
+updates:
+  # The pnpm workspace - the thirteen published packages plus this repository's own tooling.
+  # Their runtime dependencies are what consumers install, so this is the one area worth a weekly
+  # look; majors stay ungrouped so a breaking change arrives on its own and can be read in isolation.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      workspace-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # The Docusaurus site for learn.bitbybit.dev. Its tree is by far the largest here and almost all
+  # of it is build-time only. The Docusaurus packages move in lockstep and must be bumped together
+  # or the plugins refuse to load, so they get their own group.
+  - package-ecosystem: npm
+    directory: /docs
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      docusaurus:
+        patterns:
+          - "@docusaurus/*"
+          - "docusaurus-*"
+          - "mermaid"
+      docs-minor-patch:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@docusaurus/*"
+          - "docusaurus-*"
+        update-types:
+          - minor
+          - patch
+
+  # Every example installs from the registry the way a user does, which is what makes them the
+  # post-publish smoke test - and also what puts thirty lockfiles in front of Dependabot. Monthly
+  # and grouped: an advisory in one of these is a bad example to copy, not a live service at risk.
+  - package-ecosystem: npm
+    directories:
+      - /examples/**
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      example-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # The create-app templates carry manifests but no lockfile: whatever is pinned here is what a
+  # scaffolded project installs on day one, so an advisory here ships to every new user.
+  - package-ecosystem: npm
+    directories:
+      - /packages/dev/create-app/templates/**
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      template-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # The workflows pin their actions by major tag; this keeps those moving without hand-editing.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns:
+          - "*"

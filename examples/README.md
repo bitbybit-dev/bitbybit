@@ -64,6 +64,95 @@ this repository; when it reports an advisory under `examples/`, run `npm run ref
 here and commit the result, bumping a direct dependency in the example's `package.json` where the
 fix is outside its range. `api/dotnet-rest` is a .NET project and is outside this lane.
 
+# Running the examples on this repository's packages
+
+The lane above answers "does the published package work". This one answers "does the change I am
+making work", by pointing the examples at `packages/dev/*` instead of at the registry, so an idea
+can be tried in a real application before anything is published.
+
+```
+npm run status:local       # what each example is pointed at, and the port it would get
+npm run dev:local          # link every example, start each on its own port, and list them
+npm run build:local        # link every example and build it
+npm run link:local         # link only
+npm run unlink:local       # put the installed packages back
+```
+
+`dev:local` with nothing further starts every linkable example at once and prints a page of its own
+at http://localhost:5300 listing them. Ctrl-C stops them all. The same commands are at the
+repository root as `npm run examples:dev`, `examples:build`, `examples:link`, `examples:unlink` and
+`examples:status`.
+
+An example is linked one of two ways, and which one it gets is worked out from the example itself:
+
+- **source**, for the examples Vite runs directly. Their `@bitbybit-dev/*` become symlinks to the
+  package directories, and a generated Vite configuration asks for the `@bitbybit-dev/source`
+  export condition, so Vite serves the TypeScript under `packages/dev/*/lib` itself. **An edit
+  there reaches the browser with no build step at all.** This is the mode to work in. The
+  generated file is `vite.config.bitbybit-local.mts`, it is not tracked, and it merges the
+  example's own Vite configuration rather than replacing it.
+- **dist**, for everything else - Angular, Next.js, Nuxt, webpack, Node. Build the packages first
+  (`npm run build-packages` at the repository root, then `npm run watch-packages` to keep them
+  compiled while you work), and what npm would publish is copied into the example. Every bundler
+  understands it and nothing is generated, but a change needs that rebuild before it shows up.
+
+Some examples are not linked, and `status:local` says which and why: an example that declares no
+package from this workspace, and one pinned to an older release than the one here.
+
+**The kernels are not part of this.** The OCCT, JSCAD and Manifold workers are fetched from the CDN
+at run time unless an example passes its own, so linking changes the library the page runs and
+leaves the kernel where it was. A change under `packages/dev/*-worker/lib` reaches an example
+through this lane; a change to a compiled kernel does not.
+
+# Starting one example
+
+Every command takes `--only <part of a path>`, which is the usual way in. From this directory:
+
+```
+npm run status:local                             # what can be linked, and the port each would get
+npm run dev:local    -- --only vite/threejs/cup  # link that one and start it
+npm run build:local  -- --only vite/threejs/cup  # link it and build it
+npm run unlink:local -- --only vite/threejs/cup  # put its installed packages back
+```
+
+`--only` matches anywhere in the path, so `--only vite/threejs` takes a directory and `--only cup`
+takes every example of that name. Two more flags:
+
+- `--port <number>` moves the block of ports, which starts at 5300.
+- `--dist` links what npm would publish rather than the sources - the shape a user installs. It
+  needs the packages built: `npm run build-packages` at the repository root, and `npm run
+  watch-packages` there to keep them compiled while you work.
+
+# Working from inside one example
+
+Once an example is linked, its own directory is a normal place to work from, and the link survives
+until you `unlink:local`.
+
+An example linked in **dist** mode - Angular, Next.js, Nuxt, webpack, Node - has the packages copied
+into its `node_modules`, so its own scripts already run against this repository with nothing else
+passed:
+
+```
+cd webpack/threejs
+npm start          # on whatever port its own configuration names, not the one this lane hands out
+```
+
+An example linked in **source** mode - anything Vite runs directly - needs the generated
+configuration, which is sitting in the example directory after the link:
+
+```
+cd vite/threejs/cup
+npx vite --config vite.config.bitbybit-local.mts
+npx vite build --config vite.config.bitbybit-local.mts
+```
+
+Its plain `npm run dev` is **not** the same thing. The symlinks are still in place, so it does reach
+this repository - but through each package's `dist/`, which then has to have been built, and without
+the deduplication the generated configuration carries, so the page ends up with two copies of the 3D
+engine. Measured on `vite/threejs/cup`: 580 modules with the generated configuration and 582 without
+it, the two extra being a second `three`. Use the generated configuration, or link the example with
+`--dist` and mean it.
+
 # Media Channels
 Discord: https://discord.gg/GSe3VMe  
 Youtube: https://www.youtube.com/@bitbybitdev?sub_confirmation=1  

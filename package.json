@@ -10,6 +10,7 @@
         "rm-dist-packages": "pnpm -r run clean-dist",
         "build-packages": "pnpm -r run build-p",
         "rebuild-all-packages": "npm run rm-dist-packages && npm run build-packages",
+        "watch-packages": "tsc -b tsconfig.build.json --watch",
         "install-rebuild-all-packages": "npm run ci-packages && npm run rebuild-all-packages",
         "test-base": "cd packages/dev/base && npm run test:coverage",
         "test-occt": "cd packages/dev/occt && npm run test:coverage",
@@ -36,7 +37,8 @@
         "check:worker-api": "node scripts/gen-worker-api.mjs --check",
         "gen:inputs": "node scripts/gen-inputs.mjs",
         "check:inputs": "node scripts/gen-inputs.mjs --check",
-        "test": "npm run check:references && npm run check:exports && npm run check:inputs && npm run check:worker-api && npm run check:worker-parity && npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs && npm run test-playcanvas && npm run test-babylonjs && npm run test-occt-worker && npm run test-jscad-worker && npm run test-manifold-worker",
+        "check:draw-parity": "node scripts/check-draw-parity.mjs",
+        "test": "npm run check:references && npm run check:exports && npm run check:inputs && npm run check:draw-parity && npm run check:worker-api && npm run check:worker-parity && npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs && npm run test-playcanvas && npm run test-babylonjs && npm run test-occt-worker && npm run test-jscad-worker && npm run test-manifold-worker",
         "test:report": "node scripts/test-report.mjs --expect \"packages/dev/*\" --baseline packages/dev/coverage-baseline.json --logo docs/static/img/logo-gold-small.png",
         "check:coverage-baseline": "node scripts/coverage-baseline.mjs",
         "coverage-baseline:save": "node scripts/coverage-baseline.mjs --save",
@@ -48,9 +50,15 @@
         "api:update": "pnpm -r run api:update",
         "check:tarballs": "node scripts/check-tarballs.mjs",
         "check:openapi": "node scripts/check-openapi.mjs",
+        "check:advisories": "node scripts/check-advisories.mjs",
         "kernels:fetch": "node scripts/fetch-kernels.mjs",
         "kernels:check": "node scripts/fetch-kernels.mjs --check",
-        "publish:packages": "node scripts/publish-packages.mjs"
+        "publish:packages": "node scripts/publish-packages.mjs",
+        "examples:status": "cd examples && node scripts/local.mjs status",
+        "examples:link": "cd examples && node scripts/local.mjs link",
+        "examples:unlink": "cd examples && node scripts/local.mjs unlink",
+        "examples:dev": "cd examples && node scripts/local.mjs dev",
+        "examples:build": "cd examples && node scripts/local.mjs build"
     },
     "repository": {
         "type": "git",
@@ -84,6 +92,6 @@
         "tsc-baseline": "2.1.0",
         "typescript": "5.9.3",
         "typescript-eslint": "8.69.0",
-        "vitest": "4.1.7"
+        "vitest": "4.1.11"
     }
 }

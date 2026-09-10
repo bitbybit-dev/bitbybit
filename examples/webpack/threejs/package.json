@@ -1,29 +1,33 @@
 {
-  "name": "threejs",
-  "version": "1.2.0-rc.1",
-  "description": "",
-  "private": true,
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
-    "start": "webpack serve"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@bitbybit-dev/threejs": "1.2.0-rc.1",
-    "lil-gui": "0.20.0"
-  },
-  "devDependencies": {
-    "@types/three": "0.185.0",
-    "copy-webpack-plugin": "^14.0.0",
-    "file-loader": "6.2.0",
-    "html-webpack-plugin": "5.6.3",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.6.3",
-    "webpack": "^5.96.1",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0"
-  }
+    "name": "threejs",
+    "version": "1.2.0-rc.1",
+    "description": "",
+    "private": true,
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "webpack",
+        "start": "webpack serve"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@bitbybit-dev/threejs": "1.2.0-rc.1",
+        "lil-gui": "0.20.0"
+    },
+    "devDependencies": {
+        "@types/three": "0.185.0",
+        "copy-webpack-plugin": "^14.0.0",
+        "file-loader": "6.2.0",
+        "html-webpack-plugin": "5.6.3",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.6.3",
+        "webpack": "^5.96.1",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^5.1.0"
+    },
+    "overrides": {
+        "qs": "^6.16.0",
+        "uuid": "^11.1.1"
+    }
 }

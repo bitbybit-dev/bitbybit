@@ -309,15 +309,35 @@ export class MockStandardMaterial extends MockMaterial {
     disableLighting = false;
 }
 
-export class MockMesh {
+/**
+ * A node that is deliberately not a mesh.
+ *
+ * The synchronous draw path skips its detect chain when the entity it was handed is already a
+ * `BABYLON.Mesh`, on the grounds that such an entity is being updated rather than drawn. A test for
+ * the node branch therefore needs something that is a node and is not a mesh, which the mesh mock
+ * cannot be.
+ */
+export class MockTransformNode {
     name: string;
+    id: string;
+    metadata: Record<string, unknown> | null = null;
+    isPickable = true;
+    constructor(name: string) {
+        this.name = name;
+        this.id = name;
+    }
+    getChildMeshes(): MockMesh[] { return []; }
+    dispose(): void { /* nothing to release in a mock */ }
+}
+
+export class MockMesh extends MockTransformNode {
     children: MockMesh[] = [];
     material: MockMaterial | null = null;
     isVisible = true;
-    isPickable = true;
+    override isPickable = true;
     position: MockVector3 = new MockVector3();
     scaling: MockVector3 = new MockVector3(1, 1, 1);
-    metadata: MockMeshMetadata | null = null;
+    override metadata: MockMeshMetadata | null = null;
     _vertexData: MockVertexData | null = null;
     edgesWidth = 0;
     edgesColor: MockColor4 | null = null;
@@ -325,7 +345,7 @@ export class MockMesh {
     _edgesRendering = false;
     
     constructor(name: string, scene?: MockScene | null) {
-        this.name = name;
+        super(name);
         // Make _parent and _scene non-enumerable to avoid circular reference in JSON serialization
         Object.defineProperty(this, "_parent", {
             value: null,
@@ -367,7 +387,7 @@ export class MockMesh {
         }
     }
     
-    dispose() {
+    override dispose() {
         // Remove from parent
         const parent = this._parent;
         if (parent) {
@@ -398,7 +418,7 @@ export class MockMesh {
         return this.children;
     }
     
-    getChildMeshes(): MockMesh[] {
+    override getChildMeshes(): MockMesh[] {
         // Recursively get all child meshes including instances
         const result: MockMesh[] = [];
         this.children.forEach(child => {
@@ -559,6 +579,7 @@ export function createBabylonJSMock() {
         PBRMaterial: MockPBRMetallicRoughnessMaterial,
         StandardMaterial: MockStandardMaterial,
         Mesh: MockMesh,
+        TransformNode: MockTransformNode,
         InstancedMesh: MockInstancedMesh,
         LinesMesh: MockLinesMesh,
         GreasedLineMesh: MockGreasedLineMesh,

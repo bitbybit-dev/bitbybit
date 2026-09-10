@@ -142,13 +142,21 @@ Three things leave this repository and cannot be taken back:
 3. **The dotted API paths** - which downstream tools store as stable identifiers, in data this
    repository never sees and cannot migrate.
 
-The third is why some code here cannot be "corrected". A signature that returns a mesh where it has
-nothing to draw, an input type that is the union of three unrelated shape kinds, an API that tolerates
-values its types say cannot occur: each of those is load-bearing, because narrowing or widening it
-changes what an already-stored reference resolves to.
+The third is why some code here cannot be "corrected" on a whim. An input type that is the union of
+three unrelated shape kinds, an API that tolerates values its types say cannot occur: narrowing or
+widening either changes what an already-stored reference resolves to.
 
 The practical rule: **internals are free, the surface is not.** Refactor freely behind the API;
 changing what the declarations say is a release decision, not a code-review one.
+
+A signature that returns a scene object where it has nothing to draw used to be listed here as
+another of those. It was not load-bearing, it was a lie, and being unable to distinguish the two is
+what let it stand: the drawing entry points declared a mesh and returned a tag, an overlay or nothing
+at all through a double cast, and every layer above paid for it with casts of its own. It has been
+corrected - `drawAnyAsync` and `drawAny` now derive what they return from the entity they were
+given - which is a release decision, taken as one, in the window a release candidate exists for. The distinction worth keeping is the one that paragraph blurred: a
+persisted *dotted path* cannot move, and a *type* that never described what the code does was never
+the contract.
 
 ## Building and checking
 

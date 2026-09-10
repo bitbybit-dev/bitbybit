@@ -85,10 +85,10 @@
     },
     "homepage": "https://bitbybit.dev",
     "devDependencies": {
-        "@vitest/coverage-v8": "4.1.7",
+        "@vitest/coverage-v8": "4.1.11",
         "openapi-typescript": "7.13.0",
         "typescript": "5.9.3",
-        "vitest": "4.1.7"
+        "vitest": "4.1.11"
     },
     "dependencies": {
         "@cfworker/json-schema": "4.1.1"
