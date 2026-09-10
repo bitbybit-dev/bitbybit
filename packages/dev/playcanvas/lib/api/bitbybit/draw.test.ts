@@ -2002,7 +2002,7 @@ describe("Draw unit tests", () => {
         const drawnAt = [[2, 3, 0], [3, 3, 0], [3, 4, 0], [2, 4, 0], [2, 3, 0]];
 
         it("should stamp the path kind rather than the polyline kind it is drawn through", () => {
-            const res = draw.drawAny({ entity: movedSquare });
+            const res = draw.drawAny({ entity: movedSquare }) as DrawnEntity;
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadPath);
         });
 
