@@ -29,12 +29,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # pnpm's version comes from the packageManager field; Node's from .tool-versions, the one pin
       # mise and asdf read on a developer's machine as well.
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .tool-versions
           cache: pnpm
@@ -45,7 +45,7 @@ jobs:
       # the occt package names them with their SHA-256 and where they are published, and the fetch
       # verifies what is present and downloads what is not. Cached on the manifest's hash so a
       # rebuild, and only a rebuild, downloads again.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           key: occt-kernels-${{ hashFiles('packages/dev/occt/kernels.json') }}
           path: packages/dev/occt/bitbybit-dev-occt*/*.wasm
