@@ -85,7 +85,7 @@
     },
     "homepage": "https://bitbybit.dev",
     "devDependencies": {
-        "@vitest/coverage-v8": "4.1.11",
+        "@vitest/coverage-v8": "5.0.0",
         "openapi-typescript": "7.13.0",
         "typescript": "5.9.3",
         "vitest": "4.1.11"

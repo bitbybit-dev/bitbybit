@@ -178,7 +178,7 @@
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.0",
         "@types/earcut": "3.0.0",
-        "@vitest/coverage-v8": "4.1.11",
+        "@vitest/coverage-v8": "5.0.0",
         "jsdom": "29.0.1",
         "shx": "0.4.0",
         "typescript": "5.9.3",
