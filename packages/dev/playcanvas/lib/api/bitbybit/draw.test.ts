@@ -1485,6 +1485,28 @@ describe("Draw unit tests", () => {
             expect(res.text).toBe("Second");
             expect(res.bitbybitMeta?.type).toBe(Inputs.Draw.drawingTypes.tag);
         });
+
+        it("should hand the tags already on screen to the tag api as the ones to update, and a first draw none", () => {
+            // Arrange
+            const tagsEntity = [tagNamed("Tag 1", [0, 0, 0]), tagNamed("Tag 2", [1, 1, 1])];
+            const alreadyOnScreen: unknown = draw.drawAny({ entity: tagsEntity });
+            const group = alreadyOnScreen as pc.Entity;
+            const realDrawTags = Tag.prototype.drawTags.bind(tag);
+            const readAsTheCallIsMade: (Inputs.Tag.TagDto[] | undefined)[] = [];
+            vi.spyOn(tag, "drawTags").mockImplementation((inputs) => {
+                readAsTheCallIsMade.push(inputs.tagsVariable);
+                return realDrawTags(inputs);
+            });
+
+            // Act
+            draw.drawAny({ entity: tagsEntity, group });
+            draw.drawAny({ entity: [tagNamed("Tag 3", [2, 2, 2])] });
+
+            // Assert
+            expect(readAsTheCallIsMade[0]).toBe(alreadyOnScreen);
+            expect(readAsTheCallIsMade[1]).toBeUndefined();
+            vi.restoreAllMocks();
+        });
     });
 
     describe("UpdateAny through group userData", () => {
@@ -1991,6 +2013,45 @@ describe("Draw unit tests", () => {
     });
 
 
+    describe("Draw decomposed meshes", () => {
+        const asMesh = (entity: unknown): Inputs.OCCT.DecomposedMeshDto => entity as Inputs.OCCT.DecomposedMeshDto;
+        const asMeshes = (entity: unknown): Inputs.OCCT.DecomposedMeshDto[] => entity as Inputs.OCCT.DecomposedMeshDto[];
+
+        it("should draw a decomposed mesh handed in directly", async () => {
+            // Arrange
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: asMesh(mockOCCTBoxDecomposedMesh()), options }) as DrawnEntity;
+
+            // Assert
+            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occt);
+        });
+
+        it("should draw a list of decomposed meshes into one container", async () => {
+            // Arrange
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: asMeshes([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]), options });
+
+            // Assert
+            expect(res.name).toBe("decomposedMeshesContainer");
+            expect(res.children).toHaveLength(2);
+        });
+
+        it("should add the container of decomposed meshes to the scene the first one landed in", async () => {
+            // Arrange
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: asMeshes([mockOCCTBoxDecomposedMesh()]), options });
+
+            // Assert
+            expect(res.parent).not.toBeNull();
+        });
+    });
+
     describe("a JSCAD path survives being drawn again through its own handle", () => {
 
         const movedSquare: Inputs.JSCAD.JSCADPath2 = {
@@ -2018,6 +2079,100 @@ describe("Draw unit tests", () => {
             const spy = vi.spyOn(draw.drawHelper, "drawPolylineClose");
             draw.drawAny({ entity: movedSquare, group: res });
             expect(spy.mock.calls[0]![0].polyline.points).toEqual(drawnAt);
+            spy.mockRestore();
+        });
+    });
+
+    describe("the async table asks its own check again, instead of asserting the entity it was handed", () => {
+
+        const wouldOtherwiseDrawAPoint: Inputs.Base.Point3 = [0, 0, 0];
+        const wouldOtherwiseDrawPoints: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1]];
+
+        it("should consult the check twice and draw nothing at all when the second answer disagrees", async () => {
+            // Arrange
+            const detect = vi.spyOn(draw, "detectJscadMesh");
+            detect.mockReturnValueOnce(true).mockReturnValue(false);
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: wouldOtherwiseDrawAPoint });
+
+            // Assert
+            expect(detect.mock.calls.length).toBeGreaterThan(1);
+            expect(res).toBeUndefined();
+            detect.mockRestore();
+        });
+
+        it("should do the same for the list entry, which carries the same guard", async () => {
+            // Arrange
+            const detect = vi.spyOn(draw, "detectJscadMeshes");
+            detect.mockReturnValueOnce(true).mockReturnValue(false);
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: wouldOtherwiseDrawPoints });
+
+            // Assert
+            expect(detect.mock.calls.length).toBeGreaterThan(1);
+            expect(res).toBeUndefined();
+            detect.mockRestore();
+        });
+    });
+
+    describe("the draw input carries only what it was handed", () => {
+
+        it("should leave the scene handle unset when it is not passed", () => {
+            // Act
+            const inputs = new Inputs.Draw.DrawAny<pc.Entity>([0, 0, 0]);
+
+            // Assert
+            expect(inputs.entity).toStrictEqual([0, 0, 0]);
+            expect(inputs.group).toBeUndefined();
+        });
+
+        it("should keep a scene handle it is passed", () => {
+            // Arrange
+            const handle = new pc.Entity("handle");
+
+            // Act
+            const inputs = new Inputs.Draw.DrawAny<pc.Entity>([0, 0, 0], new Inputs.Draw.DrawBasicGeometryOptions(), handle);
+
+            // Assert
+            expect(inputs.group).toBe(handle);
+        });
+    });
+
+    describe("a list of JSCAD paths draws as a list of polylines", () => {
+
+        const movedSquare: Inputs.JSCAD.JSCADPath2 = {
+            points: [[0, 0], [1, 0], [1, 1], [0, 1]],
+            isClosed: true,
+            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 3, 0, 1],
+        };
+
+        const openCorner: Inputs.JSCAD.JSCADPath2 = {
+            points: [[0, 0], [1, 0], [1, 1]],
+            isClosed: false,
+            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -4, 0, 0, 1],
+        };
+
+        const drawnAt = [[[2, 3, 0], [3, 3, 0], [3, 4, 0], [2, 4, 0], [2, 3, 0]], [[-4, 0, 0], [-3, 0, 0], [-3, 1, 0]]];
+
+        it("should stamp the plural kind, not the one a single path gets", () => {
+            const res = draw.drawAny({ entity: [movedSquare, openCorner] }) as DrawnEntity;
+            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadPaths);
+        });
+
+        it("should draw each path where its own transforms put it, closing only the closed one", () => {
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylinesWithColours");
+            draw.drawAny({ entity: [movedSquare, openCorner] });
+            expect(spy.mock.calls[0]![0].polylines.map((polyline) => polyline.points)).toEqual(drawnAt);
+            spy.mockRestore();
+        });
+
+        it("should draw the same points again when handed back its own handle", () => {
+            const res = draw.drawAny({ entity: [movedSquare, openCorner], options: { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true } });
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylinesWithColours");
+            draw.drawAny({ entity: [movedSquare, openCorner], group: res });
+            expect(spy.mock.calls[0]![0].polylines.map((polyline) => polyline.points)).toEqual(drawnAt);
             spy.mockRestore();
         });
     });

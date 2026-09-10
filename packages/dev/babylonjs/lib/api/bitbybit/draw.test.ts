@@ -2705,6 +2705,21 @@ describe("Draw unit tests", () => {
             expect(result.level).toBe(1);
         });
 
+        it("should fall back to a scale of one when it is handed a zero it cannot draw with", () => {
+            // Arrange
+            const inputs = new Inputs.Draw.GenericTextureDto();
+            inputs.url = "test.png";
+            inputs.uScale = 0;
+            inputs.vScale = 0;
+
+            // Act
+            const result = draw.createTexture(inputs);
+
+            // Assert
+            expect(result.uScale).toBe(1);
+            expect(result.vScale).toBe(1);
+        });
+
         it("should create texture with custom properties", () => {
             // Arrange
             const inputs = new Inputs.Draw.GenericTextureDto();
@@ -2894,6 +2909,165 @@ describe("Draw unit tests", () => {
 
             // Assert
             expect(drawn).toHaveBeenCalledWith(expect.objectContaining({ polyline: { points: drawnAt } }));
+        });
+    });
+
+    describe("the async table asks its own check again, instead of asserting the entity it was handed", () => {
+
+        const wouldOtherwiseDrawAPoint: Inputs.Base.Point3 = [0, 0, 0];
+        const wouldOtherwiseDrawPoints: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1]];
+
+        it("should consult the check twice and draw nothing at all when the second answer disagrees", async () => {
+            // Arrange
+            const detect = vi.spyOn(draw, "detectJscadMesh");
+            detect.mockReturnValueOnce(true).mockReturnValue(false);
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: wouldOtherwiseDrawAPoint });
+
+            // Assert
+            expect(detect.mock.calls.length).toBeGreaterThan(1);
+            expect(res).toBeUndefined();
+            detect.mockRestore();
+        });
+
+        it("should do the same for the list entry, which carries the same guard", async () => {
+            // Arrange
+            const detect = vi.spyOn(draw, "detectJscadMeshes");
+            detect.mockReturnValueOnce(true).mockReturnValue(false);
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: wouldOtherwiseDrawPoints });
+
+            // Assert
+            expect(detect.mock.calls.length).toBeGreaterThan(1);
+            expect(res).toBeUndefined();
+            detect.mockRestore();
+        });
+    });
+
+    describe("a list of JSCAD paths draws as a list of polylines", () => {
+
+        const movedSquare: Inputs.JSCAD.JSCADPath2 = {
+            points: [[0, 0], [1, 0], [1, 1], [0, 1]],
+            isClosed: true,
+            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 3, 0, 1],
+        };
+
+        const openCorner: Inputs.JSCAD.JSCADPath2 = {
+            points: [[0, 0], [1, 0], [1, 1]],
+            isClosed: false,
+            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -4, 0, 0, 1],
+        };
+
+        const drawnAt = [[[2, 3, 0], [3, 3, 0], [3, 4, 0], [2, 4, 0], [2, 3, 0]], [[-4, 0, 0], [-3, 0, 0], [-3, 1, 0]]];
+
+        it("should stamp the plural kind, not the one a single path gets", () => {
+            // Arrange
+            const mockMesh = createMockMesh("jscad-paths");
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
+
+            // Act
+            const res = draw.drawAny({ entity: [movedSquare, openCorner] });
+
+            // Assert
+            expect(res.metadata.type).toBe(Inputs.Draw.drawingTypes.jscadPaths);
+        });
+
+        it("should draw each path where its own transforms put it, closing only the closed one", () => {
+            // Arrange
+            const mockMesh = createMockMesh("jscad-paths");
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
+            const drawn = vi.spyOn(mockDrawHelper, "drawPolylinesWithColours");
+
+            // Act
+            draw.drawAny({ entity: [movedSquare, openCorner] });
+
+            // Assert
+            expect(drawn).toHaveBeenCalledWith(expect.objectContaining({
+                polylines: [{ points: drawnAt[0] }, { points: drawnAt[1] }],
+            }));
+            drawn.mockRestore();
+        });
+
+        it("should draw the same points again when handed back its own handle", () => {
+            // Arrange
+            const mockMesh = createMockMesh("jscad-paths");
+            mockMesh.metadata = { type: Inputs.Draw.drawingTypes.jscadPaths, options: {} };
+            mockDrawHelper.drawPolylinesWithColours = vi.fn().mockReturnValue(mockMesh);
+            const drawn = vi.spyOn(mockDrawHelper, "drawPolylinesWithColours");
+
+            // Act
+            draw.drawAny({ entity: [movedSquare, openCorner], babylonMesh: mockMesh });
+
+            // Assert
+            expect(drawn).toHaveBeenCalledWith(expect.objectContaining({
+                polylines: [{ points: drawnAt[0] }, { points: drawnAt[1] }],
+            }));
+            drawn.mockRestore();
+        });
+    });
+
+    describe("what a drawn node hands to the metadata step", () => {
+
+        const nodeWhoseTriadAppearsOnDraw = (already: BABYLON.AbstractMesh, added: BABYLON.AbstractMesh): BABYLON.TransformNode => {
+            const node = new BABYLON.TransformNode("node-1", mockScene);
+            node.getChildMeshes = vi.fn().mockReturnValueOnce([already]).mockReturnValue([already, added]);
+            return node;
+        };
+
+        it("should hand it only the meshes the draw put there, not ones the caller had already parented", () => {
+            // Arrange
+            const alreadyParented = createMockMesh("already-parented");
+            const axis = createMockMesh("axis");
+            const node = nodeWhoseTriadAppearsOnDraw(alreadyParented, axis);
+            const metadataStep = vi.spyOn(draw as any, "applyNodeSettingsAndMetadata");
+
+            // Act
+            draw.drawAny({ entity: node });
+
+            // Assert
+            expect(metadataStep).toHaveBeenCalledWith(Inputs.Draw.drawingTypes.node, expect.anything(), node, [axis]);
+            metadataStep.mockRestore();
+        });
+
+        it("should do the same for every node of a list, each measured against its own children", () => {
+            // Arrange
+            const alreadyParented = createMockMesh("already-parented");
+            const axis = createMockMesh("axis");
+            const node = nodeWhoseTriadAppearsOnDraw(alreadyParented, axis);
+            const metadataStep = vi.spyOn(draw as any, "applyNodeSettingsAndMetadata");
+
+            // Act
+            draw.drawAny({ entity: [node] });
+
+            // Assert
+            expect(metadataStep).toHaveBeenCalledWith(Inputs.Draw.drawingTypes.nodes, expect.anything(), node, [axis]);
+            metadataStep.mockRestore();
+        });
+    });
+
+    describe("a list of scene nodes is told apart by what the engine says they are", () => {
+
+        it("should detect a list of transform nodes", () => {
+            // Arrange
+            const nodes = [new BABYLON.TransformNode("node-1", mockScene), new BABYLON.TransformNode("node-2", mockScene)];
+
+            // Assert
+            expect(draw.detectNodes(nodes)).toBe(true);
+        });
+
+        it("should not detect a list only some of which are nodes", () => {
+            // Arrange
+            const mixed = [new BABYLON.TransformNode("node-1", mockScene), { id: "looks-like-a-node" }];
+
+            // Assert
+            expect(draw.detectNodes(mixed)).toBe(false);
+        });
+
+        it("should not detect an empty list, because every element of one vacuously matches", () => {
+            // Assert
+            expect(draw.detectNodes([])).toBe(false);
         });
     });
 

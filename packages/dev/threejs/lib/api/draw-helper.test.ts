@@ -1339,7 +1339,53 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
+    describe("what a redrawn list of polylines releases", () => {
+        const listInputs = (points: Inputs.Base.Point3[]) => ({
+            polylines: [{ points, isClosed: false }],
+            updatable: true,
+            size: 2,
+            opacity: 1,
+            colours: "#ff0000",
+        });
+
+        it("should leave a child that is not a line where it is when it replaces the drawing", () => {
+            // Arrange
+            const drawn = drawHelper.drawPolylinesWithColours(listInputs([[0, 0, 0], [1, 0, 0]]));
+            const lineItDrew = drawn.children[0] as LineSegments2;
+            const callersOwnChild = new THREEJS.Mesh(new THREEJS.BufferGeometry(), new THREEJS.MeshBasicMaterial());
+            drawn.add(callersOwnChild);
+            const releasedCallersOwn = vi.spyOn(callersOwnChild.geometry, "dispose");
+            const releasedLineItDrew = vi.spyOn(lineItDrew.geometry, "dispose");
+            const aDifferentPointCountForcesANewLine = listInputs([[0, 0, 0], [1, 0, 0], [2, 2, 2]]);
+
+            // Act
+            drawHelper.drawPolylinesWithColours({ ...aDifferentPointCountForcesANewLine, polylinesMesh: drawn });
+
+            // Assert
+            expect(releasedLineItDrew).toHaveBeenCalled();
+            expect(releasedCallersOwn).not.toHaveBeenCalled();
+            releasedCallersOwn.mockRestore();
+            releasedLineItDrew.mockRestore();
+        });
+    });
+
     describe("drawPolyline (internal)", () => {
+        it("should leave a child that is not a line where it is when it replaces the drawing", () => {
+            // Arrange
+            const mesh = new THREEJS.Group();
+            const callersOwnChild = new THREEJS.Mesh(new THREEJS.BufferGeometry(), new THREEJS.MeshBasicMaterial());
+            mesh.add(callersOwnChild);
+            const released = vi.spyOn(callersOwnChild.geometry, "dispose");
+
+            // Act
+            const result = drawHelper.drawPolyline(mesh, [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[], false, 2, 1, "#ff0000");
+
+            // Assert
+            expect(released).not.toHaveBeenCalled();
+            expect(result.children.length).toBe(1);
+            released.mockRestore();
+        });
+
         it("should create new polyline when mesh is undefined", () => {
             const points: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1], [2, 0, 0]];
 
@@ -2687,6 +2733,46 @@ describe("DrawHelper unit tests", () => {
 
             // Assert
             expect(drawHelper.isDisposed()).toBe(true);
+        });
+
+        const drawnPolylineMaterial = (): THREEJS.Material => {
+            const inputs = new Inputs.Polyline.DrawPolylineDto<THREEJS.Group>(
+                { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] as Inputs.Base.Point3[], isClosed: false },
+                1,
+                "#00ff00",
+                2
+            );
+            const drawn = drawHelper.drawPolylineClose(inputs);
+            return (drawn.children[0] as LineSegments2).material;
+        };
+
+        it("should carry on disposing when a line material refuses", () => {
+            // Arrange
+            const warned: unknown[] = [];
+            vi.spyOn(console, "warn").mockImplementation((message: unknown) => { warned.push(message); });
+            drawnPolylineMaterial().dispose = () => { throw new Error("already gone"); };
+
+            // Act
+            drawHelper.dispose();
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(true);
+            expect(warned.length).toBeGreaterThan(0);
+        });
+
+        it("should let go of a line material that has no dispose at all", () => {
+            // Arrange
+            const warned: unknown[] = [];
+            vi.spyOn(console, "warn").mockImplementation((message: unknown) => { warned.push(message); });
+            const material: { dispose?: () => void } = drawnPolylineMaterial();
+            Object.defineProperty(material, "dispose", { value: undefined, configurable: true });
+
+            // Act
+            drawHelper.dispose();
+
+            // Assert
+            expect(drawHelper.isDisposed()).toBe(true);
+            expect(warned).toStrictEqual([]);
         });
 
         it("should carry on disposing when one material refuses", async () => {

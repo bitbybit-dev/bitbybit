@@ -1695,4 +1695,110 @@ describe("Draw unit tests", () => {
         });
     });
 
+    describe("the async table asks its own check again, instead of asserting the entity it was handed", () => {
+
+        const wouldOtherwiseDrawAPoint: Inputs.Base.Point3 = [0, 0, 0];
+        const wouldOtherwiseDrawPoints: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1]];
+
+        it("should consult the check twice and draw nothing at all when the second answer disagrees", async () => {
+            // Arrange
+            const detect = vi.spyOn(draw, "detectJscadMesh");
+            detect.mockReturnValueOnce(true).mockReturnValue(false);
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: wouldOtherwiseDrawAPoint });
+
+            // Assert
+            expect(detect.mock.calls.length).toBeGreaterThan(1);
+            expect(res).toBeUndefined();
+            detect.mockRestore();
+        });
+
+        it("should do the same for the list entry, which carries the same guard", async () => {
+            // Arrange
+            const detect = vi.spyOn(draw, "detectJscadMeshes");
+            detect.mockReturnValueOnce(true).mockReturnValue(false);
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: wouldOtherwiseDrawPoints });
+
+            // Assert
+            expect(detect.mock.calls.length).toBeGreaterThan(1);
+            expect(res).toBeUndefined();
+            detect.mockRestore();
+        });
+    });
+
+    describe("the draw input carries only what it was handed", () => {
+
+        it("should leave the scene handle unset when it is not passed", () => {
+            // Act
+            const inputs = new Inputs.Draw.DrawAny<Group>([0, 0, 0]);
+
+            // Assert
+            expect(inputs.entity).toStrictEqual([0, 0, 0]);
+            expect(inputs.group).toBeUndefined();
+        });
+
+        it("should keep every option the shape dto is handed, down to the last of the twenty six", () => {
+            // Act
+            const everyOne = new Inputs.Draw.DrawOcctShapeOptions(
+                0.5, 0.6, "#111111", undefined, "#222222", 3, true, true, true, "#333333", 2, 0.01,
+                true, 0.2, "#444444", true, 0.3, "#555555", true, "#666666", 0.7, 4, 25, true, true, true);
+
+            // Assert
+            expect(everyOne.keepMeshData).toBe(true);
+            expect(everyOne.allowQualityDecrease).toBe(true);
+            expect(everyOne.forceFaceDeflection).toBe(true);
+        });
+
+        it("should keep a scene handle it is passed", () => {
+            // Arrange
+            const handle = new Group();
+
+            // Act
+            const inputs = new Inputs.Draw.DrawAny<Group>([0, 0, 0], new Inputs.Draw.DrawBasicGeometryOptions(), handle);
+
+            // Assert
+            expect(inputs.group).toBe(handle);
+        });
+    });
+
+    describe("a list of JSCAD paths draws as a list of polylines", () => {
+
+        const movedSquare: Inputs.JSCAD.JSCADPath2 = {
+            points: [[0, 0], [1, 0], [1, 1], [0, 1]],
+            isClosed: true,
+            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 3, 0, 1],
+        };
+
+        const openCorner: Inputs.JSCAD.JSCADPath2 = {
+            points: [[0, 0], [1, 0], [1, 1]],
+            isClosed: false,
+            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -4, 0, 0, 1],
+        };
+
+        const drawnAt = [[[2, 3, 0], [3, 3, 0], [3, 4, 0], [2, 4, 0], [2, 3, 0]], [[-4, 0, 0], [-3, 0, 0], [-3, 1, 0]]];
+
+        it("should stamp the plural kind, not the one a single path gets", () => {
+            const res = draw.drawAny({ entity: [movedSquare, openCorner] });
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadPaths);
+        });
+
+        it("should draw each path where its own transforms put it, closing only the closed one", () => {
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylinesWithColours");
+            draw.drawAny({ entity: [movedSquare, openCorner] });
+            expect(spy.mock.calls[0]![0].polylines.map((polyline) => polyline.points)).toEqual(drawnAt);
+            spy.mockRestore();
+        });
+
+        it("should draw the same points again when handed back its own handle", () => {
+            const res = draw.drawAny({ entity: [movedSquare, openCorner], options: { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true } });
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylinesWithColours");
+            draw.drawAny({ entity: [movedSquare, openCorner], group: res });
+            expect(spy.mock.calls[0]![0].polylines.map((polyline) => polyline.points)).toEqual(drawnAt);
+            spy.mockRestore();
+        });
+    });
+
 });
