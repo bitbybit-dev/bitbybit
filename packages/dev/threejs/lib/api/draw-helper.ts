@@ -8,6 +8,9 @@ import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as THREEJS from "three";
+import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
+import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
 
 export class DrawHelper extends DrawHelperCore {
@@ -15,6 +18,7 @@ export class DrawHelper extends DrawHelperCore {
     private readonly materialCache = new Map<string, THREEJS.MeshPhysicalMaterial>();
 
     private readonly unlitMaterialCache = new Map<string, THREEJS.MeshBasicMaterial>();
+    private readonly lineMaterialCache = new Map<string, LineMaterial>();
 
     private entityIdCounter = 0;
     private readonly instanceId = `three-${Date.now()}`;
@@ -35,7 +39,7 @@ export class DrawHelper extends DrawHelperCore {
      * @returns True if disposed, false otherwise
      */
     public isDisposed(): boolean {
-        return this.materialCache.size === 0 && this.unlitMaterialCache.size === 0;
+        return this.materialCache.size === 0 && this.unlitMaterialCache.size === 0 && this.lineMaterialCache.size === 0;
     }
 
     /**
@@ -64,6 +68,17 @@ export class DrawHelper extends DrawHelperCore {
             }
         });
         this.unlitMaterialCache.clear();
+
+        this.lineMaterialCache.forEach((material, key) => {
+            try {
+                if (material.dispose) {
+                    material.dispose();
+                }
+            } catch (error) {
+                console.warn(`Error disposing line material ${key}:`, error);
+            }
+        });
+        this.lineMaterialCache.clear();
 
         this.entityIdCounter = 0;
 
@@ -257,9 +272,9 @@ export class DrawHelper extends DrawHelperCore {
             return pts;
         });
 
-        let lineSegments: THREEJS.LineSegments | undefined;
+        let lineSegments: LineSegments2 | undefined;
         if (inputs.polylinesMesh && inputs.updatable) {
-            lineSegments = inputs.polylinesMesh.children[0] as THREEJS.LineSegments;
+            lineSegments = inputs.polylinesMesh.children[0] as LineSegments2;
         }
         const polylines = this.drawPolylines(
             lineSegments,
@@ -275,9 +290,8 @@ export class DrawHelper extends DrawHelperCore {
         if (inputs.polylinesMesh && inputs.updatable) {
             if (inputs.polylinesMesh.children[0]!.name !== polylines!.name) {
                 inputs.polylinesMesh.children.forEach(child => {
-                    if (child instanceof THREEJS.LineSegments) {
+                    if (child instanceof LineSegments2) {
                         child.geometry.dispose();
-                        (child.material as THREEJS.Material).dispose();
                     }
                 });
                 inputs.polylinesMesh.clear();
@@ -327,9 +341,9 @@ export class DrawHelper extends DrawHelperCore {
         pointsToDraw: Inputs.Base.Point3[],
         updatable: boolean, size: number, opacity: number, colours: string | string[],
         arrowSize = 0, arrowAngle = 30): THREEJS.Group {
-        let lineSegments: THREEJS.LineSegments | undefined;
+        let lineSegments: LineSegments2 | undefined;
         if (mesh && mesh.children.length > 0) {
-            lineSegments = mesh.children[0] as THREEJS.LineSegments;
+            lineSegments = mesh.children[0] as LineSegments2;
         }
         const polylines = this.drawPolylines(lineSegments, [pointsToDraw], updatable, size, opacity, colours, 
             Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize, arrowAngle);
@@ -338,6 +352,14 @@ export class DrawHelper extends DrawHelperCore {
             mesh.name = this.generateEntityId("polyline");
             mesh.add(polylines!);
             this.context.scene.add(mesh);
+        } else if (polylines && polylines !== lineSegments) {
+            mesh.children.forEach(child => {
+                if (child instanceof LineSegments2) {
+                    child.geometry.dispose();
+                }
+            });
+            mesh.clear();
+            mesh.add(polylines);
         }
         return mesh;
     }
@@ -664,7 +686,7 @@ export class DrawHelper extends DrawHelperCore {
         jscadMesh.applyMatrix4(matrix4);
     }
 
-    async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>) {
+    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>) {
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
@@ -774,7 +796,7 @@ export class DrawHelper extends DrawHelperCore {
                 return texts;
             });
             const textPolylines = await Promise.all(promises);
-            const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.edgeIndexColour);
+            const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, inputs.edgeIndexColour);
             shapeGroup.add(edgeMesh!);
         }
         if (inputs.drawFaceIndexes) {
@@ -803,13 +825,13 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
 
-            const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.faceIndexColour);
+            const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, inputs.faceIndexColour);
             faceMesh!.parent = shapeGroup;
         }
         return shapeGroup;
     }
 
-    async handleDecomposedMeshIndividually(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<THREEJS.Group> {
+    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<THREEJS.Group> {
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
@@ -898,7 +920,7 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    private drawPolylines(lineSegments: THREEJS.LineSegments | undefined, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
+    private drawPolylines(lineSegments: LineSegments2 | undefined, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
         size: number, _opacity: number, colours: string | string[], colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
         arrowSize = 0, arrowAngle = 30) {
         if (polylinesPoints && polylinesPoints.length > 0) {
@@ -938,14 +960,13 @@ export class DrawHelper extends DrawHelperCore {
                     });
                 }
             });
-            let lines: THREEJS.LineSegments;
+            let lines: LineSegments2;
 
             if (lineSegments && updatable) {
                 if (lineSegments?.userData?.["linesForRenderLengths"] === polylinesPoints.map(l => l.length).toString()) {
-                    lineSegments.geometry.clearGroups();
-                    lineSegments.geometry.setFromPoints(lineVertices);
-                    const lineColors = this.computePolylineColorsWithExplicit(polylineSegmentCounts, allColors);
-                    lineSegments.geometry.setAttribute("color", new THREEJS.Float32BufferAttribute(lineColors, 3));
+                    lineSegments.geometry.setPositions(DrawHelper.flattenVertices(lineVertices));
+                    lineSegments.geometry.setColors(this.computePolylineColorsWithExplicit(polylineSegmentCounts, allColors));
+                    lineSegments.material = this.getOrCreateLineMaterial(size);
                     return lineSegments;
                 } else {
                     lines = this.createLineGeometry(lineVertices, colours, size, polylineSegmentCounts, colorMapStrategy, allColors);
@@ -1021,8 +1042,6 @@ export class DrawHelper extends DrawHelperCore {
         colorMapStrategy: Inputs.Base.colorMapStrategyEnum = Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
         explicitColors?: string[]
     ) {
-        const lineGeometry = new THREEJS.BufferGeometry().setFromPoints(lineVertices);
-
         let lineColors: number[];
         if (explicitColors && explicitColors.length > 0) {
             lineColors = this.computePolylineColorsWithExplicit(polylineSegmentCounts, explicitColors);
@@ -1036,13 +1055,98 @@ export class DrawHelper extends DrawHelperCore {
             }
         }
 
-        lineGeometry.setAttribute("color", new THREEJS.Float32BufferAttribute(lineColors, 3));
-        const lineMaterial = new THREEJS.LineBasicMaterial({
-            color: 0xffffff, linewidth: size, vertexColors: true
-        });
-        const line = new THREEJS.LineSegments(lineGeometry, lineMaterial);
+        const geometry = new LineSegmentsGeometry();
+        geometry.setPositions(DrawHelper.flattenVertices(lineVertices));
+        geometry.setColors(lineColors);
+
+        const line = new LineSegments2(geometry, this.getOrCreateLineMaterial(size));
         line.name = this.generateEntityId("lines");
         return line;
+    }
+
+    /** What a `size` of 1 is worth in pixels of line width, chosen to match the BabylonJS layer. */
+    private static readonly LINE_WIDTH_PER_SIZE = 1 / 3;
+
+    /**
+     * The narrowest a drawn line is allowed to get, in pixels.
+     *
+     * Below one pixel the ribbon `LineSegments2` builds stops covering a pixel centre reliably and
+     * the line comes out broken or gone, because this material discards a fragment outside the
+     * ribbon rather than fading it - there is no coverage mask to resolve a partial pixel. That
+     * regime is easy to reach without meaning to: the library's own defaults scale to well under a
+     * pixel, `size` at 0.1 to a thirtieth of one.
+     *
+     * The floor is one pixel because that is what these lines were before they could carry a width
+     * at all - `LineBasicMaterial` ignores `linewidth` and WebGL draws every line exactly one pixel
+     * wide - so no scene drawn at a default gets thinner than it used to be, and a `size` set high
+     * enough to ask for more still gets it.
+     */
+    private static readonly LINE_WIDTH_MIN_PX = 1;
+
+    /**
+     * Decimal places a line width is rounded to for its cache key.
+     *
+     * The width is a float, so an unrounded key gives two widths that differ only in the last binary
+     * digit two materials that never hit. Rounding bounds the key space to the widths a scene can
+     * actually tell apart, which is what lets this cache have no eviction: a cached line material is
+     * referenced by every line drawn at that width, and nothing here tracks those, so freeing one on
+     * eviction would blank lines still in the scene. `dispose()` is the single owner instead.
+     */
+    private static readonly LINE_WIDTH_PRECISION = 3;
+
+    /**
+     * The flat position array `LineSegmentsGeometry` wants, from the vertices the polyline paths build.
+     * Written once because the create and update paths must lay out the same geometry - built twice,
+     * one of them drifts and the update silently writes a different shape than the draw did.
+     */
+    private static flattenVertices(lineVertices: THREEJS.Vector3[]): number[] {
+        const positions: number[] = [];
+        lineVertices.forEach((v) => positions.push(v.x, v.y, v.z));
+        return positions;
+    }
+
+    /**
+     * The material a drawn line gets its width from.
+     *
+     * `LineBasicMaterial` cannot carry a width: WebGL renders GL lines one pixel wide whatever
+     * `linewidth` says. Drawing through `LineSegments2` builds the line as ribbon geometry instead,
+     * which can be any width - so `size` finally means something here.
+     *
+     * The width is in pixels, scaled so the default reads like the same script drawn through the
+     * BabylonJS layer, and floored so it never lands in the sub-pixel regime `LINE_WIDTH_MIN_PX`
+     * describes. Matching that layer's units instead - world units at a hundredth of `size`, which
+     * is what it uses - was tried and does not survive: a hundredth of a small `size` is well under
+     * a pixel across, and Three draws a sub-pixel ribbon either broken or, with the coverage mask
+     * resolving it, so faint it disappears. BabylonJS's line shader holds a thin line together where
+     * this one cannot, so the weight is matched here rather than the unit.
+     *
+     * A pixel width also stays readable at any zoom, which is what an edge on a CAD model is for.
+     * The trade is that it does not thin out as a scene grows the way a world-unit width does.
+     *
+     * The viewport the width is measured against is not set here. `LineSegments2` writes the
+     * renderer's own viewport into the material before every frame, so a line is correct in a canvas
+     * that is not the window and stays correct across a resize without anything being redrawn.
+     * Setting it here as well would be overwritten before it was ever read.
+     *
+     * Colour comes from the geometry rather than the material, so one material serves every line of
+     * a given width and is cached and disposed with the rest.
+     */
+    private getOrCreateLineMaterial(size: number): LineMaterial {
+        const width = Math.max(DrawHelper.LINE_WIDTH_MIN_PX, size * DrawHelper.LINE_WIDTH_PER_SIZE);
+        const key = `line-${width.toFixed(DrawHelper.LINE_WIDTH_PRECISION)}`;
+
+        const cached = this.lineMaterialCache.get(key);
+        if (cached) {
+            return cached;
+        }
+
+        const material = new LineMaterial({
+            color: 0xffffff,
+            linewidth: width,
+            vertexColors: true,
+        });
+        this.lineMaterialCache.set(key, material);
+        return material;
     }
 
     private handleDecomposedManifold(
@@ -1311,7 +1415,7 @@ export class DrawHelper extends DrawHelperCore {
             if (pointCount === 0) return;
 
             const segments = pointCount > 1000 ? 1 : 6;
-            const geom = new THREEJS.SphereGeometry(size, segments, segments);
+            const geom = new THREEJS.SphereGeometry(size / 2, segments, segments);
 
             const instancedMesh = new THREEJS.InstancedMesh(geom, ms.material, pointCount);
             instancedMesh.name = this.generateEntityId(`points-${ms.hex}`);

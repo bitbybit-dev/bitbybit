@@ -643,7 +643,7 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
+    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
 
@@ -787,7 +787,7 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    async handleDecomposedMeshIndividually(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
+    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
 
@@ -955,8 +955,15 @@ export class DrawHelper extends DrawHelperCore {
 
     /**
      * Create a new polyline entity with explicit colors (for arrow support)
+     *
+     * The width is accepted and not applied. A polyline here is drawn as `pc.PRIMITIVE_LINES`, and
+     * WebGL renders a GL line one pixel wide whatever width is asked for - so the parameter is
+     * carried to keep this path's signature the same as its siblings', and named to say it is unused
+     * rather than to imply an effect. Honouring a width would mean building the line as
+     * camera-facing ribbon geometry with a shader to expand it, which PlayCanvas has no equivalent
+     * of; `packages/dev/playcanvas/CLAUDE.md` records what that would take.
      * @param linePositions - Line positions array
-     * @param size - Line width
+     * @param _size - Line width, not applied; see above
      * @param polylinePoints - Original polyline points for signature
      * @param segmentCounts - Number of segments per polyline/arrow
      * @param explicitColors - Explicit color for each polyline/arrow segment
@@ -1047,7 +1054,7 @@ export class DrawHelper extends DrawHelperCore {
      * @param existingEntity - Optional existing entity to update
      * @param polylinesPoints - Array of polylines
      * @param updatable - Whether to attempt updates
-     * @param size - Line width
+     * @param size - Line width. Not applied: a GL line is one pixel wide whatever this says.
      * @param opacity - Line opacity
      * @param colours - Line colors
      * @param colorMapStrategy - Strategy for mapping colors to polylines
@@ -1413,7 +1420,7 @@ export class DrawHelper extends DrawHelperCore {
             const instancedEntity = this.createInstancedSphereMesh(
                 this.generateEntityId(`points-${ms.hex}`, meshName),
                 ms.positions.map(p => ({ position: p.position, index: p.index })),
-                size,
+                size / 2,
                 segments,
                 ms.material
             );

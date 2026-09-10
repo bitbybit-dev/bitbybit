@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  js-yaml: ^4.3.2
+  js-yaml@4: ^4.3.2
 
 importers:
 

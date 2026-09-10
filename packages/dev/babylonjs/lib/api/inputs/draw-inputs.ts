@@ -20,13 +20,56 @@ export namespace Draw {
      */
     export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
     /**
-     * Everything a draw call will accept: points, vectors, lines, segments and polylines; Verb curves
-     * and surfaces; OCCT shape handles; tags; meshes from any kernel; and lists of any of them. This
-     * union is what makes one draw call able to render anything these packages produce without you
-     * having to say which kind it is.
+     * Everything a draw call will accept: points, lines, segments and polylines; Verb curves and
+     * surfaces; the handles the OCCT, Manifold and JSCAD kernels return; tags; a BabylonJS node, which draws as an axis triad; whatever a layer
+     * above these packages has taught the call to draw; and a list of any one of them. This union is
+     * what makes one draw call able to render anything these packages produce without you having to
+     * say which kind it is.
+     *
+     * The list arms are one per kind rather than a single list of the union, because that is what is
+     * true: drawing a list applies one set of options to one kind of thing, and every plural handler
+     * reads its list as homogeneous. A mixed list is not something this call can draw, and saying so
+     * here is what stops one being written.
+     *
+     * `Base.Vector3` is not listed and is still accepted: it is the same type as `Base.Point3`.
+     *
+     * `number[]` and `number[][]` are listed, and are the loosest members here on purpose. A point is
+     * the tuple `Base.Point3`, but the vector services are honestly `number[]` - they operate on a
+     * vector of any length - so every result of `vector.add`, `cross`, `lerp` and their siblings is a
+     * `number[]`, and drawing one is ordinary. Dropping these arms would narrow the union at the cost
+     * of making the library's own output undrawable without a cast.
      */
-    export type Entity = number[] | [number, number, number] | Base.Point3 | Base.Vector3 | Base.Line3  | Base.Segment3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.JSCAD.JSCADEntity | Inputs.OCCT.DecomposedMeshDto | Inputs.Tag.TagDto | { type: string, name?: string, entityName?: string } |
-       number[][] | Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Segment3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.JSCAD.JSCADEntity[] | Inputs.OCCT.DecomposedMeshDto[] | Inputs.Tag.TagDto[] | { type: string[], name?: string, entityName?: string } | { type: string, name?: string, entityName?: string }[];
+    export type Entity =
+        | number[]
+        | Base.Point3
+        | Base.Line3
+        | Base.Segment3
+        | Base.Polyline3
+        | Base.VerbCurve
+        | Base.VerbSurface
+        | Inputs.OCCT.TopoDSShapePointer
+        | Inputs.OCCT.DecomposedMeshDto
+        | Inputs.Manifold.ManifoldPointer
+        | Inputs.Manifold.CrossSectionPointer
+        | Inputs.JSCAD.JSCADEntity
+        | Inputs.Tag.TagDto
+        | CustomGeometryDrawable
+        | CustomOverlayDrawable
+        | BABYLON.TransformNode
+        | number[][]
+        | Base.Point3[]
+        | Base.Line3[]
+        | Base.Segment3[]
+        | Base.Polyline3[]
+        | Base.VerbCurve[]
+        | Base.VerbSurface[]
+        | Inputs.OCCT.TopoDSShapePointer[]
+        | Inputs.OCCT.DecomposedMeshDto[]
+        | Inputs.Manifold.ManifoldPointer[]
+        | Inputs.Manifold.CrossSectionPointer[]
+        | Inputs.JSCAD.JSCADEntity[]
+        | Inputs.Tag.TagDto[]
+        | BABYLON.TransformNode[];
 
     /**
      * Metadata a drawn tag carries so that handing it back updates it in place.
@@ -53,8 +96,70 @@ export namespace Draw {
      */
     export type DrawnTags = DrawnTag[] & { metadata?: DrawnTagMeta | undefined };
 
-    export class DrawAny {
-        constructor(entity?: Entity, options?: DrawOptions, babylonMesh?: BABYLON.Mesh | BABYLON.LinesMesh) {
+    /**
+     * What every drawn output has in common: it can be released. A layer above these packages that
+     * draws an overlay - a label, a dimension, a marker - hands back one of these rather than a
+     * mesh, because positioning something from the scene is not the same as being geometry in it.
+     */
+    export interface DrawnOverlay { dispose(): void }
+
+    /**
+     * A drawable a layer above these packages taught the draw call to render, drawn as geometry.
+     * `type` is the discriminant it is matched on, the same convention the kernels already follow
+     * at runtime with "occ-shape" and "manifold-shape".
+     */
+    export interface CustomGeometryDrawable { readonly type: string; readonly name: string }
+
+    /** The same, for a drawable that draws an overlay rather than geometry. */
+    export interface CustomOverlayDrawable { readonly type: string; readonly entityName: string }
+
+    /**
+     * Everything drawing can produce, for the dispatch that runs before the kind is known. A caller
+     * does know, and gets the one arm that applies through `Drawn`.
+     *
+     * The node arm is not the mesh arm: drawing a node draws an axis triad, which is a
+     * `TransformNode` and not geometry, and saying so is what lets that path return what it builds
+     * instead of asserting it is a mesh.
+     */
+    export type DrawnAny<T> = T | BABYLON.TransformNode | BABYLON.TransformNode[] | DrawnTag | DrawnTags | DrawnOverlay | undefined;
+
+    /**
+     * What drawing a particular entity resolves to.
+     *
+     * One call draws a dozen kinds of thing, and what comes back depends on which kind went in: a
+     * tag becomes the tag itself, because it renders as an HTML overlay positioned from the scene
+     * rather than as geometry in it; an overlay a host application resolves becomes a handle that
+     * only knows how to dispose itself; a node becomes the node, because drawing one draws an axis
+     * triad parented to it rather than replacing it with geometry; everything else becomes a mesh.
+     * Spelling that out here is what lets a caller use what it gets back without first narrowing a
+     * union it already knows the answer to.
+     *
+     * A mesh is matched before a node in the single-entity arms so that handing a drawn mesh back to
+     * update it in place still resolves to a mesh - `Mesh` extends `TransformNode`, so the node arm
+     * would otherwise swallow it and hand back the wider type. The list arms do not repeat that:
+     * there is no update path that takes a list, so a list of meshes is drawn as the list of nodes
+     * it is, and claiming a single mesh there would describe a result nothing can produce.
+     *
+     * An `E` that is not known - the whole `Entity` union, or an `any` - resolves to the union of
+     * every branch, which is the honest answer for a caller that does not know either.
+     *
+     * The empty-list arm is not decoration. `{ entity: [] }` infers `E` as `never[]`, and `never`
+     * satisfies every other branch, so without it a literal empty list types as drawn tags.
+     */
+    export type Drawn<E, T> =
+        E extends readonly unknown[]
+            ? ([E[number]] extends [never] ? undefined
+                : E[number] extends Inputs.Tag.TagDto ? DrawnTags
+                : E[number] extends BABYLON.TransformNode ? BABYLON.TransformNode[]
+                : T)
+            : E extends Inputs.Tag.TagDto ? DrawnTag
+            : E extends CustomOverlayDrawable ? DrawnOverlay
+            : E extends BABYLON.Mesh ? T
+            : E extends BABYLON.TransformNode ? BABYLON.TransformNode
+            : T;
+
+    export class DrawAny<E extends Entity = Entity> {
+        constructor(entity?: E, options?: DrawOptions, babylonMesh?: BABYLON.Mesh | BABYLON.LinesMesh) {
             if (entity !== undefined) { this.entity = entity; }
             if (options !== undefined) { this.options = options; }
             if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
@@ -63,7 +168,7 @@ export namespace Draw {
          * Entity to be drawn - can be a single or multiple points, lines, polylines, verb curves, verb surfaces, jscad meshes, jscad polygons, jscad paths, occt shapes, tags, nodes
          * @default undefined
          */
-        entity!: Entity;
+        entity!: E;
         /**
          * Options that help you control how your drawn objects look like. This property is optional. In order to pick the right option you need to know which entity you are going to draw. For example if you draw points, lines, polylines or jscad meshes you can use basic geometry options, but if you want to draw OCCT shapes, use OCCT options.
          * @default undefined
@@ -957,27 +1062,36 @@ export namespace Draw {
 
     /**
      * The kind of geometry a draw call detected, in singular and plural forms - point, line, node,
-     * polyline, Verb curve and surface, JSCAD mesh, and so on. Returned on drawn objects so you can
-     * tell what a handle refers to when updating or disposing it.
+     * polyline, Verb curve and surface, JSCAD mesh, and so on. Written onto a drawn object so that
+     * handing it back finds the handler that made it, and readable so you can tell what a handle
+     * refers to when updating or disposing it.
+     *
+     * The values are strings rather than ordinals, and the membership is the same in every renderer.
+     * As ordinals they were neither: the three renderers listed different kinds, so the same number
+     * meant a Manifold solid in one and a list of OCCT shapes in another, and a value written by one
+     * renderer read as a different kind in the next. A string says what it is wherever it is read.
      */
     export enum drawingTypes {
-        point,
-        points,
-        line,
-        lines,
-        node,
-        nodes,
-        polyline,
-        polylines,
-        verbCurve,
-        verbCurves,
-        verbSurface,
-        verbSurfaces,
-        jscadMesh,
-        jscadMeshes,
-        occt,
-        manifold,
-        tag,
-        tags,
+        point = "point",
+        points = "points",
+        line = "line",
+        lines = "lines",
+        node = "node",
+        nodes = "nodes",
+        polyline = "polyline",
+        polylines = "polylines",
+        verbCurve = "verbCurve",
+        verbCurves = "verbCurves",
+        verbSurface = "verbSurface",
+        verbSurfaces = "verbSurfaces",
+        jscadMesh = "jscadMesh",
+        jscadMeshes = "jscadMeshes",
+        jscadPath = "jscadPath",
+        jscadPaths = "jscadPaths",
+        occt = "occt",
+        occtShapes = "occtShapes",
+        manifold = "manifold",
+        tag = "tag",
+        tags = "tags",
     }
 }

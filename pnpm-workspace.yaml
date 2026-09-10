@@ -32,5 +32,8 @@ allowBuilds:
 # pins it at exactly 4.3.1 - a version that cannot bound the CPU a YAML merge key chain costs.
 # 4.3.2 is the patch that fixes that and carries nothing else, and the exact pin above it means
 # no update can reach it; this is the only lever. Drop the entry once redocly moves its pin.
+# The key is scoped to the 4.x range rather than left bare: a bare `js-yaml` overrides every
+# dependent whatever it asked for, so the first package here to want js-yaml 5 would silently be
+# handed a 4.x it cannot use. Scoped, the override reaches only what already asked for 4.
 overrides:
-  js-yaml: ^4.3.2
+  js-yaml@4: ^4.3.2

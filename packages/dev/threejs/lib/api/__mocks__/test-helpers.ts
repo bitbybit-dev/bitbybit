@@ -280,3 +280,13 @@ export function createOrbitCameraMocks() {
     };
 }
 
+/**
+ * The flat numbers behind a geometry attribute, whichever kind it is.
+ *
+ * A wide line is drawn through LineSegmentsGeometry, which keeps a line's positions and colours in
+ * interleaved instance attributes rather than plain buffers - so what a test wants to compare sits
+ * one level further in, behind `data`.
+ */
+export function flatOf(attribute: THREEJS.BufferAttribute | THREEJS.InterleavedBufferAttribute): number[] {
+    return Array.from("data" in attribute ? attribute.data.array : attribute.array);
+}

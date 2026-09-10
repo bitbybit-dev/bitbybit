@@ -10383,10 +10383,12 @@ declare namespace Bit {
         private defaultNodeOptions;
         constructor(drawHelper: DrawHelper, node: BabylonNode, tag: Tag, context: Context);
         drawAnyAsyncNoReturn(inputs: Inputs.Draw.DrawAny): Promise<void>;
-        drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh>;
+        drawAnyAsync<E extends Inputs.Draw.Entity>(inputs: Inputs.Draw.DrawAny<E>): Promise<Inputs.Draw.Drawn<E, BABYLON.Mesh>>;
+        protected drawResolvedAsync(inputs: Inputs.Draw.DrawAny): Promise<Inputs.Draw.DrawnAny<BABYLON.Mesh>>;
         private updateAny;
         drawAnyNoReturn(inputs: Inputs.Draw.DrawAny): void;
-        drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh;
+        drawAny<E extends Inputs.Draw.Entity>(inputs: Inputs.Draw.DrawAny<E>): Inputs.Draw.Drawn<E, BABYLON.Mesh>;
+        protected drawResolved(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawnAny<BABYLON.Mesh>;
         drawGridMeshNoReturn(inputs: Inputs.Draw.SceneDrawGridMeshDto): void;
         drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh;
         optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions;
@@ -11508,7 +11510,9 @@ declare namespace Bit {
         private readonly advanced;
         readonly context: Context;
         constructor(drawHelper: DrawHelper, node: BabylonNode, tag: Tag, things: ThingsAdv, advanced: AdvancedAdv, context: Context);
-        drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<any>;
+        drawAnyAsync<E extends Inputs.Draw.Entity>(inputs: Inputs.Draw.DrawAny<E>): Promise<Inputs.Draw.Drawn<E, BABYLON.Mesh>>;
+        protected drawResolvedAsync(inputs: Inputs.Draw.DrawAny): Promise<Inputs.Draw.DrawnAny<BABYLON.Mesh>>;
+        protected drawResolved(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawnAny<BABYLON.Mesh>;
         drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh;
         optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions;
         optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions;

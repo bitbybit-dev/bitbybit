@@ -223,7 +223,7 @@ describe("Draw unit tests", () => {
                 size: 3,
                 colours: ["#0000ff"]
             };
-            const points = [];
+            const points: Inputs.Base.Point3[] = [];
             for (let i = 0; i < 1005; i++) {
                 points.push([1, i, 3]);
             }
@@ -819,7 +819,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should return undefined for empty array entity via drawAnyAsync", async () => {
-            const res = await draw.drawAnyAsync({ entity: [] }) as DrawnEntity;
+            const res = await draw.drawAnyAsync({ entity: [] });
             expect(res).toBeUndefined();
         });
 
@@ -973,7 +973,7 @@ describe("Draw unit tests", () => {
             occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockRejectedValue(mockError);
 
             const inputs = {
-                entity: { type: "occ-shape", hash: 12345 },
+                entity: { type: "occ-shape", hash: 12345 } as Inputs.OCCT.TopoDSShapePointer,
                 options: new Inputs.Draw.DrawOcctShapeOptions()
             };
 
@@ -997,14 +997,14 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle invalid point coordinates with NaN", () => {
-            const invalidCoords = [NaN, 2, 3];
+            const invalidCoords: Inputs.Base.Point3 = [NaN, 2, 3];
             const res = draw.drawAny({ entity: invalidCoords }) as DrawnEntity;
 
             expect(res).toBeUndefined();
         });
 
         it("should handle Infinity in coordinates", () => {
-            const invalidCoords = [Infinity, 2, 3];
+            const invalidCoords: Inputs.Base.Point3 = [Infinity, 2, 3];
             const res = draw.drawAny({ entity: invalidCoords }) as DrawnEntity;
 
             expect(res).toBeDefined();
@@ -1013,7 +1013,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle very large coordinate values", () => {
-            const largeCoords = [1e10, 2e10, 3e10];
+            const largeCoords: Inputs.Base.Point3 = [1e10, 2e10, 3e10];
             const res = draw.drawAny({ entity: largeCoords }) as DrawnEntity;
 
             expect(res).toBeDefined();
@@ -1399,7 +1399,7 @@ describe("Draw unit tests", () => {
             const tagEntity = tagNamed("Test Tag", [1, 2, 3]);
 
             // Act
-            const res = draw.drawAny({ entity: tagEntity }) as Inputs.Draw.DrawnTag;
+            const res = draw.drawAny({ entity: tagEntity });
 
             // Assert
             expect(drawTagSpy).toHaveBeenCalledTimes(1);
@@ -1415,7 +1415,7 @@ describe("Draw unit tests", () => {
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
 
             // Act
-            const res = draw.drawAny({ entity: tagEntity, options }) as Inputs.Draw.DrawnTag;
+            const res = draw.drawAny({ entity: tagEntity, options });
 
             // Assert
             expect(drawTagSpy).toHaveBeenCalledWith(expect.objectContaining({
@@ -1430,7 +1430,7 @@ describe("Draw unit tests", () => {
             const tagEntity = tagNamed("Registered", [4, 5, 6]);
 
             // Act
-            const res = draw.drawAny({ entity: tagEntity }) as Inputs.Draw.DrawnTag;
+            const res = draw.drawAny({ entity: tagEntity });
 
             // Assert
             expect(draw.context.tagBag).toStrictEqual([res]);
@@ -1474,12 +1474,12 @@ describe("Draw unit tests", () => {
 
         it("should redraw a tag that is passed back in, rather than refusing it", () => {
             // Arrange
-            const first = draw.drawAny({ entity: tagNamed("First", [0, 0, 0]) }) as Inputs.Draw.DrawnTag;
+            const first = draw.drawAny({ entity: tagNamed("First", [0, 0, 0]) });
             const drawnTag: unknown = first;
             const group = drawnTag as pc.Entity;
 
             // Act
-            const res = draw.drawAny({ entity: tagNamed("Second", [1, 1, 1]), group }) as Inputs.Draw.DrawnTag;
+            const res = draw.drawAny({ entity: tagNamed("Second", [1, 1, 1]), group });
 
             // Assert
             expect(res.text).toBe("Second");
@@ -1549,7 +1549,7 @@ describe("Draw unit tests", () => {
             const tag2: Inputs.Tag.TagDto = { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false };
             const drawTagSpy = vi.spyOn(tag, "drawTag").mockReturnValue(tag2);
 
-            const res = draw.drawAny({ entity: tag2, group: mockGroup }) as Inputs.Draw.DrawnTag;
+            const res = draw.drawAny({ entity: tag2, group: mockGroup });
             expect(drawTagSpy).toHaveBeenCalled();
             expect(res.bitbybitMeta?.type).toBe(Inputs.Draw.drawingTypes.tag);
             drawTagSpy.mockRestore();
@@ -1987,6 +1987,38 @@ describe("Draw unit tests", () => {
 
             expect(texture.minFilter).toBe(pc.FILTER_NEAREST);
             expect(texture.magFilter).toBe(pc.FILTER_NEAREST);
+        });
+    });
+
+
+    describe("a JSCAD path survives being drawn again through its own handle", () => {
+
+        const movedSquare: Inputs.JSCAD.JSCADPath2 = {
+            points: [[0, 0], [1, 0], [1, 1], [0, 1]],
+            isClosed: true,
+            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 3, 0, 1],
+        };
+
+        const drawnAt = [[2, 3, 0], [3, 3, 0], [3, 4, 0], [2, 4, 0], [2, 3, 0]];
+
+        it("should stamp the path kind rather than the polyline kind it is drawn through", () => {
+            const res = draw.drawAny({ entity: movedSquare });
+            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.jscadPath);
+        });
+
+        it("should draw the path where its transforms put it", () => {
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+            draw.drawAny({ entity: movedSquare });
+            expect(spy.mock.calls[0]![0].polyline.points).toEqual(drawnAt);
+            spy.mockRestore();
+        });
+
+        it("should draw the same points again when handed back its own handle", () => {
+            const res = draw.drawAny({ entity: movedSquare, options: { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true } });
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+            draw.drawAny({ entity: movedSquare, group: res });
+            expect(spy.mock.calls[0]![0].polyline.points).toEqual(drawnAt);
+            spy.mockRestore();
         });
     });
 

@@ -1780,7 +1780,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = false;
@@ -1800,7 +1800,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.drawTwoSided = false;
 
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
@@ -1814,7 +1814,7 @@ describe("DrawHelper unit tests", () => {
             ]);
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "crossSection" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.crossSectionColour = "#00ff00";
             inputs.crossSectionOpacity = 1;
             inputs.crossSectionWidth = 2;
@@ -1834,7 +1834,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
 
@@ -1853,7 +1853,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = false;
@@ -1873,7 +1873,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = true;
@@ -1893,7 +1893,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = true;
@@ -1916,8 +1916,8 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
             inputs.manifoldsOrCrossSections = [
-                { hash: 123, type: "manifold" },
-                { hash: 456, type: "manifold" }
+                { hash: 123, type: "manifold-shape" },
+                { hash: 456, type: "manifold-shape" }
             ];
             inputs.faceColour = "#ff0000";
             inputs.drawTwoSided = false;
@@ -1937,8 +1937,8 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>();
             inputs.manifoldsOrCrossSections = [
-                { hash: 123, type: "manifold" },
-                { hash: 456, type: "manifold" }
+                { hash: 123, type: "manifold-shape" },
+                { hash: 456, type: "manifold-shape" }
             ];
             inputs.faceColour = "#ff0000";
             inputs.drawTwoSided = false;
@@ -2280,7 +2280,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.drawTwoSided = false;
 
             await drawHelper.drawManifoldOrCrossSection(inputs);

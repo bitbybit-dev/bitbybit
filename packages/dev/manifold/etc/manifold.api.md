@@ -770,7 +770,7 @@ export namespace Manifold {
     }
     export type CrossSectionPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     export class CrossSectionsDto<T> {
@@ -915,7 +915,7 @@ export namespace Manifold {
     }
     export type ManifoldPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     export class ManifoldRefineDto<T> {
@@ -1009,7 +1009,7 @@ export namespace Manifold {
     }
     export type MeshPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     export class MeshTriangleIndexDto<T> {

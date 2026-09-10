@@ -3107,13 +3107,17 @@ export class Draw extends DrawCore {
     readonly context: Context;
     createPBRMaterial(inputs: Inputs_2.Draw.GenericPBRMaterialDto): BABYLON_2.PBRMetallicRoughnessMaterial;
     createTexture(inputs: Inputs_2.Draw.GenericTextureDto): BABYLON_2.Texture;
-    drawAny(inputs: Inputs_2.Draw.DrawAny): BABYLON_2.Mesh;
-    drawAnyAsync(inputs: Inputs_2.Draw.DrawAny): Promise<BABYLON_2.Mesh>;
+    detectNode(entity: unknown): entity is BABYLON_2.TransformNode;
+    detectNodes(entity: unknown): entity is BABYLON_2.TransformNode[];
+    drawAny<E extends Inputs_2.Draw.Entity>(inputs: Inputs_2.Draw.DrawAny<E>): Inputs_2.Draw.Drawn<E, BABYLON_2.Mesh>;
+    drawAnyAsync<E extends Inputs_2.Draw.Entity>(inputs: Inputs_2.Draw.DrawAny<E>): Promise<Inputs_2.Draw.Drawn<E, BABYLON_2.Mesh>>;
     drawAnyAsyncNoReturn(inputs: Inputs_2.Draw.DrawAny): Promise<void>;
     drawAnyNoReturn(inputs: Inputs_2.Draw.DrawAny): void;
     drawGridMesh(inputs: Inputs_2.Draw.SceneDrawGridMeshDto): BABYLON_2.Mesh;
     drawGridMeshNoReturn(inputs: Inputs_2.Draw.SceneDrawGridMeshDto): void;
     readonly drawHelper: DrawHelper;
+    protected drawResolved(inputs: Inputs_2.Draw.DrawAny): Inputs_2.Draw.DrawnAny<BABYLON_2.Mesh>;
+    protected drawResolvedAsync(inputs: Inputs_2.Draw.DrawAny): Promise<Inputs_2.Draw.DrawnAny<BABYLON_2.Mesh>>;
     readonly node: BabylonNode;
     optionsBabylonNode(inputs: Inputs_2.Draw.DrawNodeOptions): Inputs_2.Draw.DrawNodeOptions;
     optionsManifoldShapeMaterial(inputs: Inputs_2.Draw.DrawManifoldOrCrossSectionOptions): Inputs_2.Draw.DrawManifoldOrCrossSectionOptions;
@@ -3134,11 +3138,23 @@ namespace Draw_2 {
         // (undocumented)
         opaque = "opaque"
     }
+    interface CustomGeometryDrawable {
+        // (undocumented)
+        readonly name: string;
+        // (undocumented)
+        readonly type: string;
+    }
+    interface CustomOverlayDrawable {
+        // (undocumented)
+        readonly entityName: string;
+        // (undocumented)
+        readonly type: string;
+    }
     // (undocumented)
-    class DrawAny {
-        constructor(entity?: Entity, options?: DrawOptions, babylonMesh?: BABYLON_2.Mesh | BABYLON_2.LinesMesh);
+    class DrawAny<E extends Entity = Entity> {
+        constructor(entity?: E, options?: DrawOptions, babylonMesh?: BABYLON_2.Mesh | BABYLON_2.LinesMesh);
         babylonMesh?: BABYLON_2.Mesh | BABYLON_2.LinesMesh | undefined;
-        entity: Entity;
+        entity: E;
         options?: DrawOptions | undefined;
     }
     class DrawBasicGeometryOptions {
@@ -3157,41 +3173,47 @@ namespace Draw_2 {
     }
     enum drawingTypes {
         // (undocumented)
-        jscadMesh = 12,
+        jscadMesh = "jscadMesh",
         // (undocumented)
-        jscadMeshes = 13,
+        jscadMeshes = "jscadMeshes",
         // (undocumented)
-        line = 2,
+        jscadPath = "jscadPath",
         // (undocumented)
-        lines = 3,
+        jscadPaths = "jscadPaths",
         // (undocumented)
-        manifold = 15,
+        line = "line",
         // (undocumented)
-        node = 4,
+        lines = "lines",
         // (undocumented)
-        nodes = 5,
+        manifold = "manifold",
         // (undocumented)
-        occt = 14,
+        node = "node",
         // (undocumented)
-        point = 0,
+        nodes = "nodes",
         // (undocumented)
-        points = 1,
+        occt = "occt",
         // (undocumented)
-        polyline = 6,
+        occtShapes = "occtShapes",
         // (undocumented)
-        polylines = 7,
+        point = "point",
         // (undocumented)
-        tag = 16,
+        points = "points",
         // (undocumented)
-        tags = 17,
+        polyline = "polyline",
         // (undocumented)
-        verbCurve = 8,
+        polylines = "polylines",
         // (undocumented)
-        verbCurves = 9,
+        tag = "tag",
         // (undocumented)
-        verbSurface = 10,
+        tags = "tags",
         // (undocumented)
-        verbSurfaces = 11
+        verbCurve = "verbCurve",
+        // (undocumented)
+        verbCurves = "verbCurves",
+        // (undocumented)
+        verbSurface = "verbSurface",
+        // (undocumented)
+        verbSurfaces = "verbSurfaces"
     }
     // (undocumented)
     class DrawManifoldOrCrossSectionOptions {
@@ -3207,12 +3229,18 @@ namespace Draw_2 {
         faceMaterial?: Base_3.Material | undefined;
         faceOpacity: number;
     }
+    type Drawn<E, T> = E extends readonly unknown[] ? ([E[number]] extends [never] ? undefined : E[number] extends Inputs_2.Tag.TagDto ? DrawnTags : E[number] extends BABYLON_2.TransformNode ? BABYLON_2.TransformNode[] : T) : E extends Inputs_2.Tag.TagDto ? DrawnTag : E extends CustomOverlayDrawable ? DrawnOverlay : E extends BABYLON_2.Mesh ? T : E extends BABYLON_2.TransformNode ? BABYLON_2.TransformNode : T;
+    type DrawnAny<T> = T | BABYLON_2.TransformNode | BABYLON_2.TransformNode[] | DrawnTag | DrawnTags | DrawnOverlay | undefined;
     class DrawNodeOptions {
         constructor(colourX?: Base_3.Color, colourY?: Base_3.Color, colourZ?: Base_3.Color, size?: number);
         colorX: Base_3.Color;
         colorY: Base_3.Color;
         colorZ: Base_3.Color;
         size: number;
+    }
+    interface DrawnOverlay {
+        // (undocumented)
+        dispose(): void;
     }
     interface DrawnTag extends Inputs_2.Tag.TagDto {
         // (undocumented)
@@ -3280,19 +3308,7 @@ namespace Draw_2 {
         precision: number;
     }
     type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
-    type Entity = number[] | [number, number, number] | Base_3.Point3 | Base_3.Vector3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Tag.TagDto | {
-        type: string;
-        name?: string;
-        entityName?: string;
-    } | number[][] | Base_3.Point3[] | Base_3.Vector3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Tag.TagDto[] | {
-        type: string[];
-        name?: string;
-        entityName?: string;
-    } | {
-        type: string;
-        name?: string;
-        entityName?: string;
-    }[];
+    type Entity = number[] | Base_3.Point3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Manifold.ManifoldPointer | Inputs_2.Manifold.CrossSectionPointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | CustomGeometryDrawable | CustomOverlayDrawable | BABYLON_2.TransformNode | number[][] | Base_3.Point3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Manifold.ManifoldPointer[] | Inputs_2.Manifold.CrossSectionPointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[] | BABYLON_2.TransformNode[];
     class GenericPBRMaterialDto {
         constructor(name?: string, baseColor?: Base_3.Color, metallic?: number, roughness?: number, alpha?: number, emissiveColor?: Base_3.Color, emissiveIntensity?: number, zOffset?: number, zOffsetUnits?: number, baseColorTexture?: Base_3.Texture, metallicRoughnessTexture?: Base_3.Texture, normalTexture?: Base_3.Texture, emissiveTexture?: Base_3.Texture, occlusionTexture?: Base_3.Texture, alphaMode?: alphaModeEnum, alphaCutoff?: number, doubleSided?: boolean, wireframe?: boolean, unlit?: boolean);
         alpha: number;
@@ -3420,9 +3436,9 @@ export class DrawHelper extends DrawHelperCore {
     // (undocumented)
     edgesRendering(mesh: BABYLON_2.LinesMesh, size: number, opacity: number, colours: string | string[]): void;
     // (undocumented)
-    handleDecomposedMesh(inputs: Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<BABYLON_2.Mesh>;
+    handleDecomposedMesh(inputs: Omit<Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<BABYLON_2.Mesh>;
     // (undocumented)
-    handleDecomposedMeshIndividually(inputs: Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<BABYLON_2.Mesh>;
+    handleDecomposedMeshIndividually(inputs: Omit<Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<BABYLON_2.Mesh>;
     isDisposed(): boolean;
     // (undocumented)
     localAxes(size: number, scene: BABYLON_2.Scene, colorXHex: string, colorYHex: string, colorZHex: string): BABYLON_2.Mesh;
@@ -4598,7 +4614,7 @@ namespace Manifold {
     }
     type CrossSectionPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class CrossSectionsDto<T> {
@@ -4743,7 +4759,7 @@ namespace Manifold {
     }
     type ManifoldPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class ManifoldRefineDto<T> {
@@ -4837,7 +4853,7 @@ namespace Manifold {
     }
     type MeshPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class MeshTriangleIndexDto<T> {

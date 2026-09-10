@@ -1701,7 +1701,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = false;
@@ -1721,7 +1721,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.drawTwoSided = false;
 
             const result = (await drawHelper.drawManifoldOrCrossSection(inputs))!;
@@ -1735,7 +1735,7 @@ describe("DrawHelper unit tests", () => {
             ]);
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "crossSection" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.crossSectionColour = "#00ff00";
             inputs.crossSectionOpacity = 1;
             inputs.crossSectionWidth = 2;
@@ -1754,7 +1754,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
 
@@ -1786,7 +1786,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = false;
@@ -1805,7 +1805,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = true;
@@ -1831,7 +1831,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
             inputs.drawTwoSided = true;
@@ -1860,8 +1860,8 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
             inputs.manifoldsOrCrossSections = [
-                { hash: 123, type: "manifold" },
-                { hash: 456, type: "manifold" }
+                { hash: 123, type: "manifold-shape" },
+                { hash: 456, type: "manifold-shape" }
             ];
             inputs.faceColour = "#ff0000";
             inputs.drawTwoSided = false;
@@ -1880,8 +1880,8 @@ describe("DrawHelper unit tests", () => {
 
             const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>();
             inputs.manifoldsOrCrossSections = [
-                { hash: 123, type: "manifold" },
-                { hash: 456, type: "manifold" }
+                { hash: 123, type: "manifold-shape" },
+                { hash: 456, type: "manifold-shape" }
             ];
             inputs.faceColour = "#ff0000";
             inputs.drawTwoSided = false;
@@ -2083,7 +2083,7 @@ describe("DrawHelper unit tests", () => {
                 .mockRejectedValue(mockError);
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
 
             await expect(drawHelper.drawManifoldOrCrossSection(inputs))
                 .rejects
@@ -2153,7 +2153,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, pc.StandardMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
 
             await drawHelper.drawManifoldOrCrossSection(inputs);
 
@@ -2945,7 +2945,7 @@ describe("DrawHelper unit tests", () => {
             vi.spyOn(console, "error").mockImplementation(() => undefined);
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockRejectedValue(new Error("kernel gone"));
             const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer, pc.StandardMaterial>();
-            inputs.manifoldsOrCrossSections = [{ hash: 123, type: "manifold" }];
+            inputs.manifoldsOrCrossSections = [{ hash: 123, type: "manifold-shape" }];
 
             // Act & Assert
             await expect(drawHelper.drawManifoldsOrCrossSections(inputs)).rejects.toThrow("Failed to draw manifolds or cross sections");

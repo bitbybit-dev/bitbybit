@@ -8,7 +8,9 @@ import { DrawHelper } from "../draw-helper";
 import { Draw } from "./draw";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker/lib";
-import { Group, InstancedMesh, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Scene } from "three";
+import { Group, InstancedMesh, Mesh, MeshBasicMaterial, MeshPhongMaterial, Scene } from "three";
+import { flatOf } from "../__mocks__/test-helpers";
+import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import * as THREE from "three";
 import * as Inputs from "../inputs";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
@@ -57,7 +59,7 @@ describe("Draw unit tests", () => {
     describe("Draw point and points tests", () => {
 
         it("should draw a point via draw any async without options", async () => {
-            const res = await draw.drawAnyAsync({ entity: [1, -2, 3] }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [1, -2, 3] });
             expect(res.name).toContain("pointMesh");
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
             expect(res.children.length).toBe(1);
@@ -66,7 +68,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should draw a point via draw any without options", () => {
-            const res = draw.drawAny({ entity: [-1, 2, -3] }) as THREE.Group;
+            const res = draw.drawAny({ entity: [-1, 2, -3] });
             expect(res.name).toContain("pointMesh");
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
             expect(res.children.length).toBe(1);
@@ -80,7 +82,7 @@ describe("Draw unit tests", () => {
                 size: 4,
                 colours: "#ff0000",
             };
-            const res = draw.drawAny({ entity: [-1, 2, -3], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [-1, 2, -3], options });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
             expect(res.name).toContain("pointMesh");
@@ -101,8 +103,8 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true
             };
-            const res = draw.drawAny({ entity: [-1, 2, -3], options }) as THREE.Group;
-            const res2 = draw.drawAny({ entity: [2, 5, 5], options, group: res }) as THREE.Group;
+            const res = draw.drawAny({ entity: [-1, 2, -3], options });
+            const res2 = draw.drawAny({ entity: [2, 5, 5], options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
@@ -125,8 +127,8 @@ describe("Draw unit tests", () => {
                 colours: ["#0000ff"],
                 updatable: true
             };
-            const res = draw.drawAny({ entity: [-1, 2, -3], options }) as THREE.Group;
-            const res2 = draw.drawAny({ entity: [2, 5, 5], options, group: res }) as THREE.Group;
+            const res = draw.drawAny({ entity: [-1, 2, -3], options });
+            const res2 = draw.drawAny({ entity: [2, 5, 5], options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
@@ -149,7 +151,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should draw a points via draw any async without options", async () => {
-            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]] }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]] });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.points);
             expect(res.name).toContain("pointsMesh");
             expect(res.children.length).toBe(1);
@@ -166,8 +168,8 @@ describe("Draw unit tests", () => {
                 colours: ["#0000ff"],
                 updatable: true
             };
-            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options }) as THREE.Group;
-            const res2 = await draw.drawAnyAsync({ entity: [[-1, 2, -3], [2.2, 3.5, -3], [3, -2, 1.5]], options, group: res }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
+            const res2 = await draw.drawAnyAsync({ entity: [[-1, 2, -3], [2.2, 3.5, -3], [3, -2, 1.5]], options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.points);
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.points);
@@ -192,8 +194,8 @@ describe("Draw unit tests", () => {
                 colours: ["#0000ff"],
                 updatable: true
             };
-            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options }) as THREE.Group;
-            const res2 = await draw.drawAnyAsync({ entity: [[-1, 2, -3], [2.2, 3.5, -3], [3, -2, 1.5], [4, -4, 1.5]], options, group: res }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
+            const res2 = await draw.drawAnyAsync({ entity: [[-1, 2, -3], [2.2, 3.5, -3], [3, -2, 1.5], [4, -4, 1.5]], options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.points);
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.points);
@@ -216,7 +218,7 @@ describe("Draw unit tests", () => {
                 size: 3,
                 colours: ["#0000ff"]
             };
-            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
             const mesh = res.children[0]! as InstancedMesh;
             expect(mesh.geometry.attributes["position"]!.count).toEqual(49);
         });
@@ -227,11 +229,11 @@ describe("Draw unit tests", () => {
                 size: 3,
                 colours: ["#0000ff"]
             };
-            const points = [];
+            const points: Inputs.Base.Point3[] = [];
             for (let i = 0; i < 1005; i++) {
                 points.push([1, i, 3]);
             }
-            const res = await draw.drawAnyAsync({ entity: points, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: points, options });
             const mesh = res.children[0]! as InstancedMesh;
             expect(mesh.geometry.attributes["position"]!.count).toEqual(12);
         });
@@ -242,7 +244,7 @@ describe("Draw unit tests", () => {
                 size: 3,
                 colours: ["#0000ff", "#ff0000", "#00ff00"]
             };
-            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
             expect(res.children.length).toBe(3);
             const mat1 = (res.children[0]! as InstancedMesh).material as MeshBasicMaterial;
             const mat2 = (res.children[1] as InstancedMesh).material as MeshBasicMaterial;
@@ -258,7 +260,7 @@ describe("Draw unit tests", () => {
                 size: 3,
                 colours: ["#0000ff", "#ff0000"]
             };
-            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
 
             expect(res.children.length).toBe(2);
             const mat1 = (res.children[0]! as InstancedMesh).material as MeshBasicMaterial;
@@ -271,18 +273,18 @@ describe("Draw unit tests", () => {
     describe("Draw line tests", () => {
 
         it("should draw a line via draw any async without options", async () => {
-            const res = await draw.drawAnyAsync({ entity: { start: [1, -2, 3], end: [0, -3, 0] } }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: { start: [1, -2, 3], end: [0, -3, 0] } });
             expect(res.name).toContain("polylines");
             expect(res.children.length).toBe(1);
-            expect(res.children[0] instanceof LineSegments).toBe(true);
+            expect(res.children[0] instanceof LineSegments2).toBe(true);
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
         });
 
         it("should draw a line via draw any without options", async () => {
-            const res = await draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] } }) as THREE.Group;
+            const res = await draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] } });
             expect(res.name).toContain("polylines");
             expect(res.children.length).toBe(1);
-            expect(res.children[0] instanceof LineSegments).toBe(true);
+            expect(res.children[0] instanceof LineSegments2).toBe(true);
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
         });
 
@@ -292,13 +294,13 @@ describe("Draw unit tests", () => {
                 size: 4,
                 colours: "#ff0000",
             };
-            const res = draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] }, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] }, options });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
 
-            const ptMesh = res.children[0]! as LineSegments;
+            const ptMesh = res.children[0]! as LineSegments2;
             expect(res.name).toContain("polylines");
-            expect(ptMesh.geometry.attributes["position"]!.array.toString()).toEqual("1,-3,3,0,-3,4");
+            expect(flatOf(ptMesh.geometry.attributes["instanceStart"]!).toString()).toEqual("1,-3,3,0,-3,4");
         });
 
         it("should draw lines via draw any with options", () => {
@@ -308,13 +310,13 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
             };
 
-            const res = draw.drawAny({ entity: [{ start: [1, -3, 3], end: [0, -3, 4] }, { start: [1, 3, 3], end: [0, 3, -4] }], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [{ start: [1, -3, 3], end: [0, -3, 4] }, { start: [1, 3, 3], end: [0, 3, -4] }], options });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.lines);
 
-            const ptMesh = res.children[0]! as LineSegments;
+            const ptMesh = res.children[0]! as LineSegments2;
             expect(res.name).toContain("polylines");
-            expect(ptMesh.geometry.attributes["position"]!.array.toString()).toEqual("1,-3,3,0,-3,4,1,3,3,0,3,-4");
+            expect(flatOf(ptMesh.geometry.attributes["instanceStart"]!).toString()).toEqual("1,-3,3,0,-3,4,1,3,3,0,3,-4");
         });
 
         it("should update lines via draw any with options", () => {
@@ -324,14 +326,14 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: [{ start: [1, -3, 3], end: [0, -3, 4] }, { start: [1, 3, 3], end: [0, 3, -4] }], options }) as THREE.Group;
-            const res2 = draw.drawAny({ entity: [{ start: [3, -4, 4], end: [1, -4, 5] }, { start: [2, 4, 4], end: [1, 4, -5] }], options, group: res }) as THREE.Group;
+            const res = draw.drawAny({ entity: [{ start: [1, -3, 3], end: [0, -3, 4] }, { start: [1, 3, 3], end: [0, 3, -4] }], options });
+            const res2 = draw.drawAny({ entity: [{ start: [3, -4, 4], end: [1, -4, 5] }, { start: [2, 4, 4], end: [1, 4, -5] }], options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.lines);
             expect(res2.name).toEqual(res.name);
-            const ptMesh = res.children[0]! as LineSegments;
+            const ptMesh = res.children[0]! as LineSegments2;
             expect(res.name).toContain("polylines");
-            expect(ptMesh.geometry.attributes["position"]!.array.toString()).toEqual("3,-4,4,1,-4,5,2,4,4,1,4,-5");
+            expect(flatOf(ptMesh.geometry.attributes["instanceStart"]!).toString()).toEqual("3,-4,4,1,-4,5,2,4,4,1,4,-5");
         });
 
         it("should update a line via draw any with options", () => {
@@ -341,14 +343,14 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] }, options }) as THREE.Group;
-            const res2 = draw.drawAny({ entity: { start: [1, 3, -33], end: [0, -33, 4] }, options, group: res }) as THREE.Group;
+            const res = draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] }, options });
+            const res2 = draw.drawAny({ entity: { start: [1, 3, -33], end: [0, -33, 4] }, options, group: res });
 
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
             expect(res.name).toEqual(res2.name);
 
-            const lineSegments2 = res2.children[0]! as LineSegments;
-            expect(lineSegments2.geometry.attributes["position"]!.array.toString()).toEqual("1,3,-33,0,-33,4");
+            const lineSegments2 = res2.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments2.geometry.attributes["instanceStart"]!).toString()).toEqual("1,3,-33,0,-33,4");
         });
 
         it("should create a polyline via draw any with options", () => {
@@ -358,12 +360,12 @@ describe("Draw unit tests", () => {
                 colours: "#ff00ff",
                 updatable: false,
             };
-            const res = draw.drawAny({ entity: { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, options });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.polyline);
 
-            const lineSegments1 = res.children[0]! as LineSegments;
-            expect(lineSegments1.geometry.attributes["position"]!.array.toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5");
+            const lineSegments1 = res.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments1.geometry.attributes["instanceStart"]!).toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5");
         });
 
         it("should update a polyline via draw any with options", () => {
@@ -373,13 +375,13 @@ describe("Draw unit tests", () => {
                 colours: "#ff00ff",
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, options }) as THREE.Group;
-            const res2 = draw.drawAny({ entity: { points: [[2, -4, 4], [1, -4, 3], [4, 5, 6]] }, options, group: res }) as THREE.Group;
+            const res = draw.drawAny({ entity: { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, options });
+            const res2 = draw.drawAny({ entity: { points: [[2, -4, 4], [1, -4, 3], [4, 5, 6]] }, options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.polyline);
             expect(res.name).toEqual(res2.name);
-            const lineSegments1 = res.children[0]! as LineSegments;
-            expect(lineSegments1.geometry.attributes["position"]!.array.toString()).toEqual("2,-4,4,1,-4,3,1,-4,3,4,5,6");
+            const lineSegments1 = res.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments1.geometry.attributes["instanceStart"]!).toString()).toEqual("2,-4,4,1,-4,3,1,-4,3,4,5,6");
         });
 
         it("should create a closed polyline with color via draw any with options", () => {
@@ -394,12 +396,12 @@ describe("Draw unit tests", () => {
                     { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]], isClosed: true, color: [1, 0, 1] },
                     { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]], isClosed: false, color: [1, 1, 1] }
                 ], options
-            }) as THREE.Group;
+            });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
 
-            const lineSegments1 = res.children[0]! as LineSegments;
-            expect(lineSegments1.geometry.attributes["position"]!.array.toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5,3,4,5,1,-3,3,1,-3,3,0,-3,4,0,-3,4,3,4,5");
+            const lineSegments1 = res.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments1.geometry.attributes["instanceStart"]!).toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5,3,4,5,1,-3,3,1,-3,3,0,-3,4,0,-3,4,3,4,5");
         });
 
         it("should update a polyline via draw any with options", () => {
@@ -409,18 +411,18 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: [{ points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, { points: [[3, -3, 3], [4, -4, 5], [4, 6, 5]] }], options }) as THREE.Group;
-            const res2 = draw.drawAny({ entity: [{ points: [[2, -4, 5], [1, -2, 3], [4, 6, 7]] }, { points: [[9, -4, 2], [3, -3, 5], [6, 4, 3]] }], options, group: res }) as THREE.Group;
+            const res = draw.drawAny({ entity: [{ points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, { points: [[3, -3, 3], [4, -4, 5], [4, 6, 5]] }], options });
+            const res2 = draw.drawAny({ entity: [{ points: [[2, -4, 5], [1, -2, 3], [4, 6, 7]] }, { points: [[9, -4, 2], [3, -3, 5], [6, 4, 3]] }], options, group: res });
 
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
             expect(res.name).toEqual(res2.name);
 
-            const lineSegments1 = res.children[0]! as LineSegments;
-            const lineSegments2 = res2.children[0]! as LineSegments;
+            const lineSegments1 = res.children[0]! as LineSegments2;
+            const lineSegments2 = res2.children[0]! as LineSegments2;
 
             expect(lineSegments1.name).toEqual(lineSegments2.name);
 
-            expect(lineSegments2.geometry.attributes["position"]!.array.toString()).toEqual("2,-4,5,1,-2,3,1,-2,3,4,6,7,9,-4,2,3,-3,5,3,-3,5,6,4,3");
+            expect(flatOf(lineSegments2.geometry.attributes["instanceStart"]!).toString()).toEqual("2,-4,5,1,-2,3,1,-2,3,4,6,7,9,-4,2,3,-3,5,3,-3,5,6,4,3");
         });
 
         it("should update a polyline via draw any with options if at least one polyline has more points", () => {
@@ -430,15 +432,15 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: [{ points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, { points: [[3, -3, 3], [4, -4, 5], [4, 6, 5]] }], options }) as THREE.Group;
-            const res2 = draw.drawAny({ entity: [{ points: [[2, -4, 5], [1, -2, 3], [4, 6, 7], [3, 4, 6]] }, { points: [[9, -4, 2], [3, -3, 5], [6, 4, 3]] }], options, group: res }) as THREE.Group;
+            const res = draw.drawAny({ entity: [{ points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, { points: [[3, -3, 3], [4, -4, 5], [4, 6, 5]] }], options });
+            const res2 = draw.drawAny({ entity: [{ points: [[2, -4, 5], [1, -2, 3], [4, 6, 7], [3, 4, 6]] }, { points: [[9, -4, 2], [3, -3, 5], [6, 4, 3]] }], options, group: res });
 
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
             expect(res2).toBe(res);
             expect(res.children).toHaveLength(1);
 
-            const lineSegments = res2.children[0]! as LineSegments;
-            expect(lineSegments.geometry.attributes["position"]!.array.toString()).toEqual("2,-4,5,1,-2,3,1,-2,3,4,6,7,4,6,7,3,4,6,9,-4,2,3,-3,5,3,-3,5,6,4,3");
+            const lineSegments = res2.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments.geometry.attributes["instanceStart"]!).toString()).toEqual("2,-4,5,1,-2,3,1,-2,3,4,6,7,4,6,7,3,4,6,9,-4,2,3,-3,5,3,-3,5,6,4,3");
         });
     });
 
@@ -456,13 +458,13 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: curveMock, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: curveMock, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurve);
             expect(res).toBeDefined();
             expect(res.name).toContain("polyline");
             expect(res.children.length).toBe(1);
-            const lineSegments = res.children[0]! as LineSegments;
-            expect(lineSegments.geometry.attributes["position"]!.array.toString()).toEqual("1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6");
+            const lineSegments = res.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments.geometry.attributes["instanceStart"]!).toString()).toEqual("1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6");
         });
 
         it("should draw curves", async () => {
@@ -484,12 +486,12 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: [curveMock1, curveMock2], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [curveMock1, curveMock2], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurves);
             expect(res).toBeDefined();
             expect(res.name).toContain("polyline");
-            const lineSegments = res.children[0]! as LineSegments;
-            expect(lineSegments.geometry.attributes["position"]!.array.toString()).toEqual("1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6,3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
+            const lineSegments = res.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments.geometry.attributes["instanceStart"]!).toString()).toEqual("1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6,3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
         });
 
         it("should update drawn curves", async () => {
@@ -511,15 +513,15 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: [curveMock1, curveMock2], options }) as THREE.Group;
-            const res2 = await draw.drawAnyAsync({ entity: [curveMock2, curveMock1], options, group: res }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [curveMock1, curveMock2], options });
+            const res2 = await draw.drawAnyAsync({ entity: [curveMock2, curveMock1], options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurves);
             expect(res).toBeDefined();
             expect(res.name).toContain("polyline");
             expect(res.name).toEqual(res2.name);
-            const lineSegments = res.children[0]! as LineSegments;
-            expect(lineSegments.geometry.attributes["position"]!.array.toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6,1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6");
+            const lineSegments = res.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments.geometry.attributes["instanceStart"]!).toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6,1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6");
         });
 
         it("should create new verb curve", async () => {
@@ -541,17 +543,17 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: curveMock1, options }) as THREE.Group;
-            const res2 = await draw.drawAnyAsync({ entity: curveMock2, options, group: res }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: curveMock1, options });
+            const res2 = await draw.drawAnyAsync({ entity: curveMock2, options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurve);
             expect(res).toBeDefined();
             expect(res.name).toContain("polyline");
             expect(res.name).toEqual(res2.name);
-            const lineSegments1 = res.children[0]! as LineSegments;
-            expect(lineSegments1.geometry.attributes["position"]!.array.toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
-            const lineSegments2 = res2.children[0]! as LineSegments;
-            expect(lineSegments2.geometry.attributes["position"]!.array.toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
+            const lineSegments1 = res.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments1.geometry.attributes["instanceStart"]!).toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
+            const lineSegments2 = res2.children[0]! as LineSegments2;
+            expect(flatOf(lineSegments2.geometry.attributes["instanceStart"]!).toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
         });
 
         it("should draw verb surface", async () => {
@@ -562,7 +564,7 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: surfaceMock, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: surfaceMock, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurface);
             expect(res).toBeDefined();
             expect(res.name).toContain("surface");
@@ -582,7 +584,7 @@ describe("Draw unit tests", () => {
                 updatable: true,
                 hidden: true,
             };
-            const res = await draw.drawAnyAsync({ entity: surfaceMock, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: surfaceMock, options });
             expect(res.visible).toBe(false);
         });
 
@@ -595,8 +597,8 @@ describe("Draw unit tests", () => {
                 colours: "#ff0000",
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: surfaceMock1, options }) as THREE.Group;
-            const res2 = await draw.drawAnyAsync({ entity: surfaceMock2, options, group: res }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: surfaceMock1, options });
+            const res2 = await draw.drawAnyAsync({ entity: surfaceMock2, options, group: res });
 
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurface);
             expect(res).toBeDefined();
@@ -620,7 +622,7 @@ describe("Draw unit tests", () => {
                 colours: ["#ff0000", "#00ff00"],
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: [surfaceMock1, surfaceMock2], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [surfaceMock1, surfaceMock2], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
             expect(res).toBeDefined();
             expect(res.name).toContain("colouredSurfaces");
@@ -644,7 +646,7 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
             occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
 
-            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
@@ -658,7 +660,7 @@ describe("Draw unit tests", () => {
 
             occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
 
-            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
@@ -676,7 +678,7 @@ describe("Draw unit tests", () => {
             occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
             vi.spyOn(solidText, "createVectorText").mockResolvedValue([[[0, 0], [0.5, 0], [0.5, 0.3], [0, 0.3]]]);
             vector.add = vi.fn().mockReturnValue([1, 2, 3]);
-            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
             expect(res.name).toContain("brepMesh");
@@ -687,7 +689,7 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawOcctShapeOptions();
             occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
 
-            const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occtShapes);
             expect(res).toBeDefined();
             expect(res.name).toContain("shapesMeshContainer");
@@ -700,7 +702,7 @@ describe("Draw unit tests", () => {
             options.faceMaterial = customMaterial;
             occtWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
 
-            const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occtShapes);
             expect(res).toBeDefined();
             expect(res.name).toContain("shapesMeshContainer");
@@ -717,7 +719,7 @@ describe("Draw unit tests", () => {
         it("should draw a JSCAD mesh with default options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue(mockJSCADBoxDecomposedMesh());
-            const res = await draw.drawAnyAsync({ entity: jscadSolid(), options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: jscadSolid(), options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
@@ -727,7 +729,7 @@ describe("Draw unit tests", () => {
         it("should draw a JSCAD mesh with specified color options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
-            const res = await draw.drawAnyAsync({ entity: jscadSolid([0, 1, 0]), options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: jscadSolid([0, 1, 0]), options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
@@ -741,7 +743,7 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.colours = "#00ffff";
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
-            const res = await draw.drawAnyAsync({ entity: jscadSolid(), options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: jscadSolid(), options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
@@ -755,7 +757,7 @@ describe("Draw unit tests", () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             options.colours = "#00ffff";
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
-            const res = await draw.drawAnyAsync({ entity: jscadSolid([0, 0, 1]), options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: jscadSolid([0, 0, 1]), options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMesh);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
@@ -768,7 +770,7 @@ describe("Draw unit tests", () => {
         it("should draw multiple JSCAD meshes with default options", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), mockJSCADBoxDecomposedMesh()]);
-            const res = await draw.drawAnyAsync({ entity: [jscadSolid(), jscadSolid()], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [jscadSolid(), jscadSolid()], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
@@ -778,7 +780,7 @@ describe("Draw unit tests", () => {
         it("should draw multiple JSCAD meshes with custom color", async () => {
             const options = new Inputs.Draw.DrawBasicGeometryOptions();
             jscadWorkerManager.genericCallToWorkerPromise = vi.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), { ...mockJSCADBoxDecomposedMesh(), color: [0, 0, 1] }]);
-            const res = await draw.drawAnyAsync({ entity: [jscadSolid(), jscadSolid()], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [jscadSolid(), jscadSolid()], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
             expect(res).toBeDefined();
             expect(res.name).toContain("jscadMesh");
@@ -794,15 +796,15 @@ describe("Draw unit tests", () => {
 
         it("should draw a segment (2-point array) via draw any", () => {
             const segment: Inputs.Base.Segment3 = [[0, 0, 0], [1, 2, 3]];
-            const res = draw.drawAny({ entity: segment }) as THREE.Group;
+            const res = draw.drawAny({ entity: segment });
             expect(res.name).toContain("polylines");
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
-            expect(res.children[0] instanceof LineSegments).toBe(true);
+            expect(res.children[0] instanceof LineSegments2).toBe(true);
         });
 
         it("should draw a segment via draw any async", async () => {
             const segment: Inputs.Base.Segment3 = [[-1, -2, -3], [4, 5, 6]];
-            const res = await draw.drawAnyAsync({ entity: segment }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: segment });
             expect(res.name).toContain("polylines");
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
         });
@@ -814,8 +816,8 @@ describe("Draw unit tests", () => {
             };
             const segment1: Inputs.Base.Segment3 = [[0, 0, 0], [1, 1, 1]];
             const segment2: Inputs.Base.Segment3 = [[2, 2, 2], [3, 3, 3]];
-            const res = draw.drawAny({ entity: segment1, options }) as THREE.Group;
-            const res2 = draw.drawAny({ entity: segment2, options, group: res }) as THREE.Group;
+            const res = draw.drawAny({ entity: segment1, options });
+            const res2 = draw.drawAny({ entity: segment2, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
     });
@@ -828,12 +830,12 @@ describe("Draw unit tests", () => {
         });
 
         it("should return undefined for empty array entity via drawAnyAsync", async () => {
-            const res = await draw.drawAnyAsync({ entity: [] }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [] });
             expect(res).toBeUndefined();
         });
 
         it("should return undefined for undefined entity via drawAny", () => {
-            const res = draw.drawAny({ entity: { unknownType: true } as unknown as Inputs.Draw.Entity }) as THREE.Group;
+            const res = draw.drawAny({ entity: { unknownType: true } as unknown as Inputs.Draw.Entity });
             expect(res).toBeUndefined();
         });
     });
@@ -868,10 +870,10 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: [1, 2, 3], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [1, 2, 3], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.point);
             
-            const res2 = draw.drawAny({ entity: [4, 5, 6], options, group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: [4, 5, 6], options, group: res });
             expect(res.name).toEqual(res2.name);
             expect(res2.children.length).toBe(1);
             expect(res2.children[0] instanceof InstancedMesh).toBe(true);
@@ -882,10 +884,10 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: [[1, 2, 3], [4, 5, 6]], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [[1, 2, 3], [4, 5, 6]], options });
             expect(res.userData["type"]).toBeDefined();
             
-            const res2 = draw.drawAny({ entity: [[7, 8, 9], [10, 11, 12]], options, group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: [[7, 8, 9], [10, 11, 12]], options, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -894,10 +896,10 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: { start: [0, 0, 0], end: [1, 1, 1] }, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: { start: [0, 0, 0], end: [1, 1, 1] }, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
             
-            const res2 = draw.drawAny({ entity: { start: [2, 2, 2], end: [3, 3, 3] }, options, group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: { start: [2, 2, 2], end: [3, 3, 3] }, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -906,10 +908,10 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] }, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] }, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.polyline);
             
-            const res2 = draw.drawAny({ entity: { points: [[3, 3, 3], [4, 4, 4], [5, 5, 5]] }, options, group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: { points: [[3, 3, 3], [4, 4, 4], [5, 5, 5]] }, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -926,10 +928,10 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: curveMock1, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: curveMock1, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurve);
             
-            const res2 = draw.drawAny({ entity: curveMock2, options, group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: curveMock2, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -940,10 +942,10 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: surfaceMock1, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: surfaceMock1, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurface);
             
-            const res2 = draw.drawAny({ entity: surfaceMock2, options, group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: surfaceMock2, options, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -954,9 +956,9 @@ describe("Draw unit tests", () => {
                 size: 5,
                 updatable: true,
             };
-            const res = draw.drawAny({ entity: [1, 2, 3], options: originalOptions }) as THREE.Group;
+            const res = draw.drawAny({ entity: [1, 2, 3], options: originalOptions });
             
-            const res2 = draw.drawAny({ entity: [4, 5, 6], group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: [4, 5, 6], group: res });
             expect(res.name).toEqual(res2.name);
         });
     });
@@ -970,7 +972,7 @@ describe("Draw unit tests", () => {
             });
 
             const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
-            const res = await draw.drawAnyAsync({ entity: manifoldShape(123), options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: manifoldShape(123), options });
             expect(res).toBeDefined();
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
         });
@@ -994,7 +996,7 @@ describe("Draw unit tests", () => {
                     manifoldShape(456)
                 ], 
                 options 
-            }) as THREE.Group;
+            });
             expect(res).toBeDefined();
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
         });
@@ -1012,7 +1014,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: "#ff00ff",
             };
-            const res = draw.drawAny({ entity: polylines, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: polylines, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
             expect(res.name).toContain("polylines");
         });
@@ -1027,7 +1029,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: ["#ff0000", "#00ff00", "#0000ff"],
             };
-            const res = draw.drawAny({ entity: polylines, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: polylines, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
         });
 
@@ -1042,15 +1044,15 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: polylines1, options }) as THREE.Group;
-            const res2 = await draw.drawAnyAsync({ entity: polylines2, options, group: res }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: polylines1, options });
+            const res2 = await draw.drawAnyAsync({ entity: polylines2, options, group: res });
             expect(res.name).toEqual(res2.name);
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
         });
 
         it("should return undefined for empty polylines array via drawAnyAsync", async () => {
             const polylines: Inputs.Base.Polyline3[] = [];
-            const res = await draw.drawAnyAsync({ entity: polylines }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: polylines });
             expect(res).toBeUndefined();
         });
     });
@@ -1067,7 +1069,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: "#ff0000",
             };
-            const res = draw.drawAny({ entity: lines, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: lines, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.lines);
             expect(res.name).toContain("polylines");
         });
@@ -1081,7 +1083,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: "#00ff00",
             };
-            const res = await draw.drawAnyAsync({ entity: segments, options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: segments, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.lines);
         });
 
@@ -1096,8 +1098,8 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: lines1, options }) as THREE.Group;
-            const res2 = await draw.drawAnyAsync({ entity: lines2, options, group: res }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: lines1, options });
+            const res2 = await draw.drawAnyAsync({ entity: lines2, options, group: res });
             expect(res.name).toEqual(res2.name);
             expect(res2.userData["type"]).toBe(Inputs.Draw.drawingTypes.lines);
         });
@@ -1108,7 +1110,7 @@ describe("Draw unit tests", () => {
                 { start: [1, 0, 0], end: [1, 1, 0] },
                 { start: [1, 1, 0], end: [0, 0, 0] }
             ];
-            const res = await draw.drawAnyAsync({ entity: lines }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: lines });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.lines);
         });
     });
@@ -1132,7 +1134,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: "#ff0000",
             };
-            const res = draw.drawAny({ entity: [curveMock1, curveMock2, curveMock3], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [curveMock1, curveMock2, curveMock3], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurves);
             expect(res.name).toContain("polylines");
         });
@@ -1150,10 +1152,10 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: [curveMock1], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [curveMock1], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurves);
             
-            const res2 = await draw.drawAnyAsync({ entity: [curveMock2], options, group: res }) as THREE.Group;
+            const res2 = await draw.drawAnyAsync({ entity: [curveMock2], options, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -1174,7 +1176,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: ["#ff0000", "#00ff00", "#0000ff"],
             };
-            const res = draw.drawAny({ entity: [curveMock1, curveMock2, curveMock3], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [curveMock1, curveMock2, curveMock3], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurves);
         });
     });
@@ -1189,7 +1191,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: "#ff0000",
             };
-            const res = draw.drawAny({ entity: [surfaceMock1, surfaceMock2, surfaceMock3], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [surfaceMock1, surfaceMock2, surfaceMock3], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
             expect(res.name).toContain("colouredSurfaces");
         });
@@ -1201,10 +1203,10 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: true,
             };
-            const res = await draw.drawAnyAsync({ entity: [surfaceMock1], options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: [surfaceMock1], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
             
-            const res2 = await draw.drawAnyAsync({ entity: [surfaceMock2], options, group: res }) as THREE.Group;
+            const res2 = await draw.drawAnyAsync({ entity: [surfaceMock2], options, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -1216,7 +1218,7 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 colours: ["#ff0000", "#00ff00", "#0000ff"],
             };
-            const res = draw.drawAny({ entity: [surfaceMock1, surfaceMock2, surfaceMock3], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [surfaceMock1, surfaceMock2, surfaceMock3], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
             expect(res.children.length).toBe(3);
         });
@@ -1235,12 +1237,12 @@ describe("Draw unit tests", () => {
                 size: 1,
                 adaptDepth: false,
             };
-            const res = draw.drawAny({ entity: tagEntity }) as THREE.Group;
+            const res = draw.drawAny({ entity: tagEntity });
             expect(drawTagSpy).toHaveBeenCalledTimes(1);
             expect(drawTagSpy).toHaveBeenCalledWith(expect.objectContaining({
                 tag: tagEntity,
             }));
-            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.tag);
+            expect(res.userData!["type"]).toBe(Inputs.Draw.drawingTypes.tag);
             drawTagSpy.mockRestore();
         });
 
@@ -1257,12 +1259,12 @@ describe("Draw unit tests", () => {
                 adaptDepth: false,
             };
             const options = { updatable: true } as Inputs.Draw.DrawOptions;
-            const res = draw.drawAny({ entity: tagEntity, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: tagEntity, options });
             expect(drawTagSpy).toHaveBeenCalledWith(expect.objectContaining({
                 tag: tagEntity,
                 updatable: true,
             }));
-            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.tag);
+            expect(res.userData!["type"]).toBe(Inputs.Draw.drawingTypes.tag);
             drawTagSpy.mockRestore();
         });
 
@@ -1293,12 +1295,12 @@ describe("Draw unit tests", () => {
                 { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 1, adaptDepth: false },
                 { text: "Tag 3", position: [2, 2, 2], colour: "#0000ff", size: 1, adaptDepth: false },
             ];
-            const res = draw.drawAny({ entity: tagsEntity }) as THREE.Group;
+            const res = draw.drawAny({ entity: tagsEntity });
             expect(drawTagsSpy).toHaveBeenCalledTimes(1);
             expect(drawTagsSpy).toHaveBeenCalledWith(expect.objectContaining({
                 tags: tagsEntity,
             }));
-            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.tags);
+            expect(res.userData!["type"]).toBe(Inputs.Draw.drawingTypes.tags);
             drawTagsSpy.mockRestore();
         });
 
@@ -1328,11 +1330,11 @@ describe("Draw unit tests", () => {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 updatable: false,
             };
-            const res = draw.drawAny({ entity: tagsEntity, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: tagsEntity, options });
             expect(drawTagsSpy).toHaveBeenCalledWith(expect.objectContaining({
                 tags: tagsEntity,
             }));
-            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.tags);
+            expect(res.userData!["type"]).toBe(Inputs.Draw.drawingTypes.tags);
             drawTagsSpy.mockRestore();
         });
     });
@@ -1344,10 +1346,10 @@ describe("Draw unit tests", () => {
             const polylines2 = [{ points: [[2, 2, 2], [3, 2, 2]] as Inputs.Base.Point3[] }];
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
             
-            const res = draw.drawAny({ entity: polylines1, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: polylines1, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.polylines);
             
-            const res2 = draw.drawAny({ entity: polylines2, group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: polylines2, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -1356,10 +1358,10 @@ describe("Draw unit tests", () => {
             const lines2: Inputs.Base.Line3[] = [{ start: [5, 5, 5], end: [6, 6, 6] }];
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
             
-            const res = draw.drawAny({ entity: lines1, options }) as THREE.Group;
+            const res = draw.drawAny({ entity: lines1, options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.lines);
             
-            const res2 = draw.drawAny({ entity: lines2, group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: lines2, group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -1374,10 +1376,10 @@ describe("Draw unit tests", () => {
             };
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
             
-            const res = draw.drawAny({ entity: [curveMock1], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [curveMock1], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbCurves);
             
-            const res2 = draw.drawAny({ entity: [curveMock2], group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: [curveMock2], group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -1386,10 +1388,10 @@ describe("Draw unit tests", () => {
             const surfaceMock2 = createSurfaceMock2();
             const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
             
-            const res = draw.drawAny({ entity: [surfaceMock1], options }) as THREE.Group;
+            const res = draw.drawAny({ entity: [surfaceMock1], options });
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
             
-            const res2 = draw.drawAny({ entity: [surfaceMock2], group: res }) as THREE.Group;
+            const res2 = draw.drawAny({ entity: [surfaceMock2], group: res });
             expect(res.name).toEqual(res2.name);
         });
 
@@ -1400,9 +1402,9 @@ describe("Draw unit tests", () => {
             
             const tag2: Inputs.Tag.TagDto = { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false };
             
-            const res = draw.drawAny({ entity: tag2, group: mockGroup }) as THREE.Group;
+            const res = draw.drawAny({ entity: tag2, group: mockGroup });
             expect(drawTagSpy).toHaveBeenCalled();
-            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.tag);
+            expect(res.userData!["type"]).toBe(Inputs.Draw.drawingTypes.tag);
             drawTagSpy.mockRestore();
         });
 
@@ -1413,9 +1415,9 @@ describe("Draw unit tests", () => {
             
             const tags2: Inputs.Tag.TagDto[] = [{ text: "Tag B", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false }];
             
-            const res = draw.drawAny({ entity: tags2, group: mockGroup }) as THREE.Group;
+            const res = draw.drawAny({ entity: tags2, group: mockGroup });
             expect(drawTagsSpy).toHaveBeenCalled();
-            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.tags);
+            expect(res.userData!["type"]).toBe(Inputs.Draw.drawingTypes.tags);
             drawTagsSpy.mockRestore();
         });
 
@@ -1423,7 +1425,7 @@ describe("Draw unit tests", () => {
             const mockGroup = {
                 userData: { type: "unknownType" },
             } as unknown as THREE.Group;
-            const res = draw.drawAny({ entity: [1, 2, 3], group: mockGroup }) as THREE.Group;
+            const res = draw.drawAny({ entity: [1, 2, 3], group: mockGroup });
             expect(res).toBeUndefined();
         });
     });
@@ -1600,14 +1602,15 @@ describe("Draw unit tests", () => {
 
 
     describe("Draw decomposed meshes", () => {
-        const asEntity = (entity: unknown): Inputs.Draw.Entity => entity as Inputs.Draw.Entity;
+        const asMesh = (entity: unknown): Inputs.OCCT.DecomposedMeshDto => entity as Inputs.OCCT.DecomposedMeshDto;
+        const asMeshes = (entity: unknown): Inputs.OCCT.DecomposedMeshDto[] => entity as Inputs.OCCT.DecomposedMeshDto[];
 
         it("should draw a decomposed mesh handed in directly", async () => {
             // Arrange
             const options = new Inputs.Draw.DrawOcctShapeOptions();
 
             // Act
-            const res = await draw.drawAnyAsync({ entity: asEntity(mockOCCTBoxDecomposedMesh()), options }) as THREE.Group;
+            const res = await draw.drawAnyAsync({ entity: asMesh(mockOCCTBoxDecomposedMesh()), options });
 
             // Assert
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.occt);
@@ -1620,9 +1623,9 @@ describe("Draw unit tests", () => {
 
             // Act
             const res = await draw.drawAnyAsync({
-                entity: asEntity([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]),
+                entity: asMeshes([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]),
                 options,
-            }) as THREE.Group;
+            });
 
             // Assert
             expect(res.name).toBe("decomposedMeshesContainer");
@@ -1635,9 +1638,9 @@ describe("Draw unit tests", () => {
 
             // Act
             const res = await draw.drawAnyAsync({
-                entity: asEntity([mockOCCTBoxDecomposedMesh()]),
+                entity: asMeshes([mockOCCTBoxDecomposedMesh()]),
                 options,
-            }) as THREE.Group;
+            });
 
             // Assert
             expect(res.parent).not.toBeNull();
@@ -1660,4 +1663,36 @@ describe("Draw unit tests", () => {
             expect(material.color.getHexString()).toBe("000000");
         });
     });
+
+    describe("a JSCAD path survives being drawn again through its own handle", () => {
+
+        const movedSquare: Inputs.JSCAD.JSCADPath2 = {
+            points: [[0, 0], [1, 0], [1, 1], [0, 1]],
+            isClosed: true,
+            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 3, 0, 1],
+        };
+
+        const drawnAt = [[2, 3, 0], [3, 3, 0], [3, 4, 0], [2, 4, 0], [2, 3, 0]];
+
+        it("should stamp the path kind rather than the polyline kind it is drawn through", () => {
+            const res = draw.drawAny({ entity: movedSquare });
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.jscadPath);
+        });
+
+        it("should draw the path where its transforms put it", () => {
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+            draw.drawAny({ entity: movedSquare });
+            expect(spy.mock.calls[0]![0].polyline.points).toEqual(drawnAt);
+            spy.mockRestore();
+        });
+
+        it("should draw the same points again when handed back its own handle", () => {
+            const res = draw.drawAny({ entity: movedSquare, options: { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true } });
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+            draw.drawAny({ entity: movedSquare, group: res });
+            expect(spy.mock.calls[0]![0].polyline.points).toEqual(drawnAt);
+            spy.mockRestore();
+        });
+    });
+
 });

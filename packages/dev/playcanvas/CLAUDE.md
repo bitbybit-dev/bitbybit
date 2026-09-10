@@ -5,6 +5,21 @@ in `packages/dev/CLAUDE.md`; the shared draw rules are in `core`'s.
 
 The engine is an ordinary dependency here, not a peer as it is in `babylonjs`.
 
+- **Line width is not honoured here, and that is a limitation of the engine layer rather than an
+  oversight.** A polyline or an OCCT edge is drawn as `pc.PRIMITIVE_LINES`, and WebGL renders a GL
+  line one pixel wide whatever width is asked for - so `DrawBasicGeometryOptions.size` and
+  `DrawOcctShapeOptions.edgeWidth` reach the draw path, are carried through it, and change nothing on
+  screen. The parameters that would apply a width are named `_size` to say so at the call site.
+
+  The other two renderers do honour it: `babylonjs` draws through `GreasedLine` and `threejs` through
+  `LineSegments2`, both of which build the line as ribbon geometry a shader expands to any width.
+  PlayCanvas ships no equivalent, so matching them means writing that expansion here - quad-strip
+  geometry per polyline plus a shader that offsets its vertices in clip space by the viewport, and
+  with it joins, caps, per-vertex colours and the update-in-place path. Generating the ribbon in
+  world space instead, with no shader, is the cheap version and is not worth doing: it was tried in
+  `threejs` and a sub-pixel world-space ribbon renders broken or, once a coverage mask resolves it,
+  so faint the line disappears.
+
 - **Pushing OCCT faces behind their edges needs `depthBias` and `slopeDepthBias` together** - 2 each
   when edges are drawn, plus a further 0.1 on the back-face material, which is part of its cache key.
   Setting only `depthBias` leaves edges z-fighting at grazing angles.

@@ -583,13 +583,14 @@ export class Draw extends DrawCore {
     readonly context: Context;
     createPBRMaterial(inputs: Inputs_2.Draw.GenericPBRMaterialDto): pc_2.StandardMaterial;
     createTexture(inputs: Inputs_2.Draw.GenericTextureDto): pc_2.Texture;
-    drawAny(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Inputs_2.Draw.DrawnEntity | undefined;
+    drawAny<E extends Inputs_2.Draw.Entity>(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity, E>): Inputs_2.Draw.Drawn<E, Inputs_2.Draw.BitByBitEntity>;
     // Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    drawAnyAsync(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Promise<Inputs_2.Draw.DrawnEntity | undefined>;
+    drawAnyAsync<E extends Inputs_2.Draw.Entity>(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity, E>): Promise<Inputs_2.Draw.Drawn<E, Inputs_2.Draw.BitByBitEntity>>;
     // (undocumented)
     readonly drawHelper: DrawHelper;
+    protected drawResolved(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Inputs_2.Draw.DrawnEntity;
+    // (undocumented)
+    protected drawResolvedAsync(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Promise<Inputs_2.Draw.DrawnEntity>;
     optionsOcctShape(inputs: Inputs_2.Draw.DrawOcctShapeOptions): Inputs_2.Draw.DrawOcctShapeOptions;
     optionsSimple(inputs: Inputs_2.Draw.DrawBasicGeometryOptions): Inputs_2.Draw.DrawBasicGeometryOptions;
     // (undocumented)
@@ -616,10 +617,16 @@ namespace Draw_2 {
         // (undocumented)
         type: drawingTypes;
     }
+    interface CustomGeometryDrawable {
+        // (undocumented)
+        readonly name: string;
+        // (undocumented)
+        readonly type: string;
+    }
     // (undocumented)
-    class DrawAny<U> {
-        constructor(entity?: Entity, options?: DrawOptions);
-        entity: Entity;
+    class DrawAny<U, E extends Entity = Entity> {
+        constructor(entity?: E, options?: DrawOptions, group?: U);
+        entity: E;
         group?: U | undefined;
         options?: DrawOptions | undefined;
     }
@@ -637,44 +644,49 @@ namespace Draw_2 {
         size: number;
         updatable: boolean;
     }
-    // (undocumented)
     enum drawingTypes {
         // (undocumented)
-        jscadMesh = 12,
+        jscadMesh = "jscadMesh",
         // (undocumented)
-        jscadMeshes = 13,
+        jscadMeshes = "jscadMeshes",
         // (undocumented)
-        line = 2,
+        jscadPath = "jscadPath",
         // (undocumented)
-        lines = 3,
+        jscadPaths = "jscadPaths",
         // (undocumented)
-        node = 4,
+        line = "line",
         // (undocumented)
-        nodes = 5,
+        lines = "lines",
         // (undocumented)
-        occt = 14,
+        manifold = "manifold",
         // (undocumented)
-        occtShapes = 15,
+        node = "node",
         // (undocumented)
-        point = 0,
+        nodes = "nodes",
         // (undocumented)
-        points = 1,
+        occt = "occt",
         // (undocumented)
-        polyline = 6,
+        occtShapes = "occtShapes",
         // (undocumented)
-        polylines = 7,
+        point = "point",
         // (undocumented)
-        tag = 16,
+        points = "points",
         // (undocumented)
-        tags = 17,
+        polyline = "polyline",
         // (undocumented)
-        verbCurve = 8,
+        polylines = "polylines",
         // (undocumented)
-        verbCurves = 9,
+        tag = "tag",
         // (undocumented)
-        verbSurface = 10,
+        tags = "tags",
         // (undocumented)
-        verbSurfaces = 11
+        verbCurve = "verbCurve",
+        // (undocumented)
+        verbCurves = "verbCurves",
+        // (undocumented)
+        verbSurface = "verbSurface",
+        // (undocumented)
+        verbSurfaces = "verbSurfaces"
     }
     // (undocumented)
     class DrawManifoldOrCrossSectionOptions {
@@ -690,7 +702,9 @@ namespace Draw_2 {
         faceMaterial?: Base_3.Material | undefined;
         faceOpacity: number;
     }
-    type DrawnEntity = BitByBitEntity | DrawnTag | DrawnTags;
+    type Drawn<E, T> = E extends readonly unknown[] ? ([E[number]] extends [never] ? undefined : E[number] extends Inputs_2.Tag.TagDto ? DrawnTags : T) : E extends Inputs_2.Tag.TagDto ? DrawnTag : T;
+    type DrawnAny<T> = T | DrawnTag | DrawnTags | undefined;
+    type DrawnEntity = DrawnAny<BitByBitEntity>;
     interface DrawnTag extends Inputs_2.Tag.TagDto {
         // (undocumented)
         bitbybitMeta?: BitByBitMeta | undefined;
@@ -730,20 +744,7 @@ namespace Draw_2 {
     }
     // (undocumented)
     type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
-    // (undocumented)
-    type Entity = number[] | [number, number, number] | Base_3.Point3 | Base_3.Vector3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Tag.TagDto | {
-        type: string;
-        name?: string;
-        entityName?: string;
-    } | number[][] | Base_3.Point3[] | Base_3.Vector3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Tag.TagDto[] | {
-        type: string[];
-        name?: string;
-        entityName?: string;
-    } | {
-        type: string;
-        name?: string;
-        entityName?: string;
-    }[];
+    type Entity = number[] | Base_3.Point3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Manifold.ManifoldPointer | Inputs_2.Manifold.CrossSectionPointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | CustomGeometryDrawable | number[][] | Base_3.Point3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Manifold.ManifoldPointer[] | Inputs_2.Manifold.CrossSectionPointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[];
     class GenericPBRMaterialDto {
         constructor(name?: string, baseColor?: Base_3.Color, metallic?: number, roughness?: number, alpha?: number, emissiveColor?: Base_3.Color, emissiveIntensity?: number, zOffset?: number, zOffsetUnits?: number, baseColorTexture?: Base_3.Texture, metallicRoughnessTexture?: Base_3.Texture, normalTexture?: Base_3.Texture, emissiveTexture?: Base_3.Texture, occlusionTexture?: Base_3.Texture, alphaMode?: alphaModeEnum, alphaCutoff?: number, doubleSided?: boolean, wireframe?: boolean, unlit?: boolean);
         alpha: number;
@@ -752,7 +753,7 @@ namespace Draw_2 {
         baseColor: Base_3.Color;
         baseColorTexture?: Base_3.Texture | undefined;
         doubleSided: boolean;
-        emissiveColor?: Base_3.Color;
+        emissiveColor?: Base_3.Color | undefined;
         emissiveIntensity: number;
         emissiveTexture?: Base_3.Texture | undefined;
         metallic: number;
@@ -852,9 +853,9 @@ export class DrawHelper extends DrawHelperCore {
         colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum;
     }): pc_2.Entity;
     // (undocumented)
-    handleDecomposedMesh(inputs: Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<pc_2.Entity>;
+    handleDecomposedMesh(inputs: Omit<Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<pc_2.Entity>;
     // (undocumented)
-    handleDecomposedMeshIndividually(inputs: Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<pc_2.Entity>;
+    handleDecomposedMeshIndividually(inputs: Omit<Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<pc_2.Entity>;
     isDisposed(): boolean;
     // (undocumented)
     updatePointsInstances(group: pc_2.Entity, positions: Inputs_2.Base.Point3[]): void;
@@ -2010,7 +2011,7 @@ namespace Manifold {
     }
     type CrossSectionPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class CrossSectionsDto<T> {
@@ -2155,7 +2156,7 @@ namespace Manifold {
     }
     type ManifoldPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class ManifoldRefineDto<T> {
@@ -2249,7 +2250,7 @@ namespace Manifold {
     }
     type MeshPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class MeshTriangleIndexDto<T> {

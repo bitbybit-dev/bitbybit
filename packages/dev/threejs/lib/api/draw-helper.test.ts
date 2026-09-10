@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
-import { createDrawHelperMocks, hexToRgb, colorsAreEqual, getMaterialFromMesh, createMockJSCADMesh, createMockOCCTShape, mockWorkerError } from "./__mocks__/test-helpers";
+import { createDrawHelperMocks, flatOf, hexToRgb, colorsAreEqual, getMaterialFromMesh, createMockJSCADMesh, createMockOCCTShape, mockWorkerError } from "./__mocks__/test-helpers";
 import { mockOCCTBoxDecomposedMesh } from "./__mocks__/test-data";
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
@@ -9,10 +9,13 @@ import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Vector } from "@bitbybit-dev/base";
 import * as THREEJS from "three";
+import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
+import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 
 let nextPointerHash = 1;
 const occtShape = (): Inputs.OCCT.TopoDSShapePointer => ({ hash: nextPointerHash++, type: "occ-shape" });
-const manifoldShape = (): Inputs.Manifold.ManifoldPointer => ({ hash: nextPointerHash++, type: "manifold" });
+const manifoldShape = (): Inputs.Manifold.ManifoldPointer => ({ hash: nextPointerHash++, type: "manifold-shape" });
 
 
 const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
@@ -238,6 +241,38 @@ describe("DrawHelper unit tests", () => {
         });
     });
 
+    describe("how wide a drawn line comes out", () => {
+
+        const widthAt = (size: number) => {
+            const polyline = { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[], isClosed: false };
+            const result = drawHelper.drawPolylineClose(
+                new Inputs.Polyline.DrawPolylineDto<THREEJS.Group>(polyline, 1, "#00ff00", size));
+            const line = result.children[0] as LineSegments2;
+            return line.material.linewidth;
+        };
+
+        it("should scale with the size it was asked for, once past the floor", () => {
+            expect(widthAt(30)).toBeCloseTo(10, 5);
+            expect(widthAt(60)).toBeCloseTo(20, 5);
+        });
+
+        const defaultOcctEdgeWidth = 2;
+        const defaultBasicGeometrySize = 0.1;
+
+        it("should never draw a line thinner than a pixel, where this material breaks up", () => {
+            expect(widthAt(defaultOcctEdgeWidth)).toBe(1);
+            expect(widthAt(defaultBasicGeometrySize)).toBe(1);
+        });
+
+        it("should give two sizes that floor to the same width the same material", () => {
+            const polyline = { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[], isClosed: false };
+            const draw = (size: number) => (drawHelper.drawPolylineClose(
+                new Inputs.Polyline.DrawPolylineDto<THREEJS.Group>(polyline, 1, "#00ff00", size))
+                .children[0] as LineSegments2).material;
+            expect(draw(defaultOcctEdgeWidth)).toBe(draw(defaultBasicGeometrySize));
+        });
+    });
+
     describe("drawPolylineClose", () => {
         it("should draw a polyline", () => {
             const polylineData = {
@@ -258,10 +293,10 @@ describe("DrawHelper unit tests", () => {
             expect(result.name).toContain("polyline");
             expect(result.children.length).toBe(1);
 
-            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            const lineSegments = result.children[0] as LineSegments2;
             if (lineSegments.material && !Array.isArray(lineSegments.material)) {
-                const material = lineSegments.material as THREEJS.LineBasicMaterial;
-                const colorAttribute = lineSegments.geometry.getAttribute("color");
+                const material = lineSegments.material;
+                const colorAttribute = lineSegments.geometry.getAttribute("instanceColorStart");
                 if (colorAttribute) {
                     const expectedRgb = hexToRgb("#00ff00");
                     expect(colorAttribute.getX(0)).toBeCloseTo(expectedRgb.r, 2);
@@ -294,9 +329,9 @@ describe("DrawHelper unit tests", () => {
         it("should update existing polyline mesh when updatable is true", () => {
             const existingMesh = new THREEJS.Group();
             existingMesh.name = "existingPolyline";
-            const lineGeom = new THREEJS.BufferGeometry();
-            const lineMat = new THREEJS.LineBasicMaterial();
-            existingMesh.add(new THREEJS.LineSegments(lineGeom, lineMat));
+            const lineGeom = new LineSegmentsGeometry();
+            const lineMat = new LineMaterial();
+            existingMesh.add(new LineSegments2(lineGeom, lineMat));
 
             const polylineData = {
                 points: [[0, 0, 0], [2, 2, 2]] as Inputs.Base.Point3[],
@@ -337,10 +372,10 @@ describe("DrawHelper unit tests", () => {
             expect(result.name).toContain("polylines");
             expect(result.children.length).toBe(1);
 
-            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            const lineSegments = result.children[0] as LineSegments2;
             if (lineSegments.material && !Array.isArray(lineSegments.material)) {
 
-                const colorAttribute = lineSegments.geometry.getAttribute("color");
+                const colorAttribute = lineSegments.geometry.getAttribute("instanceColorStart");
                 if (colorAttribute) {
                     const expectedRgb = hexToRgb("#ff0000");
                     expect(colorAttribute.getX(0)).toBeCloseTo(expectedRgb.r, 2);
@@ -365,8 +400,8 @@ describe("DrawHelper unit tests", () => {
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
             expect(result.children.length).toBe(1);
-            const colours = (result.children[0] as THREEJS.LineSegments).geometry.getAttribute("color");
-            expect(Array.from(colours.array)).toEqual([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0]);
+            const colours = (result.children[0] as LineSegments2).geometry.getAttribute("instanceColorStart");
+            expect(flatOf(colours)).toEqual([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0]);
         });
 
         it("should fall back to the default colour for polylines that carry none", () => {
@@ -378,9 +413,9 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            const colours = (result.children[0] as THREEJS.LineSegments).geometry.getAttribute("color");
+            const colours = (result.children[0] as LineSegments2).geometry.getAttribute("instanceColorStart");
             const grey = new THREEJS.Color("#444444");
-            expect(Array.from(colours.array).slice(0, 6)).toEqual([1, 0, 0, 1, 0, 0]);
+            expect(flatOf(colours).slice(0, 6)).toEqual([1, 0, 0, 1, 0, 0]);
             [grey.r, grey.g, grey.b, grey.r, grey.g, grey.b].forEach((expected, i) => {
                 expect(colours.array[6 + i]).toBeCloseTo(expected, 6);
             });
@@ -395,8 +430,8 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            const colours = (result.children[0] as THREEJS.LineSegments).geometry.getAttribute("color");
-            expect(Array.from(colours.array)).toEqual([0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0]);
+            const colours = (result.children[0] as LineSegments2).geometry.getAttribute("instanceColorStart");
+            expect(flatOf(colours)).toEqual([0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0]);
         });
 
         it("should handle closed polylines", () => {
@@ -419,9 +454,9 @@ describe("DrawHelper unit tests", () => {
         it("should update existing polylines mesh when updatable is true", () => {
             const existingMesh = new THREEJS.Group();
             existingMesh.name = "existingPolylines";
-            const lineGeom = new THREEJS.BufferGeometry();
-            const lineMat = new THREEJS.LineBasicMaterial();
-            const lineSegments = new THREEJS.LineSegments(lineGeom, lineMat);
+            const lineGeom = new LineSegmentsGeometry();
+            const lineMat = new LineMaterial();
+            const lineSegments = new LineSegments2(lineGeom, lineMat);
             lineSegments.userData = { linesForRenderLengths: "2,2" };
             existingMesh.add(lineSegments);
 
@@ -469,9 +504,9 @@ describe("DrawHelper unit tests", () => {
         it("should update existing curve mesh when updatable is true", () => {
             const existingMesh = new THREEJS.Group();
             existingMesh.name = "existingCurve";
-            const lineGeom = new THREEJS.BufferGeometry();
-            const lineMat = new THREEJS.LineBasicMaterial();
-            existingMesh.add(new THREEJS.LineSegments(lineGeom, lineMat));
+            const lineGeom = new LineSegmentsGeometry();
+            const lineMat = new LineMaterial();
+            existingMesh.add(new LineSegments2(lineGeom, lineMat));
 
             const mockCurve = {
                 tessellate: vi.fn().mockReturnValue([
@@ -1007,8 +1042,8 @@ describe("DrawHelper unit tests", () => {
 
             const edgesGroup = result.children.find(child => child.name?.includes("edges")) as THREEJS.Group;
             if (edgesGroup && edgesGroup.children.length > 0) {
-                const lineSegments = edgesGroup.children[0] as THREEJS.LineSegments;
-                const material = lineSegments.material as THREEJS.LineBasicMaterial;
+                const lineSegments = edgesGroup.children[0] as LineSegments2;
+                const material = lineSegments.material;
                 expect(colorsAreEqual(material.color, hexToRgb("#00ff00"))).toBe(true);
             }
         });
@@ -1325,9 +1360,9 @@ describe("DrawHelper unit tests", () => {
 
         it("should handle existing mesh with children", () => {
             const existingMesh = new THREEJS.Group();
-            const lineGeom = new THREEJS.BufferGeometry();
-            const lineMat = new THREEJS.LineBasicMaterial();
-            existingMesh.add(new THREEJS.LineSegments(lineGeom, lineMat));
+            const lineGeom = new LineSegmentsGeometry();
+            const lineMat = new LineMaterial();
+            existingMesh.add(new LineSegments2(lineGeom, lineMat));
 
             const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 5, 5]];
 
@@ -1364,11 +1399,11 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
             expect(result.children.length).toBe(1);
-            const lineSegments = result.children[0] as THREEJS.LineSegments;
-            expect(lineSegments).toBeInstanceOf(THREEJS.LineSegments);
+            const lineSegments = result.children[0] as LineSegments2;
+            expect(lineSegments).toBeInstanceOf(LineSegments2);
             
-            const positions = lineSegments.geometry.attributes["position"]!;
-            expect(positions.count).toBe(14);
+            const positions = lineSegments.geometry.attributes["instanceStart"]!;
+            expect(positions.count).toBe(7);
         });
 
         it("should draw multiple polylines with arrows of different colors", () => {
@@ -1392,14 +1427,14 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
-            const lineSegments = result.children[0] as THREEJS.LineSegments;
+            const lineSegments = result.children[0] as LineSegments2;
             
-            const positions = lineSegments.geometry.attributes["position"]!;
-            expect(positions.count).toBe(36);
+            const positions = lineSegments.geometry.attributes["instanceStart"]!;
+            expect(positions.count).toBe(18);
             
-            const colors = lineSegments.geometry.attributes["color"]!;
+            const colors = lineSegments.geometry.attributes["instanceColorStart"]!;
             expect(colors).toBeDefined();
-            expect(colors.count).toBe(36);
+            expect(colors.count).toBe(18);
         });
 
         it("should not draw arrows when arrowSize is 0", () => {
@@ -1418,9 +1453,9 @@ describe("DrawHelper unit tests", () => {
                 arrowAngle: 30
             });
 
-            const lineSegments = result.children[0] as THREEJS.LineSegments;
-            const positions = lineSegments.geometry.attributes["position"]!;
-            expect(positions.count).toBe(4);
+            const lineSegments = result.children[0] as LineSegments2;
+            const positions = lineSegments.geometry.attributes["instanceStart"]!;
+            expect(positions.count).toBe(2);
         });
 
         it("should draw arrows with custom angle", () => {
@@ -1439,9 +1474,9 @@ describe("DrawHelper unit tests", () => {
                 arrowAngle: 45
             });
 
-            const lineSegments = result.children[0] as THREEJS.LineSegments;
-            const positions = lineSegments.geometry.attributes["position"]!;
-            expect(positions.count).toBe(10);
+            const lineSegments = result.children[0] as LineSegments2;
+            const positions = lineSegments.geometry.attributes["instanceStart"]!;
+            expect(positions.count).toBe(5);
         });
 
         it("should use same color for arrows as their parent polyline", () => {
@@ -1461,8 +1496,8 @@ describe("DrawHelper unit tests", () => {
                 arrowAngle: 30
             });
 
-            const lineSegments = result.children[0] as THREEJS.LineSegments;
-            const colors = lineSegments.geometry.attributes["color"] as THREEJS.BufferAttribute;
+            const lineSegments = result.children[0] as LineSegments2;
+            const colors = lineSegments.geometry.attributes["instanceColorStart"] as THREEJS.InterleavedBufferAttribute;
             
             const red = new THREEJS.Color("#ff0000");
             expect(colors.getX(0)).toBeCloseTo(red.r, 2);
@@ -1490,8 +1525,8 @@ describe("DrawHelper unit tests", () => {
                 arrowAngle: 30
             });
 
-            const lineSegments = result.children[0] as THREEJS.LineSegments;
-            const positions = lineSegments.geometry.attributes["position"]!;
+            const lineSegments = result.children[0] as LineSegments2;
+            const positions = lineSegments.geometry.attributes["instanceStart"]!;
             expect(positions.count).toBe(0);
         });
 
@@ -1527,9 +1562,9 @@ describe("DrawHelper unit tests", () => {
             });
 
             expect(secondResult).toBe(firstResult);
-            const lineSegments = secondResult.children[0] as THREEJS.LineSegments;
-            const positions = lineSegments.geometry.attributes["position"]!;
-            expect(positions.count).toBe(10);
+            const lineSegments = secondResult.children[0] as LineSegments2;
+            const positions = lineSegments.geometry.attributes["instanceStart"]!;
+            expect(positions.count).toBe(5);
         });
     });
 
@@ -1571,7 +1606,7 @@ describe("DrawHelper unit tests", () => {
             mockWorkerError(mockManifoldWorkerManager, "decomposeManifoldOrCrossSection", mockError);
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
 
@@ -1713,7 +1748,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
             inputs.faceColour = "#ff0000";
             inputs.faceOpacity = 1;
 
@@ -1779,7 +1814,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
             expect(result.children.length).toBe(2);
@@ -2027,7 +2062,7 @@ describe("DrawHelper unit tests", () => {
             });
 
             const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
-            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold" };
+            inputs.manifoldOrCrossSection = { hash: 123, type: "manifold-shape" };
 
             const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
             expect(result).toBeUndefined();
@@ -2767,7 +2802,7 @@ describe("DrawHelper unit tests", () => {
             vi.spyOn(console, "error").mockImplementation(() => undefined);
             mockWorkerError(mockManifoldWorkerManager, "decomposeManifoldsOrCrossSections", new Error("kernel gone"));
             const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer, THREEJS.MeshPhysicalMaterial>();
-            inputs.manifoldsOrCrossSections = [{ hash: 123, type: "manifold" }];
+            inputs.manifoldsOrCrossSections = [{ hash: 123, type: "manifold-shape" }];
 
             // Act & Assert
             await expect(drawHelper.drawManifoldsOrCrossSections(inputs))

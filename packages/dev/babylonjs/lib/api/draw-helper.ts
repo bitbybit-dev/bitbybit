@@ -1102,7 +1102,7 @@ export class DrawHelper extends DrawHelperCore {
         return shapesMeshContainer;
     }
 
-    async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
+    async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         const dummy = undefined;
@@ -1256,7 +1256,7 @@ export class DrawHelper extends DrawHelperCore {
         return shapeMesh;
     }
 
-    async handleDecomposedMeshIndividually(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
+    async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         const dummy = undefined;

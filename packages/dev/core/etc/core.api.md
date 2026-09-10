@@ -615,6 +615,16 @@ export const DEFAULT_COLORS: {
 export type DefaultColors = typeof DEFAULT_COLORS;
 
 // @public
+export interface DrawableKind {
+    // (undocumented)
+    readonly kind: string;
+    // (undocumented)
+    matches(entity: unknown): boolean;
+    // (undocumented)
+    readonly phase: DrawPhase;
+}
+
+// @public (undocumented)
 export class DrawCore {
     // (undocumented)
     arraysInChildrenArraysAreOfLength3(array: unknown[][]): boolean;
@@ -625,52 +635,55 @@ export class DrawCore {
     // (undocumented)
     checkIfElementsInArrayAreNumbers(array: unknown[]): boolean;
     // (undocumented)
-    detectDecomposedMesh(entity: unknown): boolean;
+    detectDecomposedMesh(entity: unknown): entity is Inputs_3.OCCT.DecomposedMeshDto;
     // (undocumented)
-    detectDecomposedMeshes(entity: unknown): boolean;
+    detectDecomposedMeshes(entity: unknown): entity is Inputs_3.OCCT.DecomposedMeshDto[];
     // (undocumented)
     detectJscadMesh(entity: unknown): entity is Inputs_3.JSCAD.JSCADGeom2 | Inputs_3.JSCAD.JSCADGeom3;
     // (undocumented)
     detectJscadMeshes(entity: unknown): entity is (Inputs_3.JSCAD.JSCADGeom2 | Inputs_3.JSCAD.JSCADGeom3)[];
+    detectJscadPath(entity: unknown): entity is Inputs_3.JSCAD.JSCADPath2;
     // (undocumented)
-    detectLine(entity: unknown): boolean;
+    detectJscadPaths(entity: unknown): entity is Inputs_3.JSCAD.JSCADPath2[];
     // (undocumented)
-    detectLines(entity: unknown): boolean;
+    detectLine(entity: unknown): entity is Inputs_3.Base.Line3 | Inputs_3.Base.Segment3;
     // (undocumented)
-    detectManifoldShape(entity: unknown): boolean;
+    detectLines(entity: unknown): entity is (Inputs_3.Base.Line3 | Inputs_3.Base.Segment3)[];
     // (undocumented)
-    detectManifoldShapes(entity: unknown): boolean;
+    detectManifoldShape(entity: unknown): entity is Inputs_3.Manifold.ManifoldPointer | Inputs_3.Manifold.CrossSectionPointer;
     // (undocumented)
+    detectManifoldShapes(entity: unknown): entity is (Inputs_3.Manifold.ManifoldPointer | Inputs_3.Manifold.CrossSectionPointer)[];
     detectNode(entity: unknown): boolean;
     // (undocumented)
     detectNodes(entity: unknown): boolean;
     // (undocumented)
-    detectOcctShape(entity: unknown): boolean;
+    detectOcctShape(entity: unknown): entity is Inputs_3.OCCT.TopoDSShapePointer;
     // (undocumented)
-    detectOcctShapes(entity: unknown): boolean;
+    detectOcctShapes(entity: unknown): entity is Inputs_3.OCCT.TopoDSShapePointer[];
     // (undocumented)
-    detectPoint(entity: unknown): boolean;
+    detectPoint(entity: unknown): entity is Inputs_3.Base.Point3;
     // (undocumented)
-    detectPoints(entity: unknown): boolean;
-    // (undocumented)
+    detectPoints(entity: unknown): entity is Inputs_3.Base.Point3[];
     detectPolyline(entity: unknown): boolean;
     // (undocumented)
     detectPolylines(entity: unknown): boolean;
     // (undocumented)
-    detectTag(entity: unknown): boolean;
+    detectTag(entity: unknown): entity is Inputs_3.Tag.TagDto;
     // (undocumented)
-    detectTags(entity: unknown): boolean;
-    // (undocumented)
+    detectTags(entity: unknown): entity is Inputs_3.Tag.TagDto[];
     detectVerbCurve(entity: unknown): boolean;
     // (undocumented)
     detectVerbCurves(entity: unknown): boolean;
-    // (undocumented)
     detectVerbSurface(entity: unknown): boolean;
     // (undocumented)
     detectVerbSurfaces(entity: unknown): boolean;
-    protected isTagDto(value: unknown): boolean;
-    protected isTagDtoArray(value: unknown): boolean;
+    // (undocumented)
+    protected drawableKinds(): readonly DrawableKind[];
+    protected isTagDto(value: unknown): value is Inputs_3.Tag.TagDto;
+    protected isTagDtoArray(value: unknown): value is Inputs_3.Tag.TagDto[];
     protected isValidDrawInput(entity: unknown): boolean;
+    protected pathToPolylinePoints(path: Inputs_3.JSCAD.JSCADPath2): Inputs_3.Base.Point3[];
+    protected resolveDrawableKind(entity: unknown, phase: DrawPhase, handled: (kind: string) => boolean): string | undefined;
 }
 
 // @public
@@ -724,6 +737,9 @@ export interface DrawOptionsBase {
     // (undocumented)
     updatable?: boolean | undefined;
 }
+
+// @public
+export type DrawPhase = "sync" | "async";
 
 // @public
 export const GEOMETRY_DEFAULTS: {
@@ -1900,7 +1916,7 @@ namespace Manifold {
     }
     type CrossSectionPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class CrossSectionsDto<T> {
@@ -2045,7 +2061,7 @@ namespace Manifold {
     }
     type ManifoldPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class ManifoldRefineDto<T> {
@@ -2139,7 +2155,7 @@ namespace Manifold {
     }
     type MeshPointer = {
         hash: number;
-        type: string;
+        type: "manifold-shape";
     };
     // (undocumented)
     class MeshTriangleIndexDto<T> {

@@ -18,18 +18,18 @@ export namespace Manifold {
      * reference. Pass it into the next operation to keep building, and dispose it when finished to
      * release the kernel memory behind it.
      */
-    export type ManifoldPointer = { hash: number, type: string };
+    export type ManifoldPointer = { hash: number, type: "manifold-shape" };
     /**
      * A handle to a 2D cross section inside the Manifold kernel. Cross sections are built, offset and
      * booleaned in the plane, then extruded or revolved into solids - often the cheapest route to a
      * profile-driven part.
      */
-    export type CrossSectionPointer = { hash: number, type: string };
+    export type CrossSectionPointer = { hash: number, type: "manifold-shape" };
     /**
      * A handle to raw mesh data inside the Manifold kernel, used when importing an existing mesh into
      * the kernel or reading one back out.
      */
-    export type MeshPointer = { hash: number, type: string };
+    export type MeshPointer = { hash: number, type: "manifold-shape" };
 
     /**
      * How overlapping and self-intersecting outlines decide what is inside. evenOdd alternates with
