@@ -60,19 +60,19 @@ importers:
         specifier: 9.13.0
         version: 9.13.0(@babylonjs/core@9.13.0)(babylonjs-gltf2interface@9.25.0)
       '@bitbybit-dev/base':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../core
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../occt-worker
       earcut:
         specifier: 3.0.2
@@ -146,25 +146,25 @@ importers:
   packages/dev/core:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../base
       '@bitbybit-dev/jscad':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../jscad
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../jscad-worker
       '@bitbybit-dev/manifold':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../manifold
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../manifold-worker
       '@bitbybit-dev/occt':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../occt
       '@bitbybit-dev/occt-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.3.0
@@ -238,7 +238,7 @@ importers:
   packages/dev/jscad:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../base
       '@jscad/3mf-serializer':
         specifier: 2.1.12
@@ -275,7 +275,7 @@ importers:
   packages/dev/jscad-worker:
     dependencies:
       '@bitbybit-dev/jscad':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../jscad
       rxjs:
         specifier: 7.8.2
@@ -300,7 +300,7 @@ importers:
   packages/dev/manifold:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../base
       manifold-3d:
         specifier: 3.3.2
@@ -325,7 +325,7 @@ importers:
   packages/dev/manifold-worker:
     dependencies:
       '@bitbybit-dev/manifold':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../manifold
       rxjs:
         specifier: 7.8.2
@@ -353,7 +353,7 @@ importers:
   packages/dev/occt:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../base
     devDependencies:
       '@microsoft/api-extractor':
@@ -375,10 +375,10 @@ importers:
   packages/dev/occt-worker:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../base
       '@bitbybit-dev/occt':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../occt
       rxjs:
         specifier: 7.8.2
@@ -400,19 +400,19 @@ importers:
   packages/dev/playcanvas:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../core
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.3.0
@@ -446,19 +446,19 @@ importers:
   packages/dev/threejs:
     dependencies:
       '@bitbybit-dev/base':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../base
       '@bitbybit-dev/core':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../core
       '@bitbybit-dev/jscad-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../jscad-worker
       '@bitbybit-dev/manifold-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../manifold-worker
       '@bitbybit-dev/occt-worker':
-        specifier: 1.2.0-rc.1
+        specifier: 1.2.0-rc.2
         version: link:../occt-worker
       jsonpath-plus:
         specifier: 10.3.0

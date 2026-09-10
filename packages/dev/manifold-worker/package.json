@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/manifold-worker",
-    "version": "1.2.0-rc.1",
+    "version": "1.2.0-rc.2",
     "description": "Bit By Bit Developers Manifold Based CAD Library to Program Geometry Via WebWorker",
     "homepage": "https://docs.bitbybit.dev/classes/Bit.Manifold",
     "main": "index.js",
@@ -119,7 +119,7 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/manifold": "1.2.0-rc.1",
+        "@bitbybit-dev/manifold": "1.2.0-rc.2",
         "rxjs": "7.8.2"
     },
     "devDependencies": {
