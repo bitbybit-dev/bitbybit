@@ -6,7 +6,12 @@
 //   node scripts/examples.mjs install [--only <part>]  npm ci in each (npm install where no lockfile)
 //   node scripts/examples.mjs build   [--only <part>]  npm run build in each that has a build script
 //   node scripts/examples.mjs verify  [--only <part>]  install, then build
-//   node scripts/examples.mjs audit   [--only <part>]  npm audit at the high level, lockfile only
+//   node scripts/examples.mjs audit   [--only <part>]  npm audit at the moderate level, lockfile only
+//
+// `audit` is npm's view and is not the whole picture: npm resolves advisories from its own feed,
+// which has diverged from the database Dependabot reads - multer@1.4.5-lts.2 reported "found 0
+// vulnerabilities" here while GitHub held fifteen advisories against it. ../scripts/check-advisories.mjs
+// covers that gap and runs beside this one; neither replaces the other.
 //   node scripts/examples.mjs refresh [--only <part>]  move each lockfile to the newest versions its manifest allows, then apply audit fixes
 //
 // Examples are found by walking this directory for package.json files (generated output and
@@ -75,7 +80,7 @@ const steps = {
     },
     audit: (e) => {
         if (!e.lockfile) return { example: e.path, step: "audit", ok: true, seconds: "0", note: "no lockfile" };
-        return run(e, "audit", "npm", ["audit", "--package-lock-only", "--audit-level=high"]);
+        return run(e, "audit", "npm", ["audit", "--package-lock-only", "--audit-level=moderate"]);
     },
     refresh: (e) => {
         if (!e.lockfile) return { example: e.path, step: "refresh", ok: true, seconds: "0", note: "no lockfile" };

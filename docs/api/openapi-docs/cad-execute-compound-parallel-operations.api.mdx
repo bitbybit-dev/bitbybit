@@ -48,9 +48,7 @@ Runs several independent CAD operations in parallel as one compound task. Each s
   <Translate id="theme.openapi.request.title">Request</Translate>
 </Heading>
 
-<ParamsDetails
-  parameters={undefined}
->
+<ParamsDetails>
   
 </ParamsDetails>
 
@@ -66,5 +64,44 @@ Runs several independent CAD operations in parallel as one compound task. Each s
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/cad/compound`
+
+Runs several independent CAD operations in parallel as one compound task. Each sub-operation is executed on its own and produces its own downloadable result, so use this when the operations do not depend on each other - for a sequence where each step consumes the previous one's output, use the chained pipeline endpoint instead. Returns 202 with a compound task id; poll it and download the per-sub-task manifest when it completes.
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `parallel` | boolean | yes | Must be true - signals that items should be processed concurrently |
+| `items` | array of object | yes | List of independent CAD operations to execute in parallel. Each item becomes a sub-task. |
+| `items[].operation` | string | yes | Fully-qualified CAD operation identifier. Supports OCCT, Manifold, JSCAD, and vector/math operations. |
+| `items[].params` | object | no | Operation-specific parameters for this sub-task |
+| `items[].inputFiles` | array of object | no | References to previously uploaded files to be used as inputs for this operation |
+| `items[].inputFiles[].fileId` | string | yes | ID of a previously uploaded file (from POST /files/upload) |
+| `items[].inputFiles[].role` | string | yes | Role identifier for the file (e.g. 'step-model', 'coordinates-csv') |
+| `items[].outputFormats` | array of string | no | Per-item output format overrides. If omitted, the task produces raw result data. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Compound task accepted |
+| `400` | Validation error |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/cad/compound" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

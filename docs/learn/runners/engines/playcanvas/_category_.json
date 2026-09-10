@@ -1,5 +1,6 @@
 {
   "label": "PlayCanvas",
+  "key": "RunnersPlayCanvas",
   "position": 1,
   "link": {
     "type": "generated-index",

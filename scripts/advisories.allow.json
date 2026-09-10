@@ -1,0 +1,29 @@
+{
+    "//": "Advisories that check-advisories.mjs must not fail on, each with the reason it does not apply here. An entry that stops matching anything fails the check, so this list cannot rot: remove it when the dependency moves. Record only advisories that are unreachable or unfixable - never one that is merely inconvenient to fix.",
+    "allow": [
+        {
+            "ghsa": "GHSA-px8p-9vwx-vf98",
+            "package": "fflate",
+            "reason": "The advisory is an infinite loop in unzipSync on a malformed ZIP64 archive. The vulnerable copy reaches this repository only as @jscad/3mf-serializer's exact pin of fflate 0.7.3, and that package imports zipSync and strToU8 and nothing else - it writes 3MF archives and never unzips one, so the affected function is not reachable. No fix exists to take instead: the newest @jscad/3mf-serializer still pins 0.7.3.",
+            "reviewed": "2026-09-10"
+        },
+        {
+            "ghsa": "GHSA-w3rx-r6r6-pgpr",
+            "package": "image-size",
+            "reason": "Denial of service in the ICNS parser. Every published version is affected (the advisory records no patched version and 2.0.2 is the newest release), and the package reaches this repository only inside Docusaurus, which uses it at build time to read the dimensions of images committed to this repository. There is no untrusted input on that path and no version to move to.",
+            "reviewed": "2026-09-10"
+        },
+        {
+            "ghsa": "GHSA-5p2g-fcmc-qvqq",
+            "package": "image-size",
+            "reason": "Denial of service in the JXL and HEIF parsers, same package and same reasoning as the ICNS advisory above: no published version is unaffected, and it runs at docs build time over this repository's own images.",
+            "reviewed": "2026-09-10"
+        },
+        {
+            "ghsa": "GHSA-qxc2-j82w-r537",
+            "package": "@faker-js/faker",
+            "reason": "helpers.fake can be driven into code execution by a hostile template string. faker reaches this repository only through postman-collection, which pins it at exactly 5.5.3 to generate sample values for the API reference at docs build time; the templates it renders come from this repository's own OpenAPI document. The only patched version is 10.5.0, and postman-collection - which has no newer release - calls the faker 5.x API, so forcing the patched version breaks the docs build outright.",
+            "reviewed": "2026-09-10"
+        }
+    ]
+}

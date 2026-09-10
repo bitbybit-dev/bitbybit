@@ -123,9 +123,9 @@
         "rxjs": "7.8.2"
     },
     "devDependencies": {
-        "@vitest/coverage-v8": "4.1.7",
+        "@vitest/coverage-v8": "4.1.11",
         "shx": "0.4.0",
         "typescript": "5.9.3",
-        "vitest": "4.1.7"
+        "vitest": "4.1.11"
     }
 }

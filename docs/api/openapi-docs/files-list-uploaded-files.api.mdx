@@ -66,5 +66,33 @@ Returns a paginated list of the files uploaded under your API key, newest first,
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/files`
+
+Returns a paginated list of the files uploaded under your API key, newest first, with each file's id, original name, size, upload status and expiry. Use it to find the file id to pass to a conversion endpoint, and to check that an upload through a pre-signed URL actually completed before you reference it.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `page` | query | integer | no | 1-based page number. Defaults to the first page. |
+| `limit` | query | integer | no | How many files to return per page. |
+| `status` | query | `pending` \| `confirmed` \| `expired` | no | Return only files in this upload state: pending (a pre-signed URL was issued but the upload has not been confirmed), confirmed (the blob is stored and usable), or expired. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | File list |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/files" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

@@ -27,3 +27,10 @@ allowBuilds:
   "@parcel/watcher": false
   unrs-resolver: false
   webworker-threads: false
+
+# js-yaml reaches this workspace only through openapi-typescript -> @redocly/openapi-core, which
+# pins it at exactly 4.3.1 - a version that cannot bound the CPU a YAML merge key chain costs.
+# 4.3.2 is the patch that fixes that and carries nothing else, and the exact pin above it means
+# no update can reach it; this is the only lever. Drop the entry once redocly moves its pin.
+overrides:
+  js-yaml: ^4.3.2
