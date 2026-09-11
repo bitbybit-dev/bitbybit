@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/manifold",
-    "version": "1.2.0-rc.2",
+    "version": "1.2.0",
     "description": "Bit By Bit Developers Manifold based CAD Library to Program Geometry",
     "homepage": "https://docs.bitbybit.dev/classes/Bit.Manifold",
     "main": "index.js",
@@ -103,7 +103,7 @@
     "type": "module",
     "dependencies": {
         "manifold-3d": "3.3.2",
-        "@bitbybit-dev/base": "1.2.0-rc.2"
+        "@bitbybit-dev/base": "1.2.0"
     },
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.0",

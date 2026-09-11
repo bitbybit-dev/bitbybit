@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/occt-worker",
-    "version": "1.2.0-rc.2",
+    "version": "1.2.0",
     "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel adapted for WebWorker",
     "homepage": "https://docs.bitbybit.dev/classes/Bit.OCCT",
     "main": "index.js",
@@ -118,8 +118,8 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/occt": "1.2.0-rc.2",
-        "@bitbybit-dev/base": "1.2.0-rc.2",
+        "@bitbybit-dev/occt": "1.2.0",
+        "@bitbybit-dev/base": "1.2.0",
         "rxjs": "7.8.2"
     },
     "devDependencies": {
