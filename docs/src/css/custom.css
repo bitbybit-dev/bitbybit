@@ -162,3 +162,11 @@
 .related-pages li {
     margin: 0;
 }
+
+/* Version and build identity in the footer copyright line */
+.footer__copyright .bb-build {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    opacity: 0.6;
+}

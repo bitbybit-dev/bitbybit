@@ -8,6 +8,7 @@
 .docusaurus
 .cache-loader
 /static/llms.txt
+/static/build-id.json
 
 # Misc
 .DS_Store

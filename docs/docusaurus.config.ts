@@ -3,12 +3,27 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 import packageJson from "./package.json";
+import { readFileSync } from "fs";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+
+// Written by scripts/build-id.js before every build and start; the footer shows it and the site
+// serves it at /build-id.json, so the two can never disagree. A config loaded without it (an IDE,
+// a bare docusaurus command) shows "dev".
+function readBuildId(): string {
+    try {
+        const parsed = JSON.parse(readFileSync("./static/build-id.json", "utf8")) as { buildId?: unknown };
+        return typeof parsed.buildId === "string" && parsed.buildId.length > 0 ? parsed.buildId : "dev";
+    } catch {
+        return "dev";
+    }
+}
+const buildId = readBuildId();
 
 const config: Config = {
     customFields: {
         bitbybitVersion: packageJson.version,
+        buildId,
     },
     title: "Bitbybit",
     tagline: "Learn How To Use The Platform",
@@ -365,7 +380,7 @@ const config: Config = {
                     ],
                 },
             ],
-            copyright: `Copyright © ${new Date().getFullYear()} Bit by bit developers`,
+            copyright: `Copyright © ${new Date().getFullYear()} Bit by bit developers <span class="bb-build" title="Version ${packageJson.version}, build ${buildId}">v${packageJson.version} · ${buildId}</span>`,
         },
         prism: {
             theme: prismThemes.github,
