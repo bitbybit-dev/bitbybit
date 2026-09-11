@@ -108,11 +108,11 @@
     "type": "module",
     "dependencies": {
         "@bitbybit-dev/base": "1.2.0",
-        "@jscad/io-utils": "2.0.28",
-        "@jscad/modeling": "2.12.3",
-        "@jscad/stl-serializer": "2.1.18",
-        "@jscad/dxf-serializer": "2.1.18",
-        "@jscad/3mf-serializer": "2.1.12"
+        "@jscad/io-utils": "2.0.33",
+        "@jscad/modeling": "2.13.0",
+        "@jscad/stl-serializer": "2.1.23",
+        "@jscad/dxf-serializer": "2.1.23",
+        "@jscad/3mf-serializer": "2.1.17"
     },
     "devDependencies": {
         "@microsoft/api-extractor": "7.59.0",
