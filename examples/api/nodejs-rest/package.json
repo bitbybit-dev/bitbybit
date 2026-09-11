@@ -1,6 +1,6 @@
 {
     "name": "bitbybit-api-nodejs-rest-threejs",
-    "version": "1.2.0-rc.2",
+    "version": "1.2.0",
     "private": true,
     "type": "module",
     "scripts": {

@@ -81,39 +81,39 @@ packages/
 
 For AI coding assistants, use these resources to get comprehensive Bitbybit API knowledge.
 
-### AI Prompt Context Files (v1.2.0-rc.2)
+### AI Prompt Context Files (v1.2.0)
 
 #### Beginner Context (Monaco Editor)
 For online TypeScript editor at bitbybit.dev:
-- Full Context (116k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-babylon-monaco-ai-context.md
+- Full Context (116k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-babylon-monaco-ai-context.md
 
 #### BabylonJS Context
-- Full (116k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-babylon-ai-context.md
-- Lite (114k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-babylon-no-comment-min-ai.md
+- Full (116k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-babylon-ai-context.md
+- Lite (114k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-babylon-no-comment-min-ai.md
 
 #### Three.js Context
-- Full (95k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-three-ai-context.md
-- Lite (82k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-three-no-comment-min-ai.md
+- Full (95k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-three-ai-context.md
+- Lite (82k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-three-no-comment-min-ai.md
 
 #### PlayCanvas Context
-- Full (94k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-playcanvas-ai-context.md
-- Lite (82k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-playcanvas-no-comment-min-ai.md
+- Full (94k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-playcanvas-ai-context.md
+- Lite (82k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-playcanvas-no-comment-min-ai.md
 
 ### TypeScript Declaration Files (.d.ts)
 
 For AI agents that struggle with dictionary translation, use these full TypeScript type definitions:
 
 #### BabylonJS Declarations
-- With Comments (~500k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-babylon-formatted.d.ts
-- Without Comments (~180k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-babylon-formatted-no-comments.d.ts
+- With Comments (~500k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-babylon-formatted.d.ts
+- Without Comments (~180k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-babylon-formatted-no-comments.d.ts
 
 #### Three.js Declarations
-- With Comments (~420k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-three-formatted.d.ts
-- Without Comments (~150k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-three-formatted-no-comments.d.ts
+- With Comments (~420k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-three-formatted.d.ts
+- Without Comments (~150k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-three-formatted-no-comments.d.ts
 
 #### PlayCanvas Declarations
-- With Comments (~420k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-playcanvas-formatted.d.ts
-- Without Comments (~150k tokens): https://git-cdn.bitbybit.dev/v1.2.0-rc.2/ai-context/bitbybit-playcanvas-formatted-no-comments.d.ts
+- With Comments (~420k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-playcanvas-formatted.d.ts
+- Without Comments (~150k tokens): https://git-cdn.bitbybit.dev/v1.2.0/ai-context/bitbybit-playcanvas-formatted-no-comments.d.ts
 
 ### Context7 MCP (Recommended)
 
