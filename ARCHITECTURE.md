@@ -130,7 +130,8 @@ The JSDoc on the public API is not in that table, because nothing here generates
 *from*. Its tags (`@default`, `@optional`, `@step` and the rest, thousands of them) are structured
 metadata that downstream generators read, so it is closer to a declaration than to prose. That is why
 it is exempt from the comment ban, and why no tool in this repository may rewrite it: a fixer that
-tidied it would silently change what those generators produce.
+tidied it would silently change what those generators produce. `scripts/check-api-docs.mjs` only
+reads it: it holds the corpus to `scripts/api-docs-baseline.json` against `API_DOCS_GUIDE.md`.
 
 ## The published contract
 

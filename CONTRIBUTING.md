@@ -89,6 +89,8 @@ Please avoid submitting changes that are purely cosmetic (e.g., formatting, whit
 
 - Find our docs [on GitHub](https://github.com/bitbybit-dev/bitbybit/tree/master/docs)
 - We use **Docusaurus** as our documentation framework
+- The JSDoc on the public API is documentation too: `API_DOCS_GUIDE.md` says how it is written, and
+  `npm run api-docs:report` lists what still falls short of it
 
 ---
 
