@@ -2,8 +2,11 @@ import * as Inputs from "../../inputs";
 import * as Manifold3D from "manifold-3d";
 
 /**
- * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
- * Thanks Manifold community for developing this kernel
+ * Changing Manifold solids beyond booleans: wrapping them in a convex hull, slicing and projecting
+ * them into cross-sections, refining and smoothing their meshes, simplifying them, composing and
+ * decomposing them, and computing normals and curvature into vertex property channels. A property
+ * channel is one number per vertex stored on the mesh, such as the three channels of a normal.
+ * Every method returns a new solid.
  */
 export class ManifoldOperations {
 
@@ -14,24 +17,34 @@ export class ManifoldOperations {
     }
 
     /**
-     * Computes convex hull of the manifold shape provided
-     * @param inputs two shapes
-     * @returns hulled manifold shape
+     * Wraps a solid in its convex hull, the smallest shape without dents that contains it, like
+     * shrink-wrap pulled tight over it.
+     * @param inputs - The solid
+     * @returns The convex hull
      * @group hulls
      * @shortname convex hull
      * @drawable true
+     * @example
+     * ```typescript
+     * const wrapped = await bitbybit.manifold.manifold.operations.hull({ manifold: shape });
+     * ```
      */
     hull(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.hull();
     }
 
     /**
-     * Hull points or manifolds
-     * @param inputs manifold
-     * @returns manifold
+     * Wraps points, solids or a mix of both in one convex hull, the smallest shape without dents
+     * that contains them all.
+     * @param inputs - The points and solids to wrap
+     * @returns The convex hull
      * @group hulls
      * @shortname hull points
      * @drawable true
+     * @example
+     * ```typescript
+     * const wrapped = await bitbybit.manifold.manifold.operations.hullPoints({ points: [[0, 0, 0], [10, 0, 0], [0, 10, 0], [0, 0, 10]] });
+     * ```
      */
     hullPoints(inputs: Inputs.Manifold.HullPointsDto<(Inputs.Base.Point3 | Manifold3D.Manifold)[]>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
@@ -40,52 +53,76 @@ export class ManifoldOperations {
     }
 
     /**
-     * Returns the cross section of this object parallel to the X-Y plane at the
-     * specified height. Using a height equal to the bottom
-     * of the bounding box will return the bottom faces, while using a height
-     * equal to the top of the bounding box will return empty.
-     * @param inputs manifold and height
-     * @returns sliced cross section
+     * Cuts a solid with a plane parallel to the XY plane at the given Z height and returns the flat
+     * section as a cross-section.
+     *
+     * A height at the bottom of the solid's bounding box gives its bottom faces; a height at the
+     * top gives an empty cross-section.
+     * @param inputs - The solid and the Z height of the cut
+     * @returns The section as a cross-section
      * @group cross sections
      * @shortname slice
      * @drawable true
+     * @example
+     * ```typescript
+     * const section = await bitbybit.manifold.manifold.operations.slice({ manifold: sphere, height: 2 });
+     * ```
      */
     slice(inputs: Inputs.Manifold.SliceDto<Manifold3D.Manifold>): Manifold3D.CrossSection {
         return inputs.manifold.slice(inputs.height);
     }
 
     /**
-     * Creates a projection on xy plane from the shape outline
-     * @param inputs manifold
-     * @returns projected cross section
+     * Flattens a solid onto the XY plane and returns its outline as a cross-section, like its
+     * shadow under a light straight above.
+     * @param inputs - The solid
+     * @returns The outline as a cross-section
      * @group cross sections
      * @shortname project
      * @drawable true
+     * @example
+     * ```typescript
+     * const shadow = await bitbybit.manifold.manifold.operations.project({ manifold: shape });
+     * ```
      */
     project(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Manifold3D.CrossSection {
         return inputs.manifold.project();
     }
 
     /**
-     * Return a copy of the manifold with the set tolerance value.
-     * This performs mesh simplification when the tolerance value is increased.
-     * @param inputs manifold and tolerance
-     * @returns manifold with new tolerance
+     * Gives a solid a new tolerance, the rounding error it is allowed to carry, and simplifies its
+     * mesh when the tolerance grows.
+     *
+     * Triangles thinner than the tolerance are treated as degenerate and removed.
+     * @param inputs - The solid and the tolerance in model units
+     * @returns The solid with the new tolerance
      * @group basic
      * @shortname set tolerance
      * @drawable false
+     * @example
+     * ```typescript
+     * const coarser = await bitbybit.manifold.manifold.operations.setTolerance({ manifold: shape, tolerance: 0.01 });
+     * ```
      */
     setTolerance(inputs: Inputs.Manifold.ManifoldRefineToleranceDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.setTolerance(inputs.tolerance);
     }
 
     /**
-     * Returns the first of n sequential new unique mesh IDs for marking sets of triangles that can be looked up after further operations. Assign to Mesh.runOriginalID vector.
-     * @param inputs count
-     * @returns void
+     * Reserves a run of `count` unique mesh ids and returns the first, for marking sets of
+     * triangles that can be found again after later operations.
+     *
+     * Assign them to a mesh's `runOriginalID` before building a solid from it, for instance to keep
+     * several materials apart.
+     * @param inputs - How many ids to reserve
+     * @returns The first of the reserved ids; the rest follow in sequence
      * @group basic
      * @shortname reserve id
      * @drawable false
+     * @example
+     * ```typescript
+     * const firstId = await bitbybit.manifold.manifold.operations.reserveIds({ count: 2 });
+     * ```
      */
     reserveIds(inputs: Inputs.Manifold.CountDto): number {
         const { Manifold } = this.manifold;
@@ -94,36 +131,39 @@ export class ManifoldOperations {
     }
 
     /**
-     * If you copy a manifold, but you want this new copy to have new properties
-     * (e.g. a different UV mapping), you can reset its IDs to a new original,
-     * meaning it will now be referenced by its descendants instead of the meshes
-     * it was built from, allowing you to differentiate the copies when applying
-     * your properties to the final result.
+     * Makes a copy of a solid that counts as a new original, so the copy can carry its own vertex
+     * properties, such as a different UV mapping, and be told apart from what it was built from.
      *
-     * This function also condenses all coplanar faces in the relation, and
-     * collapses those edges. If you want to have inconsistent properties across
-     * these faces, meaning you want to preserve some of these edges, you should
-     * instead call GetMesh(), calculate your properties and use these to
-     * construct a new manifold.
-     * @param inputs manifold
-     * @returns original manifold
+     * Coplanar faces are merged and the edges between them collapsed on the way; keep the mesh
+     * route instead when those edges must stay.
+     * @param inputs - The solid
+     * @returns The copy marked as an original
      * @group basic
      * @shortname as original
      * @drawable true
+     * @example
+     * ```typescript
+     * const original = await bitbybit.manifold.manifold.operations.asOriginal({ manifold: shape });
+     * ```
      */
     asOriginal(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.asOriginal();
     }
 
     /**
-     * Constructs a new manifold from a list of other manifolds. This is a purely
-     * topological operation, so care should be taken to avoid creating
-     * overlapping results. It is the inverse operation of Decompose().
-     * @param inputs manifold shapes
-     * @returns composed manifold
+     * Packs several solids into one without fusing them, the inverse of `decompose`.
+     *
+     * Nothing is checked for overlap, so keep the solids apart; a boolean union is the right tool
+     * for overlapping ones.
+     * @param inputs - The solids to pack together
+     * @returns One solid holding all of them
      * @group composition
      * @shortname compose
      * @drawable true
+     * @example
+     * ```typescript
+     * const packed = await bitbybit.manifold.manifold.operations.compose({ manifolds: [cube, sphere] });
+     * ```
      */
     compose(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
@@ -132,157 +172,204 @@ export class ManifoldOperations {
     }
 
     /**
-     * This operation returns a vector of Manifolds that are topologically
-     * disconnected. If everything is connected, the vector is length one,
-     * containing a copy of the original. It is the inverse operation of
-     * Compose().
-     * @param inputs manifold
-     * @returns decomposed manifold shapes
+     * Splits a solid into its separate, unconnected pieces, the inverse of `compose`.
+     *
+     * A solid that is all one piece comes back as a list of one copy.
+     * @param inputs - The solid
+     * @returns The separate pieces
      * @group composition
      * @shortname decompose
      * @drawable true
+     * @example
+     * ```typescript
+     * const pieces = await bitbybit.manifold.manifold.operations.decompose({ manifold: packed });
+     * ```
      */
     decompose(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
         return inputs.manifold.decompose();
     }
 
     /**
-     * Fills in vertex properties for normal vectors, calculated from the mesh
-     * geometry. Flat faces composed of three or more triangles will remain flat.
-     * @param inputs manifold and normal index with minimum sharp angle
-     * @returns manifold with calculated normals
+     * Computes a normal for every vertex from the mesh and stores it in three property channels
+     * starting at `normalIdx`.
+     *
+     * Edges sharper than `minSharpAngle`, in degrees, keep separate normals on each side and stay
+     * crisp; at 0 every triangle keeps its own normal. Flat faces of several triangles stay flat.
+     * @param inputs - The solid, the first normal channel and the sharp angle in degrees
+     * @returns The solid with normals stored
      * @group adjustments
      * @shortname calculate normals
      * @drawable true
+     * @example
+     * ```typescript
+     * const withNormals = await bitbybit.manifold.manifold.operations.calculateNormals({ manifold: shape, normalIdx: 0, minSharpAngle: 60 });
+     * ```
      */
     calculateNormals(inputs: Inputs.Manifold.CalculateNormalsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.calculateNormals(inputs.normalIdx, inputs.minSharpAngle);
     }
 
     /**
-     * Curvature is the inverse of the radius of curvature, and signed such that
-     * positive is convex and negative is concave. There are two orthogonal
-     * principal curvatures at any point on a manifold, with one maximum and the
-     * other minimum. Gaussian curvature is their product, while mean
-     * curvature is their sum. This approximates them for every vertex and assigns
-     * them as vertex properties on the given channels.
-     * @param inputs manifold and gaussian and mean index
-     * @returns manifold with calculated curvature
+     * Computes how strongly the surface bends at every vertex and stores it in property channels:
+     * Gaussian curvature at `gaussianIdx`, mean curvature at `meanIdx`.
+     *
+     * Curvature is the inverse of the bending radius, positive where the surface is convex and
+     * negative where it is concave; an index below 0 skips that channel.
+     * @param inputs - The solid and the two channels to store into
+     * @returns The solid with curvature stored
      * @group adjustments
      * @shortname calculate curvature
      * @drawable true
+     * @example
+     * ```typescript
+     * const withCurvature = await bitbybit.manifold.manifold.operations.calculateCurvature({ manifold: shape, gaussianIdx: 0, meanIdx: 1 });
+     * ```
      */
     calculateCurvature(inputs: Inputs.Manifold.CalculateCurvatureDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.calculateCurvature(inputs.gaussianIdx, inputs.meanIdx);
     }
 
     /**
-     * Increase the density of the mesh by splitting each edge into pieces such
-     * that any point on the resulting triangles is roughly within tolerance of
-     * the smoothly curved surface defined by the tangent vectors. This means
-     * tightly curving regions will be divided more finely than smoother regions.
-     * If halfedgeTangents are not present, the result will simply be a copy of
-     * the original. Quads will ignore their interior triangle bisector.
-     * @param inputs manifold and tolerance
-     * @returns refined manifold
+     * Adds triangles to a smoothed solid until every point of its mesh lies within `tolerance` of
+     * the smooth surface, so tightly curved regions get more triangles than flat ones.
+     *
+     * Only a solid that was smoothed with `smoothOut` or `smoothByNormals` changes; any other comes
+     * back as a copy.
+     * @param inputs - The solid and the tolerance in model units
+     * @returns The refined solid
      * @group adjustments
      * @shortname refine to tolerance
      * @drawable true
+     * @example
+     * ```typescript
+     * const finer = await bitbybit.manifold.manifold.operations.refineToTolerance({ manifold: smoothed, tolerance: 0.01 });
+     * ```
      */
     refineToTolerance(inputs: Inputs.Manifold.ManifoldRefineToleranceDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.refineToTolerance(inputs.tolerance);
     }
 
     /**
-     * Increase the density of the mesh by splitting each edge into pieces of
-     * roughly the input length. Interior verts are added to keep the rest of the
-     * triangulation edges also of roughly the same length. If halfedgeTangents
-     * are present (e.g. from the Smooth() constructor), the new vertices will be
-     * moved to the interpolated surface according to their barycentric
-     * coordinates.
-     * @param inputs manifold and length
-     * @returns refined manifold
+     * Adds triangles to a solid by splitting every edge into pieces of roughly the given length,
+     * adding inner vertices to keep the triangles even.
+     *
+     * On a solid smoothed with `smoothOut` or `smoothByNormals` the new vertices move onto the
+     * smooth surface; otherwise the surface stays as it is.
+     * @param inputs - The solid and the target edge length in model units
+     * @returns The refined solid
      * @group adjustments
      * @shortname refine to length
      * @drawable true
+     * @example
+     * ```typescript
+     * const finer = await bitbybit.manifold.manifold.operations.refineToLength({ manifold: smoothed, length: 0.5 });
+     * ```
      */
     refineToLength(inputs: Inputs.Manifold.ManifoldRefineLengthDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.refineToLength(inputs.length);
     }
 
     /**
-     * Increase the density of the mesh by splitting every edge into n pieces. For
-     * instance, with n = 2, each triangle will be split into 4 triangles. These
-     * will all be coplanar (and will not be immediately collapsed) unless the
-     * Mesh/Manifold has halfedgeTangents specified (e.g. from the Smooth()
-     * constructor), in which case the new vertices will be moved to the
-     * interpolated surface according to their barycentric coordinates.
-     * @param inputs manifold and count
-     * @returns refined manifold
+     * Adds triangles to a solid by splitting every edge into `number` pieces; with 2, each triangle
+     * becomes four.
+     *
+     * On a solid smoothed with `smoothOut` or `smoothByNormals` the new vertices move onto the
+     * smooth surface; otherwise the new triangles stay flat.
+     * @param inputs - The solid and how many pieces to split each edge into
+     * @returns The refined solid
      * @group adjustments
      * @shortname refine
      * @drawable true
+     * @example
+     * ```typescript
+     * const finer = await bitbybit.manifold.manifold.operations.refine({ manifold: smoothed, number: 2 });
+     * ```
      */
     refine(inputs: Inputs.Manifold.ManifoldRefineDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.refine(inputs.number);
     }
 
     /**
-     * Smooths out the Manifold by filling in the halfedgeTangent vectors. The
-     * geometry will remain unchanged until Refine or RefineToLength is called to
-     * interpolate the surface. This version uses the geometry of the triangles
-     * and pseudo-normals to define the tangent vectors.
-     * @param inputs manifold and minimum sharp angle and minimum smoothness
-     * @returns smoothed manifold
+     * Marks a solid for smoothing by working out tangents from its triangles, so a later `refine`
+     * or `refineToLength` bends the new triangles into a smooth surface.
+     *
+     * Edges sharper than `minSharpAngle`, in degrees, stay sharp; `minSmoothness` above 0 rounds
+     * those a little, and 1 smooths everything. The geometry itself does not change until it is
+     * refined.
+     * @param inputs - The solid, the sharp angle in degrees and the smoothness of sharp edges
+     * @returns The solid with smoothing tangents
      * @group adjustments
      * @shortname smooth out
      * @drawable true
+     * @example
+     * ```typescript
+     * const smoothed = await bitbybit.manifold.manifold.operations.smoothOut({ manifold: cube, minSharpAngle: 60, minSmoothness: 0 });
+     * const rounded = await bitbybit.manifold.manifold.operations.refineToLength({ manifold: smoothed, length: 0.5 });
+     * ```
      */
     smoothOut(inputs: Inputs.Manifold.ManifoldSmoothOutDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.smoothOut(inputs.minSharpAngle, inputs.minSmoothness);
     }
 
     /**
-     * Smooths out the Manifold by filling in the halfedgeTangent vectors. The
-     * geometry will remain unchanged until Refine or RefineToLength is called to
-     * interpolate the surface. This version uses the supplied vertex normal
-     * properties to define the tangent vectors.
-     * @param inputs manifold and normal index
-     * @returns smoothed manifold
+     * Marks a solid for smoothing using the normals stored in its vertex properties, so a later
+     * `refine` or `refineToLength` bends the new triangles into a smooth surface.
+     *
+     * `normalIdx` is the first of the three normal channels, as `calculateNormals` stores them;
+     * where the normals on a vertex disagree the edge stays sharp.
+     * @param inputs - The solid and the first normal channel
+     * @returns The solid with smoothing tangents
      * @group adjustments
      * @shortname smooth by normals
      * @drawable true
+     * @example
+     * ```typescript
+     * const smoothed = await bitbybit.manifold.manifold.operations.smoothByNormals({ manifold: withNormals, normalIdx: 0 });
+     * ```
      */
     smoothByNormals(inputs: Inputs.Manifold.ManifoldSmoothByNormalsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.smoothByNormals(inputs.normalIdx);
     }
 
     /**
-     * Return a copy of the manifold simplified to the given tolerance, but with
-     * its actual tolerance value unchanged. The result will contain a subset of
-     * the original verts and all surfaces will have moved by less than tolerance.
-     * @param inputs manifold and tolerance
-     * @returns simplified manifold
+     * Removes vertices from a solid's mesh while keeping every surface within `tolerance` of where
+     * it was, to cut the triangle count.
+     *
+     * The result keeps a subset of the original vertices; the solid's own tolerance value stays
+     * unchanged.
+     * @param inputs - The solid and how far surfaces may move, in model units
+     * @returns The simplified solid
      * @group adjustments
      * @shortname simplify
      * @drawable true
+     * @example
+     * ```typescript
+     * const lighter = await bitbybit.manifold.manifold.operations.simplify({ manifold: shape, tolerance: 0.05 });
+     * ```
      */
     simplify(inputs: Inputs.Manifold.ManifoldSimplifyDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.simplify(inputs.tolerance);
     }
 
     /**
-     * Create a new copy of this manifold with updated vertex properties by
-     * supplying a function that takes the existing position and properties as
-     * input. You may specify any number of output properties, allowing creation
-     * and removal of channels. Note: undefined behavior will result if you read
-     * past the number of input properties or write past the number of output
-     * properties.
-     * @param inputs manifold, numProp and property function
-     * @returns manifold with updated properties
+     * Rewrites the vertex properties of a solid with a function that receives each vertex's
+     * position and old properties and fills in the new ones.
+     *
+     * `numProp` sets how many properties each vertex has afterwards, so channels can be added or
+     * dropped; reading past the old count or writing past the new one is undefined.
+     * @param inputs - The solid, the new property count and the function that fills the properties
+     * @returns The solid with the new properties
      * @group adjustments
      * @shortname set properties
      * @drawable true
+     * @example
+     * ```typescript
+     * const colored = await bitbybit.manifold.manifold.operations.setProperties({
+     *     manifold: shape,
+     *     numProp: 3,
+     *     propFunc: (newProp, position) => { newProp[0] = position[0]; newProp[1] = position[1]; newProp[2] = position[2]; },
+     * });
+     * ```
      */
     setProperties(inputs: Inputs.Manifold.ManifoldSetPropertiesDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.setProperties(inputs.numProp, inputs.propFunc);

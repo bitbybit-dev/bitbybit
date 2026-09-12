@@ -17,6 +17,9 @@ export namespace Lists {
         last = "last",
     }
 
+    /**
+     * A list and a position for `lists.getItem`.
+     */
     export class ListItemDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -24,12 +27,12 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The list to interrogate
+         * The list to read from.
          * @default undefined
          */
         list!: T[];
         /**
-         * Index of the item in the list - 0 means first.
+         * Position of the item, counting from 0; outside the list it throws.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -37,11 +40,15 @@ export namespace Lists {
          */
         index = 0;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the item is deep-copied so the caller cannot change the list through it; an
+         * item that cannot be copied, such as one with circular references, throws.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list and a range of positions for `lists.getSubList`.
+     */
     export class SubListDto<T> {
         constructor(list?: T[], indexStart?: number, indexEnd?: number, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -50,12 +57,12 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The list to split into a sublist
+         * The list to cut from.
          * @default undefined
          */
         list!: T[];
         /**
-         * Index from which to start the sublist - 0 means first.
+         * Position of the first item to take, counting from 0.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -63,7 +70,7 @@ export namespace Lists {
          */
         indexStart = 0;
         /**
-         * Index to which to end the sublist - 0 means first.
+         * Position just after the last item to take; it is not included.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -71,43 +78,54 @@ export namespace Lists {
          */
         indexEnd = 1;
         /**
-         * Tries to clone the data in the component, sometimes it may not be possible if structure is circular
+         * When true, the items are deep-copied so the caller cannot change the list through them;
+         * an item that cannot be copied throws.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list for the methods that read or reshape it whole: `lists.reverse`, `lists.shuffle`,
+     * `lists.flipLists`, `lists.getFirstItem` and the others.
+     */
     export class ListCloneDto<T> {
         constructor(list?: T[], clone?: boolean) {
             if (list !== undefined) { this.list = list; }
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The list to interrogate
+         * The list to work on.
          * @default undefined
          */
         list!: T[];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * modifying methods work in place. Circular data cannot be copied and throws.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A pattern and a length for `lists.repeatInPattern`, which repeats the pattern until the list
+     * is that long.
+     */
     export class RepeatInPatternDto<T> {
         constructor(list?: T[]) {
             if (list !== undefined) { this.list = list; }
         }
         /**
-         * The list to interrogate
+         * The items to repeat, in order.
          * @default undefined
          */
         list!: T[];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the pattern is deep-copied first so the input is never changed. Data with
+         * circular references cannot be copied and throws.
          * @default true
          */
         clone?: boolean | undefined = true;
         /**
-         * The limit of the length of the list
+         * The length of the result; the pattern is cut off there.
          * @default 100
          * @minimum 1
          * @maximum Infinity
@@ -115,6 +133,9 @@ export namespace Lists {
          */
         lengthLimit = 100;
     }
+    /**
+     * A list and a direction for `lists.sortNumber` and `lists.sortTexts`.
+     */
     export class SortDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -122,21 +143,26 @@ export namespace Lists {
             if (orderAsc !== undefined) { this.orderAsc = orderAsc; }
         }
         /**
-         * The list to interrogate
+         * The numbers or texts to sort.
          * @default undefined
          */
         list!: T[];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input stays in its old order; when false
+         * it is sorted in place.
          * @default true
          */
         clone?: boolean | undefined = true;
         /**
-         * If true, the list will be sorted in ascending order, otherwise in descending order
+         * When true, the smallest or alphabetically first item comes first; when false the order is
+         * reversed.
          * @default true
          */
         orderAsc = true;
     }
+    /**
+     * Objects, the property to compare and a direction for `lists.sortByPropValue`.
+     */
     export class SortJsonDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -144,36 +170,43 @@ export namespace Lists {
             if (orderAsc !== undefined) { this.orderAsc = orderAsc; }
         }
         /**
-         * The list to interrogate
+         * The objects to sort; each should carry the property.
          * @default undefined
          */
         list!: T[];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input stays in its old order; when false
+         * it is sorted in place.
          * @default true
          */
         clone?: boolean | undefined = true;
         /**
-         * If true, the list will be sorted in ascending order, otherwise in descending order
+         * When true, the object with the smallest value comes first; when false the largest.
          * @default true
          */
         orderAsc = true;
         /**
-         * The property to sort by
+         * Name of the property whose numeric value decides the order.
          * @default propName
          */
         property = "propName";
     }
+    /**
+     * A list for `lists.removeAllItems`, which empties it in place.
+     */
     export class ListDto<T> {
         constructor(list?: T[]) {
             if (list !== undefined) { this.list = list; }
         }
         /**
-         * The list
+         * The list to empty.
          * @default undefined
          */
         list!: T[];
     }
+    /**
+     * A list and a group size for `lists.groupNth`.
+     */
     export class GroupListDto<T> {
         constructor(list?: T[], nrElements?: number, keepRemainder?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -181,12 +214,12 @@ export namespace Lists {
             if (keepRemainder !== undefined) { this.keepRemainder = keepRemainder; }
         }
         /**
-         * The list of elements to group together
+         * The items to split into groups, in order.
          * @default undefined
          */
         list!: T[];
         /**
-         * The number of elements in each group
+         * How many items go in each group.
          * @default 2
          * @minimum 1
          * @maximum Infinity
@@ -194,23 +227,27 @@ export namespace Lists {
          */
         nrElements = 2;
         /**
-         * If true, the remainder of the list will be added as a separate group
+         * When true, the items left over at the end form a shorter last group; when false they are
+         * dropped.
          * @default false
          */
         keepRemainder = false;
     }
+    /**
+     * An item and a count for `lists.repeat`.
+     */
     export class MultiplyItemDto<T> {
         constructor(item?: T, times?: number) {
             if (item !== undefined) { this.item = item; }
             if (times !== undefined) { this.times = times; }
         }
         /**
-         * The item to multiply
+         * The item to repeat; every entry of the result is this same item.
          * @default undefined
          */
         item!: T;
         /**
-         * Times to multiply
+         * How many entries the result has.
          * @default 10
          * @minimum 0
          * @maximum Infinity
@@ -218,6 +255,9 @@ export namespace Lists {
          */
         times: number = 10;
     }
+    /**
+     * A list, an item and a position for `lists.addItemAtIndex`.
+     */
     export class AddItemAtIndexDto<T> {
         constructor(list?: T[], item?: T, index?: number, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -226,17 +266,18 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The list to which item needs to be added
+         * The list to insert into.
          * @default undefined
          */
         list!: T[];
         /**
-         * The item to add
+         * The item to insert.
          * @default undefined
          */
         item!: T;
         /**
-         * The index to add the item at
+         * The position the item takes, counting from 0; the item there and everything after it
+         * shift up by one.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -244,11 +285,15 @@ export namespace Lists {
          */
         index = 0;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * item is inserted in place.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list, an item and several positions for `lists.addItemAtIndexes`.
+     */
     export class AddItemAtIndexesDto<T> {
         constructor(list?: T[], item?: T, indexes?: number[], clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -257,27 +302,32 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The list to which item needs to be added
+         * The list to insert into.
          * @default undefined
          */
         list!: T[];
         /**
-         * The item to add
+         * The item to insert at every position.
          * @default undefined
          */
         item!: T;
         /**
-         * The index to add the item at
+         * The positions, counted on the list as it was before any insertion; positions outside the
+         * list are ignored.
          * @default [0]
          */
         indexes: number[] = [0];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * items are inserted in place.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
 
+    /**
+     * A list, several items and one position per item for `lists.addItemsAtIndexes`.
+     */
     export class AddItemsAtIndexesDto<T> {
         constructor(list?: T[], items?: T[], indexes?: number[], clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -286,26 +336,31 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The list to which item needs to be added
+         * The list to insert into.
          * @default undefined
          */
         list!: T[];
         /**
-         * The item to add
+         * The items to insert, one per index, in the same order.
          * @default undefined
          */
         items!: T[];
         /**
-         * The index to add the item at
+         * One position per item, in ascending order, counted on the list as it was before any
+         * insertion; a wrong count or order throws.
          * @default [0]
          */
         indexes: number[] = [0];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * items are inserted in place.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list and a position for `lists.removeItemAtIndex` and `lists.removeItemAtIndexFromEnd`.
+     */
     export class RemoveItemAtIndexDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -313,12 +368,13 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-        * The list from which item needs to be removed
-        * @default undefined
-        */
+         * The list to take the item out of.
+         * @default undefined
+         */
         list!: T[];
         /**
-         * The index to on which remove item
+         * The position to remove, counting from 0 at the start, or from 0 at the end for the
+         * from-end method; outside the list nothing is removed.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -326,11 +382,15 @@ export namespace Lists {
          */
         index = 0;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * item is removed in place.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list and several positions for `lists.removeItemsAtIndexes`.
+     */
     export class RemoveItemsAtIndexesDto<T> {
         constructor(list?: T[], indexes?: number[], clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -338,21 +398,26 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-        * The list from which item needs to be removed
-        * @default undefined
-        */
+         * The list to take the items out of.
+         * @default undefined
+         */
         list!: T[];
         /**
-         * The indexes that should be removed
+         * The positions to remove, counted on the list as it was before any removal; positions
+         * outside the list are ignored.
          * @default undefined
          */
         indexes!: number[];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * items are removed in place.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list, a step and an offset for `lists.removeNthItem`.
+     */
     export class RemoveNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -361,12 +426,12 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-        * The list from which item needs to be removed
-        * @default undefined
-        */
+         * The list to thin out.
+         * @default undefined
+         */
         list!: T[];
         /**
-         * The nth item to remove
+         * The step: every nth item, counted from the offset, is removed.
          * @default 2
          * @minimum 1
          * @maximum Infinity
@@ -374,7 +439,7 @@ export namespace Lists {
          */
         nth = 2;
         /**
-         * The offset from which to start counting
+         * Position of the first item to remove, counting from 0.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -382,11 +447,15 @@ export namespace Lists {
          */
         offset = 0;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * items are removed in place.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list and a probability for `lists.randomGetThreshold` and `lists.randomRemoveThreshold`.
+     */
     export class RandomThresholdDto<T> {
         constructor(list?: T[], threshold?: number, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -394,12 +463,13 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-        * The list from which item needs to be updated
-        * @default undefined
-        */
+         * The list to pick from.
+         * @default undefined
+         */
         list!: T[];
         /**
-         * Threshold for items
+         * The probability, from 0 to 1, that any one item is kept by the get method or dropped by
+         * the remove method.
          * @default 0.5
          * @minimum 0
          * @maximum 1
@@ -407,27 +477,35 @@ export namespace Lists {
          */
         threshold = 1;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list for `lists.removeDuplicates` and `lists.removeDuplicateNumbers`, which drop repeated
+     * items.
+     */
     export class RemoveDuplicatesDto<T> {
         constructor(list?: T[], clone?: boolean) {
             if (list !== undefined) { this.list = list; }
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-        * The list from which item needs to be removed
-        * @default undefined
-        */
+         * The list to remove repeats from; the first occurrence of each item stays.
+         * @default undefined
+         */
         list!: T[];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * Numbers and a tolerance for `lists.removeDuplicateNumbersTolerance`, which drops
+     * near-repeats.
+     */
     export class RemoveDuplicatesToleranceDto<T> {
         constructor(list?: T[], clone?: boolean, tolerance?: number) {
             if (list !== undefined) { this.list = list; }
@@ -435,12 +513,12 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-        * The list from which item needs to be removed
-        * @default undefined
-        */
+         * The numbers to remove near-repeats from; the first of each group stays.
+         * @default undefined
+         */
         list!: T[];
         /**
-         * The tolerance to apply
+         * Numbers closer together than this count as the same.
          * @default 1e-7
          * @minimum 0
          * @maximum Infinity
@@ -448,27 +526,34 @@ export namespace Lists {
          */
         tolerance = 1e-7;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list and a repeating pattern for `lists.getByPattern`.
+     */
     export class GetByPatternDto<T> {
         constructor(list?: T[], pattern?: boolean[]) {
             if (list !== undefined) { this.list = list; }
             if (pattern !== undefined) { this.pattern = pattern; }
         }
         /**
-        * The list from which we need to get an item
-        * @default undefined
-        */
+         * The list to filter.
+         * @default undefined
+         */
         list!: T[];
         /**
-         * The list of booleans to be used as a pattern (true means get, false means skip)
+         * The pattern of `true` (keep) and `false` (skip) applied item by item and repeated until
+         * the list ends.
          * @default [true, true, false]
          */
         pattern: boolean[] = [true, true, false];
     }
+    /**
+     * A list, a step and an offset for `lists.getNthItem`.
+     */
     export class GetNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -477,12 +562,12 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-        * The list from which we need to get an item
-        * @default undefined
-        */
+         * The list to pick from.
+         * @default undefined
+         */
         list!: T[];
         /**
-         * The nth item to get
+         * The step: every nth item, counted from the offset, is kept.
          * @default 2
          * @minimum 1
          * @maximum Infinity
@@ -490,7 +575,7 @@ export namespace Lists {
          */
         nth = 2;
         /**
-         * The offset from which to start counting
+         * Position of the first item to keep, counting from 0.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -498,33 +583,40 @@ export namespace Lists {
          */
         offset = 0;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the items are deep-copied so the caller cannot change the list through them.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * Several lists for `lists.getLongestListLength`, which measures the longest of them.
+     */
     export class GetLongestListLength<T> {
         constructor(lists?: T[]) {
             if (lists !== undefined) { this.lists = lists; }
         }
         /**
-         * The list from which we need to get an item
+         * The lists to measure.
          * @default undefined
          */
         lists!: T[];
     }
+    /**
+     * Nested lists and a depth for `lists.mergeElementsOfLists`, which regroups items by position.
+     */
     export class MergeElementsOfLists<T> {
         constructor(lists?: T[], level?: number) {
             if (lists !== undefined) { this.lists = lists; }
             if (level !== undefined) { this.level = level; }
         }
         /**
-        * The list from which we need to get an item
-        * @default undefined
-        */
+         * The lists whose items are regrouped by position.
+         * @default undefined
+         */
         lists!: T[];
         /**
-         * The level on which to merge the elements. 0 means first level
+         * How many levels of nesting to flatten inside each list before regrouping; 0 regroups the
+         * lists as they are.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -532,6 +624,9 @@ export namespace Lists {
          */
         level = 0;
     }
+    /**
+     * A list and an item for `lists.addItem` and `lists.prependItem`.
+     */
     export class AddItemDto<T> {
         constructor(list?: T[], item?: T, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -539,21 +634,25 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The list to which item needs to be added
+         * The list that receives the item.
          * @default undefined
          */
         list!: T[];
         /**
-         * The item to add
+         * The item to add at the end or the start.
          * @default undefined
          */
         item!: T;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * item is added in place.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list, an item and an end for `lists.addItemFirstLast`.
+     */
     export class AddItemFirstLastDto<T> {
         constructor(list?: T[], item?: T, position?: firstLastEnum, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
@@ -562,70 +661,82 @@ export namespace Lists {
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The list to which item needs to be added
+         * The list that receives the item.
          * @default undefined
          */
         list!: T[];
         /**
-         * The item to add
+         * The item that goes at the chosen end.
          * @default undefined
          */
         item!: T;
         /**
-         * The option if the item needs to be added at the beginning or the end of the list
+         * Whether the item goes at the start (`first`) or the end (`last`).
          * @default last
          */
         position: firstLastEnum = firstLastEnum.last;
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the list is deep-copied first so the input is never changed; when false the
+         * item is added in place.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * Several lists for `lists.concatenate`, joined end to end.
+     */
     export class ConcatenateDto<T> {
         constructor(lists?: T[][], clone?: boolean) {
             if (lists !== undefined) { this.lists = lists; }
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The lists to concatenate
+         * The lists to join, in the order they should appear.
          * @default undefined
          */
         lists!: T[][];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the lists are deep-copied first so the inputs are never changed.
          * @default true
          */
         clone?: boolean | undefined = true;
     }
+    /**
+     * A list and an item for `lists.includes` and `lists.findIndex`.
+     */
     export class IncludesDto<T> {
         constructor(list?: T[], item?: T) {
             if (list !== undefined) { this.list = list; }
             if (item !== undefined) { this.item = item; }
         }
         /**
-         * The list to check
+         * The list to search.
          * @default undefined
          */
         list!: T[];
         /**
-         * The item to look for
+         * The item to look for; it must be the very same value or object, not just an equal-looking
+         * one.
          * @default undefined
          */
         item!: T;
     }
+    /**
+     * Several lists for `lists.interleave`, which weaves them together item by item.
+     */
     export class InterleaveDto<T> {
         constructor(lists?: T[][], clone?: boolean) {
             if (lists !== undefined) { this.lists = lists; }
             if (clone !== undefined) { this.clone = clone; }
         }
         /**
-         * The lists to interleave
+         * The lists to weave; the first item of each comes first, then the second of each, and so
+         * on.
          * @default undefined
          */
         lists!: T[][];
         /**
-         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * When true, the lists are deep-copied first so the inputs are never changed.
          * @default true
          */
         clone?: boolean | undefined = true;

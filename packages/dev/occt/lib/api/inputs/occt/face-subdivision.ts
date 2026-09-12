@@ -1,6 +1,10 @@
 // A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
 // directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 
+/**
+ * A face and a grid of divisions for `shapes.face.subdivideToPoints`, `subdivideToNormals` and
+ * `subdivideToUV`; the U and V counts set the grid, the shift and removal flags adjust its rows.
+ */
 export class FaceSubdivisionDto<T> {
     /**
       * Provide options without default values
@@ -18,12 +22,12 @@ export class FaceSubdivisionDto<T> {
     }
 
     /**
-     * Brep OpenCascade geometry
+     * The face to lay the grid over.
      * @default undefined
      */
     shape!: T;
     /**
-     * Number of points that will be added on U direction
+     * How many rows of points across the U range, edge to edge.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -31,7 +35,7 @@ export class FaceSubdivisionDto<T> {
      */
     nrDivisionsU = 10;
     /**
-     * Number  of points that will be added on V direction
+     * How many points along each row across the V range, edge to edge.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -39,37 +43,43 @@ export class FaceSubdivisionDto<T> {
      */
     nrDivisionsV = 10;
     /**
-     * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+     * When true, every point moves half a step in U; on a closed face such as a cylinder this keeps
+     * points off the seam.
      * @default false
      */
     shiftHalfStepU = false;
     /**
-     * Removes start edge points on U
+     * When true, the row at the start of the U range is left out.
      * @default false
      */
     removeStartEdgeU = false;
     /**
-     * Removes end edge points on U 
+     * When true, the row at the end of the U range is left out.
      * @default false
      */
     removeEndEdgeU = false;
     /**
-     * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+     * When true, every point moves half a step in V; on a closed face such as a cylinder this keeps
+     * points off the seam.
      * @default false
      */
     shiftHalfStepV = false;
     /**
-     * Removes start edge points on V
+     * When true, the points at the start of the V range are left out of every row.
      * @default false
      */
     removeStartEdgeV = false;
     /**
-     * Removes end edge points on V 
+     * When true, the points at the end of the V range are left out of every row.
      * @default false
      */
     removeEndEdgeV = false;
 }
 
+/**
+ * A face and a number of divisions for `shapes.face.subdivideToWires`, which draws evenly spaced
+ * wires across the face in one parameter direction.
+ */
 export class FaceSubdivisionToWiresDto<T> {
     /**
       * Provide options without default values
@@ -84,12 +94,13 @@ export class FaceSubdivisionToWiresDto<T> {
     }
 
     /**
-     * Openascade Face
+     * The face to draw the wires on.
      * @default undefined
      */
     shape!: T;
     /**
-     * Number of points that will be added on U direction
+     * How many steps to divide the range into; one more wire than that is drawn, the two boundary
+     * lines included.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -97,26 +108,31 @@ export class FaceSubdivisionToWiresDto<T> {
      */
     nrDivisions = 10;
     /**
-    * Linear subdivision direction true - U, false - V
-    * @default true
-    */
+     * When true each wire sits at a fixed U and runs across the V range; when false the roles swap.
+     * @default true
+     */
     isU = true;
     /**
-     * Sometimes you want to shift your wires half way the step distance, especially on periodic surfaces
+     * When true, every wire moves half a step along the divided direction.
      * @default false
      */
     shiftHalfStep = false;
     /**
-     * Removes start wire
+     * When true, the wire on the start boundary is left out.
      * @default false
      */
     removeStart = false;
     /**
-     * Removes end wire
+     * When true, the wire on the end boundary is left out.
      * @default false
      */
     removeEnd = false;
 }
+/**
+ * A face, a grid of cells and optional patterns for `shapes.face.subdivideToRectangleWires`, which
+ * draws one rectangle wire per cell of the face's UV range. The patterns are read cell by cell and
+ * repeat when they run out.
+ */
 export class FaceSubdivideToRectangleWiresDto<T> {
     /**
       * Provide options without default values
@@ -133,12 +149,12 @@ export class FaceSubdivideToRectangleWiresDto<T> {
         if (offsetFromBorderV !== undefined) { this.offsetFromBorderV = offsetFromBorderV; }
     }
     /**
-     * Openascade Face
+     * The face to draw the rectangles on.
      * @default undefined
      */
     shape!: T;
     /**
-     * Number of rectangles on U direction
+     * How many cells across the U range.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -146,7 +162,7 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      */
     nrRectanglesU = 10;
     /**
-     * Number of rectangles on V direction
+     * How many cells across the V range.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -154,35 +170,35 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      */
     nrRectanglesV = 10;
     /**
-     * Rectangle scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+     * Sizes of the rectangles along U as fractions of their cell, from 0 to 1, applied in turn; 1
+     * fills the cell, and leaving the list out means no scaling.
      * @default undefined
      * @optional true
      */
     scalePatternU!: number[];
     /**
-     * Rectangle scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+     * Sizes of the rectangles along V as fractions of their cell, from 0 to 1, applied in turn; 1
+     * fills the cell, and leaving the list out means no scaling.
      * @default undefined
      * @optional true
      */
     scalePatternV!: number[];
     /**
-     * Rectangle fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
-     * if 1 is used, the fillet will be exactly half of the length of the shorter side of the rectangle
+     * Corner rounding of the rectangles as fractions from 0 to 1 of half the shorter side, applied
+     * in turn; 0 leaves sharp corners.
      * @default undefined
      * @optional true
      */
     filletPattern!: number[];
     /**
-     * Rectangle inclusion pattern - true means that the rectangle will be included, 
-     * false means that the rectangle will be removed from the face
+     * Which cells get a rectangle, applied in turn: true draws one, false skips the cell.
      * @default undefined
      * @optional true
      */
     inclusionPattern!: boolean[];
     /**
-     * If offset on U is bigger then 0 we will use a smaller space for rectangles to be placed. This means that even rectangle of U param 1 will be offset from the face border
-     * That is often required to create a pattern that is not too close to the face border
-     * It should not be bigger then half of the total width of the face as that will create problems
+     * A fraction of the U range trimmed at each end before dividing into cells, so the pattern
+     * keeps clear of the border; keep it below 0.5.
      * @default 0
      * @minimum 0
      * @maximum 0.5
@@ -190,9 +206,8 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      */
     offsetFromBorderU = 0;
     /**
-     * If offset on V is bigger then 0 we will use a smaller space for rectangles to be placed. This means that even rectangle of V param 1 will be offset from the face border
-     * That is often required to create a pattern that is not too close to the face border
-     * It should not be bigger then half of the total width of the face as that will create problems
+     * A fraction of the V range trimmed at each end before dividing into cells, so the pattern
+     * keeps clear of the border; keep it below 0.5.
      * @default 0
      * @minimum 0
      * @maximum 0.5
@@ -200,6 +215,11 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      */
     offsetFromBorderV = 0;
 }
+/**
+ * A face, hexagon counts and optional patterns for `shapes.face.subdivideToHexagonWires`, which
+ * lays a honeycomb of hexagon wires over the face's UV range. The patterns are read hexagon by
+ * hexagon and repeat when they run out.
+ */
 export class FaceSubdivideToHexagonWiresDto<T> {
     /**
       * Provide options without default values
@@ -221,12 +241,12 @@ export class FaceSubdivideToHexagonWiresDto<T> {
         if (extendVBottom !== undefined) { this.extendVBottom = extendVBottom; }
     }
     /**
-     * Openascade Face
+     * The face to draw the hexagons on.
      * @default undefined
      */
     shape!: T;
     /**
-     * Number of hexagons on U direction
+     * How many hexagons across the U range.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -234,7 +254,7 @@ export class FaceSubdivideToHexagonWiresDto<T> {
      */
     nrHexagonsU?: number | undefined = 10;
     /**
-     * Number of hexagons on V direction
+     * How many hexagons across the V range.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -245,37 +265,41 @@ export class FaceSubdivideToHexagonWiresDto<T> {
     //  * If true, we will create hexagons with flat tops on U direction
     //  * @default false
     //  */
+    /**
+     * When true, the hexagons turn a flat side toward the U direction; when false a corner points
+     * that way.
+     */
     flatU = false;
     /**
-     * Hexagon scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+     * Sizes of the hexagons along U as fractions of their full size, applied in turn about each
+     * hexagon's center; 1 or no list means no scaling.
      * @default undefined
      * @optional true
      */
     scalePatternU?: number[] | undefined;
     /**
-     * Hexagon scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+     * Sizes of the hexagons along V as fractions of their full size, applied in turn about each
+     * hexagon's center; 1 or no list means no scaling.
      * @default undefined
      * @optional true
      */
     scalePatternV?: number[] | undefined;
     /**
-     * Hexagon fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
-     * if 1 is used, the fillet will be exactly half of the length of the shortest segment of the hexagon
+     * Corner rounding of the hexagons as fractions from 0 to 1 of the largest radius that fits,
+     * applied in turn; 0 leaves sharp corners.
      * @default undefined
      * @optional true
      */
     filletPattern?: number[] | undefined;
     /**
-     * Hexagon inclusion pattern - true means that the hexagon will be included, 
-     * false means that the hexagon will be removed from the face
+     * Which hexagons are drawn, applied in turn: true draws one, false skips it.
      * @default undefined
      * @optional true
      */
     inclusionPattern?: boolean[] | undefined;
     /**
-     * If offset on U is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of U param 1 will be offset from the face border
-     * That is often required to create a pattern that is not too close to the face border
-     * It should not be bigger then half of the total width of the face as that will create problems
+     * A fraction of the U range trimmed at each end before laying the grid, so the pattern keeps
+     * clear of the border; keep it below 0.5.
      * @default 0
      * @minimum 0
      * @maximum 0.5
@@ -283,9 +307,8 @@ export class FaceSubdivideToHexagonWiresDto<T> {
      */
     offsetFromBorderU?: number | undefined = 0;
     /**
-     * If offset on V is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of V param 1 will be offset from the face border
-     * That is often required to create a pattern that is not too close to the face border
-     * It should not be bigger then half of the total width of the face as that will create problems
+     * A fraction of the V range trimmed at each end before laying the grid, so the pattern keeps
+     * clear of the border; keep it below 0.5.
      * @default 0
      * @minimum 0
      * @maximum 0.5
@@ -293,27 +316,36 @@ export class FaceSubdivideToHexagonWiresDto<T> {
      */
     offsetFromBorderV?: number | undefined = 0;
     /**
-     * If true, we will extend the hexagons beyond the face u up border by their pointy tops
+     * When true, the grid is stretched so the hexagons at the high end of U reach past that border,
+     * covering it without a jagged edge.
      * @default false
      */
     extendUUp?: boolean | undefined = false;
     /**
-     * If true, we will extend the hexagons beyond the face u bottom border by their pointy tops
+     * When true, the grid is stretched so the hexagons at the low end of U reach past that border,
+     * covering it without a jagged edge.
      * @default false
      */
     extendUBottom?: boolean | undefined = false;
     /**
-     * If true, we will extend the hexagons beyond the face v upper border by their half width
+     * When true, the grid is stretched so the hexagons at the high end of V reach past that border,
+     * covering it without a jagged edge.
      * @default false
      */
     extendVUp?: boolean | undefined = false;
     /**
-     * If true, we will extend the hexagons beyond the face v bottom border by their half width
+     * When true, the grid is stretched so the hexagons at the low end of V reach past that border,
+     * covering it without a jagged edge.
      * @default false
      */
     extendVBottom?: boolean | undefined = false;
 }
 
+/**
+ * A face, hexagon counts and optional patterns for `shapes.face.subdivideToHexagonHoles`, which
+ * cuts a honeycomb of hexagonal holes into the face. Without a scale pattern each hole is half the
+ * size of its hexagon.
+ */
 export class FaceSubdivideToHexagonHolesDto<T> {
     /**
       * Provide options without default values
@@ -332,12 +364,12 @@ export class FaceSubdivideToHexagonHolesDto<T> {
         if (offsetFromBorderV !== undefined) { this.offsetFromBorderV = offsetFromBorderV; }
     }
     /**
-     * Openascade Face
+     * The face to cut the holes into.
      * @default undefined
      */
     shape!: T;
     /**
-     * Number of hexagons on U direction
+     * How many hexagons across the U range.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -345,7 +377,7 @@ export class FaceSubdivideToHexagonHolesDto<T> {
      */
     nrHexagonsU?: number | undefined = 10;
     /**
-     * Number of hexagons on V direction
+     * How many hexagons across the V range.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -356,42 +388,47 @@ export class FaceSubdivideToHexagonHolesDto<T> {
     //  * If true, we will create hexagons with flat tops on U direction
     //  * @default false
     //  */
+    /**
+     * When true, the hexagons turn a flat side toward the U direction; when false a corner points
+     * that way.
+     */
     flatU = false;
     /**
-     * If true, we will also create holes as faces
+     * When true, the result also carries one face per hole after the perforated face.
      * @default false
      */
     holesToFaces?: boolean | undefined = false;
     /**
-     * Hexagon scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+     * Sizes of the holes along U as fractions of their hexagon, applied in turn; leaving the list
+     * out uses 0.5.
      * @default undefined
      * @optional true
      */
     scalePatternU?: number[] | undefined;
     /**
-     * Hexagon scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+     * Sizes of the holes along V as fractions of their hexagon, applied in turn; leaving the list
+     * out uses 0.5.
      * @default undefined
      * @optional true
      */
     scalePatternV?: number[] | undefined;
     /**
-     * Hexagon fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
-     * if 1 is used, the fillet will be exactly half of the length of the shortest segment of the hexagon
+     * Corner rounding of the holes as fractions from 0 to 1 of the largest radius that fits,
+     * applied in turn; 0 leaves sharp corners.
      * @default undefined
      * @optional true
      */
     filletPattern?: number[] | undefined;
     /**
-     * Hexagon inclusion pattern - true means that the hexagon will be included, 
-     * false means that the hexagon will be removed from the face
+     * Which hexagons become holes, applied in turn: true cuts one, false leaves the face whole
+     * there.
      * @default undefined
      * @optional true
      */
     inclusionPattern?: boolean[] | undefined;
     /**
-     * If offset on U is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of U param 1 will be offset from the face border
-     * That is often required to create a pattern that is not too close to the face border
-     * It should not be bigger then half of the total width of the face as that will create problems
+     * A fraction of the U range trimmed at each end before laying the grid, so the holes keep clear
+     * of the border; keep it below 0.5.
      * @default 0
      * @minimum 0
      * @maximum 0.5
@@ -399,9 +436,8 @@ export class FaceSubdivideToHexagonHolesDto<T> {
      */
     offsetFromBorderU?: number | undefined = 0;
     /**
-     * If offset on V is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of V param 1 will be offset from the face border
-     * That is often required to create a pattern that is not too close to the face border
-     * It should not be bigger then half of the total width of the face as that will create problems
+     * A fraction of the V range trimmed at each end before laying the grid, so the holes keep clear
+     * of the border; keep it below 0.5.
      * @default 0
      * @minimum 0
      * @maximum 0.5
@@ -410,6 +446,11 @@ export class FaceSubdivideToHexagonHolesDto<T> {
     offsetFromBorderV?: number | undefined = 0;
 }
 
+/**
+ * A face, a grid of cells and optional patterns for `shapes.face.subdivideToRectangleHoles`, which
+ * cuts a grid of rectangular holes into the face. Without a scale pattern each hole covers half its
+ * cell.
+ */
 export class FaceSubdivideToRectangleHolesDto<T> {
     /**
       * Provide options without default values
@@ -427,12 +468,12 @@ export class FaceSubdivideToRectangleHolesDto<T> {
         if (offsetFromBorderV !== undefined) { this.offsetFromBorderV = offsetFromBorderV; }
     }
     /**
-     * Openascade Face
+     * The face to cut the holes into.
      * @default undefined
      */
     shape!: T;
     /**
-     * Number of rectangles on U direction
+     * How many cells across the U range.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -440,7 +481,7 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      */
     nrRectanglesU = 10;
     /**
-     * Number of rectangles on V direction
+     * How many cells across the V range.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -448,40 +489,40 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      */
     nrRectanglesV = 10;
     /**
-     * Rectangle scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+     * Sizes of the holes along U as fractions of their cell, applied in turn; leaving the list out
+     * uses 0.5.
      * @default undefined
      * @optional true
      */
     scalePatternU!: number[];
     /**
-     * Rectangle scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+     * Sizes of the holes along V as fractions of their cell, applied in turn; leaving the list out
+     * uses 0.5.
      * @default undefined
      * @optional true
      */
     scalePatternV!: number[];
     /**
-     * Rectangle fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
-     * if 1 is used, the fillet will be exactly half of the length of the shorter side of the rectangle
+     * Corner rounding of the holes as fractions from 0 to 1 of half the shorter side, applied in
+     * turn; 0 leaves sharp corners.
      * @default undefined
      * @optional true
      */
     filletPattern!: number[];
     /**
-     * Rectangle inclusion pattern - true means that the rectangle will be included, 
-     * false means that the rectangle will be removed from the face
+     * Which cells become holes, applied in turn: true cuts one, false leaves the face whole there.
      * @default undefined
      * @optional true
      */
     inclusionPattern!: boolean[];
     /**
-     * If true, we will also output the faces for all the rectangles. The first face in the result will be the original face with holes punched, while the rest will be the rectangles
+     * When true, the result also carries one face per hole after the perforated face.
      * @default false
      */
     holesToFaces = false;
     /**
-     * If offset on U is bigger then 0 we will use a smaller space for rectangles to be placed. This means that even rectangle of U param 1 will be offset from the face border
-     * That is often required to create a pattern that is not too close to the face border
-     * It should not be bigger then half of the total width of the face as that will create problems
+     * A fraction of the U range trimmed at each end before dividing into cells, so the holes keep
+     * clear of the border; keep it below 0.5.
      * @default 0
      * @minimum 0
      * @maximum 0.5
@@ -489,9 +530,8 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      */
     offsetFromBorderU = 0;
     /**
-     * If offset on V is bigger then 0 we will use a smaller space for rectangles to be placed. This means that even rectangle of V param 1 will be offset from the face border
-     * That is often required to create a pattern that is not too close to the face border
-     * It should not be bigger then half of the total width of the face as that will create problems
+     * A fraction of the V range trimmed at each end before dividing into cells, so the holes keep
+     * clear of the border; keep it below 0.5.
      * @default 0
      * @minimum 0
      * @maximum 0.5
@@ -499,6 +539,11 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      */
     offsetFromBorderV = 0;
 }
+/**
+ * A face, a grid of divisions and nth-row rules for `shapes.face.subdivideToPointsControlled`,
+ * which shifts or removes points on every nth row instead of all of them. Each rule pairs an `Nth`
+ * count with an `OffsetN` start; 0 switches it off.
+ */
 export class FaceSubdivisionControlledDto<T> {
     /**
      * Provide options without default values
@@ -521,12 +566,12 @@ export class FaceSubdivisionControlledDto<T> {
         if (removeEndEdgeVOffsetN !== undefined) { this.removeEndEdgeVOffsetN = removeEndEdgeVOffsetN; }
     }
     /**
-     * Brep OpenCascade geometry
+     * The face to lay the grid over.
      * @default undefined
      */
     shape!: T;
     /**
-     * Number of subdivisions on U direction
+     * How many rows of points across the U range, edge to edge.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -534,7 +579,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     nrDivisionsU = 10;
     /**
-     * Number of subdivisions on V direction
+     * How many points along each row across the V range, edge to edge.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -542,7 +587,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     nrDivisionsV = 10;
     /**
-     * Shift half step every nth U row
+     * Every how-manyth V row is pushed half a step in U; 0 shifts none.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -550,7 +595,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     shiftHalfStepNthU = 0;
     /**
-     * Offset for shift half step every nth U row
+     * Which V row the counting for the U shift starts at.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -558,7 +603,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     shiftHalfStepUOffsetN = 0;
     /**
-     * Removes start edge points on U
+     * Every how-manyth point is dropped from the first U row; 0 keeps them all.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -566,7 +611,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     removeStartEdgeNthU = 0;
     /**
-     * Offset for remove start edge points on U
+     * Which point the counting for the first U row removal starts at.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -574,7 +619,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     removeStartEdgeUOffsetN = 0;
     /**
-     * Removes end edge points on U 
+     * Every how-manyth point is dropped from the last U row; 0 keeps them all.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -582,7 +627,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     removeEndEdgeNthU = 0;
     /**
-     * Offset for remove end edge points on U
+     * Which point the counting for the last U row removal starts at.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -590,7 +635,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     removeEndEdgeUOffsetN = 0;
     /**
-     * Shift half step every nth V row
+     * Every how-manyth U row is pushed half a step in V; 0 shifts none.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -598,7 +643,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     shiftHalfStepNthV = 0;
     /**
-     * Offset for shift half step every nth V row
+     * Which U row the counting for the V shift starts at.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -606,7 +651,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     shiftHalfStepVOffsetN = 0;
     /**
-     * Removes start edge points on V
+     * Every how-manyth point is dropped from the first V row; 0 keeps them all.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -614,7 +659,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     removeStartEdgeNthV = 0;
     /**
-     * Offset for remove start edge points on V
+     * Which point the counting for the first V row removal starts at.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -622,7 +667,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     removeStartEdgeVOffsetN = 0;
     /**
-     * Removes end edge points on V 
+     * Every how-manyth point is dropped from the last V row; 0 keeps them all.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -630,7 +675,7 @@ export class FaceSubdivisionControlledDto<T> {
      */
     removeEndEdgeNthV = 0;
     /**
-     * Offset for remove end edge points on V
+     * Which point the counting for the last V row removal starts at.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -638,6 +683,11 @@ export class FaceSubdivisionControlledDto<T> {
      */
     removeEndEdgeVOffsetN = 0;
 }
+/**
+ * A face and one line across its UV range for `shapes.face.subdivideToPointsOnParam` and
+ * `subdivideToUVOnParam`: the line sits at `param` in one direction and `nrPoints` points spread
+ * over the other.
+ */
 export class FaceLinearSubdivisionDto<T> {
     /**
      * Provide options without default values
@@ -652,17 +702,18 @@ export class FaceLinearSubdivisionDto<T> {
         if (removeEndPoint !== undefined) { this.removeEndPoint = removeEndPoint; }
     }
     /**
-     * Brep OpenCascade geometry
+     * The face to place the points on.
      * @default undefined
      */
     shape!: T;
     /**
-     * Linear subdivision direction true - U, false - V
+     * When true the line sits at a fixed U and the points spread across the V range; when false the
+     * roles swap.
      * @default true
      */
     isU = true;
     /**
-     * Param on direction 0 - 1
+     * Where the line sits, as a fraction from 0 to 1 of the fixed direction's range.
      * @default 0.5
      * @minimum 0
      * @maximum 1
@@ -670,7 +721,7 @@ export class FaceLinearSubdivisionDto<T> {
      */
     param = 0.5;
     /**
-     * Number of subdivisions on opposite direction
+     * How many points along the line, edge to edge.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -678,17 +729,18 @@ export class FaceLinearSubdivisionDto<T> {
      */
     nrPoints = 10;
     /**
-     * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+     * When true, every point moves half a step along the line; on a closed face this keeps points
+     * off the seam.
      * @default false
      */
     shiftHalfStep = false;
     /**
-     * Removes first point
+     * When true, the first point is left out.
      * @default false
      */
     removeStartPoint = false;
     /**
-     * Removes last point
+     * When true, the last point is left out.
      * @default false
      */
     removeEndPoint = false;

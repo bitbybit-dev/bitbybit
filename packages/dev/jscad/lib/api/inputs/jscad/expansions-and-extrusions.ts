@@ -3,6 +3,10 @@
 import { Base } from "../base-inputs";
 import { JSCADEntity, solidCornerTypeEnum } from "./entities-and-enums";
 
+/**
+ * Feeds `expansions.expand` and `expansions.offset`: the geometry, the signed distance to move its
+ * boundary by and how the corners are shaped on the way.
+ */
 export class ExpansionDto {
     constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
         if (geometry !== undefined) { this.geometry = geometry; }
@@ -11,12 +15,14 @@ export class ExpansionDto {
         if (segments !== undefined) { this.segments = segments; }
     }
     /**
-     * Can contain various Jscad entities from Solid category
+     * The 2D shape, path or solid to grow; `offset` takes 2D shapes and paths only. It stays as it
+     * is and a new entity comes back
      * @default undefined
      */
     geometry!: JSCADEntity;
     /**
-     * Delta (+/-) of expansion
+     * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it
+     * (a solid accepts positive only)
      * @default 0.1
      * @minimum -Infinity
      * @maximum Infinity
@@ -24,12 +30,14 @@ export class ExpansionDto {
      */
     delta = 0.1;
     /**
-     * Type of corner to create during of expansion; edge, chamfer, round
+     * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
+     * it; a solid accepts `round` only
      * @default edge
      */
     corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
     /**
-     * Integer number of segments when creating round corners         
+     * Number of straight pieces a `round` corner is made of over a full circle; more makes it
+     * smoother
      * @default 24
      * @minimum 0
      * @maximum Infinity
@@ -37,6 +45,10 @@ export class ExpansionDto {
      */
     segments = 24;
 }
+/**
+ * The offset options, mirroring `ExpansionDto`: the geometry, the signed distance and the corner
+ * shaping. `expansions.offset` reads `ExpansionDto`, so this class is here for symmetry.
+ */
 export class OffsetDto {
     constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
         if (geometry !== undefined) { this.geometry = geometry; }
@@ -45,12 +57,12 @@ export class OffsetDto {
         if (segments !== undefined) { this.segments = segments; }
     }
     /**
-     * Can contain various Jscad entities from Solid category
+     * The 2D shape or path whose outline is moved; it stays as it is and a new entity comes back
      * @default undefined
      */
     geometry!: JSCADEntity;
     /**
-     * Delta (+/-) of offset
+     * How far the outline moves, in model units: positive outward, negative inward
      * @default 0.1
      * @minimum -Infinity
      * @maximum Infinity
@@ -58,12 +70,14 @@ export class OffsetDto {
      */
     delta = 0.1;
     /**
-     * Type of corner to create during the offset; edge, chamfer, round.
+     * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
+     * it
      * @default edge
      */
     corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
     /**
-     * Integer number of segments when creating round corners
+     * Number of straight pieces a `round` corner is made of over a full circle; more makes it
+     * smoother
      * @default 24
      * @minimum 0
      * @maximum Infinity
@@ -71,6 +85,10 @@ export class OffsetDto {
      */
     segments = 24;
 }
+/**
+ * Feeds `extrusions.extrudeLinear`: the flat shape, how far it rises along Z and the optional twist
+ * applied on the way up.
+ */
 export class ExtrudeLinearDto {
     constructor(geometry?: JSCADEntity, height?: number, twistAngle?: number, twistSteps?: number) {
         if (geometry !== undefined) { this.geometry = geometry; }
@@ -79,12 +97,13 @@ export class ExtrudeLinearDto {
         if (twistSteps !== undefined) { this.twistSteps = twistSteps; }
     }
     /**
-     * Geometry to extrude
+     * The flat 2D shape in the XY plane to raise into a solid; a closed path also works, an open
+     * one throws an error
      * @default undefined
      */
     geometry!: JSCADEntity;
     /**
-     * Height of linear extrude
+     * How far the shape rises along Z, in model units; negative extrudes downward
      * @default 1
      * @minimum -Infinity
      * @maximum Infinity
@@ -92,7 +111,8 @@ export class ExtrudeLinearDto {
      */
     height = 1;
     /**
-     * Twist angle in degrees
+     * How far the top is turned relative to the bottom around Z, in degrees; 0 gives a straight
+     * extrusion
      * @default 90
      * @minimum -Infinity
      * @maximum Infinity
@@ -100,7 +120,8 @@ export class ExtrudeLinearDto {
      */
     twistAngle = 90;
     /**
-     * Number of twist steps
+     * Number of slices the twist is built from, at least 1; more makes a smoother twist and a
+     * heavier mesh
      * @default 15
      * @minimum 0
      * @maximum Infinity
@@ -109,16 +130,25 @@ export class ExtrudeLinearDto {
     twistSteps = 15;
 }
 
+/**
+ * Feeds `hulls.hull` and `hulls.hullChain` with the entities to wrap, all of one kind: solids, 2D
+ * shapes or paths. For `hullChain` the order is the order they connect in.
+ */
 export class HullDto {
     constructor(meshes?: JSCADEntity[]) {
         if (meshes !== undefined) { this.meshes = meshes; }
     }
     /**
-     * Geometries to use in hull
+     * The solids, 2D shapes or paths to wrap, all of one kind; for a chain, in the order they
+     * connect
      * @default undefined
      */
     meshes!: JSCADEntity[];
 }
+/**
+ * Feeds `extrusions.extrudeRectangular`: the outline to build a wall along, the wall's height along
+ * Z and its half thickness.
+ */
 export class ExtrudeRectangularDto {
     constructor(geometry?: JSCADEntity, height?: number, size?: number) {
         if (geometry !== undefined) { this.geometry = geometry; }
@@ -126,12 +156,12 @@ export class ExtrudeRectangularDto {
         if (size !== undefined) { this.size = size; }
     }
     /**
-     * Geometry to extrude
+     * The 2D shape or path whose outline the wall follows; the inside of a shape stays empty
      * @default undefined
      */
     geometry!: JSCADEntity;
     /**
-     * Height of linear extrude
+     * How tall the wall is along Z, in model units, standing on the XY plane
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -139,7 +169,8 @@ export class ExtrudeRectangularDto {
      */
     height = 1;
     /**
-     * Size of the rectangle
+     * How far the wall reaches to each side of the outline, in model units, so the wall is twice
+     * this thick
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -147,6 +178,10 @@ export class ExtrudeRectangularDto {
      */
     size = 1;
 }
+/**
+ * Feeds `extrusions.extrudeRectangularPoints`: the points of the line to build a wall along, the
+ * wall's height along Z and its half thickness.
+ */
 export class ExtrudeRectangularPointsDto {
     constructor(points?: Base.Point3[], height?: number, size?: number) {
         if (points !== undefined) { this.points = points; }
@@ -154,12 +189,12 @@ export class ExtrudeRectangularPointsDto {
         if (size !== undefined) { this.size = size; }
     }
     /**
-     * Points for a path
+     * The corner points of the line the wall follows, in order; only X and Y are used
      * @default undefined
      */
     points!: Base.Point3[];
     /**
-     * Height of linear extrude
+     * How tall the wall is along Z, in model units, standing on the XY plane
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -167,7 +202,8 @@ export class ExtrudeRectangularPointsDto {
      */
     height = 1;
     /**
-     * Size of the rectangle
+     * How far the wall reaches to each side of the line, in model units, so the wall is twice this
+     * thick
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -175,6 +211,10 @@ export class ExtrudeRectangularPointsDto {
      */
     size = 1;
 }
+/**
+ * Feeds `extrusions.extrudeRotate`: the flat profile to spin around the Z axis, how far and from
+ * where to spin it, and how finely the round result is faceted.
+ */
 export class ExtrudeRotateDto {
     constructor(polygon?: JSCADEntity, angle?: number, startAngle?: number, segments?: number) {
         if (polygon !== undefined) { this.polygon = polygon; }
@@ -183,12 +223,13 @@ export class ExtrudeRotateDto {
         if (segments !== undefined) { this.segments = segments; }
     }
     /**
-     * Polygon to extrude
+     * The flat 2D shape in the XY plane to revolve around the Z axis; its X coordinates are the
+     * distances from the axis, which clips it where it crosses
      * @default undefined
      */
     polygon!: JSCADEntity;
     /**
-     * Angle in degrees
+     * How far to revolve, in degrees: 360 makes a full ring, the default 90 a quarter
      * @default 90
      * @minimum -Infinity
      * @maximum Infinity
@@ -196,7 +237,7 @@ export class ExtrudeRotateDto {
      */
     angle = 90;
     /**
-     * Start angle in degrees
+     * Where the revolution starts, in degrees from the X axis
      * @default 0
      * @minimum -Infinity
      * @maximum Infinity
@@ -204,7 +245,8 @@ export class ExtrudeRotateDto {
      */
     startAngle = 0;
     /**
-     * Number of segments
+     * Number of steps in a full turn; a partial angle uses proportionally fewer. Fewer than 3
+     * throws an error
      * @default 24
      * @minimum 0
      * @maximum Infinity

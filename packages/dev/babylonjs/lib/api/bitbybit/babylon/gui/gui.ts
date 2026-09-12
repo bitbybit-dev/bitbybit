@@ -14,7 +14,7 @@ import { BabylonGuiColorPicker } from "./color-picker";
 import { BabylonGuiImage } from "./image";
 
 /**
- * The in-scene 2D interface: buttons, sliders, checkboxes, colour pickers, text blocks, input
+ * The in-scene 2D interface: buttons, sliders, checkboxes, color pickers, text blocks, input
  * fields, images and the containers that lay them out. Use it for controls that live inside the 3D
  * canvas - a slider floating next to the model - rather than in the surrounding page.
  */

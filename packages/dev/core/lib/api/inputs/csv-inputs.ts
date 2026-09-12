@@ -6,6 +6,10 @@
  */
 export namespace CSV {
 
+    /**
+     * Feeds `csv.parseToArray` and `csv.getColumnCount` with the CSV text and the two separators; a
+     * separator can be written as `\n` or `\t` in two characters.
+     */
     export class ParseToArrayDto {
         constructor(csv?: string, rowSeparator?: string, columnSeparator?: string) {
             if (csv !== undefined) { this.csv = csv; }
@@ -13,22 +17,28 @@ export namespace CSV {
             if (columnSeparator !== undefined) { this.columnSeparator = columnSeparator; }
         }
         /**
-         * CSV text to parse
+         * The whole CSV text, rows separated by `rowSeparator`
          * @default name,age\nJohn,30
          */
         csv = "name,age\nJohn,30";
         /**
-         * Row separator (newline character)
+         * The text between rows, normally a line break; `\n` written as two characters is read as
+         * one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text between cells in a row, normally a comma; `\t` written as two characters is read
+         * as a tab
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
     }
 
+    /**
+     * Feeds `csv.parseToJson`: the CSV text, which row holds the headers, where the data starts,
+     * the separators and which columns to read as numbers.
+     */
     export class ParseToJsonDto {
         constructor(csv?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]) {
             if (csv !== undefined) { this.csv = csv; }
@@ -39,12 +49,13 @@ export namespace CSV {
             if (numberColumns !== undefined) { this.numberColumns = numberColumns; }
         }
         /**
-         * CSV text to parse
+         * The whole CSV text, headers included
          * @default name,age\nJohn,30\nJane,25
          */
         csv = "name,age\nJohn,30\nJane,25";
         /**
-         * Row index where headers are located
+         * Index of the row whose cells become the object keys, counting from 0 and skipping blank
+         * lines
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -52,7 +63,8 @@ export namespace CSV {
          */
         headerRow?: number | undefined = 0;
         /**
-         * Row index where data starts
+         * Index of the first row turned into an object, counting from 0; normally the row after the
+         * headers
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -60,23 +72,29 @@ export namespace CSV {
          */
         dataStartRow?: number | undefined = 1;
         /**
-         * Row separator (newline character)
+         * The text between rows, normally a line break; `\n` written as two characters is read as
+         * one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text between cells in a row, normally a comma; `\t` written as two characters is read
+         * as a tab
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
         /**
-         * Column names that should be converted to numbers
+         * Header names whose cells are parsed as numbers; every other cell stays text
          * @default undefined
          * @optional true
          */
         numberColumns?: string[] | undefined;
     }
 
+    /**
+     * Feeds `csv.parseToJsonWithHeaders`: the CSV text, the header names to use instead of a header
+     * line, where the data starts, the separators and which columns to read as numbers.
+     */
     export class ParseToJsonWithHeadersDto {
         constructor(csv?: string, headers?: string[], dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]) {
             if (csv !== undefined) { this.csv = csv; }
@@ -87,17 +105,19 @@ export namespace CSV {
             if (numberColumns !== undefined) { this.numberColumns = numberColumns; }
         }
         /**
-         * CSV text to parse
+         * The whole CSV text, normally without a header line
          * @default John,30\nJane,25
          */
         csv = "John,30\nJane,25";
         /**
-         * Custom header names to use
+         * The object keys, one per column in column order; a row with more cells than keys loses
+         * the extra cells
          * @default ["name", "age"]
          */
         headers: string[] = ["name", "age"];
         /**
-         * Row index where data starts
+         * Index of the first row turned into an object, counting from 0; set it to 1 to skip a
+         * header line the text does have
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -105,23 +125,29 @@ export namespace CSV {
          */
         dataStartRow?: number | undefined = 0;
         /**
-         * Row separator (newline character)
+         * The text between rows, normally a line break; `\n` written as two characters is read as
+         * one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text between cells in a row, normally a comma; `\t` written as two characters is read
+         * as a tab
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
         /**
-         * Column names that should be converted to numbers
+         * Header names whose cells are parsed as numbers; every other cell stays text
          * @default undefined
          * @optional true
          */
         numberColumns?: string[] | undefined;
     }
 
+    /**
+     * Feeds `csv.queryColumn`: the CSV text, the header name of the column to read, the row layout,
+     * the separators and whether to parse the values as numbers.
+     */
     export class QueryColumnDto {
         constructor(csv?: string, column?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, asNumber?: boolean) {
             if (csv !== undefined) { this.csv = csv; }
@@ -133,17 +159,17 @@ export namespace CSV {
             if (asNumber !== undefined) { this.asNumber = asNumber; }
         }
         /**
-         * CSV text to query
+         * The whole CSV text, headers included
          * @default name,age\nJohn,30\nJane,25
          */
         csv = "name,age\nJohn,30\nJane,25";
         /**
-         * Column name to query
+         * Header name of the column whose values are listed
          * @default name
          */
         column = "name";
         /**
-         * Row index where headers are located
+         * Index of the row whose cells are the header names, counting from 0
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -151,7 +177,7 @@ export namespace CSV {
          */
         headerRow?: number | undefined = 0;
         /**
-         * Row index where data starts
+         * Index of the first row read as data, counting from 0; normally the row after the headers
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -159,22 +185,28 @@ export namespace CSV {
          */
         dataStartRow?: number | undefined = 1;
         /**
-         * Row separator (newline character)
+         * The text between rows, normally a line break; `\n` written as two characters is read as
+         * one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text between cells in a row, normally a comma; `\t` written as two characters is read
+         * as a tab
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
         /**
-         * Convert column values to numbers
+         * When true, every value of the column is parsed as a number instead of staying text
          * @default false
          */
         asNumber?: boolean | undefined = false;
     }
 
+    /**
+     * Feeds `csv.queryRowsByValue`: the CSV text, the column to test and the value it must equal,
+     * the row layout, the separators and the columns read as numbers.
+     */
     export class QueryRowsByValueDto {
         constructor(csv?: string, column?: string, value?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]) {
             if (csv !== undefined) { this.csv = csv; }
@@ -187,22 +219,23 @@ export namespace CSV {
             if (numberColumns !== undefined) { this.numberColumns = numberColumns; }
         }
         /**
-         * CSV text to query
+         * The whole CSV text, headers included
          * @default name,age\nJohn,30\nJane,25
          */
         csv = "name,age\nJohn,30\nJane,25";
         /**
-         * Column name to filter by
+         * Header name of the column that is compared with `value`
          * @default age
          */
         column = "age";
         /**
-         * Value to match
+         * The text a row's cell must equal to be kept; compared as a number when the column is in
+         * `numberColumns`
          * @default 30
          */
         value = "30";
         /**
-         * Row index where headers are located
+         * Index of the row whose cells are the header names, counting from 0
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -210,7 +243,7 @@ export namespace CSV {
          */
         headerRow?: number | undefined = 0;
         /**
-         * Row index where data starts
+         * Index of the first row read as data, counting from 0; normally the row after the headers
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -218,23 +251,29 @@ export namespace CSV {
          */
         dataStartRow?: number | undefined = 1;
         /**
-         * Row separator (newline character)
+         * The text between rows, normally a line break; `\n` written as two characters is read as
+         * one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text between cells in a row, normally a comma; `\t` written as two characters is read
+         * as a tab
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
         /**
-         * Column names that should be converted to numbers
+         * Header names whose cells are parsed as numbers, in the result and in the comparison
          * @default undefined
          * @optional true
          */
         numberColumns?: string[] | undefined;
     }
 
+    /**
+     * Feeds `csv.arrayToCsv` with the rows to write, each a list of cells, and the separators to
+     * put between cells and rows.
+     */
     export class ArrayToCsvDto {
         constructor(array?: (string | number | boolean | null | undefined)[][], rowSeparator?: string, columnSeparator?: string) {
             if (array !== undefined) { this.array = array; }
@@ -242,22 +281,28 @@ export namespace CSV {
             if (columnSeparator !== undefined) { this.columnSeparator = columnSeparator; }
         }
         /**
-         * 2D array to convert
+         * The rows, each a list of cells; numbers and booleans are written as text, null and
+         * undefined as empty cells
          * @default [["name", "age"], ["John", "30"]]
          */
         array: (string | number | boolean | null | undefined)[][] = [["name", "age"], ["John", "30"]];
         /**
-         * Row separator (newline character)
+         * The text put between rows, normally a line break; `\n` written as two characters is used
+         * as one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text put between cells, normally a comma; a cell containing it is wrapped in quotes
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
     }
 
+    /**
+     * Feeds `csv.jsonToCsv`: the objects to write, the property names that become the columns in
+     * order, whether to write a header line and the separators.
+     */
     export class JsonToCsvDto<T = Record<string, unknown>> {
         constructor(json?: T[], headers?: string[], includeHeaders?: boolean, rowSeparator?: string, columnSeparator?: string) {
             if (json !== undefined) { this.json = json; }
@@ -267,32 +312,37 @@ export namespace CSV {
             if (columnSeparator !== undefined) { this.columnSeparator = columnSeparator; }
         }
         /**
-         * Array of JSON objects to convert
+         * The objects, one row each, in order; a property an object lacks becomes an empty cell
          * @default [{"name": "John", "age": "30"}]
          */
         json: T[] = [{ "name": "John", "age": "30" }] as T[];
         /**
-         * Headers to use (in order)
+         * The property names written as columns, in this order; properties not listed are left out
          * @default ["name", "age"]
          */
         headers: string[] = ["name", "age"];
         /**
-         * Whether to include headers in output
+         * When true, the first line holds the header names
          * @default true
          */
         includeHeaders?: boolean | undefined = true;
         /**
-         * Row separator (newline character)
+         * The text put between rows, normally a line break; `\n` written as two characters is used
+         * as one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text put between cells, normally a comma; a cell containing it is wrapped in quotes
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
     }
 
+    /**
+     * Feeds `csv.jsonToCsvAuto`: the objects to write, whose first entry's property names become
+     * the columns, whether to write a header line and the separators.
+     */
     export class JsonToCsvAutoDto<T = Record<string, unknown>> {
         constructor(json?: T[], includeHeaders?: boolean, rowSeparator?: string, columnSeparator?: string) {
             if (json !== undefined) { this.json = json; }
@@ -301,27 +351,33 @@ export namespace CSV {
             if (columnSeparator !== undefined) { this.columnSeparator = columnSeparator; }
         }
         /**
-         * Array of JSON objects to convert
+         * The objects, one row each; the property names of the first one are the columns, in their
+         * order
          * @default [{"name": "John", "age": "30"}]
          */
         json: T[] = [{ "name": "John", "age": "30" }] as T[];
         /**
-         * Whether to include headers in output
+         * When true, the first line holds the header names
          * @default true
          */
         includeHeaders?: boolean | undefined = true;
         /**
-         * Row separator (newline character)
+         * The text put between rows, normally a line break; `\n` written as two characters is used
+         * as one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text put between cells, normally a comma; a cell containing it is wrapped in quotes
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
     }
 
+    /**
+     * Feeds `csv.getHeaders` with the CSV text, which row holds the header names and the
+     * separators.
+     */
     export class GetHeadersDto {
         constructor(csv?: string, headerRow?: number, rowSeparator?: string, columnSeparator?: string) {
             if (csv !== undefined) { this.csv = csv; }
@@ -330,12 +386,13 @@ export namespace CSV {
             if (columnSeparator !== undefined) { this.columnSeparator = columnSeparator; }
         }
         /**
-         * CSV text to get headers from
+         * The whole CSV text, headers included
          * @default name,age\nJohn,30
          */
         csv = "name,age\nJohn,30";
         /**
-         * Row index where headers are located
+         * Index of the row whose cells are the header names, counting from 0 and skipping blank
+         * lines
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -343,17 +400,23 @@ export namespace CSV {
          */
         headerRow?: number | undefined = 0;
         /**
-         * Row separator (newline character)
+         * The text between rows, normally a line break; `\n` written as two characters is read as
+         * one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text between cells in a row, normally a comma; `\t` written as two characters is read
+         * as a tab
          * @default ,
          */
         columnSeparator?: string | undefined = ",";
     }
 
+    /**
+     * Feeds `csv.getRowCount` with the CSV text, how many leading rows are not data and the
+     * separators.
+     */
     export class GetRowCountDto {
         constructor(csv?: string, hasHeaders?: boolean, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string) {
             if (csv !== undefined) { this.csv = csv; }
@@ -363,29 +426,32 @@ export namespace CSV {
             if (columnSeparator !== undefined) { this.columnSeparator = columnSeparator; }
         }
         /**
-         * CSV text to count rows
+         * The whole CSV text; blank lines are not counted
          * @default name,age\nJohn,30\nJane,25
          */
         csv = "name,age\nJohn,30\nJane,25";
         /**
-         * Whether CSV has headers
+         * When true, the first row is a header line and is not counted; ignored when `dataStartRow`
+         * is set
          * @default true
          */
         hasHeaders?: boolean | undefined = true;
         /**
-         * Row index where data starts (overrides hasHeaders if set)
+         * Index of the first data row, counting from 0; when set, the rows before it are not
+         * counted and `hasHeaders` is ignored
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         dataStartRow?: number | undefined;
         /**
-         * Row separator (newline character)
+         * The text between rows, normally a line break; `\n` written as two characters is read as
+         * one
          * @default \n
          */
         rowSeparator?: string | undefined = "\n";
         /**
-         * Column separator (delimiter)
+         * The text between cells in a row, normally a comma; it does not change the count
          * @default ,
          */
         columnSeparator?: string | undefined = ",";

@@ -18,6 +18,10 @@ export enum brepGraphNodeKindEnum {
     compound = "compound",
     compsolid = "compsolid",
 }
+/**
+ * A shape and a graph node, by kind and index, for `brepGraph.reconstruct`, which turns the node
+ * back into a real sub-shape.
+ */
 export class BRepGraphReconstructDto<T> {
     constructor(shape?: T, kind?: brepGraphNodeKindEnum, index?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -25,38 +29,47 @@ export class BRepGraphReconstructDto<T> {
         if (index !== undefined) { this.index = index; }
     }
     /**
-     * Shape the graph is rebuilt from
+     * The shape the graph was built from.
      * @default undefined
      */
     shape!: T;
     /**
-     * Kind of graph node to reconstruct into a sub-shape
+     * What kind of part the node is: solid, shell, face, wire, edge, vertex, compound or compsolid.
      * @default solid
      */
     kind: brepGraphNodeKindEnum = brepGraphNodeKindEnum.solid;
     /**
-     * 0-based index of the node within its kind
+     * The position of the node among the parts of its kind, counting from 0, as the graph queries
+     * report it.
      * @default 0
      * @step 1
      */
     index = 0;
 }
+/**
+ * A shape and one of its sub-shapes for `brepGraph.nodeOfShape`, which finds the graph node
+ * standing for the sub-shape.
+ */
 export class BRepGraphNodeOfShapeDto<T> {
     constructor(shape?: T, subShape?: T) {
         if (shape !== undefined) { this.shape = shape; }
         if (subShape !== undefined) { this.subShape = subShape; }
     }
     /**
-     * Shape the graph is rebuilt from
+     * The shape the graph was built from.
      * @default undefined
      */
     shape!: T;
     /**
-     * Sub-shape of the shape to locate in the graph
+     * The face, edge or other part of the shape to look up.
      * @default undefined
      */
     subShape!: T;
 }
+/**
+ * A shell or solid, points near its corners and rounding settings for
+ * `corners.filletCornerByPoint`, which rounds only the corners picked by the points.
+ */
 export class FilletCornerByPointDto<T> {
     constructor(shape?: T, points?: Base.Point3[], radius?: number, taperFactor?: number, snapTolerance?: number, mode?: cornerModeEnum) {
         if (shape !== undefined) { this.shape = shape; }
@@ -67,23 +80,24 @@ export class FilletCornerByPointDto<T> {
         if (mode !== undefined) { this.mode = mode; }
     }
     /**
-     * Shell or solid whose corner(s) will be rounded
+     * The shell or solid whose corners are rounded.
      * @default undefined
      */
     shape!: T;
     /**
-     * Points near the corners to round (the nearest vertex to each is used)
+     * Points near the corners to round; the vertex nearest each point is the one treated.
      * @default []
      */
     points: Base.Point3[] = [];
     /**
-     * Fillet radius
+     * The rounding radius, in model units.
      * @default 1
      * @step 0.1
      */
     radius = 1;
     /**
-     * 3D corners only: taper reach along the incident edges, 0 = tightest (near spherical corner), 1 = up to the edge neutral point
+     * For 3D corners, how far the rounding reaches along the meeting edges: 0 for the tightest,
+     * almost spherical corner, 1 for the full reach.
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -91,17 +105,23 @@ export class FilletCornerByPointDto<T> {
      */
     taperFactor = 1;
     /**
-     * Maximum point-to-vertex distance to accept; 0 or less snaps to the nearest vertex unconditionally
+     * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
+     * nearest vertex whatever the distance.
      * @default 0
      * @step 0.1
      */
     snapTolerance = 0;
     /**
-     * auto: planar corners are corner-only, 3D corners are taper-filleted; planarOnly: 3D corners are skipped
+     * `auto` rounds planar corners in place and 3D corners with a taper; `planarOnly` skips 3D
+     * corners.
      * @default auto
      */
     mode: cornerModeEnum = cornerModeEnum.auto;
 }
+/**
+ * A shell or solid, points near its corners and bevel settings for `corners.chamferCornerByPoint`,
+ * which bevels only the corners picked by the points.
+ */
 export class ChamferCornerByPointDto<T> {
     constructor(shape?: T, points?: Base.Point3[], distance?: number, angle?: number, snapTolerance?: number, mode?: cornerModeEnum) {
         if (shape !== undefined) { this.shape = shape; }
@@ -112,39 +132,45 @@ export class ChamferCornerByPointDto<T> {
         if (mode !== undefined) { this.mode = mode; }
     }
     /**
-     * Shell or solid whose corner(s) will be beveled
+     * The shell or solid whose corners are beveled.
      * @default undefined
      */
     shape!: T;
     /**
-     * Points near the corners to chamfer (the nearest vertex to each is used)
+     * Points near the corners to bevel; the vertex nearest each point is the one treated.
      * @default []
      */
     points: Base.Point3[] = [];
     /**
-     * Chamfer setback distance
+     * How far the bevel reaches back from the corner along its edges, in model units.
      * @default 1
      * @step 0.1
      */
     distance = 1;
     /**
-     * Chamfer angle in degrees (used by the planar 2D chamfer)
+     * The slope of the bevel in degrees, used for planar corners.
      * @default 45
      * @step 1
      */
     angle = 45;
     /**
-     * Maximum point-to-vertex distance to accept; 0 or less snaps to the nearest vertex unconditionally
+     * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
+     * nearest vertex whatever the distance.
      * @default 0
      * @step 0.1
      */
     snapTolerance = 0;
     /**
-     * auto: planar corners are corner-only, 3D corners use a local plane cut; planarOnly: 3D corners are skipped
+     * `auto` bevels planar corners in place and 3D corners with a local plane cut; `planarOnly`
+     * skips 3D corners.
      * @default auto
      */
     mode: cornerModeEnum = cornerModeEnum.auto;
 }
+/**
+ * A shell or solid and points near its corners for `corners.classifyCornerByPoint`, which reports
+ * what kind of corner each point picks.
+ */
 export class ClassifyCornerByPointDto<T> {
     constructor(shape?: T, points?: Base.Point3[], snapTolerance?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -152,22 +178,27 @@ export class ClassifyCornerByPointDto<T> {
         if (snapTolerance !== undefined) { this.snapTolerance = snapTolerance; }
     }
     /**
-     * Shell or solid whose corner(s) will be classified
+     * The shell or solid whose corners are looked up.
      * @default undefined
      */
     shape!: T;
     /**
-     * Points near the corners to classify (the nearest vertex to each is used)
+     * Points near the corners to classify; the vertex nearest each point is the one reported.
      * @default []
      */
     points: Base.Point3[] = [];
     /**
-     * Maximum point-to-vertex distance to accept; 0 or less snaps to the nearest vertex unconditionally
+     * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
+     * nearest vertex whatever the distance.
      * @default 0
      * @step 0.1
      */
     snapTolerance = 0;
 }
+/**
+ * A flat wire or face, a distance, an angle and optional corner indexes for
+ * `fillets.chamfer2dVertices`, which bevels the corners.
+ */
 export class Chamfer2dVertexDto<T> {
     constructor(shape?: T, distance?: number, angle?: number, indexes?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -176,28 +207,32 @@ export class Chamfer2dVertexDto<T> {
         if (indexes !== undefined) { this.indexes = indexes; }
     }
     /**
-     * 2D wire or planar face whose corners will be chamfered
+     * The flat wire or face whose corners are beveled.
      * @default undefined
      */
     shape!: T;
     /**
-     * Chamfer setback distance along the corner edge
+     * How far the bevel cuts back from each corner along one edge, in model units.
      * @default 1
      * @step 0.1
      */
     distance = 1;
     /**
-     * Chamfer angle in degrees
+     * The angle of the bevel to that edge, in degrees; 45 gives an even chamfer.
      * @default 45
      * @step 1
      */
     angle = 45;
     /**
-     * Optional 1-based corner indexes to chamfer; chamfers all corners when omitted
+     * Which corners to bevel, counted from 1 along the outline; leave it out to bevel them all.
      * @default undefined
      */
     indexes?: number[] | undefined;
 }
+/**
+ * A shape, the faces to tilt and the draft settings for `draft.draftAngle`, which tapers the faces
+ * about a neutral plane.
+ */
 export class DraftAngleDto<T, U> {
     constructor(shape?: T, faces?: U[], direction?: Base.Vector3, angle?: number, neutralPlaneOrigin?: Base.Point3, neutralPlaneDirection?: Base.Vector3, flag?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -209,42 +244,47 @@ export class DraftAngleDto<T, U> {
         if (flag !== undefined) { this.flag = flag; }
     }
     /**
-     * Shape to draft
+     * The solid whose faces are tilted.
      * @default undefined
      */
     shape!: T;
     /**
-     * Faces of the shape to taper
+     * The faces of the shape that get the taper.
      * @default undefined
      */
     faces!: U[];
     /**
-     * Pull direction the draft is applied along
+     * The pull direction, the way the part leaves the mold; the taper is measured against it.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
     /**
-     * Draft angle in degrees
+     * The draft angle, in degrees.
      * @default 5
      * @step 1
      */
     angle = 5;
     /**
-     * Origin of the neutral plane (kept fixed during drafting)
+     * A point on the neutral plane, the plane that stays where it is while the faces pivot about
+     * it.
      * @default [0, 0, 0]
      */
     neutralPlaneOrigin: Base.Point3 = [0, 0, 0];
     /**
-     * Normal of the neutral plane
+     * The normal of the neutral plane.
      * @default [0, 0, 1]
      */
     neutralPlaneDirection: Base.Vector3 = [0, 0, 1];
     /**
-     * Direction flag passed to OCCT (true keeps the standard draft side)
+     * When true, the faces taper on the standard side; false tapers them the other way.
      * @default true
      */
     flag = true;
 }
+/**
+ * A wire or shape, a direction, an angle and a length for `draft.makeDraft`, which grows a tapered
+ * skirt from the edges.
+ */
 export class MakeDraftDto<T> {
     constructor(shape?: T, direction?: Base.Vector3, angle?: number, lengthMax?: number, internal?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -254,33 +294,38 @@ export class MakeDraftDto<T> {
         if (internal !== undefined) { this.internal = internal; }
     }
     /**
-     * Shape (or face/wire) to draft from
+     * The wire, face or shape whose edges the skirt grows from.
      * @default undefined
      */
     shape!: T;
     /**
-     * Draft direction
+     * The direction the skirt grows along, the pull direction of the mold.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
     /**
-     * Draft angle in degrees
+     * How far the skirt leans from the direction, in degrees.
      * @default 5
      * @step 1
      */
     angle = 5;
     /**
-     * Maximum length of the corner edge between two draft faces
+     * How long the skirt may grow, in model units, measured along the corner edges between its
+     * faces.
      * @default 10
      * @step 0.1
      */
     lengthMax = 10;
     /**
-     * Whether the draft is internal
+     * When true, the skirt leans inward instead of outward.
      * @default false
      */
     internal = false;
 }
+/**
+ * A wire or shape, a direction, an angle and a stop shape for `draft.makeDraftToShape`, which grows
+ * a tapered skirt from the edges until it meets the stop shape.
+ */
 export class MakeDraftToShapeDto<T> {
     constructor(shape?: T, direction?: Base.Vector3, angle?: number, stopShape?: T, keepOut?: boolean, internal?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -291,33 +336,33 @@ export class MakeDraftToShapeDto<T> {
         if (internal !== undefined) { this.internal = internal; }
     }
     /**
-     * Shape (or face/wire) to draft from
+     * The wire, face or shape whose edges the skirt grows from.
      * @default undefined
      */
     shape!: T;
     /**
-     * Draft direction
+     * The direction the skirt grows along, the pull direction of the mold.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
     /**
-     * Draft angle in degrees
+     * How far the skirt leans from the direction, in degrees.
      * @default 5
      * @step 1
      */
     angle = 5;
     /**
-     * Shape the draft is performed up to
+     * The shape the skirt grows up to and stops at.
      * @default undefined
      */
     stopShape!: T;
     /**
-     * Keep the part of the stop shape outside the draft
+     * When true, the part of the stop shape outside the skirt is kept in the result.
      * @default false
      */
     keepOut = false;
     /**
-     * Whether the draft is internal
+     * When true, the skirt leans inward instead of outward.
      * @default false
      */
     internal = false;

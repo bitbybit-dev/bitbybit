@@ -2,6 +2,10 @@
 // directory, in the order set by scripts/inputs.config.mjs, into ../manifold-inputs.ts. Edit here, then regenerate.
 import { Base } from "../base-inputs";
 
+/**
+ * A solid or cross-section and how to draw it, for the renderer packages: face color, opacity and
+ * material for a solid, line color and width for a cross-section.
+ */
 export class DrawManifoldOrCrossSectionDto<T, M> {
     /**
      * Provide options without default values
@@ -20,12 +24,12 @@ export class DrawManifoldOrCrossSectionDto<T, M> {
         if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
     }
     /**
-     * Manifold geometry
+     * The solid or cross-section to draw.
      * @default undefined
      */
     manifoldOrCrossSection?: T | undefined;
     /**
-     * Face opacity value between 0 and 1
+     * How opaque the faces are, from 0 for invisible to 1 for solid.
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -33,28 +37,28 @@ export class DrawManifoldOrCrossSectionDto<T, M> {
      */
     faceOpacity = 1;
     /**
-     * Face material
+     * A material for the faces from the rendering engine; when given it replaces the face color.
      * @default undefined
      * @optional true
      */
     faceMaterial?: M | undefined;
     /**
-     * Hex colour string for face colour
+     * The color of the faces as a hex string such as `#ff0000`.
      * @default #ff0000
      */
     faceColour: Base.Color = "#ff0000";
     /**
-     * Hex colour string for cross section drawing
+     * The color of a cross-section's lines as a hex string.
      * @default #ff00ff
      */
     crossSectionColour: Base.Color = "#ff00ff";
     /**
-     * Width of cross section lines
+     * How thick a cross-section's lines are drawn.
      * @default 2
      */
     crossSectionWidth = 2;
     /**
-     * Cross section opacity value between 0 and 1
+     * How opaque a cross-section's lines are, from 0 to 1.
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -62,22 +66,23 @@ export class DrawManifoldOrCrossSectionDto<T, M> {
      */
     crossSectionOpacity = 1;
     /**
-     * Compute normals for the shape
+     * When true, normals are computed for the mesh so it shades smoothly.
      * @default false
      */
     computeNormals = false;
     /**
-     * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+     * When true, the back of each face is drawn in its own color, which shows which way faces
+     * point.
      * @default true
      */
     drawTwoSided = true;
     /**
-     * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+     * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
      * @default #0000ff
      */
     backFaceColour: Base.Color = "#0000ff";
     /**
-     * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+     * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -85,6 +90,10 @@ export class DrawManifoldOrCrossSectionDto<T, M> {
      */
     backFaceOpacity = 1;
 }
+/**
+ * Solids or cross-sections and how to draw them, for the renderer packages: the same options as
+ * `DrawManifoldOrCrossSectionDto`, applied to every shape in the list.
+ */
 export class DrawManifoldsOrCrossSectionsDto<T, M> {
     /**
      * Provide options without default values
@@ -103,23 +112,23 @@ export class DrawManifoldsOrCrossSectionsDto<T, M> {
         if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
     }
     /**
-     * Manifold geometry
+     * The solids or cross-sections to draw with the same options.
      * @default undefined
      */
     manifoldsOrCrossSections?: T[] | undefined;
     /**
-     * Face material
+     * A material for the faces from the rendering engine; when given it replaces the face color.
      * @default undefined
      * @optional true
      */
     faceMaterial?: M | undefined;
     /**
-     * Hex colour string for face colour
+     * The color of the faces as a hex string such as `#ff0000`.
      * @default #ff0000
      */
     faceColour: Base.Color = "#ff0000";
     /**
-     * Face opacity value between 0 and 1
+     * How opaque the faces are, from 0 for invisible to 1 for solid.
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -127,17 +136,17 @@ export class DrawManifoldsOrCrossSectionsDto<T, M> {
      */
     faceOpacity = 1;
     /**
-     * Hex colour string for cross section drawing
+     * The color of a cross-section's lines as a hex string.
      * @default #ff00ff
      */
     crossSectionColour: Base.Color = "#ff00ff";
     /**
-     * Width of cross section lines
+     * How thick a cross-section's lines are drawn.
      * @default 2
      */
     crossSectionWidth = 2;
     /**
-     * Cross section opacity value between 0 and 1
+     * How opaque a cross-section's lines are, from 0 to 1.
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -145,22 +154,23 @@ export class DrawManifoldsOrCrossSectionsDto<T, M> {
      */
     crossSectionOpacity = 1;
     /**
-     * Compute normals for the shape
+     * When true, normals are computed for the meshes so they shade smoothly.
      * @default false
      */
     computeNormals = false;
     /**
-     * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+     * When true, the back of each face is drawn in its own color, which shows which way faces
+     * point.
      * @default true
      */
     drawTwoSided = true;
     /**
-     * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+     * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
      * @default #0000ff
      */
     backFaceColour: Base.Color = "#0000ff";
     /**
-     * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+     * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
      * @default 1
      * @minimum 0
      * @maximum 1

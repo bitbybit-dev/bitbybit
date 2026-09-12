@@ -30,7 +30,7 @@ export namespace JSCAD {
     /** A plane, `[normalX, normalY, normalZ, distanceFromOrigin]`. */
     export type JSCADPlane = [number, number, number, number];
 
-    /** A colour, either `[r, g, b]` or `[r, g, b, a]`, each channel from 0 to 1. */
+    /** A color, either `[r, g, b]` or `[r, g, b, a]`, each channel from 0 to 1. */
     export type JSCADColor = [number, number, number] | [number, number, number, number];
 
     /** A convex polygon in 3D - the face of a solid. */
@@ -81,6 +81,11 @@ export namespace JSCAD {
         transforms: JSCADMat4;
     };
 
+    /**
+     * A polyline as a plain list of points, the form `polygon.createFromPolyline`,
+     * `path.createFromPolyline` and `path.appendPolyline` read; only X and Y of each point are used by
+     * them.
+     */
     export class PolylinePropertiesDto {
         /**
          * Provide options without default values
@@ -90,15 +95,17 @@ export namespace JSCAD {
             if (isClosed !== undefined) { this.isClosed = isClosed; }
         }
         /**
-         * Points of the polyline
+         * The corner points in order, given in 3D; JSCAD methods use only X and Y
          */
         points!: Base.Point3[];
         /**
-         * Can contain is closed information
+         * Whether the last point joins back to the first; the JSCAD methods decide closure on their own
+         * and ignore this flag
          */
         isClosed?: boolean | undefined = false;
         /**
-         * Can contain color information
+         * A color carried along with the polyline for drawing, as a hex string or an RGB list; the
+         * JSCAD methods ignore it
          */
         color?: string | number[] | undefined;
     }
@@ -136,25 +143,37 @@ export namespace JSCAD {
          */
         right = "right",
     }
+    /**
+     * Feeds `toPolygonPoints` and `shapeToMesh` on the JSCAD service with the one entity to turn into
+     * triangles or mesh data; a 2D shape is given a tiny thickness on the way.
+     */
     export class MeshDto {
         constructor(mesh?: JSCADEntity) {
             if (mesh !== undefined) { this.mesh = mesh; }
         }
         /**
-        * Solid Jscad mesh
-        */
+         * The solid to convert; a flat 2D shape works too and is given a tiny thickness first
+         */
         mesh!: JSCADEntity;
     }
 
+    /**
+     * Feeds `shapesToMeshes` on the JSCAD service with the entities to turn into mesh data, one result
+     * per entry in the same order.
+     */
     export class MeshesDto {
         constructor(meshes?: JSCADEntity[]) {
             if (meshes !== undefined) { this.meshes = meshes; }
         }
         /**
-        * Solid Jscad mesh
-        */
+         * The solids to convert, in the order the results should come back; flat 2D shapes work too
+         */
         meshes!: JSCADEntity[];
     }
+    /**
+     * The options `draw.drawAnyAsync` passes on when the entity is one JSCAD solid or 2D shape: color,
+     * opacity, visibility, the two-sided rendering and the mesh to reuse when redrawing.
+     */
     export class DrawSolidMeshDto<T> {
         /**
          * Provide options without default values
@@ -171,11 +190,11 @@ export namespace JSCAD {
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
-         * Solid Jscad mesh
+         * The solid or flat 2D shape to draw; it is converted to mesh data on the way
          */
         mesh!: JSCADEntity;
         /**
-         * Value between 0 and 1
+         * How opaque the faces are, from 0 for invisible to 1 for solid
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -183,39 +202,44 @@ export namespace JSCAD {
          */
         opacity = 1;
         /**
-         * Hex colour string
+         * Hex color of the faces; a list uses its first entry. An entity colored with `colors.colorize`
+         * keeps its own color instead
          * @default #444444
          */
         colours: string | string[] = "#444444";
         /**
-         * Indicates wether this solid will be transformed in time
+         * When true, the drawn mesh can be refreshed in place on later draws by passing it back as
+         * `jscadMesh`
          * @default false
          */
         updatable = false;
         /**
-         * Hidden
+         * When true, the mesh is created but not shown until it is made visible
          * @default false
          */
         hidden = false;
         /**
-         * Solid mesh variable in case it already exists and needs updating
+         * A mesh from an earlier draw to refresh instead of creating a new one; used only when
+         * `updatable` is true
          * @default undefined
          * @optional true
          * @ignore true
          */
         jscadMesh?: T | undefined;
         /**
-         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * When true, the back of every face is drawn as well, in `backFaceColour`, which helps to see
+         * face orientation
          * @default true
          */
         drawTwoSided = true;
         /**
-         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * Hex color of the back faces, the side the face normal points away from; used only when
+         * `drawTwoSided` is true
          * @default #0000ff
          */
         backFaceColour = "#0000ff";
         /**
-         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * How opaque the back faces are, from 0 to 1; used only when `drawTwoSided` is true
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -223,6 +247,10 @@ export namespace JSCAD {
          */
         backFaceOpacity = 1;
     }
+    /**
+     * The options `draw.drawAnyAsync` passes on when the entity is a list of JSCAD solids or 2D shapes:
+     * colors, opacity, visibility, the two-sided rendering and the parent mesh to reuse when redrawing.
+     */
     export class DrawSolidMeshesDto<T> {
         /**
          * Provide options without default values
@@ -239,13 +267,13 @@ export namespace JSCAD {
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
-         * Solid Jscad meshes
+         * The solids or flat 2D shapes to draw, each becoming a child of one parent mesh
          * @default undefined
          * @optional true
          */
         meshes!: JSCADEntity[];
         /**
-         * Value between 0 and 1
+         * How opaque the faces are, from 0 for invisible to 1 for solid
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -253,39 +281,44 @@ export namespace JSCAD {
          */
         opacity = 1;
         /**
-         * Hex colour string
+         * Hex color of the faces; a list with one entry per entity colors each in turn, any other list
+         * uses its first entry. Colorized entities keep their own color
          * @default #444444
          */
         colours: string | string[] = "#444444";
         /**
-         * Indicates wether this solid will be transformed in time
+         * When true, the drawn meshes can be refreshed in place on later draws by passing the parent
+         * back as `jscadMesh`
          * @default false
          */
         updatable = false;
         /**
-         * Should be hidden
+         * When true, the meshes are created but not shown until they are made visible
          * @default false
          */
         hidden = false;
         /**
-         * Solid mesh variable in case it already exists and needs updating
+         * The parent mesh from an earlier draw to refresh instead of creating a new one; used only when
+         * `updatable` is true
          * @default undefined
          * @optional true
          * @ignore true
          */
         jscadMesh?: T | undefined;
         /**
-         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * When true, the back of every face is drawn as well, in `backFaceColour`, which helps to see
+         * face orientation
          * @default true
          */
         drawTwoSided = true;
         /**
-         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * Hex color of the back faces, the side the face normal points away from; used only when
+         * `drawTwoSided` is true
          * @default #0000ff
          */
         backFaceColour = "#0000ff";
         /**
-         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * How opaque the back faces are, from 0 to 1; used only when `drawTwoSided` is true
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -293,6 +326,10 @@ export namespace JSCAD {
          */
         backFaceOpacity = 1;
     }
+    /**
+     * The options `draw.drawAnyAsync` passes on when the entity is a JSCAD 2D path, drawn as a line
+     * through its points: color, opacity, line width and the line to reuse when redrawing.
+     */
     export class DrawPathDto<T> {
         /**
          * Provide options without default values
@@ -306,17 +343,17 @@ export namespace JSCAD {
             if (pathMesh !== undefined) { this.pathMesh = pathMesh; }
         }
         /**
-         * 2D Path to draw         
+         * The 2D path to draw as a line; a closed path is drawn back to its first point
          * @default undefined
          */
         path!: JSCADEntity;
         /**
-         * Colour of the path
+         * Hex color of the line; a path colored with `colors.colorize` keeps its own color instead
          * @default #444444
          */
         colour = "#444444";
         /**
-         * Opacity of the path
+         * How opaque the line is, from 0 for invisible to 1 for solid
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -324,7 +361,7 @@ export namespace JSCAD {
          */
         opacity = 1;
         /**
-         * Width of the path
+         * Thickness of the drawn line
          * @default 10
          * @minimum 0
          * @maximum Infinity
@@ -332,66 +369,87 @@ export namespace JSCAD {
          */
         width = 10;
         /**
-         * Indicates wether the path will change in time
+         * When true, the drawn line can be refreshed in place on later draws by passing it back as
+         * `pathMesh`
          * @default false
          */
         updatable = false;
         /**
-         * Path mesh variable that will be updated if updatable property is set to true
+         * A line from an earlier draw to refresh instead of creating a new one; used only when
+         * `updatable` is true
          * @default undefined
          * @optional true
          * @ignore true
          */
         pathMesh?: T | undefined;
     }
+    /**
+     * Feeds `transformSolids` on the JSCAD service: the solids to move and the matrix, or matrices,
+     * applied to each of them.
+     */
     export class TransformSolidsDto {
         constructor(meshes?: JSCADEntity[], transformation?: Base.TransformMatrixes) {
             if (meshes !== undefined) { this.meshes = meshes; }
             if (transformation !== undefined) { this.transformation = transformation; }
         }
         /**
-         * Solids to be transformed
+         * The solids to transform; they stay as they are and transformed copies come back in the same
+         * order
          * @default undefined
          */
         meshes!: JSCADEntity[];
         /**
-         * Transformation matrix or a list of transformation matrixes
+         * One 4x4 matrix, a list of matrices applied in order, or a list of such lists, as the
+         * `transforms` methods produce
          * @default undefined
          */
         transformation!: Base.TransformMatrixes;
     }
+    /**
+     * Feeds `transformSolid` on the JSCAD service: the solid to move and the matrix, or matrices,
+     * applied to it.
+     */
     export class TransformSolidDto {
         constructor(mesh?: JSCADEntity, transformation?: Base.TransformMatrixes) {
             if (mesh !== undefined) { this.mesh = mesh; }
             if (transformation !== undefined) { this.transformation = transformation; }
         }
         /**
-         * Solid to be transformed
+         * The solid to transform; it stays as it is and a transformed copy comes back. A 2D shape or a
+         * path throws an error
          * @default undefined
          */
         mesh!: JSCADEntity;
         /**
-         * Transformation matrix or a list of transformation matrixes
+         * One 4x4 matrix, a list of matrices applied in order, or a list of such lists, as the
+         * `transforms` methods produce
          * @default undefined
          */
         transformation!: Base.TransformMatrixes;
     }
+    /**
+     * Feeds `downloadSolidSTL` on the JSCAD service: the solid to write and the name of the STL file.
+     */
     export class DownloadSolidDto {
         constructor(mesh?: JSCADEntity, fileName?: string) {
             if (mesh !== undefined) { this.mesh = mesh; }
             if (fileName !== undefined) { this.fileName = fileName; }
         }
         /**
-         * Solid to be downloaded
+         * The solid to write to the file
          * @default undefined
          */
         mesh!: JSCADEntity;
         /**
-         * File name
+         * Name of the downloaded file without the extension, which is added
          * @default undefined
          */
         fileName!: string;
     }
+    /**
+     * Feeds `downloadGeometryDxf` and `downloadGeometry3MF` on the JSCAD service: the geometry to
+     * write, the file name and optional options for the file writer.
+     */
     export class DownloadGeometryDto {
         constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: any) {
             if (geometry !== undefined) { this.geometry = geometry; }
@@ -399,96 +457,123 @@ export namespace JSCAD {
             if (options !== undefined) { this.options = options; }
         }
         /**
-         * Solid or path to be downloaded, also supports multiple geometries in array
+         * A solid, a 2D shape, a path, or a list of them, all written into one file
          * @default undefined
          */
         geometry!: JSCADEntity | JSCADEntity[];
         /**
-         * File name
+         * Name of the downloaded file without the extension, which is added
          * @default jscad-geometry
          */
         fileName = "jscad-geometry";
         /**
-         * Options
+         * Options handed to the DXF or 3MF writer as they are; leave it out for the defaults
          * @default undefined
          * @optional true
          */
         options;
     }
+    /**
+     * Feeds `downloadSolidsSTL` on the JSCAD service: the solids to write into one STL file and the
+     * file's name.
+     */
     export class DownloadSolidsDto {
         constructor(meshes?: JSCADEntity[], fileName?: string) {
             if (meshes !== undefined) { this.meshes = meshes; }
             if (fileName !== undefined) { this.fileName = fileName; }
         }
         /**
-         * Solids to be downloaded
+         * The solids to write, all into the same file
          * @default undefined
          */
         meshes!: JSCADEntity[];
         /**
-         * File name
+         * Name of the downloaded file without the extension, which is added
          * @default undefined
          */
         fileName!: string;
     }
+    /**
+     * Feeds `colors.colorize`: the geometry to tint, one entity or a list, and the color it is drawn in
+     * from then on.
+     */
     export class ColorizeDto {
         constructor(geometry?: JSCADEntity, color?: string) {
             if (geometry !== undefined) { this.geometry = geometry; }
             if (color !== undefined) { this.color = color; }
         }
         /**
-         * Solid to be colorized
+         * A solid, a 2D shape, a path, or a list of them; colored copies come back in the same shape as
+         * the input
          * @default undefined
          */
         geometry!: JSCADEntity | JSCADEntity[];
         /**
-         * Hex color string
+         * Hex color string the geometry is always drawn in, ahead of the drawing options
          * @default #0000ff
          */
         color = "#0000ff";
     }
+    /**
+     * Feeds `booleans.union`, `booleans.intersect` and `booleans.subtract` with any number of inputs;
+     * for `subtract` the first entry is the one being cut. All entries must be of one kind, solids or
+     * 2D shapes.
+     */
     export class BooleanObjectsDto {
         constructor(meshes?: JSCADEntity[]) {
             if (meshes !== undefined) { this.meshes = meshes; }
         }
         /**
-         * Contains solid Jscad mesh objects that will be used to perform boolean operation
+         * The solids, or the 2D shapes, to combine; the inputs stay as they are and a new entity comes
+         * back
          * @default undefined
          */
         meshes!: JSCADEntity[];
     }
+    /**
+     * Feeds `booleans.unionTwo`, `booleans.intersectTwo` and `booleans.subtractTwo` with exactly two
+     * inputs of one kind, solids or 2D shapes; for `subtractTwo`, `second` is cut out of `first`.
+     */
     export class BooleanTwoObjectsDto {
         constructor(first?: JSCADEntity, second?: JSCADEntity) {
             if (first !== undefined) { this.first = first; }
             if (second !== undefined) { this.second = second; }
         }
         /**
-         * Contains Jscad Solid
+         * The first solid or 2D shape, the one that is kept and cut in a subtraction
          * @default undefined
          */
         first!: JSCADEntity;
         /**
-         * Contains Jscad Solid
+         * The second solid or 2D shape, of the same kind as `first`
          * @default undefined
          */
         second!: JSCADEntity;
     }
+    /**
+     * Feeds `booleans.subtractFrom`: `from` is the base and every entry of `meshes` is cut out of it.
+     * All must be of one kind, solids or 2D shapes.
+     */
     export class BooleanObjectsFromDto {
         constructor(from?: JSCADEntity, meshes?: JSCADEntity[]) {
             if (from !== undefined) { this.from = from; }
             if (meshes !== undefined) { this.meshes = meshes; }
         }
         /**
-         * Contains Jscad Solid
+         * The solid or 2D shape to cut from; it stays as it is and a cut copy comes back
          * @default undefined
          */
         from!: JSCADEntity;
         /**
-         * Contains Jscad Solid
+         * The solids or 2D shapes to cut out of `from`, of the same kind as it
          * @default undefined
          */
         meshes!: JSCADEntity[];
     }
+    /**
+     * Feeds `expansions.expand` and `expansions.offset`: the geometry, the signed distance to move its
+     * boundary by and how the corners are shaped on the way.
+     */
     export class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
             if (geometry !== undefined) { this.geometry = geometry; }
@@ -497,12 +582,14 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Can contain various Jscad entities from Solid category
+         * The 2D shape, path or solid to grow; `offset` takes 2D shapes and paths only. It stays as it
+         * is and a new entity comes back
          * @default undefined
          */
         geometry!: JSCADEntity;
         /**
-         * Delta (+/-) of expansion
+         * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it
+         * (a solid accepts positive only)
          * @default 0.1
          * @minimum -Infinity
          * @maximum Infinity
@@ -510,12 +597,14 @@ export namespace JSCAD {
          */
         delta = 0.1;
         /**
-         * Type of corner to create during of expansion; edge, chamfer, round
+         * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
+         * it; a solid accepts `round` only
          * @default edge
          */
         corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
         /**
-         * Integer number of segments when creating round corners         
+         * Number of straight pieces a `round` corner is made of over a full circle; more makes it
+         * smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -523,6 +612,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * The offset options, mirroring `ExpansionDto`: the geometry, the signed distance and the corner
+     * shaping. `expansions.offset` reads `ExpansionDto`, so this class is here for symmetry.
+     */
     export class OffsetDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
             if (geometry !== undefined) { this.geometry = geometry; }
@@ -531,12 +624,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Can contain various Jscad entities from Solid category
+         * The 2D shape or path whose outline is moved; it stays as it is and a new entity comes back
          * @default undefined
          */
         geometry!: JSCADEntity;
         /**
-         * Delta (+/-) of offset
+         * How far the outline moves, in model units: positive outward, negative inward
          * @default 0.1
          * @minimum -Infinity
          * @maximum Infinity
@@ -544,12 +637,14 @@ export namespace JSCAD {
          */
         delta = 0.1;
         /**
-         * Type of corner to create during the offset; edge, chamfer, round.
+         * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
+         * it
          * @default edge
          */
         corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
         /**
-         * Integer number of segments when creating round corners
+         * Number of straight pieces a `round` corner is made of over a full circle; more makes it
+         * smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -557,6 +652,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `extrusions.extrudeLinear`: the flat shape, how far it rises along Z and the optional twist
+     * applied on the way up.
+     */
     export class ExtrudeLinearDto {
         constructor(geometry?: JSCADEntity, height?: number, twistAngle?: number, twistSteps?: number) {
             if (geometry !== undefined) { this.geometry = geometry; }
@@ -565,12 +664,13 @@ export namespace JSCAD {
             if (twistSteps !== undefined) { this.twistSteps = twistSteps; }
         }
         /**
-         * Geometry to extrude
+         * The flat 2D shape in the XY plane to raise into a solid; a closed path also works, an open
+         * one throws an error
          * @default undefined
          */
         geometry!: JSCADEntity;
         /**
-         * Height of linear extrude
+         * How far the shape rises along Z, in model units; negative extrudes downward
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -578,7 +678,8 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Twist angle in degrees
+         * How far the top is turned relative to the bottom around Z, in degrees; 0 gives a straight
+         * extrusion
          * @default 90
          * @minimum -Infinity
          * @maximum Infinity
@@ -586,7 +687,8 @@ export namespace JSCAD {
          */
         twistAngle = 90;
         /**
-         * Number of twist steps
+         * Number of slices the twist is built from, at least 1; more makes a smoother twist and a
+         * heavier mesh
          * @default 15
          * @minimum 0
          * @maximum Infinity
@@ -595,16 +697,25 @@ export namespace JSCAD {
         twistSteps = 15;
     }
 
+    /**
+     * Feeds `hulls.hull` and `hulls.hullChain` with the entities to wrap, all of one kind: solids, 2D
+     * shapes or paths. For `hullChain` the order is the order they connect in.
+     */
     export class HullDto {
         constructor(meshes?: JSCADEntity[]) {
             if (meshes !== undefined) { this.meshes = meshes; }
         }
         /**
-         * Geometries to use in hull
+         * The solids, 2D shapes or paths to wrap, all of one kind; for a chain, in the order they
+         * connect
          * @default undefined
          */
         meshes!: JSCADEntity[];
     }
+    /**
+     * Feeds `extrusions.extrudeRectangular`: the outline to build a wall along, the wall's height along
+     * Z and its half thickness.
+     */
     export class ExtrudeRectangularDto {
         constructor(geometry?: JSCADEntity, height?: number, size?: number) {
             if (geometry !== undefined) { this.geometry = geometry; }
@@ -612,12 +723,12 @@ export namespace JSCAD {
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Geometry to extrude
+         * The 2D shape or path whose outline the wall follows; the inside of a shape stays empty
          * @default undefined
          */
         geometry!: JSCADEntity;
         /**
-         * Height of linear extrude
+         * How tall the wall is along Z, in model units, standing on the XY plane
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -625,7 +736,8 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Size of the rectangle
+         * How far the wall reaches to each side of the outline, in model units, so the wall is twice
+         * this thick
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -633,6 +745,10 @@ export namespace JSCAD {
          */
         size = 1;
     }
+    /**
+     * Feeds `extrusions.extrudeRectangularPoints`: the points of the line to build a wall along, the
+     * wall's height along Z and its half thickness.
+     */
     export class ExtrudeRectangularPointsDto {
         constructor(points?: Base.Point3[], height?: number, size?: number) {
             if (points !== undefined) { this.points = points; }
@@ -640,12 +756,12 @@ export namespace JSCAD {
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Points for a path
+         * The corner points of the line the wall follows, in order; only X and Y are used
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Height of linear extrude
+         * How tall the wall is along Z, in model units, standing on the XY plane
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -653,7 +769,8 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Size of the rectangle
+         * How far the wall reaches to each side of the line, in model units, so the wall is twice this
+         * thick
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -661,6 +778,10 @@ export namespace JSCAD {
          */
         size = 1;
     }
+    /**
+     * Feeds `extrusions.extrudeRotate`: the flat profile to spin around the Z axis, how far and from
+     * where to spin it, and how finely the round result is faceted.
+     */
     export class ExtrudeRotateDto {
         constructor(polygon?: JSCADEntity, angle?: number, startAngle?: number, segments?: number) {
             if (polygon !== undefined) { this.polygon = polygon; }
@@ -669,12 +790,13 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Polygon to extrude
+         * The flat 2D shape in the XY plane to revolve around the Z axis; its X coordinates are the
+         * distances from the axis, which clips it where it crosses
          * @default undefined
          */
         polygon!: JSCADEntity;
         /**
-         * Angle in degrees
+         * How far to revolve, in degrees: 360 makes a full ring, the default 90 a quarter
          * @default 90
          * @minimum -Infinity
          * @maximum Infinity
@@ -682,7 +804,7 @@ export namespace JSCAD {
          */
         angle = 90;
         /**
-         * Start angle in degrees
+         * Where the revolution starts, in degrees from the X axis
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -690,7 +812,8 @@ export namespace JSCAD {
          */
         startAngle = 0;
         /**
-         * Number of segments
+         * Number of steps in a full turn; a partial angle uses proportionally fewer. Fewer than 3
+         * throws an error
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -698,133 +821,181 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `polygon.createFromPolyline` with the polyline whose points become the outline of a filled
+     * 2D shape.
+     */
     export class PolylineDto {
         constructor(polyline?: PolylinePropertiesDto) {
             if (polyline !== undefined) { this.polyline = polyline; }
         }
         /**
-         * Polyline with points
+         * The polyline whose points, in order, outline the shape; only X and Y are used
          */
         polyline!: PolylinePropertiesDto;
     }
+    /**
+     * Feeds `polygon.createFromCurve` with a NURBS curve, which is sampled into points to outline a
+     * filled 2D shape.
+     */
     export class CurveDto {
         constructor(curve?: any) {
             if (curve !== undefined) { this.curve = curve; }
         }
         /**
-         * Nurbs curve
+         * A NURBS curve that can be sampled into points; only X and Y of the samples are used
          */
         curve: any;
     }
+    /**
+     * Feeds `polygon.createFromPoints` with the outline points of a filled 2D shape, listed in order
+     * around it.
+     */
     export class PointsDto {
         constructor(points?: Base.Point3[]) {
             if (points !== undefined) { this.points = points; }
         }
         /**
-         * Points
+         * The outline points in order, at least three; only X and Y are used
          */
         points!: Base.Point3[];
     }
+    /**
+     * Feeds `path.close` and `polygon.createFromPath` with the one 2D path to work on; a 2D shape or a
+     * solid throws an error.
+     */
     export class PathDto {
         constructor(path?: JSCADEntity) {
             if (path !== undefined) { this.path = path; }
         }
         /**
-         * 2D path
+         * The 2D path to work on; it stays as it is and a new path or shape comes back
          * @default undefined
          */
         path!: JSCADEntity;
     }
+    /**
+     * Feeds `path.createFromPoints`: the points a new 2D path runs through and whether it closes back
+     * to the first.
+     */
     export class PathFromPointsDto {
         constructor(points?: Base.Point2[], closed?: boolean) {
             if (points !== undefined) { this.points = points; }
             if (closed !== undefined) { this.closed = closed; }
         }
         /**
-         * Points through which to create a path
+         * The points the path runs through, in order; only X and Y are used and repeated consecutive
+         * points are dropped
          * @default undefined
          */
         points!: Base.Point2[];
         /**
-         * Indicates wether we want to create a closed path
+         * When true, the last point joins back to the first and the path accepts no more points
          * @default false
          */
         closed = false;
     }
+    /**
+     * Feeds `path.createPathsFromPoints` with several point lists, one 2D path each; a list ending on
+     * its first point makes a closed path.
+     */
     export class PathsFromPointsDto {
         constructor(pointsLists?: Base.Point3[][] | Base.Point2[][]) {
             if (pointsLists !== undefined) { this.pointsLists = pointsLists; }
         }
         /**
-         * Points
+         * One list of points per path, in the order the paths should come back; a list whose last point
+         * equals its first gives a closed path
          * @default undefined
          */
         pointsLists!: Base.Point3[][] | Base.Point2[][];
     }
+    /**
+     * Feeds `path.createFromPolyline`: the polyline a new 2D path runs through and whether it closes
+     * back to the first point.
+     */
     export class PathFromPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, closed?: boolean) {
             if (polyline !== undefined) { this.polyline = polyline; }
             if (closed !== undefined) { this.closed = closed; }
         }
         /**
-         * Polyline
+         * The polyline whose points the path runs through; only X and Y are used and its own closed
+         * flag is ignored
          * @default undefined
          */
         polyline!: PolylinePropertiesDto;
         /**
-         * Indicates wether we want to create a closed path
+         * When true, the last point joins back to the first and the path accepts no more points
          * @default false
          */
         closed = false;
     }
+    /**
+     * A 2D path and a NURBS curve to add to its end. No method reads it at present; sample the curve
+     * into points and use `path.appendPoints` instead.
+     */
     export class PathAppendCurveDto {
         constructor(curve?: JSCADEntity, path?: JSCADEntity) {
             if (curve !== undefined) { this.curve = curve; }
             if (path !== undefined) { this.path = path; }
         }
         /**
-         * Verb Nurbs curve
+         * A NURBS curve whose sampled points would extend the path
          * @default undefined
          */
         curve!: JSCADEntity;
         /**
-         * Path to append the curve to
+         * The open 2D path that would be extended
          * @default undefined
          */
         path!: JSCADEntity;
     }
+    /**
+     * Feeds `path.appendPoints`: an open 2D path and the points to add after its last point.
+     */
     export class PathAppendPointsDto {
         constructor(points?: Base.Point2[], path?: JSCADEntity) {
             if (points !== undefined) { this.points = points; }
             if (path !== undefined) { this.path = path; }
         }
         /**
-         * Points to append
+         * The points to add after the path's last point, in order; only X and Y are used
          * @default undefined
          */
         points!: Base.Point2[];
         /**
-         * Path to append the points to
+         * The open 2D path to extend; it stays as it is and a longer copy comes back. A closed path
+         * throws an error
          * @default undefined
          */
         path!: JSCADEntity;
     }
+    /**
+     * Feeds `path.appendPolyline`: an open 2D path and the polyline whose points are added after its
+     * last point.
+     */
     export class PathAppendPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, path?: JSCADEntity) {
             if (polyline !== undefined) { this.polyline = polyline; }
             if (path !== undefined) { this.path = path; }
         }
         /**
-         * Polyline to append
+         * The polyline whose points are added after the path's last point; only X and Y are used
          * @default undefined
          */
         polyline!: PolylinePropertiesDto;
         /**
-         * Path to append the polyline to
+         * The open 2D path to extend; it stays as it is and a longer copy comes back. A closed path
+         * throws an error
          * @default undefined
          */
         path!: JSCADEntity;
     }
+    /**
+     * Feeds `path.appendArc`: an open 2D path with at least one point, the point the arc ends on, the
+     * ellipse the arc is cut from and which of the four fitting arcs to take.
+     */
     export class PathAppendArcDto {
         constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number) {
             if (path !== undefined) { this.path = path; }
@@ -837,17 +1008,18 @@ export namespace JSCAD {
             if (radiusY !== undefined) { this.radiusY = radiusY; }
         }
         /**
-         * Path to append the arc to
+         * The open 2D path to extend, with at least one point; the arc starts at its last point
          * @default undefined
          */
         path!: JSCADEntity;
         /**
-         * End point of an arc
+         * Where the arc ends, as a 2D point in the XY plane
          * @default [1, 1]
          */
         endPoint: Base.Point2 = [1, 1];
         /**
-         * Rotation (degrees) of the X axis of the arc with respect to the X axis of the coordinate system
+         * Tilt of the ellipse the arc is cut from, in degrees from the X axis; it changes nothing for a
+         * circle
          * @default 90
          * @minimum -Infinity
          * @maximum Infinity
@@ -855,17 +1027,18 @@ export namespace JSCAD {
          */
         xAxisRotation = 90;
         /**
-         * Draw an arc clockwise with respect to the center point
+         * When true, the arc turns clockwise from the start to the end point; false turns
+         * counter-clockwise
          * @default true
          */
         clockwise = true;
         /**
-         * Draw an arc longer than PI radians
+         * When true, the longer of the two arcs between the points is taken, more than half the ellipse
          * @default false
          */
         large = false;
         /**
-         * Number of segments for the arc
+         * Number of straight pieces for a full ellipse; the arc gets its proportional share
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -873,7 +1046,8 @@ export namespace JSCAD {
          */
         segments = 24;
         /**
-         * X radius of an arc
+         * Half width of the ellipse along its own X axis, in model units; scaled up when too small to
+         * reach the end point
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -881,7 +1055,8 @@ export namespace JSCAD {
          */
         radiusX = 1;
         /**
-         * Y radius of an arc
+         * Half height of the ellipse along its own Y axis, in model units; equal to `radiusX` for a
+         * circular arc
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -889,6 +1064,10 @@ export namespace JSCAD {
          */
         radiusY = 1;
     }
+    /**
+     * Feeds `polygon.circle`: a filled circle in the XY plane, given by its 2D center, radius and the
+     * number of straight sides that approximate it.
+     */
     export class CircleDto {
         constructor(center?: Base.Point2, radius?: number, segments?: number) {
             if (center !== undefined) { this.center = center; }
@@ -896,12 +1075,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center of the circle
+         * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
         center: Base.Point2 = [0, 0];
         /**
-         * Radius of the circle
+         * Distance from the center to the rim, in model units
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -909,7 +1088,7 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Segment number
+         * Number of straight sides around the circle; more makes it rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -917,6 +1096,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `polygon.ellipse`: a filled ellipse in the XY plane, given by its 2D center, its two
+     * half-sizes and the number of straight sides that approximate it.
+     */
     export class EllipseDto {
         constructor(center?: Base.Point2, radius?: Base.Point2, segments?: number) {
             if (center !== undefined) { this.center = center; }
@@ -924,17 +1107,17 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center of the circle
+         * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
         center: Base.Point2 = [0, 0];
         /**
-         * Radius of the circle in [x, y] form
+         * The half width along X and the half height along Y, in model units, as `[x, y]`
          * @default [1, 2]
          */
         radius: Base.Point2 = [1, 2];
         /**
-         * Segment number
+         * Number of straight sides around the ellipse; more makes it rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -942,18 +1125,22 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `polygon.square`: a filled square in the XY plane with sides parallel to the axes, given by
+     * its 2D center and side length.
+     */
     export class SquareDto {
         constructor(center?: Base.Point2, size?: number) {
             if (center !== undefined) { this.center = center; }
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Center of the 2D square
+         * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
         center: Base.Point2 = [0, 0];
         /**
-         * Size of the square
+         * Length of each side, in model units
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -962,6 +1149,10 @@ export namespace JSCAD {
         size = 1;
 
     }
+    /**
+     * Feeds `polygon.rectangle`: a filled rectangle in the XY plane with sides parallel to the axes,
+     * given by its 2D center, width along X and length along Y.
+     */
     export class RectangleDto {
         constructor(center?: Base.Point2, width?: number, length?: number) {
             if (center !== undefined) { this.center = center; }
@@ -969,12 +1160,12 @@ export namespace JSCAD {
             if (length !== undefined) { this.length = length; }
         }
         /**
-         * Center of the 2D rectangle
+         * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
         center: Base.Point2 = [0, 0];
         /**
-         * Width of the rectangle
+         * Full size along X, in model units
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -982,7 +1173,7 @@ export namespace JSCAD {
          */
         width = 1;
         /**
-         * Length of the rectangle
+         * Full size along Y, in model units
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -990,6 +1181,11 @@ export namespace JSCAD {
          */
         length = 1;
     }
+    /**
+     * Feeds `polygon.roundedRectangle`: a filled rectangle in the XY plane whose four corners are
+     * rounded, given by its 2D center, its sizes, the corner radius and how finely the corners are
+     * faceted.
+     */
     export class RoundedRectangleDto {
         constructor(center?: Base.Point2, roundRadius?: number, segments?: number, width?: number, length?: number) {
             if (center !== undefined) { this.center = center; }
@@ -999,12 +1195,13 @@ export namespace JSCAD {
             if (length !== undefined) { this.length = length; }
         }
         /**
-         * Center of the 2D rectangle
+         * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
         center: Base.Point2 = [0, 0];
         /**
-         * The radius to round the rectangle edge
+         * Radius of each rounded corner, in model units; it must be less than half of the smaller side
+         * or an error is thrown
          * @default 0.2
          * @minimum -Infinity
          * @maximum Infinity
@@ -1012,7 +1209,8 @@ export namespace JSCAD {
          */
         roundRadius = 0.2;
         /**
-         * Number of segments for corners
+         * Number of straight pieces a full circle of rounding is made of, so each corner gets a
+         * quarter; more makes it smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1020,7 +1218,7 @@ export namespace JSCAD {
          */
         segments = 24;
         /**
-         * Width of the rectangle
+         * Full size along X, in model units
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -1028,7 +1226,7 @@ export namespace JSCAD {
          */
         width = 1;
         /**
-         * Length of the rectangle
+         * Full size along Y, in model units
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -1036,6 +1234,10 @@ export namespace JSCAD {
          */
         length = 1;
     }
+    /**
+     * Feeds `polygon.star`: a filled star in the XY plane, given by its 2D center, how many tips it
+     * has, how far the tips and the notches between them reach and where the first tip points.
+     */
     export class StarDto {
         constructor(center?: Base.Point2, vertices?: number, density?: number, outerRadius?: number, innerRadius?: number, startAngle?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1046,12 +1248,12 @@ export namespace JSCAD {
             if (startAngle !== undefined) { this.startAngle = startAngle; }
         }
         /**
-         * Center of the 2D star
+         * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
         center: Base.Point2 = [0, 0];
         /**
-         * Number of vertices on the star
+         * Number of tips; the star has as many notches between them
          * @default 10
          * @minimum 0
          * @maximum Infinity
@@ -1059,7 +1261,8 @@ export namespace JSCAD {
          */
         vertices = 10;
         /**
-         * Density of the star
+         * Read only when `innerRadius` is 0: how many tips apart the edges connect, 2 for a pentagram,
+         * from which the notch radius is derived
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1067,7 +1270,7 @@ export namespace JSCAD {
          */
         density = 1;
         /**
-         * Outer radius of the star
+         * Distance from the center to each tip, in model units
          * @default 2
          * @minimum 0
          * @maximum Infinity
@@ -1075,7 +1278,7 @@ export namespace JSCAD {
          */
         outerRadius = 2;
         /**
-         * Inner radius of the star
+         * Distance from the center to each notch, in model units; 0 lets `density` decide it
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1083,7 +1286,7 @@ export namespace JSCAD {
          */
         innerRadius = 1;
         /**
-         * Starting angle for first vertice, in degrees
+         * Direction of the first tip, in degrees counter-clockwise from the X axis
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1091,18 +1294,22 @@ export namespace JSCAD {
          */
         startAngle = 0;
     }
+    /**
+     * Feeds `shapes.cube`: a cube with faces parallel to the axes, given by its center point and edge
+     * length.
+     */
     export class CubeDto {
         constructor(center?: Base.Point3, size?: number) {
             if (center !== undefined) { this.center = center; }
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Center coordinates of the cube
+         * The point the cube is centered on, so half the edge length lies on each side of it
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Size of the cube
+         * Length of every edge, in model units
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -1110,18 +1317,22 @@ export namespace JSCAD {
          */
         size = 1;
     }
+    /**
+     * Feeds `shapes.cubesOnCenterPoints`: one cube of the same edge length on every center point,
+     * coming back in the same order.
+     */
     export class CubeCentersDto {
         constructor(centers?: Base.Point3[], size?: number) {
             if (centers !== undefined) { this.centers = centers; }
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Center coordinates of the cubes
+         * The points the cubes are centered on, one cube each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Size of the cube
+         * Length of every edge of every cube, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1129,6 +1340,10 @@ export namespace JSCAD {
          */
         size = 1;
     }
+    /**
+     * Feeds `shapes.cuboid`: a box with faces parallel to the axes, given by its center point and its
+     * sizes along X, Y and Z.
+     */
     export class CuboidDto {
         constructor(center?: Base.Point3, width?: number, length?: number, height?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1137,12 +1352,12 @@ export namespace JSCAD {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Center coordinates of the cubod
+         * The point the box is centered on, so half of each size lies on each side of it
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Width of the cuboid
+         * Full size along X, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1150,7 +1365,7 @@ export namespace JSCAD {
          */
         width = 1;
         /**
-         * Length of the cuboid
+         * Full size along Z, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1158,7 +1373,7 @@ export namespace JSCAD {
          */
         length = 1;
         /**
-         * Height of the cuboid
+         * Full size along Y, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1166,6 +1381,10 @@ export namespace JSCAD {
          */
         height = 1;
     }
+    /**
+     * Feeds `shapes.cuboidsOnCenterPoints`: one box of the same sizes on every center point, coming
+     * back in the same order.
+     */
     export class CuboidCentersDto {
         constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number) {
             if (centers !== undefined) { this.centers = centers; }
@@ -1174,12 +1393,12 @@ export namespace JSCAD {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Center coordinates of the cuboids
+         * The points the boxes are centered on, one box each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Width of the cuboids
+         * Full size of every box along X, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1187,7 +1406,7 @@ export namespace JSCAD {
          */
         width = 1;
         /**
-         * Length of the cuboids
+         * Full size of every box along Z, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1195,7 +1414,7 @@ export namespace JSCAD {
          */
         length = 1;
         /**
-         * Height of the cuboids
+         * Full size of every box along Y, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1203,6 +1422,10 @@ export namespace JSCAD {
          */
         height = 1;
     }
+    /**
+     * Feeds `shapes.roundedCuboid`: a box with every edge and corner rounded, given by its center, its
+     * sizes along X, Y and Z, the rounding radius and how finely the rounding is faceted.
+     */
     export class RoundedCuboidDto {
         constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1213,12 +1436,13 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center coordinates of the cubod
+         * The point the box is centered on, so half of each size lies on each side of it
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Radius for rounding edges
+         * Radius of the rounding on every edge, in model units; it must be less than half of the
+         * smallest side or an error is thrown
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -1226,7 +1450,7 @@ export namespace JSCAD {
          */
         roundRadius = 1;
         /**
-         * Width of the cuboid
+         * Full size along X, in model units, rounding included
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1234,7 +1458,7 @@ export namespace JSCAD {
          */
         width = 1;
         /**
-         * Length of the cuboid
+         * Full size along Z, in model units, rounding included
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1242,7 +1466,7 @@ export namespace JSCAD {
          */
         length = 1;
         /**
-         * Height of the cuboid
+         * Full size along Y, in model units, rounding included
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1250,7 +1474,7 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Segments of rounded edges
+         * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1258,6 +1482,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.roundedCuboidsOnCenterPoints`: one rounded box of the same sizes and rounding on
+     * every center point, coming back in the same order.
+     */
     export class RoundedCuboidCentersDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
             if (centers !== undefined) { this.centers = centers; }
@@ -1268,12 +1496,13 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center coordinates of the cuboids
+         * The points the boxes are centered on, one box each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Radius for rounding edges
+         * Radius of the rounding on every edge, in model units; it must be less than half of the
+         * smallest side or an error is thrown
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -1281,7 +1510,7 @@ export namespace JSCAD {
          */
         roundRadius = 0.1;
         /**
-         * Width of the cuboids
+         * Full size of every box along X, in model units, rounding included
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1289,7 +1518,7 @@ export namespace JSCAD {
          */
         width = 1;
         /**
-         * Length of the cuboids
+         * Full size of every box along Z, in model units, rounding included
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1297,7 +1526,7 @@ export namespace JSCAD {
          */
         length = 1;
         /**
-         * Height of the cuboids
+         * Full size of every box along Y, in model units, rounding included
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1305,7 +1534,7 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Segments of rounded edges
+         * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1313,6 +1542,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.cylinderElliptic`: a cylinder standing along Z with an elliptical cross-section
+     * that can differ between its two ends, so it also makes cones and tapers.
+     */
     export class CylidnerEllipticDto {
         constructor(center?: Base.Point3, height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1322,12 +1555,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center of the cylinder
+         * The point halfway up the axis; half the height lies above it along Z and half below
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Height of the cylinder
+         * Full length along Z, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1335,17 +1568,17 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Start radius on X and Y directions
+         * The X and Y radii of the bottom end, in model units, as `[x, y]`
          * @default [1, 2]
          */
         startRadius: Base.Vector2 = [1, 2];
         /**
-         * End radius on X and Y directions
+         * The X and Y radii of the top end, in model units, as `[x, y]`; `[0, 0]` closes it to a point
          * @default [2, 3]
          */
         endRadius: Base.Vector2 = [2, 3];
         /**
-         * Subdivision segments
+         * Number of flat sides around the cylinder; more makes it rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1353,6 +1586,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.cylinderEllipticOnCenterPoints`: one elliptic cylinder of the same size on every
+     * center point, coming back in the same order.
+     */
     export class CylidnerCentersEllipticDto {
         constructor(centers?: Base.Point3[], height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number) {
             if (centers !== undefined) { this.centers = centers; }
@@ -1362,12 +1599,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Centers of the cylinders
+         * The points halfway up each axis, one cylinder each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Height of the cylinders
+         * Full length of every cylinder along Z, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1375,17 +1612,18 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Start radius on X and Y directions
+         * The X and Y radii of every bottom end, in model units, as `[x, y]`
          * @default [1, 2]
          */
         startRadius: Base.Point2 = [1, 2];
         /**
-         * End radius on X and Y directions
+         * The X and Y radii of every top end, in model units, as `[x, y]`; `[0, 0]` closes them to a
+         * point
          * @default [2, 3]
          */
         endRadius: Base.Point2 = [2, 3];
         /**
-         * Subdivision segments
+         * Number of flat sides around each cylinder; more makes them rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1393,6 +1631,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.cylinder`: a round cylinder standing along Z, given by the point halfway up its
+     * axis, its height, its radius and how many flat sides approximate it.
+     */
     export class CylidnerDto {
         constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1401,12 +1643,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center of the cylinder
+         * The point halfway up the axis; half the height lies above it along Z and half below
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Height of the cylinder
+         * Full length along Z, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1414,7 +1656,7 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Radius of the cylinder
+         * Distance from the axis to the side, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1422,7 +1664,7 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Subdivision segments
+         * Number of flat sides around the cylinder; more makes it rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1430,6 +1672,11 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.roundedCylinder`: a cylinder standing along Z whose two rims are rounded, given by
+     * the point halfway up its axis, the rounding radius, its height and radius and how finely it is
+     * faceted.
+     */
     export class RoundedCylidnerDto {
         constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1439,12 +1686,13 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center of the cylinder
+         * The point halfway up the axis; half the height lies above it along Z and half below
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Rounding radius
+         * Radius of the rounding on both rims, in model units; the height must be more than twice it or
+         * an error is thrown
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -1452,7 +1700,7 @@ export namespace JSCAD {
          */
         roundRadius = 0.1;
         /**
-         * Height of the cylinder
+         * Full length along Z, in model units, rounding included
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1460,7 +1708,7 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Radius of the cylinder
+         * Distance from the axis to the side, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1468,7 +1716,7 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Segment number
+         * Number of flat sides around the cylinder and pieces in the rounding; more makes it smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1476,6 +1724,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.ellipsoid`: a sphere stretched separately along X, Y and Z, given by its center,
+     * its three radii and how finely it is faceted.
+     */
     export class EllipsoidDto {
         constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1483,17 +1735,17 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center coordinates
+         * The point the ellipsoid is centered on
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Radius of the ellipsoid in [x, y, z] form
+         * The half sizes along X, Y and Z, in model units, as `[x, y, z]`; equal values make a sphere
          * @default [1, 2, 3]
          */
         radius: Base.Point3 = [1, 2, 3];
         /**
-         * Segment count for ellipsoid
+         * Number of facets around the ellipsoid; more makes it smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1501,6 +1753,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.ellipsoidsOnCenterPoints`: one ellipsoid of the same radii on every center point,
+     * coming back in the same order.
+     */
     export class EllipsoidCentersDto {
         constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number) {
             if (centers !== undefined) { this.centers = centers; }
@@ -1508,17 +1764,17 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center coordinates
+         * The points the ellipsoids are centered on, one each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Radius of the ellipsoid in [x, y, z] form
+         * The half sizes of every ellipsoid along X, Y and Z, in model units, as `[x, y, z]`
          * @default [1, 2, 3]
          */
         radius: Base.Point3 = [1, 2, 3];
         /**
-         * Segment count for ellipsoid
+         * Number of facets around each ellipsoid; more makes them smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1526,6 +1782,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.geodesicSphere`: a sphere made of evenly sized triangles, given by its center, its
+     * radius and how finely the twenty starting faces are subdivided.
+     */
     export class GeodesicSphereDto {
         constructor(center?: Base.Point3, radius?: number, frequency?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1533,12 +1793,12 @@ export namespace JSCAD {
             if (frequency !== undefined) { this.frequency = frequency; }
         }
         /**
-         * Center coordinate of the geodesic sphere
+         * The point the sphere is centered on
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Radius of the sphere
+         * Distance from the center to the surface, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1546,7 +1806,8 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Subdivision count
+         * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
+         * least 6, and higher is rounder
          * @default 12
          * @minimum 0
          * @maximum Infinity
@@ -1554,6 +1815,10 @@ export namespace JSCAD {
          */
         frequency = 12;
     }
+    /**
+     * Feeds `shapes.geodesicSpheresOnCenterPoints`: one geodesic sphere of the same radius on every
+     * center point, coming back in the same order.
+     */
     export class GeodesicSphereCentersDto {
         constructor(centers?: Base.Point3[], radius?: number, frequency?: number) {
             if (centers !== undefined) { this.centers = centers; }
@@ -1561,12 +1826,12 @@ export namespace JSCAD {
             if (frequency !== undefined) { this.frequency = frequency; }
         }
         /**
-         * Center coordinates of the geodesic spheres
+         * The points the spheres are centered on, one each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Radius of the sphere
+         * Distance from each center to its surface, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1574,7 +1839,8 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Subdivision count
+         * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
+         * least 6, and higher is rounder
          * @default 12
          * @minimum 0
          * @maximum Infinity
@@ -1582,6 +1848,10 @@ export namespace JSCAD {
          */
         frequency = 12;
     }
+    /**
+     * Feeds `shapes.cylindersOnCenterPoints`: one round cylinder of the same size standing along Z on
+     * every center point, coming back in the same order.
+     */
     export class CylidnerCentersDto {
         constructor(centers?: Base.Point3[], height?: number, radius?: number, segments?: number) {
             if (centers !== undefined) { this.centers = centers; }
@@ -1590,12 +1860,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Centers of the cylinders
+         * The points halfway up each axis, one cylinder each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Height of the cylinders
+         * Full length of every cylinder along Z, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1603,7 +1873,7 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Radius of the cylinders
+         * Distance from the axis to the side of every cylinder, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1611,7 +1881,7 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Subdivision segments
+         * Number of flat sides around each cylinder; more makes them rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1619,6 +1889,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.roundedCylindersOnCenterPoints`: one rounded cylinder of the same size on every
+     * center point, coming back in the same order.
+     */
     export class RoundedCylidnerCentersDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, height?: number, radius?: number, segments?: number) {
             if (centers !== undefined) { this.centers = centers; }
@@ -1628,12 +1902,13 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Centers of the cylinders
+         * The points halfway up each axis, one cylinder each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Rounding radius
+         * Radius of the rounding on both rims of every cylinder, in model units; the height must be
+         * more than twice it or an error is thrown
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -1641,7 +1916,7 @@ export namespace JSCAD {
          */
         roundRadius = 0.1;
         /**
-         * Height of the cylinders
+         * Full length of every cylinder along Z, in model units, rounding included
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1649,7 +1924,7 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Radius of the cylinders
+         * Distance from the axis to the side of every cylinder, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1657,7 +1932,8 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Segment number
+         * Number of flat sides around each cylinder and pieces in the rounding; more makes them
+         * smoother
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1665,6 +1941,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.sphere`: a sphere given by its center point, its radius and how many facets
+     * approximate it.
+     */
     export class SphereDto {
         constructor(center?: Base.Point3, radius?: number, segments?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1672,12 +1952,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center point of the sphere
+         * The point the sphere is centered on
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Radius of the sphere
+         * Distance from the center to the surface, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1685,7 +1965,7 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Segment count
+         * Number of facets around the sphere; more makes it rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1693,6 +1973,10 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.spheresOnCenterPoints`: one sphere of the same radius on every center point, coming
+     * back in the same order.
+     */
     export class SphereCentersDto {
         constructor(centers?: Base.Point3[], radius?: number, segments?: number) {
             if (centers !== undefined) { this.centers = centers; }
@@ -1700,12 +1984,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Center points of the spheres
+         * The points the spheres are centered on, one each, in the order the results come back
          * @default undefined
          */
         centers!: Base.Point3[];
         /**
-         * Radius of the spheres
+         * Distance from each center to its surface, in model units
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1713,7 +1997,7 @@ export namespace JSCAD {
          */
         radius = 1;
         /**
-         * Segment count
+         * Number of facets around each sphere; more makes them rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1721,6 +2005,11 @@ export namespace JSCAD {
          */
         segments = 24;
     }
+    /**
+     * Feeds `shapes.torus`: a ring with a round cross-section lying flat in the XY plane around the
+     * origin, given by the ring and tube radii, the facet counts of each and the angles that can leave
+     * the ring partly open.
+     */
     export class TorusDto {
         constructor(center?: Base.Point3, innerRadius?: number, outerRadius?: number, innerSegments?: number, outerSegments?: number, innerRotation?: number, outerRotation?: number, startAngle?: number) {
             if (center !== undefined) { this.center = center; }
@@ -1733,12 +2022,13 @@ export namespace JSCAD {
             if (startAngle !== undefined) { this.startAngle = startAngle; }
         }
         /**
-         * Center coordinate
+         * Meant to be the ring's center; it is not applied at present, the torus is built around the
+         * origin, so move it with `transformSolid`
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Inner radius
+         * Radius of the tube itself, in model units; it must be less than `outerRadius`
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1746,7 +2036,8 @@ export namespace JSCAD {
          */
         innerRadius = 1;
         /**
-         * Outer radius
+         * Distance from the ring's center to the middle of the tube, in model units, so the ring spans
+         * twice the sum of both radii
          * @default 2
          * @minimum 0
          * @maximum Infinity
@@ -1754,7 +2045,7 @@ export namespace JSCAD {
          */
         outerRadius = 2;
         /**
-         * Number of inner segments
+         * Number of flat pieces around the tube's cross-section; more makes the tube rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1762,7 +2053,7 @@ export namespace JSCAD {
          */
         innerSegments = 24;
         /**
-         * Number of outer segments
+         * Number of flat pieces around the ring; more makes the ring rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1770,7 +2061,8 @@ export namespace JSCAD {
          */
         outerSegments = 24;
         /**
-         * Inner rotation in degrees
+         * Turn of the tube's cross-section about its own center, in degrees; it shows when
+         * `innerSegments` is low enough for the facets to be visible
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1778,7 +2070,8 @@ export namespace JSCAD {
          */
         innerRotation = 0;
         /**
-         * Outer rotation in degrees
+         * How far the tube is swept around the ring, in degrees; 360 closes the ring and less leaves it
+         * open
          * @default 360
          * @minimum -Infinity
          * @maximum Infinity
@@ -1786,7 +2079,7 @@ export namespace JSCAD {
          */
         outerRotation = 360;
         /**
-         * Start angle in degrees
+         * Where the sweep around the ring starts, in degrees from the X axis
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1794,6 +2087,11 @@ export namespace JSCAD {
          */
         startAngle = 0;
     }
+    /**
+     * Feeds `text.createVectorText` with the text and the font options: where the text starts, how tall
+     * a capital letter is, the spacing of lines and letters, the alignment of several lines and the
+     * stroke compensation. `CylinderTextDto` and `SphereTextDto` reuse them.
+     */
     export class TextDto {
         constructor(text?: string, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number) {
             if (text !== undefined) { this.text = text; }
@@ -1807,12 +2105,13 @@ export namespace JSCAD {
             if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
         }
         /**
-         * Text to write
+         * The characters to write; a newline starts a new line and a character outside plain ASCII
+         * becomes a question mark
          * @default Hello World
          */
         text = "Hello World";
         /**
-         * Number of segments
+         * Number of straight pieces used for curved strokes; more makes letters rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1820,7 +2119,7 @@ export namespace JSCAD {
          */
         segments = 24;
         /**
-         * X offset of the text
+         * Where the text starts along X, in model units
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1828,7 +2127,7 @@ export namespace JSCAD {
          */
         xOffset = 0;
         /**
-         * Y offset of the text
+         * Where the baseline of the first line sits along Y, in model units
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1836,7 +2135,7 @@ export namespace JSCAD {
          */
         yOffset = 0;
         /**
-         * Height of the text
+         * Height of a capital letter, in model units; the whole text scales with it
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1844,7 +2143,8 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Space between lines
+         * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
+         * percent gap
          * @default 1.4
          * @minimum -Infinity
          * @maximum Infinity
@@ -1852,7 +2152,8 @@ export namespace JSCAD {
          */
         lineSpacing = 1.4;
         /**
-         * Space between letters
+         * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
+         * letters twice as far apart
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -1860,12 +2161,13 @@ export namespace JSCAD {
          */
         letterSpacing = 1;
         /**
-         * Align between left, center, right
+         * How the lines of a multi-line text line up: to the left, the center or the right
          * @default center
          */
         align = jscadTextAlignEnum.center;
         /**
-         * Offset the extrusion
+         * Thickness the strokes will get later, in model units; the outlines are pulled in by half of
+         * it so letters keep their size once thick
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1873,6 +2175,10 @@ export namespace JSCAD {
          */
         extrudeOffset = 0;
     }
+    /**
+     * Feeds `text.cylindricalText`: the text and font options of `TextDto` plus the size of the
+     * cylinders every stroke is chained from.
+     */
     export class CylinderTextDto {
         constructor(text?: string, extrusionHeight?: number, extrusionSize?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number) {
             if (text !== undefined) { this.text = text; }
@@ -1888,12 +2194,14 @@ export namespace JSCAD {
             if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
         }
         /**
-         * Text to write
+         * The characters to write; a newline starts a new line and a character outside plain ASCII
+         * becomes a question mark
          * @default Hello World
          */
         text = "Hello World";
         /**
-         * Height of the cylinder
+         * Length of the cylinders along Z, in model units; the strokes sit on the XY plane with half of
+         * it on each side
          * @default 0.5
          * @minimum 0
          * @maximum Infinity
@@ -1901,7 +2209,7 @@ export namespace JSCAD {
          */
         extrusionHeight = 0.5;
         /**
-         * Radius of the cylinder
+         * Radius of the cylinders, in model units, which is half the thickness of the strokes
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -1909,7 +2217,8 @@ export namespace JSCAD {
          */
         extrusionSize = 0.1;
         /**
-         * Segment subdivision for cylinder
+         * Number of flat sides around each cylinder and pieces in curved strokes; more makes the
+         * letters rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -1917,7 +2226,7 @@ export namespace JSCAD {
          */
         segments = 24;
         /**
-         * X offset of the text
+         * Where the text starts along X before it is centered, in model units
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1925,15 +2234,15 @@ export namespace JSCAD {
          */
         xOffset = 0;
         /**
-         * Y offset of the text
+         * Where the baseline of the first line sits along Y, in model units
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
-         * @step 0.1 
+         * @step 0.1
          */
         yOffset = 0;
         /**
-         * Height of the text
+         * Height of a capital letter, in model units; the whole text scales with it
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -1941,7 +2250,8 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Space between lines
+         * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
+         * percent gap
          * @default 1.4
          * @minimum -Infinity
          * @maximum Infinity
@@ -1949,7 +2259,8 @@ export namespace JSCAD {
          */
         lineSpacing = 1.4;
         /**
-         * Space between letters
+         * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
+         * letters twice as far apart
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -1957,12 +2268,13 @@ export namespace JSCAD {
          */
         letterSpacing = 1;
         /**
-         * Align between left, center, right
+         * How the lines of a multi-line text line up: to the left, the center or the right
          * @default center
          */
         align = jscadTextAlignEnum.center;
         /**
-         * Offset the extrusion
+         * Pulls the strokes inward by half this amount, in model units, so thick strokes keep the
+         * intended letter size
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1970,6 +2282,10 @@ export namespace JSCAD {
          */
         extrudeOffset = 0;
     }
+    /**
+     * Feeds `text.sphericalText`: the text and font options of `TextDto` plus the size of the spheres
+     * every stroke is chained from.
+     */
     export class SphereTextDto {
         constructor(text?: string, radius?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number) {
             if (text !== undefined) { this.text = text; }
@@ -1984,12 +2300,13 @@ export namespace JSCAD {
             if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
         }
         /**
-         * Text to write
+         * The characters to write; a newline starts a new line and a character outside plain ASCII
+         * becomes a question mark
          * @default Hello World
          */
         text = "Hello World";
         /**
-         * Radius of the spheres
+         * Radius of the spheres, in model units, which is half the thickness of the strokes
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -1997,7 +2314,8 @@ export namespace JSCAD {
          */
         radius = 0.1;
         /**
-         * Segment subdivision for sphere
+         * Number of facets around each sphere and pieces in curved strokes; more makes the letters
+         * rounder
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -2005,7 +2323,7 @@ export namespace JSCAD {
          */
         segments = 24;
         /**
-         * X offset of the text
+         * Where the text starts along X before it is centered, in model units
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -2013,7 +2331,7 @@ export namespace JSCAD {
          */
         xOffset = 0;
         /**
-         * Y offset of the text
+         * Where the baseline of the first line sits along Y, in model units
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -2021,7 +2339,7 @@ export namespace JSCAD {
          */
         yOffset = 0;
         /**
-         * Height of the text
+         * Height of a capital letter, in model units; the whole text scales with it
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -2029,7 +2347,8 @@ export namespace JSCAD {
          */
         height = 1;
         /**
-         * Space between lines
+         * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
+         * percent gap
          * @default 1.4
          * @minimum -Infinity
          * @maximum Infinity
@@ -2037,7 +2356,8 @@ export namespace JSCAD {
          */
         lineSpacing = 1.4;
         /**
-         * Space between letters
+         * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
+         * letters twice as far apart
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -2045,12 +2365,13 @@ export namespace JSCAD {
          */
         letterSpacing = 1;
         /**
-         * Align between left, center, right
+         * How the lines of a multi-line text line up: to the left, the center or the right
          * @default center
          */
         align = jscadTextAlignEnum.center;
         /**
-         * Offset the extrusion
+         * Pulls the strokes inward by half this amount, in model units, so thick strokes keep the
+         * intended letter size
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -2058,12 +2379,17 @@ export namespace JSCAD {
          */
         extrudeOffset = 0;
     }
+    /**
+     * Feeds `shapes.fromPolygonPoints` with the faces of a solid, each as the list of points around it,
+     * listed clockwise as seen from outside.
+     */
     export class FromPolygonPoints {
         constructor(polygonPoints?: Base.Point3[][]) {
             if (polygonPoints !== undefined) { this.polygonPoints = polygonPoints; }
         }
         /**
-         * Points describing polygons
+         * One list of points per face, each going around the face clockwise as seen from outside; the
+         * lists are reversed in place while the solid is built
          */
         polygonPoints!: Base.Point3[][];
     }

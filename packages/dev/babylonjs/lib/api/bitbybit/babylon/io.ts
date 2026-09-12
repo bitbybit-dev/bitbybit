@@ -4,6 +4,11 @@ import * as SERIALIZERS from "@babylonjs/serializers";
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 
+/**
+ * Loading models into the scene and exporting it: glTF, glb, STL and OBJ files come in from a File,
+ * a URL or raw glb bytes as one container mesh with their children under it, and the whole scene or
+ * chosen meshes go out as .babylon, glb or STL downloads.
+ */
 export class BabylonIO {
 
     private supportedFileFormats = [
@@ -14,12 +19,20 @@ export class BabylonIO {
     constructor(private readonly context: Context) { }
 
     /**
-     * Imports mesh from the asset that you have uploaded for the project.
-     * You must upload your assets to your project via project management page.
-     * @returns scene loaded mesh
+     * Loads a glTF, glb, STL or OBJ model from a File into the scene and gives back a container
+     * mesh with the model's meshes as its children; any other extension throws an error.
+     *
+     * The loaded meshes cast and receive shadows and start hidden when `hidden` is true.
+     * @param inputs - The model file and whether it starts hidden
+     * @returns The container mesh holding the loaded model
      * @group load
      * @shortname asset
      * @drawable true
+     * @example
+     * ```typescript
+     * const file = await bitbybit.asset.getFile({ fileName: "chair.glb" });
+     * const model = await bitbybit.babylon.io.loadAssetIntoScene({ assetFile: file, hidden: false });
+     * ```
      */
     async loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<BABYLON.Mesh> {
         const type = inputs.assetFile.name.split(".").pop()!;
@@ -37,23 +50,36 @@ export class BabylonIO {
     }
 
     /**
-     * Imports mesh from the asset that you have uploaded for the project.
-     * You must upload your assets to your project via project management page.
-     * @returns scene loaded mesh
+     * Loads a glTF, glb, STL or OBJ model from a File into the scene, as `loadAssetIntoScene` does,
+     * without giving the mesh back.
+     * @param inputs - The model file and whether it starts hidden
      * @group load
      * @shortname asset
+     * @example
+     * ```typescript
+     * const file = await bitbybit.asset.getFile({ fileName: "chair.glb" });
+     * await bitbybit.babylon.io.loadAssetIntoSceneNoReturn({ assetFile: file, hidden: false });
+     * ```
      */
     async loadAssetIntoSceneNoReturn(inputs: Inputs.Asset.AssetFileDto): Promise<void> {
         await this.loadAssetIntoScene(inputs);
     }
 
     /**
-     * Imports mesh from the asset url that you have uploaded to an accessible web storage.
-     * Keep in mind that files need to be publically accessible for this to work, be sure that CORS access is enabled for the assets.
-     * @returns scene loaded mesh
+     * Loads a glTF, glb, STL or OBJ model from a web address into the scene and gives back a
+     * container mesh with the model's meshes as its children.
+     *
+     * `rootUrl` is the folder and `assetFile` the file name in it, so textures beside the model
+     * resolve too; the server must allow cross-origin requests.
+     * @param inputs - The folder URL, the file name and whether it starts hidden
+     * @returns The container mesh holding the loaded model
      * @group load
      * @shortname asset from url
      * @drawable true
+     * @example
+     * ```typescript
+     * const model = await bitbybit.babylon.io.loadAssetIntoSceneFromRootUrl({ rootUrl: "https://example.com/models/", assetFile: "chair.glb", hidden: false });
+     * ```
      */
     async loadAssetIntoSceneFromRootUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<BABYLON.Mesh> {
         const type = inputs.assetFile.split(".").pop()!;
@@ -70,23 +96,33 @@ export class BabylonIO {
         }
     }
     /**
-     * Imports mesh from the asset url that you have uploaded to an accessible web storage.
-     * Keep in mind that files need to be publically accessible for this to work, be sure that CORS access is enabled for the assets.
-     * @returns scene loaded mesh
+     * Loads a model from a web address into the scene, as `loadAssetIntoSceneFromRootUrl` does,
+     * without giving the mesh back.
+     * @param inputs - The folder URL, the file name and whether it starts hidden
      * @group load
      * @shortname asset from url
+     * @example
+     * ```typescript
+     * await bitbybit.babylon.io.loadAssetIntoSceneFromRootUrlNoReturn({ rootUrl: "https://example.com/models/", assetFile: "chair.glb", hidden: false });
+     * ```
      */
     async loadAssetIntoSceneFromRootUrlNoReturn(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<void> {
         await this.loadAssetIntoSceneFromRootUrl(inputs);
     }
     /**
-     * Loads GLB binary data directly into the scene from a Uint8Array.
-     * This is useful when you have GLB data from sources like OCCT's convertStepToGltf method.
-     * @param inputs GLB data as Uint8Array and optional configuration
-     * @returns scene loaded mesh
+     * Loads a glb model held as bytes into the scene, such as the output of
+     * `occt.io.convertStepToGltf`, and gives back a container mesh with the model's meshes as its
+     * children.
+     * @param inputs - The glb bytes, a name for the model and whether it starts hidden
+     * @returns The container mesh holding the loaded model
      * @group load
      * @shortname glb from array buffer
      * @drawable true
+     * @example
+     * ```typescript
+     * const glb = await bitbybit.occt.io.convertStepToGltf({ stepData: file, meshPrecision: 0.005, meshAngle: 0.5, meshRelative: true, internalVerticesMode: false, controlSurfaceDeflection: false });
+     * const model = await bitbybit.babylon.io.loadGlbFromArrayBuffer({ glbData: glb, fileName: "part.glb", hidden: false });
+     * ```
      */
     async loadGlbFromArrayBuffer(inputs: Inputs.Asset.AssetGlbDataDto): Promise<BABYLON.Mesh> {
         const buffer = inputs.glbData.buffer.slice(inputs.glbData.byteOffset, inputs.glbData.byteOffset + inputs.glbData.byteLength) as ArrayBuffer;
@@ -96,22 +132,31 @@ export class BabylonIO {
     }
 
     /**
-     * Loads GLB binary data directly into the scene from a Uint8Array without returning the mesh.
-     * This is useful when you have GLB data from sources like OCCT's convertStepToGltf method.
-     * @param inputs GLB data as Uint8Array and optional configuration
+     * Loads a glb model held as bytes into the scene, as `loadGlbFromArrayBuffer` does, without
+     * giving the mesh back.
+     * @param inputs - The glb bytes, a name for the model and whether it starts hidden
      * @group load
      * @shortname glb from array buffer no return
      * @drawable true
+     * @example
+     * ```typescript
+     * await bitbybit.babylon.io.loadGlbFromArrayBufferNoReturn({ glbData: glb, fileName: "part.glb", hidden: false });
+     * ```
      */
     async loadGlbFromArrayBufferNoReturn(inputs: Inputs.Asset.AssetGlbDataDto): Promise<void> {
         await this.loadGlbFromArrayBuffer(inputs);
     }
 
     /**
-     * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
-     * @param inputs filename
+     * Downloads the whole scene as a `.babylon` file, the engine's own JSON format that its editors
+     * and loaders read back; the extension is added when missing.
+     * @param inputs - The file name
      * @group export
      * @shortname babylon scene
+     * @example
+     * ```typescript
+     * bitbybit.babylon.io.exportBabylon({ fileName: "my-scene" });
+     * ```
      */
     exportBabylon(inputs: Inputs.BabylonIO.ExportSceneDto): void {
         const metadata = this.context.scene.metadata;
@@ -145,10 +190,15 @@ export class BabylonIO {
     }
 
     /**
-     * Exports the whole scene to .glb format. This file format has become industry standard for web models.
-     * @param inputs filename
+     * Downloads the whole scene as a glb file, the binary glTF that most 3D tools and web viewers
+     * read; `discardSkyboxAndGrid` leaves out the skybox and ground this library adds.
+     * @param inputs - The file name and whether to leave out the skybox and ground
      * @group export
      * @shortname gltf scene
+     * @example
+     * ```typescript
+     * bitbybit.babylon.io.exportGLB({ fileName: "my-scene", discardSkyboxAndGrid: true });
+     * ```
      */
     exportGLB(inputs: Inputs.BabylonIO.ExportSceneGlbDto): void {
         const options: SERIALIZERS.IExportOptions = {
@@ -163,10 +213,16 @@ export class BabylonIO {
     }
 
     /**
-     * Exports the mesh with its children to stl
-     * @param inputs filename and the mesh
+     * Downloads a mesh and its visible child meshes as one STL file, the plain triangle format 3D
+     * printers take; lines are left out.
+     * @param inputs - The mesh and the file name
+     * @returns An empty object once the download has started
      * @group export
      * @shortname babylon mesh to stl
+     * @example
+     * ```typescript
+     * await bitbybit.babylon.io.exportMeshToStl({ mesh, fileName: "part" });
+     * ```
      */
     async exportMeshToStl(inputs: Inputs.BabylonIO.ExportMeshToStlDto): Promise<any> {
         const allChildren = inputs.mesh.getChildMeshes();
@@ -181,11 +237,16 @@ export class BabylonIO {
     }
 
     /**
-   * Exports the meshes to stl
-   * @param inputs filename and the mesh
-   * @group export
-   * @shortname babylon meshes to stl
-   */
+     * Downloads several meshes, with their child meshes, as one STL file; lines are left out.
+     * @param inputs - The meshes and the file name
+     * @returns An empty object once the download has started
+     * @group export
+     * @shortname babylon meshes to stl
+     * @example
+     * ```typescript
+     * await bitbybit.babylon.io.exportMeshesToStl({ meshes: [meshA, meshB], fileName: "parts" });
+     * ```
+     */
     async exportMeshesToStl(inputs: Inputs.BabylonIO.ExportMeshesToStlDto): Promise<any> {
         const meshes: BABYLON.Mesh[] = [];
         inputs.meshes.forEach((mesh) => {

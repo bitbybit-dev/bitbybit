@@ -5,21 +5,29 @@ import { Vector } from "./vector";
 import { Line } from "./line";
 
 /**
- * Contains various methods for polyline. Polyline in bitbybit is a simple object that has points property
- * containing an array of points. { points: number[][] }
+ * Polylines: chains of straight segments through a list of points, held as plain objects of the
+ * form `{ points, isClosed }`. A closed polyline joins its last point back to its first. The
+ * methods here measure a polyline, convert it to segments or lines, find where polylines cross,
+ * sort loose segments into chains and size fillets for its corners. Lengths are in model units.
  */
 export class Polyline {
 
     constructor(private readonly vector: Vector, private readonly point: Point, private readonly line: Line, private readonly geometryHelper: GeometryHelper) { }
 
     /**
-     * Calculates total length of polyline by summing distances between consecutive points.
-     * Example: points=[[0,0,0], [3,0,0], [3,4,0]] → 3 + 4 = 7
-     * @param inputs a polyline
-     * @returns length
+     * Measures the polyline by adding up the straight distances between neighboring points.
+     *
+     * The closing segment of a closed polyline is not counted.
+     * Example: [[0,0,0], [3,0,0], [3,4,0]] -> 7
+     * @param inputs - The polyline
+     * @returns The length in model units
      * @group get
      * @shortname polyline length
      * @drawable false
+     * @example
+     * ```typescript
+     * const len = bitbybit.polyline.length({ polyline: { points: [[0, 0, 0], [3, 0, 0], [3, 4, 0]] } });
+     * ```
      */
     length(inputs: Inputs.Polyline.PolylineDto): number {
         let distanceOfPolyline = 0;
@@ -32,10 +40,11 @@ export class Polyline {
     }
 
     /**
-     * Counts number of points in polyline.
-     * Example: polyline with points=[[0,0,0], [1,0,0], [1,1,0]] → 3
-     * @param inputs a polyline
-     * @returns nr of points
+     * Counts the points of the polyline.
+     *
+     * Example: three points -> 3
+     * @param inputs - The polyline
+     * @returns The number of points
      * @group get
      * @shortname nr polyline points
      * @drawable false
@@ -45,10 +54,11 @@ export class Polyline {
     }
 
     /**
-     * Extracts points array from polyline object.
-     * Example: polyline={points:[[0,0,0], [1,0,0]]} → [[0,0,0], [1,0,0]]
-     * @param inputs a polyline
-     * @returns points
+     * Reads the list of points out of the polyline.
+     *
+     * Example: { points: [[0,0,0], [1,0,0]] } -> [[0,0,0], [1,0,0]]
+     * @param inputs - The polyline
+     * @returns Its points, in order
      * @group get
      * @shortname points
      * @drawable true
@@ -58,26 +68,41 @@ export class Polyline {
     }
 
     /**
-     * Reverses point order of polyline (flips direction).
-     * Example: points=[[0,0,0], [1,0,0], [2,0,0]] → [[2,0,0], [1,0,0], [0,0,0]]
-     * @param inputs a polyline
-     * @returns reversed polyline
+     * Reverses the order of the points, so the polyline runs the other way.
+     *
+     * The given polyline's own point list is reversed in place and handed back inside a new
+     * polyline object.
+     * Example: [[0,0,0], [1,0,0], [2,0,0]] -> [[2,0,0], [1,0,0], [0,0,0]]
+     * @param inputs - The polyline
+     * @returns A polyline with the points in reverse order
      * @group convert
      * @shortname reverse polyline
      * @drawable true
+     * @example
+     * ```typescript
+     * const back = bitbybit.polyline.reverse({ polyline: { points: [[0, 0, 0], [1, 0, 0], [2, 0, 0]] } });
+     * ```
      */
     reverse(inputs: Inputs.Polyline.PolylineDto): Inputs.Polyline.PolylinePropertiesDto {
         return { points: inputs.polyline.points.reverse() };
     }
 
     /**
-     * Applies transformation matrix to all points in polyline (rotates, scales, or translates).
-     * Example: polyline with 4 points, translation [5,0,0] → all points moved +5 in X direction
-     * @param inputs a polyline
-     * @returns transformed polyline
+     * Applies a transformation matrix, or a list of them in order, to every point of the polyline.
+     *
+     * Example: a translation by [5,0,0] -> every point moved 5 along X
+     * @param inputs - The polyline and the transformation
+     * @returns A new polyline with the transformed points
      * @group transforms
      * @shortname transform polyline
      * @drawable true
+     * @example
+     * ```typescript
+     * const moved = bitbybit.polyline.transformPolyline({
+     *     polyline: { points: [[0, 0, 0], [1, 0, 0]] },
+     *     transformation: bitbybit.transforms.translationXYZ({ translation: [5, 0, 0] }),
+     * });
+     * ```
      */
     transformPolyline(inputs: Inputs.Polyline.TransformPolylineDto): Inputs.Polyline.PolylinePropertiesDto {
         const transformation = inputs.transformation;
@@ -87,13 +112,18 @@ export class Polyline {
     }
 
     /**
-     * Creates a polyline from points array with optional isClosed flag.
-     * Example: points=[[0,0,0], [1,0,0], [1,1,0]], isClosed=true → {points:..., isClosed:true}
-     * @param inputs points and info if its closed
-     * @returns polyline
+     * Builds a polyline object from points, open or closed.
+     *
+     * Example: three points with isClosed true -> a triangle
+     * @param inputs - The points and whether the last joins back to the first
+     * @returns The polyline object
      * @group create
      * @shortname polyline
      * @drawable true
+     * @example
+     * ```typescript
+     * const triangle = bitbybit.polyline.create({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]], isClosed: true });
+     * ```
      */
     create(inputs: Inputs.Polyline.PolylineCreateDto): Inputs.Polyline.PolylinePropertiesDto {
         return {
@@ -103,14 +133,20 @@ export class Polyline {
     }
 
     /**
-     * Converts polyline to line segments (each segment as line object with start/end).
-     * Closed polylines include closing segment.
-     * Example: 3 points → 2 or 3 lines (depending on isClosed)
-     * @param inputs polyline
-     * @returns lines
+     * Splits the polyline into line objects, one per segment, each with a start and an end point.
+     *
+     * A closed polyline also gets the segment from its last point back to its first, unless the two
+     * coincide.
+     * Example: three points -> two lines, or three when closed
+     * @param inputs - The polyline
+     * @returns One line per segment, in order
      * @group convert
      * @shortname polyline to lines
      * @drawable true
+     * @example
+     * ```typescript
+     * const lines = bitbybit.polyline.polylineToLines({ polyline: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]], isClosed: true } });
+     * ```
      */
     polylineToLines(inputs: Inputs.Polyline.PolylineDto): Inputs.Base.Line3[] {
         const segments = this.polylineToSegments(inputs);
@@ -121,14 +157,20 @@ export class Polyline {
     }
 
     /**
-     * Converts polyline to segment arrays (each segment as [point1, point2]).
-     * Closed polylines include closing segment if endpoints differ.
-     * Example: 4 points, closed → 4 segments connecting all points in a loop
-     * @param inputs polyline
-     * @returns segments
+     * Splits the polyline into segments, each a pair of points.
+     *
+     * A closed polyline also gets the segment from its last point back to its first, unless the two
+     * coincide. Fewer than two points give no segments.
+     * Example: four points, closed -> four segments around the loop
+     * @param inputs - The polyline
+     * @returns One point pair per segment, in order
      * @group convert
      * @shortname polyline to segments
      * @drawable false
+     * @example
+     * ```typescript
+     * const segments = bitbybit.polyline.polylineToSegments({ polyline: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]], isClosed: false } });
+     * ```
      */
     polylineToSegments(inputs: Inputs.Polyline.PolylineDto): Inputs.Base.Segment3[] {
         const polyline = inputs.polyline;
@@ -155,14 +197,23 @@ export class Polyline {
     }
 
     /**
-     * Finds points where polyline crosses itself (self-intersection points).
-     * Skips adjacent segments and deduplicates close points.
-     * Example: figure-8 shaped polyline → returns center crossing point
-     * @param inputs points of self intersection
-     * @returns polyline
+     * Finds the points where the polyline crosses itself.
+     *
+     * Neighboring segments are not tested against each other, and crossings closer together than
+     * the tolerance are reported once.
+     * Example: a figure-eight -> its one crossing point
+     * @param inputs - The polyline and the tolerance
+     * @returns The crossing points; empty when there are none
      * @group intersections
      * @shortname polyline self intersections
      * @drawable true
+     * @example
+     * ```typescript
+     * const crossings = bitbybit.polyline.polylineSelfIntersection({
+     *     polyline: { points: [[0, 0, 0], [2, 2, 0], [2, 0, 0], [0, 2, 0]] },
+     *     tolerance: 1e-6,
+     * });
+     * ```
      */
     polylineSelfIntersection(inputs: Inputs.Polyline.PolylineToleranceDto): Inputs.Base.Point3[] {
         const { polyline, tolerance } = inputs;
@@ -217,14 +268,24 @@ export class Polyline {
     }
 
     /**
-     * Finds intersection points between two polylines (all segment-segment crossings).
-     * Tests all segment pairs and deduplicates close points.
-     * Example: crossing polylines forming an X → returns center intersection point
-     * @param inputs two polylines and tolerance
-     * @returns points
+     * Finds the points where two polylines cross each other, testing every segment of one against
+     * every segment of the other.
+     *
+     * Crossings closer together than the tolerance are reported once.
+     * Example: two polylines forming an X -> the point in the middle
+     * @param inputs - The two polylines and the tolerance
+     * @returns The crossing points; empty when there are none
      * @group intersection
      * @shortname two polyline intersection
      * @drawable true
+     * @example
+     * ```typescript
+     * const crossings = bitbybit.polyline.twoPolylineIntersection({
+     *     polyline1: { points: [[0, 0, 0], [2, 2, 0]] },
+     *     polyline2: { points: [[0, 2, 0], [2, 0, 0]] },
+     *     tolerance: 1e-6,
+     * });
+     * ```
      */
     twoPolylineIntersection(inputs: Inputs.Polyline.TwoPolylinesToleranceDto): Inputs.Base.Point3[] {
         const { polyline1, polyline2, tolerance } = inputs;
@@ -267,14 +328,23 @@ export class Polyline {
     }
 
     /**
-     * Sorts scrambled segments into connected polylines by matching endpoints.
-     * Uses spatial hashing for efficient connection finding.
-     * Example: 10 random segments that form 2 connected paths → 2 polylines
-     * @param inputs segments
-     * @returns polylines
+     * Joins loose segments into polylines by matching up ends that meet within the tolerance.
+     *
+     * Segments that connect end to end become one polyline each chain; segments that touch nothing
+     * become single-segment polylines.
+     * Example: ten scattered segments forming two chains -> two polylines
+     * @param inputs - The segments and the tolerance for two ends to count as touching
+     * @returns The polylines the segments form
      * @group sort
      * @shortname segments to polylines
      * @drawable true
+     * @example
+     * ```typescript
+     * const chains = bitbybit.polyline.sortSegmentsIntoPolylines({
+     *     segments: [[[0, 0, 0], [1, 0, 0]], [[1, 0, 0], [1, 1, 0]], [[5, 5, 0], [6, 5, 0]]],
+     *     tolerance: 1e-5,
+     * });
+     * ```
      */
     sortSegmentsIntoPolylines(inputs: Inputs.Polyline.SegmentsToleranceDto): Inputs.Base.Polyline3[] {
         const tolerance = inputs.tolerance ?? 1e-5;
@@ -443,22 +513,23 @@ export class Polyline {
     }
 
     /**
-     * Calculates the maximum possible half-line fillet radius for each corner
-     * of a given polyline. For a closed polyline, it includes the corners
-     * connecting the last segment back to the first.
+     * Finds the largest fillet for every corner of the polyline, each limited to the nearer half of
+     * its segments so the fillets never overlap.
      *
-     * The calculation uses the 'half-line' constraint, meaning the fillet's
-     * tangent points must lie within the first half of each segment connected
-     * to the corner.
-     *
-     * @param inputs Defines the polyline points, whether it's closed, and an optional tolerance.
-     * @returns An array containing the maximum fillet radius calculated for each corner.
-     *          The order corresponds to corners P[1]...P[n-2] for open polylines,
-     *          and P[1]...P[n-2], P[0], P[n-1] for closed polylines.
-     *          Returns an empty array if the polyline has fewer than 3 points.
+     * A closed polyline includes the two corners at its ends. Fewer than three points give an empty
+     * list.
+     * @param inputs - The polyline and the tolerance
+     * @returns One radius per corner, in the order of the corners
      * @group fillet
      * @shortname polyline max fillet radii
      * @drawable false
+     * @example
+     * ```typescript
+     * const radii = bitbybit.polyline.maxFilletsHalfLine({
+     *     polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]], isClosed: true },
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     maxFilletsHalfLine(
         inputs: Inputs.Polyline.PolylineToleranceDto
@@ -471,18 +542,22 @@ export class Polyline {
     }
 
     /**
-     * Calculates the single safest maximum fillet radius that can be applied
-     * uniformly to all corners of a polyline, based on the 'half-line' constraint.
-     * This is determined by finding the minimum of the maximum possible fillet
-     * radii calculated for each individual corner.
+     * Finds one fillet radius that fits every corner of the polyline: the smallest of the
+     * per-corner maximums under the half-segment rule.
      *
-     * @param inputs Defines the polyline points, whether it's closed, and an optional tolerance.
-     * @returns The smallest value from the results of calculatePolylineMaxFillets.
-     *          Returns 0 if the polyline has fewer than 3 points or if any
-     *          calculated maximum radius is 0.
+     * Fewer than three points, or any corner that allows no fillet, give 0.
+     * @param inputs - The polyline and the tolerance
+     * @returns The radius that fits every corner, in model units
      * @group fillet
      * @shortname polyline safest fillet radius
      * @drawable false
+     * @example
+     * ```typescript
+     * const radius = bitbybit.polyline.safestFilletRadius({
+     *     polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]], isClosed: true },
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     safestFilletRadius(
         inputs: Inputs.Polyline.PolylineToleranceDto

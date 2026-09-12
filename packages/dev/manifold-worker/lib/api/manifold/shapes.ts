@@ -5,8 +5,10 @@ import * as Inputs from "@bitbybit-dev/manifold/lib/api/inputs";
 import { ManifoldWorkerManager } from "../../manifold-worker/manifold-worker-manager";
 
 /**
- * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
- * Thanks Manifold community for developing this kernel
+ * Building Manifold solids: the cube, sphere, cylinder and tetrahedron primitives, and solids from
+ * triangle meshes or lists of triangles. The kernel keeps Z as its up axis, so a cylinder stands
+ * along Z and a cube's `size` runs along X, Y and Z; every solid comes back as a closed triangle
+ * mesh.
  */
 export class ManifoldShapes {
     constructor(
@@ -15,79 +17,115 @@ export class ManifoldShapes {
     }
 
     /**
-     * Convert a Mesh into a Manifold, retaining its properties and merging only
-     * the positions according to the merge vectors. Will throw an error if the
-     * result is not an oriented 2-manifold. Will collapse degenerate triangles
-     * and unnecessary vertices.
+     * Builds a solid from plain mesh data, the form `manifoldToMesh` hands out, so a mesh can make
+     * a round trip through other tools.
      *
-     * All fields are read, making this structure suitable for a lossless
-     * round-trip of data from manifoldToMesh(). For multi-material input, use
-     * reserveIDs() to set a unique originalID for each material, and sort the
-     * materials into triangle runs.
-     * @param inputs mesh definition
-     * @returns manifold
+     * The mesh must be closed and consistently oriented, or an error is thrown; degenerate
+     * triangles and unneeded vertices are removed on the way in.
+     * @param inputs - The mesh data
+     * @returns The solid
      * @group create
      * @shortname manifold from mesh
      * @drawable true
+     * @example
+     * ```typescript
+     * const solid = await bitbybit.manifold.manifold.shapes.manifoldFromMesh({ mesh });
+     * ```
      */
     manifoldFromMesh(inputs: Inputs.Manifold.CreateFromMeshDto): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.manifoldFromMesh", inputs);
     }
 
     /**
-     * Create a Manifold from a set of polygon points describing triangles.
-     * @param inputs Polygon points
-     * @returns Manifold
+     * Builds a solid from a list of triangles, each given as three points, merging points that
+     * coincide.
+     *
+     * The triangles must form a closed, consistently oriented surface; entries that are not three
+     * points are skipped, and points with missing coordinates throw an error.
+     * @param inputs - The triangles as lists of three points
+     * @returns The solid
      * @group create
      * @shortname from polygon points
      * @drawable true
+     * @example
+     * ```typescript
+     * const solid = await bitbybit.manifold.manifold.shapes.fromPolygonPoints({ polygonPoints: triangles });
+     * ```
      */
     fromPolygonPoints(inputs: Inputs.Manifold.FromPolygonPointsDto): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.fromPolygonPoints", inputs);
     }
 
     /**
-     * Create a 3D cube shape
-     * @param inputs Cube parameters
-     * @returns Cube solid
+     * Creates a box solid with the given size along X, Y and Z.
+     *
+     * With `center` true the box is centered on the origin; otherwise its corner sits on the origin
+     * and it extends along the positive axes.
+     * @param inputs - The size along each axis and whether to center it
+     * @returns The box solid
      * @group primitives
      * @shortname cube
      * @drawable true
+     * @example
+     * ```typescript
+     * const box = await bitbybit.manifold.manifold.shapes.cube({ size: 10, center: true });
+     * ```
      */
     cube(inputs: Inputs.Manifold.CubeDto): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.cube", inputs);
     }
 
     /**
-     * Create a 3D sphere shape
-     * @param inputs Sphere parameters
-     * @returns Sphere solid
+     * Creates a sphere solid of the given radius, centered on the origin.
+     *
+     * `circularSegments` is the number of segments around the sphere; it is rounded up to a
+     * multiple of four, since the sphere is built by refining an octahedron.
+     * @param inputs - The radius and the number of segments around the sphere
+     * @returns The sphere solid
      * @group primitives
      * @shortname sphere
      * @drawable true
+     * @example
+     * ```typescript
+     * const ball = await bitbybit.manifold.manifold.shapes.sphere({ radius: 5, circularSegments: 32 });
+     * ```
      */
     sphere(inputs: Inputs.Manifold.SphereDto): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.sphere", inputs);
     }
 
     /**
-     * Create a 3D tetrahedron shape
-     * @returns Tetrahedron solid
+     * Creates a tetrahedron solid centered on the origin, with one corner at `[1, 1, 1]` and the
+     * others placed symmetrically.
+     * @returns The tetrahedron solid
      * @group primitives
      * @shortname tetrahedron
      * @drawable true
+     * @example
+     * ```typescript
+     * const tetra = await bitbybit.manifold.manifold.shapes.tetrahedron();
+     * ```
      */
     tetrahedron(): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.tetrahedron", {});
     }
 
     /**
-     * Create a 3D cylinder shape
-     * @param inputs Cylinder parameters
-     * @returns Cylinder solid
+     * Creates a cylinder solid standing along Z, or a cone when the top radius differs from the
+     * bottom one.
+     *
+     * `radiusLow` is the bottom radius and must be above 0, `radiusHigh` the top radius, which may
+     * be 0 for a point; `circularSegments` sets how round the sides are. `center` centers the
+     * cylinder on the origin instead of standing it on it.
+     * @param inputs - The height, the bottom and top radii, the number of segments and whether to center it
+     * @returns The cylinder or cone solid
      * @group primitives
      * @shortname cylinder
      * @drawable true
+     * @example
+     * ```typescript
+     * const cone = await bitbybit.manifold.manifold.shapes.cylinder({ height: 10, radiusLow: 4, radiusHigh: 1, circularSegments: 32, center: false });
+     * ```
      */
     cylinder(inputs: Inputs.Manifold.CylinderDto): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.cylinder", inputs);

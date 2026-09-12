@@ -6,8 +6,12 @@ import { Mesh } from "./services/mesh/mesh";
 import { BaseBitByBit } from "../base";
 
 /**
- * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
- * Thanks Manifold community for developing this kernel
+ * The entry point to the Manifold kernel, a fast mesh-based solid modeler: `manifold` builds and
+ * changes solids, `crossSection` handles the flat outlines they are extruded and revolved from, and
+ * `mesh` reads the triangle data. Manifold works on triangle meshes rather than exact curves, so
+ * booleans are quick and always watertight, and it keeps its own Z axis as up: extrusions grow
+ * along Z and slices are parallel to the XY plane. The methods on the service itself turn solids
+ * and cross-sections into plain mesh data for drawing.
  */
 export class ManifoldService {
     plugins: any;
@@ -25,12 +29,20 @@ export class ManifoldService {
     }
 
     /**
-     * Decomposes manifold or cross section shape into a mesh or simple polygons
-     * @param inputs Manifold shape or cross section
-     * @returns Decomposed mesh definition or simple polygons
+     * Turns a solid into plain mesh data, or a cross-section into its polygons, ready for drawing
+     * or export.
+     *
+     * `normalIdx` names the vertex property channel that holds normals, when the solid carries
+     * them.
+     * @param inputs - The solid or cross-section and the optional normal channel
+     * @returns The mesh data of a solid, or the polygons of a cross-section
      * @group decompose
      * @shortname decompose m or cs
      * @drawable false
+     * @example
+     * ```typescript
+     * const mesh = await bitbybit.manifold.decomposeManifoldOrCrossSection({ manifoldOrCrossSection: cube });
+     * ```
      */
     decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
         if ((inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh) {
@@ -41,12 +53,19 @@ export class ManifoldService {
     }
 
     /**
-     * Turns manifold shape into a collection of polygon points representing the mesh.
-     * @param inputs Manifold shape
-     * @returns polygon points
+     * Turns a solid into a list of triangles, each three points, the same form
+     * `shapes.fromPolygonPoints` reads back.
+     *
+     * An empty solid gives an empty list.
+     * @param inputs - The solid
+     * @returns One list of three points per triangle
      * @group decompose
      * @shortname to polygon points
      * @drawable false
+     * @example
+     * ```typescript
+     * const triangles = await bitbybit.manifold.toPolygonPoints({ manifold: cube });
+     * ```
      */
     toPolygonPoints(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Inputs.Base.Mesh3 {
         if (typeof inputs.manifold.getMesh === "function") {
@@ -102,12 +121,19 @@ export class ManifoldService {
     }
 
     /**
-     * Decomposes manifold or cross section shape into a mesh or simple polygons
-     * @param inputs Manifold shapes or cross sections
-     * @returns Decomposed mesh definitions or a list of simple polygons
+     * Turns several solids into mesh data, or cross-sections into polygons, as
+     * `decomposeManifoldOrCrossSection` does for one.
+     *
+     * `normalIdx` gives one normal channel per shape.
+     * @param inputs - The solids or cross-sections and the optional normal channels
+     * @returns One mesh or polygon list per shape, in the same order
      * @group decompose
      * @shortname decompose m's or cs's
      * @drawable false
+     * @example
+     * ```typescript
+     * const meshes = await bitbybit.manifold.decomposeManifoldsOrCrossSections({ manifoldsOrCrossSections: [cube, sphere] });
+     * ```
      */
     decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Manifold3D.Manifold | Manifold3D.CrossSection>): (Manifold3D.Mesh | Manifold3D.SimplePolygon[])[] {
         return inputs.manifoldsOrCrossSections.map((manifoldOrCrossSection, index) => {

@@ -8,45 +8,62 @@ import * as BABYLON from "@babylonjs/core";
  */
 export namespace BabylonGltf {
 
+    /**
+     * Feeds the `babylon.gltf` methods that read a loaded asset container: its root node, meshes
+     * and animation groups.
+     */
     export class AssetContainerDto {
         constructor(assetContainer?: BABYLON.AssetContainer) {
             if (assetContainer !== undefined) { this.assetContainer = assetContainer; }
         }
         /**
-         * Asset container produced when loading a glTF or glb file. Holds the meshes, materials, animations and the root node.
+         * The container a glTF or glb load gave back, holding the meshes, materials, animations and
+         * root node
          * @default undefined
          */
         assetContainer!: BABYLON.AssetContainer;
     }
 
+    /**
+     * Feeds the `babylon.gltf` material variant methods with the root node of a loaded glTF asset,
+     * as `getRootNode` reads it.
+     */
     export class GltfRootNodeDto {
         constructor(rootNode?: BABYLON.TransformNode) {
             if (rootNode !== undefined) { this.rootNode = rootNode; }
         }
         /**
-         * Root transform node of a loaded glTF asset. Material variants and other glTF level operations work on this node.
+         * The root transform node of a loaded glTF asset; material variants are looked up from it
          * @default undefined
          */
         rootNode!: BABYLON.TransformNode;
     }
 
+    /**
+     * Feeds `babylon.gltf.selectMaterialVariant` with the root node of a loaded glTF asset and the
+     * name of the material variant to switch to.
+     */
     export class SelectVariantDto {
         constructor(rootNode?: BABYLON.TransformNode, variantName?: string) {
             if (rootNode !== undefined) { this.rootNode = rootNode; }
             if (variantName !== undefined) { this.variantName = variantName; }
         }
         /**
-         * Root transform node of a loaded glTF asset that declares KHR_materials_variants.
+         * The root transform node of a loaded glTF asset that declares material variants
          * @default undefined
          */
         rootNode!: BABYLON.TransformNode;
         /**
-         * Name of the material variant to activate. Use list material variants to discover the available names.
+         * The variant to activate, one of the names `listMaterialVariants` gives
          * @default undefined
          */
         variantName!: string;
     }
 
+    /**
+     * Feeds `babylon.gltf.playAnimationGroup` with the animation to start, whether it repeats and
+     * how fast it plays.
+     */
     export class PlayAnimationGroupDto {
         constructor(animationGroup?: BABYLON.AnimationGroup, loop?: boolean, speedRatio?: number) {
             if (animationGroup !== undefined) { this.animationGroup = animationGroup; }
@@ -54,29 +71,32 @@ export namespace BabylonGltf {
             if (speedRatio !== undefined) { this.speedRatio = speedRatio; }
         }
         /**
-         * Animation group to play.
+         * The animation from a loaded asset, as `getAnimationGroups` lists them
          * @default undefined
          */
         animationGroup!: BABYLON.AnimationGroup;
         /**
-         * Loop the animation.
+         * When true, the animation starts over each time it reaches its end
          * @default true
          */
         loop = true;
         /**
-         * Playback speed ratio where 1 is normal speed.
+         * Playback speed where 1 is normal, 2 twice as fast and 0.5 half speed
          * @default 1
          * @step 0.1
          */
         speedRatio = 1;
     }
 
+    /**
+     * Feeds `babylon.gltf.stopAnimationGroup` with the running animation to stop where it is.
+     */
     export class AnimationGroupDto {
         constructor(animationGroup?: BABYLON.AnimationGroup) {
             if (animationGroup !== undefined) { this.animationGroup = animationGroup; }
         }
         /**
-         * Animation group to operate on.
+         * The animation from a loaded asset, as `getAnimationGroups` lists them
          * @default undefined
          */
         animationGroup!: BABYLON.AnimationGroup;

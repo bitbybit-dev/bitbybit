@@ -1,15 +1,20 @@
 import * as Inputs from "../inputs";
 
 /**
- * Contains various math methods.
+ * Arithmetic, rounding, ranges, random numbers and the trigonometric functions on plain numbers.
+ * The trigonometric functions take and give angles in radians; `degToRad` and `radToDeg` convert at
+ * the boundary, because almost every angle a user types is in degrees. The interpolation helpers
+ * (`lerp`, `remap`, `ease`, `smoothstep`, `pingPong`) are the building blocks of animation and
+ * parametric variation.
  */
 export class MathBitByBit {
 
     /**
-     * Creates and returns a number value (pass-through for number input).
-     * Example: Input 42 → 42, Input 3.14 → 3.14
-     * @param inputs a number to be created
-     * @returns number
+     * Passes a number through unchanged, so a value can be given a name and reused.
+     *
+     * Example: 42 -> 42
+     * @param inputs - The number
+     * @returns The same number
      * @group create
      * @shortname number
      * @drawable false
@@ -19,13 +24,21 @@ export class MathBitByBit {
     }
 
     /**
-     * Performs basic arithmetic operations on two numbers (add, subtract, multiply, divide, power, modulus).
-     * Example: 5 + 3 → 8, 10 % 3 → 1, 2 ^ 3 → 8
-     * @param inputs two numbers and operator
-     * @returns Result of math operation action
+     * Applies one arithmetic operation to two numbers: add, subtract, multiply, divide, power or
+     * modulus.
+     *
+     * The operation reads `first` then `second`: subtract gives first minus second, power gives
+     * first to the power of second.
+     * Example: 5 add 3 -> 8, 10 modulus 3 -> 1, 2 power 3 -> 8
+     * @param inputs - The two numbers and the operation
+     * @returns The result of the operation
      * @group operations
      * @shortname two numbers
      * @drawable false
+     * @example
+     * ```typescript
+     * const result = bitbybit.math.twoNrOperation({ first: 2, second: 3, operation: Bit.Inputs.Math.mathTwoNrOperatorEnum.power });
+     * ```
      */
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number {
         let result!: number;
@@ -55,39 +68,57 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the remainder after division (modulus operation).
-     * Example: 10 % 3 → 1, 17 % 5 → 2
-     * @param inputs two numbers and operator
-     * @returns Result of modulus operation
+     * Finds the remainder after dividing one number by another.
+     *
+     * The sign follows the first number, as it does in JavaScript.
+     * Example: 10 modulus 3 -> 1, 17 modulus 5 -> 2
+     * @param inputs - The number to divide and the number to divide by
+     * @returns The remainder
      * @group operations
      * @shortname modulus
      * @drawable false
+     * @example
+     * ```typescript
+     * const remainder = bitbybit.math.modulus({ number: 17, modulus: 5 });
+     * ```
      */
     modulus(inputs: Inputs.Math.ModulusDto): number {
         return this.twoNrOperation({ first: inputs.number, second: inputs.modulus, operation: Inputs.Math.mathTwoNrOperatorEnum.modulus });
     }
 
     /**
-     * Rounds a number to specified decimal places.
-     * Example: 1.32156 with 3 decimals returns 1.322
-     * @param inputs a number and decimal places
-     * @returns Result of rounding
+     * Rounds a number to a given number of decimal places.
+     *
+     * Example: 1.32156 to 3 places -> 1.322
+     * @param inputs - The number and how many decimal places to keep
+     * @returns The rounded number
      * @group operations
      * @shortname round to decimals
      * @drawable false
+     * @example
+     * ```typescript
+     * const rounded = bitbybit.math.roundToDecimals({ number: 1.32156, decimalPlaces: 3 });
+     * ```
      */
     roundToDecimals(inputs: Inputs.Math.RoundToDecimalsDto): number {
         return Math.round(inputs.number * Math.pow(10, inputs.decimalPlaces)) / Math.pow(10, inputs.decimalPlaces);
     }
 
     /**
-     * Rounds a number to specified decimal places and removes trailing zeros.
-     * Example: 1.32156 with 3 decimals returns 1.322, but 1.320000001 returns 1.32, and 1.000 returns 1
-     * @param inputs a number and decimal places
-     * @returns Result of rounding as a number without trailing zeros
+     * Rounds a number to a given number of decimal places and drops the zeros at the end.
+     *
+     * As a number the result cannot carry trailing zeros anyway; the difference from
+     * `roundToDecimals` is that floating-point noise such as 1.320000001 is cleaned to 1.32.
+     * Example: 1.32156 to 3 places -> 1.322, 1.320000001 -> 1.32, 1.000 -> 1
+     * @param inputs - The number and how many decimal places to keep
+     * @returns The rounded number
      * @group operations
      * @shortname round trim zeros
      * @drawable false
+     * @example
+     * ```typescript
+     * const clean = bitbybit.math.roundAndRemoveTrailingZeros({ number: 1.320000001, decimalPlaces: 3 });
+     * ```
      */
     roundAndRemoveTrailingZeros(inputs: Inputs.Math.RoundToDecimalsDto): number {
         const rounded = Math.round(inputs.number * Math.pow(10, inputs.decimalPlaces)) / Math.pow(10, inputs.decimalPlaces);
@@ -95,13 +126,21 @@ export class MathBitByBit {
     }
 
     /**
-     * Performs mathematical operations on a single number (absolute, negate, sqrt, trig functions, logarithms, etc.).
-     * Example: sqrt(5) → 2.236, abs(-3) → 3, sin(π/2) → 1
-     * @param inputs one number and operator action
-     * @returns Result of math operation
+     * Applies one operation to a single number: absolute, negate, square root, rounding,
+     * logarithms, the trigonometric functions and their inverses, exponential, or a conversion
+     * between radians and degrees.
+     *
+     * The trigonometric functions work in radians.
+     * Example: sqrt of 5 -> 2.236, absolute of -3 -> 3
+     * @param inputs - The number and the operation
+     * @returns The result of the operation
      * @group operations
      * @shortname one number
      * @drawable false
+     * @example
+     * ```typescript
+     * const root = bitbybit.math.oneNrOperation({ number: 5, operation: Bit.Inputs.Math.mathOneNrOperatorEnum.sqrt });
+     * ```
      */
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number {
         let result!: number;
@@ -170,52 +209,69 @@ export class MathBitByBit {
     }
 
     /**
-    * Maps a number from one range to another range proportionally.
-    * Example: 5 from [0,10] to [0,100] → 50, 0.5 from [0,1] to [-10,10] → 0
-    * @param inputs one number and operator action
-    * @returns Result of mapping
-    * @group operations
-    * @shortname remap
-    * @drawable false
-    */
+     * Maps a number from one range onto another, keeping its relative position.
+     *
+     * A number outside the source range maps proportionally beyond the target range.
+     * Example: 5 from [0,10] to [0,100] -> 50, 0.5 from [0,1] to [-10,10] -> 0
+     * @param inputs - The number, the range it is in and the range to map it to
+     * @returns The number at the same relative position in the target range
+     * @group operations
+     * @shortname remap
+     * @drawable false
+     * @example
+     * ```typescript
+     * const percent = bitbybit.math.remap({ number: 5, fromLow: 0, fromHigh: 10, toLow: 0, toHigh: 100 });
+     * ```
+     */
     remap(inputs: Inputs.Math.RemapNumberDto): number {
         return (inputs.number - inputs.fromLow) * (inputs.toHigh - inputs.toLow) / (inputs.fromHigh - inputs.fromLow) + inputs.toLow;
     }
 
     /**
-    * Generates a random decimal number between 0 (inclusive) and 1 (exclusive).
-    * Example: Outputs like 0.342, 0.891, or any value in [0, 1)
-    * @returns A random number between 0 and 1
-    * @group generate
-    * @shortname random 0 - 1
-    * @drawable false
-    */
+     * Gives a random number from 0 up to, but not including, 1.
+     *
+     * Example: 0.342, 0.891 or any other value in that range
+     * @returns A random number between 0 and 1
+     * @group generate
+     * @shortname random 0 - 1
+     * @drawable false
+     */
     random(): number {
         return Math.random();
     }
 
     /**
-    * Generates a random number within a specified range (low to high).
-    * Example: Range [0, 10] → outputs like 3.7, 8.2, or any value between 0 and 10
-    * @param inputs low and high numbers
-    * @returns A random number
-    * @group generate
-    * @shortname random number
-    * @drawable false
-    */
+     * Gives a random number between `low` and `high`.
+     *
+     * Example: low 0, high 10 -> 3.7, 8.2 or any other value between them
+     * @param inputs - The low and high ends of the range
+     * @returns A random number in the range
+     * @group generate
+     * @shortname random number
+     * @drawable false
+     * @example
+     * ```typescript
+     * const value = bitbybit.math.randomNumber({ low: 0, high: 10 });
+     * ```
+     */
     randomNumber(inputs: Inputs.Math.RandomNumberDto): number {
         return Math.random() * (inputs.high - inputs.low) + inputs.low;
     }
 
     /**
-    * Generates multiple random numbers within a specified range.
-    * Example: Range [0, 10] with 3 items → [2.5, 7.1, 4.8]
-    * @param inputs low and high numbers
-    * @returns A list of random numbers
-    * @group generate
-    * @shortname random numbers
-    * @drawable false
-    */
+     * Gives a list of random numbers between `low` and `high`.
+     *
+     * Example: low 0, high 10, count 3 -> [2.5, 7.1, 4.8]
+     * @param inputs - The low and high ends of the range and how many numbers to make
+     * @returns The random numbers
+     * @group generate
+     * @shortname random numbers
+     * @drawable false
+     * @example
+     * ```typescript
+     * const values = bitbybit.math.randomNumbers({ low: 0, high: 10, count: 3 });
+     * ```
+     */
     randomNumbers(inputs: Inputs.Math.RandomNumbersDto): number[] {
         const result = [];
         for (let i = 0; i < inputs.count; i++) {
@@ -225,38 +281,49 @@ export class MathBitByBit {
     }
 
     /**
-    * Returns the mathematical constant π (pi) ≈ 3.14159.
-    * Example: Outputs 3.141592653589793
-    * @returns A number PI
-    * @group generate
-    * @shortname π
-    * @drawable false
-    */
+     * Gives the constant pi, the ratio of a circle's circumference to its diameter.
+     *
+     * Example: 3.141592653589793
+     * @returns The number pi
+     * @group generate
+     * @shortname π
+     * @drawable false
+     */
     pi(): number {
         return Math.PI;
     }
 
     /**
-     * Formats a number as a string with a fixed number of decimal places (always shows trailing zeros).
-     * Example: 3.14159 with 2 decimals → '3.14', 5 with 3 decimals → '5.000'
-     * @param inputs a number to be rounded to decimal places
-     * @returns number
+     * Formats a number as text with a fixed number of decimal places, keeping trailing zeros.
+     *
+     * Example: 3.14159 with 2 places -> '3.14', 5 with 3 places -> '5.000'
+     * @param inputs - The number and how many decimal places to show
+     * @returns The formatted text
      * @group operations
      * @shortname to fixed
      * @drawable false
+     * @example
+     * ```typescript
+     * const label = bitbybit.math.toFixed({ number: 3.14159, decimalPlaces: 2 });
+     * ```
      */
     toFixed(inputs: Inputs.Math.ToFixedDto): string {
         return inputs.number.toFixed(inputs.decimalPlaces);
     }
 
     /**
-     * Adds two numbers together.
-     * Example: 5 + 3 → 8, -2 + 7 → 5
-     * @param inputs two numbers
-     * @returns number
+     * Adds two numbers.
+     *
+     * Example: 5 and 3 -> 8, -2 and 7 -> 5
+     * @param inputs - The two numbers
+     * @returns Their sum
      * @group basics
      * @shortname add
      * @drawable false
+     * @example
+     * ```typescript
+     * const sum = bitbybit.math.add({ first: 5, second: 3 });
+     * ```
      */
     add(inputs: Inputs.Math.TwoNumbersDto): number {
         return inputs.first + inputs.second;
@@ -264,25 +331,35 @@ export class MathBitByBit {
 
     /**
      * Subtracts the second number from the first.
-     * Example: 10 - 3 → 7, 5 - 8 → -3
-     * @param inputs two numbers
-     * @returns number
+     *
+     * Example: 10 and 3 -> 7, 5 and 8 -> -3
+     * @param inputs - The number to subtract from and the number to subtract
+     * @returns Their difference
      * @group basics
      * @shortname subtract
      * @drawable false
+     * @example
+     * ```typescript
+     * const difference = bitbybit.math.subtract({ first: 10, second: 3 });
+     * ```
      */
     subtract(inputs: Inputs.Math.TwoNumbersDto): number {
         return inputs.first - inputs.second;
     }
 
     /**
-     * Multiplies two numbers together.
-     * Example: 5 × 3 → 15, -2 × 4 → -8
-     * @param inputs two numbers
-     * @returns number
+     * Multiplies two numbers.
+     *
+     * Example: 5 and 3 -> 15, -2 and 4 -> -8
+     * @param inputs - The two numbers
+     * @returns Their product
      * @group basics
      * @shortname multiply
      * @drawable false
+     * @example
+     * ```typescript
+     * const product = bitbybit.math.multiply({ first: 5, second: 3 });
+     * ```
      */
     multiply(inputs: Inputs.Math.TwoNumbersDto): number {
         return inputs.first * inputs.second;
@@ -290,35 +367,48 @@ export class MathBitByBit {
 
     /**
      * Divides the first number by the second.
-     * Example: 10 ÷ 2 → 5, 7 ÷ 2 → 3.5
-     * @param inputs two numbers
-     * @returns number
+     *
+     * Dividing by 0 gives Infinity, as in JavaScript.
+     * Example: 10 and 2 -> 5, 7 and 2 -> 3.5
+     * @param inputs - The number to divide and the number to divide by
+     * @returns Their quotient
      * @group basics
      * @shortname divide
      * @drawable false
+     * @example
+     * ```typescript
+     * const quotient = bitbybit.math.divide({ first: 7, second: 2 });
+     * ```
      */
     divide(inputs: Inputs.Math.TwoNumbersDto): number {
         return inputs.first / inputs.second;
     }
 
     /**
-     * Raises the first number to the power of the second (exponentiation).
-     * Example: 2³ → 8, 5² → 25, 10⁻¹ → 0.1
-     * @param inputs two numbers
-     * @returns number
+     * Raises the first number to the power of the second.
+     *
+     * Example: 2 to the 3 -> 8, 5 to the 2 -> 25, 10 to the -1 -> 0.1
+     * @param inputs - The base and the exponent
+     * @returns The power
      * @group basics
      * @shortname power
      * @drawable false
+     * @example
+     * ```typescript
+     * const cube = bitbybit.math.power({ first: 2, second: 3 });
+     * ```
      */
     power(inputs: Inputs.Math.TwoNumbersDto): number {
         return Math.pow(inputs.first, inputs.second);
     }
 
     /**
-     * Calculates the square root of a number.
-     * Example: √9 → 3, √2 → 1.414, √16 → 4
-     * @param inputs a number
-     * @returns number
+     * Finds the square root of a number.
+     *
+     * A negative number gives NaN.
+     * Example: 9 -> 3, 2 -> 1.414
+     * @param inputs - The number
+     * @returns The square root
      * @group basics
      * @shortname sqrt
      * @drawable false
@@ -328,10 +418,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Returns the absolute value (removes negative sign, always positive or zero).
-     * Example: |-5| → 5, |3| → 3, |0| → 0
-     * @param inputs a number
-     * @returns number
+     * Drops the sign of a number, so the result is never negative.
+     *
+     * Example: -5 -> 5, 3 -> 3, 0 -> 0
+     * @param inputs - The number
+     * @returns The absolute value
      * @group basics
      * @shortname abs
      * @drawable false
@@ -341,10 +432,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Rounds a number to the nearest integer.
-     * Example: 3.7 → 4, 2.3 → 2, 5.5 → 6
-     * @param inputs a number
-     * @returns number
+     * Rounds a number to the nearest whole number; halves round up.
+     *
+     * Example: 3.7 -> 4, 2.3 -> 2, 5.5 -> 6
+     * @param inputs - The number
+     * @returns The nearest whole number
      * @group basics
      * @shortname round
      * @drawable false
@@ -354,10 +446,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Rounds a number down to the nearest integer (toward negative infinity).
-     * Example: 3.7 → 3, -2.3 → -3, 5 → 5
-     * @param inputs a number
-     * @returns number
+     * Rounds a number down to the whole number below it.
+     *
+     * Example: 3.7 -> 3, -2.3 -> -3, 5 -> 5
+     * @param inputs - The number
+     * @returns The whole number below
      * @group basics
      * @shortname floor
      * @drawable false
@@ -367,10 +460,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Rounds a number up to the nearest integer (toward positive infinity).
-     * Example: 3.2 → 4, -2.8 → -2, 5 → 5
-     * @param inputs a number
-     * @returns number
+     * Rounds a number up to the whole number above it.
+     *
+     * Example: 3.2 -> 4, -2.8 -> -2, 5 -> 5
+     * @param inputs - The number
+     * @returns The whole number above
      * @group basics
      * @shortname ceil
      * @drawable false
@@ -380,10 +474,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Negates a number (flips its sign: positive becomes negative, negative becomes positive).
-     * Example: 5 → -5, -3 → 3, 0 → 0
-     * @param inputs a number
-     * @returns number
+     * Flips the sign of a number.
+     *
+     * Example: 5 -> -5, -3 -> 3, 0 -> 0
+     * @param inputs - The number
+     * @returns The number with the opposite sign
      * @group basics
      * @shortname negate
      * @drawable false
@@ -393,10 +488,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the natural logarithm (base e) of a number.
-     * Example: ln(2.718) → ~1, ln(7.389) → ~2, ln(1) → 0
-     * @param inputs a number
-     * @returns number
+     * Finds the natural logarithm of a number: the power e must be raised to for that number.
+     *
+     * Example: 2.718 -> about 1, 1 -> 0
+     * @param inputs - The number, greater than 0
+     * @returns The natural logarithm
      * @group basics
      * @shortname ln
      * @drawable false
@@ -406,10 +502,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the base 10 logarithm of a number.
-     * Example: log₁₀(100) → 2, log₁₀(1000) → 3, log₁₀(10) → 1
-     * @param inputs a number
-     * @returns number
+     * Finds the base-10 logarithm of a number: the power 10 must be raised to for that number.
+     *
+     * Example: 100 -> 2, 1000 -> 3, 10 -> 1
+     * @param inputs - The number, greater than 0
+     * @returns The base-10 logarithm
      * @group basics
      * @shortname log10
      * @drawable false
@@ -419,10 +516,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Raises 10 to the power of the input number.
-     * Example: 10² → 100, 10³ → 1000, 10⁻¹ → 0.1
-     * @param inputs a number
-     * @returns number
+     * Raises 10 to the power of a number.
+     *
+     * Example: 2 -> 100, 3 -> 1000, -1 -> 0.1
+     * @param inputs - The exponent
+     * @returns 10 to that power
      * @group basics
      * @shortname ten pow
      * @drawable false
@@ -432,10 +530,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the sine of an angle in radians.
-     * Example: sin(0) → 0, sin(π/2) → 1, sin(π) → ~0
-     * @param inputs a number
-     * @returns number
+     * Finds the sine of an angle given in radians.
+     *
+     * Example: 0 -> 0, pi/2 -> 1
+     * @param inputs - The angle in radians
+     * @returns The sine, between -1 and 1
      * @group basics
      * @shortname sin
      * @drawable false
@@ -445,10 +544,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the cosine of an angle in radians.
-     * Example: cos(0) → 1, cos(π/2) → ~0, cos(π) → -1
-     * @param inputs a number
-     * @returns number
+     * Finds the cosine of an angle given in radians.
+     *
+     * Example: 0 -> 1, pi -> -1
+     * @param inputs - The angle in radians
+     * @returns The cosine, between -1 and 1
      * @group basics
      * @shortname cos
      * @drawable false
@@ -458,10 +558,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the tangent of an angle in radians.
-     * Example: tan(0) → 0, tan(π/4) → ~1, tan(π/2) → infinity
-     * @param inputs a number
-     * @returns number
+     * Finds the tangent of an angle given in radians.
+     *
+     * Example: 0 -> 0, pi/4 -> about 1
+     * @param inputs - The angle in radians
+     * @returns The tangent
      * @group basics
      * @shortname tan
      * @drawable false
@@ -471,10 +572,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the arcsine (inverse sine) in radians, returns angle whose sine is the input.
-     * Example: asin(0) → 0, asin(1) → π/2 (~1.57), asin(0.5) → π/6 (~0.524)
-     * @param inputs a number
-     * @returns number
+     * Finds the angle, in radians, whose sine is the given number.
+     *
+     * Example: 0 -> 0, 1 -> pi/2 (about 1.57)
+     * @param inputs - A number between -1 and 1
+     * @returns The angle in radians
      * @group basics
      * @shortname asin
      * @drawable false
@@ -484,10 +586,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the arccosine (inverse cosine) in radians, returns angle whose cosine is the input.
-     * Example: acos(1) → 0, acos(0) → π/2 (~1.57), acos(-1) → π (~3.14)
-     * @param inputs a number
-     * @returns number
+     * Finds the angle, in radians, whose cosine is the given number.
+     *
+     * Example: 1 -> 0, -1 -> pi (about 3.14)
+     * @param inputs - A number between -1 and 1
+     * @returns The angle in radians
      * @group basics
      * @shortname acos
      * @drawable false
@@ -497,10 +600,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates the arctangent (inverse tangent) in radians, returns angle whose tangent is the input.
-     * Example: atan(0) → 0, atan(1) → π/4 (~0.785), atan(-1) → -π/4
-     * @param inputs a number
-     * @returns number
+     * Finds the angle, in radians, whose tangent is the given number.
+     *
+     * Example: 0 -> 0, 1 -> pi/4 (about 0.785)
+     * @param inputs - The number
+     * @returns The angle in radians, between -pi/2 and pi/2
      * @group basics
      * @shortname atan
      * @drawable false
@@ -510,10 +614,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Calculates e raised to the power of the input (exponential function).
-     * Example: e⁰ → 1, e¹ → ~2.718, e² → ~7.389
-     * @param inputs a number
-     * @returns number
+     * Raises e, the base of the natural logarithm, to the power of a number.
+     *
+     * Example: 0 -> 1, 1 -> about 2.718, 2 -> about 7.389
+     * @param inputs - The exponent
+     * @returns e to that power
      * @group basics
      * @shortname exp
      * @drawable false
@@ -524,9 +629,10 @@ export class MathBitByBit {
 
     /**
      * Converts an angle from degrees to radians.
-     * Example: 180° → π (~3.14159), 90° → π/2 (~1.5708), 360° → 2π
-     * @param inputs a number in degrees
-     * @returns number
+     *
+     * Example: 180 -> pi (about 3.14159), 90 -> pi/2
+     * @param inputs - The angle in degrees
+     * @returns The angle in radians
      * @group basics
      * @shortname deg to rad
      * @drawable false
@@ -537,9 +643,10 @@ export class MathBitByBit {
 
     /**
      * Converts an angle from radians to degrees.
-     * Example: π → 180°, π/2 → 90°, 2π → 360°
-     * @param inputs a number in radians
-     * @returns number
+     *
+     * Example: pi -> 180, pi/2 -> 90
+     * @param inputs - The angle in radians
+     * @returns The angle in degrees
      * @group basics
      * @shortname rad to deg
      * @drawable false
@@ -549,14 +656,21 @@ export class MathBitByBit {
     }
 
     /**
-     * Applies an easing function to interpolate smoothly between min and max values.
-     * Example: x=0.5 from [0,100] with easeInQuad → applies quadratic acceleration curve
-     * Useful for smooth animations with various acceleration/deceleration curves.
-     * @param inputs a number, min and max values, and ease type
-     * @returns number
+     * Maps a value from 0 to 1 onto the range `min` to `max` along an easing curve, so the result
+     * speeds up or slows down instead of changing evenly.
+     *
+     * An `easeIn` curve starts slowly, an `easeOut` curve ends slowly, an `easeInOut` curve does
+     * both.
+     * Example: 0.5 from [0,100] with easeInQuad -> 25
+     * @param inputs - The value between 0 and 1, the target range and the easing curve
+     * @returns The eased value in the target range
      * @group operations
      * @shortname ease
      * @drawable false
+     * @example
+     * ```typescript
+     * const eased = bitbybit.math.ease({ x: 0.5, min: 0, max: 100, ease: Bit.Inputs.Math.easeEnum.easeInQuad });
+     * ```
      */
     ease(inputs: Inputs.Math.EaseDto) {
         const x = inputs.x;
@@ -569,41 +683,57 @@ export class MathBitByBit {
     }
 
     /**
-     * Constrains a value between a minimum and maximum value.
-     * Example: clamp(5, 0, 3) returns 3, clamp(-1, 0, 3) returns 0, clamp(1.5, 0, 3) returns 1.5
-     * @param inputs a number, min and max values
-     * @returns number clamped between min and max
+     * Keeps a number within a range: below `min` becomes `min`, above `max` becomes `max`.
+     *
+     * Example: 5 in [0,3] -> 3, -1 in [0,3] -> 0, 1.5 in [0,3] -> 1.5
+     * @param inputs - The number and the range to keep it in
+     * @returns The number, limited to the range
      * @group operations
      * @shortname clamp
      * @drawable false
+     * @example
+     * ```typescript
+     * const limited = bitbybit.math.clamp({ number: 5, min: 0, max: 3 });
+     * ```
      */
     clamp(inputs: Inputs.Math.ClampDto): number {
         return Math.max(inputs.min, Math.min(inputs.max, inputs.number));
     }
 
     /**
-     * Linear interpolation between two values using parameter t (0 to 1).
-     * Example: From 0 to 100 at t=0.5 → 50, From 10 to 20 at t=0.25 → 12.5
-     * When t=0 returns start, when t=1 returns end. Useful for smooth transitions.
-     * @param inputs start value, end value, and interpolation parameter t
-     * @returns interpolated value
+     * Blends from a start value to an end value by a fraction `t`: 0 gives the start, 1 the end,
+     * 0.5 the midpoint.
+     *
+     * A `t` outside 0 to 1 extrapolates past the ends.
+     * Example: 0 to 100 at 0.5 -> 50, 10 to 20 at 0.25 -> 12.5
+     * @param inputs - The start value, the end value and the fraction
+     * @returns The blended value
      * @group operations
      * @shortname lerp
      * @drawable false
+     * @example
+     * ```typescript
+     * const mid = bitbybit.math.lerp({ start: 10, end: 20, t: 0.25 });
+     * ```
      */
     lerp(inputs: Inputs.Math.LerpDto): number {
         return inputs.start + (inputs.end - inputs.start) * inputs.t;
     }
 
     /**
-     * Calculates the interpolation parameter t for a value between start and end (reverse of lerp).
-     * Example: Value 5 in range [0,10] → t=0.5, Value 2.5 in range [0,10] → t=0.25
-     * Returns what t value would produce the given value in a lerp. Useful for finding relative position.
-     * @param inputs start value, end value, and the value to find t for
-     * @returns interpolation parameter (typically 0-1)
+     * Finds where a value sits between a start and an end, as a fraction: the `t` that `lerp` would
+     * need to produce it.
+     *
+     * Example: 5 in [0,10] -> 0.5, 2.5 in [0,10] -> 0.25
+     * @param inputs - The start value, the end value and the value to locate
+     * @returns The fraction from start to end
      * @group operations
      * @shortname inverse lerp
      * @drawable false
+     * @example
+     * ```typescript
+     * const fraction = bitbybit.math.inverseLerp({ start: 0, end: 10, value: 2.5 });
+     * ```
      */
     inverseLerp(inputs: Inputs.Math.InverseLerpDto): number {
         if (inputs.start === inputs.end) {
@@ -613,11 +743,12 @@ export class MathBitByBit {
     }
 
     /**
-     * Hermite interpolation with smooth acceleration and deceleration (smoother than linear lerp).
-     * Example: x=0 → 0, x=0.5 → 0.5, x=1 → 1 (but with smooth S-curve in between)
-     * Input is automatically clamped to [0,1]. Output eases in and out smoothly. Great for animations.
-     * @param inputs a number between 0 and 1
-     * @returns smoothly interpolated value
+     * Turns a value from 0 to 1 into a smooth S-curve that starts and ends gently; the value is
+     * clamped to that range first.
+     *
+     * Example: 0 -> 0, 0.5 -> 0.5, 0.25 -> 0.156
+     * @param inputs - The value between 0 and 1
+     * @returns The smoothed value between 0 and 1
      * @group operations
      * @shortname smoothstep
      * @drawable false
@@ -628,11 +759,11 @@ export class MathBitByBit {
     }
 
     /**
-     * Returns the sign of a number: -1 for negative, 0 for zero, 1 for positive.
-     * Example: -5 → -1, 0 → 0, 3.14 → 1
-     * Useful for determining direction or polarity.
-     * @param inputs a number
-     * @returns -1, 0, or 1
+     * Tells the sign of a number: -1 when negative, 0 when zero, 1 when positive.
+     *
+     * Example: -5 -> -1, 0 -> 0, 3.14 -> 1
+     * @param inputs - The number
+     * @returns -1, 0 or 1
      * @group operations
      * @shortname sign
      * @drawable false
@@ -642,11 +773,12 @@ export class MathBitByBit {
     }
 
     /**
-     * Returns the fractional part of a number (removes integer part, keeps decimals).
-     * Example: 3.14 → 0.14, 5.9 → 0.9, -2.3 → 0.7
-     * Useful for wrapping values and creating repeating patterns.
-     * @param inputs a number
-     * @returns fractional part (always positive)
+     * Keeps the part of a number after the decimal point, measured up from the whole number below
+     * it, so the result is always from 0 up to 1.
+     *
+     * Example: 3.14 -> 0.14, -2.3 -> 0.7
+     * @param inputs - The number
+     * @returns The fractional part, from 0 up to 1
      * @group operations
      * @shortname fract
      * @drawable false
@@ -656,14 +788,20 @@ export class MathBitByBit {
     }
 
     /**
-     * Wraps a number within a specified range (creates repeating cycle).
-     * Example: 1.5 in range [0,1) → 0.5, -0.3 in range [0,1) → 0.7, 370° in range [0,360) → 10°
-     * Useful for angles, UVs, or any repeating domain. Like modulo but handles negatives properly.
-     * @param inputs a number, min and max values
-     * @returns wrapped value within range
+     * Wraps a number into a range so it cycles round: past `max` it comes back in at `min`, and
+     * below `min` it comes back in at `max`.
+     *
+     * Useful for angles and repeating patterns; unlike a plain modulus it handles negative numbers.
+     * Example: 1.5 in [0,1) -> 0.5, -0.3 in [0,1) -> 0.7, 370 in [0,360) -> 10
+     * @param inputs - The number and the range to wrap it into
+     * @returns The wrapped number, from min up to max
      * @group operations
      * @shortname wrap
      * @drawable false
+     * @example
+     * ```typescript
+     * const angle = bitbybit.math.wrap({ number: 370, min: 0, max: 360 });
+     * ```
      */
     wrap(inputs: Inputs.Math.WrapDto): number {
         const range = inputs.max - inputs.min;
@@ -675,15 +813,19 @@ export class MathBitByBit {
     }
 
     /**
-     * Creates a ping-pong (back-and-forth) effect that bounces a value between 0 and length.
-     * The value goes from 0→length, then back length→0, repeating this cycle.
-     * Example: With length=1: t=0→0, t=0.5→0.5, t=1→1 (peak), t=1.5→0.5, t=2→0, t=2.5→0.5 (repeats)
-     * Useful for creating bouncing animations like a ball or oscillating motion.
-     * @param inputs time value t and length
-     * @returns value bouncing between 0 and length
+     * Bounces a value back and forth between 0 and `length` as `t` grows: up to `length`, back down
+     * to 0, and again.
+     *
+     * Example: length 1 at t 0.5 -> 0.5, t 1 -> 1, t 1.5 -> 0.5, t 2 -> 0
+     * @param inputs - The running value and the length to bounce within
+     * @returns The bounced value between 0 and length
      * @group operations
      * @shortname ping pong
      * @drawable false
+     * @example
+     * ```typescript
+     * const bounce = bitbybit.math.pingPong({ t: 1.5, length: 1 });
+     * ```
      */
     pingPong(inputs: Inputs.Math.PingPongDto): number {
         const t = Math.abs(inputs.t) % (inputs.length * 2);
@@ -691,14 +833,18 @@ export class MathBitByBit {
     }
 
     /**
-     * Moves a value toward a target by a maximum delta amount (never overshooting).
-     * Example: From 0 toward 10 by max 3 → 3, From 8 toward 10 by max 3 → 10 (reached)
-     * Useful for smooth movement with maximum speed limits.
-     * @param inputs current value, target value, and maximum delta
-     * @returns new value moved toward target
+     * Moves a value toward a target by at most `maxDelta`, without overshooting it.
+     *
+     * Example: 0 toward 10 by 3 -> 3, 8 toward 10 by 3 -> 10
+     * @param inputs - The current value, the target and the largest step allowed
+     * @returns The value after one step
      * @group operations
      * @shortname move towards
      * @drawable false
+     * @example
+     * ```typescript
+     * const next = bitbybit.math.moveTowards({ current: 8, target: 10, maxDelta: 3 });
+     * ```
      */
     moveTowards(inputs: Inputs.Math.MoveTowardsDto): number {
         const delta = inputs.target - inputs.current;
@@ -709,15 +855,21 @@ export class MathBitByBit {
     }
 
     /**
-     * Safely evaluates a simple arithmetic expression containing only
-     * numbers, +, -, *, /, parentheses, and whitespace.
-     * Uses the shunting-yard algorithm — no eval/Function.
-     * Example: '(3+2)*4' → 20, '10/3' → 3.3333...
-     * @param inputs arithmetic expression string
-     * @returns evaluated result
+     * Works out a simple arithmetic expression written as text: numbers, +, -, the multiplication
+     * sign, /, parentheses and spaces.
+     *
+     * The expression is parsed and computed by the library itself, never handed to the JavaScript
+     * engine to run, so it is safe with text a user typed.
+     * Example: '(3+2) times 4' written with the sign -> 20, '10/3' -> 3.3333
+     * @param inputs - The expression text
+     * @returns The computed value
      * @group operations
      * @shortname eval arithmetic
      * @drawable false
+     * @example
+     * ```typescript
+     * const value = bitbybit.math.evalArithmetic({ expression: "(3 + 2) * 4" });
+     * ```
      */
     evalArithmetic(inputs: Inputs.Math.EvalArithmeticDto): number {
         const expr = inputs.expression;

@@ -60,6 +60,12 @@ interface OrbitCameraConfig {
     frameOnStart: boolean;
 }
 
+/**
+ * The orbiting camera for PlayCanvas: it looks at a pivot point from a distance and turns around it
+ * with `yaw` around the vertical axis and `pitch` up or down, both in degrees. The controller it
+ * gives back carries the camera entity and its input handlers; the methods here move the pivot,
+ * frame an entity and reset the view.
+ */
 export class PlayCanvasOrbitCamera {
 
     constructor(
@@ -67,11 +73,20 @@ export class PlayCanvasOrbitCamera {
     ) { }
 
     /**
-     * Creates an orbit camera controller that allows rotating around a pivot point. This camera is suitable for 3D object inspection and scene navigation.
-     * @param inputs Describes the orbit camera configuration
-     * @returns Orbit camera controller instance with mouse and touch input handlers
+     * Creates an orbit camera that circles `pivotPoint` at `distance`, placed by `yaw` and `pitch`
+     * in degrees, with mouse and touch controls.
+     *
+     * The limits fence how far it can zoom and tilt, inertia smooths its motion, and with
+     * `focusEntity` and `frameOnStart` it starts framed on that entity. The application must be
+     * initialized first.
+     * @param inputs - The pivot, distance, angles, limits, sensitivities, inertia and start options
+     * @returns The orbit camera controller holding the camera entity and its input handlers
      * @group create
      * @shortname new orbit camera
+     * @example
+     * ```typescript
+     * const orbit = bitbybit.playcanvas.camera.orbitCamera.create({ pivotPoint: [0, 0, 0], distance: 20, pitch: 30, yaw: 45, distanceMin: 0.1, distanceMax: 1000, pitchAngleMin: -90, pitchAngleMax: 90, orbitSensitivity: 0.3, distanceSensitivity: 0.5, inertiaFactor: 0.1, autoRender: true, frameOnStart: true });
+     * ```
      */
     create(inputs: Inputs.PlayCanvasCamera.OrbitCameraDto): OrbitCameraController {
         if (!this.context.app) {
@@ -151,10 +166,14 @@ export class PlayCanvasOrbitCamera {
     }
 
     /**
-     * Sets the pivot point of the orbit camera
-     * @param inputs Orbit camera and pivot point
+     * Moves the point an orbit camera looks at and circles around, keeping its distance and angles.
+     * @param inputs - The orbit camera controller and the new pivot point
      * @group adjust
      * @shortname set pivot point
+     * @example
+     * ```typescript
+     * bitbybit.playcanvas.camera.orbitCamera.setPivotPoint({ orbitCamera: orbit, pivotPoint: [0, 5, 0] });
+     * ```
      */
     setPivotPoint(inputs: Inputs.PlayCanvasCamera.PivotPointDto): void {
         const pivotVec = new pc.Vec3(inputs.pivotPoint[0], inputs.pivotPoint[1], inputs.pivotPoint[2]);
@@ -162,9 +181,9 @@ export class PlayCanvasOrbitCamera {
     }
 
     /**
-     * Gets the pivot point of the orbit camera
-     * @param inputs Orbit camera instance
-     * @returns Pivot point as [x, y, z]
+     * Reads the point an orbit camera looks at and circles around.
+     * @param inputs - The orbit camera controller
+     * @returns The pivot point
      * @group get
      * @shortname get pivot point
      */
@@ -174,20 +193,29 @@ export class PlayCanvasOrbitCamera {
     }
 
     /**
-     * Focus the camera on an entity, adjusting distance to frame it properly
-     * @param inputs Orbit camera and entity to focus on
+     * Turns an orbit camera toward an entity and backs off until the whole entity fits the view.
+     * @param inputs - The orbit camera controller and the entity
      * @group adjust
      * @shortname focus on entity
+     * @example
+     * ```typescript
+     * bitbybit.playcanvas.camera.orbitCamera.focusOnEntity({ orbitCamera: orbit, entity: drawn });
+     * ```
      */
     focusOnEntity(inputs: Inputs.PlayCanvasCamera.FocusEntityDto): void {
         inputs.orbitCamera.orbitCamera.focus(inputs.entity);
     }
 
     /**
-     * Reset camera to specific yaw, pitch and distance
-     * @param inputs Orbit camera and reset parameters
+     * Puts an orbit camera at the given `yaw` and `pitch` in degrees and `distance` from its pivot,
+     * discarding whatever the user has done with it.
+     * @param inputs - The orbit camera controller, the two angles and the distance
      * @group adjust
      * @shortname reset camera
+     * @example
+     * ```typescript
+     * bitbybit.playcanvas.camera.orbitCamera.resetCamera({ orbitCamera: orbit, yaw: 45, pitch: 30, distance: 20 });
+     * ```
      */
     resetCamera(inputs: Inputs.PlayCanvasCamera.ResetCameraDto): void {
         inputs.orbitCamera.orbitCamera.reset(inputs.yaw, inputs.pitch, inputs.distance);

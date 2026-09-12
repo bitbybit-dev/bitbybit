@@ -1,15 +1,22 @@
 // A fragment of the Manifold inputs namespace: scripts/gen-inputs.mjs assembles every file in this
 // directory, in the order set by scripts/inputs.config.mjs, into ../manifold-inputs.ts. Edit here, then regenerate.
 
+/**
+ * One solid for the methods that take nothing else, such as `manifold.evaluate.volume` or
+ * `manifold.operations.hull`.
+ */
 export class ManifoldDto<T> {
     constructor(manifold?: T) {
         if (manifold !== undefined) { this.manifold = manifold; }
     }
     /**
-     * Manifold shape
+     * The solid to work on; it is not changed.
      */
     manifold!: T;
 }
+/**
+ * A solid, a channel and a sharp angle for `manifold.operations.calculateNormals`.
+ */
 export class CalculateNormalsDto<T> {
     constructor(manifold?: T, normalIdx?: number, minSharpAngle?: number) {
         if (manifold !== undefined) { this.manifold = manifold; }
@@ -17,14 +24,12 @@ export class CalculateNormalsDto<T> {
         if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
     }
     /**
-     * Manifold shape
+     * The solid to compute normals for.
      */
     manifold!: T;
     /**
-     * The property channel in which to store the X
-    * values of the normals. The X, Y, and Z channels will be sequential. The
-    * property set will be automatically expanded to include up through normalIdx
-    * + 2.
+     * The property channel that receives the X of each normal; Y and Z follow in the next two, and
+     * channels are added as needed.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -32,12 +37,8 @@ export class CalculateNormalsDto<T> {
      */
     normalIdx = 0;
     /**
-     * Any edges with angles greater than this value will
-     * remain sharp, getting different normal vector properties on each side of
-     * the edge. By default, no edges are sharp and all normals are shared. With a
-     * value of zero, the model is faceted and all normals match their triangle
-     * normals, but in this case it would be better not to calculate normals at
-     * all. The value is in degrees.
+     * Edges bent more than this, in degrees, get separate normals on each side and stay crisp; at 0
+     * every triangle keeps its own normal.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -45,19 +46,20 @@ export class CalculateNormalsDto<T> {
      */
     minSharpAngle = 0;
 }
+/**
+ * A solid and two channels for `manifold.operations.calculateCurvature`.
+ */
 export class CalculateCurvatureDto<T> {
     constructor(manifold?: T) {
         if (manifold !== undefined) { this.manifold = manifold; }
     }
     /**
-     * Manifold shape
+     * The solid to compute curvature for.
      */
     manifold!: T;
     /**
-     * The property channel index in which to store the
-     * Gaussian curvature. An index < 0 will be ignored (stores nothing). The
-     * property set will be automatically expanded to include the channel
-     * index specified.
+     * The property channel that receives the Gaussian curvature, the product of the two principal
+     * curvatures; below 0 skips it.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -65,10 +67,8 @@ export class CalculateCurvatureDto<T> {
      */
     gaussianIdx: number = 0;
     /**
-     * The property channel index in which to store the mean
-     * curvature. An index < 0 will be ignored (stores nothing). The property
-     * set will be automatically expanded to include the channel index
-     * specified. The mean curvature is a scalar value that describes the
+     * The property channel that receives the mean curvature, the sum of the two principal
+     * curvatures; below 0 skips it.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -76,15 +76,21 @@ export class CalculateCurvatureDto<T> {
      */
     meanIdx: number = 1;
 }
+/**
+ * A count for `manifold.operations.reserveIds`, which reserves that many mesh ids.
+ */
 export class CountDto {
     constructor(count?: number) {
         if (count !== undefined) { this.count = count; }
     }
     /**
-     * Nr to count
+     * How many ids to reserve.
      */
     count!: number;
 }
+/**
+ * Two solids and a search distance for `manifold.evaluate.minGap`.
+ */
 export class ManifoldsMinGapDto<T> {
     constructor(manifold1?: T, manifold2?: T, searchLength?: number) {
         if (manifold1 !== undefined) { this.manifold1 = manifold1; }
@@ -92,15 +98,15 @@ export class ManifoldsMinGapDto<T> {
         if (searchLength !== undefined) { this.searchLength = searchLength; }
     }
     /**
-     * Manifold shape
+     * The first solid.
      */
     manifold1!: T;
     /**
-     * Manifold shape
+     * The second solid.
      */
     manifold2!: T;
     /**
-     * Length of the search gap
+     * How far apart the solids may be before the search gives up, in model units.
      * @default 100
      * @minimum 0
      * @maximum Infinity

@@ -5,6 +5,13 @@ import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs";
 
+/**
+ * Reading and writing OpenCascade shapes in exchange formats: STEP and IGES in, STEP, STL and DXF
+ * out, STEP to glTF conversion with the assembly tree, colors and names preserved, and a STEP
+ * assembly structure as JSON. Files travel as text or binary data, never as paths. OpenCascade
+ * treats Z as up while this library treats Y as up, so the `adjustYtoZ` and `adjustZtoY` flags swap
+ * the axes on the way out and in.
+ */
 export class OCCTIO {
     constructor(
         readonly occWorkerManager: OCCTWorkerManager,
@@ -12,44 +19,84 @@ export class OCCTIO {
     }
 
     /**
-     * Saves the step file
-     * @param inputs STEP filename and shape to be saved
+     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and starts a
+     * browser download of the file.
+     *
+     * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
+     * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` names the download
+     * and `tryDownload` false skips it. `saveShapeSTEPAndReturn` gives the file's text instead.
+     * @param inputs - The shape, the file name, the axis adjustment and the download options
+     * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save step
      * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapeSTEP({ shape: box, fileName: "box.step", adjustYtoZ: true, tryDownload: true });
+     * ```
      */
     async saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         await this.saveSTEP(inputs);
     }
 
     /**
-     * Saves the step file and returns the text value
-     * @param inputs STEP filename and shape to be saved
+     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and returns the
+     * file's text.
+     *
+     * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
+     * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` and `tryDownload`
+     * matter only where a browser download can be started.
+     * @param inputs - The shape, the file name, the axis adjustment and the download options
+     * @returns The STEP file as text
      * @group io
      * @shortname save step and return
      * @drawable false
+     * @example
+     * ```typescript
+     * const step = await bitbybit.occt.io.saveShapeSTEPAndReturn({ shape: box, fileName: "box.step", adjustYtoZ: true, tryDownload: false });
+     * ```
      */
     async saveShapeSTEPAndReturn(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
         return this.saveSTEP(inputs);
     }
 
     /**
-     * Saves the stl file
-     * @param inputs STL filename and shape to be saved
+     * Triangulates a shape, writes it as STL, the mesh format 3D printers read, and starts a browser
+     * download of the file.
+     *
+     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces more
+     * closely and make a bigger file. `adjustYtoZ` turns Y-up into Z-up. `fileName` names the
+     * download, `tryDownload` false skips it. `saveShapeStlAndReturn` gives the text instead.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download options
+     * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save stl
      * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapeStl({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: true });
+     * ```
      */
     async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         await this.saveStl(inputs);
     }
 
     /**
-     * Saves the stl file and returns
-     * @param inputs STL filename and shape to be saved
+     * Triangulates a shape and writes it as STL, the mesh format 3D printers and slicers read,
+     * returning the file's text.
+     *
+     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
+     * more closely and make a bigger file. `adjustYtoZ` turns the shape so Y-up becomes Z-up.
+     * `fileName` and `tryDownload` only matter where a download can start.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download options
+     * @returns The STL file as text
      * @group io
      * @shortname save stl return
      * @drawable false
+     * @example
+     * ```typescript
+     * const stl = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: false });
+     * ```
      */
     async saveShapeStlAndReturn(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
         return this.saveStl(inputs);
@@ -96,36 +143,72 @@ export class OCCTIO {
     }
 
     /**
-     * Creates DXF paths from an OCCT shape
-     * Important - shapes containing wires must lie on XZ plane (Y=0) for correct 2D DXF export.
-     * @param inputs Shape to convert to DXF paths
+     * Turns the wires of a shape into DXF path records, the first step of a 2D DXF export.
+     *
+     * The shape must lie flat on the XZ ground plane, since DXF drawings are two-dimensional. The
+     * deflection settings say how closely curved edges are followed. Give the paths a layer with
+     * `dxfPathsWithLayer` and write the file with `dxfCreate`.
+     * @param inputs - The shape and the deflection settings
+     * @returns The DXF paths
      * @group dxf
      * @shortname shape to dxf paths
      * @drawable false
+     * @example
+     * ```typescript
+     * const paths = await bitbybit.occt.io.shapeToDxfPaths({
+     *     shape: flatOutline,
+     *     angularDeflection: 0.1,
+     *     curvatureDeflection: 0.1,
+     *     minimumOfPoints: 2,
+     *     uTolerance: 1e-9,
+     *     minimumLength: 1e-7,
+     * });
+     * ```
      */
     shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<IO.DxfPathDto[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("io.shapeToDxfPaths", inputs);
     }
 
     /**
-     * Adds layer and color information to DXF paths
-     * Important - shapes containing wires must lie on XZ plane (Y=0) for correct 2D DXF export.
-     * @param inputs DXF paths, layer name, and color
+     * Puts DXF paths on a named layer with a color, making one part of a DXF drawing.
+     *
+     * A drawing may hold several parts, each with its own layer and color; `dxfCreate` writes them
+     * into one file.
+     * @param inputs - The paths, the layer name and the color
+     * @returns The paths as one layered part
      * @group dxf
      * @shortname dxf paths with layer
      * @drawable false
+     * @example
+     * ```typescript
+     * const part = await bitbybit.occt.io.dxfPathsWithLayer({ paths, layer: "cut", color: "#ff0000" });
+     * ```
      */
     dxfPathsWithLayer(inputs: Inputs.OCCT.DxfPathsWithLayerDto): Promise<IO.DxfPathsPartDto> {
         return this.occWorkerManager.genericCallToWorkerPromise("io.dxfPathsWithLayer", inputs);
     }
 
     /**
-     * Assembles multiple path parts into a complete DXF file.
-     * Important - shapes containing wires must lie on XZ plane (Y=0) for correct 2D DXF export.
-     * @param inputs Multiple DXF paths parts
+     * Writes DXF parts into one DXF file and returns its text.
+     *
+     * `colorFormat` chooses AutoCAD's indexed colors or true color, `acadVersion` the DXF version:
+     * AC1009 is R12, the most widely readable, AC1015 is 2000. `fileName` and `tryDownload` matter
+     * only where a browser download can be started.
+     * @param inputs - The layered parts, the color format, the DXF version and the download options
+     * @returns The DXF file as text
      * @group dxf
      * @shortname dxf create
      * @drawable false
+     * @example
+     * ```typescript
+     * const dxf = await bitbybit.occt.io.dxfCreate({
+     *     pathsParts: [part],
+     *     colorFormat: Bit.Inputs.OCCT.dxfColorFormatEnum.aci,
+     *     acadVersion: Bit.Inputs.OCCT.dxfAcadVersionEnum.AC1009,
+     *     fileName: "drawing.dxf",
+     *     tryDownload: false,
+     * });
+     * ```
      */
     dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): Promise<string> {
         return this.occWorkerManager.genericCallToWorkerPromise<string>("io.dxfCreate", inputs).then(s => {
@@ -147,21 +230,21 @@ export class OCCTIO {
     }
 
     /**
-     * Convert a STEP file to glTF format (binary GLB).
-     * 
-     * Uses OCCT's native RWGltf_CafWriter for fast conversion with full preservation of:
-     * - Assembly hierarchy (as glTF node tree)
-     * - Instance/product names
-     * - Surface colors and materials
-     * - Transformations
-     * 
-     * The coordinate system is automatically converted from OCCT (Z-up) to glTF (Y-up).
-     * 
-     * @param inputs - STEP file content and mesh precision settings. Accepts File, Blob, string, ArrayBuffer, or Uint8Array.
-     * @returns GLB binary data as Uint8Array (can be used directly with Three.js, Babylon.js, etc.)
+     * Converts a STEP file into a binary glTF (GLB), keeping the assembly tree as glTF nodes along
+     * with part names, colors, materials and placements.
+     *
+     * `stepData` is the file as text, ArrayBuffer or Uint8Array. The mesh settings say how finely
+     * curved surfaces are triangulated: `meshPrecision` is the deflection, `meshAngle` the angular
+     * deflection. Z-up becomes glTF's Y-up. Failure throws.
+     * @param inputs - The STEP file content and the meshing settings
+     * @returns The GLB file as bytes
      * @group assembly
      * @shortname step to gltf
      * @drawable false
+     * @example
+     * ```typescript
+     * const glb = await bitbybit.occt.io.convertStepToGltf({ stepData: stepText, meshPrecision: 0.005, meshAngle: 0.5, meshRelative: true, internalVerticesMode: false, controlSurfaceDeflection: false });
+     * ```
      */
     async convertStepToGltf(inputs: Inputs.OCCT.ConvertStepToGltfDto): Promise<Uint8Array> {
         // Convert File/Blob to ArrayBuffer before sending to worker
@@ -174,35 +257,27 @@ export class OCCTIO {
     }
 
     /**
-     * Convert a STEP file to glTF format with full control over all options.
-     * 
-     * This advanced method allows fine-grained control over:
-     * - STEP reading options (colors, names, materials, layers, props)
-     * - Mesh generation options (deflection, angle, parallel, threshold)
-     * - glTF export options (merge faces, indices, naming, transforms)
-     * 
-     * Use this for performance tuning - disable features you don't need for faster processing.
-     * 
-     * @param inputs - Advanced options including STEP data, mesh settings, and glTF export settings.
-     * @returns GLB binary data as Uint8Array
+     * Converts a STEP file into a binary glTF (GLB) like `convertStepToGltf`, with every option
+     * exposed.
+     *
+     * The read flags choose what to take from the file (colors, names, materials, layers,
+     * properties), the mesh settings how finely to triangulate, the export settings how the glTF is
+     * written (merged faces, 16-bit indexes, naming, scale). Switch off what you do not need.
+     * @param inputs - The STEP file content and the reading, meshing and export settings
+     * @returns The GLB file as bytes
      * @group assembly
      * @shortname step to gltf advanced
      * @drawable false
-     * 
      * @example
      * ```typescript
-     * // Fast conversion - only colors, no names (for large files)
-     * const glbData = await occt.io.convertStepToGltfAdvanced({
-     *     stepData: stepContent,
-     *     readColors: true,
-     *     readNames: false,      // Skip name parsing for speed
-     *     readMaterials: true,
-     *     readLayers: false,
-     *     readProps: false,
-     *     meshDeflection: 0.1,
-     *     meshParallel: true,
-     *     mergeFaces: true
-     * });
+     * const options = new Bit.Inputs.OCCT.ConvertStepToGltfAdvancedDto();
+     * options.stepData = stepText;
+     * options.readColors = true;
+     * options.readNames = true;
+     * options.meshDeflection = 0.005;
+     * options.mergeFaces = true;
+     * options.adjustZtoY = true;
+     * const glb = await bitbybit.occt.io.convertStepToGltfAdvanced(options);
      * ```
      */
     async convertStepToGltfAdvanced(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedDto): Promise<Uint8Array> {
@@ -216,16 +291,25 @@ export class OCCTIO {
     }
 
     /**
-     * Convert a STEP file to glTF format (binary GLB) with explicit Draco geometry
-     * compression settings.
-     * Same fast path as `convertStepToGltf` but exposes the Draco knobs of the
-     * underlying native function.
-     * @param inputs - STEP file content, mesh precision settings and Draco knobs.
-     *                 Accepts File, Blob, string, ArrayBuffer, or Uint8Array.
-     * @returns GLB binary data as Uint8Array
+     * Converts a STEP file into a binary glTF (GLB) like `convertStepToGltf` and compresses the
+     * geometry with Draco, which makes the file much smaller at the cost of a Draco-capable loader.
+     *
+     * The Draco settings set the compression level and how many bits positions, normals, texture
+     * coordinates and colors keep; fewer bits mean a smaller file and less precision.
+     * @param inputs - The STEP file content, the meshing settings and the Draco settings
+     * @returns The GLB file as bytes
      * @group assembly
      * @shortname step to gltf with draco
      * @drawable false
+     * @example
+     * ```typescript
+     * const options = new Bit.Inputs.OCCT.ConvertStepToGltfWithDracoDto();
+     * options.stepData = stepText;
+     * options.meshPrecision = 0.005;
+     * options.dracoCompressionLevel = 7;
+     * options.dracoQuantizePositionBits = 14;
+     * const glb = await bitbybit.occt.io.convertStepToGltfWithDraco(options);
+     * ```
      */
     async convertStepToGltfWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfWithDracoDto): Promise<Uint8Array> {
         // Convert File/Blob to ArrayBuffer before sending to worker
@@ -238,19 +322,25 @@ export class OCCTIO {
     }
 
     /**
-     * Convert a STEP file to glTF format with full control over all reading,
-     * meshing and writer options, plus explicit Draco geometry compression
-     * settings.
+     * Converts a STEP file into a binary glTF (GLB) with every reading, meshing and writing option
+     * exposed, as `convertStepToGltfAdvanced` does, and compresses the geometry with Draco.
      *
-     * Same fast path as `convertStepToGltfAdvanced` but exposes the 8 Draco
-     * knobs.
-     *
-     * @param inputs - Advanced options including STEP data, mesh settings, glTF
-     *                 export settings and Draco knobs.
-     * @returns GLB binary data as Uint8Array
+     * The Draco settings set the compression level and how many bits positions, normals, texture
+     * coordinates and colors keep; fewer bits mean a smaller file and less precision.
+     * @param inputs - The STEP file content, the reading, meshing and export settings, and the Draco settings
+     * @returns The GLB file as bytes
      * @group assembly
      * @shortname step to gltf advanced with draco
      * @drawable false
+     * @example
+     * ```typescript
+     * const options = new Bit.Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto();
+     * options.stepData = stepText;
+     * options.readColors = true;
+     * options.meshDeflection = 0.005;
+     * options.dracoCompressionLevel = 7;
+     * const glb = await bitbybit.occt.io.convertStepToGltfAdvancedWithDraco(options);
+     * ```
      */
     async convertStepToGltfAdvancedWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto): Promise<Uint8Array> {
         // Convert File/Blob to ArrayBuffer before sending to worker
@@ -263,24 +353,22 @@ export class OCCTIO {
     }
 
     /**
-     * Parse a STEP file and return the assembly structure as JSON.
-     * 
-     * Uses OCCT's native XCAFPrs_DocumentExplorer for efficient traversal.
-     * Runs entirely in C++ for maximum performance.
-     * 
-     * Returns an object containing an array of nodes with:
-     * - id: Unique path identifier for each node
-     * - name: Part or assembly name
-     * - isAssembly: Whether this is an assembly node (has children)
-     * - visible: Visibility flag
-     * - colorRgba: Surface color (if set) with r, g, b, a components
-     * - transform: 4x4 transformation matrix in column-major order (if not identity)
-     * 
-     * @param inputs - STEP file content. Accepts File, Blob, string, ArrayBuffer, or Uint8Array.
-     * @returns Parsed assembly structure
+     * Reads the assembly structure of a STEP file without building geometry: every part and
+     * sub-assembly as a node with its id, name, whether it is an assembly, its visibility, its
+     * color and its placement matrix.
+     *
+     * The nodes come in depth-first order, so children follow their parent. A file that cannot be
+     * parsed reports its error in the result.
+     * @param inputs - The STEP file content
+     * @returns The list of nodes, the format version and any error
      * @group assembly
      * @shortname parse step to json
      * @drawable false
+     * @example
+     * ```typescript
+     * const tree = await bitbybit.occt.io.parseStepToJson({ stepData: stepText });
+     * console.log(tree.nodes.map(n => n.name));
+     * ```
      */
     async parseStepToJson(inputs: Inputs.OCCT.ParseStepAssemblyToJsonDto): Promise<Models.OCCT.AssemblyJsonResult> {
         // Convert File/Blob to ArrayBuffer before sending to worker

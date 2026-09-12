@@ -5,16 +5,28 @@ import { Context } from "../../context";
 import * as Inputs from "../../inputs";
 import { Base } from "../../inputs";
 
+/**
+ * Working with meshes already in the BabylonJS scene, the objects `draw.drawAnyAsync` gives back:
+ * moving, rotating and scaling them, showing and hiding, parenting, picking and collision flags,
+ * names and ids, cloning and instancing for many copies, and reading their triangles back out.
+ * Rotations are given in degrees; positions and distances are in scene units.
+ */
 export class BabylonMesh {
 
     constructor(
         private readonly context: Context,
     ) { }
 
-    /** Disposes drawn mesh object from the scene
-     * @param inputs Contains BabylonJS mesh that should be disposed
+    /**
+     * Removes a mesh from the scene and frees its GPU resources; the mesh cannot be used
+     * afterwards. Nothing happens when no mesh is given.
+     * @param inputs - The mesh to remove
      * @group memory
      * @shortname dispose
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.dispose({ babylonMesh: mesh });
+     * ```
      */
     dispose(inputs: Inputs.BabylonMesh.BabylonMeshDto): void {
         if (inputs.babylonMesh) {
@@ -23,11 +35,19 @@ export class BabylonMesh {
         }
     }
 
-    /** Udates drawn BabylonJS mesh object without disposing it
-     * @param inputs Contains BabylonJS mesh that should be updated, together with position, rotation, scaling and colour info
-     * @returns BabylonJS Mesh
+    /**
+     * Moves, rotates, scales and recolors a drawn mesh in place, without drawing it again, which is
+     * faster when only the placement or the color changes.
+     *
+     * `rotation` is in radians here. `colours` is one hex color, or a list with one entry per child
+     * mesh, or per point or line of such a drawing; any other list uses its first entry.
+     * @param inputs - The drawn mesh, its new position, rotation, scaling and colors
      * @group updates
      * @shortname update drawn
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.updateDrawn({ babylonMesh: mesh, position: [0, 5, 0], rotation: [0, Math.PI / 2, 0], scaling: [1, 1, 1], colours: "#ff0000" });
+     * ```
      */
     updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): void {
         const type = inputs.babylonMesh.metadata.type as Inputs.Draw.drawingTypes;
@@ -101,10 +121,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Change the visibility of a drawn BabylonJS mesh
-     * @param inputs BabylonJS mesh and parent mesh
+     * Sets how visible a mesh is, from 0 for fully transparent to 1 for fully shown, with the
+     * values between fading it; `includeChildren` applies the same value to its child meshes.
+     * @param inputs - The mesh, the visibility from 0 to 1 and whether children follow
      * @group visibility
      * @shortname set visibility
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.setVisibility({ babylonMesh: mesh, visibility: 0.5, includeChildren: true });
+     * ```
      */
     setVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto): void {
         inputs.babylonMesh.visibility = inputs.visibility;
@@ -118,10 +143,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Hides the mesh
-     * @param inputs BabylonJS mesh to hide
+     * Hides a mesh without removing it from the scene, and its child meshes too when
+     * `includeChildren` is true; `show` brings it back.
+     * @param inputs - The mesh and whether its children follow
      * @group visibility
      * @shortname hide
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.hide({ babylonMesh: mesh, includeChildren: true });
+     * ```
      */
     hide(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void {
         inputs.babylonMesh.isVisible = false;
@@ -135,10 +165,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Show the mesh
-     * @param inputs BabylonJS mesh to hide
+     * Shows a mesh that `hide` or a hidden draw made invisible, and its child meshes too when
+     * `includeChildren` is true.
+     * @param inputs - The mesh and whether its children follow
      * @group visibility
      * @shortname show
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.show({ babylonMesh: mesh, includeChildren: true });
+     * ```
      */
     show(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void {
         inputs.babylonMesh.isVisible = true;
@@ -150,19 +185,25 @@ export class BabylonMesh {
     }
 
     /**
-     * Change the parent of the drawn mesh
-     * @param inputs BabylonJS mesh and parent mesh
+     * Makes one mesh the child of another, so it moves, turns and scales together with its parent
+     * from then on; its position becomes relative to the parent.
+     * @param inputs - The mesh and the mesh to parent it to
      * @group set
      * @shortname parent
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.setParent({ babylonMesh: wheel, parentMesh: car });
+     * ```
      */
     setParent(inputs: Inputs.BabylonMesh.SetParentDto): void {
         inputs.babylonMesh.parent = inputs.parentMesh;
     }
 
     /**
-     * Get the parent of the drawn mesh
-     * @param inputs BabylonJS mesh
-     * @returns Parent mesh
+     * Reads the node a mesh is parented to, which is what it moves with; a mesh at the top level
+     * has none.
+     * @param inputs - The mesh
+     * @returns The parent node
      * @group get
      * @shortname parent
      */
@@ -171,10 +212,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Change the check collisions property of the drawn mesh
-     * @param inputs BabylonJS mesh and check collisions
+     * Turns collision checking on or off for a mesh, and its children when `includeChildren` is
+     * true, so a camera or another collider with collisions enabled cannot pass through it.
+     * @param inputs - The mesh, the flag and whether children follow
      * @group set
      * @shortname check collisions
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.setCheckCollisions({ babylonMesh: walls, checkCollisions: true, includeChildren: true });
+     * ```
      */
     setCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): void {
         inputs.babylonMesh.checkCollisions = inputs.checkCollisions;
@@ -187,8 +233,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Get the check collisions property of the drawn mesh
-     * @param inputs BabylonJS mesh and check collisions
+     * Reads whether a mesh takes part in collision checking.
+     * @param inputs - The mesh
+     * @returns True when collisions are checked against the mesh
      * @group get
      * @shortname check collisions
      */
@@ -197,10 +244,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Change the pickable property of the drawn mesh
-     * @param inputs BabylonJS mesh and pickable
+     * Sets whether a mesh answers to pointer picking, and its children too when `includeChildren`
+     * is true; an unpickable mesh is skipped by clicks and rays that pick.
+     * @param inputs - The mesh, the flag and whether children follow
      * @group get
      * @shortname check collisions
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.setPickable({ babylonMesh: mesh, pickable: true, includeChildren: true });
+     * ```
      */
     setPickable(inputs: Inputs.BabylonMesh.PickableBabylonMeshDto): void {
         inputs.babylonMesh.isPickable = inputs.pickable;
@@ -213,10 +265,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Force mesh to be pickable by pointer move events, default is false as it is performance heavy
-     * @param inputs BabylonJS mesh
+     * Lets a mesh, and its children when `includeChildren` is true, react to the pointer merely
+     * moving over it, which is off by default because it costs a pick on every pointer move.
+     * @param inputs - The mesh and whether children follow
      * @group set
      * @shortname enable pointer move events
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.enablePointerMoveEvents({ babylonMesh: mesh, includeChildren: true });
+     * ```
      */
     enablePointerMoveEvents(inputs: Inputs.BabylonMesh.BabylonMeshWithChildrenDto): void {
         inputs.babylonMesh.enablePointerMoveEvents = true;
@@ -229,10 +286,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Make mesh ignore pointer move events, default is false
-     * @param inputs BabylonJS mesh and pickable
+     * Stops a mesh, and its children when `includeChildren` is true, from reacting to pointer
+     * moves, back to the default.
+     * @param inputs - The mesh and whether children follow
      * @group set
      * @shortname disable pointer move events
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.disablePointerMoveEvents({ babylonMesh: mesh, includeChildren: true });
+     * ```
      */
     disablePointerMoveEvents(inputs: Inputs.BabylonMesh.BabylonMeshWithChildrenDto): void {
         inputs.babylonMesh.enablePointerMoveEvents = false;
@@ -245,8 +307,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Change the pickable property of the drawn mesh
-     * @param inputs BabylonJS mesh and pickable
+     * Reads whether the mesh can be picked with the pointer.
+     * @param inputs - The mesh
+     * @returns True when the mesh answers to picking
      * @group get
      * @shortname pickable
      */
@@ -255,61 +318,100 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets meshes that have names which contain a given text
-     * @param inputs BabylonJS mesh and name
+     * Finds every mesh in the scene whose name contains the given text, case-sensitive, in scene
+     * order.
+     * @param inputs - The text to look for in mesh names
+     * @returns The matching meshes
      * @group get
      * @shortname meshes where name contains
+     * @example
+     * ```typescript
+     * const wheels = bitbybit.babylon.mesh.getMeshesWhereNameContains({ name: "wheel" });
+     * ```
      */
     getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.ByNameBabylonMeshDto): BABYLON.AbstractMesh[] {
         return this.context.scene.meshes.filter(m => m.name.includes(inputs.name));
     }
 
     /**
-     * Gets child meshes
-     * @param inputs BabylonJS mesh and whether to include only direct descendants
+     * Lists the meshes parented under a mesh: all descendants, or only the direct children when
+     * `directDescendantsOnly` is true.
+     * @param inputs - The mesh and whether to stop at direct children
+     * @returns The child meshes
      * @group get
      * @shortname child meshes
+     * @example
+     * ```typescript
+     * const parts = bitbybit.babylon.mesh.getChildMeshes({ babylonMesh: model, directDescendantsOnly: false });
+     * ```
      */
     getChildMeshes(inputs: Inputs.BabylonMesh.ChildMeshesBabylonMeshDto): BABYLON.AbstractMesh[] {
         return inputs.babylonMesh.getChildMeshes(inputs.directDescendantsOnly);
     }
 
     /**
-     * Gets meshes of id
-     * @param inputs BabylonJS mesh and name
+     * Finds every mesh in the scene with exactly the given id; ids need not be unique, so several
+     * may match.
+     * @param inputs - The id to look for
+     * @returns The meshes with that id
      * @group get
      * @shortname meshes by id
+     * @example
+     * ```typescript
+     * const meshes = bitbybit.babylon.mesh.getMeshesOfId({ id: "wheel" });
+     * ```
      */
     getMeshesOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): BABYLON.AbstractMesh[] {
         return this.context.scene.getMeshesById(inputs.id);
     }
 
     /**
-     * Gets mesh of id
-     * @param inputs BabylonJS mesh and name
+     * Finds the first mesh in the scene with exactly the given id; use `getMeshesOfId` when several
+     * share it.
+     * @param inputs - The id to look for
+     * @returns The first mesh with that id
      * @group get
      * @shortname mesh by id
+     * @example
+     * ```typescript
+     * const mesh = bitbybit.babylon.mesh.getMeshOfId({ id: "wheel" });
+     * ```
      */
     getMeshOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): BABYLON.AbstractMesh {
         return this.context.scene.getMeshById(inputs.id)!;
     }
 
     /**
-     * Gets mesh of unique id
-     * @param inputs BabylonJS mesh and name
+     * Finds the mesh with the given unique id, the number the scene assigns to every mesh once, as
+     * `getUniqueId` reads it.
+     * @param inputs - The unique id
+     * @returns The mesh with that unique id
      * @group get
      * @shortname mesh by unique id
+     * @example
+     * ```typescript
+     * const id = bitbybit.babylon.mesh.getUniqueId({ babylonMesh: mesh });
+     * const same = bitbybit.babylon.mesh.getMeshOfUniqueId({ uniqueId: id });
+     * ```
      */
     getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): BABYLON.AbstractMesh {
         return this.context.scene.getMeshByUniqueId(inputs.uniqueId)!;
     }
 
     /**
-     * Merges multiple meshes into one
-     * @param inputs BabylonJS meshes and options
-     * @returns a new mesh
+     * Joins several meshes into one new mesh, which draws faster than many separate ones.
+     *
+     * The sources are removed when `disposeSource` is true; set `allow32BitsIndices` when the
+     * meshes together have more than 65 thousand vertices, and use the sub-mesh options to keep
+     * separate materials.
+     * @param inputs - The meshes and the merge options
+     * @returns The merged mesh
      * @group edit
      * @shortname merge
+     * @example
+     * ```typescript
+     * const merged = bitbybit.babylon.mesh.mergeMeshes({ arrayOfMeshes: [meshA, meshB], disposeSource: true, allow32BitsIndices: true, subdivideWithSubMeshes: false, multiMultiMaterials: false });
+     * ```
      */
     mergeMeshes(inputs: Inputs.BabylonMesh.MergeMeshesDto): BABYLON.Mesh {
         const newMesh = BABYLON.Mesh.MergeMeshes(
@@ -323,23 +425,35 @@ export class BabylonMesh {
         return newMesh!;
     }
 
-    /** Convers mesh to flat shaded mesh
-     * @param inputs BabylonJS mesh
-     * @returns a new mesh
+    /**
+     * Gives every triangle of a mesh its own vertices and normals, so faces show as flat facets
+     * instead of being smoothed across edges; the mesh is changed in place and given back.
+     * @param inputs - The mesh
+     * @returns The same mesh, flat shaded
      * @group edit
      * @shortname convert to flat shaded
+     * @example
+     * ```typescript
+     * const faceted = bitbybit.babylon.mesh.convertToFlatShadedMesh({ babylonMesh: mesh });
+     * ```
      */
     convertToFlatShadedMesh(inputs: Inputs.BabylonMesh.BabylonMeshDto): BABYLON.Mesh {
         return inputs.babylonMesh.convertToFlatShadedMesh();
     }
 
     /**
-     * Clones the mesh
-     * @param inputs BabylonJS mesh to clone
-     * @returns a new mesh
+     * Makes a copy of a mesh, with its children, that shares the geometry of the original and is
+     * placed at the same spot; the copy casts and receives shadows like the original.
+     * @param inputs - The mesh to copy
+     * @returns The copy
      * @group edit
      * @shortname clone
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const copy = bitbybit.babylon.mesh.clone({ babylonMesh: mesh });
+     * bitbybit.babylon.mesh.setPosition({ babylonMesh: copy, position: [10, 0, 0] });
+     * ```
      */
     clone(inputs: Inputs.BabylonMesh.BabylonMeshDto): BABYLON.Mesh {
         const clone = inputs.babylonMesh.clone();
@@ -360,13 +474,18 @@ export class BabylonMesh {
     }
 
     /**
-     * Clones the mesh to positions
-     * @param inputs BabylonJS mesh and positions
-     * @returns a new mesh
+     * Makes one copy of a mesh at every given position, in the same order; the copies share the
+     * geometry of the original.
+     * @param inputs - The mesh and the positions
+     * @returns One copy per position
      * @group edit
      * @shortname clone to positions
      * @disposableOutput true
      * @drawable true
+     * @example
+     * ```typescript
+     * const copies = bitbybit.babylon.mesh.cloneToPositions({ babylonMesh: mesh, positions: [[0, 0, 0], [10, 0, 0], [20, 0, 0]] });
+     * ```
      */
     cloneToPositions(inputs: Inputs.BabylonMesh.CloneToPositionsDto): BABYLON.Mesh[] {
         const clones: BABYLON.Mesh[] = [];
@@ -379,8 +498,8 @@ export class BabylonMesh {
     }
 
     /**
-     * Change the id of the drawn mesh
-     * @param inputs BabylonJS mesh and name
+     * Sets the id of a mesh, a label that `getMeshOfId` finds it by and that need not be unique.
+     * @param inputs - The mesh and the id
      * @group set
      * @shortname id
      */
@@ -389,8 +508,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Get the id of the drawn mesh
-     * @param inputs BabylonJS mesh and id
+     * Reads the id of a mesh, the label set by `setId` or by the loader that created it.
+     * @param inputs - The mesh
+     * @returns The id
      * @group get
      * @shortname id
      */
@@ -399,9 +519,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Get the unique id of the drawn mesh
-     * @param inputs BabylonJS mesh and id
-     * @returns unique id number
+     * Reads the unique id of a mesh, the number the scene gives every mesh once and never reuses.
+     * @param inputs - The mesh
+     * @returns The unique id number
      * @group get
      * @shortname unique id
      */
@@ -411,8 +531,9 @@ export class BabylonMesh {
 
 
     /**
-     * Change the name of the drawn mesh
-     * @param inputs BabylonJS mesh and name
+     * Sets the name of a mesh, and of its children too when `includeChildren` is true; names are
+     * what `getMeshesWhereNameContains` searches.
+     * @param inputs - The mesh, the name and whether children follow
      * @group set
      * @shortname name
      */
@@ -427,10 +548,17 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets the vertices as polygon points. These can be used with other construction methods to create meshes. Mesh must be triangulated.
-     * @param inputs BabylonJS mesh and name
+     * Reads the triangles of a mesh as lists of three points in the mesh's own coordinates, the
+     * form `jscad.shapes.fromPolygonPoints` and similar builders take. The mesh must be made of
+     * triangles.
+     * @param inputs - The mesh
+     * @returns The triangles as lists of three points
      * @group get
      * @shortname vertices as polygon points
+     * @example
+     * ```typescript
+     * const triangles = bitbybit.babylon.mesh.getVerticesAsPolygonPoints({ babylonMesh: mesh });
+     * ```
      */
     getVerticesAsPolygonPoints(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3[][] {
         const vertices = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.PositionKind)!;
@@ -450,8 +578,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets the name of babylon mesh
-     * @param inputs BabylonJS mesh and name
+     * Reads the name of a mesh, as set by `setName` or by whatever created it.
+     * @param inputs - The mesh
+     * @returns The name
      * @group get
      * @shortname name
      */
@@ -460,10 +589,16 @@ export class BabylonMesh {
     }
 
     /**
-     * Change the material of the drawn mesh
-     * @param inputs BabylonJS mesh and material
+     * Gives a mesh a material, and its children too when `includeChildren` is true; the material
+     * decides the color, shininess and transparency of its surface.
+     * @param inputs - The mesh, the material and whether children follow
      * @group set
      * @shortname material
+     * @example
+     * ```typescript
+     * const material = bitbybit.babylon.material.pbrMetallicRoughness.create({ name: "red", baseColor: "#ff0000", emissiveColor: "#000000", metallic: 0.2, roughness: 0.6, alpha: 1, backFaceCulling: false, zOffset: 0 });
+     * bitbybit.babylon.mesh.setMaterial({ babylonMesh: mesh, material, includeChildren: true });
+     * ```
      */
     setMaterial(inputs: Inputs.BabylonMesh.MaterialBabylonMeshDto): void {
         inputs.babylonMesh.material = inputs.material;
@@ -476,8 +611,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets the material of babylon mesh
-     * @param inputs BabylonJS mesh
+     * Reads the material of a mesh, the surface description its faces are drawn with.
+     * @param inputs - The mesh
+     * @returns The material
      * @group get
      * @shortname material
      */
@@ -486,9 +622,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets the position as point of babylonjs mesh
-     * @param inputs BabylonJS mesh
-     * @returns point
+     * Reads the position of a mesh relative to its parent, as a point.
+     * @param inputs - The mesh
+     * @returns The position as a point
      * @group get
      * @shortname position
      */
@@ -498,9 +634,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets the absolute position in the world as point of babylonjs mesh
-     * @param inputs BabylonJS mesh
-     * @returns point
+     * Reads the position of a mesh in world coordinates, with every parent's transform applied.
+     * @param inputs - The mesh
+     * @returns The world position as a point
      * @group get
      * @shortname absolute position
      */
@@ -510,8 +646,10 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets the rotation vector of babylonjs mesh
-     * @param inputs BabylonJS mesh
+     * Reads the rotation of a mesh around X, Y and Z, in radians, as its rotation property holds
+     * it.
+     * @param inputs - The mesh
+     * @returns The rotation angles in radians
      * @group get
      * @shortname rotation
      */
@@ -521,8 +659,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets the scale vector of babylonjs mesh
-     * @param inputs BabylonJS mesh
+     * Reads the scale factors of a mesh along X, Y and Z; 1 is unscaled.
+     * @param inputs - The mesh
+     * @returns The scale factors
      * @group get
      * @shortname scale
      */
@@ -532,10 +671,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Moves babylonjs mesh forward in local space
-     * @param inputs BabylonJS mesh and distance
+     * Moves a mesh along its own forward direction, the local Z axis, by `distance` scene units; a
+     * turned mesh moves the way it faces.
+     * @param inputs - The mesh and the distance
      * @group move
      * @shortname forward
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.moveForward({ babylonMesh: mesh, distance: 5 });
+     * ```
      */
     moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -543,8 +687,8 @@ export class BabylonMesh {
     }
 
     /**
-     * Moves babylonjs mesh backward in local space
-     * @param inputs BabylonJS mesh and distance
+     * Moves a mesh against its own forward direction, the local Z axis, by `distance` scene units.
+     * @param inputs - The mesh and the distance
      * @group move
      * @shortname backward
      */
@@ -554,8 +698,8 @@ export class BabylonMesh {
     }
 
     /**
-     * Moves babylonjs mesh up in local space
-     * @param inputs BabylonJS mesh and distance
+     * Moves a mesh along its own up direction, the local Y axis, by `distance` scene units.
+     * @param inputs - The mesh and the distance
      * @group move
      * @shortname up
      */
@@ -565,8 +709,8 @@ export class BabylonMesh {
     }
 
     /**
-     * Moves babylonjs mesh down in local space
-     * @param inputs BabylonJS mesh and distance
+     * Moves a mesh against its own up direction, the local Y axis, by `distance` scene units.
+     * @param inputs - The mesh and the distance
      * @group move
      * @shortname down
      */
@@ -576,8 +720,8 @@ export class BabylonMesh {
     }
 
     /**
-     * Moves babylonjs mesh right in local space
-     * @param inputs BabylonJS mesh and distance
+     * Moves a mesh along its own right direction, the local X axis, by `distance` scene units.
+     * @param inputs - The mesh and the distance
      * @group move
      * @shortname right
      */
@@ -587,8 +731,8 @@ export class BabylonMesh {
     }
 
     /**
-     * Moves babylonjs mesh left in local space
-     * @param inputs BabylonJS mesh and distance
+     * Moves a mesh against its own right direction, the local X axis, by `distance` scene units.
+     * @param inputs - The mesh and the distance
      * @group move
      * @shortname left
      */
@@ -598,10 +742,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Rotates babylonjs mesh around local y axis
-     * @param inputs BabylonJS mesh and rotation in degrees
+     * Turns a mesh around its own Y axis by `rotate` degrees, on top of its current rotation, the
+     * way a car turns left or right.
+     * @param inputs - The mesh and the angle in degrees
      * @group move
      * @shortname yaw
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.yaw({ babylonMesh: mesh, rotate: 45 });
+     * ```
      */
     yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -610,8 +759,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Rotates babylonjs mesh around local x axis
-     * @param inputs BabylonJS mesh and rotation in degrees
+     * Turns a mesh around its own X axis by `rotate` degrees, on top of its current rotation, the
+     * way a nose tips up or down.
+     * @param inputs - The mesh and the angle in degrees
      * @group move
      * @shortname pitch
      */
@@ -622,8 +772,9 @@ export class BabylonMesh {
     }
 
     /**
-     * Rotates babylonjs mesh around local z axis
-     * @param inputs BabylonJS mesh and rotation in degrees
+     * Turns a mesh around its own Z axis by `rotate` degrees, on top of its current rotation, the
+     * way a wing banks.
+     * @param inputs - The mesh and the angle in degrees
      * @group move
      * @shortname roll
      */
@@ -634,10 +785,15 @@ export class BabylonMesh {
     }
 
     /**
-     * Rotates the mesh around axis and given position by a given angle
-     * @param inputs Rotation around axis information    
+     * Turns a mesh by `angle` degrees around an axis that passes through `position`, so the mesh
+     * orbits that point rather than spinning in place.
+     * @param inputs - The mesh, the point on the axis, the axis direction and the angle in degrees
      * @group move
      * @shortname rotate around axis with position
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.rotateAroundAxisWithPosition({ mesh, position: [0, 0, 0], axis: [0, 1, 0], angle: 90 });
+     * ```
      */
     rotateAroundAxisWithPosition(inputs: Inputs.BabylonMesh.RotateAroundAxisNodeDto): void {
         inputs.mesh.rotateAround(
@@ -648,20 +804,29 @@ export class BabylonMesh {
     }
 
     /**
-     * Updates the position of the BabylonJS mesh or instanced mesh
-     * @param inputs BabylonJS mesh and position point
+     * Places a mesh, or an instance of one, at a point relative to its parent.
+     * @param inputs - The mesh and the position
      * @group set
      * @shortname position
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.setPosition({ babylonMesh: mesh, position: [0, 5, 0] });
+     * ```
      */
     setPosition(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshPositionDto): void {
         inputs.babylonMesh.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
     }
 
     /**
-     * Updates the rotation of the BabylonJS mesh or instanced mesh
-     * @param inputs BabylonJS mesh and rotation along x, y and z axis in degrees
+     * Sets the rotation of a mesh, or an instance of one, as angles in degrees around X, Y and Z,
+     * replacing its current rotation.
+     * @param inputs - The mesh and the three angles in degrees
      * @group set
      * @shortname rotation
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.setRotation({ babylonMesh: mesh, rotation: [0, 90, 0] });
+     * ```
      */
     setRotation(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshRotationDto): void {
         const radX = BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians();
@@ -672,18 +837,24 @@ export class BabylonMesh {
     }
 
     /**
-     * Updates the scale of the BabylonJS mesh or instanced mesh
-     * @param inputs BabylonJS mesh and scale vector
+     * Sets the scale factors of a mesh, or an instance of one, along X, Y and Z, replacing its
+     * current scale; 1 is unscaled.
+     * @param inputs - The mesh and the three scale factors
      * @group set
      * @shortname scale
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.setScale({ babylonMesh: mesh, scale: [2, 1, 1] });
+     * ```
      */
     setScale(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshScaleDto): void {
         inputs.babylonMesh.scaling = new BABYLON.Vector3(inputs.scale[0], inputs.scale[1], inputs.scale[2]);
     }
 
     /**
-     * Scales the BabylonJS mesh or instanced mesh in place by a given factor
-     * @param inputs BabylonJS mesh and scale factor
+     * Multiplies the current scale of a mesh, or an instance of one, by one factor on all axes, so
+     * 2 doubles whatever size it has.
+     * @param inputs - The mesh and the factor
      * @group set
      * @shortname scale in place
      */
@@ -692,20 +863,32 @@ export class BabylonMesh {
     }
 
     /**
-     * Checks wether mesh intersects another mesh mesh
-     * @param inputs Two BabylonJS meshes
+     * Tells whether two meshes overlap, judged by their bounding boxes: axis-aligned ones by
+     * default, or boxes that follow each mesh's rotation when `precise` is true;
+     * `includeDescendants` tests their children too.
+     * @param inputs - The two meshes and the precision options
+     * @returns True when the meshes overlap
      * @group intersects
      * @shortname mesh
+     * @example
+     * ```typescript
+     * const touching = bitbybit.babylon.mesh.intersectsMesh({ babylonMesh: meshA, babylonMesh2: meshB, precise: true, includeDescendants: false });
+     * ```
      */
     intersectsMesh(inputs: Inputs.BabylonMesh.IntersectsMeshDto): boolean {
         return inputs.babylonMesh.intersectsMesh(inputs.babylonMesh2, inputs.precise, inputs.includeDescendants);
     }
 
     /**
-     * Checks wether mesh intersects point
-     * @param inputs BabylonJS mesh and point
+     * Tells whether a point lies inside the bounding box of a mesh.
+     * @param inputs - The mesh and the point
+     * @returns True when the point is inside the mesh's bounds
      * @group intersects
      * @shortname point
+     * @example
+     * ```typescript
+     * const inside = bitbybit.babylon.mesh.intersectsPoint({ babylonMesh: mesh, point: [0, 1, 0] });
+     * ```
      */
     intersectsPoint(inputs: Inputs.BabylonMesh.IntersectsPointDto): boolean {
         const point = new BABYLON.Vector3(inputs.point[0], inputs.point[1], inputs.point[2]);
@@ -713,25 +896,36 @@ export class BabylonMesh {
     }
 
     /**
-    * Creates mesh instance for optimised rendering. This method will check if mesh contains children and will create instances for each child.
-    *  These are optimised for max performance when rendering many similar objects in the scene. This method returns instances as childrens in a new mesh. 
-    * If the mesh has children, then every child goes a mesh instance.
-    * @group instance
-    * @shortname create and transform
-    * @disposableOutput true
-    */
+     * Creates a placed instance of a mesh, as `createMeshInstanceAndTransform` does, without giving
+     * it back; for scripts that only need the copy to appear.
+     * @param inputs - The mesh and the position, rotation and scaling of the instance
+     * @group instance
+     * @shortname create and transform
+     * @disposableOutput true
+     * @example
+     * ```typescript
+     * bitbybit.babylon.mesh.createMeshInstanceAndTransformNoReturn({ mesh, position: [10, 0, 0], rotation: [0, 45, 0], scaling: [1, 1, 1] });
+     * ```
+     */
     createMeshInstanceAndTransformNoReturn(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): void {
         this.createMeshInstanceAndTransform(inputs);
     }
 
     /**
-     * Creates mesh instance for optimised rendering. This method will check if mesh contains children and will create instances for each child.
-     *  These are optimised for max performance when rendering many similar objects in the scene. This method returns instances as childrens in a new mesh. 
-     * If the mesh has children, then every child goes a mesh instance.
+     * Creates an instance of a mesh, a lightweight copy that shares its geometry and draws cheaply,
+     * and places it at the given position, rotation in degrees and scaling.
+     *
+     * A mesh with children gets one instance per child, gathered under a new container; the
+     * original is hidden.
+     * @param inputs - The mesh and the position, rotation and scaling of the instance
+     * @returns The container holding the instances
      * @group instance
-     * @returns babylon mesh
      * @shortname create and transform
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const instance = bitbybit.babylon.mesh.createMeshInstanceAndTransform({ mesh, position: [10, 0, 0], rotation: [0, 45, 0], scaling: [1, 1, 1] });
+     * ```
      */
     createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): BABYLON.Mesh {
         const parent = new BABYLON.Mesh(uniqueName("instanceContainer"), this.context.scene);
@@ -789,11 +983,20 @@ export class BabylonMesh {
 
 
     /**
-     * Creates mesh instance. These are optimised for max performance
-     * when rendering many similar objects in the scene. If the mesh has children, then every child gets a mesh instance.
+     * Creates an instance of a mesh, a lightweight copy that shares its geometry and draws cheaply
+     * when many alike are needed, placed where the original is.
+     *
+     * A mesh with children gets one instance per child, gathered under a new container.
+     * @param inputs - The mesh
+     * @returns The instance, or the container holding the child instances
      * @group instance
      * @shortname create
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const instance = bitbybit.babylon.mesh.createMeshInstance({ mesh });
+     * bitbybit.babylon.mesh.setPosition({ babylonMesh: instance, position: [10, 0, 0] });
+     * ```
      */
     createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): BABYLON.Mesh {
         let result!: BABYLON.Mesh;
@@ -832,7 +1035,10 @@ export class BabylonMesh {
     }
 
     /**
-     * Gets side orientation
+     * Turns a side orientation choice into the number the engine uses for it, for building meshes
+     * by hand.
+     * @param sideOrientation - The side orientation choice
+     * @returns The engine's number for that orientation
      * @ignore true
      */
     getSideOrientation(sideOrientation: Inputs.BabylonMesh.sideOrientationEnum): number {

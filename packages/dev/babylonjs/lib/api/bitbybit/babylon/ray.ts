@@ -4,15 +4,26 @@ import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../inputs";
 import { Base } from "../../inputs";
 
+/**
+ * Rays: a start point and a direction, optionally with a length, used to pick what lies along a
+ * line of sight or to test intersections. `createPickingRay` builds the ray from the camera through
+ * the pointer, the others build one from points.
+ */
 export class BabylonRay {
 
     constructor(private readonly context: Context) { }
 
     /**
-     * Creates a picking ray of the current mouse position in the active camera
+     * Builds a ray from the active camera through the pointer's current position on the canvas, the
+     * ray a click would pick with.
+     * @returns The ray
      * @group create
      * @shortname create picking ray
-     * @returns Ray
+     * @example
+     * ```typescript
+     * const ray = bitbybit.babylon.ray.createPickingRay();
+     * const pick = bitbybit.babylon.pick.pickWithRay({ ray });
+     * ```
      */
     createPickingRay(): BABYLON.Ray {
         const scene = this.context.scene;
@@ -20,11 +31,16 @@ export class BabylonRay {
     }
 
     /**
-     * Create a ray that start at origin, has direction vector and optionally length
-     * @param inputs origin, direction and length
+     * Builds a ray starting at `origin` and pointing along `direction`; `length` limits how far it
+     * reaches, and 0 or nothing leaves it unlimited.
+     * @param inputs - The origin, the direction and the optional length
+     * @returns The ray
      * @group create
      * @shortname create custom ray
-     * @returns ray
+     * @example
+     * ```typescript
+     * const ray = bitbybit.babylon.ray.createRay({ origin: [0, 10, 0], direction: [0, -1, 0], length: 100 });
+     * ```
      */
     createRay(inputs: Inputs.BabylonRay.BaseRayDto): BABYLON.Ray {
         const or = new BABYLON.Vector3(inputs.origin[0], inputs.origin[1], inputs.origin[2]);
@@ -37,11 +53,16 @@ export class BabylonRay {
     }
 
     /**
-     * Create a ray from one point to another
-     * @param inputs origin, direction and length
+     * Builds a ray that starts at `from`, points toward `to` and is exactly as long as the distance
+     * between them.
+     * @param inputs - The start point and the end point
+     * @returns The ray
      * @group create
      * @shortname create ray from to
-     * @returns ray
+     * @example
+     * ```typescript
+     * const ray = bitbybit.babylon.ray.createRayFromTo({ from: [0, 10, 0], to: [0, 0, 0] });
+     * ```
      */
     createRayFromTo(inputs: Inputs.BabylonRay.FromToDto): BABYLON.Ray {
         const or = new BABYLON.Vector3(inputs.from[0], inputs.from[1], inputs.from[2]);
@@ -51,11 +72,11 @@ export class BabylonRay {
 
 
     /**
-     * Get the origin of the ray
-     * @param inputs ray
+     * Reads the point a ray starts from, as a point in the scene.
+     * @param inputs - The ray
+     * @returns The origin point
      * @group get
      * @shortname get ray origin
-     * @returns origin point
      */
     getOrigin(inputs: Inputs.BabylonRay.RayDto): Base.Point3 {
         const or = inputs.ray.origin;
@@ -63,11 +84,11 @@ export class BabylonRay {
     }
 
     /**
-     * Get the direction of the ray
-     * @param inputs ray
+     * Reads the direction a ray points in, as a unit vector.
+     * @param inputs - The ray
+     * @returns The direction vector
      * @group get
      * @shortname get ray direction
-     * @returns direction vector
      */
     getDirection(inputs: Inputs.BabylonRay.RayDto): Base.Vector3 {
         const dir = inputs.ray.direction;
@@ -75,11 +96,11 @@ export class BabylonRay {
     }
 
     /**
-     * Get the length of the ray
-     * @param inputs ray
+     * Reads how far a ray reaches; an unlimited ray reports a very large number.
+     * @param inputs - The ray
+     * @returns The length
      * @group get
      * @shortname get ray length
-     * @returns length
      */
     getLength(inputs: Inputs.BabylonRay.RayDto): number {
         return inputs.ray.length;

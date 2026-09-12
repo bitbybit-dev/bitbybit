@@ -2,19 +2,22 @@
 // directory, in the order set by scripts/inputs.config.mjs, into ../manifold-inputs.ts. Edit here, then regenerate.
 import { Base } from "../base-inputs";
 
+/**
+ * A solid and a tolerance for `manifold.operations.refineToTolerance` and
+ * `manifold.operations.setTolerance`.
+ */
 export class ManifoldRefineToleranceDto<T> {
     constructor(manifold?: T, tolerance?: number) {
         if (manifold !== undefined) { this.manifold = manifold; }
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * Manifold shape
+     * The solid to work on.
      */
     manifold!: T;
     /**
-     * The desired maximum distance between the faceted mesh
-     * produced and the exact smoothly curving surface. All vertices are exactly
-     * on the surface, within rounding error.
+     * The largest distance allowed between the triangles and the smooth surface they stand for, in
+     * model units.
      * @default 1e-6
      * @minimum 0
      * @maximum Infinity
@@ -22,17 +25,20 @@ export class ManifoldRefineToleranceDto<T> {
      */
     tolerance = 1e-6;
 }
+/**
+ * A solid and an edge length for `manifold.operations.refineToLength`.
+ */
 export class ManifoldRefineLengthDto<T> {
     constructor(manifold?: T, length?: number) {
         if (manifold !== undefined) { this.manifold = manifold; }
         if (length !== undefined) { this.length = length; }
     }
     /**
-     * Manifold shape
+     * The solid to refine.
      */
     manifold!: T;
     /**
-     * Length of the manifold
+     * The rough length every edge is split down to, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -40,17 +46,20 @@ export class ManifoldRefineLengthDto<T> {
      */
     length = 0.1;
 }
+/**
+ * A solid and a count for `manifold.operations.refine`.
+ */
 export class ManifoldRefineDto<T> {
     constructor(manifold?: T, number?: number) {
         if (manifold !== undefined) { this.manifold = manifold; }
         if (number !== undefined) { this.number = number; }
     }
     /**
-     * Manifold shape
+     * The solid to refine.
      */
     manifold!: T;
     /**
-     * The number of pieces to split every edge into. Must be > 1.
+     * How many pieces every edge is split into; must be more than 1 to change anything.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -58,19 +67,21 @@ export class ManifoldRefineDto<T> {
      */
     number = 1;
 }
+/**
+ * A solid and a normal channel for `manifold.operations.smoothByNormals`.
+ */
 export class ManifoldSmoothByNormalsDto<T> {
     constructor(manifold?: T, normalIdx?: number) {
         if (manifold !== undefined) { this.manifold = manifold; }
         if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
     }
     /**
-     * Manifold shape
+     * The solid to mark for smoothing.
      */
     manifold!: T;
     /**
-     * The first property channel of the normals. NumProp must be
-     * at least normalIdx + 3. Any vertex where multiple normals exist and don't
-     * agree will result in a sharp edge.
+     * The first of the three property channels holding the normals; the solid must have at least
+     * that many plus three.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -78,19 +89,21 @@ export class ManifoldSmoothByNormalsDto<T> {
      */
     normalIdx = 0;
 }
+/**
+ * A solid and a tolerance for `manifold.operations.simplify`.
+ */
 export class ManifoldSimplifyDto<T> {
     constructor(manifold?: T, tolerance?: number) {
         if (manifold !== undefined) { this.manifold = manifold; }
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * Manifold shape
+     * The solid to simplify.
      */
     manifold!: T;
     /**
-     * The maximum distance between the original and simplified meshes. 
-     * If not given or is less than the current tolerance, the current tolerance is used.
-     * The result will contain a subset of the original verts and all surfaces will have moved by less than tolerance.
+     * How far surfaces may move while vertices are removed, in model units; left out or below the
+     * solid's own tolerance, that tolerance is used.
      * @default undefined
      * @minimum 0
      * @maximum Infinity
@@ -98,6 +111,9 @@ export class ManifoldSimplifyDto<T> {
      */
     tolerance?: number | undefined;
 }
+/**
+ * A solid, a property count and a fill function for `manifold.operations.setProperties`.
+ */
 export class ManifoldSetPropertiesDto<T> {
     constructor(manifold?: T, numProp?: number, propFunc?: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void) {
         if (manifold !== undefined) { this.manifold = manifold; }
@@ -105,11 +121,11 @@ export class ManifoldSetPropertiesDto<T> {
         if (propFunc !== undefined) { this.propFunc = propFunc; }
     }
     /**
-     * Manifold shape
+     * The solid whose vertex properties are rewritten.
      */
     manifold!: T;
     /**
-     * The new number of properties per vertex
+     * How many properties each vertex has afterwards.
      * @default 3
      * @minimum 3
      * @maximum Infinity
@@ -117,12 +133,15 @@ export class ManifoldSetPropertiesDto<T> {
      */
     numProp = 3;
     /**
-     * A function that modifies the properties of a given vertex.
-     * Note: undefined behavior will result if you read past the number of input properties or write past the number of output properties.
+     * A function that receives the new property array, the vertex position and the old properties,
+     * and fills the new array in place.
      * @default undefined
      */
     propFunc!: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void;
 }
+/**
+ * A solid and the smoothing settings for `manifold.operations.smoothOut`.
+ */
 export class ManifoldSmoothOutDto<T> {
     constructor(manifold?: T, minSharpAngle?: number, minSmoothness?: number) {
         if (manifold !== undefined) { this.manifold = manifold; }
@@ -130,15 +149,12 @@ export class ManifoldSmoothOutDto<T> {
         if (minSmoothness !== undefined) { this.minSmoothness = minSmoothness; }
     }
     /**
-     * Manifold shape
+     * The solid to mark for smoothing.
      */
     manifold!: T;
     /**
-     * Any edges with angles greater
-     * than this value will remain sharp. The rest will be smoothed to G1
-     * continuity, with the caveat that flat faces of three or more triangles will
-     * always remain flat. With a value of zero, the model is faceted, but in this
-     * case there is no point in smoothing.
+     * Edges bent more than this, in degrees, stay sharp; the rest are smoothed. At 0 nothing is
+     * smoothed.
      * @default 60
      * @minimum -Infinity
      * @maximum Infinity
@@ -146,10 +162,7 @@ export class ManifoldSmoothOutDto<T> {
      */
     minSharpAngle = 60;
     /**
-     * The smoothness applied to
-     * sharp angles. The default gives a hard edge, while values > 0 will give a
-     * small fillet on these sharp edges. A value of 1 is equivalent to a
-     * minSharpAngle of 180 - all edges will be smooth.
+     * How much the sharp edges are rounded, from 0 for a hard edge to 1 for fully smooth.
      * @default 0
      * @minimum 0
      * @maximum 1

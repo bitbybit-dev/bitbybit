@@ -22,11 +22,17 @@ export class ManifoldBitByBit {
 
     // last
     /**
-     * Delete manifold or cross section from memory
-     * @param inputs manifold or cross section
+     * Frees the memory a solid or a cross-section holds inside the kernel; the object cannot be
+     * used afterwards. Call it for results a script no longer needs, so long sessions do not run
+     * out of memory.
+     * @param inputs - The solid or cross-section to free
      * @group cleanup
      * @shortname delete m or cs
      * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.manifold.deleteManifoldOrCrossSection({ manifoldOrCrossSection: cube });
+     * ```
      */
     async deleteManifoldOrCrossSection(inputs: Inputs.Manifold.ManifoldOrCrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<void> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("deleteManifoldOrCrossSection", inputs);
@@ -34,11 +40,17 @@ export class ManifoldBitByBit {
 
     // last
     /**
-     * Delete manifolds or cross sections from memory
-     * @param inputs manifolds or cross sections
+     * Frees the memory several solids or cross-sections hold inside the kernel; they cannot be used
+     * afterwards. Call it for results a script no longer needs, so long sessions do not run out of
+     * memory.
+     * @param inputs - The solids or cross-sections to free
      * @group cleanup
      * @shortname delete m's or cs's
      * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.manifold.deleteManifoldsOrCrossSections({ manifoldsOrCrossSections: [cube, sphere] });
+     * ```
      */
     async deleteManifoldsOrCrossSections(inputs: Inputs.Manifold.ManifoldsOrCrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<void> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("deleteManifoldsOrCrossSections", inputs);

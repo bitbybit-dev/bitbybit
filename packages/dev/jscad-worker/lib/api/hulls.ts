@@ -5,8 +5,10 @@ import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 import { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
 
 /**
- * Contains various functions for Solid hulls from JSCAD library https://github.com/jscad/OpenJSCAD.org
- * Thanks JSCAD community for developing this kernel
+ * Wrapping JSCAD geometry in its convex hull, the shape a tight sheet would take around it: `hull`
+ * wraps everything at once and `hullChain` wraps each consecutive pair, so a row of shapes becomes
+ * a bent tube rather than one lump. All inputs of a call must be of the same kind, solids, 2D
+ * shapes or paths.
  */
 export class JSCADHulls {
     constructor(
@@ -15,26 +17,40 @@ export class JSCADHulls {
     }
 
     /**
-     * Hull chain connects solids or 2d geometries by filling an empty space in between objects in order.
-     * Geometries need to be of the same type.
-     * @param inputs Geometries
-     * @returns Chain hulled geometry
+     * Wraps each consecutive pair of inputs in a convex hull and fuses the hulls, so a row of
+     * shapes becomes a continuous strand that follows their order.
+     *
+     * A bend in the row is kept, where `hull` would fill it in. All inputs must be of the same
+     * kind.
+     * @param inputs - The solids, 2D shapes or paths, in the order they connect
+     * @returns The chained hull
      * @group hulls
      * @shortname hull chain
      * @drawable true
+     * @example
+     * ```typescript
+     * const spheres = await bitbybit.jscad.shapes.spheresOnCenterPoints({ centers: [[0, 0, 0], [10, 0, 0], [10, 10, 0]], radius: 1, segments: 16 });
+     * const strand = await bitbybit.jscad.hulls.hullChain({ meshes: spheres });
+     * ```
      */
     hullChain(inputs: Inputs.JSCAD.HullDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("hulls.hullChain", inputs);
     }
 
     /**
-     * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
-     * Geometries need to be of the same type.
-     * @param inputs Geometries
-     * @returns Hulled geometry
+     * Wraps all the inputs in one convex hull, the smallest shape without dents that contains them
+     * all, regardless of their order.
+     *
+     * All inputs must be of the same kind, solids, 2D shapes or paths.
+     * @param inputs - The solids, 2D shapes or paths
+     * @returns The convex hull
      * @group hulls
      * @shortname hull
      * @drawable true
+     * @example
+     * ```typescript
+     * const wrapped = await bitbybit.jscad.hulls.hull({ meshes: [cube, sphere] });
+     * ```
      */
     hull(inputs: Inputs.JSCAD.HullDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("hulls.hull", inputs);

@@ -5,8 +5,11 @@ import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 import { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
 
 /**
- * Contains various functions for solid 3D shapes from JSCAD library https://github.com/jscad/OpenJSCAD.org
- * Thanks JSCAD community for developing this kernel
+ * Building JSCAD solids: cubes, cuboids, spheres, ellipsoids, cylinders, a torus and a solid from
+ * raw polygon points, each with a variant that places one copy on every point of a list. The kernel
+ * keeps Z as its own axis, so a cylinder stands along Z and a torus lies flat in the XY plane;
+ * every solid is a closed mesh of polygons and `segments` says how many flat facets approximate a
+ * round surface.
  */
 export class JSCADShapes {
     constructor(
@@ -15,240 +18,365 @@ export class JSCADShapes {
     }
 
     /**
-     * Create a 3D cube shape
-     * @param inputs Cube parameters
-     * @returns Cube solid
+     * Builds a cube of edge length `size` centered on `center`, with its faces parallel to the
+     * axes.
+     * @param inputs - The center and the edge length
+     * @returns The cube solid
      * @group primitives
      * @shortname cube
      * @drawable true
+     * @example
+     * ```typescript
+     * const cube = await bitbybit.jscad.shapes.cube({ center: [0, 0, 0], size: 10 });
+     * ```
      */
     cube(inputs: Inputs.JSCAD.CubeDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cube", inputs);
     }
 
     /**
-     * Create a 3D cubes on multiple center points
-     * @param inputs Cube with multiple center points parameters
-     * @returns List of cube solids
+     * Builds one cube of edge length `size` on every point of `centers`, in the same order.
+     * @param inputs - The center points and the edge length
+     * @returns One cube per center point
      * @group primitives on centers
      * @shortname cubes
      * @drawable true
+     * @example
+     * ```typescript
+     * const cubes = await bitbybit.jscad.shapes.cubesOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0], [40, 0, 0]], size: 10 });
+     * ```
      */
     cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cubesOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D cuboid shape
-     * @param inputs Cuboid parameters
-     * @returns Cuboid solid
+     * Builds a box centered on `center` with `width` along X, `height` along Y and `length` along
+     * Z, its faces parallel to the axes.
+     * @param inputs - The center and the three side lengths
+     * @returns The box solid
      * @group primitives
      * @shortname cuboid
      * @drawable true
+     * @example
+     * ```typescript
+     * const box = await bitbybit.jscad.shapes.cuboid({ center: [0, 0, 0], width: 10, height: 5, length: 20 });
+     * ```
      */
     cuboid(inputs: Inputs.JSCAD.CuboidDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cuboid", inputs);
     }
 
     /**
-     * Create a 3D cuboids on multiple center points
-     * @param inputs Cuboids with multiple center point parameters
-     * @returns List of cuboid solids
+     * Builds one box of the given `width`, `height` and `length` on every point of `centers`, in
+     * the same order.
+     * @param inputs - The center points and the three side lengths
+     * @returns One box per center point
      * @group primitives on centers
      * @shortname cuboids
      * @drawable true
+     * @example
+     * ```typescript
+     * const boxes = await bitbybit.jscad.shapes.cuboidsOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], width: 10, height: 5, length: 20 });
+     * ```
      */
     cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cuboidsOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D elliptic cylinder solid
-     * @param inputs Elliptic cylinder parameters
-     * @returns Elliptic cylinder solid
+     * Builds a cylinder with an elliptical cross-section whose radii can differ at the two ends,
+     * standing along Z and centered on `center`.
+     *
+     * `startRadius` is the X and Y radius at the bottom end and `endRadius` at the top, so unequal
+     * pairs make a tapered or cone-like solid; `height` is split evenly above and below `center`.
+     * @param inputs - The center, the height, the two radius pairs and the segment count
+     * @returns The elliptic cylinder solid
      * @group primitives
      * @shortname cylinder elliptic
      * @drawable true
+     * @example
+     * ```typescript
+     * const cone = await bitbybit.jscad.shapes.cylinderElliptic({ center: [0, 0, 0], height: 10, startRadius: [4, 2], endRadius: [1, 0.5], segments: 32 });
+     * ```
      */
     cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylinderElliptic", inputs);
     }
 
     /**
-     * Create a 3D elliptic cylinders on multiple center points
-     * @param inputs Elliptic cylinders with multiple center point parameters
-     * @returns List of elliptic cylinders solids
+     * Builds one elliptic cylinder with the given radii and height on every point of `centers`, in
+     * the same order, as `cylinderElliptic` does for one.
+     * @param inputs - The center points, the height, the two radius pairs and the segment count
+     * @returns One elliptic cylinder per center point
      * @group primitives on centers
      * @shortname cylinder elliptic
      * @drawable true
+     * @example
+     * ```typescript
+     * const cones = await bitbybit.jscad.shapes.cylinderEllipticOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], height: 10, startRadius: [4, 2], endRadius: [1, 0.5], segments: 32 });
+     * ```
      */
     cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylinderEllipticOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D cylinder solid
-     * @param inputs Cylinder parameters
-     * @returns Cylinder solid
+     * Builds a round cylinder of the given `radius` standing along Z, with `height` split evenly
+     * above and below `center`.
+     *
+     * `segments` is the number of flat sides around it; more makes it rounder.
+     * @param inputs - The center, the height, the radius and the segment count
+     * @returns The cylinder solid
      * @group primitives
      * @shortname cylinder
      * @drawable true
+     * @example
+     * ```typescript
+     * const cylinder = await bitbybit.jscad.shapes.cylinder({ center: [0, 0, 0], height: 10, radius: 3, segments: 32 });
+     * ```
      */
     cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylinder", inputs);
     }
 
     /**
-     * Create a 3D cylinders on multiple center points
-     * @param inputs Cylinders with multiple center point parameters
-     * @returns List of cylinder solids
+     * Builds one cylinder of the given `radius` and `height` on every point of `centers`, in the
+     * same order, as `cylinder` does for one.
+     * @param inputs - The center points, the height, the radius and the segment count
+     * @returns One cylinder per center point
      * @group primitives on centers
      * @shortname cylinder
      * @drawable true
+     * @example
+     * ```typescript
+     * const posts = await bitbybit.jscad.shapes.cylindersOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0], [40, 0, 0]], height: 10, radius: 1, segments: 16 });
+     * ```
      */
     cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylindersOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D ellipsoid solid
-     * @param inputs Ellipsoid parameters
-     * @returns Ellipsoid solid
+     * Builds an ellipsoid, a sphere stretched separately along X, Y and Z, centered on `center`.
+     *
+     * `radius` holds the three half-sizes in `[x, y, z]` order; equal values make a sphere.
+     * @param inputs - The center, the three radii and the segment count
+     * @returns The ellipsoid solid
      * @group primitives
      * @shortname ellipsoid
      * @drawable true
+     * @example
+     * ```typescript
+     * const egg = await bitbybit.jscad.shapes.ellipsoid({ center: [0, 0, 0], radius: [5, 3, 8], segments: 32 });
+     * ```
      */
     ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.ellipsoid", inputs);
     }
 
     /**
-     * Create a 3D ellipsoids on multiple center points
-     * @param inputs Ellipsoid parameters with multiple center points
-     * @returns List of ellipsoid solids
+     * Builds one ellipsoid with the given radii on every point of `centers`, in the same order, as
+     * `ellipsoid` does for one.
+     * @param inputs - The center points, the three radii and the segment count
+     * @returns One ellipsoid per center point
      * @group primitives on centers
      * @shortname ellipsoid
      * @drawable true
+     * @example
+     * ```typescript
+     * const eggs = await bitbybit.jscad.shapes.ellipsoidsOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], radius: [5, 3, 8], segments: 32 });
+     * ```
      */
     ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.ellipsoidsOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D geodesic sphere solid
-     * @param inputs Geodesic sphere parameters
-     * @returns Geodesic sphere solid
+     * Builds a sphere from evenly sized triangles, the way a geodesic dome is built, centered on
+     * `center`.
+     *
+     * `frequency` is how finely the twenty starting faces are subdivided; it is used in whole
+     * multiples of 6 and must be at least 6, and higher values give a rounder sphere.
+     * @param inputs - The center, the radius and the subdivision frequency
+     * @returns The geodesic sphere solid
      * @group primitives
      * @shortname geodesic sphere
      * @drawable true
+     * @example
+     * ```typescript
+     * const dome = await bitbybit.jscad.shapes.geodesicSphere({ center: [0, 0, 0], radius: 5, frequency: 12 });
+     * ```
      */
     geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.geodesicSphere", inputs);
     }
 
     /**
-     * Create a 3D geodesic spheres on multiple center points
-     * @param inputs Geodesic sphere parameters with multiple center points
-     * @returns List of geodesic spheres
+     * Builds one geodesic sphere of the given `radius` on every point of `centers`, in the same
+     * order, as `geodesicSphere` does for one.
+     * @param inputs - The center points, the radius and the subdivision frequency
+     * @returns One geodesic sphere per center point
      * @group primitives on centers
      * @shortname geodesic sphere
      * @drawable true
+     * @example
+     * ```typescript
+     * const domes = await bitbybit.jscad.shapes.geodesicSpheresOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], radius: 5, frequency: 12 });
+     * ```
      */
     geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.geodesicSpheresOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D rounded cuboid solid
-     * @param inputs Rounded cuboid parameters
-     * @returns Rounded cuboid solid
+     * Builds a box with all its edges and corners rounded by `roundRadius`, centered on `center`
+     * with `width` along X, `height` along Y and `length` along Z.
+     *
+     * `roundRadius` must be less than half of the smallest side or an error is thrown; `segments`
+     * sets how smoothly the rounding is faceted.
+     * @param inputs - The center, the three side lengths, the rounding radius and the segment count
+     * @returns The rounded box solid
      * @group primitives
      * @shortname rounded cuboid
      * @drawable true
+     * @example
+     * ```typescript
+     * const soft = await bitbybit.jscad.shapes.roundedCuboid({ center: [0, 0, 0], width: 10, height: 5, length: 20, roundRadius: 1, segments: 16 });
+     * ```
      */
     roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.roundedCuboid", inputs);
     }
 
     /**
-     * Create a 3D rounded cuboids on multiple center points
-     * @param inputs Rounded cuboids parameters with multiple center points
-     * @returns List of rounded cuboids
+     * Builds one rounded box with the given sides and rounding on every point of `centers`, in the
+     * same order, as `roundedCuboid` does for one.
+     * @param inputs - The center points, the three side lengths, the rounding radius and the segment count
+     * @returns One rounded box per center point
      * @group primitives on centers
      * @shortname rounded cuboid
      * @drawable true
+     * @example
+     * ```typescript
+     * const softBoxes = await bitbybit.jscad.shapes.roundedCuboidsOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], width: 10, height: 5, length: 20, roundRadius: 1, segments: 16 });
+     * ```
      */
     roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.roundedCuboidsOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D rounded cylinder solid
-     * @param inputs Rounded cylinder parameters
-     * @returns Rounded cylinder solid
+     * Builds a cylinder standing along Z whose two rims are rounded by `roundRadius`, with `height`
+     * split evenly above and below `center`.
+     *
+     * `height` must be more than twice `roundRadius` or an error is thrown.
+     * @param inputs - The center, the rounding radius, the height, the radius and the segment count
+     * @returns The rounded cylinder solid
      * @group primitives
      * @shortname rounded cylinder
      * @drawable true
+     * @example
+     * ```typescript
+     * const pill = await bitbybit.jscad.shapes.roundedCylinder({ center: [0, 0, 0], roundRadius: 1, height: 10, radius: 3, segments: 32 });
+     * ```
      */
     roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.roundedCylinder", inputs);
     }
 
     /**
-     * Create a 3D rounded cylinders on multiple center points
-     * @param inputs Rounded cylinders parameters with multiple center points
-     * @returns List of rounded cylinders
+     * Builds one rounded cylinder with the given size and rounding on every point of `centers`, in
+     * the same order, as `roundedCylinder` does for one.
+     * @param inputs - The center points, the rounding radius, the height, the radius and the segment count
+     * @returns One rounded cylinder per center point
      * @group primitives on centers
      * @shortname rounded cylinder
      * @drawable true
+     * @example
+     * ```typescript
+     * const pills = await bitbybit.jscad.shapes.roundedCylindersOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], roundRadius: 1, height: 10, radius: 3, segments: 32 });
+     * ```
      */
     roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.roundedCylindersOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D sphere solid
-     * @param inputs Sphere parameters
-     * @returns Sphere solid
+     * Builds a sphere of the given `radius` centered on `center`; `segments` is the number of
+     * facets around it, so more makes it rounder.
+     * @param inputs - The center, the radius and the segment count
+     * @returns The sphere solid
      * @group primitives
      * @shortname sphere
      * @drawable true
+     * @example
+     * ```typescript
+     * const ball = await bitbybit.jscad.shapes.sphere({ center: [0, 0, 0], radius: 5, segments: 32 });
+     * ```
      */
     sphere(inputs: Inputs.JSCAD.SphereDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.sphere", inputs);
     }
 
     /**
-     * Create a 3D sphere on multiple center points
-     * @param inputs Sphere parameters with multiple center points
-     * @returns List of spheres
+     * Builds one sphere of the given `radius` on every point of `centers`, in the same order, as
+     * `sphere` does for one.
+     * @param inputs - The center points, the radius and the segment count
+     * @returns One sphere per center point
      * @group primitives on centers
      * @shortname sphere
      * @drawable true
+     * @example
+     * ```typescript
+     * const balls = await bitbybit.jscad.shapes.spheresOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0], [40, 0, 0]], radius: 5, segments: 32 });
+     * ```
      */
     spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.spheresOnCenterPoints", inputs);
     }
 
     /**
-     * Create a 3D torus solid
-     * @param inputs Torus parameters
-     * @returns Torus solid
+     * Builds a torus, a ring with a round cross-section, lying flat in the XY plane around the
+     * origin with Z through its hole.
+     *
+     * `outerRadius` is the distance from the center to the middle of the tube and `innerRadius` the
+     * tube's own radius, which must be smaller. Rotations and `startAngle` are in degrees; an
+     * `outerRotation` below 360 leaves the ring open.
+     * @param inputs - The two radii, the two segment counts, the two rotations and the start angle
+     * @returns The torus solid
      * @group primitives
      * @shortname torus
      * @drawable true
+     * @example
+     * ```typescript
+     * const ring = await bitbybit.jscad.shapes.torus({ center: [0, 0, 0], innerRadius: 1, outerRadius: 5, innerSegments: 16, outerSegments: 48, innerRotation: 0, outerRotation: 360, startAngle: 0 });
+     * ```
      */
     torus(inputs: Inputs.JSCAD.TorusDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.torus", inputs);
     }
 
     /**
-     * Create a 3D shape from poylgon points that have to be nested arrays of points
-     * @param inputs points
-     * @returns shape
+     * Builds a solid from its faces, each given as a list of points that go around the face.
+     *
+     * List the points of every face clockwise as seen from outside the solid; the faces must close
+     * the solid for booleans to work on it. The lists are reversed in place while the solid is
+     * built.
+     * @param inputs - The faces as lists of points
+     * @returns The solid
      * @group shapes
      * @shortname from polygon points
      * @drawable true
+     * @example
+     * ```typescript
+     * const tetrahedron = await bitbybit.jscad.shapes.fromPolygonPoints({ polygonPoints: [
+     *     [[0, 0, 0], [10, 0, 0], [0, 10, 0]],
+     *     [[0, 0, 0], [0, 10, 0], [0, 0, 10]],
+     *     [[0, 0, 0], [0, 0, 10], [10, 0, 0]],
+     *     [[10, 0, 0], [0, 0, 10], [0, 10, 0]],
+     * ] });
+     * ```
      */
     fromPolygonPoints(inputs: Inputs.JSCAD.FromPolygonPoints): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.fromPolygonPoints", inputs);

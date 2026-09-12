@@ -3,7 +3,9 @@ import { DrawHelper } from "../draw-helper";
 import { ThreeJSCamera } from "./threejs/camera";
 
 /**
- * Contains various functions that expose ThreeJS objects
+ * The Three.js side of the library: what lives in the rendered scene rather than in a CAD kernel.
+ * The `camera` property builds and steers the orbit camera; drawing itself goes through `draw`, and
+ * the plain data helpers sit beside it on the base object.
  */
 export class ThreeJS {
     public camera: ThreeJSCamera;

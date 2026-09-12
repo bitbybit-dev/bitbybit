@@ -4,6 +4,13 @@
 import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
+/**
+ * Edges in OpenCascade: single curves between two vertices, straight, circular, elliptical or
+ * free-form. Build them from points and lines, as arcs, circles and ellipses, or as tangent
+ * constructions against circles; read them back as points, lengths, tangents and centers; and pick
+ * edges out of any shape. Edges join end to end into wires, which `shapes.wire` handles. Parameters
+ * along an edge run from 0 at its start to 1 at its end; angles are in degrees.
+ */
 export class OCCTEdge {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
@@ -11,733 +18,1088 @@ export class OCCTEdge {
     }
 
     /**
-     * Rebuilds an edge's curve to relax (lower) or raise its polynomial degree.
-     * @param inputs edge, target degree and tolerance
-     * @returns OpenCascade edge
+     * Rebuilds the curve of an edge as a B-spline of a given degree, within a tolerance.
+     *
+     * Lowering the degree simplifies the curve, raising it gives later operations more freedom;
+     * either way the new curve stays within `tolerance` of the old.
+     * @param inputs - The edge, the degree to rebuild to and the tolerance
+     * @returns A new edge with the rebuilt curve
      * @group rebuild
      * @shortname rebuild edge degree
      * @drawable true
+     * @example
+     * ```typescript
+     * const simpler = await bitbybit.occt.shapes.edge.rebuildEdgeDegree({ shape: edge, degree: 3, tolerance: 1e-3 });
+     * ```
      */
     rebuildEdgeDegree(inputs: Inputs.OCCT.RebuildCurveDegreeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.rebuildEdgeDegree", inputs);
     }
 
     /**
-     * Moves the seam (origin) of a periodic edge to a parameter value.
-     * @param inputs periodic edge and parameter
-     * @returns OpenCascade edge
+     * Moves the seam of a closed periodic edge, the point where it starts and ends, to a given
+     * parameter along the curve.
+     *
+     * The geometry does not change; only where the edge is considered to begin.
+     * @param inputs - The periodic edge and the parameter of the new seam
+     * @returns A new edge starting at the seam
      * @group seam
      * @shortname move edge seam by param
      * @drawable true
+     * @example
+     * ```typescript
+     * const rotated = await bitbybit.occt.shapes.edge.moveEdgeSeamByParameter({ shape: circle, parameter: 1.57 });
+     * ```
      */
     moveEdgeSeamByParameter(inputs: Inputs.OCCT.CurveSeamByParameterDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.moveEdgeSeamByParameter", inputs);
     }
 
     /**
-     * Moves the seam (origin) of a periodic edge by an arc length from the current start.
-     * @param inputs periodic edge and length
-     * @returns OpenCascade edge
+     * Moves the seam of a closed periodic edge, the point where it starts and ends, by a distance
+     * along the curve from its current start.
+     *
+     * The geometry does not change; only where the edge is considered to begin.
+     * @param inputs - The periodic edge and the distance to move the seam
+     * @returns A new edge starting at the seam
      * @group seam
      * @shortname move edge seam by length
      * @drawable true
+     * @example
+     * ```typescript
+     * const rotated = await bitbybit.occt.shapes.edge.moveEdgeSeamByLength({ shape: circle, length: 2.5 });
+     * ```
      */
     moveEdgeSeamByLength(inputs: Inputs.OCCT.CurveSeamByLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.moveEdgeSeamByLength", inputs);
     }
 
     /**
-     * Returns debug info about the edge's curve: type, degree, poles/knots, rational/periodic/closed,
-     * parameter range, period, length and end points.
-     * @param inputs edge
-     * @returns Edge curve debug info
+     * Collects diagnostic facts about the curve of an edge: its type and degree, control point and
+     * knot counts, whether it is rational, periodic or closed, its parameter range and period, its
+     * length and its end points.
+     * @param inputs - The edge to inspect
+     * @returns The report about the edge's curve
      * @group debug
      * @shortname edge debug info
      * @drawable false
+     * @example
+     * ```typescript
+     * const info = await bitbybit.occt.shapes.edge.debugInfo({ shape: edge });
+     * ```
      */
     debugInfo(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Models.OCCT.EdgeDebugInfo> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.debugInfo", inputs);
     }
 
     /**
-     * Creates linear edge from base line format {start: Point3, end: Point3}
-     * @param inputs base line
-     * @returns OpenCascade edge
+     * Makes a straight edge from a line object of the form `{ start, end }`.
+     * @param inputs - The line
+     * @returns The straight edge
      * @group from base
      * @shortname edge from base line
      * @drawable true
+     * @example
+     * ```typescript
+     * const edge = await bitbybit.occt.shapes.edge.fromBaseLine({ line: { start: [0, 0, 0], end: [10, 0, 0] } });
+     * ```
      */
     fromBaseLine(inputs: Inputs.OCCT.LineBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseLine", inputs);
     }
 
     /**
-     * Creates linear edges from base lines format {start: Point3, end: Point3}[]
-     * @param inputs base lines
-     * @returns OpenCascade edges
+     * Makes one straight edge per line object of the form `{ start, end }`.
+     * @param inputs - The lines
+     * @returns One edge per line, in the same order
      * @group from base
      * @shortname edges from base lines
      * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.fromBaseLines({ lines: [{ start: [0, 0, 0], end: [10, 0, 0] }, { start: [10, 0, 0], end: [10, 10, 0] }] });
+     * ```
      */
     fromBaseLines(inputs: Inputs.OCCT.LinesBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseLines", inputs);
     }
 
     /**
-     * Creates linear edge from base segment format [Point3, Point3]
-     * @param inputs base segment
-     * @returns OpenCascade edge
+     * Makes a straight edge from a segment, a pair of points `[start, end]`.
+     * @param inputs - The segment
+     * @returns The straight edge
      * @group from base
      * @shortname edge from base segment
      * @drawable true
+     * @example
+     * ```typescript
+     * const edge = await bitbybit.occt.shapes.edge.fromBaseSegment({ segment: [[0, 0, 0], [10, 0, 0]] });
+     * ```
      */
     fromBaseSegment(inputs: Inputs.OCCT.SegmentBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseSegment", inputs);
     }
 
     /**
-     * Creates linear edge from base segments format [Point3, Point3][]
-     * @param inputs base segments
-     * @returns OpenCascade edges
+     * Makes one straight edge per segment, each a pair of points `[start, end]`.
+     * @param inputs - The segments
+     * @returns One edge per segment, in the same order
      * @group from base
      * @shortname edges from base segments
      * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.fromBaseSegments({ segments: [[[0, 0, 0], [10, 0, 0]], [[10, 0, 0], [10, 10, 0]]] });
+     * ```
      */
     fromBaseSegments(inputs: Inputs.OCCT.SegmentsBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseSegments", inputs);
     }
 
     /**
-     * Creates linear edges from collection of points
-     * @param inputs Points
-     * @returns OpenCascade edges
+     * Joins each point to the next with a straight edge, so a list of points becomes a chain of
+     * edges.
+     *
+     * The edges are returned loose; `shapes.wire.createPolylineWire` makes the joined wire
+     * directly.
+     * @param inputs - The points, in order
+     * @returns One edge per pair of neighboring points
      * @group from base
      * @shortname edges from points
      * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.fromPoints({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
+     * ```
      */
     fromPoints(inputs: Inputs.OCCT.PointsDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromPoints", inputs);
     }
 
     /**
-     * Creates linear edges from polyline definition
-     * @param inputs Polyline
-     * @returns OpenCascade edges
+     * Makes one straight edge per segment of a polyline object; a closed polyline also gets the
+     * edge from its last point back to its first.
+     * @param inputs - The polyline
+     * @returns One edge per segment, in order
      * @group from base
      * @shortname edges from polyline
      * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.fromBasePolyline({ polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]], isClosed: true } });
+     * ```
      */
     fromBasePolyline(inputs: Inputs.OCCT.PolylineBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBasePolyline", inputs);
     }
 
     /**
-     * Creates linear edges from triangle definition
-     * @param inputs Triangle
-     * @returns OpenCascade edges
+     * Makes the three straight edges of a triangle given as three points.
+     * @param inputs - The triangle
+     * @returns Its three edges
      * @group from base
      * @shortname edges from triangle
      * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.fromBaseTriangle({ triangle: [[0, 0, 0], [10, 0, 0], [0, 10, 0]] });
+     * ```
      */
     fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseTriangle", inputs);
     }
 
     /**
-     * Creates linear edges from mesh definition
-     * @param inputs Mesh
-     * @returns OpenCascade edges
+     * Makes the three straight edges of every triangle of a mesh, all in one flat list.
+     *
+     * A triangle whose edges cannot be built is skipped with a warning rather than stopping the
+     * rest.
+     * @param inputs - The mesh as a list of triangles
+     * @returns The edges of all the triangles
      * @group from base
      * @shortname edges from mesh
      * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.fromBaseMesh({ mesh: triangles });
+     * ```
      */
     fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseMesh", inputs);
     }
 
     /**
-     * Creates linear edge between two points
-     * @param inputs Two points between which edge should be created
-     * @returns OpenCascade edge
+     * Makes a straight edge between two points, the simplest edge there is.
+     * @param inputs - The start and end points
+     * @returns The straight edge
      * @group primitives
      * @shortname line
      * @drawable true
+     * @example
+     * ```typescript
+     * const edge = await bitbybit.occt.shapes.edge.line({ start: [0, 0, 0], end: [10, 0, 0] });
+     * ```
      */
     line(inputs: Inputs.OCCT.LineDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.line", inputs);
     }
 
     /**
-     * Creates arc edge between three points
-     * @param inputs three points
-     * @returns OpenCascade edge
+     * Makes a circular arc that starts at the first point, passes through the middle one and ends
+     * at the last.
+     * @param inputs - The three points
+     * @returns The arc edge
      * @group primitives
      * @shortname arc 3 points
      * @drawable true
+     * @example
+     * ```typescript
+     * const arc = await bitbybit.occt.shapes.edge.arcThroughThreePoints({ start: [0, 0, 0], middle: [5, 5, 0], end: [10, 0, 0] });
+     * ```
      */
     arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.arcThroughThreePoints", inputs);
     }
 
     /**
-     * Creates arc edge between two points given the tangent direction vector on first point.
-     * @param inputs two points and tangent vector
-     * @returns OpenCascade edge
+     * Makes a circular arc from one point to another that leaves the first point in a given
+     * direction.
+     *
+     * The tangent fixes the plane and the radius of the arc.
+     * @param inputs - The start point, the tangent direction there and the end point
+     * @returns The arc edge
      * @group primitives
      * @shortname arc 2 points tangent
      * @drawable true
+     * @example
+     * ```typescript
+     * const arc = await bitbybit.occt.shapes.edge.arcThroughTwoPointsAndTangent({ start: [0, 0, 0], tangentVec: [0, 1, 0], end: [10, 0, 0] });
+     * ```
      */
     arcThroughTwoPointsAndTangent(inputs: Inputs.OCCT.ArcEdgeTwoPointsTangentDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.arcThroughTwoPointsAndTangent", inputs);
     }
 
     /**
-     * Creates an arc edge between two points on a circle
-     * @param inputs two points and circle edge
-     * @returns OpenCascade edge
+     * Cuts an arc out of a circle edge between two points on it.
+     *
+     * `sense` picks which way round the circle the arc runs from the first point to the second.
+     * @param inputs - The circle edge, the two points and the direction of travel
+     * @returns The arc edge
      * @group primitives
      * @shortname arc from circle and points
      * @drawable true
+     * @example
+     * ```typescript
+     * const arc = await bitbybit.occt.shapes.edge.arcFromCircleAndTwoPoints({ circle, start: [10, 0, 0], end: [0, 0, 10], sense: true });
+     * ```
      */
     arcFromCircleAndTwoPoints(inputs: Inputs.OCCT.ArcEdgeCircleTwoPointsDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.arcFromCircleAndTwoPoints", inputs);
     }
 
     /**
-     * Creates an arc edge between two alpha angles on a circle
-     * @param inputs two angles and circle edge
-     * @returns OpenCascade edge
+     * Cuts an arc out of a circle edge between two angles, in degrees, measured around the circle
+     * from its own start.
+     *
+     * `sense` picks which way round the circle the arc runs from the first angle to the second.
+     * @param inputs - The circle edge, the two angles in degrees and the direction of travel
+     * @returns The arc edge
      * @group primitives
      * @shortname arc from circle and angles
      * @drawable true
+     * @example
+     * ```typescript
+     * const quarter = await bitbybit.occt.shapes.edge.arcFromCircleAndTwoAngles({ circle, alphaAngle1: 0, alphaAngle2: 90, sense: true });
+     * ```
      */
     arcFromCircleAndTwoAngles(inputs: Inputs.OCCT.ArcEdgeCircleTwoAnglesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.arcFromCircleAndTwoAngles", inputs);
     }
 
     /**
-     * Creates an arc edge between the point on a circle and a given alpha angle
-     * @param inputs point, circle edge and alpha angle
-     * @returns OpenCascade edge
+     * Cuts an arc out of a circle edge that starts at a point on the circle and spans a given
+     * angle, in degrees.
+     *
+     * `sense` picks which way round the circle the arc runs.
+     * @param inputs - The circle edge, the start point, the angle in degrees and the direction of travel
+     * @returns The arc edge
      * @group primitives
      * @shortname arc from circle point and angle
      * @drawable true
+     * @example
+     * ```typescript
+     * const arc = await bitbybit.occt.shapes.edge.arcFromCirclePointAndAngle({ circle, point: [10, 0, 0], alphaAngle: 45, sense: true });
+     * ```
      */
     arcFromCirclePointAndAngle(inputs: Inputs.OCCT.ArcEdgeCirclePointAngleDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.arcFromCirclePointAndAngle", inputs);
     }
 
     /**
-     * Creates OpenCascade circle edge
-     * @param inputs Circle parameters
-     * @returns OpenCascade circle edge
+     * Makes a full circle as one closed edge, lying in the plane whose normal is `direction`.
+     * @param inputs - The radius, the center and the plane normal
+     * @returns The circle edge
      * @group primitives
      * @shortname circle
      * @drawable true
+     * @example
+     * ```typescript
+     * const circle = await bitbybit.occt.shapes.edge.createCircleEdge({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * ```
      */
     createCircleEdge(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.createCircleEdge", inputs);
     }
 
     /**
-     * Creates OpenCascade ellipse edge
-     * @param inputs Ellipse parameters
-     * @returns OpenCascade ellipse edge
+     * Makes a full ellipse as one closed edge, lying in the plane whose normal is `direction`.
+     *
+     * `radiusMajor` must not be smaller than `radiusMinor`, or the kernel refuses the ellipse.
+     * @param inputs - The center, the plane normal and the two radii
+     * @returns The ellipse edge
      * @group primitives
      * @shortname ellipse
      * @drawable true
+     * @example
+     * ```typescript
+     * const ellipse = await bitbybit.occt.shapes.edge.createEllipseEdge({ center: [0, 0, 0], direction: [0, 1, 0], radiusMinor: 3, radiusMajor: 6 });
+     * ```
      */
     createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.createEllipseEdge", inputs);
     }
 
     /**
-     * Removes internal faces for the shape
-     * @param inputs Shape
-     * @returns OpenCascade shape with no internal edges
+     * Merges faces that lie on the same surface and edges on the same curve, which removes the
+     * internal seams a boolean or a fuse leaves behind.
+     *
+     * It is `shapes.shape.unifySameDomain` with edges and faces both unified and B-splines left as
+     * they are.
+     * @param inputs - The shape
+     * @returns The shape without internal seams
      * @group shapes
      * @shortname remove internal
      * @drawable true
+     * @example
+     * ```typescript
+     * const clean = await bitbybit.occt.shapes.edge.removeInternalEdges({ shape: fused });
+     * ```
      */
     removeInternalEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.removeInternalEdges", inputs);
     }
 
     /**
-     * Creates an edge from geom curve and geom surface
-     * @param inputs shapes are expected to contain 2 array elements - first is geom curve, second geom surface
-     * @returns OpenCascade TopoDS_Edge
+     * Makes an edge from a 2D curve laid onto a surface: the curve lives in the surface's UV space
+     * and the edge follows it across the surface.
+     * @param inputs - The 2D curve and the surface to lay it on
+     * @returns The edge on the surface
      * @group from
      * @shortname 2d curve and surface
      * @drawable true
+     * @example
+     * ```typescript
+     * const edge = await bitbybit.occt.shapes.edge.makeEdgeFromGeom2dCurveAndSurface({ curve: curve2d, surface });
+     * ```
      */
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.CurveAndSurfaceDto<Inputs.OCCT.Geom2dCurvePointer, Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.makeEdgeFromGeom2dCurveAndSurface", inputs);
     }
 
     /**
-     * Gets the edge by providing an index from the shape
-     * @param inputs Shape
-     * @returns OpenCascade edge
+     * Picks one edge out of a shape by its position, counting from 0, in the order the kernel walks
+     * the shape.
+     *
+     * The shape must be an edge, a wire or something built from them; an index beyond the last edge
+     * throws an error.
+     * @param inputs - The shape and the 0-based index
+     * @returns The edge at that index
      * @group get
      * @shortname get edge
      * @drawable true
+     * @example
+     * ```typescript
+     * const first = await bitbybit.occt.shapes.edge.getEdge({ shape: wire, index: 0 });
+     * ```
      */
     getEdge(inputs: Inputs.OCCT.EdgeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdge", inputs);
     }
 
     /**
-     * Gets the edges of a shape in a list
-     * @param inputs Shape
-     * @returns OpenCascade edge list
+     * Lists every edge of a shape in the order the kernel walks it, which is not the order along a
+     * wire; use `getEdgesAlongWire` for that.
+     * @param inputs - The shape
+     * @returns The edges found in the shape
      * @group get
      * @shortname get edges
      * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
+     * ```
      */
     getEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdges", inputs);
     }
 
     /**
-     * Gets the edges of a wire ordered along the direction of the wire
-     * @param inputs wire shape
-     * @returns OpenCascade edge list
+     * Lists the edges of a wire in the order they follow each other along it, each oriented to run
+     * in the wire's direction.
+     *
+     * A single edge is returned as a one-element list.
+     * @param inputs - The wire
+     * @returns Its edges in order along the wire
      * @group get
      * @shortname get edges along wire
      * @drawable true
+     * @example
+     * ```typescript
+     * const ordered = await bitbybit.occt.shapes.edge.getEdgesAlongWire({ shape: wire });
+     * ```
      */
     getEdgesAlongWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdgesAlongWire", inputs);
     }
 
     /**
-     * Gets circular edges of a wire ordered along the direction of the wire
-     * @param inputs wire shape
-     * @returns OpenCascade edge list
+     * Lists only the circular edges of a wire, in the order they follow each other along it.
+     * @param inputs - The wire
+     * @returns Its circular edges in order
      * @group get
      * @shortname get circular edges along wire
      * @drawable true
+     * @example
+     * ```typescript
+     * const arcs = await bitbybit.occt.shapes.edge.getCircularEdgesAlongWire({ shape: roundedRectangle });
+     * ```
      */
     getCircularEdgesAlongWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getCircularEdgesAlongWire", inputs);
     }
 
     /**
-     * Gets linear edges of a wire ordered along the direction of the wire
-     * @param inputs wire shape
-     * @returns OpenCascade edge list
+     * Lists only the straight edges of a wire, in the order they follow each other along it.
+     * @param inputs - The wire
+     * @returns Its straight edges in order
      * @group get
      * @shortname get linear edges along wire
      * @drawable true
+     * @example
+     * ```typescript
+     * const straights = await bitbybit.occt.shapes.edge.getLinearEdgesAlongWire({ shape: roundedRectangle });
+     * ```
      */
     getLinearEdgesAlongWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getLinearEdgesAlongWire", inputs);
     }
 
     /**
-     * Gets corner points of edges for a shape. There's no order guarantee here. All duplicates are removed, so when three edges form one corner, that will be represented by a single point in the list. 
-     * @param inputs Shape that contains edges - wire, face, shell, solid
-     * @returns List of points
+     * Lists the end points of every edge of a shape, with repeats removed, so a corner where
+     * several edges meet appears once.
+     *
+     * The points come in no particular order.
+     * @param inputs - The shape whose edges to read: a wire, face, shell or solid
+     * @returns The unique end points of the edges
      * @group get
      * @shortname corners
      * @drawable true
+     * @example
+     * ```typescript
+     * const corners = await bitbybit.occt.shapes.edge.getCornerPointsOfEdgesForShape({ shape: box });
+     * ```
      */
     getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getCornerPointsOfEdgesForShape", inputs);
     }
 
     /**
-     * Gets the edge length
-     * @param inputs edge
-     * @returns Length
+     * Measures the length of an edge along its curve, in model units.
+     * @param inputs - The edge
+     * @returns The length
      * @group get
      * @shortname edge length
      * @drawable false
+     * @example
+     * ```typescript
+     * const len = await bitbybit.occt.shapes.edge.getEdgeLength({ shape: edge });
+     * ```
      */
     getEdgeLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdgeLength", inputs);
     }
 
     /**
-     * Gets the edge lengths of the shape
-     * @param inputs shape
-     * @returns Lengths
+     * Measures every edge of a shape along its curve, in model units.
+     * @param inputs - The shape
+     * @returns One length per edge, in the order `getEdges` lists them
      * @group get
      * @shortname edge lengths of shape
      * @drawable false
+     * @example
+     * ```typescript
+     * const lengths = await bitbybit.occt.shapes.edge.getEdgeLengthsOfShape({ shape: box });
+     * ```
      */
     getEdgeLengthsOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<number[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdgeLengthsOfShape", inputs);
     }
 
     /**
-     * Gets the lengths of the edges
-     * @param inputs edges
-     * @returns Lengths
+     * Measures each edge in a list along its curve, in model units.
+     * @param inputs - The edges
+     * @returns One length per edge, in the same order
      * @group get
      * @shortname lengths
      * @drawable false
+     * @example
+     * ```typescript
+     * const lengths = await bitbybit.occt.shapes.edge.getEdgesLengths({ shapes: edges });
+     * ```
      */
     getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdgesLengths", inputs);
     }
 
     /**
-     * Gets the center of mass for the edge
-     * @param inputs edge
-     * @returns Point representing center of mass
+     * Finds the center of mass of an edge, the balance point of its curve; for a straight edge that
+     * is its midpoint, for an arc a point inside the curve.
+     * @param inputs - The edge
+     * @returns The center of mass point
      * @group get
      * @shortname center of mass
      * @drawable true
+     * @example
+     * ```typescript
+     * const center = await bitbybit.occt.shapes.edge.getEdgeCenterOfMass({ shape: edge });
+     * ```
      */
     getEdgeCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdgeCenterOfMass", inputs);
     }
 
     /**
-     * Gets the centers of mass for the edges
-     * @param inputs edges
-     * @returns Points representing centers of mass
+     * Finds the center of mass of each edge in a list.
+     * @param inputs - The edges
+     * @returns One point per edge, in the same order
      * @group get
      * @shortname centers of mass
      * @drawable true
+     * @example
+     * ```typescript
+     * const centers = await bitbybit.occt.shapes.edge.getEdgesCentersOfMass({ shapes: edges });
+     * ```
      */
     getEdgesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdgesCentersOfMass", inputs);
     }
 
     /**
-     * Gets the center point of the circular edge. If edge is not circular, point will not be returned.
-     * @param inputs edge
-     * @returns Point representing center of the circular edge
+     * Finds the center of the circle a circular edge lies on.
+     *
+     * An edge that is not circular throws an error.
+     * @param inputs - The circular edge
+     * @returns The center point
      * @group get circular edge
      * @shortname get center of circular edge
      * @drawable true
+     * @example
+     * ```typescript
+     * const center = await bitbybit.occt.shapes.edge.getCircularEdgeCenterPoint({ shape: arc });
+     * ```
      */
     getCircularEdgeCenterPoint(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getCircularEdgeCenterPoint", inputs);
     }
 
     /**
-     * Gets the radius of the circular edge. If edge is not circular, radius will not be returned.
-     * @param inputs edge
-     * @returns Radius of the circular edge
+     * Reads the radius of the circle a circular edge lies on.
+     *
+     * An edge that is not circular throws an error.
+     * @param inputs - The circular edge
+     * @returns The radius in model units
      * @group get circular edge
      * @shortname get radius of circular edge
      * @drawable false
+     * @example
+     * ```typescript
+     * const radius = await bitbybit.occt.shapes.edge.getCircularEdgeRadius({ shape: arc });
+     * ```
      */
     getCircularEdgeRadius(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getCircularEdgeRadius", inputs);
     }
 
     /**
-     * Gets the direction vector of the plane of the circular edge. If edge is not circular, direction vector will not be returned.
-     * @param inputs edge
-     * @returns Direction vector of the circular edge
+     * Reads the normal of the plane a circular edge lies in.
+     *
+     * An edge that is not circular throws an error.
+     * @param inputs - The circular edge
+     * @returns The unit normal of the circle's plane
      * @group get circular edge
      * @shortname get plane direction of circular edge
      * @drawable true
+     * @example
+     * ```typescript
+     * const normal = await bitbybit.occt.shapes.edge.getCircularEdgePlaneDirection({ shape: arc });
+     * ```
      */
     getCircularEdgePlaneDirection(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Vector3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getCircularEdgePlaneDirection", inputs);
     }
 
     /**
-     * Gets the point on edge at param
-     * @param input edge
-     * @returns Point on param
+     * Finds the point a fraction of the way along an edge: 0 is the start, 1 the end, 0.5 the
+     * middle of the parameter range.
+     *
+     * The fraction follows the curve's own parameter, which for a free-form curve is not evenly
+     * spread by length; use `pointOnEdgeAtLength` for a distance.
+     * @param inputs - The edge and the fraction from 0 to 1
+     * @returns The point on the edge
      * @group extract
      * @shortname point at param
      * @drawable true
+     * @example
+     * ```typescript
+     * const middle = await bitbybit.occt.shapes.edge.pointOnEdgeAtParam({ shape: edge, param: 0.5 });
+     * ```
      */
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.pointOnEdgeAtParam", inputs);
     }
 
     /**
-     * Gets the points on edges at param
-     * @param input edges
-     * @returns Points on param
+     * Finds the point at the same fraction along each edge in a list.
+     * @param inputs - The edges and the fraction from 0 to 1
+     * @returns One point per edge, in the same order
      * @group extract
      * @shortname points on edges at param
      * @drawable true
+     * @example
+     * ```typescript
+     * const middles = await bitbybit.occt.shapes.edge.pointsOnEdgesAtParam({ shapes: edges, param: 0.5 });
+     * ```
      */
     pointsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.pointsOnEdgesAtParam", inputs);
     }
 
     /**
-     * Gets the points of all edges from a shape in separate lists for each edge
-     * @param inputs Shape
-     * @returns OpenCascade points lists
+     * Turns every edge of a shape into a run of points that follows its curve closely enough to
+     * draw it, one list per edge.
+     *
+     * The deflection settings say how tightly the points hug curved edges; a wire's edges come in
+     * their order along the wire.
+     * @param inputs - The shape and the deflection settings
+     * @returns One list of points per edge
      * @group extract
      * @shortname edges to points
      * @drawable false
+     * @example
+     * ```typescript
+     * const polylines = await bitbybit.occt.shapes.edge.edgesToPoints({
+     *     shape: wire,
+     *     angularDeflection: 0.1,
+     *     curvatureDeflection: 0.1,
+     *     minimumOfPoints: 2,
+     *     uTolerance: 1e-9,
+     *     minimumLength: 1e-7,
+     * });
+     * ```
      */
     edgesToPoints(inputs: Inputs.OCCT.EdgesToPointsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[][]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.edgesToPoints", inputs);
     }
 
     /**
-     * Computes reversed edge from input edge
-     * @param inputs Shape
-     * @returns OpenCascade edge
+     * Flips the direction of an edge, so its start becomes its end.
+     * @param inputs - The edge
+     * @returns A new edge running the other way
      * @group get
      * @shortname reversed edge
      * @drawable true
+     * @example
+     * ```typescript
+     * const back = await bitbybit.occt.shapes.edge.reversedEdge({ shape: edge });
+     * ```
      */
     reversedEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.reversedEdge", inputs);
     }
 
     /**
-     * Gets the tangent vector on edge at param
-     * @param input edge
-     * @returns Tangent vector on param
+     * Finds the direction the edge is heading at a fraction of the way along it, from 0 at the
+     * start to 1 at the end.
+     * @param inputs - The edge and the fraction from 0 to 1
+     * @returns The tangent direction
      * @group extract
      * @shortname tangent at param
      * @drawable true
+     * @example
+     * ```typescript
+     * const tangent = await bitbybit.occt.shapes.edge.tangentOnEdgeAtParam({ shape: arc, param: 0.5 });
+     * ```
      */
     tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Vector3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentOnEdgeAtParam", inputs);
     }
 
     /**
-     * Gets the tangent vectors on edges at param
-     * @param input edges
-     * @returns Tangent vectors on param
+     * Finds the direction each edge in a list is heading at the same fraction along it.
+     * @param inputs - The edges and the fraction from 0 to 1
+     * @returns One tangent per edge, in the same order
      * @group extract
      * @shortname tangents on edges at param
      * @drawable true
+     * @example
+     * ```typescript
+     * const tangents = await bitbybit.occt.shapes.edge.tangentsOnEdgesAtParam({ shapes: edges, param: 0.5 });
+     * ```
      */
     tangentsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentsOnEdgesAtParam", inputs);
     }
 
     /**
-     * Gets the point on edge at length
-     * @param input edge and length
-     * @returns Point on edge
+     * Finds the point a given distance along an edge from its start, measured along the curve in
+     * model units.
+     * @param inputs - The edge and the distance from its start
+     * @returns The point on the edge
      * @group extract
      * @shortname point at length
      * @drawable true
+     * @example
+     * ```typescript
+     * const point = await bitbybit.occt.shapes.edge.pointOnEdgeAtLength({ shape: edge, length: 2.5 });
+     * ```
      */
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.pointOnEdgeAtLength", inputs);
     }
 
     /**
-     * Gets the points on edges at length
-     * @param input edges and length
-     * @returns Points on edges
+     * Finds the point at the same distance from the start along each edge in a list.
+     * @param inputs - The edges and the distance from the start
+     * @returns One point per edge, in the same order
      * @group extract
      * @shortname points at length
      * @drawable true
+     * @example
+     * ```typescript
+     * const points = await bitbybit.occt.shapes.edge.pointsOnEdgesAtLength({ shapes: edges, length: 2.5 });
+     * ```
      */
     pointsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.pointsOnEdgesAtLength", inputs);
     }
 
     /**
-     * Gets the tangent vector on edge at length
-     * @param input edge and length
-     * @returns Tangent vector on edge
+     * Finds the direction the edge is heading at a given distance along it from its start, measured
+     * along the curve.
+     * @param inputs - The edge and the distance from its start
+     * @returns The tangent direction
      * @group extract
      * @shortname tangent at length
      * @drawable true
+     * @example
+     * ```typescript
+     * const tangent = await bitbybit.occt.shapes.edge.tangentOnEdgeAtLength({ shape: arc, length: 2.5 });
+     * ```
      */
     tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Vector3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentOnEdgeAtLength", inputs);
     }
 
     /**
-     * Gets the tangent vectors on edges at length
-     * @param input edges and length
-     * @returns Tangent vectors on edges
+     * Finds the direction each edge in a list is heading at the same distance from its start.
+     * @param inputs - The edges and the distance from the start
+     * @returns One tangent per edge, in the same order
      * @group extract
      * @shortname tangents at length
      * @drawable true
+     * @example
+     * ```typescript
+     * const tangents = await bitbybit.occt.shapes.edge.tangentsOnEdgesAtLength({ shapes: edges, length: 2.5 });
+     * ```
      */
     tangentsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Vector3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentsOnEdgesAtLength", inputs);
     }
 
     /**
-     * Gets the start point on edge
-     * @param input edge
-     * @returns Start point
+     * Reads the point where an edge starts, in the edge's own direction.
+     * @param inputs - The edge
+     * @returns The start point
      * @group extract
      * @shortname start point
      * @drawable true
+     * @example
+     * ```typescript
+     * const start = await bitbybit.occt.shapes.edge.startPointOnEdge({ shape: edge });
+     * ```
      */
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.startPointOnEdge", inputs);
     }
 
     /**
-     * Gets the start points on edges
-     * @param input edges
-     * @returns Start points
+     * Reads the start point of each edge in a list.
+     * @param inputs - The edges
+     * @returns One start point per edge, in the same order
      * @group extract
      * @shortname start points
      * @drawable true
+     * @example
+     * ```typescript
+     * const starts = await bitbybit.occt.shapes.edge.startPointsOnEdges({ shapes: edges });
+     * ```
      */
     startPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.startPointsOnEdges", inputs);
     }
 
     /**
-     * Gets the end point on edge
-     * @param input edge
-     * @returns End point
+     * Reads the point where an edge ends, in the edge's own direction.
+     * @param inputs - The edge
+     * @returns The end point
      * @group extract
      * @shortname end point
      * @drawable true
+     * @example
+     * ```typescript
+     * const end = await bitbybit.occt.shapes.edge.endPointOnEdge({ shape: edge });
+     * ```
      */
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.endPointOnEdge", inputs);
     }
 
     /**
-     * Gets the end points on edges
-     * @param input edges
-     * @returns End points
+     * Reads the end point of each edge in a list.
+     * @param inputs - The edges
+     * @returns One end point per edge, in the same order
      * @group extract
      * @shortname end points
      * @drawable true
+     * @example
+     * ```typescript
+     * const ends = await bitbybit.occt.shapes.edge.endPointsOnEdges({ shapes: edges });
+     * ```
      */
     endPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.endPointsOnEdges", inputs);
     }
 
     /**
-     * Divides edge by params to points
-     * @param input edge and division params
-     * @returns Points
+     * Places points along an edge at equal steps of its parameter, from start to end.
+     *
+     * `nrOfDivisions` steps give one more point than that; `removeStartPoint` and `removeEndPoint`
+     * drop the ends. On a free-form curve equal parameter steps are not equal distances; use
+     * `divideEdgeByEqualDistanceToPoints` for those.
+     * @param inputs - The edge, the number of divisions and whether to drop the end points
+     * @returns The points along the edge, in order
      * @group extract
      * @shortname points by params
      * @drawable true
+     * @example
+     * ```typescript
+     * const points = await bitbybit.occt.shapes.edge.divideEdgeByParamsToPoints({ shape: edge, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
+     * ```
      */
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.divideEdgeByParamsToPoints", inputs);
     }
 
     /**
-     * Divides edges by params to points
-     * @param input edges and division params
-     * @returns Points
+     * Places points along each edge in a list at equal steps of its parameter, one list per edge.
+     * @param inputs - The edges, the number of divisions and whether to drop the end points
+     * @returns One list of points per edge, in the same order
      * @group extract
      * @shortname points by params on edges
      * @drawable false
+     * @example
+     * ```typescript
+     * const points = await bitbybit.occt.shapes.edge.divideEdgesByParamsToPoints({ shapes: edges, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
+     * ```
      */
     divideEdgesByParamsToPoints(inputs: Inputs.OCCT.DivideShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[][]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.divideEdgesByParamsToPoints", inputs);
     }
 
     /**
-     * Divides edge by length to points
-     * @param input edge and division params
-     * @returns Points
+     * Places points along an edge at equal distances measured along its curve, from start to end.
+     *
+     * `nrOfDivisions` steps give one more point than that; `removeStartPoint` and `removeEndPoint`
+     * drop the ends.
+     * @param inputs - The edge, the number of divisions and whether to drop the end points
+     * @returns The points along the edge, in order
      * @group extract
      * @shortname points by distance
      * @drawable true
+     * @example
+     * ```typescript
+     * const points = await bitbybit.occt.shapes.edge.divideEdgeByEqualDistanceToPoints({ shape: edge, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
+     * ```
      */
     divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.divideEdgeByEqualDistanceToPoints", inputs);
     }
 
     /**
-     * Divides edges by length to points
-     * @param input edges and division params
-     * @returns Points
+     * Places points along each edge in a list at equal distances along its curve, one list per
+     * edge.
+     * @param inputs - The edges, the number of divisions and whether to drop the end points
+     * @returns One list of points per edge, in the same order
      * @group extract
      * @shortname points by distance on edges
      * @drawable false
+     * @example
+     * ```typescript
+     * const points = await bitbybit.occt.shapes.edge.divideEdgesByEqualDistanceToPoints({ shapes: edges, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
+     * ```
      */
     divideEdgesByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[][]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.divideEdgesByEqualDistanceToPoints", inputs);
     }
 
     /**
-     * Creates lines from two given points till circle tangent locations
-     * @param input resulting lines
-     * @returns lines
+     * Draws the straight lines from two points that just touch a circle, one tangent line from each
+     * point.
+     *
+     * `positionResult` keeps the solutions on one side of the circle or all of them, and
+     * `circleRemainder` adds the piece of the circle between the touching points.
+     * @param inputs - The circle edge, the two points, the tolerance and which solutions to keep
+     * @returns The tangent lines, and the circle piece when asked for
      * @group constraint
      * @shortname tan lines from 2 pts to circle
      * @drawable true
+     * @example
+     * ```typescript
+     * const tangents = await bitbybit.occt.shapes.edge.constraintTanLinesFromTwoPtsToCircle({
+     *     circle,
+     *     point1: [20, 0, 0],
+     *     point2: [-20, 0, 0],
+     *     tolerance: 1e-7,
+     *     positionResult: Bit.Inputs.OCCT.positionResultEnum.all,
+     *     circleRemainder: Bit.Inputs.OCCT.circleInclusionEnum.none,
+     * });
+     * ```
      */
     constraintTanLinesFromTwoPtsToCircle(inputs: Inputs.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.constraintTanLinesFromTwoPtsToCircle", inputs);
     }
 
     /**
-     * Creates lines from a given point till circle tangent locations
-     * @param input resulting lines
-     * @returns lines
+     * Draws the two straight lines from a point that just touch a circle.
+     *
+     * `positionResult` keeps the solution on one side of the circle or both, and `circleRemainder`
+     * adds the piece of the circle between the touching points.
+     * @param inputs - The circle edge, the point, the tolerance and which solutions to keep
+     * @returns The tangent lines, and the circle piece when asked for
      * @group constraint
      * @shortname tan lines from pt to circle
      * @drawable true
+     * @example
+     * ```typescript
+     * const tangents = await bitbybit.occt.shapes.edge.constraintTanLinesFromPtToCircle({
+     *     circle,
+     *     point: [20, 0, 0],
+     *     tolerance: 1e-7,
+     *     positionResult: Bit.Inputs.OCCT.positionResultEnum.all,
+     *     circleRemainder: Bit.Inputs.OCCT.circleInclusionEnum.none,
+     * });
+     * ```
      */
     constraintTanLinesFromPtToCircle(inputs: Inputs.OCCT.ConstraintTanLinesFromPtToCircleDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.constraintTanLinesFromPtToCircle", inputs);
     }
 
     /**
-     * Creates tangent lines between two circles.
-     * @param input resulting lines
-     * @returns lines
+     * Draws the straight lines that just touch two circles at once, like a belt around two pulleys.
+     *
+     * `positionResult` keeps the lines on one side or all of them, and `circleRemainders` adds the
+     * outside or inside pieces of the circles between the touching points, which completes the belt
+     * shape.
+     * @param inputs - The two circle edges, the tolerance and which solutions and circle pieces to keep
+     * @returns The tangent lines, and the circle pieces when asked for
      * @group constraint
      * @shortname tan lines on two circles
      * @drawable true
+     * @example
+     * ```typescript
+     * const belt = await bitbybit.occt.shapes.edge.constraintTanLinesOnTwoCircles({
+     *     circle1,
+     *     circle2,
+     *     tolerance: 1e-7,
+     *     positionResult: Bit.Inputs.OCCT.positionResultEnum.all,
+     *     circleRemainders: Bit.Inputs.OCCT.twoCircleInclusionEnum.outside,
+     * });
+     * ```
      */
     constraintTanLinesOnTwoCircles(inputs: Inputs.OCCT.ConstraintTanLinesOnTwoCirclesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.constraintTanLinesOnTwoCircles", inputs);
     }
 
     /**
-     * Creates tangent circles between two circles.
-     * @param input resulting circles
-     * @returns circles
+     * Draws the circles of a given radius that just touch two circles at once.
+     * @param inputs - The two circle edges, the tolerance and the radius of the new circles
+     * @returns The tangent circles
      * @group constraint
      * @shortname tan circles on two circles
      * @drawable true
+     * @example
+     * ```typescript
+     * const circles = await bitbybit.occt.shapes.edge.constraintTanCirclesOnTwoCircles({ circle1, circle2, tolerance: 1e-7, radius: 3 });
+     * ```
      */
     constraintTanCirclesOnTwoCircles(inputs: Inputs.OCCT.ConstraintTanCirclesOnTwoCirclesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.constraintTanCirclesOnTwoCircles", inputs);
     }
 
     /**
-     * Creates tangent circles between a point and a circle.
-     * @param input resulting circles
-     * @returns circles
+     * Draws the circles of a given radius that pass through a point and just touch a circle.
+     * @param inputs - The circle edge, the point, the tolerance and the radius of the new circles
+     * @returns The tangent circles
      * @group constraint
      * @shortname tan circles on circle and pnt
      * @drawable true
+     * @example
+     * ```typescript
+     * const circles = await bitbybit.occt.shapes.edge.constraintTanCirclesOnCircleAndPnt({ circle, point: [15, 0, 0], tolerance: 1e-7, radius: 3 });
+     * ```
      */
     constraintTanCirclesOnCircleAndPnt(inputs: Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.constraintTanCirclesOnCircleAndPnt", inputs);
     }
 
     /**
-     * Checks whether an edge is linear
-     * @param input edge
-     * @returns boolean if is linear
+     * Tells whether an edge is a straight line.
+     * @param inputs - The edge
+     * @returns True when the edge is straight
      * @group is
      * @shortname is edge linear
      * @drawable false
+     * @example
+     * ```typescript
+     * const straight = await bitbybit.occt.shapes.edge.isEdgeLinear({ shape: edge });
+     * ```
      */
     isEdgeLinear(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<boolean> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.isEdgeLinear", inputs);
     }
 
     /**
-     * Checks whether an edge is circular
-     * @param input edge
-     * @returns boolean if is circular
+     * Tells whether an edge lies on a circle, whether a full circle or an arc.
+     * @param inputs - The edge
+     * @returns True when the edge is circular
      * @group is
      * @shortname is edge circular
      * @drawable false
+     * @example
+     * ```typescript
+     * const round = await bitbybit.occt.shapes.edge.isEdgeCircular({ shape: edge });
+     * ```
      */
     isEdgeCircular(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<boolean> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.isEdgeCircular", inputs);

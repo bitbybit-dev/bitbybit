@@ -7,6 +7,9 @@ import { Base } from "./base-inputs";
  * a kernel wire ready for solid modelling.
  */
 export namespace Polyline {
+    /**
+     * Points and a closed flag for `polyline.create`.
+     */
     export class PolylineCreateDto {
         /**
          * Provide options without default values
@@ -16,16 +19,20 @@ export namespace Polyline {
             if (isClosed !== undefined) { this.isClosed = isClosed; }
         }
         /**
-         * Points of the polyline
+         * The points of the polyline, in order along it.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Can contain is closed information
+         * When true, the polyline joins its last point back to its first.
          * @default false
          */
         isClosed?: boolean | undefined = false;
     }
+    /**
+     * A polyline as a plain object: its points in order, whether it closes back on itself, and an
+     * optional color for drawing.
+     */
     export class PolylinePropertiesDto {
         /**
          * Provide options without default values
@@ -35,57 +42,72 @@ export namespace Polyline {
             if (isClosed !== undefined) { this.isClosed = isClosed; }
         }
         /**
-         * Points of the polyline
+         * The points of the polyline, in order along it.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Can contain is closed information
+         * When true, the polyline joins its last point back to its first.
          * @default false
          */
         isClosed?: boolean | undefined = false;
         /**
-         * Optional polyline color
+         * A color used when the polyline is drawn, as a hex text such as `#ff0000` or as `[r, g,
+         * b]` values from 0 to 1.
          * @default #444444
          */
         color?: string | number[] | undefined;
     }
+    /**
+     * One polyline for the methods that read it: `polyline.length`, `polyline.getPoints`,
+     * `polyline.polylineToSegments` and the rest.
+     */
     export class PolylineDto {
         constructor(polyline?: PolylinePropertiesDto) {
             if (polyline !== undefined) { this.polyline = polyline; }
         }
         /**
-         * Polyline with points
+         * The polyline object with its points.
          * @default undefined
          */
         polyline!: PolylinePropertiesDto;
     }
+    /**
+     * A list of polylines, for methods that take several at once.
+     */
     export class PolylinesDto {
         constructor(polylines?: PolylinePropertiesDto[]) {
             if (polylines !== undefined) { this.polylines = polylines; }
         }
         /**
-         * Polylines array
+         * The polyline objects.
          * @default undefined
          */
         polylines!: PolylinePropertiesDto[];
     }
+    /**
+     * A polyline and the transformation `polyline.transformPolyline` applies to its points.
+     */
     export class TransformPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, transformation?: Base.TransformMatrixes) {
             if (polyline !== undefined) { this.polyline = polyline; }
             if (transformation !== undefined) { this.transformation = transformation; }
         }
         /**
-         * Polyline to transform
+         * The polyline whose points are transformed; a new polyline is returned.
          * @default undefined
          */
         polyline!: PolylinePropertiesDto;
         /**
-         * Transformation matrix or a list of transformation matrixes
+         * A transformation matrix, or a list of them applied in order.
          * @default undefined
          */
         transformation!: Base.TransformMatrixes;
     }
+    /**
+     * One polyline and how to draw it: its width, color and opacity, and whether the drawn mesh
+     * will be updated later.
+     */
     export class DrawPolylineDto<T> {
         /**
          * Provide options without default values
@@ -99,12 +121,12 @@ export namespace Polyline {
             if (polylineMesh !== undefined) { this.polylineMesh = polylineMesh; }
         }
         /**
-         * Polyline
+         * The polyline to draw, with its points and closed flag.
          * @default undefined
          */
         polyline!: PolylinePropertiesDto;
         /**
-         * Value between 0 and 1
+         * How opaque the line is, from 0 (invisible) to 1 (solid).
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -112,12 +134,12 @@ export namespace Polyline {
          */
         opacity?: number | undefined = 1;
         /**
-         * Hex colour string
+         * Color of the line as a hex text such as `#ff0000`; a list of texts is also accepted.
          * @default #444444
          */
         colours?: string | string[] | undefined = "#444444";
         /**
-         * Width of the polyline
+         * Width of the drawn line.
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -125,16 +147,21 @@ export namespace Polyline {
          */
         size?: number | undefined = 3;
         /**
-         * Indicates wether the position of this polyline will change in time
+         * When true, the drawn mesh is built so its points can be changed later without redrawing.
          * @default false
          */
         updatable?: boolean | undefined = false;
         /**
-         * Line mesh variable in case it already exists and needs updating
+         * A mesh drawn earlier for this polyline; when given it is updated in place instead of a
+         * new one being made.
          * @default undefined
          */
         polylineMesh?: T | undefined;
     }
+    /**
+     * A list of polylines and how to draw them: their width, colors and opacity, and whether the
+     * drawn mesh will be updated later.
+     */
     export class DrawPolylinesDto<T> {
         /**
          * Provide options without default values
@@ -148,12 +175,12 @@ export namespace Polyline {
             if (polylinesMesh !== undefined) { this.polylinesMesh = polylinesMesh; }
         }
         /**
-         * Polylines
+         * The polylines to draw, each with its points and closed flag.
          * @default undefined
          */
         polylines!: PolylinePropertiesDto[];
         /**
-         * Value between 0 and 1
+         * How opaque the lines are, from 0 (invisible) to 1 (solid).
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -161,12 +188,12 @@ export namespace Polyline {
          */
         opacity?: number | undefined = 1;
         /**
-         * Hex colour string
+         * One hex color text for all polylines, or one text per polyline.
          * @default #444444
          */
         colours?: string | string[] | undefined = "#444444";
         /**
-         * Width of the polyline
+         * Width of the drawn lines.
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -174,27 +201,31 @@ export namespace Polyline {
          */
         size?: number | undefined = 3;
         /**
-         * Indicates wether the position of this polyline will change in time
+         * When true, the drawn mesh is built so the points can be changed later without redrawing.
          * @default false
          */
         updatable?: boolean | undefined = false;
         /**
-         * Polyline mesh variable in case it already exists and needs updating
+         * A mesh drawn earlier for these polylines; when given it is updated in place instead of a
+         * new one being made.
          * @default undefined
          */
         polylinesMesh?: T | undefined;
     }
+    /**
+     * Loose segments and a tolerance for `polyline.sortSegmentsIntoPolylines`.
+     */
     export class SegmentsToleranceDto {
         constructor(segments?: Base.Segment3[]) {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * Segments array
+         * The segments to join, each a pair of points, in any order.
          * @default undefined
          */
         segments!: Base.Segment3[];
         /**
-         * Tolerance for the calculation
+         * Two segment ends closer than this, in model units, count as touching.
          * @default 1e-5
          * @minimum -Infinity
          * @maximum Infinity
@@ -202,18 +233,22 @@ export namespace Polyline {
          */
         tolerance?: number | undefined = 1e-5;
     }
+    /**
+     * A polyline and a tolerance for `polyline.polylineSelfIntersection`,
+     * `polyline.maxFilletsHalfLine` and `polyline.safestFilletRadius`.
+     */
     export class PolylineToleranceDto {
         constructor(polyline?: PolylinePropertiesDto, tolerance?: number) {
             if (polyline !== undefined) { this.polyline = polyline; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * Polyline to check
+         * The polyline to examine.
          * @default undefined
          */
         polyline!: PolylinePropertiesDto;
         /**
-         * Tolerance for the calculation
+         * Distance, in model units, below which two points count as the same.
          * @default 1e-5
          * @minimum -Infinity
          * @maximum Infinity
@@ -221,6 +256,9 @@ export namespace Polyline {
          */
         tolerance?: number | undefined = 1e-5;
     }
+    /**
+     * Two polylines and a tolerance for `polyline.twoPolylineIntersection`.
+     */
     export class TwoPolylinesToleranceDto {
         constructor(polyline1?: PolylinePropertiesDto, polyline2?: PolylinePropertiesDto, tolerance?: number) {
             if (polyline1 !== undefined) { this.polyline1 = polyline1; }
@@ -228,17 +266,17 @@ export namespace Polyline {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * First polyline to check
+         * The first polyline.
          * @default undefined
          */
         polyline1!: PolylinePropertiesDto;
         /**
-         * Second polyline to check
+         * The second polyline.
          * @default undefined
          */
         polyline2!: PolylinePropertiesDto;
         /**
-         * Tolerance for the calculation
+         * Crossing points closer together than this, in model units, are reported once.
          * @default 1e-5
          * @minimum -Infinity
          * @maximum Infinity

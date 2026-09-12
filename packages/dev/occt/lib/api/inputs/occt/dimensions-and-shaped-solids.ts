@@ -5,6 +5,11 @@ import { dimensionEndTypeEnum, directionEnum } from "./enums";
 import { LPolygonDto } from "./profiles-and-primitive-solids";
 import { ChristmasTreeDto, Heart2DDto, NGonWireDto, ParallelogramDto, StarDto } from "./faces-2d-curves-and-decorative-wires";
 
+/**
+ * Two points and the drawing settings for `dimensions.simpleLinearLengthDimension`: where the
+ * dimension line sits, how the extension lines, arrows and label look, and how the distance is
+ * written.
+ */
 export class SimpleLinearLengthDimensionDto {
     constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, arrowType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
         if (start !== undefined) { this.start = start; }
@@ -26,22 +31,24 @@ export class SimpleLinearLengthDimensionDto {
         if (removeTrailingZeros !== undefined) { this.removeTrailingZeros = removeTrailingZeros; }
     }
     /**
-     * The start point for dimension
+     * The first of the two points whose distance is measured.
      * @default undefined
      */
     start!: Base.Point3;
     /**
-     * The end point for dimension
+     * The second of the two points whose distance is measured.
      * @default undefined
      */
     end!: Base.Point3;
     /**
-     * The dimension direction (must include length)
+     * The vector from the measured points to the dimension line; its length is the offset, in model
+     * units, and it must not run along the measured line.
      * @default undefined
      */
     direction!: Base.Vector3;
     /**
-     * The dimension label
+     * The gap between each measured point and the start of its extension line, in model units, so
+     * the dimension does not touch the geometry.
      * @default 0
      * @minimum -Infinity
      * @maximum Infinity
@@ -49,7 +56,7 @@ export class SimpleLinearLengthDimensionDto {
      */
     offsetFromPoints?: number | undefined = 0;
     /**
-     * The dimension crossing size
+     * How far the lines stick out past their crossings, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -57,7 +64,7 @@ export class SimpleLinearLengthDimensionDto {
      */
     crossingSize?: number | undefined = 0.2;
     /**
-     * The dimension label decimal places
+     * How many decimals the distance is rounded to in the label.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -65,12 +72,12 @@ export class SimpleLinearLengthDimensionDto {
      */
     decimalPlaces?: number | undefined = 2;
     /**
-     * The dimension label suffix
+     * Text written after the number, such as a unit; the model has no unit of its own.
      * @default (cm)
      */
     labelSuffix?: string | undefined = "(cm)";
     /**
-     * The dimension label size
+     * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -78,7 +85,7 @@ export class SimpleLinearLengthDimensionDto {
      */
     labelSize?: number | undefined = 0.1;
     /**
-     * The dimension label offset
+     * How far the label sits from the dimension line, in model units.
      * @default 0.3
      * @minimum -Infinity
      * @maximum Infinity
@@ -86,7 +93,7 @@ export class SimpleLinearLengthDimensionDto {
      */
     labelOffset?: number | undefined = 0.3;
     /**
-     * The dimension label rotation
+     * Extra rotation of the label in its plane, in degrees.
      * @default 0
      * @minimum -360
      * @maximum 360
@@ -94,12 +101,12 @@ export class SimpleLinearLengthDimensionDto {
      */
     labelRotation?: number | undefined = 0;
     /**
-     * End type for dimension
+     * What the dimension line ends with: nothing, or an arrowhead.
      * @default none
      */
     endType?: dimensionEndTypeEnum | undefined = dimensionEndTypeEnum.none;
     /**
-     * The size/length of dimension arrows
+     * The length of the arrowheads, in model units.
      * @default 0.3
      * @minimum 0
      * @maximum Infinity
@@ -107,7 +114,7 @@ export class SimpleLinearLengthDimensionDto {
      */
     arrowSize?: number | undefined = 0.3;
     /**
-     * The total angle between arrow lines (max 90 degrees)
+     * The full angle between the two lines of an arrowhead, in degrees, up to 90.
      * @default 30
      * @minimum 0
      * @maximum 90
@@ -115,32 +122,37 @@ export class SimpleLinearLengthDimensionDto {
      */
     arrowAngle?: number | undefined = 30;
     /**
-     * Flip arrows to point outward instead of inward
+     * When true, the arrowheads point outward from the dimension instead of inward.
      * @default false
      */
     arrowsFlipped?: boolean | undefined = false;
     /**
-     * Flip label horizontally
+     * When true, the label is mirrored left to right.
      * @default false
      */
     labelFlipHorizontal?: boolean | undefined = false;
     /**
-     * Flip label vertically
+     * When true, the label is mirrored top to bottom.
      * @default false
      */
     labelFlipVertical?: boolean | undefined = false;
     /**
-     * Override label text with custom expression (supports 'val' for computed value, e.g., '100*val', 'Length: val mm')
+     * An expression written instead of the plain number, with `val` standing for the distance, such
+     * as `100*val` or `Length: val mm`.
      * @default 1*val
      * @optional true
      */
     labelOverwrite?: string | undefined = "1*val";
     /**
-     * Remove trailing zeros from decimal places
+     * When true, zeros at the end of the decimals are dropped, so 2.50 becomes 2.5.
      * @default false
      */
     removeTrailingZeros?: boolean | undefined = false;
 }
+/**
+ * A center, two directions and the drawing settings for `dimensions.simpleAngularDimension`: the
+ * arc, the extension lines, the arrows and the label with the angle.
+ */
 export class SimpleAngularDimensionDto {
     constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
         if (direction1 !== undefined) { this.direction1 = direction1; }
@@ -165,22 +177,22 @@ export class SimpleAngularDimensionDto {
     }
 
     /**
-     * The first direction for dimension
+     * The direction of the first leg of the angle, from the center.
      * @default [1, 0, 0]
      */
     direction1: Base.Point3 = [1, 0, 0];
     /**
-     * The second direction for dimension
+     * The direction of the second leg of the angle, from the center.
      * @default [0, 0, 1]
      */
     direction2: Base.Point3 = [0, 0, 1];
     /**
-     * The center point for dimension
+     * The point the angle is measured at.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * The dimension radius
+     * The distance from the center to the dimension arc, in model units.
      * @default 4
      * @minimum 0
      * @maximum Infinity
@@ -188,7 +200,7 @@ export class SimpleAngularDimensionDto {
      */
     radius = 4;
     /**
-     * Offset from center
+     * The gap between the center and the start of each extension line, in model units.
      * @default 0.5
      * @minimum -Infinity
      * @maximum Infinity
@@ -196,7 +208,7 @@ export class SimpleAngularDimensionDto {
      */
     offsetFromCenter = 0.5;
     /**
-     * The dimension crossing size
+     * How far the extension lines stick out past the arc, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -204,7 +216,7 @@ export class SimpleAngularDimensionDto {
      */
     extraSize = 0;
     /**
-     * The dimension label decimal places
+     * How many decimals the angle is rounded to in the label.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -212,12 +224,12 @@ export class SimpleAngularDimensionDto {
      */
     decimalPlaces = 2;
     /**
-     * The dimension label suffix
+     * Text written after the number, such as the unit.
      * @default (deg)
      */
     labelSuffix = "(deg)";
     /**
-     * The dimension label size
+     * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -225,7 +237,7 @@ export class SimpleAngularDimensionDto {
      */
     labelSize = 0.1;
     /**
-     * The dimension label offset
+     * How far the label sits from the arc, in model units.
      * @default 0.3
      * @minimum -Infinity
      * @maximum Infinity
@@ -233,17 +245,17 @@ export class SimpleAngularDimensionDto {
      */
     labelOffset = 0.3;
     /**
-     * If true the angle is in radians
+     * When true, the angle is written in radians instead of degrees.
      * @default false
      */
     radians = false;
     /**
-     * End type for dimension
+     * What the arc ends with: nothing, or an arrowhead.
      * @default none
      */
     endType?: dimensionEndTypeEnum | undefined = dimensionEndTypeEnum.none;
     /**
-     * The size/length of dimension arrows
+     * The length of the arrowheads, in model units.
      * @default 0.3
      * @minimum 0
      * @maximum Infinity
@@ -251,7 +263,7 @@ export class SimpleAngularDimensionDto {
      */
     arrowSize?: number | undefined = 0.3;
     /**
-     * The total angle between arrow lines (max 90 degrees)
+     * The full angle between the two lines of an arrowhead, in degrees, up to 90.
      * @default 30
      * @minimum 0
      * @maximum 90
@@ -259,12 +271,12 @@ export class SimpleAngularDimensionDto {
      */
     arrowAngle?: number | undefined = 30;
     /**
-     * Flip arrows to point outward instead of inward
+     * When true, the arrowheads point outward from the dimension instead of inward.
      * @default false
      */
     arrowsFlipped?: boolean | undefined = false;
     /**
-     * Additional rotation angle for the label in degrees
+     * Extra rotation of the label in its plane, in degrees.
      * @default 0
      * @minimum -360
      * @maximum 360
@@ -272,27 +284,32 @@ export class SimpleAngularDimensionDto {
      */
     labelRotation?: number | undefined = 0;
     /**
-     * Flip label horizontally
+     * When true, the label is mirrored left to right.
      * @default false
      */
     labelFlipHorizontal?: boolean | undefined = false;
     /**
-     * Flip label vertically
+     * When true, the label is mirrored top to bottom.
      * @default false
      */
     labelFlipVertical?: boolean | undefined = false;
     /**
-     * Override label text with custom expression (supports 'val' for computed value, e.g., '100*val', 'Angle: val deg')
+     * An expression written instead of the plain number, with `val` standing for the angle, such as
+     * `100*val` or `Angle: val deg`.
      * @default 1*val
      * @optional true
      */
     labelOverwrite?: string | undefined = "1*val";
     /**
-     * Remove trailing zeros from decimal places
+     * When true, zeros at the end of the decimals are dropped, so 45.00 becomes 45.
      * @default false
      */
     removeTrailingZeros?: boolean | undefined = false;
 }
+/**
+ * Two points, a label and the drawing settings for `dimensions.pinWithLabel`, a line pointing at a
+ * spot on a model with text at its end.
+ */
 export class PinWithLabelDto {
     constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean) {
         if (startPoint !== undefined) { this.startPoint = startPoint; }
@@ -311,22 +328,22 @@ export class PinWithLabelDto {
         if (labelFlipVertical !== undefined) { this.labelFlipVertical = labelFlipVertical; }
     }
     /**
-     * The start point for dimension
+     * The spot on the model the pin marks.
      * @default [0, 0, 0]
      */
     startPoint: Base.Point3 = [0, 0, 0];
     /**
-     * The end point for dimension
+     * The point the pin line ends at, where the label is written.
      * @default [0, 5, 2]
      */
     endPoint?: Base.Point3 | undefined = [0, 5, 2];
     /**
-     * The dimension direction (must include length)
+     * The normal of the plane the label is written in.
      * @default [0, 0, 1]
      */
     direction?: Base.Vector3 | undefined = [0, 0, 1];
     /**
-     * Offset from the start point
+     * The gap between the start point and the beginning of the line, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -334,12 +351,12 @@ export class PinWithLabelDto {
      */
     offsetFromStart?: number | undefined = 0;
     /**
-     * The dimension label
+     * The text written at the end of the pin.
      * @default Pin
      */
     label?: string | undefined = "Pin";
     /**
-     * The dimension label offset
+     * The gap between the end of the line and the label, in model units.
      * @default 0.3
      * @minimum -Infinity
      * @maximum Infinity
@@ -347,7 +364,7 @@ export class PinWithLabelDto {
      */
     labelOffset?: number | undefined = 0.3;
     /**
-     * The dimension label size
+     * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -355,12 +372,12 @@ export class PinWithLabelDto {
      */
     labelSize?: number | undefined = 0.1;
     /**
-     * End type for dimension
+     * What the pin line ends with at the start point: nothing, or an arrowhead.
      * @default none
      */
     endType?: dimensionEndTypeEnum | undefined = dimensionEndTypeEnum.none;
     /**
-     * The size/length of dimension arrows
+     * The length of the arrowhead, in model units.
      * @default 0.3
      * @minimum 0
      * @maximum Infinity
@@ -368,7 +385,7 @@ export class PinWithLabelDto {
      */
     arrowSize?: number | undefined = 0.3;
     /**
-     * The total angle between arrow lines (max 90 degrees)
+     * The full angle between the two lines of the arrowhead, in degrees, up to 90.
      * @default 30
      * @minimum 0
      * @maximum 90
@@ -376,12 +393,12 @@ export class PinWithLabelDto {
      */
     arrowAngle?: number | undefined = 30;
     /**
-     * Flip arrows to point outward instead of inward
+     * When true, the arrowhead points away from the start point instead of toward it.
      * @default false
      */
     arrowsFlipped?: boolean | undefined = false;
     /**
-     * Additional rotation angle for the label in degrees
+     * Extra rotation of the label in its plane, in degrees.
      * @default 0
      * @minimum -360
      * @maximum 360
@@ -389,16 +406,20 @@ export class PinWithLabelDto {
      */
     labelRotation?: number | undefined = 0;
     /**
-     * Flip label horizontally
+     * When true, the label is mirrored left to right.
      * @default false
      */
     labelFlipHorizontal?: boolean | undefined = false;
     /**
-     * Flip label vertically
+     * When true, the label is mirrored top to bottom.
      * @default false
      */
     labelFlipVertical?: boolean | undefined = false;
 }
+/**
+ * A star outline and the extrusion lengths for `shapes.solid.createStarSolid`; at least one length
+ * must be above 0.
+ */
 export class StarSolidDto extends StarDto {
     constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base.Point3, direction?: Base.Vector3, offsetOuterEdges?: number, half?: boolean, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(outerRadius, innerRadius, numRays, center, direction, offsetOuterEdges, half);
@@ -406,7 +427,7 @@ export class StarSolidDto extends StarDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the star grows along its plane normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -414,7 +435,7 @@ export class StarSolidDto extends StarDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the star grows against its plane normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -422,6 +443,10 @@ export class StarSolidDto extends StarDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * A regular polygon and the extrusion lengths for `shapes.solid.createNGonSolid`; at least one
+ * length must be above 0.
+ */
 export class NGonSolidDto extends NGonWireDto {
     constructor(center?: Base.Point3, direction?: Base.Vector3, nrCorners?: number, radius?: number, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(center, direction, nrCorners, radius);
@@ -429,7 +454,7 @@ export class NGonSolidDto extends NGonWireDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the polygon grows along its plane normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -437,7 +462,7 @@ export class NGonSolidDto extends NGonWireDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the polygon grows against its plane normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -445,6 +470,10 @@ export class NGonSolidDto extends NGonWireDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * A parallelogram and the extrusion lengths for `shapes.solid.createParallelogramSolid`; at least
+ * one length must be above 0.
+ */
 export class ParallelogramSolidDto extends ParallelogramDto {
     constructor(center?: Base.Point3, direction?: Base.Vector3, aroundCenter?: boolean, width?: number, height?: number, angle?: number, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(center, direction, aroundCenter, width, height, angle);
@@ -452,7 +481,7 @@ export class ParallelogramSolidDto extends ParallelogramDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the parallelogram grows along its plane normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -460,7 +489,7 @@ export class ParallelogramSolidDto extends ParallelogramDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the parallelogram grows against its plane normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -468,6 +497,10 @@ export class ParallelogramSolidDto extends ParallelogramDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * A heart outline and the extrusion lengths for `shapes.solid.createHeartSolid`; at least one
+ * length must be above 0.
+ */
 export class HeartSolidDto extends Heart2DDto {
     constructor(center?: Base.Point3, direction?: Base.Vector3, rotation?: number, sizeApprox?: number, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(center, direction, rotation, sizeApprox);
@@ -475,7 +508,7 @@ export class HeartSolidDto extends Heart2DDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the heart grows along its plane normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -483,7 +516,7 @@ export class HeartSolidDto extends Heart2DDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the heart grows against its plane normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -491,6 +524,10 @@ export class HeartSolidDto extends Heart2DDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * A tree outline and the extrusion lengths for `shapes.solid.createChristmasTreeSolid`; at least
+ * one length must be above 0.
+ */
 export class ChristmasTreeSolidDto extends ChristmasTreeDto {
     constructor(height?: number, innerDist?: number, outerDist?: number, nrSkirts?: number, trunkHeight?: number, trunkWidth?: number, half?: boolean, rotation?: number, origin?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(height, innerDist, outerDist, nrSkirts, trunkHeight, trunkWidth, half, rotation, origin, direction);
@@ -498,7 +535,7 @@ export class ChristmasTreeSolidDto extends ChristmasTreeDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the tree grows along its plane normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -506,7 +543,7 @@ export class ChristmasTreeSolidDto extends ChristmasTreeDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the tree grows against its plane normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -514,6 +551,10 @@ export class ChristmasTreeSolidDto extends ChristmasTreeDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * An L shape and the extrusion lengths for `shapes.solid.createLPolygonSolid`; at least one length
+ * must be above 0.
+ */
 export class LPolygonSolidDto extends LPolygonDto {
     constructor(widthFirst?: number, lengthFirst?: number, widthSecond?: number, lengthSecond?: number, align?: directionEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(widthFirst, lengthFirst, widthSecond, lengthSecond, align, rotation, center, direction);
@@ -521,7 +562,7 @@ export class LPolygonSolidDto extends LPolygonDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the L shape grows along its plane normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -529,7 +570,7 @@ export class LPolygonSolidDto extends LPolygonDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the L shape grows against its plane normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity

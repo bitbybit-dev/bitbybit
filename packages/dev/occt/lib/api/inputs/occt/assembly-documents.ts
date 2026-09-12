@@ -4,8 +4,8 @@ import { Base } from "@bitbybit-dev/base";
 import * as Models from "../../models";
 
 /**
- * DTO for building an assembly document.
- * Returns a document handle that the caller manages.
+ * A structure, an optional document to update and optional source documents for
+ * `assembly.manager.buildAssemblyDocument`.
  * @typeParam T - Shape type (TopoDS_Shape or pointer)
  * @typeParam D - Document type (Handle_TDocStd_Document or pointer)
  */
@@ -16,23 +16,20 @@ export class BuildAssemblyDocumentDto<T, D> {
         if (sourceDocuments !== undefined) { this.sourceDocuments = sourceDocuments; }
     }
     /**
-     * Assembly structure definition with parts and nodes
+     * The parts, nodes and updates to build, from `combineStructure`.
      * @default undefined
      */
     structure!: Models.OCCT.AssemblyStructureDef<T>;
     /**
-     * Optional existing document handle to reuse.
-     * If provided and valid, the document will be cleared and updated instead of creating a new one.
-     * This is useful for updating an assembly without creating a new document each time.
+     * A document to update in place instead of creating a new one; its removals and part updates
+     * are applied first, then the new parts and nodes added.
      * @default undefined
      * @optional true
      */
     existingDocument?: D | undefined;
     /**
-     * Optional array of source document handles referenced by `structure.loadedParts` entries
-     * via `sourceDocumentIndex`. Typically these are documents previously loaded with
-     * loadStepToDoc. Lifetime of source documents is the caller's responsibility — they are
-     * not modified or deleted by buildAssemblyDocument.
+     * The documents imported parts copy from, indexed by `sourceDocumentIndex`; usually loaded with
+     * `loadStepToDoc`, and left unchanged.
      * @default undefined
      * @optional true
      */
@@ -40,8 +37,8 @@ export class BuildAssemblyDocumentDto<T, D> {
 }
 
 /**
- * DTO for creating a single assembly part definition.
- * Use this in visual programming to define a part that can be instanced.
+ * A part definition for `assembly.manager.createPart`: a shape with an id that instance nodes
+ * place, as many times as needed.
  */
 export class CreateAssemblyPartDto<T> {
     constructor(
@@ -56,32 +53,33 @@ export class CreateAssemblyPartDto<T> {
         if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
     }
     /**
-     * Unique identifier for referencing this part in nodes
+     * The id instance nodes refer to the part by; it must be unique among the parts.
      * @default undefined
      */
     id!: string;
     /**
-     * The shape for this part
+     * The geometry of the part, shared by every instance of it.
      * @default undefined
      */
     shape!: T;
     /**
-     * Display name for the part (appears in STEP file and viewers)
+     * The name of the part, written into STEP files and shown by viewers.
      * @default undefined
      */
     name!: string;
     /**
-     * Optional color for the part (RGBA, values 0-1)
+     * The color of the part as `{ r, g, b, a }` with every channel from 0 to 1; leave it out for
+     * the default gray.
      * @default {"r":0.5,"g":0.5,"b":0.5,"a":1}
-     * @min 0
-     * @max 1
+     * @minimum 0
+     * @maximum 1
      */
     colorRgba?: Base.ColorRGBA | undefined;
 }
 
 /**
- * DTO for creating an assembly node (container for other nodes).
- * Assembly nodes group instances and other assemblies together.
+ * An assembly node definition for `assembly.manager.createAssemblyNode`: a container that groups
+ * instances and other assemblies.
  */
 export class CreateAssemblyNodeDto {
     constructor(
@@ -98,39 +96,38 @@ export class CreateAssemblyNodeDto {
         if (matrix !== undefined) { this.matrix = matrix; }
     }
     /**
-     * Unique identifier for this assembly node
+     * The id child nodes refer to this assembly by; it must be unique among the nodes.
      * @default undefined
      */
     id!: string;
     /**
-     * Display name for the assembly
+     * The name of the assembly, written into STEP files and shown by viewers.
      * @default undefined
      */
     name!: string;
     /**
-     * Parent node ID. Leave undefined for root level assembly.
+     * The id of the assembly this one sits in; leave it out for a root.
      * @default undefined
      */
     parentId?: string | undefined;
     /**
-     * Optional color for the assembly
+     * A color for the assembly as `{ r, g, b, a }` with every channel from 0 to 1.
      * @default {"r":0.5,"g":0.5,"b":0.5,"a":1}
-     * @min 0
-     * @max 1
+     * @minimum 0
+     * @maximum 1
      */
     colorRgba?: Base.ColorRGBA | undefined = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
     /**
-     * Optional placement matrix (column-major, 16 numbers) or an ordered list of
-     * matrices applied first-to-last. When provided it fully defines the node's
-     * placement and takes precedence over any translation/rotation/scale.
+     * A placement for the whole group as a column-major 4x4 matrix, or a list of them applied first
+     * to last.
      * @default undefined
      */
     matrix?: Base.TransformMatrix | Base.TransformMatrixes | undefined;
 }
 
 /**
- * DTO for creating an instance node (reference to a part with transform).
- * Instance nodes place a part at a specific location with optional transform.
+ * An instance node definition for `assembly.manager.createInstanceNode`: one placement of a part,
+ * with a translation, rotation and scale or a matrix.
  */
 export class CreateInstanceNodeDto {
     constructor(
@@ -155,57 +152,58 @@ export class CreateInstanceNodeDto {
         if (matrix !== undefined) { this.matrix = matrix; }
     }
     /**
-     * Unique identifier for this instance node
+     * The id of this placement; it must be unique among the nodes.
      * @default undefined
      */
     id!: string;
     /**
-     * ID of the part to instance (must match a part's id)
+     * The id of the part, or imported part, being placed.
      * @default undefined
      */
     partId!: string;
     /**
-     * Display name for this instance
+     * The name of this placement, written into STEP files and shown by viewers.
      * @default undefined
      */
     name!: string;
     /**
-     * Parent assembly node ID. Leave undefined for root level.
+     * The id of the assembly this placement sits in; leave it out for the root.
      * @default undefined
      */
     parentId?: string | undefined;
     /**
-     * Translation as [x, y, z]
+     * Where the part is moved to, as `[x, y, z]` in model units.
      * @default [0, 0, 0]
      */
     translation?: Base.Point3 | undefined = [0, 0, 0];
     /**
-     * Rotation as [rx, ry, rz] Euler angles in degrees (applied Rx * Ry * Rz)
+     * Euler angles `[rx, ry, rz]` in degrees about the X, Y and Z axes; the Z turn is applied
+     * first, then Y, then X.
      * @default [0, 0, 0]
      */
     rotation?: Base.Vector3 | undefined = [0, 0, 0];
     /**
-     * Uniform scale factor
+     * A uniform scale of the placed part; 1 keeps its size.
      * @default 1.0
      */
     scale?: number | undefined = 1.0;
     /**
-     * Optional color override for this instance
+     * A color for this placement only, as `{ r, g, b, a }` from 0 to 1, overriding the part's
+     * color.
      * @default undefined
      */
     colorRgba?: Base.ColorRGBA | undefined;
     /**
-     * Optional placement matrix (column-major, 16 numbers) or an ordered list of
-     * matrices applied first-to-last. When provided it fully defines the instance's
-     * placement and takes precedence over translation/rotation/scale.
+     * The placement as a column-major 4x4 matrix, or a list of them applied first to last; when
+     * given, translation, rotation and scale are ignored.
      * @default undefined
      */
     matrix?: Base.TransformMatrix | Base.TransformMatrixes | undefined;
 }
 
 /**
- * DTO for creating a part update definition.
- * Part updates specify changes to apply to existing parts in a document.
+ * A change to an existing part for `assembly.manager.createPartUpdate`: a new shape, name or color
+ * for the part at a label.
  */
 export class CreatePartUpdateDto<T> {
     constructor(
@@ -220,38 +218,32 @@ export class CreatePartUpdateDto<T> {
         if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
     }
     /**
-     * Label of the existing part to update (e.g., "0:1:1:1").
-     * Obtain this from document queries like getDocumentParts.
+     * The label of the part to change, such as `0:1:1:1`, as `assembly.query.getDocumentParts`
+     * reports it.
      * @default undefined
      */
     label!: string;
     /**
-     * New shape to replace the existing shape.
-     * If undefined, the shape is not changed.
+     * The new geometry of the part; leave it out to keep the old one.
      * @default undefined
      */
     shape?: T | undefined;
     /**
-     * New name for the part.
-     * If undefined, the name is not changed.
+     * The new name of the part; leave it out to keep the old one.
      * @default undefined
      */
     name?: string | undefined;
     /**
-     * New color for the part.
-     * If undefined, the color is not changed.
+     * The new color of the part as `{ r, g, b, a }` from 0 to 1; leave it out to keep the old one.
      * @default undefined
      */
     colorRgba?: Base.ColorRGBA | undefined;
 }
 
 /**
- * DTO for combining parts and nodes into an assembly structure.
- * Use this as the final step to create a complete structure definition.
- * 
- * For updating existing documents:
- * - Use `removals` to specify labels to remove
- * - Use `partUpdates` to update existing parts (shape, name, color)
+ * Parts, nodes and the update lists for `assembly.manager.combineStructure`, which gathers them
+ * into one structure for `buildAssemblyDocument`; the update lists only matter when an existing
+ * document is updated.
  */
 export class CombineAssemblyStructureDto<T> {
     constructor(
@@ -270,55 +262,43 @@ export class CombineAssemblyStructureDto<T> {
         if (loadedParts !== undefined) { this.loadedParts = loadedParts; }
     }
     /**
-     * List of part definitions (shapes that can be instanced)
+     * The part definitions from `createPart`, the shapes that instances place.
      * @default []
      */
     parts: Models.OCCT.AssemblyPartDef<T>[] = [];
     /**
-     * List of node definitions (assemblies and instances)
+     * The assembly and instance node definitions that make up the tree.
      * @default []
      */
     nodes: Models.OCCT.AssemblyNodeDef[] = [];
     /**
-     * Labels to remove from existing document.
-     * Can be part labels, instance labels, or assembly labels.
-     * Ignored when creating a new document (no existingDocument provided).
+     * Labels of parts, instances or assemblies to remove from an existing document; ignored for a
+     * new one.
      * @default undefined
      */
     removals?: string[] | undefined;
     /**
-     * Updates to apply to existing parts in the document.
-     * Each update can change the shape, name, and/or color of a part.
-     * Ignored when creating a new document (no existingDocument provided).
+     * Changes to parts of an existing document from `createPartUpdate`; ignored for a new one.
      * @default undefined
      */
     partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[] | undefined;
     /**
-     * Whether to clear the existing document before adding new content.
-     * Only relevant when an existingDocument is provided to buildAssemblyDocument.
-     * 
-     * - `true`: Clear all existing shapes, then add new parts/nodes (full rebuild)
-     * - `false`: Keep existing shapes, apply removals/updates, add new parts/nodes (incremental)
-     * 
+     * When true, an existing document is emptied before the new parts and nodes are added; when
+     * false its content is kept and the removals and updates applied.
      * @default false
      */
     clearDocument = false;
     /**
-     * Parts imported from other documents (e.g. STEP-loaded). Each entry references a
-     * source document via `sourceDocumentIndex` (matching the order of `sourceDocuments`
-     * on buildAssemblyDocument) and copies a label (or all free shapes) into this assembly,
-     * preserving sub-assembly hierarchy, names and colors. Instance nodes can then reference
-     * them by `partId` to place the imported assembly multiple times with different transforms.
+     * Imported part definitions from `createImportedPart`, each copying a label tree out of one of
+     * the source documents so instances can place it.
      * @default undefined
      */
     loadedParts?: Models.OCCT.AssemblyLoadedPartDef[] | undefined;
 }
 
 /**
- * DTO for creating an imported part definition.
- * Imported parts copy a label tree from a source document (typically STEP-loaded) into
- * the new assembly, preserving sub-assembly hierarchy. They become referenceable as a
- * single part (by id) from any instance node.
+ * An imported part definition for `assembly.manager.createImportedPart`: a label tree copied from
+ * another document, placed by instances like any part.
  */
 export class CreateImportedPartDto {
     constructor(
@@ -335,37 +315,37 @@ export class CreateImportedPartDto {
         if (colorRgba !== undefined) { this.colorRgba = colorRgba; }
     }
     /**
-     * Unique identifier for referencing this imported part from instance nodes (via partId).
+     * The id instance nodes refer to the imported part by; it must be unique among the parts.
      * @default undefined
      */
     id!: string;
     /**
-     * Index into the `sourceDocuments` array passed to buildAssemblyDocument.
+     * Which of the `sourceDocuments` given to `buildAssemblyDocument` to copy from, counting from
+     * 0.
      * @default 0
      */
     sourceDocumentIndex = 0;
     /**
-     * Optional OCAF entry string of the label to copy from the source document (e.g. "0:1:1:1").
-     * If omitted, all free shapes of the source document are imported (wrapped in a new
-     * assembly compound when there are multiple).
+     * The label of the sub-tree to copy, such as `0:1:1:1`; leave it out to copy every top-level
+     * shape of the source document.
      * @default undefined
      */
     sourceLabel?: string | undefined;
     /**
-     * Optional display name override applied to the imported root label.
+     * A name for the copied root; leave it out to keep the source's name.
      * @default undefined
      */
     name?: string | undefined;
     /**
-     * Optional color override applied to the imported root label.
+     * A color for the copied root as `{ r, g, b, a }` from 0 to 1; leave it out to keep the
+     * source's colors.
      * @default undefined
      */
     colorRgba?: Base.ColorRGBA | undefined;
 }
 
 /**
- * DTO for setting the color of a label in a document.
- * Takes the document handle directly instead of docId.
+ * A document, a label and a color for `assembly.manager.setLabelColor`.
  */
 export class SetDocLabelColorDto<T> {
     constructor(
@@ -384,17 +364,17 @@ export class SetDocLabelColorDto<T> {
         if (a !== undefined) { this.a = a; }
     }
     /**
-     * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+     * The document from `buildAssemblyDocument` or `loadStepToDoc`.
      * @default undefined
      */
     document!: T;
     /**
-     * Label of the part/instance to color
+     * The label of the part, instance or assembly to color, such as `0:1:1:1`.
      * @default undefined
      */
     label!: string;
     /**
-     * Red component (0.0 - 1.0)
+     * The red channel, from 0 to 1.
      * @default 0.5
      * @minimum 0
      * @maximum 1
@@ -402,7 +382,7 @@ export class SetDocLabelColorDto<T> {
      */
     r = 0.5;
     /**
-     * Green component (0.0 - 1.0)
+     * The green channel, from 0 to 1.
      * @default 0.5
      * @minimum 0
      * @maximum 1
@@ -410,7 +390,7 @@ export class SetDocLabelColorDto<T> {
      */
     g = 0.5;
     /**
-     * Blue component (0.0 - 1.0)
+     * The blue channel, from 0 to 1.
      * @default 0.5
      * @minimum 0
      * @maximum 1
@@ -418,7 +398,7 @@ export class SetDocLabelColorDto<T> {
      */
     b = 0.5;
     /**
-     * Alpha component (0.0 - 1.0, 1.0 = opaque)
+     * The opacity, from 0 for transparent to 1 for opaque.
      * @default 1.0
      * @minimum 0
      * @maximum 1
@@ -428,8 +408,7 @@ export class SetDocLabelColorDto<T> {
 }
 
 /**
- * DTO for setting the name of a label in a document.
- * Takes the document handle directly instead of docId.
+ * A document, a label and a name for `assembly.manager.setLabelName`.
  */
 export class SetDocLabelNameDto<T> {
     constructor(document?: T, label?: string, name?: string) {
@@ -438,40 +417,40 @@ export class SetDocLabelNameDto<T> {
         if (name !== undefined) { this.name = name; }
     }
     /**
-     * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+     * The document from `buildAssemblyDocument` or `loadStepToDoc`.
      * @default undefined
      */
     document!: T;
     /**
-     * Label to rename
+     * The label of the part, instance or assembly to rename, such as `0:1:1:1`.
      * @default undefined
      */
     label!: string;
     /**
-     * New name
+     * The new name written to the label.
      * @default Renamed
      */
     name = "Renamed";
 }
 
 /**
- * DTO for querying a document (e.g., get parts, hierarchy).
- * Takes the document handle directly.
+ * A document for the queries that read it whole, such as `assembly.query.getDocumentParts` and
+ * `getAssemblyHierarchy`, and for deleting it.
  */
 export class DocumentQueryDto<T> {
     constructor(document?: T) {
         if (document !== undefined) { this.document = document; }
     }
     /**
-     * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+     * The document from `buildAssemblyDocument` or `loadStepToDoc`.
      * @default undefined
      */
     document!: T;
 }
 
 /**
- * DTO for querying a specific label in a document.
- * Takes the document handle directly.
+ * A document and one label for the queries that read a single label, such as
+ * `assembly.query.getShapeFromLabel` and `getLabelColor`.
  */
 export class DocumentLabelQueryDto<T> {
     constructor(document?: T, label?: string) {
@@ -479,36 +458,34 @@ export class DocumentLabelQueryDto<T> {
         if (label !== undefined) { this.label = label; }
     }
     /**
-     * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+     * The document from `buildAssemblyDocument` or `loadStepToDoc`.
      * @default undefined
      */
     document!: T;
     /**
-     * Label entry string (e.g., "0:1:1:1")
+     * The label to read, such as `0:1:1:1`, as `getDocumentParts` reports it.
      * @default undefined
      */
     label!: string;
 }
 
 /**
- * DTO for loading a STEP file and returning a document handle.
+ * A STEP file for `assembly.manager.loadStepToDoc`, which reads it into an assembly document.
  */
 export class LoadStepToDocDto {
     constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
         if (stepData !== undefined) { this.stepData = stepData; }
     }
     /**
-     * STEP file content.
-     * Accepts string, ArrayBuffer, Uint8Array, File, or Blob.
-     * Supports both regular STEP and gzip-compressed STEP-Z.
+     * The STEP file as text, ArrayBuffer, Uint8Array, File or Blob; gzip-compressed STEP-Z is
+     * unpacked on its own.
      * @default undefined
      */
     stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
 }
 
 /**
- * DTO for exporting an assembly document to STEP format.
- * Takes the document handle directly.
+ * A document and file options for `assembly.manager.exportDocumentToStep`.
  */
 export class ExportDocumentToStepDto<T> {
     constructor(
@@ -527,40 +504,40 @@ export class ExportDocumentToStepDto<T> {
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
     }
     /**
-     * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+     * The document from `buildAssemblyDocument` or `loadStepToDoc`.
      * @default undefined
      */
     document!: T;
     /**
-     * File name for the STEP header and download
+     * The file name written into the STEP header and used for the download.
      * @default assembly.step
      */
     fileName = "assembly.step";
     /**
-     * Author name for the STEP header (optional)
+     * The author written into the STEP header.
      * @default Bitbybit user
      */
     author = "Bitbybit user";
     /**
-     * Organization name for the STEP header (optional)
+     * The organization written into the STEP header.
      * @default Bitbybit
      */
     organization = "Bitbybit";
     /**
-     * Whether to compress as STEP-Z (gzip)
+     * When true, the file is written as gzip-compressed STEP-Z.
      * @default false
      */
     compress = false;
     /**
-     * Whether to trigger a file download in the browser
+     * When true, a browser download of the file is started where that is possible; the kernel
+     * itself only returns the bytes.
      * @default false
      */
     tryDownload = false;
 }
 
 /**
- * DTO for exporting an assembly document directly to glTF (GLB) format.
- * Takes the document handle directly.
+ * A document, meshing settings and file options for `assembly.manager.exportDocumentToGltf`.
  */
 export class ExportDocumentToGltfDto<T> {
     constructor(
@@ -581,58 +558,60 @@ export class ExportDocumentToGltfDto<T> {
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
     }
     /**
-     * Assembly document handle from buildAssemblyDocument or loadStepToDoc
+     * The document from `buildAssemblyDocument` or `loadStepToDoc`.
      * @default undefined
      */
     document!: T;
     /**
-     * Mesh precision for triangulation. Lower values = finer mesh.
+     * How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh.
      * @default 0.1
      */
     meshDeflection = 0.1;
     /**
-     * Angular deflection for meshing in radians. Lower values = smoother curves.
+     * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
+     * smoother curves.
      * @default 0.5
      */
     meshAngle = 0.5;
     /**
-     * Add interior vertices for better curved face fidelity (slower, set false for speed).
+     * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
+     * speed.
      * @default false
      */
     internalVerticesMode = false;
     /**
-     * Extra post-pass refining triangles that bulge beyond the deflection (slower,
-     * set false for speed).
+     * When true, an extra pass refines triangles that bulge beyond the deflection, at the cost of
+     * speed.
      * @default false
      */
     controlSurfaceDeflection = false;
     /**
-     * Whether to merge faces with same material for optimization.
-     * Set to false to preserve face boundaries.
+     * When true, faces with the same material are joined into one mesh; false keeps every face
+     * separate.
      * @default false
      */
     mergeFaces = false;
     /**
-     * Whether to export texture coordinates (UVs).
+     * When true, texture coordinates are written even for meshes without textures.
      * @default false
      */
     forceUVExport = false;
     /**
-     * File name for download (optional, should end with .glb)
+     * The name the downloaded file gets; it should end in `.glb`.
      * @default assembly.glb
      */
     fileName = "assembly.glb";
     /**
-     * Whether to trigger a file download in the browser
+     * When true, a browser download of the file is started where that is possible; the kernel
+     * itself only returns the bytes.
      * @default false
      */
     tryDownload = false;
 }
 
 /**
- * DTO for exporting an assembly document directly to glTF (GLB) format with
- * explicit Draco geometry compression settings. Mirrors `ExportDocumentToGltfDto`
- * and exposes the 8 Draco knobs of the underlying native function.
+ * A document, meshing settings and Draco settings for
+ * `assembly.manager.exportDocumentToGltfWithDraco`, which writes a Draco-compressed glTF.
  */
 export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto<T> {
     constructor(
@@ -647,12 +626,12 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
         super(document, meshDeflection, meshAngle, mergeFaces, forceUVExport, fileName, tryDownload);
     }
     /**
-     * Enable Draco geometry compression on output.
+     * When true, the geometry is compressed with Draco.
      * @default true
      */
     useDraco = true;
     /**
-     * Draco compression level - 0 (fastest, largest) ... 10 (slowest, smallest).
+     * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
      * @default 7
      * @minimum 0
      * @maximum 10
@@ -660,7 +639,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      */
     dracoCompressionLevel = 7;
     /**
-     * Quantization bits for vertex positions.
+     * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
      * @default 14
      * @minimum 0
      * @maximum 31
@@ -668,7 +647,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      */
     dracoQuantizePositionBits = 14;
     /**
-     * Quantization bits for normals.
+     * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
      * @default 10
      * @minimum 0
      * @maximum 31
@@ -676,7 +655,8 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      */
     dracoQuantizeNormalBits = 10;
     /**
-     * Quantization bits for texture coordinates (UVs).
+     * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
+     * precision.
      * @default 12
      * @minimum 0
      * @maximum 31
@@ -684,7 +664,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      */
     dracoQuantizeTexcoordBits = 12;
     /**
-     * Quantization bits for vertex colors.
+     * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
      * @default 8
      * @minimum 0
      * @maximum 31
@@ -692,7 +672,8 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      */
     dracoQuantizeColorBits = 8;
     /**
-     * Quantization bits for generic attributes.
+     * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
+     * precision.
      * @default 12
      * @minimum 0
      * @maximum 31
@@ -700,7 +681,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      */
     dracoQuantizeGenericBits = 12;
     /**
-     * Apply a single quantization grid across all attributes.
+     * When true, one quantization grid is used for every attribute instead of one per attribute.
      * @default false
      */
     dracoUnifiedQuantization = false;

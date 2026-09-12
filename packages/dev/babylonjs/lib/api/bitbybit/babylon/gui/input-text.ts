@@ -4,17 +4,28 @@ import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 
+/**
+ * Single-line text fields the user can type into, with a placeholder shown while empty. Subscribe
+ * to the text changed event to react to typing.
+ */
 export class BabylonGuiInputText {
     
     constructor(_context: Context) { }
 
     /**
-     * Creates input text
-     * @param inputs input text properties
-     * @returns input text
+     * Creates a text field holding `text`, showing `placeholder` while it is empty, in the given
+     * colors; sizes are pixel strings or fractions of the parent.
+     * @param inputs - The name, the text, the placeholder, the colors and the optional size
+     * @returns The text field
      * @group create
      * @shortname create input text
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const input = bitbybit.babylon.gui.inputText.createInputText({ name: "label", text: "", placeholder: "Type a label", color: "#f0cebb", background: "black", width: "300px", height: "40px" });
+     * panel.addControl(input);
+     * input.onTextChangedObservable.add((field) => { console.log(field.text); });
+     * ```
      */
     createInputText(inputs: Inputs.BabylonGui.CreateInputTextDto): BABYLON.GUI.InputText {
         const inputText = new BABYLON.GUI.InputText(inputs.name);
@@ -38,9 +49,9 @@ export class BabylonGuiInputText {
     }
 
     /**
-     * Sets the input text background
-     * @param inputs input text and background
-     * @returns input text
+     * Sets the background color of a text field, as a CSS color.
+     * @param inputs - The text field and the background color
+     * @returns The same text field
      * @group set
      * @shortname set input text background
      */
@@ -50,9 +61,9 @@ export class BabylonGuiInputText {
     }
 
     /**
-     * Sets the input text text
-     * @param inputs input text and text
-     * @returns input text
+     * Replaces the text a text field holds, which fires its text changed event like typing would.
+     * @param inputs - The text field and the text
+     * @returns The same text field
      * @group set
      * @shortname set input text text
      */
@@ -62,9 +73,9 @@ export class BabylonGuiInputText {
     }
 
     /**
-     * Sets the input text placeholder
-     * @param inputs input text and placeholder
-     * @returns input text
+     * Sets the hint a text field shows while it is empty.
+     * @param inputs - The text field and the placeholder
+     * @returns The same text field
      * @group set
      * @shortname set input text placeholder
      */
@@ -74,9 +85,9 @@ export class BabylonGuiInputText {
     }
 
     /**
-     * Gets the input text background
-     * @param inputs input text
-     * @returns input text background
+     * Reads the background color of a text field.
+     * @param inputs - The text field
+     * @returns The background color
      * @group get
      * @shortname get input text background
      */
@@ -85,9 +96,9 @@ export class BabylonGuiInputText {
     }
 
     /**
-     * Gets the input text text
-     * @param inputs input text
-     * @returns input text text
+     * Reads the text a text field currently holds, as typed by the user.
+     * @param inputs - The text field
+     * @returns The text
      * @group get
      * @shortname get input text text
      */
@@ -96,9 +107,9 @@ export class BabylonGuiInputText {
     }
 
     /**
-     * Gets the input text placeholder
-     * @param inputs input text
-     * @returns input text placeholder
+     * Reads the hint a text field shows while it is empty.
+     * @param inputs - The text field
+     * @returns The placeholder
      * @group get
      * @shortname get input text placeholder
      */
@@ -107,8 +118,10 @@ export class BabylonGuiInputText {
     }
 
     /**
-     * Creates the selector of an observable for the input text
-     * @param inputs observable name
+     * Passes through the name of a text field event, its text changing, as a typed selector for
+     * code that subscribes to text field events by name.
+     * @param inputs - The event selector
+     * @returns The same selector
      * @group create
      * @shortname input text observable selector
      */

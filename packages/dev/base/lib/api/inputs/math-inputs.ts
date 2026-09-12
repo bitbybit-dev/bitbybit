@@ -91,13 +91,16 @@ export namespace Math {
         easeOutBounce = "easeOutBounce",
         easeInOutBounce = "easeInOutBounce",
     }
+    /**
+     * A number and a divisor for `math.modulus`, which gives the remainder of the division.
+     */
     export class ModulusDto {
         constructor(number?: number, modulus?: number) {
             if (number !== undefined) { this.number = number; }
             if (modulus !== undefined) { this.modulus = modulus; }
         }
         /**
-         * Number
+         * The number to divide.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -105,7 +108,7 @@ export namespace Math {
          */
         number = 1;
         /**
-         * Modulus
+         * The number to divide by; the remainder is smaller than it.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -113,12 +116,16 @@ export namespace Math {
          */
         modulus = 2;
     }
+    /**
+     * One number for the single-number methods of `math`: `sqrt`, `abs`, `sin`, `degToRad` and the
+     * rest.
+     */
     export class NumberDto {
         constructor(number?: number) {
             if (number !== undefined) { this.number = number; }
         }
         /**
-         * Number
+         * The number the method works on; for the trigonometric methods an angle in radians.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -126,12 +133,15 @@ export namespace Math {
          */
         number = 1;
     }
+    /**
+     * A value between 0 and 1, a target range and an easing curve for `math.ease`.
+     */
     export class EaseDto {
         constructor(x?: number) {
             if (x !== undefined) { this.x = x; }
         }
         /**
-         * X value param between 0-1
+         * The position along the curve, from 0 at `min` to 1 at `max`.
          * @default 0.5
          * @minimum 0
          * @maximum 1
@@ -139,7 +149,7 @@ export namespace Math {
          */
         x = 0.5;
         /**
-         * Minimum value
+         * The value at the start of the curve.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -147,7 +157,7 @@ export namespace Math {
          */
         min = 0;
         /**
-         * Maximum value
+         * The value at the end of the curve.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -155,18 +165,22 @@ export namespace Math {
          */
         max = 1;
         /**
-         * Ease function
+         * The easing curve: `easeIn` starts slowly, `easeOut` ends slowly, `easeInOut` does both,
+         * in sine, quadratic, cubic and other strengths.
          * @default easeInSine
          */
         ease: easeEnum = easeEnum.easeInSine;
     }
+    /**
+     * A number and a precision for `math.roundToDecimals` and `math.roundAndRemoveTrailingZeros`.
+     */
     export class RoundToDecimalsDto {
         constructor(number?: number, decimalPlaces?: number) {
             if (number !== undefined) { this.number = number; }
             if (decimalPlaces !== undefined) { this.decimalPlaces = decimalPlaces; }
         }
         /**
-         * Number to round
+         * The number to round; it is not changed, a rounded copy is returned.
          * @default 1.123456
          * @minimum -Infinity
          * @maximum Infinity
@@ -174,7 +188,7 @@ export namespace Math {
          */
         number = 1.123456;
         /**
-         * Number of decimal places
+         * How many digits to keep after the decimal point; 0 rounds to a whole number.
          * @default 2
          * @minimum -Infinity
          * @maximum Infinity
@@ -182,6 +196,9 @@ export namespace Math {
          */
         decimalPlaces = 2;
     }
+    /**
+     * Two numbers and the arithmetic operation `math.twoNrOperation` applies to them.
+     */
     export class ActionOnTwoNumbersDto {
         constructor(first?: number, second?: number, operation?: mathTwoNrOperatorEnum) {
             if (first !== undefined) { this.first = first; }
@@ -189,7 +206,7 @@ export namespace Math {
             if (operation !== undefined) { this.operation = operation; }
         }
         /**
-         * First number
+         * The first operand: the number subtracted from, divided, or raised to a power.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -197,7 +214,7 @@ export namespace Math {
          */
         first = 1;
         /**
-         * Second number
+         * The second operand: the number subtracted, divided by, or used as the exponent.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -205,18 +222,21 @@ export namespace Math {
          */
         second = 1;
         /**
-         * Point
+         * The operation to apply to `first` and `second`, in that order
          * @default add
          */
         operation: mathTwoNrOperatorEnum = mathTwoNrOperatorEnum.add;
     }
+    /**
+     * Two numbers for `math.add`, `math.subtract`, `math.multiply`, `math.divide` and `math.power`.
+     */
     export class TwoNumbersDto {
         constructor(first?: number, second?: number) {
             if (first !== undefined) { this.first = first; }
             if (second !== undefined) { this.second = second; }
         }
         /**
-         * First number
+         * The first operand: the number subtracted from, divided, or raised to a power.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -224,7 +244,7 @@ export namespace Math {
          */
         first = 1;
         /**
-         * Second number
+         * The second operand: the number subtracted, divided by, or used as the exponent.
          * @default 2
          * @minimum -Infinity
          * @maximum Infinity
@@ -232,13 +252,16 @@ export namespace Math {
          */
         second = 2;
     }
+    /**
+     * One number and the operation `math.oneNrOperation` applies to it.
+     */
     export class ActionOnOneNumberDto {
         constructor(number?: number, operation?: mathOneNrOperatorEnum) {
             if (number !== undefined) { this.number = number; }
             if (operation !== undefined) { this.operation = operation; }
         }
         /**
-         * First number
+         * The number the operation works on; for the trigonometric operations an angle in radians.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -246,11 +269,14 @@ export namespace Math {
          */
         number = 1;
         /**
-         * Point
+         * The operation to apply to `number`
          * @default absolute
          */
         operation: mathOneNrOperatorEnum = mathOneNrOperatorEnum.absolute;
     }
+    /**
+     * A number, the range it is in and the range `math.remap` maps it to.
+     */
     export class RemapNumberDto {
         constructor(number?: number, fromLow?: number, fromHigh?: number, toLow?: number, toHigh?: number) {
             if (number !== undefined) { this.number = number; }
@@ -260,7 +286,7 @@ export namespace Math {
             if (toHigh !== undefined) { this.toHigh = toHigh; }
         }
         /**
-         * Number to remap
+         * The number to map.
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
@@ -268,7 +294,7 @@ export namespace Math {
          */
         number = 0.5;
         /**
-         * First number range min
+         * The low end of the range the number is in.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -276,15 +302,15 @@ export namespace Math {
          */
         fromLow = 0;
         /**
-        * Map to range min
-        * @default 1
-        * @minimum -Infinity
-        * @maximum Infinity
-        * @step 0.1
-        */
+         * The high end of the range the number is in.
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
         fromHigh = 1;
         /**
-         * First number range max
+         * The low end of the range to map to; `fromLow` lands here.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -292,7 +318,7 @@ export namespace Math {
          */
         toLow = 1;
         /**
-         * Map to range max
+         * The high end of the range to map to; `fromHigh` lands here.
          * @default 2
          * @minimum -Infinity
          * @maximum Infinity
@@ -300,13 +326,17 @@ export namespace Math {
          */
         toHigh = 2;
     }
+    /**
+     * The range `math.randomNumber` picks a value from; `low` can be picked, `high` is never quite
+     * reached.
+     */
     export class RandomNumberDto {
         constructor(low?: number, high?: number) {
             if (low !== undefined) { this.low = low; }
             if (high !== undefined) { this.high = high; }
         }
         /**
-         * Low range of random value
+         * The smallest value that can be picked.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -314,7 +344,7 @@ export namespace Math {
          */
         low = 0;
         /**
-         * High range of random value
+         * The top of the range; values get close to it but never reach it.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -323,6 +353,10 @@ export namespace Math {
         high = 1;
     }
 
+    /**
+     * The range and the count for `math.randomNumbers`; `low` can be picked, `high` is never quite
+     * reached.
+     */
     export class RandomNumbersDto {
         constructor(low?: number, high?: number, count?: number) {
             if (low !== undefined) { this.low = low; }
@@ -330,7 +364,7 @@ export namespace Math {
             if (count !== undefined) { this.count = count; }
         }
         /**
-         * Low range of random value
+         * The smallest value that can be picked.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -338,7 +372,7 @@ export namespace Math {
          */
         low = 0;
         /**
-         * High range of random value
+         * The top of the range; values get close to it but never reach it.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -346,7 +380,7 @@ export namespace Math {
          */
         high = 1;
         /**
-         * Number of produced random values
+         * How many random numbers to produce.
          * @default 10
          * @minimum -Infinity
          * @maximum Infinity
@@ -355,13 +389,16 @@ export namespace Math {
         count = 10;
     }
 
+    /**
+     * A number and a precision for `math.toFixed`, which formats it as text.
+     */
     export class ToFixedDto {
         constructor(number?: number, decimalPlaces?: number) {
             if (number !== undefined) { this.number = number; }
             if (decimalPlaces !== undefined) { this.decimalPlaces = decimalPlaces; }
         }
         /**
-         * Number to round
+         * The number to format.
          * @default undefined
          * @minimum -Infinity
          * @maximum Infinity
@@ -369,7 +406,7 @@ export namespace Math {
          */
         number!: number;
         /**
-         * Number of decimal places
+         * How many digits to show after the decimal point, padding with zeros.
          * @default 2
          * @minimum -Infinity
          * @maximum Infinity
@@ -377,6 +414,9 @@ export namespace Math {
          */
         decimalPlaces = 2;
     }
+    /**
+     * A number and the range `math.clamp` keeps it within.
+     */
     export class ClampDto {
         constructor(number?: number, min?: number, max?: number) {
             if (number !== undefined) { this.number = number; }
@@ -384,7 +424,7 @@ export namespace Math {
             if (max !== undefined) { this.max = max; }
         }
         /**
-         * Number to clamp
+         * The number to limit.
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
@@ -392,7 +432,7 @@ export namespace Math {
          */
         number = 0.5;
         /**
-         * Minimum value
+         * The lowest value allowed; anything below becomes this.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -400,7 +440,7 @@ export namespace Math {
          */
         min = 0;
         /**
-         * Maximum value
+         * The highest value allowed; anything above becomes this.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -408,6 +448,9 @@ export namespace Math {
          */
         max = 1;
     }
+    /**
+     * A start, an end and a fraction for `math.lerp`, which blends between them.
+     */
     export class LerpDto {
         constructor(start?: number, end?: number, t?: number) {
             if (start !== undefined) { this.start = start; }
@@ -415,7 +458,7 @@ export namespace Math {
             if (t !== undefined) { this.t = t; }
         }
         /**
-         * Start value
+         * The value at fraction 0.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -423,7 +466,7 @@ export namespace Math {
          */
         start = 0;
         /**
-         * End value
+         * The value at fraction 1.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -431,7 +474,7 @@ export namespace Math {
          */
         end = 1;
         /**
-         * Interpolation value (0-1)
+         * How far from start to end, from 0 to 1; values outside that range extrapolate.
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
@@ -439,6 +482,10 @@ export namespace Math {
          */
         t = 0.5;
     }
+    /**
+     * A start, an end and a value for `math.inverseLerp`, which finds the value's fraction between
+     * them.
+     */
     export class InverseLerpDto {
         constructor(start?: number, end?: number, value?: number) {
             if (start !== undefined) { this.start = start; }
@@ -446,7 +493,7 @@ export namespace Math {
             if (value !== undefined) { this.value = value; }
         }
         /**
-         * Start value
+         * The value that counts as fraction 0.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -454,7 +501,7 @@ export namespace Math {
          */
         start = 0;
         /**
-         * End value
+         * The value that counts as fraction 1.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -462,7 +509,7 @@ export namespace Math {
          */
         end = 1;
         /**
-         * Value to find t for
+         * The value to locate between start and end.
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
@@ -470,6 +517,9 @@ export namespace Math {
          */
         value = 0.5;
     }
+    /**
+     * A number and the range `math.wrap` cycles it into.
+     */
     export class WrapDto {
         constructor(number?: number, min?: number, max?: number) {
             if (number !== undefined) { this.number = number; }
@@ -477,7 +527,7 @@ export namespace Math {
             if (max !== undefined) { this.max = max; }
         }
         /**
-         * Number to wrap
+         * The number to wrap; it may be far outside the range.
          * @default 1.5
          * @minimum -Infinity
          * @maximum Infinity
@@ -485,7 +535,7 @@ export namespace Math {
          */
         number = 1.5;
         /**
-         * Minimum value
+         * The start of the range, included in the result.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -493,7 +543,7 @@ export namespace Math {
          */
         min = 0;
         /**
-         * Maximum value
+         * The end of the range, not included: a number reaching it comes back in at `min`.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -501,13 +551,17 @@ export namespace Math {
          */
         max = 1;
     }
+    /**
+     * A running value and a length for `math.pingPong`, which bounces the value between 0 and the
+     * length.
+     */
     export class PingPongDto {
         constructor(t?: number, length?: number) {
             if (t !== undefined) { this.t = t; }
             if (length !== undefined) { this.length = length; }
         }
         /**
-         * Time value
+         * The running value, such as elapsed time; it may grow without limit.
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
@@ -515,7 +569,7 @@ export namespace Math {
          */
         t = 0.5;
         /**
-         * Length of ping pong
+         * The turning point: the result rises to it, then falls back to 0.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -523,6 +577,9 @@ export namespace Math {
          */
         length = 1;
     }
+    /**
+     * A current value, a target and a step limit for `math.moveTowards`.
+     */
     export class MoveTowardsDto {
         constructor(current?: number, target?: number, maxDelta?: number) {
             if (current !== undefined) { this.current = current; }
@@ -530,7 +587,7 @@ export namespace Math {
             if (maxDelta !== undefined) { this.maxDelta = maxDelta; }
         }
         /**
-         * Current value
+         * The value to move.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -538,7 +595,7 @@ export namespace Math {
          */
         current = 0;
         /**
-         * Target value
+         * The value to move toward; it is never overshot.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -546,7 +603,7 @@ export namespace Math {
          */
         target = 1;
         /**
-         * Maximum change amount
+         * The largest change allowed in one step.
          * @default 0.1
          * @minimum -Infinity
          * @maximum Infinity
@@ -554,12 +611,16 @@ export namespace Math {
          */
         maxDelta = 0.1;
     }
+    /**
+     * An expression written as text for `math.evalArithmetic`.
+     */
     export class EvalArithmeticDto {
         constructor(expression?: string) {
             if (expression !== undefined) { this.expression = expression; }
         }
         /**
-         * Arithmetic expression containing numbers, +, -, *, /, and parentheses
+         * The expression: numbers, `+`, `-`, the multiplication sign, `/`, parentheses and spaces,
+         * such as `(3 + 2) / 4`.
          * @default 1+1
          */
         expression = "1+1";

@@ -6,12 +6,19 @@ import * as Inputs from "../../inputs";
 import { GlobalCDNProvider } from "@bitbybit-dev/base";
 
 
+/**
+ * The BabylonJS scene as a whole: the active camera and its limits, lights with shadows, the skybox
+ * and environment lighting, fog, physics, pointer events, the canvas background and clearing
+ * everything drawn. A scene holds every mesh, light and camera; most scripts touch it to set up
+ * lighting and the camera once and then draw into it.
+ */
 export class BabylonScene {
 
     constructor(private readonly context: Context) { }
 
     /**
-     * Gets the scene for the current context
+     * Gives the scene every draw call goes into, for direct use of the BabylonJS API on it.
+     * @returns The current scene
      * @ignore true
      * @group scene
      * @shortname get scene
@@ -21,10 +28,17 @@ export class BabylonScene {
     }
 
     /**
-     * Gets the scene for the current context
+     * Makes the given scene the one this library draws into, adding the shadow bookkeeping and root
+     * node it expects; for applications that create the scene themselves.
+     * @param inputs - The scene to use
+     * @returns The same scene, now current
      * @ignore true
      * @group scene
      * @shortname get scene
+     * @example
+     * ```typescript
+     * const scene = bitbybit.babylon.scene.setAndAttachScene({ scene: myScene });
+     * ```
      */
     setAndAttachScene(inputs: Inputs.BabylonScene.SceneDto): BABYLON.Scene {
         const scene = inputs.scene;
@@ -34,10 +48,16 @@ export class BabylonScene {
     }
 
     /**
-     * Activate camera by overwriting currently active camera
-     * @param inputs Activates the camera
+     * Makes a camera the one the scene renders through, detaching the controls of the camera that
+     * was active before.
+     * @param inputs - The camera to activate
      * @group camera
      * @shortname activate
+     * @example
+     * ```typescript
+     * const camera = bitbybit.babylon.camera.arcRotate.create({ radius: 20, target: [0, 0, 0], alpha: 45, beta: 70, lowerBetaLimit: 1, upperBetaLimit: 179, angularSensibilityX: 1000, angularSensibilityY: 1000, panningSensibility: 1000, wheelPrecision: 3, maxZ: 1000 });
+     * bitbybit.babylon.scene.activateCamera({ camera });
+     * ```
      */
     activateCamera(inputs: Inputs.BabylonScene.ActiveCameraDto): void {
         this.context.scene.activeCamera!.detachControl();
@@ -45,10 +65,16 @@ export class BabylonScene {
     }
 
     /**
-     * Use right handed system
-     * @param inputs Activates the camera
+     * Switches the scene between the left-handed coordinate system BabylonJS uses by default and a
+     * right-handed one, the convention of most CAD tools and of glTF; the active camera is
+     * refreshed to match.
+     * @param inputs - Whether to use the right-handed system
      * @group system
      * @shortname hand right
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.useRightHandedSystem({ use: true });
+     * ```
      */
     useRightHandedSystem(inputs: Inputs.BabylonScene.UseRightHandedSystemDto): void {
         this.context.scene.useRightHandedSystem = inputs.use;
@@ -57,19 +83,25 @@ export class BabylonScene {
     }
 
     /**
-     * Creates and draws a point light in the scene but does not output anything
-     * @param inputs Describes the light source
+     * Adds a point light to the scene, as `drawPointLight` does, without giving it back; for
+     * scripts that only need the light to exist.
+     * @param inputs - The light's position, colors, intensity, bulb radius and shadow settings
      * @group lights
      * @shortname point
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.drawPointLightNoReturn({ position: [10, 20, 10], intensity: 2000, diffuse: "#ffffff", specular: "#ffffff", radius: 0.5, enableShadows: true, shadowGeneratorMapSize: 1024, shadowDarkness: 0, transparencyShadow: false, shadowUsePercentageCloserFiltering: true, shadowContactHardeningLightSizeUVRatio: 0.2, shadowBias: 0.0001, shadowNormalBias: 0.002, shadowMaxZ: 1000, shadowMinZ: 0.1, shadowRefreshRate: 1 });
+     * ```
      */
     drawPointLightNoReturn(inputs: Inputs.BabylonScene.PointLightDto): void {
         this.drawPointLight(inputs);
     }
 
     /**
-     * Get shadow generators added by light sources through bitbybit
-     * @param inputs Describes the light source
+     * Lists the shadow generators of the lights created through this library, one per light with
+     * shadows enabled; drawn meshes are registered with them as casters.
+     * @returns The shadow generators, or an empty list
      * @group lights
      * @shortname point
      * @disposableOutput true
@@ -83,12 +115,21 @@ export class BabylonScene {
     }
 
     /**
-     * Creates and draws a point light in the scene
-     * @param inputs Describes the light source
-     * @returns BabylonJS point light
+     * Adds a light that shines in every direction from a point, like a bulb, with an optional small
+     * glowing sphere at its position.
+     *
+     * With `enableShadows` true a shadow generator is created and every mesh already in the scene
+     * casts and receives shadows; `intensity` is luminous power, so values in the thousands are
+     * normal.
+     * @param inputs - The light's position, colors, intensity, bulb radius and shadow settings
+     * @returns The point light
      * @group lights
      * @shortname point light
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const light = bitbybit.babylon.scene.drawPointLight({ position: [10, 20, 10], intensity: 2000, diffuse: "#ffffff", specular: "#ffffff", radius: 0.5, enableShadows: true, shadowGeneratorMapSize: 1024, shadowDarkness: 0, transparencyShadow: false, shadowUsePercentageCloserFiltering: true, shadowContactHardeningLightSizeUVRatio: 0.2, shadowBias: 0.0001, shadowNormalBias: 0.002, shadowMaxZ: 1000, shadowMinZ: 0.1, shadowRefreshRate: 1 });
+     * ```
      */
     drawPointLight(inputs: Inputs.BabylonScene.PointLightDto): BABYLON.PointLight {
         const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
@@ -154,23 +195,35 @@ export class BabylonScene {
     }
 
     /**
-     * Creates and draws a directional light in the scene
-     * @param inputs Describes the light source
+     * Adds a directional light to the scene, as `drawDirectionalLight` does, without giving it
+     * back; for scripts that only need the light to exist.
+     * @param inputs - The light's direction, colors, intensity and shadow settings
      * @group lights
      * @shortname directional
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.drawDirectionalLightNoReturn({ direction: [-100, -100, -100], intensity: 0.5, diffuse: "#ffffff", specular: "#ffffff", enableShadows: true, shadowGeneratorMapSize: 1024, shadowDarkness: 0, transparencyShadow: false, shadowUsePercentageCloserFiltering: true, shadowContactHardeningLightSizeUVRatio: 0.2, shadowBias: 0.0001, shadowNormalBias: 0.002, shadowMaxZ: 1000, shadowMinZ: 0, shadowRefreshRate: 1 });
+     * ```
      */
     drawDirectionalLightNoReturn(inputs: Inputs.BabylonScene.DirectionalLightDto): void {
         this.drawDirectionalLight(inputs);
     }
 
     /**
-     * Creates and draws a directional light in the scene
-     * @param inputs Describes the light source
-     * @returns BabylonJS directional light
+     * Adds a light that shines the same way everywhere, like the sun, along `direction`.
+     *
+     * With `enableShadows` true a shadow generator is created and every mesh already in the scene
+     * casts and receives shadows; `intensity` is a plain factor where 1 is full strength.
+     * @param inputs - The light's direction, colors, intensity and shadow settings
+     * @returns The directional light
      * @group lights
      * @shortname directional light
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const sun = bitbybit.babylon.scene.drawDirectionalLight({ direction: [-100, -100, -100], intensity: 0.5, diffuse: "#ffffff", specular: "#ffffff", enableShadows: true, shadowGeneratorMapSize: 1024, shadowDarkness: 0, transparencyShadow: false, shadowUsePercentageCloserFiltering: true, shadowContactHardeningLightSizeUVRatio: 0.2, shadowBias: 0.0001, shadowNormalBias: 0.002, shadowMaxZ: 1000, shadowMinZ: 0, shadowRefreshRate: 1 });
+     * ```
      */
     drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): BABYLON.DirectionalLight {
         const dir = new BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
@@ -223,7 +276,8 @@ export class BabylonScene {
     }
 
     /**
-     * Gets the active camera of the scene
+     * Gives the camera the scene currently renders through.
+     * @returns The active camera
      * @group camera
      * @shortname get active camera
      */
@@ -232,9 +286,19 @@ export class BabylonScene {
     }
 
     /**
-     * Adjusts the active arc rotate camera with configuration parameters
+     * Repositions the default orbiting camera, the one named `Camera`, and sets its limits and
+     * sensitivities.
+     *
+     * The camera is placed at `position` looking at `lookAt`; the radius, alpha and beta limits
+     * fence how far it can zoom and orbit, angles in degrees, and the sensibilities set how fast it
+     * reacts, lower being faster.
+     * @param inputs - The position, the target and the optional limits and sensitivities
      * @group camera
      * @shortname adjust active camera
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.adjustActiveArcRotateCamera({ position: [20, 20, 20], lookAt: [0, 0, 0], lowerRadiusLimit: 5, upperRadiusLimit: 100, lowerBetaLimit: 1, upperBetaLimit: 179, angularSensibilityX: 1000, angularSensibilityY: 1000, panningSensibility: 1000, wheelPrecision: 3, maxZ: 1000 });
+     * ```
      */
     adjustActiveArcRotateCamera(inputs: Inputs.BabylonScene.CameraConfigurationDto): void {
         const camera = this.context.scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
@@ -278,9 +342,15 @@ export class BabylonScene {
     }
 
     /**
-     * Clears all of the drawn objects in the 3D scene
+     * Removes everything drawn from the scene: meshes, materials, textures, lights other than the
+     * default hemispheric one, transform nodes, shadow generators, fog and the environment texture,
+     * and restores the default camera when another was active.
      * @group environment
      * @shortname clear all drawn
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.clearAllDrawn();
+     * ```
      */
     clearAllDrawn(): void {
         const scene = this.context.scene;
@@ -352,10 +422,18 @@ export class BabylonScene {
     }
 
     /**
-     * Enables skybox
-     * @param inputs Skybox configuration
+     * Surrounds the scene with one of the built-in skyboxes and uses it as the environment lighting
+     * that reflective materials pick up.
+     *
+     * `blur` softens the visible sky, `environmentIntensity` scales how much it lights the scene,
+     * and `hideSkybox` keeps the lighting while hiding the sky itself.
+     * @param inputs - The built-in skybox, its size, blur, environment intensity and visibility
      * @group environment
      * @shortname skybox
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.enableSkybox({ skybox: Bit.Inputs.Base.skyboxEnum.clearSky, size: 1000, blur: 0.1, environmentIntensity: 0.7, hideSkybox: false });
+     * ```
      */
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
 
@@ -377,10 +455,18 @@ export class BabylonScene {
     }
 
     /**
-     * Enables skybox with custom texture
-     * @param inputs Skybox configuration
+     * Surrounds the scene with a skybox loaded from your own texture and uses it as the environment
+     * lighting.
+     *
+     * `textureUrl` may point to an `.hdr` file, an `.env` file or the root of six cube face images;
+     * nothing happens without it. `hideSkybox` keeps the lighting while hiding the sky itself.
+     * @param inputs - The texture URL and size, the skybox size, blur, environment intensity and visibility
      * @group environment
      * @shortname skybox
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.enableSkyboxCustomTexture({ textureUrl: "https://example.com/env/studio.env", textureSize: 512, size: 1000, blur: 0.1, environmentIntensity: 0.7, hideSkybox: true });
+     * ```
      */
     enableSkyboxCustomTexture(inputs: Inputs.BabylonScene.SkyboxCustomTextureDto): void {
         if (inputs.textureUrl) {
@@ -404,37 +490,59 @@ export class BabylonScene {
     }
 
     /**
-     * Registers code to run when pointer is down
-     * @param inputs pointer statement
+     * Sets the function that runs when a pointer button is pressed on the canvas, replacing any
+     * function set before.
+     * @param inputs - The function to run
      * @ignore true
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.onPointerDown({ statement_update: () => { console.log("pressed"); } });
+     * ```
      */
     onPointerDown(inputs: Inputs.BabylonScene.PointerDto): void {
         this.context.scene.onPointerDown = inputs.statement_update;
     }
 
     /**
-     * Registers code to run when pointer is up
-     * @param inputs pointer statement
+     * Sets the function that runs when a pointer button is released on the canvas, replacing any
+     * function set before.
+     * @param inputs - The function to run
      * @ignore true
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.onPointerUp({ statement_update: () => { console.log("released"); } });
+     * ```
      */
     onPointerUp(inputs: Inputs.BabylonScene.PointerDto): void {
         this.context.scene.onPointerUp = inputs.statement_update;
     }
 
     /**
-     * Registers code to run when pointer is moving
-     * @param inputs pointer statement
+     * Sets the function that runs whenever the pointer moves over the canvas, replacing any
+     * function set before; it runs often, so keep it light.
+     * @param inputs - The function to run
      * @ignore true
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.onPointerMove({ statement_update: () => { console.log("moved"); } });
+     * ```
      */
     onPointerMove(inputs: Inputs.BabylonScene.PointerDto): void {
         this.context.scene.onPointerMove = inputs.statement_update;
     }
 
     /**
-     * Enables fog mode
-     * @param inputs fog options
+     * Fades distant geometry into a color, the way haze does.
+     *
+     * `linear` fades from `start` to `end` in scene units; `exponential` and `exponentialSquared`
+     * fade by `density` instead, ignoring the distances; `none` turns fog off.
+     * @param inputs - The fog mode, color, density and the start and end distances
      * @group environment
      * @shortname fog
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.fog({ mode: Bit.Inputs.Base.fogModeEnum.linear, color: "#ffffff", density: 0.1, start: 50, end: 300 });
+     * ```
      */
     fog(inputs: Inputs.BabylonScene.FogDto): void {
         switch (inputs.mode) {
@@ -459,21 +567,33 @@ export class BabylonScene {
     }
 
     /**
-     * Enables the physics
-     * @param inputs the gravity vector
+     * Turns on the physics engine for the scene with the given gravity, so bodies given physics
+     * fall and collide; the physics plugin must be set up on the context.
+     * @param inputs - The gravity vector
+     * @returns Nothing; the scene is changed in place
      * @ignore true
      * @group physics
      * @shortname enable
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.enablePhysics({ vector: [0, -9.81, 0] });
+     * ```
      */
     enablePhysics(inputs: Inputs.BabylonScene.EnablePhysicsDto) {
         this.context.scene.enablePhysics(new BABYLON.Vector3(inputs.vector[0], inputs.vector[1], inputs.vector[2]), this.context.havokPlugin);
     }
 
     /**
-     * Changes the scene background to a css background image for 3D space
-     * @param inputs Describes the css of the scene background or image
+     * Paints any CSS `background-image` value behind the scene, a gradient or an image, by making
+     * the scene's clear color transparent and styling the canvas.
+     * @param inputs - The CSS background image value
+     * @returns The style that was applied
      * @group background
      * @shortname css background image
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.canvasCSSBackgroundImage({ cssBackgroundImage: "linear-gradient(to top, #1a1c1f 0%, #93aacd 100%)" });
+     * ```
      */
     canvasCSSBackgroundImage(inputs: Inputs.BabylonScene.SceneCanvasCSSBackgroundImageDto): { backgroundImage: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
@@ -486,10 +606,16 @@ export class BabylonScene {
     }
 
     /**
-     * Creates a two-color linear gradient background for 3D space
-     * @param inputs Describes the two-color linear gradient parameters
+     * Paints a straight gradient between two colors behind the scene, in the given direction, with
+     * the stops as percentages along it.
+     * @param inputs - The two colors, the direction and the two stops
+     * @returns The style that was applied
      * @group background
      * @shortname two color linear gradient
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.twoColorLinearGradientBackground({ colorFrom: "#1a1c1f", colorTo: "#93aacd", direction: Bit.Inputs.Base.gradientDirectionEnum.toBottom, stopFrom: 0, stopTo: 100 });
+     * ```
      */
     twoColorLinearGradientBackground(inputs: Inputs.BabylonScene.SceneTwoColorLinearGradientDto): { backgroundImage: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
@@ -503,10 +629,16 @@ export class BabylonScene {
     }
 
     /**
-     * Creates a two-color radial gradient background for 3D space
-     * @param inputs Describes the two-color radial gradient parameters
+     * Paints a round gradient between two colors behind the scene, spreading out from `position` in
+     * the given `shape`, with the stops as percentages from the center.
+     * @param inputs - The two colors, the center position, the two stops and the shape
+     * @returns The style that was applied
      * @group background
      * @shortname two color radial gradient
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.twoColorRadialGradientBackground({ colorFrom: "#1a1c1f", colorTo: "#93aacd", position: Bit.Inputs.Base.gradientPositionEnum.center, stopFrom: 0, stopTo: 100, shape: Bit.Inputs.Base.gradientShapeEnum.circle });
+     * ```
      */
     twoColorRadialGradientBackground(inputs: Inputs.BabylonScene.SceneTwoColorRadialGradientDto): { backgroundImage: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
@@ -520,10 +652,17 @@ export class BabylonScene {
     }
 
     /**
-     * Creates a multi-color linear gradient background for 3D space
-     * @param inputs Describes the multi-color linear gradient parameters
+     * Paints a straight gradient through several colors behind the scene, each at its own stop
+     * percentage; `colors` and `stops` must be the same length, or an error object comes back
+     * instead.
+     * @param inputs - The colors, their stops and the direction
+     * @returns The style that was applied, or an error message when the lists differ in length
      * @group background
      * @shortname multi color linear gradient
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.multiColorLinearGradientBackground({ colors: ["#1a1c1f", "#4a5a7a", "#93aacd"], stops: [0, 50, 100], direction: Bit.Inputs.Base.gradientDirectionEnum.toTop });
+     * ```
      */
     multiColorLinearGradientBackground(inputs: Inputs.BabylonScene.SceneMultiColorLinearGradientDto): { backgroundImage: string } | { error: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
@@ -543,10 +682,17 @@ export class BabylonScene {
     }
 
     /**
-     * Creates a multi-color radial gradient background for 3D space
-     * @param inputs Describes the multi-color radial gradient parameters
+     * Paints a round gradient through several colors behind the scene, each at its own stop
+     * percentage; `colors` and `stops` must be the same length, or an error object comes back
+     * instead.
+     * @param inputs - The colors, their stops, the center position and the shape
+     * @returns The style that was applied, or an error message when the lists differ in length
      * @group background
      * @shortname multi color radial gradient
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.multiColorRadialGradientBackground({ colors: ["#1a1c1f", "#93aacd"], stops: [0, 100], position: Bit.Inputs.Base.gradientPositionEnum.center, shape: Bit.Inputs.Base.gradientShapeEnum.circle });
+     * ```
      */
     multiColorRadialGradientBackground(inputs: Inputs.BabylonScene.SceneMultiColorRadialGradientDto): { backgroundImage: string } | { error: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
@@ -566,10 +712,16 @@ export class BabylonScene {
     }
 
     /**
-     * Sets a background image with various customization options for 3D space
-     * @param inputs Describes the background image parameters
+     * Shows an image behind the scene with the CSS background options for how it repeats, scales,
+     * sits and scrolls; the scene's clear color becomes transparent so the image shows through.
+     * @param inputs - The image URL and the repeat, size, position, attachment, origin and clip options
+     * @returns The style that was applied
      * @group background
      * @shortname background image
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.canvasBackgroundImage({ imageUrl: "https://example.com/backdrop.jpg", repeat: Bit.Inputs.Base.backgroundRepeatEnum.noRepeat, size: Bit.Inputs.Base.backgroundSizeEnum.cover, position: Bit.Inputs.Base.gradientPositionEnum.center, attachment: Bit.Inputs.Base.backgroundAttachmentEnum.scroll, origin: Bit.Inputs.Base.backgroundOriginClipEnum.paddingBox, clip: Bit.Inputs.Base.backgroundOriginClipEnum.borderBox });
+     * ```
      */
     canvasBackgroundImage(inputs: Inputs.BabylonScene.SceneCanvasBackgroundImageDto): {
         backgroundImage: string;
@@ -604,10 +756,15 @@ export class BabylonScene {
     }
 
     /**
-     * Changes the scene background colour for 3D space
-     * @param inputs Describes the colour of the scene background
+     * Fills the background of the scene with one plain color and removes any canvas background
+     * image or gradient set before.
+     * @param inputs - The hex color
      * @group background
-     * @shortname colour
+     * @shortname color
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.backgroundColour({ colour: "#1a1c1f" });
+     * ```
      */
     backgroundColour(inputs: Inputs.BabylonScene.SceneBackgroundColourDto): void {
         this.context.scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colour));

@@ -4,6 +4,14 @@ import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import * as Models from "../../api/models";
 
+/**
+ * Solids in OpenCascade: closed shapes that enclose a volume. Build one from a primitive
+ * (`createBox`, `createSphere`, `createCylinder`, `createCone`, `createTorus`), from a flat profile
+ * extruded front and back (the star, n-gon, heart, beam and other profile solids), or from a closed
+ * shell with `fromClosedShell`; then measure it with the volume, surface area and center of mass
+ * getters, and filter points by whether they lie inside it. Vertices, edges, wires, faces, shells
+ * and compounds have their own classes beside this one under `shapes`.
+ */
 export class OCCTSolid {
 
     constructor(
@@ -13,13 +21,21 @@ export class OCCTSolid {
     }
 
     /**
-     * Returns debug info about the solid: face/edge counts, surface area, volume and per-face surface
-     * debug info (type, U/V degree, poles/knots, bounds, area, ...).
-     * @param inputs solid
-     * @returns Solid debug info
+     * Collects diagnostic facts about a solid: whether it is valid, how many faces and edges it
+     * has, its surface area and volume, and for every face the surface type, degrees, control point
+     * counts, bounds and area.
+     *
+     * An empty or null shape gives a report marked invalid with zero counts.
+     * @param inputs - The solid to inspect
+     * @returns The report with counts, area, volume and one entry per face
      * @group debug
      * @shortname solid debug info
      * @drawable false
+     * @example
+     * ```typescript
+     * const info = await bitbybit.occt.shapes.solid.debugInfo({ shape: box });
+     * console.log(info.nbFaces, info.volume);
+     * ```
      */
     debugInfo(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): Models.OCCT.SolidDebugInfo {
         if (!inputs.shape || inputs.shape.IsNull()) {
@@ -34,120 +50,205 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates Solid From shell that must be closed
-     * @param inputs Closed shell to make into solid
-     * @returns OpenCascade Solid
+     * Turns a closed shell into a solid, so the volume it encloses becomes a body that can be
+     * measured, booleaned and meshed.
+     *
+     * The shell must be watertight; a shell with gaps produces a solid the kernel cannot use.
+     * @param inputs - The closed shell
+     * @returns The solid bounded by the shell
      * @group from
      * @shortname solid from closed shell
      * @drawable true
+     * @example
+     * ```typescript
+     * const solid = await bitbybit.occt.shapes.solid.fromClosedShell({ shape: closedShell });
+     * ```
      */
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): TopoDS_Solid {
         return this.och.solidsService.fromClosedShell(inputs);
     }
 
     /**
-     * Creates OpenCascade Box
-     * @param inputs Box size and center
-     * @returns OpenCascade Box
+     * Creates a box solid with its sides parallel to the axes.
+     *
+     * `width` runs along X, `height` along Y (up) and `length` along Z, all in model units. By
+     * default the box is centered on `center`; with `originOnCenter` set to false it stands on that
+     * point instead, so `center` becomes the middle of the bottom face.
+     * @param inputs - Box size, the point it is placed on, and whether it is centered on or stands on it
+     * @returns A new solid
      * @group primitives
      * @shortname box
      * @drawable true
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 20, height: 5, center: [0, 0, 0], originOnCenter: true });
+     * ```
      */
     createBox(inputs: Inputs.OCCT.BoxDto): TopoDS_Solid {
         return this.och.solidsService.createBox(inputs);
     }
 
     /**
-     * Creates OpenCascade Cube
-     * @param inputs Cube size and center
-     * @returns OpenCascade Cube
+     * Creates a cube solid, a box with all three sides the same size, parallel to the axes.
+     *
+     * By default the cube is centered on `center`; with `originOnCenter` set to false it stands on
+     * that point instead, so `center` becomes the middle of the bottom face.
+     * @param inputs - Cube size, the point it is placed on, and whether it is centered on or stands on it
+     * @returns A new solid
      * @group primitives
      * @shortname cube
      * @drawable true
+     * @example
+     * ```typescript
+     * const cube = await bitbybit.occt.shapes.solid.createCube({ size: 10, center: [0, 0, 0], originOnCenter: true });
+     * ```
      */
     createCube(inputs: Inputs.OCCT.CubeDto): TopoDS_Solid {
         return this.och.solidsService.createCube(inputs);
     }
 
     /**
-     * Creates OpenCascade Box from corner
-     * @param inputs Box size and corner coordinates
-     * @returns OpenCascade Box
+     * Creates a box solid that starts at a corner point and extends along the positive axes.
+     *
+     * The corner with the smallest x, y and z sits at `corner`; the box reaches `width` along X,
+     * `height` along Y and `length` along Z from there, all in model units.
+     * @param inputs - Box size and the corner it grows from
+     * @returns A new solid
      * @group primitives
      * @shortname box corner
      * @drawable true
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBoxFromCorner({ width: 10, length: 20, height: 5, corner: [0, 0, 0] });
+     * ```
      */
     createBoxFromCorner(inputs: Inputs.OCCT.BoxFromCornerDto): TopoDS_Solid {
         return this.och.solidsService.createBoxFromCorner(inputs);
     }
 
     /**
-     * Creates OpenCascade Cylinder
-     * @param inputs Cylinder parameters
-     * @returns OpenCascade Cylinder
+     * Creates a cylinder solid with a round base at `center`, growing `height` along `direction`.
+     *
+     * With `originOnCenter` on, the cylinder is shifted back by half its height so `center` sits in
+     * its middle. `angle`, in degrees, cuts a wedge out of the full 360 degree round, like a slice
+     * of cake.
+     * @param inputs - Radius, height, base center, direction, an optional partial angle and whether to center on the point
+     * @returns A new solid
      * @group primitives
      * @shortname cylinder
      * @drawable true
+     * @example
+     * ```typescript
+     * const cylinder = await bitbybit.occt.shapes.solid.createCylinder({ radius: 5, height: 20, center: [0, 0, 0], direction: [0, 1, 0], angle: 360, originOnCenter: false });
+     * ```
      */
     createCylinder(inputs: Inputs.OCCT.CylinderDto): TopoDS_Solid {
         return this.och.solidsService.createCylinder(inputs);
     }
 
     /**
-     * Creates OpenCascade Cylinders on simple bit by bit lines represented by two points
-     * @param inputs Cylinder parameters
-     * @returns OpenCascade Cylinder
+     * Creates one cylinder solid along each line, from its start to its end, all with the same
+     * radius.
+     *
+     * The height of each cylinder is the length of its line.
+     * @param inputs - The lines and the radius
+     * @returns One solid per line, in the same order
      * @group primitives
      * @shortname cylinders on lines
      * @drawable true
+     * @example
+     * ```typescript
+     * const rods = await bitbybit.occt.shapes.solid.createCylindersOnLines({
+     *     lines: [{ start: [0, 0, 0], end: [0, 10, 0] }, { start: [5, 0, 0], end: [5, 10, 0] }],
+     *     radius: 0.5,
+     * });
+     * ```
      */
     createCylindersOnLines(inputs: Inputs.OCCT.CylindersOnLinesDto): TopoDS_Solid[] {
         return this.och.solidsService.createCylindersOnLines(inputs);
     }
 
     /**
-     * Creates OpenCascade Sphere
-     * @param inputs Sphere radius and center
-     * @returns OpenCascade Sphere
+     * Creates a sphere solid of the given radius around a center point.
+     * @param inputs - Radius and center
+     * @returns A new solid
      * @group primitives
      * @shortname sphere
      * @drawable true
+     * @example
+     * ```typescript
+     * const sphere = await bitbybit.occt.shapes.solid.createSphere({ radius: 5, center: [0, 0, 0] });
+     * ```
      */
     createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Solid {
         return this.och.solidsService.createSphere(inputs);
     }
 
     /**
-     * Creates OpenCascade Cone
-     * @param inputs Cone parameters
-     * @returns OpenCascade cone shape
+     * Creates a cone solid, or a truncated cone when both radii are above 0, standing on a round
+     * base at `center` and growing `height` along `direction`.
+     *
+     * `radius1` is the base and `radius2` the top; a top radius of 0 makes a pointed cone. `angle`,
+     * in degrees, cuts a wedge out of the full 360 degree round.
+     * @param inputs - Base and top radius, height, base center, direction and an optional partial angle
+     * @returns A new solid
      * @group primitives
      * @shortname cone
      * @drawable true
+     * @example
+     * ```typescript
+     * const cone = await bitbybit.occt.shapes.solid.createCone({ radius1: 5, radius2: 0, height: 10, center: [0, 0, 0], direction: [0, 1, 0], angle: 360 });
+     * ```
      */
     createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Solid {
         return this.och.solidsService.createCone(inputs);
     }
 
     /**
-     * Creates OpenCascade Torus
-     * @param inputs Torus parameters
-     * @returns OpenCascade torus shape
+     * Creates a torus solid, a ring with a round cross-section, centered on `center` with its axis
+     * along `direction`.
+     *
+     * `majorRadius` is the distance from the center to the middle of the tube and `minorRadius` the
+     * tube's own radius. `angle`, in degrees, makes a partial ring instead of the full 360 degrees.
+     * @param inputs - Major and minor radius, center, direction and an optional partial angle
+     * @returns A new solid
      * @group primitives
      * @shortname torus
      * @drawable true
+     * @example
+     * ```typescript
+     * const ring = await bitbybit.occt.shapes.solid.createTorus({ majorRadius: 10, minorRadius: 2, center: [0, 0, 0], direction: [0, 1, 0], angle: 360 });
+     * ```
      */
     createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Solid {
         return this.och.solidsService.createTorus(inputs);
     }
 
     /**
-     * Creates OpenCascade star solid
-     * @param inputs Star solid parameters
-     * @returns OpenCascade star solid
+     * Creates a star-shaped solid by extruding a flat star profile forward and backward along its
+     * own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown. The star itself is built as
+     * `shapes.wire.createStarWire` builds it.
+     * @param inputs - The star profile and the two extrusion lengths
+     * @returns A new solid
      * @group primitives
      * @shortname star
      * @drawable true
+     * @example
+     * ```typescript
+     * const star = await bitbybit.occt.shapes.solid.createStarSolid({
+     *     numRays: 5,
+     *     outerRadius: 10,
+     *     innerRadius: 5,
+     *     half: false,
+     *     center: [0, 0, 0],
+     *     direction: [0, 1, 0],
+     *     extrusionLengthFront: 2,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createStarSolid(inputs: Inputs.OCCT.StarSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createStarWire(inputs);
@@ -156,12 +257,27 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade n-gon solid
-     * @param inputs N-gon solid parameters
-     * @returns OpenCascade n-gon solid
+     * Creates a solid with a regular polygon cross-section by extruding a flat n-gon profile
+     * forward and backward along its own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The polygon profile and the two extrusion lengths
+     * @returns A new solid
      * @group primitives
      * @shortname n-gon
      * @drawable true
+     * @example
+     * ```typescript
+     * const hexPrism = await bitbybit.occt.shapes.solid.createNGonSolid({
+     *     nrCorners: 6,
+     *     radius: 5,
+     *     center: [0, 0, 0],
+     *     direction: [0, 1, 0],
+     *     extrusionLengthFront: 10,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createNGonSolid(inputs: Inputs.OCCT.NGonSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createNGonWire(inputs);
@@ -170,12 +286,29 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade parallelogram solid
-     * @param inputs Parallelogram solid parameters
-     * @returns OpenCascade parallelogram solid
+     * Creates a solid with a parallelogram cross-section by extruding a flat parallelogram profile
+     * forward and backward along its own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The parallelogram profile and the two extrusion lengths
+     * @returns A new solid
      * @group primitives
      * @shortname parallelogram
      * @drawable true
+     * @example
+     * ```typescript
+     * const slab = await bitbybit.occt.shapes.solid.createParallelogramSolid({
+     *     width: 10,
+     *     height: 5,
+     *     angle: 15,
+     *     center: [0, 0, 0],
+     *     direction: [0, 1, 0],
+     *     aroundCenter: true,
+     *     extrusionLengthFront: 2,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createParallelogramSolid(inputs: Inputs.OCCT.ParallelogramSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createParallelogramWire(inputs);
@@ -184,12 +317,27 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade heart solid
-     * @param inputs Heart solid parameters
-     * @returns OpenCascade heart solid
+     * Creates a heart-shaped solid by extruding a flat heart profile forward and backward along its
+     * own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The heart profile and the two extrusion lengths
+     * @returns A new solid
      * @group primitives
      * @shortname heart
      * @drawable true
+     * @example
+     * ```typescript
+     * const heart = await bitbybit.occt.shapes.solid.createHeartSolid({
+     *     sizeApprox: 10,
+     *     rotation: 0,
+     *     center: [0, 0, 0],
+     *     direction: [0, 1, 0],
+     *     extrusionLengthFront: 2,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createHeartSolid(inputs: Inputs.OCCT.HeartSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createHeartWire(inputs);
@@ -198,12 +346,33 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade christmas tree solid
-     * @param inputs Christmas tree solid parameters
-     * @returns OpenCascade christmas tree solid
+     * Creates a Christmas tree-shaped solid by extruding a flat tree profile forward and backward
+     * along its own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The tree profile and the two extrusion lengths
+     * @returns A new solid
      * @group primitives
      * @shortname christmas tree
      * @drawable true
+     * @example
+     * ```typescript
+     * const tree = await bitbybit.occt.shapes.solid.createChristmasTreeSolid({
+     *     height: 10,
+     *     innerDist: 1.5,
+     *     outerDist: 3,
+     *     nrSkirts: 5,
+     *     trunkHeight: 1,
+     *     trunkWidth: 1,
+     *     half: false,
+     *     rotation: 0,
+     *     origin: [0, 0, 0],
+     *     direction: [0, 1, 0],
+     *     extrusionLengthFront: 2,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createChristmasTreeSolid(inputs: Inputs.OCCT.ChristmasTreeSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createChristmasTreeWire(inputs);
@@ -212,12 +381,31 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade L-polygon solid
-     * @param inputs L-polygon solid parameters
-     * @returns OpenCascade L-polygon solid
+     * Creates an L-shaped solid by extruding a flat L profile forward and backward along its own
+     * normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The L profile and the two extrusion lengths
+     * @returns A new solid
      * @group primitives
      * @shortname L-polygon
      * @drawable true
+     * @example
+     * ```typescript
+     * const bracket = await bitbybit.occt.shapes.solid.createLPolygonSolid({
+     *     widthFirst: 10,
+     *     lengthFirst: 20,
+     *     widthSecond: 10,
+     *     lengthSecond: 15,
+     *     align: Bit.Inputs.OCCT.directionEnum.outside,
+     *     rotation: 0,
+     *     center: [0, 0, 0],
+     *     direction: [0, 1, 0],
+     *     extrusionLengthFront: 2,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createLPolygonSolid(inputs: Inputs.OCCT.LPolygonSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createLPolygonWire(inputs);
@@ -226,12 +414,30 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade I-beam profile solid
-     * @param inputs I-beam profile solid parameters
-     * @returns OpenCascade I-beam profile solid
+     * Creates an I-beam by extruding its flat profile forward and backward along its own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The I-beam profile and the two extrusion lengths
+     * @returns A new solid
      * @group beam
      * @shortname I-beam profile
      * @drawable true
+     * @example
+     * ```typescript
+     * const beam = await bitbybit.occt.shapes.solid.createIBeamProfileSolid({
+     *     width: 10,
+     *     height: 20,
+     *     flangeThickness: 1,
+     *     webThickness: 1,
+     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
+     *     rotation: 0,
+     *     center: [0, 0, 0],
+     *     direction: [0, 0, 1],
+     *     extrusionLengthFront: 100,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createIBeamProfileSolid(inputs: Inputs.OCCT.IBeamProfileSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createIBeamProfileWire(inputs);
@@ -240,12 +446,30 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade H-beam profile solid
-     * @param inputs H-beam profile solid parameters
-     * @returns OpenCascade H-beam profile solid
+     * Creates an H-beam by extruding its flat profile forward and backward along its own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The H-beam profile and the two extrusion lengths
+     * @returns A new solid
      * @group beam
      * @shortname H-beam profile
      * @drawable true
+     * @example
+     * ```typescript
+     * const beam = await bitbybit.occt.shapes.solid.createHBeamProfileSolid({
+     *     width: 20,
+     *     height: 20,
+     *     flangeThickness: 1,
+     *     webThickness: 1,
+     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
+     *     rotation: 0,
+     *     center: [0, 0, 0],
+     *     direction: [0, 0, 1],
+     *     extrusionLengthFront: 100,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createHBeamProfileSolid(inputs: Inputs.OCCT.HBeamProfileSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createHBeamProfileWire(inputs);
@@ -254,12 +478,30 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade T-beam profile solid
-     * @param inputs T-beam profile solid parameters
-     * @returns OpenCascade T-beam profile solid
+     * Creates a T-beam by extruding its flat profile forward and backward along its own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The T-beam profile and the two extrusion lengths
+     * @returns A new solid
      * @group beam
      * @shortname T-beam profile
      * @drawable true
+     * @example
+     * ```typescript
+     * const beam = await bitbybit.occt.shapes.solid.createTBeamProfileSolid({
+     *     width: 10,
+     *     height: 20,
+     *     flangeThickness: 1,
+     *     webThickness: 1,
+     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
+     *     rotation: 0,
+     *     center: [0, 0, 0],
+     *     direction: [0, 0, 1],
+     *     extrusionLengthFront: 100,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createTBeamProfileSolid(inputs: Inputs.OCCT.TBeamProfileSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createTBeamProfileWire(inputs);
@@ -268,12 +510,31 @@ export class OCCTSolid {
     }
 
     /**
-     * Creates OpenCascade U-beam profile solid
-     * @param inputs U-beam profile solid parameters
-     * @returns OpenCascade U-beam profile solid
+     * Creates a U-beam by extruding its flat profile forward and backward along its own normal.
+     *
+     * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
+     * units; at least one must be above 0 or an error is thrown.
+     * @param inputs - The U-beam profile and the two extrusion lengths
+     * @returns A new solid
      * @group beam
      * @shortname U-beam profile
      * @drawable true
+     * @example
+     * ```typescript
+     * const beam = await bitbybit.occt.shapes.solid.createUBeamProfileSolid({
+     *     width: 10,
+     *     height: 20,
+     *     flangeThickness: 1,
+     *     webThickness: 1,
+     *     flangeWidth: 3,
+     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
+     *     rotation: 0,
+     *     center: [0, 0, 0],
+     *     direction: [0, 0, 1],
+     *     extrusionLengthFront: 100,
+     *     extrusionLengthBack: 0,
+     * });
+     * ```
      */
     createUBeamProfileSolid(inputs: Inputs.OCCT.UBeamProfileSolidDto): TopoDS_Solid {
         const wire = this.och.wiresService.createUBeamProfileWire(inputs);
@@ -349,84 +610,128 @@ export class OCCTSolid {
     }
 
     /**
-     * Get solid surface area
-     * @param inputs Closed solid shape
-     * @returns Surface area
+     * Measures the total area of all the faces of a solid.
+     * @param inputs - The solid
+     * @returns The surface area in square model units
      * @group get
      * @shortname area
      * @drawable false
+     * @example
+     * ```typescript
+     * const area = await bitbybit.occt.shapes.solid.getSolidSurfaceArea({ shape: box });
+     * ```
      */
     getSolidSurfaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): number {
         return this.och.solidsService.getSolidSurfaceArea(inputs);
     }
 
     /**
-     * Get solid volume
-     * @param inputs Closed solid shape
-     * @returns volume
+     * Measures the volume a solid encloses, in cubic model units.
+     * @param inputs - The solid
+     * @returns The volume in cubic model units
      * @group get
      * @shortname volume
      * @drawable false
+     * @example
+     * ```typescript
+     * const volume = await bitbybit.occt.shapes.solid.getSolidVolume({ shape: box });
+     * ```
      */
     getSolidVolume(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): number {
         return this.och.solidsService.getSolidVolume(inputs);
     }
 
     /**
-     * Get solids volumes
-     * @param inputs Closed solid shapes
-     * @returns volumes
+     * Measures the volume of each solid in a list.
+     * @param inputs - The solids
+     * @returns One volume per solid, in the same order
      * @group get
      * @shortname volumes
      * @drawable false
+     * @example
+     * ```typescript
+     * const volumes = await bitbybit.occt.shapes.solid.getSolidsVolumes({ shapes: [box, sphere] });
+     * ```
      */
     getSolidsVolumes(inputs: Inputs.OCCT.ShapesDto<TopoDS_Solid>): number[] {
         return this.och.solidsService.getSolidsVolumes(inputs);
     }
 
     /**
-     * Get solid center of mass
-     * @param inputs Closed solid shape
-     * @returns center of mass point
+     * Finds the center of mass of a solid, treating it as filled with material of uniform density.
+     * @param inputs - The solid
+     * @returns The center of mass point
      * @group get
      * @shortname center of mass
      * @drawable true
+     * @example
+     * ```typescript
+     * const center = await bitbybit.occt.shapes.solid.getSolidCenterOfMass({ shape: box });
+     * ```
      */
     getSolidCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): Base.Point3 {
         return this.och.solidsService.getSolidCenterOfMass(inputs);
     }
 
     /**
-     * Get centers of mass of solids
-     * @param inputs Closed solid shapes
-     * @returns Points indicating centers of mass
+     * Finds the center of mass of each solid in a list, treating each as filled with material of
+     * uniform density.
+     * @param inputs - The solids
+     * @returns One point per solid, in the same order
      * @group get
      * @shortname centers of mass
      * @drawable true
+     * @example
+     * ```typescript
+     * const centers = await bitbybit.occt.shapes.solid.getSolidsCentersOfMass({ shapes: [box, sphere] });
+     * ```
      */
     getSolidsCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Solid>): Base.Point3[] {
         return this.och.solidsService.getSolidsCentersOfMass(inputs);
     }
 
     /**
-     * Gets the solids of the shape in a list
-     * @param inputs Shape
-     * @returns OpenCascade solids array
+     * Lists the solids inside any shape, such as the bodies of a compound or the result of a
+     * boolean.
+     *
+     * A shape that is itself a solid gives a list with that one solid.
+     * @param inputs - The shape to take the solids from
+     * @returns The solids found in the shape
      * @group get
      * @shortname solids
      * @drawable true
+     * @example
+     * ```typescript
+     * const solids = await bitbybit.occt.shapes.solid.getSolids({ shape: compound });
+     * ```
      */
     getSolids(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Solid[] {
         return this.och.solidsService.getSolids(inputs);
     }
 
     /**
-     * Filters collection of points based on relationship with the solid. You can choose whether to output in, on or out points.
-     * @param inputs OpenCascade solid and collection of points with options
-     * @returns filtered points
+     * Keeps the points that lie inside, on the surface of, or outside a solid, as chosen by the
+     * `keepIn`, `keepOn` and `keepOut` flags.
+     *
+     * A point counts as on the surface when it is within `tolerance` of it. Points the kernel
+     * cannot classify are kept only with `keepUnknown`.
+     * @param inputs - The solid, the points, the tolerance and which classes of point to keep
+     * @returns The points that passed the filter, in their original order
      * @group filter
      * @shortname filter solid points
      * @drawable true
+     * @example
+     * ```typescript
+     * const inside = await bitbybit.occt.shapes.solid.filterSolidPoints({
+     *     shape: box,
+     *     points: [[0, 0, 0], [100, 0, 0]],
+     *     tolerance: 1e-7,
+     *     keepIn: true,
+     *     keepOn: false,
+     *     keepOut: false,
+     *     keepUnknown: false,
+     * });
+     * ```
      */
     filterSolidPoints(inputs: Inputs.OCCT.FilterSolidPointsDto<TopoDS_Solid>): Base.Point3[] {
         return this.och.solidsService.filterSolidPoints(inputs);

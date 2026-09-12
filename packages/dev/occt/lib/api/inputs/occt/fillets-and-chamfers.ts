@@ -2,6 +2,10 @@
 // directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 import { Base } from "@bitbybit-dev/base";
 
+/**
+ * A shape, a radius and optional edge or corner indexes for `fillets.filletEdges` and
+ * `fillets.fillet2d`; `radiusList` pairs with `indexes` when both are given.
+ */
 export class FilletDto<T> {
     constructor(shape?: T, radius?: number, radiusList?: number[], indexes?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -10,12 +14,13 @@ export class FilletDto<T> {
         if (indexes !== undefined) { this.indexes = indexes; }
     }
     /**
-     * Shape to apply the fillets
+     * The shape whose edges, or whose corners for a flat wire or face, are rounded.
      * @default undefined
      */
     shape!: T;
     /**
-     * Radius of the fillets
+     * The rounding radius in model units, used for every selected edge unless `radiusList` is
+     * given.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -24,18 +29,23 @@ export class FilletDto<T> {
      */
     radius?: number | undefined = 0.1;
     /**
-     * Radius list
+     * One radius per entry of `indexes`, in the same order; needs `indexes`.
      * @default undefined
      * @optional true
      */
     radiusList?: number[] | undefined;
     /**
-     * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
+     * Which edges to round, counted from 0 for `filletEdges`, or which corners, counted from 1 for
+     * `fillet2d`; leave it out to round them all.
      * @default undefined
      * @optional true
      */
     indexes?: number[] | undefined;
 }
+/**
+ * Shapes, a radius and optional corner indexes for `fillets.fillet2dShapes`, which rounds each flat
+ * wire or face the same way.
+ */
 export class FilletShapesDto<T> {
     constructor(shapes?: T[], radius?: number, radiusList?: number[], indexes?: number[]) {
         if (shapes !== undefined) { this.shapes = shapes; }
@@ -44,12 +54,13 @@ export class FilletShapesDto<T> {
         if (indexes !== undefined) { this.indexes = indexes; }
     }
     /**
-     * Shapes to apply the fillets
+     * The flat wires or faces whose corners are rounded.
      * @default undefined
      */
     shapes!: T[];
     /**
-     * Radius of the fillets
+     * The rounding radius in model units, used for every selected corner unless `radiusList` is
+     * given.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -58,18 +69,21 @@ export class FilletShapesDto<T> {
      */
     radius?: number | undefined = 0.1;
     /**
-     * Radius list
+     * One radius per entry of `indexes`, in the same order; needs `indexes`.
      * @default undefined
      * @optional true
      */
     radiusList?: number[] | undefined;
     /**
-     * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
+     * Which corners to round, counted from 1 along each outline; leave it out to round them all.
      * @default undefined
      * @optional true
      */
     indexes?: number[] | undefined;
 }
+/**
+ * A shape, some of its edges and one radius per edge for `fillets.filletEdgesList`.
+ */
 export class FilletEdgesListDto<T, U> {
     constructor(shape?: T, edges?: U[], radiusList?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -77,21 +91,25 @@ export class FilletEdgesListDto<T, U> {
         if (radiusList !== undefined) { this.radiusList = radiusList; }
     }
     /**
-     * Shape to apply the fillet
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to use for the fillet
+     * The edges of the shape to round.
      * @default undefined
      */
     edges!: U[];
     /**
-     * Radius list for the fillets. The length of this array must match the length of the edges array. Each index corresponds to fillet on the edge at the same index.
+     * One rounding radius per edge in model units, in the same order as `edges`; the lists must
+     * have the same length.
      * @default undefined
      */
     radiusList!: number[];
 }
+/**
+ * A shape, some of its edges and one radius for `fillets.filletEdgesListOneRadius`.
+ */
 export class FilletEdgesListOneRadiusDto<T, U> {
     constructor(shape?: T, edges?: U[], radius?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -99,17 +117,17 @@ export class FilletEdgesListOneRadiusDto<T, U> {
         if (radius !== undefined) { this.radius = radius; }
     }
     /**
-     * Shape to apply the fillet
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to use for the fillet
+     * The edges of the shape to round.
      * @default undefined
      */
     edges!: U[];
     /**
-     * Radius of the fillets
+     * The rounding radius for every edge, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -118,6 +136,10 @@ export class FilletEdgesListOneRadiusDto<T, U> {
      */
     radius = 0.1;
 }
+/**
+ * A shape, one of its edges and a radius profile for `fillets.filletEdgeVariableRadius`;
+ * `radiusList` and `paramsU` pair up by position.
+ */
 export class FilletEdgeVariableRadiusDto<T, U> {
     constructor(shape?: T, edge?: U, radiusList?: number[], paramsU?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -126,26 +148,30 @@ export class FilletEdgeVariableRadiusDto<T, U> {
         if (paramsU !== undefined) { this.paramsU = paramsU; }
     }
     /**
-     * Shape to apply the fillet
+     * The shape the edge belongs to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edge to use for the fillet
+     * The edge to round with a changing radius.
      * @default undefined
      */
     edge!: U;
     /**
-     * Radius list for the fillets that has to match the paramsU list
+     * The radius in model units at each position in `paramsU`; the lists must have the same length.
      * @default undefined
      */
     radiusList!: number[];
     /**
-     * List of parameters on the edge to which apply the fillet. Each param must be between 0 and 1.
+     * Positions along the edge as fractions from 0 at its start to 1 at its end, one per radius.
      * @default undefined
      */
     paramsU!: number[];
 }
+/**
+ * A shape, some of its edges and a radius profile per edge for `fillets.filletEdgesVariableRadius`;
+ * the three lists pair up by position.
+ */
 export class FilletEdgesVariableRadiusDto<T, U> {
     constructor(shape?: T, edges?: U[], radiusLists?: number[][], paramsULists?: number[][]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -154,26 +180,32 @@ export class FilletEdgesVariableRadiusDto<T, U> {
         if (paramsULists !== undefined) { this.paramsULists = paramsULists; }
     }
     /**
-     * Shape to apply the fillet
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to use for the fillet
+     * The edges to round, each with its own radius profile.
      * @default undefined
      */
     edges!: U[];
     /**
-     * Lists of radius lists for the fillets. Top level array length needs to match the nr of edges used and each second level array needs to match paramsU length array at the same index.
+     * One list per edge of radii in model units, each pairing with the matching list in
+     * `paramsULists`.
      * @default undefined
      */
     radiusLists!: number[][];
     /**
-     * Lists of parameter lists on the edges to which apply the fillet. Each param must be between 0 and 1. Top level array length needs to match the nr of edges used and each second level array needs to match radius length array at the same index.
+     * One list per edge of positions as fractions from 0 to 1 along it, each pairing with the
+     * matching list in `radiusLists`.
      * @default undefined
      */
     paramsULists!: number[][];
 }
+/**
+ * A shape, some of its edges and one radius profile shared by all of them for
+ * `fillets.filletEdgesSameVariableRadius`.
+ */
 export class FilletEdgesSameVariableRadiusDto<T, U> {
     constructor(shape?: T, edges?: U[], radiusList?: number[], paramsU?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -182,28 +214,32 @@ export class FilletEdgesSameVariableRadiusDto<T, U> {
         if (paramsU !== undefined) { this.paramsU = paramsU; }
     }
     /**
-     * Shape to apply the fillet
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to use for the fillet
+     * The edges to round, all with the same radius profile.
      * @default undefined
      */
     edges!: U[];
 
     /**
-     * Radius list for the fillets that has to match the paramsU list
+     * The radius in model units at each position in `paramsU`; the lists must have the same length.
      * @default undefined
      */
     radiusList!: number[];
     /**
-     * List of parameters on the edges to which apply the fillet. Each param must be between 0 and 1.
+     * Positions along each edge as fractions from 0 at its start to 1 at its end, one per radius.
      * @default undefined
      */
     paramsU!: number[];
 }
 
+/**
+ * Wires, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWires`,
+ * which rounds the corners of wires that do not lie in a plane.
+ */
 export class Fillet3DWiresDto<T> {
     constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
         if (shapes !== undefined) { this.shapes = shapes; }
@@ -213,12 +249,13 @@ export class Fillet3DWiresDto<T> {
         if (indexes !== undefined) { this.indexes = indexes; }
     }
     /**
-     * Shapes to apply the fillets on
+     * The wires whose corners are rounded.
      * @default undefined
      */
     shapes!: T[];
     /**
-     * Radius of the fillets
+     * The rounding radius in model units, used for every selected corner unless `radiusList` is
+     * given.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -227,23 +264,28 @@ export class Fillet3DWiresDto<T> {
      */
     radius?: number | undefined = 0.1;
     /**
-     * Radius list
+     * One radius per entry of `indexes`, in the same order; needs `indexes`.
      * @default undefined
      * @optional true
      */
     radiusList?: number[] | undefined;
     /**
-     * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
+     * Which corners to round, counted from 0 along each wire; leave it out to round them all.
      * @default undefined
      * @optional true
      */
     indexes?: number[] | undefined;
     /**
-     * Orientation direction for the fillet
+     * The direction each wire is extruded along to build the fillets; it must not be parallel to
+     * the wire and must leave room for the radius.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * A wire, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWire`,
+ * which rounds the corners of a wire that does not lie in a plane.
+ */
 export class Fillet3DWireDto<T> {
     constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
         if (shape !== undefined) { this.shape = shape; }
@@ -253,12 +295,13 @@ export class Fillet3DWireDto<T> {
         if (indexes !== undefined) { this.indexes = indexes; }
     }
     /**
-     * Shape to apply the fillets
+     * The wire whose corners are rounded.
      * @default undefined
      */
     shape!: T;
     /**
-     * Radius of the fillets
+     * The rounding radius in model units, used for every selected corner unless `radiusList` is
+     * given.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -267,23 +310,28 @@ export class Fillet3DWireDto<T> {
      */
     radius?: number | undefined = 0.1;
     /**
-     * Radius list
+     * One radius per entry of `indexes`, in the same order; needs `indexes`.
      * @default undefined
      * @optional true
      */
     radiusList?: number[] | undefined;
     /**
-     * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
+     * Which corners to round, counted from 0 along the wire; leave it out to round them all.
      * @default undefined
      * @optional true
      */
     indexes?: number[] | undefined;
     /**
-     * Orientation direction for the fillet
+     * The direction the wire is extruded along to build the fillets; it must not be parallel to the
+     * wire and must leave room for the radius.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * A shape, a distance and optional edge indexes for `fillets.chamferEdges`; `distanceList` pairs
+ * with `indexes` when both are given.
+ */
 export class ChamferDto<T> {
     constructor(shape?: T, distance?: number, distanceList?: number[], indexes?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -292,12 +340,13 @@ export class ChamferDto<T> {
         if (indexes !== undefined) { this.indexes = indexes; }
     }
     /**
-     * Shape to apply the chamfer
+     * The shape whose edges are beveled.
      * @default undefined
      */
     shape!: T;
     /**
-     * Distance for the chamfer
+     * How far the bevel cuts back from the edge in model units, used for every selected edge unless
+     * `distanceList` is given.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -306,18 +355,22 @@ export class ChamferDto<T> {
      */
     distance?: number | undefined = 0.1;
     /**
-     * Distance for the chamfer
+     * One distance per entry of `indexes`, in the same order; needs `indexes`.
      * @default undefined
      * @optional true
      */
     distanceList?: number[] | undefined;
     /**
-     * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
+     * Which edges to bevel, counted from 0 in the order `shapes.edge.getEdges` lists them; leave it
+     * out to bevel them all.
      * @default undefined
      * @optional true
      */
     indexes?: number[] | undefined;
 }
+/**
+ * A shape, some of its edges and one distance per edge for `fillets.chamferEdgesList`.
+ */
 export class ChamferEdgesListDto<T, U> {
     constructor(shape?: T, edges?: U[], distanceList?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -325,21 +378,26 @@ export class ChamferEdgesListDto<T, U> {
         if (distanceList !== undefined) { this.distanceList = distanceList; }
     }
     /**
-     * Shape to apply the chamfer
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to apply the chamfer to
+     * The edges of the shape to bevel.
      * @default undefined
      */
     edges!: U[];
     /**
-     * Distance for the chamfer
+     * One bevel distance per edge in model units, in the same order as `edges`; the lists must have
+     * the same length.
      * @default undefined
      */
     distanceList!: number[];
 }
+/**
+ * A shape, one of its edges, a face at that edge, a distance and an angle for
+ * `fillets.chamferEdgeDistAngle`.
+ */
 export class ChamferEdgeDistAngleDto<T, U, F> {
     constructor(shape?: T, edge?: U, face?: F, distance?: number, angle?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -349,22 +407,23 @@ export class ChamferEdgeDistAngleDto<T, U, F> {
         if (angle !== undefined) { this.angle = angle; }
     }
     /**
-     * Shape to apply the chamfer
+     * The shape the edge belongs to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edge to apply the chamfer to
+     * The edge to bevel.
      * @default undefined
      */
     edge!: U;
     /**
-     * Face from which to apply the angle
+     * One of the two faces meeting at the edge; the distance is measured on it and the angle from
+     * it.
      * @default undefined
      */
     face!: F;
     /**
-     * Distance for the chamfer
+     * How far from the edge the bevel starts on the face, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -372,7 +431,7 @@ export class ChamferEdgeDistAngleDto<T, U, F> {
      */
     distance = 0.1;
     /**
-     * Angle for the chamfer
+     * The slope of the bevel away from the face, in degrees; 45 gives an even chamfer.
      * @default 45
      * @minimum 0
      * @maximum Infinity
@@ -381,6 +440,10 @@ export class ChamferEdgeDistAngleDto<T, U, F> {
     angle = 45;
 }
 
+/**
+ * A shape, one of its edges, a face at that edge and two distances for
+ * `fillets.chamferEdgeTwoDistances`, an uneven bevel.
+ */
 export class ChamferEdgeTwoDistancesDto<T, U, F> {
     constructor(shape?: T, edge?: U, face?: F, distance1?: number, distance2?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -390,22 +453,22 @@ export class ChamferEdgeTwoDistancesDto<T, U, F> {
         if (distance2 !== undefined) { this.distance2 = distance2; }
     }
     /**
-     * Shape to apply the chamfer
+     * The shape the edge belongs to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edge to apply the chamfer to
+     * The edge to bevel.
      * @default undefined
      */
     edge!: U;
     /**
-     * Face from which to apply the first distance
+     * One of the two faces meeting at the edge; `distance1` is measured on it.
      * @default undefined
      */
     face!: F;
     /**
-     * First distance from the face for the chamfer
+     * How far the bevel reaches from the edge on `face`, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -413,7 +476,7 @@ export class ChamferEdgeTwoDistancesDto<T, U, F> {
      */
     distance1 = 0.1;
     /**
-     * Second distance for the chamfer
+     * How far the bevel reaches from the edge on the other face, in model units.
      * @default 0.2
      * @minimum 0
      * @maximum Infinity
@@ -421,6 +484,10 @@ export class ChamferEdgeTwoDistancesDto<T, U, F> {
      */
     distance2 = 0.2;
 }
+/**
+ * A shape, some of its edges, one face per edge and two distances per edge for
+ * `fillets.chamferEdgesTwoDistancesLists`; all the lists pair up by position.
+ */
 export class ChamferEdgesTwoDistancesListsDto<T, U, F> {
     constructor(shape?: T, edges?: U[], faces?: F[], distances1?: number[], distances2?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -430,31 +497,35 @@ export class ChamferEdgesTwoDistancesListsDto<T, U, F> {
         if (distances2 !== undefined) { this.distances2 = distances2; }
     }
     /**
-     * Shape to apply the chamfer
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to apply the chamfers to
+     * The edges to bevel.
      * @default undefined
      */
     edges!: U[];
     /**
-     * Faces from which to apply the angle of the chamfers
+     * One face per edge, meeting it; the first distance is measured on that face.
      * @default undefined
      */
     faces!: F[];
     /**
-     * Distance 1 list for the chamfers
+     * One distance per edge, in model units, measured on the paired face.
      * @default undefined
      */
     distances1!: number[];
     /**
-     * Distance 2 list for the chamfers
+     * One distance per edge, in model units, measured on the other face.
      * @default undefined
      */
     distances2!: number[];
 }
+/**
+ * A shape, some of its edges, one face per edge and two shared distances for
+ * `fillets.chamferEdgesTwoDistances`; `faces` pairs with `edges` by position.
+ */
 export class ChamferEdgesTwoDistancesDto<T, U, F> {
     constructor(shape?: T, edges?: U[], faces?: F[], distance1?: number, distance2?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -464,22 +535,22 @@ export class ChamferEdgesTwoDistancesDto<T, U, F> {
         if (distance2 !== undefined) { this.distance2 = distance2; }
     }
     /**
-     * Shape to apply the chamfer
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to apply the chamfers to
+     * The edges to bevel.
      * @default undefined
      */
     edges!: U[];
     /**
-     * Faces from which to apply the angle of the chamfers
+     * One face per edge, meeting it; `distance1` is measured on that face.
      * @default undefined
      */
     faces!: F[];
     /**
-     * First distance from the face for the chamfer
+     * How far the bevel reaches from each edge on its paired face, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -487,7 +558,7 @@ export class ChamferEdgesTwoDistancesDto<T, U, F> {
      */
     distance1 = 0.1;
     /**
-     * Second distance for the chamfer
+     * How far the bevel reaches from each edge on the other face, in model units.
      * @default 0.2
      * @minimum 0
      * @maximum Infinity
@@ -495,6 +566,10 @@ export class ChamferEdgesTwoDistancesDto<T, U, F> {
      */
     distance2 = 0.2;
 }
+/**
+ * A shape, some of its edges, one face, distance and angle per edge for
+ * `fillets.chamferEdgesDistsAngles`; all the lists pair up by position.
+ */
 export class ChamferEdgesDistsAnglesDto<T, U, F> {
     constructor(shape?: T, edges?: U[], faces?: F[], distances?: number[], angles?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
@@ -504,32 +579,36 @@ export class ChamferEdgesDistsAnglesDto<T, U, F> {
         if (angles !== undefined) { this.angles = angles; }
     }
     /**
-     * Shape to apply the chamfer
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to apply the chamfers to
+     * The edges to bevel.
      * @default undefined
      */
     edges!: U[];
     /**
-     * Faces from which to apply the angle of the chamfers
+     * One face per edge, meeting it; the distance is measured on that face and the angle from it.
      * @default undefined
      */
     faces!: F[];
     /**
-     * Distance list for the chamfers
+     * One distance per edge, in model units, measured on the paired face.
      * @default undefined
      */
     distances!: number[];
     /**
-     * Angles for the chamfers
+     * One bevel angle per edge, in degrees, measured from the paired face.
      * @default undefined
      */
     angles!: number[];
 }
 
+/**
+ * A shape, some of its edges, one face per edge and a shared distance and angle for
+ * `fillets.chamferEdgesDistAngle`; `faces` pairs with `edges` by position.
+ */
 export class ChamferEdgesDistAngleDto<T, U, F> {
     constructor(shape?: T, edges?: U[], faces?: F[], distance?: number, angle?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -539,22 +618,22 @@ export class ChamferEdgesDistAngleDto<T, U, F> {
         if (angle !== undefined) { this.angle = angle; }
     }
     /**
-     * Shape to apply the chamfer
+     * The shape the edges belong to.
      * @default undefined
      */
     shape!: T;
     /**
-     * Edges to apply the chamfers to
+     * The edges to bevel.
      * @default undefined
      */
     edges!: U[];
     /**
-     * Faces from which to apply the angle of the chamfers
+     * One face per edge, meeting it; the distance is measured on that face and the angle from it.
      * @default undefined
      */
     faces!: F[];
     /**
-     * Distance from the face
+     * How far from each edge the bevel starts on its paired face, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -562,7 +641,7 @@ export class ChamferEdgesDistAngleDto<T, U, F> {
      */
     distance = 0.1;
     /**
-     * Angle for the chamfers
+     * The slope of the bevels away from the paired faces, in degrees; 45 gives an even chamfer.
      * @default 45
      * @minimum 0
      * @maximum Infinity

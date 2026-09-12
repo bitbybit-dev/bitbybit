@@ -4,6 +4,9 @@ import { Base } from "@bitbybit-dev/base";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum } from "./enums";
 
+/**
+ * A shape and meshing settings for `shapeToMesh`, which triangulates the shape for drawing.
+ */
 export class ShapeToMeshDto<T> {
     constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -15,12 +18,13 @@ export class ShapeToMeshDto<T> {
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
     }
     /**
-     * Shape to save
+     * The shape to triangulate.
      * @default undefined
      */
     shape!: T;
     /**
-     * Precision of the mesh
+     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+     * with more triangles.
      * @default 0.01
      * @minimum 0
      * @maximum Infinity
@@ -28,35 +32,40 @@ export class ShapeToMeshDto<T> {
      */
     precision = 0.01;
     /**
-     * Adjust Y (up) coordinate system to Z (up) coordinate system
+     * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
+     * up.
      * @default false
      */
     adjustYtoZ = false;
     /**
-     * Compute additional per-face and per-edge metadata (area, length, centers of mass,
-     * surface/curve type, tolerance and adjacency). Adds cost; base mesh is unchanged when false.
+     * When true, each face and edge entry also carries its area or length, center of mass, surface
+     * or curve type, tolerance and neighbors, at extra cost.
      * @default false
      */
     computeMetadata?: boolean | undefined = false;
     /**
-     * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
-     * is flushed off the shape so it does not accumulate in memory across calls.
+     * When true, the triangulation stays cached on the shape; when false it is cleared afterwards
+     * so memory does not grow across calls.
      * @default false
      */
     keepMeshData?: boolean | undefined = false;
     /**
-     * Allow re-meshing to a lower resolution triangulation than one already cached on the shape
-     * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
+     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
+     * for.
      * @default true
      */
     allowQualityDecrease?: boolean | undefined = true;
     /**
-     * Force every face to be re-meshed to the requested precision regardless of any cached
-     * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
+     * When true, every face is remeshed at the requested precision even when a triangulation is
+     * cached.
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
 }
+/**
+ * A shape and meshing settings for `shapeFacesToPolygonPoints`, which returns every triangle of the
+ * shape as three points.
+ */
 export class ShapeFacesToPolygonPointsDto<T> {
     constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -65,12 +74,13 @@ export class ShapeFacesToPolygonPointsDto<T> {
         if (reversedPoints !== undefined) { this.reversedPoints = reversedPoints; }
     }
     /**
-     * Shape to save
+     * The shape to triangulate.
      * @default undefined
      */
     shape!: T;
     /**
-     * Precision of the mesh
+     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+     * with more triangles.
      * @default 0.01
      * @minimum 0
      * @maximum Infinity
@@ -78,16 +88,22 @@ export class ShapeFacesToPolygonPointsDto<T> {
      */
     precision = 0.01;
     /**
-     * Adjust Y (up) coordinate system to Z (up) coordinate system
+     * When true, the points are turned so this library's Y-up becomes Z-up, for tools that treat Z
+     * as up.
      * @default false
      */
     adjustYtoZ = false;
     /**
-     * Reverse the order of the points describing the polygon because some CAD kernels use the opposite order
+     * When true, the three points of each triangle come in the opposite order, for tools that wind
+     * triangles the other way.
      * @default false
      */
     reversedPoints = false;
 }
+/**
+ * Shapes and meshing settings for `shapesToMeshes`, which triangulates each shape with the same
+ * settings.
+ */
 export class ShapesToMeshesDto<T> {
     constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
         if (shapes !== undefined) { this.shapes = shapes; }
@@ -99,12 +115,13 @@ export class ShapesToMeshesDto<T> {
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
     }
     /**
-     * Shapes to transform
+     * The shapes to triangulate, one mesh per shape.
      * @default undefined
      */
     shapes!: T[];
     /**
-     * Precision of the mesh
+     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+     * with more triangles.
      * @default 0.01
      * @minimum 0
      * @maximum Infinity
@@ -112,35 +129,40 @@ export class ShapesToMeshesDto<T> {
      */
     precision = 0.01;
     /**
-     * Adjust Y (up) coordinate system to Z (up) coordinate system
+     * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
+     * as up.
      * @default false
      */
     adjustYtoZ = false;
     /**
-     * Compute additional per-face and per-edge metadata (area, length, centers of mass,
-     * surface/curve type, tolerance and adjacency). Adds cost; base mesh is unchanged when false.
+     * When true, each face and edge entry also carries its area or length, center of mass, surface
+     * or curve type, tolerance and neighbors, at extra cost.
      * @default false
      */
     computeMetadata?: boolean | undefined = false;
     /**
-     * Keep the cached triangulation on each shape after meshing. When false (default) the mesh data
-     * is flushed so it does not accumulate in memory across calls.
+     * When true, the triangulation stays cached on each shape; when false it is cleared afterwards
+     * so memory does not grow across calls.
      * @default false
      */
     keepMeshData?: boolean | undefined = false;
     /**
-     * Allow re-meshing to a lower resolution triangulation than one already cached on a shape
-     * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
+     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
+     * for.
      * @default true
      */
     allowQualityDecrease?: boolean | undefined = true;
     /**
-     * Force every face to be re-meshed to the requested precision regardless of any cached
-     * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
+     * When true, every face is remeshed at the requested precision even when a triangulation is
+     * cached.
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
 }
+/**
+ * An assembly document and meshing settings for `docToMesh`, which triangulates its top-level
+ * shapes into one mesh with the document's colors.
+ */
 export class DocToMeshDto<U> {
     constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
         if (document !== undefined) { this.document = document; }
@@ -152,13 +174,14 @@ export class DocToMeshDto<U> {
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
     }
     /**
-     * The XCAF document to mesh. Its free (top-level) shapes are meshed as one combined mesh and
-     * per-face colours are resolved from the document into the colorGroups map of the output.
+     * The assembly document whose top-level shapes are meshed together; their face colors end up in
+     * the mesh's color groups.
      * @default undefined
      */
     document!: U;
     /**
-     * Precision of the mesh
+     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+     * with more triangles.
      * @default 0.01
      * @minimum 0
      * @maximum Infinity
@@ -166,35 +189,40 @@ export class DocToMeshDto<U> {
      */
     precision = 0.01;
     /**
-     * Adjust Y (up) coordinate system to Z (up) coordinate system
+     * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
+     * up.
      * @default false
      */
     adjustYtoZ = false;
     /**
-     * Compute additional per-face and per-edge metadata (area, length, centers of mass,
-     * surface/curve type, tolerance, adjacency, UIDs). Adds cost; base mesh is unchanged when false.
+     * When true, each face and edge entry also carries its area or length, center of mass, surface
+     * or curve type, tolerance, neighbors and ids, at extra cost.
      * @default false
      */
     computeMetadata?: boolean | undefined = false;
     /**
-     * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
-     * is flushed off the shape so it does not accumulate in memory across calls.
+     * When true, the triangulation stays cached on the shapes; when false it is cleared afterwards
+     * so memory does not grow across calls.
      * @default false
      */
     keepMeshData?: boolean | undefined = false;
     /**
-     * Allow re-meshing to a lower resolution triangulation than one already cached on the shape
-     * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
+     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
+     * for.
      * @default true
      */
     allowQualityDecrease?: boolean | undefined = true;
     /**
-     * Force every face to be re-meshed to the requested precision regardless of any cached
-     * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
+     * When true, every face is remeshed at the requested precision even when a triangulation is
+     * cached.
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
 }
+/**
+ * An assembly document and meshing settings for `docToMeshes`, which triangulates each top-level
+ * shape into its own mesh with the document's colors.
+ */
 export class DocToMeshesDto<U> {
     constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
         if (document !== undefined) { this.document = document; }
@@ -206,13 +234,14 @@ export class DocToMeshesDto<U> {
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
     }
     /**
-     * The XCAF document to mesh. Each of its free (top-level) shapes is meshed into a separate mesh
-     * (one array entry), with per-face colours resolved from the document into each colorGroups map.
+     * The assembly document whose top-level shapes are meshed one by one; each shape's face colors
+     * end up in its mesh's color groups.
      * @default undefined
      */
     document!: U;
     /**
-     * Precision of the mesh
+     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+     * with more triangles.
      * @default 0.01
      * @minimum 0
      * @maximum Infinity
@@ -220,35 +249,40 @@ export class DocToMeshesDto<U> {
      */
     precision = 0.01;
     /**
-     * Adjust Y (up) coordinate system to Z (up) coordinate system
+     * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
+     * as up.
      * @default false
      */
     adjustYtoZ = false;
     /**
-     * Compute additional per-face and per-edge metadata (area, length, centers of mass,
-     * surface/curve type, tolerance, adjacency, UIDs). Adds cost; base mesh is unchanged when false.
+     * When true, each face and edge entry also carries its area or length, center of mass, surface
+     * or curve type, tolerance, neighbors and ids, at extra cost.
      * @default false
      */
     computeMetadata?: boolean | undefined = false;
     /**
-     * Keep the cached triangulation on each shape after meshing. When false (default) the mesh data
-     * is flushed so it does not accumulate in memory across calls.
+     * When true, the triangulation stays cached on the shapes; when false it is cleared afterwards
+     * so memory does not grow across calls.
      * @default false
      */
     keepMeshData?: boolean | undefined = false;
     /**
-     * Allow re-meshing to a lower resolution triangulation than one already cached on a shape
-     * (OCCT IMeshTools_Parameters.AllowQualityDecrease).
+     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
+     * for.
      * @default true
      */
     allowQualityDecrease?: boolean | undefined = true;
     /**
-     * Force every face to be re-meshed to the requested precision regardless of any cached
-     * triangulation (OCCT IMeshTools_Parameters.ForceFaceDeflection).
+     * When true, every face is remeshed at the requested precision even when a triangulation is
+     * cached.
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
 }
+/**
+ * A shape, a file name and axis options for `io.saveShapeSTEP`, which writes the shape as a STEP
+ * file.
+ */
 export class SaveStepDto<T> {
     constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -257,32 +291,37 @@ export class SaveStepDto<T> {
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
     }
     /**
-     * Shape to save
+     * The shape written to the file.
      * @default undefined
      */
     shape!: T;
     /**
-     * File name
+     * The name the downloaded file gets; `.step` is appended when missing.
      * @default shape.step
      */
     fileName = "shape.step";
     /**
-     * Adjust Y (up) coordinate system to Z (up) coordinate system
+     * When true, the shape is turned so this library's Y-up becomes STEP's Z-up.
      * @default false
      */
     adjustYtoZ = false;
     /**
-     * Will assume that the shape is created in right handed coordinate system environment
-     * and will compensate by not mirroring the shape along z axis
+     * When true, the axis swap skips its mirror step, for shapes that were built in a right-handed
+     * system.
      * @default false
      */
     fromRightHanded?: boolean | undefined = false;
     /**
-     * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
+     * When true, a browser download of the file is started where that is possible; the kernel
+     * itself only returns the text.
      * @default true
      */
     tryDownload?: boolean | undefined = true;
 }
+/**
+ * A shape, a file name and meshing options for `io.saveShapeStl`, which triangulates the shape and
+ * writes it as an STL file.
+ */
 export class SaveStlDto<T> {
     constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, binary?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -293,37 +332,43 @@ export class SaveStlDto<T> {
         if (binary !== undefined) { this.binary = binary; }
     }
     /**
-     * Shape to save
+     * The shape written to the file.
      * @default undefined
      */
     shape!: T;
     /**
-     * File name
+     * The name the downloaded file gets.
      * @default shape.stl
      */
     fileName = "shape.stl";
     /**
-     * Precision of the mesh - lower means higher res
+     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+     * and makes a bigger file.
      * @default 0.01
      */
     precision = 0.01;
     /**
-     * Adjust Y (up) coordinate system to Z (up) coordinate system
+     * When true, the shape is turned so this library's Y-up becomes Z-up.
      * @default false
      */
     adjustYtoZ = false;
     /**
-     * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
+     * When true, a browser download of the file is started where that is possible; the kernel
+     * itself only returns the text.
      * @default true
      */
     tryDownload?: boolean | undefined = true;
     /**
-     * Generate binary STL file
+     * When true, the STL is written in its binary form, which is much smaller than the text form.
      * @default true
      */
     binary?: boolean | undefined = true;
 }
 
+/**
+ * A shape and deflection settings for `io.shapeToDxfPaths`, which traces the shape's wires into DXF
+ * path records.
+ */
 export class ShapeToDxfPathsDto<T> {
     constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -334,12 +379,13 @@ export class ShapeToDxfPathsDto<T> {
         if (minimumLength !== undefined) { this.minimumLength = minimumLength; }
     }
     /**
-     * Shape to convert to DXF paths
+     * The shape whose wires are traced; it must lie flat on the XZ ground plane.
      * @default undefined
      */
     shape!: T;
     /**
-     * The angular deflection for curve tessellation
+     * The largest angle, in radians, the traced polyline may turn between two points; smaller
+     * follows curves more closely.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -347,7 +393,8 @@ export class ShapeToDxfPathsDto<T> {
      */
     angularDeflection = 0.1;
     /**
-     * The curvature deflection for curve tessellation
+     * The largest distance, in model units, the traced polyline may stray from the curve; smaller
+     * follows it more closely.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -355,7 +402,7 @@ export class ShapeToDxfPathsDto<T> {
      */
     curvatureDeflection = 0.1;
     /**
-     * Minimum of points for curve tessellation
+     * The fewest points any edge is traced with, however straight.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -363,7 +410,7 @@ export class ShapeToDxfPathsDto<T> {
      */
     minimumOfPoints = 2;
     /**
-     * U tolerance for curve tessellation
+     * How close two parameter values must be to count as the same point.
      * @default 1.0e-9
      * @minimum 0
      * @maximum Infinity
@@ -371,7 +418,7 @@ export class ShapeToDxfPathsDto<T> {
      */
     uTolerance = 1.0e-9;
     /**
-     * Minimum length for curve tessellation
+     * Edges shorter than this, in model units, are traced with the minimum number of points.
      * @default 1.0e-7
      * @minimum 0
      * @maximum Infinity
@@ -380,6 +427,10 @@ export class ShapeToDxfPathsDto<T> {
     minimumLength = 1.0e-7;
 }
 
+/**
+ * DXF paths, a layer and a color for `io.dxfPathsWithLayer`, which makes them one part of a DXF
+ * drawing.
+ */
 export class DxfPathsWithLayerDto {
     constructor(paths?: IO.DxfPathDto[], layer?: string, color?: Base.Color) {
         if (paths !== undefined) { this.paths = paths; }
@@ -387,22 +438,25 @@ export class DxfPathsWithLayerDto {
         if (color !== undefined) { this.color = color; }
     }
     /**
-     * Array of DXF paths (output from shapeToDxfPaths)
+     * The paths from `io.shapeToDxfPaths`.
      * @default undefined
      */
     paths!: IO.DxfPathDto[];
     /**
-     * Layer name for these paths
+     * The name of the DXF layer the paths go on.
      * @default Default
      */
     layer = "Default";
     /**
-     * Color for these paths
+     * The color of the paths as a hex string such as `#000000`.
      * @default #000000
      */
     color: Base.Color = "#000000";
 }
 
+/**
+ * Layered DXF parts and file options for `io.dxfCreate`, which writes them into one DXF file.
+ */
 export class DxfPathsPartsListDto {
     constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean) {
         if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
@@ -411,32 +465,37 @@ export class DxfPathsPartsListDto {
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
     }
     /**
-     * Array of DXF paths parts (output from dxfPathsWithLayer)
+     * The parts from `io.dxfPathsWithLayer`, each with its own layer and color.
      * @default undefined
      */
     pathsParts!: IO.DxfPathsPartDto[];
     /**
-     * Color format to use in the DXF file
+     * How colors are written: `aci` as AutoCAD's indexed colors, `truecolor` as RGB.
      * @default aci
      */
     colorFormat: dxfColorFormatEnum = dxfColorFormatEnum.aci;
     /**
-     * AutoCAD version format for DXF file
+     * The DXF version to write: `AC1009` is R12, the most widely readable, `AC1015` is 2000.
      * @default AC1009
      */
     acadVersion: dxfAcadVersionEnum = dxfAcadVersionEnum.AC1009;
     /**
-     * File name
+     * The name the downloaded file gets.
      * @default bitbybit-dev.dxf
      */
     fileName?: string | undefined = "bitbybit-dev.dxf";
     /**
-     * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
+     * When true, a browser download of the file is started where that is possible; the kernel
+     * itself only returns the text.
      * @default true
      */
     tryDownload?: boolean | undefined = true;
 }
 
+/**
+ * A shape, a file name and deflection settings for a one-step DXF export; currently unused by the
+ * library, which goes through `io.shapeToDxfPaths` and `io.dxfCreate`.
+ */
 export class SaveDxfDto<T> {
     constructor(shape?: T, fileName?: string, tryDownload?: boolean, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -449,22 +508,23 @@ export class SaveDxfDto<T> {
         if (minimumLength !== undefined) { this.minimumLength = minimumLength; }
     }
     /**
-     * Shape to save
+     * The shape written to the file; it must lie flat on the XZ ground plane.
      * @default undefined
      */
     shape!: T;
     /**
-     * File name
+     * The name the downloaded file gets.
      * @default shape.dxf
      */
     fileName = "shape.dxf";
     /**
-     * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
+     * When true, a browser download of the file is started where that is possible.
      * @default true
      */
     tryDownload?: boolean | undefined = true;
     /**
-     * The angular deflection
+     * The largest angle, in radians, the traced polyline may turn between two points; smaller
+     * follows curves more closely.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -472,7 +532,8 @@ export class SaveDxfDto<T> {
      */
     angularDeflection = 0.1;
     /**
-     * The curvature deflection
+     * The largest distance, in model units, the traced polyline may stray from the curve; smaller
+     * follows it more closely.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -480,7 +541,7 @@ export class SaveDxfDto<T> {
      */
     curvatureDeflection = 0.1;
     /**
-     * Minimum of points
+     * The fewest points any edge is traced with, however straight.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -488,7 +549,7 @@ export class SaveDxfDto<T> {
      */
     minimumOfPoints = 2;
     /**
-     * U tolerance
+     * How close two parameter values must be to count as the same point.
      * @default 1.0e-9
      * @minimum 0
      * @maximum Infinity
@@ -496,7 +557,7 @@ export class SaveDxfDto<T> {
      */
     uTolerance = 1.0e-9;
     /**
-     * Minimum length
+     * Edges shorter than this, in model units, are traced with the minimum number of points.
      * @default 1.0e-7
      * @minimum 0
      * @maximum Infinity
@@ -504,6 +565,10 @@ export class SaveDxfDto<T> {
      */
     minimumLength = 1.0e-7;
 }
+/**
+ * STEP or IGES text and its kind for the core `occt.io.loadSTEPorIGESFromText`, which reads it into
+ * a shape.
+ */
 export class ImportStepIgesFromTextDto {
     constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean) {
         if (text !== undefined) { this.text = text; }
@@ -511,41 +576,43 @@ export class ImportStepIgesFromTextDto {
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
     }
     /**
-     * The text that represents step or iges contents
+     * The full text of the STEP or IGES file.
      * @default undefined
      */
     text!: string;
     /**
-     * Identify the import type
+     * Whether the text is STEP or IGES.
      */
     fileType: fileTypeEnum = fileTypeEnum.step;
     /**
-     * Adjusts models that use Z coordinate as up to Y up system.
+     * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
      * @default true
      */
     adjustZtoY = true;
 }
+/**
+ * A STEP or IGES file for the core `occt.io.loadSTEPorIGES`, which reads it into a shape.
+ */
 export class ImportStepIgesDto {
     constructor(assetFile?: File, adjustZtoY?: boolean) {
         if (assetFile !== undefined) { this.assetFile = assetFile; }
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
     }
     /**
-     * The name of the asset to store in the cache.
-     * This allows to store the imported objects for multiple run cycles in the cache
+     * The file to read; its extension decides whether it is STEP or IGES.
      * @default undefined
      */
     assetFile!: File;
     /**
-     * Adjusts models that use Z coordinate as up to Y up system.
+     * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
      * @default true
      */
     adjustZtoY = true;
 }
 
 /**
- * Options for loading STEP or IGES files.
- * Accepts text content (string) for plain files, or binary content (ArrayBuffer) for compressed files.
+ * File content, a file name and an axis option for `io.loadSTEPorIGES`, which reads STEP or IGES
+ * into a shape.
  */
 export class LoadStepOrIgesDto {
     constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean) {
@@ -554,59 +621,57 @@ export class LoadStepOrIgesDto {
         if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
     }
     /**
-     * File content:
-     * - string: for plain text files (.step, .stp, .iges, .igs)
-     * - ArrayBuffer: for compressed files (.stpz, .igz)
+     * The file's text for `.step`, `.stp`, `.iges` and `.igs`, or an ArrayBuffer for the compressed
+     * `.stpz` and `.igz` forms.
      * @default undefined
      */
     filetext!: string | ArrayBuffer;
     /**
-     * File name (used to determine file type)
+     * The file name; its extension decides whether it is read as STEP or IGES and whether it is
+     * compressed.
      * @default shape.step
      */
     fileName = "shape.step";
     /**
-     * Adjusts models that use Z coordinate as up to Y up system.
+     * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
      * @default true
      */
     adjustZtoY = true;
 }
 
 /**
- * Options for parsing STEP assemblies to JSON using native C++ XCAF traversal.
- * This is the fast, native approach that runs entirely in C++.
+ * A STEP file for `io.parseStepToJson`, which reads its assembly structure without building
+ * geometry.
  */
 export class ParseStepAssemblyToJsonDto {
     constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
         if (stepData !== undefined) { this.stepData = stepData; }
     }
     /**
-     * STEP data as string (for plain text files), ArrayBuffer, Uint8Array, File, or Blob.
-     * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
+     * The STEP file as text, ArrayBuffer, Uint8Array, File or Blob; gzip-compressed `.stpz` content
+     * is unpacked on its own.
      * @default undefined
      */
     stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
 }
 
 /**
- * Options for converting STEP to glTF format.
- * Uses native OCCT RWGltf_CafWriter for fast conversion with full attribute preservation.
+ * A STEP file and meshing settings for `io.convertStepToGltf`, which converts it into a binary
+ * glTF.
  */
 export class ConvertStepToGltfDto {
     constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
         if (stepData !== undefined) { this.stepData = stepData; }
     }
     /**
-     * STEP data as string (for plain text files), ArrayBuffer, Uint8Array, File, or Blob.
-     * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
+     * The STEP file as text, ArrayBuffer, Uint8Array, File or Blob; gzip-compressed `.stpz` content
+     * is unpacked on its own.
      * @default undefined
      */
     stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
     /**
-     * Mesh linear deflection (triangulation precision).
-     * When `meshRelative` is true (default), this is a fraction of each edge's length
-     * (e.g. 0.005 = 0.5%) so small parts get fine meshes and large parts get coarse ones.
-     * When `meshRelative` is false, this is an absolute value in model units (mm for STEP).
+     * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
+     * edge's length, otherwise an absolute distance in model units.
      * @default 0.005
      * @minimum 0.0001
      * @maximum 10
@@ -614,8 +679,8 @@ export class ConvertStepToGltfDto {
      */
     meshPrecision = 0.005;
     /**
-     * Mesh angular deflection in radians (max normal deviation between adjacent triangles).
-     * Smaller values produce smoother curved surfaces but more triangles.
+     * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
+     * smoother curves and more triangles.
      * @default 0.5
      * @minimum 0.01
      * @maximum 3.14159
@@ -623,42 +688,40 @@ export class ConvertStepToGltfDto {
      */
     meshAngle = 0.5;
     /**
-     * Use size-aware relative deflection per face. Recommended default for mixed-scale
-     * assemblies (machine + small fasteners) - dramatically reduces triangle count and
-     * meshing time with negligible visual difference. Set to false for absolute deflection
-     * (the value of `meshPrecision` is then interpreted in model units).
+     * When true, `meshPrecision` scales with each part's size, so small fasteners and large
+     * housings both mesh well; when false it is an absolute distance.
      * @default true
      */
     meshRelative = true;
     /**
-     * Add interior vertices for better curved face fidelity (slower, set false for speed).
+     * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
+     * speed.
      * @default false
      */
     internalVerticesMode = false;
     /**
-     * Extra post-pass refining triangles that bulge beyond the deflection (slower, set
-     * false for speed).
+     * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
+     * speed.
      * @default false
      */
     controlSurfaceDeflection = false;
 }
 
 /**
- * Options for converting STEP to glTF format with explicit Draco geometry
- * compression settings. Mirrors `ConvertStepToGltfDto` and exposes the Draco knobs
- * (8 trailing parameters of the underlying native function).
+ * A STEP file, meshing settings and Draco settings for `io.convertStepToGltfWithDraco`, which
+ * converts it into a Draco-compressed binary glTF.
  */
 export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
     constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
         super(stepData);
     }
     /**
-     * Enable Draco geometry compression on output.
+     * When true, the geometry is compressed with Draco.
      * @default true
      */
     useDraco = true;
     /**
-     * Draco compression level - 0 (fastest, largest) ... 10 (slowest, smallest).
+     * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
      * @default 7
      * @minimum 0
      * @maximum 10
@@ -666,7 +729,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      */
     dracoCompressionLevel = 7;
     /**
-     * Quantization bits for vertex positions.
+     * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
      * @default 14
      * @minimum 0
      * @maximum 31
@@ -674,7 +737,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      */
     dracoQuantizePositionBits = 14;
     /**
-     * Quantization bits for normals.
+     * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
      * @default 10
      * @minimum 0
      * @maximum 31
@@ -682,7 +745,8 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      */
     dracoQuantizeNormalBits = 10;
     /**
-     * Quantization bits for texture coordinates (UVs).
+     * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
+     * precision.
      * @default 12
      * @minimum 0
      * @maximum 31
@@ -690,7 +754,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      */
     dracoQuantizeTexcoordBits = 12;
     /**
-     * Quantization bits for vertex colors.
+     * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
      * @default 8
      * @minimum 0
      * @maximum 31
@@ -698,7 +762,8 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      */
     dracoQuantizeColorBits = 8;
     /**
-     * Quantization bits for generic attributes.
+     * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
+     * precision.
      * @default 12
      * @minimum 0
      * @maximum 31
@@ -706,7 +771,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      */
     dracoQuantizeGenericBits = 12;
     /**
-     * Apply a single quantization grid across all attributes.
+     * When true, one quantization grid is used for every attribute instead of one per attribute.
      * @default false
      */
     dracoUnifiedQuantization = false;
@@ -747,9 +812,8 @@ export enum gltfTransformFormatEnum {
 }
 
 /**
- * Advanced options for converting STEP to glTF format.
- * Provides full control over STEP reading, meshing, and glTF export options.
- * Use this for performance tuning - disable features you don't need.
+ * A STEP file with every reading, meshing and writing option for `io.convertStepToGltfAdvanced`;
+ * switch off what is not needed for a faster conversion.
  */
 export class ConvertStepToGltfAdvancedDto {
     constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
@@ -757,8 +821,8 @@ export class ConvertStepToGltfAdvancedDto {
     }
 
     /**
-     * STEP data as string (for plain text files), ArrayBuffer, Uint8Array, File, or Blob.
-     * Supports compressed .stpz files - gzip-compressed data is automatically decompressed.
+     * The STEP file as text, ArrayBuffer, Uint8Array, File or Blob; gzip-compressed `.stpz` content
+     * is unpacked on its own.
      * @default undefined
      */
     stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
@@ -766,36 +830,32 @@ export class ConvertStepToGltfAdvancedDto {
     // ==================== STEP Reading Options ====================
 
     /**
-     * Read color attributes from STEP file.
-     * Required for colored glTF output.
+     * When true, colors are read from the file; needed for a colored glTF.
      * @default true
      */
     readColors = true;
 
     /**
-     * Read name attributes from STEP file.
-     * Disable for faster parsing if names are not needed.
+     * When true, part names are read from the file; switch it off for faster parsing when names are
+     * not needed.
      * @default true
      */
     readNames = true;
 
     /**
-     * Read material attributes from STEP file.
-     * Required for material properties in glTF.
+     * When true, materials are read from the file; needed for material properties in the glTF.
      * @default true
      */
     readMaterials = true;
 
     /**
-     * Read layer attributes from STEP file.
-     * Usually not needed for glTF output.
+     * When true, layer information is read from the file; rarely needed for glTF.
      * @default false
      */
     readLayers = false;
 
     /**
-     * Read validation properties from STEP file.
-     * Usually not needed for glTF output.
+     * When true, validation properties are read from the file; rarely needed for glTF.
      * @default false
      */
     readProps = false;
@@ -803,10 +863,8 @@ export class ConvertStepToGltfAdvancedDto {
     // ==================== Mesh Options ====================
 
     /**
-     * Mesh linear deflection (triangulation precision).
-     * When `meshRelative` is true (default), this is a fraction of each edge's length
-     * (e.g. 0.005 = 0.5%) so deflection auto-scales with feature size.
-     * When `meshRelative` is false, this is absolute in model units (mm for STEP).
+     * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
+     * edge's length, otherwise an absolute distance in model units.
      * @default 0.005
      * @minimum 0.0001
      * @maximum 10
@@ -815,8 +873,8 @@ export class ConvertStepToGltfAdvancedDto {
     meshDeflection = 0.005;
 
     /**
-     * Mesh angular deflection in radians.
-     * Controls curvature-based refinement.
+     * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
+     * smoother curves and more triangles.
      * @default 0.5
      * @minimum 0.01
      * @maximum 3.14159
@@ -825,17 +883,14 @@ export class ConvertStepToGltfAdvancedDto {
     meshAngle = 0.5;
 
     /**
-     * Enable parallel meshing for multi-threaded builds.
-     * Recommended to keep enabled.
+     * When true, faces are meshed on several threads where the build allows it.
      * @default true
      */
     meshParallel = true;
 
     /**
-     * Face count threshold for the legacy per-sub-shape meshing fallback.
-     * Default -1 means single-pass meshing of the whole compound (fastest, recommended).
-     * Set to a positive value (e.g. 100000) to fall back to per-solid meshing for
-     * very large assemblies in memory-constrained environments.
+     * Above this many faces the assembly is meshed solid by solid to save memory; -1 meshes
+     * everything in one pass, which is fastest.
      * @default -1
      * @minimum -1
      * @maximum 500000
@@ -844,21 +899,22 @@ export class ConvertStepToGltfAdvancedDto {
     faceCountThreshold = -1;
 
     /**
-     * Use size-aware relative deflection per face (recommended). When true,
-     * `meshDeflection` is interpreted as a fraction of each edge's length.
-     * Set to false to use absolute deflection in model units.
+     * When true, `meshDeflection` scales with each part's size, so small fasteners and large
+     * housings both mesh well; when false it is an absolute distance.
      * @default true
      */
     meshRelative = true;
 
     /**
-     * Enable internal vertices mode for more accurate mesh on complex faces.
+     * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
+     * speed.
      * @default false
      */
     internalVerticesMode = false;
 
     /**
-     * Enable control surface deflection for better quality on curved surfaces.
+     * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
+     * speed.
      * @default false
      */
     controlSurfaceDeflection = false;
@@ -866,53 +922,50 @@ export class ConvertStepToGltfAdvancedDto {
     // ==================== glTF Writer Options ====================
 
     /**
-     * Merge faces within a single part into one mesh.
-     * Produces smaller file sizes.
+     * When true, the faces of a part are joined into one mesh, which makes a smaller file.
      * @default true
      */
     mergeFaces = true;
 
     /**
-     * Prefer 16-bit indices when merging faces.
-     * Produces smaller binary data when mesh fits in 16-bit indices.
+     * When true, merged meshes use 16-bit indexes where they fit, which makes a smaller file.
      * @default true
      */
     splitIndices16 = true;
 
     /**
-     * Enable parallel glTF writing.
-     * Recommended for large files.
+     * When true, the glTF is written on several threads, which helps with large files.
      * @default true
      */
     parallelWrite = true;
 
     /**
-     * Embed textures in GLB output.
-     * Only applies to binary (GLB) format.
+     * When true, textures are embedded in the GLB instead of referenced as separate files.
      * @default true
      */
     embedTextures = true;
 
     /**
-     * Export UV coordinates even without textures.
+     * When true, texture coordinates are written even for meshes without textures.
      * @default false
      */
     forceUVExport = false;
 
     /**
-     * Node naming format in output glTF.
+     * What the glTF nodes are named after: the instance, the product, a combination, or nothing.
      * @default instance
      */
     nodeNameFormat: gltfNameFormatEnum = gltfNameFormatEnum.instance;
 
     /**
-     * Mesh naming format in output glTF.
+     * What the glTF meshes are named after: the instance, the product, a combination, or nothing.
      * @default instance
      */
     meshNameFormat: gltfNameFormatEnum = gltfNameFormatEnum.instance;
 
     /**
-     * Transformation format in output glTF.
+     * How node placements are written: `compact` as translation, rotation and scale where possible,
+     * `mat4` always as a matrix, `trs` always as the three parts.
      * @default compact
      */
     transformFormat: gltfTransformFormatEnum = gltfTransformFormatEnum.compact;
@@ -920,16 +973,14 @@ export class ConvertStepToGltfAdvancedDto {
     // ==================== Coordinate System Options ====================
 
     /**
-     * Convert Z-up (OCCT default) to Y-up (glTF standard).
-     * Set to false to keep Z-up coordinate system.
+     * When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up.
      * @default true
      */
     adjustZtoY = true;
 
     /**
-     * Scale factor for the model.
-     * Useful for unit conversion (e.g., 0.001 to convert mm to meters).
-     * Set to 1.0 for no scaling.
+     * A factor applied to the whole model, such as 0.001 to turn millimeters into meters; 1 keeps
+     * the size.
      * @default 1.0
      * @minimum 0.000001
      * @maximum 1000000
@@ -939,21 +990,20 @@ export class ConvertStepToGltfAdvancedDto {
 }
 
 /**
- * Advanced options for converting STEP to glTF format with explicit Draco
- * geometry compression settings. Mirrors `ConvertStepToGltfAdvancedDto` and
- * adds the 8 Draco knobs supported by the underlying native function.
+ * A STEP file with every reading, meshing and writing option plus Draco settings for
+ * `io.convertStepToGltfAdvancedWithDraco`.
  */
 export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdvancedDto {
     constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob) {
         super(stepData);
     }
     /**
-     * Enable Draco geometry compression on output.
+     * When true, the geometry is compressed with Draco.
      * @default true
      */
     useDraco = true;
     /**
-     * Draco compression level - 0 (fastest, largest) ... 10 (slowest, smallest).
+     * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
      * @default 7
      * @minimum 0
      * @maximum 10
@@ -961,7 +1011,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      */
     dracoCompressionLevel = 7;
     /**
-     * Quantization bits for vertex positions.
+     * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
      * @default 14
      * @minimum 0
      * @maximum 31
@@ -969,7 +1019,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      */
     dracoQuantizePositionBits = 14;
     /**
-     * Quantization bits for normals.
+     * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
      * @default 10
      * @minimum 0
      * @maximum 31
@@ -977,7 +1027,8 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      */
     dracoQuantizeNormalBits = 10;
     /**
-     * Quantization bits for texture coordinates (UVs).
+     * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
+     * precision.
      * @default 12
      * @minimum 0
      * @maximum 31
@@ -985,7 +1036,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      */
     dracoQuantizeTexcoordBits = 12;
     /**
-     * Quantization bits for vertex colors.
+     * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
      * @default 8
      * @minimum 0
      * @maximum 31
@@ -993,7 +1044,8 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      */
     dracoQuantizeColorBits = 8;
     /**
-     * Quantization bits for generic attributes.
+     * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
+     * precision.
      * @default 12
      * @minimum 0
      * @maximum 31
@@ -1001,7 +1053,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      */
     dracoQuantizeGenericBits = 12;
     /**
-     * Apply a single quantization grid across all attributes.
+     * When true, one quantization grid is used for every attribute instead of one per attribute.
      * @default false
      */
     dracoUnifiedQuantization = false;

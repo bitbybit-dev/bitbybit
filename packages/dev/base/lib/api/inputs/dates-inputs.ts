@@ -6,40 +6,50 @@
  * format and locale used when parsing or printing one.
  */
 export namespace Dates {
+    /**
+     * One date for the reading and formatting methods of `dates`: `getYear`, `getMonth`,
+     * `toISOString` and the rest.
+     */
     export class DateDto {
         constructor(date?: Date) {
             if (date !== undefined) { this.date = date; }
         }
         /**
-         * The date
+         * The date to read or format.
          * @default undefined
          */
         date!: Date;
     }
 
+    /**
+     * A date written as text for `dates.parseDate`.
+     */
     export class DateStringDto {
         constructor(dateString?: string) {
             if (dateString !== undefined) { this.dateString = dateString; }
         }
         /**
-         * The date string
+         * The text to read, ideally in ISO 8601 form such as `2024-01-15T14:30:00Z`.
          * @default undefined
          */
         dateString!: string;
     }
 
+    /**
+     * A date and a new value for its seconds, for `dates.setSeconds` and `dates.setUTCSeconds`.
+     */
     export class DateSecondsDto {
         constructor(date?: Date, seconds?: number) {
             if (date !== undefined) { this.date = date; }
             if (seconds !== undefined) { this.seconds = seconds; }
         }
         /**
-         * The date to update the seconds for
+         * The date to copy; it is not changed.
          * @default undefined
          */
         date!: Date;
         /**
-         * The seconds of the date
+         * The new seconds from 0 to 59; a value outside the range rolls the date over.
          * @default 30
          * @minimum 0
          * @maximum Infinity
@@ -48,18 +58,21 @@ export namespace Dates {
         seconds = 30;
     }
 
+    /**
+     * A date and a new value for its day, for `dates.setDayOfMonth` and `dates.setUTCDay`.
+     */
     export class DateDayDto {
         constructor(date?: Date, day?: number) {
             if (date !== undefined) { this.date = date; }
             if (day !== undefined) { this.day = day; }
         }
         /**
-         * The date
+         * The date to copy; it is not changed.
          * @default undefined
          */
         date!: Date;
         /**
-         * The day of the date
+         * The new day of the month, from 1 to 31; a value outside the range rolls the date over.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -68,18 +81,22 @@ export namespace Dates {
         day = 1;
     }
 
+    /**
+     * A date and a new value for its year, for `dates.setYear` and `dates.setUTCYear`.
+     */
     export class DateYearDto {
         constructor(date?: Date, year?: number) {
             if (date !== undefined) { this.date = date; }
             if (year !== undefined) { this.year = year; }
         }
         /**
-         * The date
+         * The date to copy; it is not changed.
          * @default undefined
          */
         date!: Date;
         /**
-         * The year of the date
+         * The new year as a full number such as 2024; a value outside the range rolls the date
+         * over.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -88,18 +105,22 @@ export namespace Dates {
         year = 1;
     }
 
+    /**
+     * A date and a new value for its month, for `dates.setMonth` and `dates.setUTCMonth`.
+     */
     export class DateMonthDto {
         constructor(date?: Date, month?: number) {
             if (date !== undefined) { this.date = date; }
             if (month !== undefined) { this.month = month; }
         }
         /**
-         * The date
+         * The date to copy; it is not changed.
          * @default undefined
          */
         date!: Date;
         /**
-         * The month of the date
+         * The new month counting from 0: 0 is January, 11 December; a value outside the range rolls
+         * the date over.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -108,18 +129,21 @@ export namespace Dates {
         month = 1;
     }
 
+    /**
+     * A date and a new value for its hours, for `dates.setHours` and `dates.setUTCHours`.
+     */
     export class DateHoursDto {
         constructor(date?: Date, hours?: number) {
             if (date !== undefined) { this.date = date; }
             if (hours !== undefined) { this.hours = hours; }
         }
         /**
-         * The date
+         * The date to copy; it is not changed.
          * @default undefined
          */
         date!: Date;
         /**
-         * The hours of the date
+         * The new hours from 0 to 23; a value outside the range rolls the date over.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -128,18 +152,21 @@ export namespace Dates {
         hours = 1;
     }
 
+    /**
+     * A date and a new value for its minutes, for `dates.setMinutes` and `dates.setUTCMinutes`.
+     */
     export class DateMinutesDto {
         constructor(date?: Date, minutes?: number) {
             if (date !== undefined) { this.date = date; }
             if (minutes !== undefined) { this.minutes = minutes; }
         }
         /**
-         * The date
+         * The date to copy; it is not changed.
          * @default undefined
          */
         date!: Date;
         /**
-         * The minutes of the date
+         * The new minutes from 0 to 59; a value outside the range rolls the date over.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -148,18 +175,22 @@ export namespace Dates {
         minutes = 1;
     }
 
+    /**
+     * A date and a new value for its milliseconds, for `dates.setMilliseconds` and
+     * `dates.setUTCMilliseconds`.
+     */
     export class DateMillisecondsDto {
         constructor(date?: Date, milliseconds?: number) {
             if (date !== undefined) { this.date = date; }
             if (milliseconds !== undefined) { this.milliseconds = milliseconds; }
         }
         /**
-         * The date
+         * The date to copy; it is not changed.
          * @default undefined
          */
         date!: Date;
         /**
-         * The milliseconds of the date
+         * The new milliseconds from 0 to 999; a value outside the range rolls the date over.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -168,18 +199,21 @@ export namespace Dates {
         milliseconds = 1;
     }
 
+    /**
+     * A date and a Unix timestamp for `dates.setTime`.
+     */
     export class DateTimeDto {
         constructor(date?: Date, time?: number) {
             if (date !== undefined) { this.date = date; }
             if (time !== undefined) { this.time = time; }
         }
         /**
-         * The date
+         * The date to copy; it is not changed.
          * @default undefined
          */
         date!: Date;
         /**
-         * The time of the date
+         * The new moment as milliseconds since 1 January 1970 at 00:00 UTC.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -187,12 +221,15 @@ export namespace Dates {
          */
         time = 1;
     }
+    /**
+     * A Unix timestamp for `dates.createFromUnixTimeStamp`, which turns it into a date.
+     */
     export class CreateFromUnixTimeStampDto {
         constructor(unixTimeStamp?: number) {
             if (unixTimeStamp !== undefined) { this.unixTimeStamp = unixTimeStamp; }
         }
         /**
-         * The unix time stamp
+         * Milliseconds since 1 January 1970 at 00:00 UTC.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -200,6 +237,10 @@ export namespace Dates {
          */
         unixTimeStamp = 1;
     }
+    /**
+     * The parts of a date for `dates.createDate` and `dates.createDateUTC`; a part outside its
+     * range rolls the date over.
+     */
     export class CreateDateDto {
         constructor(year?: number, month?: number, day?: number, hours?: number, minutes?: number, seconds?: number, milliseconds?: number) {
             if (year !== undefined) { this.year = year; }
@@ -211,7 +252,7 @@ export namespace Dates {
             if (milliseconds !== undefined) { this.milliseconds = milliseconds; }
         }
         /**
-         * The year of the date
+         * The full year, such as 2024.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -219,7 +260,7 @@ export namespace Dates {
          */
         year = 1;
         /**
-         * The month of the date
+         * The month counting from 0: 0 is January, 11 December.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -227,7 +268,7 @@ export namespace Dates {
          */
         month = 1;
         /**
-         * The day of the month
+         * The day of the month, from 1 to 31.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -235,7 +276,7 @@ export namespace Dates {
          */
         day = 1;
         /**
-         * The hours of the date
+         * The hour, from 0 to 23.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -243,7 +284,7 @@ export namespace Dates {
          */
         hours = 1;
         /**
-         * The minutes of the date
+         * The minutes, from 0 to 59.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -251,7 +292,7 @@ export namespace Dates {
          */
         minutes = 1;
         /**
-         * The seconds of the date
+         * The seconds, from 0 to 59.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -260,7 +301,7 @@ export namespace Dates {
         seconds = 1;
 
         /**
-         * The milliseconds of the date
+         * The milliseconds, from 0 to 999.
          * @default 1
          * @minimum 0
          * @maximum Infinity

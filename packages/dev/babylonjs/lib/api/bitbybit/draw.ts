@@ -8,6 +8,13 @@ import { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
 import { DrawHelper } from "../draw-helper";
 
+/**
+ * Drawing anything into the scene: kernel shapes, points, lines, polylines, curves, meshes and tags
+ * all go through `drawAnyAsync`, which picks the right renderer for the entity and returns the
+ * drawn object. The `options` methods build the drawing options with defaults for each kind of
+ * entity, `createPBRMaterial` and `createTexture` make materials for the face slots, and a drawn
+ * object can be redrawn in place by passing it back.
+ */
 export class Draw extends DrawCore {
 
     private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
@@ -44,29 +51,42 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Draws any kind of geometry and does not return anything
-     * @param inputs Contains options and entities to be drawn
+     * Draws any entity into the scene, as `drawAnyAsync` does, without giving the drawn object
+     * back; for the last step of a script that only needs the result to appear.
+     * @param inputs - The entity to draw and the optional drawing options
      * @group draw async
      * @shortname draw async void
      * @disposableOutput true
      * @drawable true
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+     * await bitbybit.draw.drawAnyAsyncNoReturn({ entity: box });
+     * ```
      */
     async drawAnyAsyncNoReturn(inputs: Inputs.Draw.DrawAny): Promise<void> {
         await this.drawAnyAsync(inputs);
     }
 
     /**
-     * Draws any kind of geometry and returns the babylon mesh
-     * @param inputs Contains options and entities to be drawn
-     * @returns What drawing the given entity produces: a mesh for geometry, the tag or tags for a
-     * tag, a disposable overlay for one a host application resolves, an axis triad's node for a
-     * node. Drawing an empty list draws nothing and resolves undefined; a literal `[]` is typed as
-     * that, a list variable that happens to be empty is not, because whether a list is empty is not
-     * something the type of the list says.
+     * Draws any entity the library produces into the scene and gives back the drawn object: kernel
+     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, curves, meshes, tags and
+     * nodes.
+     *
+     * The options are matched to the entity, with defaults when none are given; pass the previous
+     * result back in the update slot to redraw in place.
+     * @param inputs - The entity to draw, the optional drawing options and the previous result when updating
+     * @returns What drawing the entity produces: a scene object for geometry, the tag or tags for a tag, an axis triad for a node; undefined for an empty list
      * @group draw async
      * @shortname draw async
      * @drawable true
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+     * const options = bitbybit.draw.optionsOcctShapeSimple({ precision: 0.01, drawFaces: true, faceColour: "#ff0000", drawEdges: true, edgeColour: "#ffffff", edgeWidth: 2, drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: box, options });
+     * ```
      */
     async drawAnyAsync<E extends Inputs.Draw.Entity>(
         inputs: Inputs.Draw.DrawAny<E>,
@@ -191,22 +211,35 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Draws any kind of geometry that does not need asynchronous computing, thus it cant be used with shapes coming from occt or jscad
-     * @param inputs Contains options and entities to be drawn
-     * @returns BabylonJS Mesh
+     * Draws an entity that needs no kernel work, as `drawAny` does, without giving the drawn object
+     * back; points, lines, polylines and tags qualify, kernel shapes do not.
+     * @param inputs - The entity to draw and the optional drawing options
      * @group draw sync
      * @shortname draw sync void
+     * @example
+     * ```typescript
+     * bitbybit.draw.drawAnyNoReturn({ entity: [[0, 0, 0], [5, 5, 5], [10, 0, 0]] });
+     * ```
      */
     drawAnyNoReturn(inputs: Inputs.Draw.DrawAny): void {
         this.drawAny(inputs);
     }
 
     /**
-     * Draws any kind of geometry that does not need asynchronous computing, thus it cant be used with shapes coming from occt or jscad
-     * @param inputs Contains options and entities to be drawn
-     * @returns BabylonJS Mesh
+     * Draws an entity that needs no kernel work into the scene right away and gives back the drawn
+     * object: points, lines, polylines, tags and nodes.
+     *
+     * Kernel shapes from OCCT, JSCAD and Manifold must go through `drawAnyAsync`, which waits for
+     * the kernel to mesh them.
+     * @param inputs - The entity to draw, the optional drawing options and the previous result when updating
+     * @returns What drawing the entity produces: a scene object for geometry, the tag or tags for a tag, an axis triad for a node; undefined for an empty list
      * @group draw sync
      * @shortname draw sync
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsSimple({ colours: "#00ff00", size: 0.5, opacity: 1, updatable: false, hidden: false, drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, colorMapStrategy: Bit.Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize: 0, arrowAngle: 15 });
+     * const drawn = bitbybit.draw.drawAny({ entity: [[0, 0, 0], [5, 5, 5], [10, 0, 0]], options });
+     * ```
      */
     drawAny<E extends Inputs.Draw.Entity>(
         inputs: Inputs.Draw.DrawAny<E>,
@@ -307,23 +340,32 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
-     * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
+     * Draws a grid on the ground plane, as `drawGridMesh` does, without giving the mesh back.
+     * @param inputs - The size, line spacing, colors and opacity of the grid
      * @group grid
      * @shortname draw grid no return
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * bitbybit.draw.drawGridMeshNoReturn({ width: 400, height: 400, subdivisions: 10, majorUnitFrequency: 10, minorUnitVisibility: 0.45, gridRatio: 0.5, opacity: 0.5, backFaceCulling: false, mainColor: "#ffffff", secondaryColor: "#ffffff" });
+     * ```
      */
     drawGridMeshNoReturn(inputs: Inputs.Draw.SceneDrawGridMeshDto): void {
         this.drawGridMesh(inputs);
     }
 
     /**
-     * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
-     * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
-     * @returns grid mesh
+     * Draws a grid on the ground plane, the XZ plane through the origin, to give a sense of scale
+     * and orientation; every tenth line is drawn thicker by default.
+     * @param inputs - The size, line spacing, colors and opacity of the grid
+     * @returns The grid mesh
      * @group grid
      * @shortname draw grid
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const grid = bitbybit.draw.drawGridMesh({ width: 400, height: 400, subdivisions: 10, majorUnitFrequency: 10, minorUnitVisibility: 0.45, gridRatio: 0.5, opacity: 0.5, backFaceCulling: false, mainColor: "#ffffff", secondaryColor: "#ffffff" });
+     * ```
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh {
         try {
@@ -356,79 +398,118 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Creates draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
-     * @param inputs option definition
-     * @returns options
+     * Builds drawing options for points, lines, polylines, curves, surfaces and JSCAD meshes:
+     * colors, size, opacity, two-sided rendering and arrow heads on lines, with defaults for what
+     * is left out.
+     * @param inputs - The options to start from
+     * @returns The drawing options
      * @group options
      * @shortname simple
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsSimple({ colours: "#ff0000", size: 2, opacity: 1, updatable: false, hidden: false, drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, colorMapStrategy: Bit.Inputs.Base.colorMapStrategyEnum.lastColorRemainder, arrowSize: 0, arrowAngle: 15 });
+     * ```
      */
     optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
         return inputs;
     }
 
     /**
-     * Creates draw options for occt shape geometry like edges, wires, faces, shells, solids and compounds
-     * @param inputs option definition
-     * @returns options
+     * Builds the full drawing options for OCCT shapes: meshing precision, face, edge and vertex
+     * colors and sizes, index labels, arrows on edges, two-sided rendering and the triangulation
+     * cache, with defaults for what is left out.
+     * @param inputs - The options to start from
+     * @returns The drawing options
      * @group options
      * @shortname occt shape
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsOcctShape({ faceOpacity: 1, edgeOpacity: 1, edgeColour: "#ffffff", faceColour: "#ff0000", edgeWidth: 2, drawEdges: true, drawFaces: true, drawVertices: false, vertexColour: "#ff00ff", vertexSize: 0.03, precision: 0.01, drawEdgeIndexes: false, edgeIndexHeight: 0.06, edgeIndexColour: "#ff00ff", drawFaceIndexes: false, faceIndexHeight: 0.06, faceIndexColour: "#0000ff", drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, edgeArrowSize: 0, edgeArrowAngle: 15, keepMeshData: false, allowQualityDecrease: true, forceFaceDeflection: false });
+     * ```
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
         return inputs;
     }
 
     /**
-     * Creates simple draw options for occt shape geometry
-     * @param inputs option definition
-     * @returns options
+     * Builds the most used drawing options for OCCT shapes, precision, face and edge colors and
+     * two-sided rendering, with defaults for what is left out.
+     * @param inputs - The options to start from
+     * @returns The drawing options
      * @group options
      * @shortname occt shape simple
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsOcctShapeSimple({ precision: 0.01, drawFaces: true, faceColour: "#ff0000", drawEdges: true, edgeColour: "#ffffff", edgeWidth: 2, drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1 });
+     * ```
      */
     optionsOcctShapeSimple(inputs: Inputs.Draw.DrawOcctShapeSimpleOptions): Inputs.Draw.DrawOcctShapeSimpleOptions {
         return inputs;
     }
 
     /**
-     * Creates simple draw options with custom face material for occt shape geometry
-     * @param inputs option definition
-     * @returns options
+     * Builds drawing options for OCCT shapes whose faces use a full engine material, as
+     * `createPBRMaterial` makes one, plus the precision and edge style.
+     * @param inputs - The options to start from
+     * @returns The drawing options
      * @group options
      * @shortname occt shape with material
+     * @example
+     * ```typescript
+     * const material = bitbybit.draw.createPBRMaterial({ name: "steel", baseColor: "#c0c0c0", metallic: 1, roughness: 0.4, alpha: 1, emissiveColor: "#000000", emissiveIntensity: 1, zOffset: 0, zOffsetUnits: 0, alphaMode: Bit.Inputs.Draw.alphaModeEnum.opaque, alphaCutoff: 0.5, doubleSided: false, wireframe: false, unlit: false });
+     * const options = bitbybit.draw.optionsOcctShapeMaterial({ precision: 0.01, faceMaterial: material, drawEdges: true, edgeColour: "#ffffff", edgeWidth: 2 });
+     * ```
      */
     optionsOcctShapeMaterial(inputs: Inputs.Draw.DrawOcctShapeMaterialOptions): Inputs.Draw.DrawOcctShapeMaterialOptions {
         return inputs;
     }
 
     /**
-     * Creates draw options for manifold gemetry
-     * @param inputs option definition
-     * @returns options
+     * Builds drawing options for Manifold solids and cross-sections: face color or a full engine
+     * material, the line style of cross-sections, normals and the two-sided rendering.
+     * @param inputs - The options to start from
+     * @returns The drawing options
      * @group options
      * @shortname manifold shape draw options
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsManifoldShapeMaterial({ faceOpacity: 1, faceColour: "#ff0000", faceMaterial: material, crossSectionColour: "#ff00ff", crossSectionWidth: 2, crossSectionOpacity: 1, computeNormals: false, drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: solid, options });
+     * ```
      */
     optionsManifoldShapeMaterial(inputs: Inputs.Draw.DrawManifoldOrCrossSectionOptions): Inputs.Draw.DrawManifoldOrCrossSectionOptions {
         return inputs;
     }
 
     /**
-     * Creates draw options for babylon js nodes
-     * @param inputs option definition
-     * @returns options
+     * Builds drawing options for transform nodes, which are drawn as a triad of colored axis lines
+     * of a given length.
+     * @param inputs - The options to start from
+     * @returns The drawing options
      * @group options
      * @shortname babylon node
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsBabylonNode({ colorX: "#0000ff", colorY: "#00ff00", colorZ: "#ff0000", size: 2 });
+     * const drawn = await bitbybit.draw.drawAnyAsync({ entity: node, options });
+     * ```
      */
     optionsBabylonNode(inputs: Inputs.Draw.DrawNodeOptions): Inputs.Draw.DrawNodeOptions {
         return inputs;
     }
 
     /**
-     * Creates a generic texture that can be used with PBR materials.
-     * This method provides a cross-engine compatible way to create textures.
-     * @param inputs Texture configuration options
-     * @returns BabylonJS Texture
+     * Creates an image texture from a URL for the texture slots of `createPBRMaterial`, with
+     * tiling, offset, rotation and filtering that mean the same in every renderer.
+     * @param inputs - The image URL and the tiling, offset, rotation, flip and sampling options
+     * @returns The engine's texture
      * @group material
      * @shortname create texture
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const texture = bitbybit.draw.createTexture({ url: "https://example.com/wood.jpg", name: "wood", uScale: 2, vScale: 2, uOffset: 0, vOffset: 0, wAng: 0, invertY: false, invertZ: false, samplingMode: Bit.Inputs.Draw.samplingModeEnum.trilinear });
+     * ```
      */
     createTexture(inputs: Inputs.Draw.GenericTextureDto): BABYLON.Texture {
         const samplingMode = this.getSamplingMode(inputs.samplingMode);
@@ -451,14 +532,19 @@ export class Draw extends DrawCore {
     }
 
     /**
-     * Creates a generic PBR (Physically Based Rendering) material.
-     * This method provides a cross-engine compatible way to create materials
-     * that can be used with draw options for OCCT shapes and other geometry.
-     * @param inputs Material configuration options
-     * @returns BabylonJS PBRMetallicRoughnessMaterial
+     * Creates a physically based material from settings that mean the same in every renderer: base
+     * color, metallic and roughness, opacity, emissive glow, the texture slots and the alpha and
+     * side options; put it in the `faceMaterial` of the drawing options.
+     * @param inputs - The name, colors, metallic and roughness values, opacity, textures and rendering options
+     * @returns The engine's material
      * @group material
      * @shortname create pbr material
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const material = bitbybit.draw.createPBRMaterial({ name: "steel", baseColor: "#c0c0c0", metallic: 1, roughness: 0.4, alpha: 1, emissiveColor: "#000000", emissiveIntensity: 1, zOffset: 0, zOffsetUnits: 0, alphaMode: Bit.Inputs.Draw.alphaModeEnum.opaque, alphaCutoff: 0.5, doubleSided: false, wireframe: false, unlit: false });
+     * const options = bitbybit.draw.optionsOcctShapeMaterial({ precision: 0.01, faceMaterial: material, drawEdges: true, edgeColour: "#ffffff", edgeWidth: 2 });
+     * ```
      */
     createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): BABYLON.PBRMetallicRoughnessMaterial {
         const mat = new BABYLON.PBRMetallicRoughnessMaterial(inputs.name, this.context.scene);

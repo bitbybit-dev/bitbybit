@@ -7,8 +7,10 @@ import { OCCTSurfaces } from "./surfaces";
 
 /**
  * The geometric layer beneath the topology: the mathematical curves and surfaces themselves,
- * separate from the edges and faces that carry them. Use it when you need to evaluate a curve at a
- * parameter, ask a surface for its normal, or build geometry that has no topological wrapper yet.
+ * separate from the edges and faces that carry them. `curves` builds 2D curves for constructions in
+ * UV space and evaluates them; `surfaces` builds infinite surfaces and extracts the surface a face
+ * lies on. These objects cannot be drawn directly: wrap them into edges and faces with
+ * `shapes.edge` and `shapes.face` first.
  */
 export class OCCTGeom {
     public readonly curves: OCCTCurves;

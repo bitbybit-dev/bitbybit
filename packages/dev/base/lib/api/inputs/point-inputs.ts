@@ -8,16 +8,22 @@ import { Base } from "./base-inputs";
  * sets are where most parametric models begin.
  */
 export namespace Point {
+    /**
+     * One point for `point.getX`, `point.getY` and `point.getZ`.
+     */
     export class PointDto {
         constructor(point?: Base.Point3) {
             if (point !== undefined) { this.point = point; }
         }
         /**
-         * Point
+         * The point as `[x, y, z]`.
          * @default undefined
          */
         point!: Base.Point3;
     }
+    /**
+     * The three values `point.pointXYZ` puts together into `[x, y, z]`.
+     */
     export class PointXYZDto {
         constructor(x?: number, y?: number, z?: number) {
             if (x !== undefined) { this.x = x; }
@@ -25,7 +31,7 @@ export namespace Point {
             if (z !== undefined) { this.z = z; }
         }
         /**
-         * Point
+         * The X value, the first entry.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -33,7 +39,7 @@ export namespace Point {
          */
         x = 0;
         /**
-         * Point
+         * The Y value, the second entry; Y is up.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -41,21 +47,24 @@ export namespace Point {
          */
         y = 0;
         /**
-        * Point
-        * @default 0
-        * @minimum -Infinity
-        * @maximum Infinity
-        * @step 0.1
-        */
+         * The Z value, the third entry.
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
         z = 0;
     }
+    /**
+     * The two values `point.pointXY` puts together into `[x, y]`.
+     */
     export class PointXYDto {
         constructor(x?: number, y?: number) {
             if (x !== undefined) { this.x = x; }
             if (y !== undefined) { this.y = y; }
         }
         /**
-         * Point
+         * The X value, the first entry.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -63,7 +72,7 @@ export namespace Point {
          */
         x = 0;
         /**
-         * Point
+         * The Y value, the second entry.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -71,32 +80,43 @@ export namespace Point {
          */
         y = 0;
     }
+    /**
+     * A list of points for the methods that read them together: `point.boundingBoxOfPoints`,
+     * `point.averagePoint` and `point.sortPoints`.
+     */
     export class PointsDto {
         constructor(points?: Base.Point3[]) {
             if (points !== undefined) { this.points = points; }
         }
         /**
-         * Points
+         * The points, each `[x, y, z]`.
          * @default undefined
          */
         points!: Base.Point3[];
     }
+    /**
+     * Two points, for methods that relate one point to another.
+     */
     export class TwoPointsDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3) {
             if (point1 !== undefined) { this.point1 = point1; }
             if (point2 !== undefined) { this.point2 = point2; }
         }
         /**
-         * Point 1
+         * The first point.
          * @default undefined
          */
         point1!: Base.Point3;
         /**
-         * Point 2
+         * The second point.
          * @default undefined
          */
         point2!: Base.Point3;
     }
+    /**
+     * One point and how to draw it: its size, color and opacity, and whether the drawn mesh will
+     * be updated later.
+     */
     export class DrawPointDto<T> {
         /**
          * Provide options without default values
@@ -110,12 +130,12 @@ export namespace Point {
             if (pointMesh !== undefined) { this.pointMesh = pointMesh; }
         }
         /**
-         * Point
+         * The point to draw, as `[x, y, z]`.
          * @default undefined
          */
         point!: Base.Point3;
         /**
-         * Value between 0 and 1
+         * How opaque the point is, from 0 (invisible) to 1 (solid).
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -123,7 +143,7 @@ export namespace Point {
          */
         opacity = 1;
         /**
-         * Size of the point
+         * Size of the drawn point, in model units.
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -131,21 +151,28 @@ export namespace Point {
          */
         size = 3;
         /**
-         * Hex colour string
+         * Color of the point as a hex string such as `#ff0000`; a list of strings is also
+         * accepted.
          * @default #444444
          */
         colours: string | string[] = "#444444";
         /**
-         * Indicates wether the position of this point will change in time
+         * When true, the drawn mesh is built so its position can be changed later without
+         * redrawing.
          * @default false
          */
         updatable = false;
         /**
-         * Point mesh variable in case it already exists and needs updating
+         * A mesh drawn earlier for this point; when given it is updated in place instead of a new
+         * one being made.
          * @default undefined
          */
         pointMesh?: T | undefined;
     }
+    /**
+     * A list of points and how to draw them: their size, colors and opacity, and whether the drawn
+     * mesh will be updated later.
+     */
     export class DrawPointsDto<T> {
         /**
          * Provide options without default values
@@ -159,12 +186,12 @@ export namespace Point {
             if (pointsMesh !== undefined) { this.pointsMesh = pointsMesh; }
         }
         /**
-         * Point
+         * The points to draw, each `[x, y, z]`.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Value between 0 and 1
+         * How opaque the points are, from 0 (invisible) to 1 (solid).
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -172,7 +199,7 @@ export namespace Point {
          */
         opacity = 1;
         /**
-         * Size of the points
+         * Size of each drawn point, in model units.
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -180,85 +207,103 @@ export namespace Point {
          */
         size = 0.1;
         /**
-         * Hex colour string or collection of strings
+         * One hex color string for all points, or one string per point.
          * @default #444444
          */
         colours: string | string[] = "#444444";
         /**
-         * Indicates wether the position of this point will change in time
+         * When true, the drawn mesh is built so the positions can be changed later without
+         * redrawing.
          * @default false
          */
         updatable = false;
         /**
-         * Points mesh variable in case it already exists and needs updating
+         * A mesh drawn earlier for these points; when given it is updated in place instead of a new
+         * one being made.
          * @default undefined
          */
         pointsMesh?: T | undefined;
     }
+    /**
+     * One point and the transformation `point.transformPoint` applies to it.
+     */
     export class TransformPointDto {
         constructor(point?: Base.Point3, transformation?: Base.TransformMatrixes) {
             if (point !== undefined) { this.point = point; }
             if (transformation !== undefined) { this.transformation = transformation; }
         }
         /**
-         * Point to transform
+         * The point to transform; it is not changed, a new point is returned.
          * @default undefined
          */
         point!: Base.Point3;
         /**
-         * Transformation matrix or a list of transformation matrixes
+         * A transformation matrix, or a list of them applied in order.
          * @default undefined
          */
         transformation!: Base.TransformMatrixes;
     }
+    /**
+     * Points and the one transformation `point.transformPoints` applies to all of them.
+     */
     export class TransformPointsDto {
         constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes) {
             if (points !== undefined) { this.points = points; }
             if (transformation !== undefined) { this.transformation = transformation; }
         }
         /**
-         * Points to transform
+         * The points to transform; they are not changed and the result keeps their order.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Transformation matrix or a list of transformation matrixes
+         * A transformation matrix, or a list of them applied in order, used for every point.
          * @default undefined
          */
         transformation!: Base.TransformMatrixes;
     }
+    /**
+     * Points and one vector per point for `point.translatePointsWithVectors`; the two lists must
+     * have the same length.
+     */
     export class TranslatePointsWithVectorsDto {
         constructor(points?: Base.Point3[], translations?: Base.Vector3[]) {
             if (points !== undefined) { this.points = points; }
             if (translations !== undefined) { this.translations = translations; }
         }
         /**
-         * Points to transform
+         * The points to move.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Translation vectors for each point
+         * One vector per point, in the same order; the first point moves by the first vector.
          * @default undefined
          */
         translations!: Base.Vector3[];
     }
+    /**
+     * Points and the one vector `point.translatePoints` moves them all by.
+     */
     export class TranslatePointsDto {
         constructor(points?: Base.Point3[], translation?: Base.Vector3) {
             if (points !== undefined) { this.points = points; }
             if (translation !== undefined) { this.translation = translation; }
         }
         /**
-         * Points to transform
+         * The points to move.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Translation vector with x, y and z values
+         * The vector every point moves by, as `[x, y, z]`.
          * @default undefined
          */
         translation!: Base.Vector3;
     }
+    /**
+     * Points and the distance along each axis that `point.translateXYZPoints` moves them.
+     */
     export class TranslateXYZPointsDto {
         constructor(points?: Base.Point3[], x?: number, y?: number, z?: number) {
             if (points !== undefined) { this.points = points; }
@@ -267,27 +312,30 @@ export namespace Point {
             if (z !== undefined) { this.z = z; }
         }
         /**
-         * Points to transform
+         * The points to move.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * X vector value
+         * Distance to move along X, in model units.
          * @default 0
          */
         x = 0;
         /**
-        * Y vector value
-        * @default 1
-        */
+         * Distance to move along Y, which is up, in model units.
+         * @default 1
+         */
         y = 1;
         /**
-        * Z vector value
-        * @default 0
-        */
+         * Distance to move along Z, in model units.
+         * @default 0
+         */
         z = 0;
     }
 
+    /**
+     * Points, a center and a factor per axis for `point.scalePointsCenterXYZ`.
+     */
     export class ScalePointsCenterXYZDto {
         constructor(points?: Base.Point3[], center?: Base.Point3, scaleXyz?: Base.Vector3) {
             if (points !== undefined) { this.points = points; }
@@ -295,22 +343,27 @@ export namespace Point {
             if (scaleXyz !== undefined) { this.scaleXyz = scaleXyz; }
         }
         /**
-         * Points to transform
+         * The points to scale; they are not changed and the result keeps their order.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * The center from which the scaling is applied
+         * The point that stays in place while the others move away from it or toward it.
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
         /**
-         * Scaling factors for each axis [1, 2, 1] means that Y axis will be scaled 200% and both x and z axis will remain on 100%
+         * The factor for each axis as `[x, y, z]`: `[1, 2, 1]` doubles distances along Y and leaves
+         * X and Z as they are.
          * @default [1, 1, 1]
          */
         scaleXyz: Base.Vector3 = [1, 1, 1];
     }
 
+    /**
+     * Points, a center, a direction and a factor for `point.stretchPointsDirFromCenter`, which
+     * scales only along that direction.
+     */
     export class StretchPointsDirFromCenterDto {
         constructor(points?: Base.Point3[], center?: Base.Point3, direction?: Base.Vector3, scale?: number) {
             if (points !== undefined) { this.points = points; }
@@ -319,22 +372,23 @@ export namespace Point {
             if (scale !== undefined) { this.scale = scale; }
         }
         /**
-         * Points to transform
+         * The points to stretch; they are not changed and the result keeps their order.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * The center from which the scaling is applied
+         * The point that stays in place; distances are measured from it.
          * @default [0, 0, 0]
          */
         center?: Base.Point3 | undefined = [0, 0, 0];
         /**
-         * Stretch direction vector
+         * The direction to stretch along; distances across it do not change.
          * @default [0, 0, 1]
          */
         direction?: Base.Vector3 | undefined = [0, 0, 1];
         /**
-         * The scale factor to apply along the direction vector. 1.0 means no change.
+         * The factor applied along the direction; 1 leaves the points as they are, 2 doubles their
+         * distance from the center along it.
          * @default 2
          * @minimum -Infinity
          * @maximum Infinity
@@ -342,6 +396,9 @@ export namespace Point {
          */
         scale?: number | undefined = 2;
     }
+    /**
+     * Points, an axis, a center and an angle for `point.rotatePointsCenterAxis`.
+     */
     export class RotatePointsCenterAxisDto {
         constructor(points?: Base.Point3[], angle?: number, axis?: Base.Vector3, center?: Base.Point3) {
             if (points !== undefined) { this.points = points; }
@@ -350,12 +407,13 @@ export namespace Point {
             if (center !== undefined) { this.center = center; }
         }
         /**
-        * Points to transform
-        * @default undefined
-        */
+         * The points to rotate; they are not changed and the result keeps their order.
+         * @default undefined
+         */
         points!: Base.Point3[];
         /**
-         * Angle of rotation in degrees
+         * How far to turn, in degrees; positive is counter-clockwise when the axis points toward
+         * you.
          * @default 90
          * @minimum -Infinity
          * @maximum Infinity
@@ -363,32 +421,41 @@ export namespace Point {
          */
         angle = 90;
         /**
-         * Axis vector for rotation
+         * The direction of the axis to turn around.
          * @default [0, 1, 0]
          */
         axis: Base.Vector3 = [0, 1, 0];
         /**
-         * The center from which the axis is pointing
+         * A point the axis passes through.
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
     }
+    /**
+     * Points and one transformation per point for `point.transformsForPoints`; the two lists must
+     * have the same length.
+     */
     export class TransformsForPointsDto {
         constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes[]) {
             if (points !== undefined) { this.points = points; }
             if (transformation !== undefined) { this.transformation = transformation; }
         }
         /**
-         * Points to transform
+         * The points to transform, as many as there are transformations; the result keeps their
+         * order.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Transformations that have to match nr of points
+         * One transformation per point, in the same order; each may be a matrix or a list of
+         * matrices applied in order.
          * @default undefined
          */
         transformation!: Base.TransformMatrixes[];
     }
+    /**
+     * Three points that define a plane, for `point.normalFromThreePoints`.
+     */
     export class ThreePointsNormalDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3, reverseNormal?: boolean) {
             if (point1 !== undefined) { this.point1 = point1; }
@@ -397,26 +464,31 @@ export namespace Point {
             if (reverseNormal !== undefined) { this.reverseNormal = reverseNormal; }
         }
         /**
-         * Point 1
+         * The first point; the normal is measured from here.
          * @default undefined
          */
         point1!: Base.Point3;
         /**
-         * Point 2
+         * The second point.
          * @default undefined
          */
         point2!: Base.Point3;
         /**
-         * Point 3
+         * The third point; going from the first to the second to the third counter-clockwise puts
+         * the normal toward you.
          * @default undefined
          */
         point3!: Base.Point3;
         /**
-         * Reverse normal direction
+         * When true, the normal is flipped to point the other way.
          * @default false
          */
         reverseNormal = false;
     }
+    /**
+     * A corner for `point.maxFilletRadius` and `point.maxFilletRadiusHalfLine`: the corner point is
+     * `end`, and `start` and `center` are the far ends of the two segments that meet there.
+     */
     export class ThreePointsToleranceDto {
         constructor(start?: Base.Point3, center?: Base.Point3, end?: Base.Point3, tolerance?: number) {
             if (start !== undefined) { this.start = start; }
@@ -425,22 +497,23 @@ export namespace Point {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * Start point
+         * The far end of the first segment.
          * @default undefined
          */
         start!: Base.Point3;
         /**
-         * Center point
+         * The far end of the second segment, not the corner.
          * @default undefined
          */
         center!: Base.Point3;
         /**
-         * End point
+         * The corner where the two segments meet.
          * @default undefined
          */
         end!: Base.Point3;
         /**
-         * Tolerance for the calculation
+         * A segment shorter than this, or an angle within it of straight or folded back, gives a
+         * radius of 0.
          * @default 1e-7
          * @minimum -Infinity
          * @maximum Infinity
@@ -448,6 +521,10 @@ export namespace Point {
          */
         tolerance = 1e-7;
     }
+    /**
+     * A polyline's points for `point.maxFilletsHalfLine` and `point.safestPointsMaxFilletHalfLine`,
+     * and whether it closes back on itself.
+     */
     export class PointsMaxFilletsHalfLineDto {
         constructor(points?: Base.Point3[], checkLastWithFirst?: boolean, tolerance?: number) {
             if (points !== undefined) { this.points = points; }
@@ -455,17 +532,19 @@ export namespace Point {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * Points to transform
+         * The points of the polyline, in order; at least three make a corner.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Check first and last point for duplicates
+         * When true, the polyline is closed and the corners at its first and last points are
+         * included.
          * @default false
          */
         checkLastWithFirst?: boolean | undefined = false;
         /**
-         * Tolerance for the calculation
+         * A segment shorter than this, or an angle within it of straight or folded back, gives a
+         * radius of 0.
          * @default 1e-7
          * @minimum -Infinity
          * @maximum Infinity
@@ -473,6 +552,10 @@ export namespace Point {
          */
         tolerance?: number | undefined = 1e-7;
     }
+    /**
+     * Points to filter with `point.removeConsecutiveDuplicates`, and how close two points must be
+     * to count as the same.
+     */
     export class RemoveConsecutiveDuplicatesDto {
         constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean) {
             if (points !== undefined) { this.points = points; }
@@ -480,12 +563,12 @@ export namespace Point {
             if (checkFirstAndLast !== undefined) { this.checkFirstAndLast = checkFirstAndLast; }
         }
         /**
-         * Points to transform
+         * The points to filter; their order is kept.
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Tolerance for removing duplicates
+         * Two points count as the same when every coordinate differs by less than this.
          * @default 1e-7
          * @minimum 0
          * @maximum Infinity
@@ -493,26 +576,34 @@ export namespace Point {
          */
         tolerance?: number | undefined = 1e-7;
         /**
-         * Check first and last point for duplicates
+         * When true, a last point that repeats the first is dropped as well, which closes a loop
+         * cleanly.
          */
         checkFirstAndLast = false;
     }
+    /**
+     * A point and a list to search for `point.closestPointFromPoints`,
+     * `point.closestPointFromPointsDistance` and `point.closestPointFromPointsIndex`.
+     */
     export class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3) {
             if (points !== undefined) { this.points = points; }
             if (point !== undefined) { this.point = point; }
         }
         /**
-         * Points to transform
+         * Points to search through
          * @default undefined
          */
         points!: Base.Point3[];
         /**
-         * Transformation matrix or a list of transformation matrixes
+         * The point to measure from; the closest of `points` to it is the result
          * @default undefined
          */
         point!: Base.Point3;
     }
+    /**
+     * Two points and a tolerance for `point.twoPointsAlmostEqual`.
+     */
     export class TwoPointsToleranceDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, tolerance?: number) {
             if (point1 !== undefined) { this.point1 = point1; }
@@ -530,7 +621,7 @@ export namespace Point {
          */
         point2!: Base.Point3;
         /**
-         * Tolerance for the calculation
+         * The points count as equal when the distance between them is below this.
          * @default 1e-7
          * @minimum -Infinity
          * @maximum Infinity
@@ -538,56 +629,69 @@ export namespace Point {
          */
         tolerance?: number | undefined = 1e-7;
     }
+    /**
+     * Two points for `point.distance`: where a measurement starts and where it ends.
+     */
     export class StartEndPointsDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3) {
             if (startPoint !== undefined) { this.startPoint = startPoint; }
             if (endPoint !== undefined) { this.endPoint = endPoint; }
         }
         /**
-         * Start point
+         * The point the measurement starts from.
          * @default undefined
          */
         startPoint!: Base.Point3;
         /**
-         * End point
+         * The point the measurement ends at.
          * @default undefined
          */
         endPoint!: Base.Point3;
     }
+    /**
+     * One start point and many end points for `point.distancesToPoints`.
+     */
     export class StartEndPointsListDto {
         constructor(startPoint?: Base.Point3, endPoints?: Base.Point3[]) {
             if (startPoint !== undefined) { this.startPoint = startPoint; }
             if (endPoints !== undefined) { this.endPoints = endPoints; }
         }
         /**
-         * Start point
+         * The point every distance is measured from.
          * @default undefined
          */
         startPoint!: Base.Point3;
         /**
-         * End point
+         * The points to measure to; the result keeps their order.
          * @default undefined
          */
         endPoints!: Base.Point3[];
     }
 
+    /**
+     * One point and a count for `point.multiplyPoint`, which repeats it.
+     */
     export class MultiplyPointDto {
         constructor(point?: Base.Point3, amountOfPoints?: number) {
             if (point !== undefined) { this.point = point; }
             if (amountOfPoints !== undefined) { this.amountOfPoints = amountOfPoints; }
         }
         /**
-         * Point for multiplication
+         * The point to repeat.
          * @default undefined
          */
         point!: Base.Point3;
         /**
-         * Number of points to create in the list
+         * How many copies to make.
          * @default undefined
          */
         amountOfPoints!: number;
     }
 
+    /**
+     * The shape of the logarithmic spiral `point.spiral` lays out: how many points, how far it
+     * reaches and how quickly it opens.
+     */
     export class SpiralDto {
         constructor(radius?: number, numberPoints?: number, widening?: number, factor?: number, phi?: number) {
             if (radius !== undefined) { this.radius = radius; }
@@ -597,7 +701,8 @@ export namespace Point {
             if (phi !== undefined) { this.phi = phi; }
         }
         /**
-         * Identifies phi angle
+         * Growth ratio of the spiral; values near 1 make a tight spiral, larger values open it
+         * faster.
          * @default 0.9
          * @minimum 0
          * @maximum Infinity
@@ -605,7 +710,7 @@ export namespace Point {
          */
         phi = 0.9;
         /**
-         * Identifies how many points will be created
+         * How many points to place along the spiral.
          * @default 200
          * @minimum 0
          * @maximum Infinity
@@ -613,7 +718,7 @@ export namespace Point {
          */
         numberPoints = 200;
         /**
-         * Widening factor of the spiral
+         * How much the spiral widens per turn; larger values spread the turns further apart.
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -621,7 +726,7 @@ export namespace Point {
          */
         widening = 3;
         /**
-         * Radius of the spiral
+         * The distance from the origin the last point reaches, in model units.
          * @default 6
          * @minimum 0
          * @maximum Infinity
@@ -629,7 +734,8 @@ export namespace Point {
          */
         radius = 6;
         /**
-         * Factor of the spiral
+         * Scales the distance before the angle is computed, which turns the whole spiral; 1 leaves
+         * it as it is.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -637,6 +743,10 @@ export namespace Point {
          */
         factor = 1;
     }
+    /**
+     * The area, counts and orientation for `point.hexGridScaledToFit`, which sizes hexagons so the
+     * given number of them fills the width and height.
+     */
     export class HexGridScaledToFitDto {
         constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean) {
             if (wdith !== undefined) { this.width = wdith; }
@@ -646,63 +756,84 @@ export namespace Point {
             if (centerGrid !== undefined) { this.centerGrid = centerGrid; }
             if (pointsOnGround !== undefined) { this.pointsOnGround = pointsOnGround; }
         }
-        /** Total desired width for the grid area. The hexagon size will be derived from this and nrHexagonsU.
+        /**
+         * The total width to fill, in model units; the hexagon size follows from it and
+         * `nrHexagonsInWidth`.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
         width?: number | undefined = 10;
-        /** Total desired height for the grid area. Note: due to hexagon geometry, the actual grid height might differ slightly if maintaining regular hexagons based on width.
+        /**
+         * The total height to fill, in model units. Regular hexagons may not tile it exactly, so
+         * the real height can differ slightly.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
-        */
+         */
         height?: number | undefined = 10;
-        /** Number of hexagons desired in width.
+        /**
+         * How many hexagons across.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         nrHexagonsInWidth?: number | undefined = 10;
-        /** Number of hexagons desired in height.
+        /**
+         * How many hexagons from top to bottom.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         nrHexagonsInHeight?: number | undefined = 10;
-        /** If true, the hexagons will be oriented with their flat sides facing up and down. 
+        /**
+         * When true, the hexagons have a flat edge at the top and bottom; when false a corner
+         * points up.
          * @default false
          */
         flatTop?: boolean | undefined = false;
-        /** If true, shift the entire grid up by half hex height. 
+        /**
+         * When true, the grid is stretched so its top row reaches past the top edge, filling the rectangle
+         * without a jagged border there.
          * @default false
-        */
+         */
         extendTop?: boolean | undefined = false;
-        /** If true, shift the entire grid down by half hex height. 
+        /**
+         * When true, the grid is stretched so its bottom row reaches past the bottom edge, filling the
+         * rectangle without a jagged border there.
          * @default false
-        */
+         */
         extendBottom?: boolean | undefined = false;
-        /** If true, shift the entire grid left by half hex width. 
+        /**
+         * When true, the grid is stretched so its left column reaches past the left edge, filling the
+         * rectangle without a jagged border there.
          * @default false
-        */
+         */
         extendLeft?: boolean | undefined = false;
-        /** If true, shift the entire grid right by half hex width. 
+        /**
+         * When true, the grid is stretched so its right column reaches past the right edge, filling the
+         * rectangle without a jagged border there.
          * @default false
-        */
+         */
         extendRight?: boolean | undefined = false;
-        /** If true, the grid center (based on totalWidth/totalHeight) will be at [0,0,0].
+        /**
+         * When true, the middle of the grid sits at the origin instead of its corner.
          * @default false
          */
         centerGrid?: boolean | undefined = false;
-        /** If true, swaps Y and Z coordinates and sets Y to 0, placing points on the XZ ground plane.
+        /**
+         * When true, the grid lies on the XZ ground plane (Y becomes 0) instead of the XY plane.
          * @default false
          */
         pointsOnGround?: boolean | undefined = false;
     }
+    /**
+     * The hexagon size, the column and row counts and the placement for `point.hexGrid`.
+     */
     export class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean) {
             if (nrHexagonsX !== undefined) { this.nrHexagonsX = nrHexagonsX; }
@@ -712,7 +843,7 @@ export namespace Point {
             if (pointsOnGround !== undefined) { this.pointsOnGround = pointsOnGround; }
         }
         /**
-         * Number of hexagons on Y direction
+         * How many rows of hexagons along Y.
          * @default 21
          * @minimum 0
          * @maximum Infinity
@@ -720,7 +851,7 @@ export namespace Point {
          */
         nrHexagonsY = 21;
         /**
-         * Number of Hexagons on Z direction
+         * How many columns of hexagons along X.
          * @default 21
          * @minimum 0
          * @maximum Infinity
@@ -728,7 +859,7 @@ export namespace Point {
          */
         nrHexagonsX = 21;
         /**
-         * radius of a single hexagon
+         * Distance from a hexagon's center to one of its corners, in model units.
          * @default 0.2
          * @minimum 0
          * @maximum Infinity
@@ -736,12 +867,12 @@ export namespace Point {
          */
         radiusHexagon: number = 0.2;
         /**
-         * Orient hexagon points grid on center
+         * When true, the middle of the grid sits at the origin instead of its corner.
          * @default false
          */
         orientOnCenter = false;
         /**
-         * Orient points on the ground
+         * When true, the grid lies on the XZ ground plane (Y becomes 0) instead of the XY plane.
          * @default false
          */
         pointsOnGround = false;

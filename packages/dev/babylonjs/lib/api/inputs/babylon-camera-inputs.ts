@@ -7,6 +7,10 @@ import { Base } from "./base-inputs";
  * settings specific to free, target and arc-rotate cameras.
  */
 export namespace BabylonCamera {
+    /**
+     * Feeds `babylon.camera.arcRotate.create`: where the orbiting camera starts around its target,
+     * how far it can zoom and orbit, and how fast it reacts.
+     */
     export class ArcRotateCameraDto {
         constructor(radius?: number, alpha?: number, beta?: number, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, panningSensibility?: number, wheelPrecision?: number, maxZ?: number) {
             if (radius !== undefined) { this.radius = radius; }
@@ -25,7 +29,7 @@ export namespace BabylonCamera {
             if (maxZ !== undefined) { this.maxZ = maxZ; }
         }
         /**
-         * Defines the camera distance from its target. This radius will be used to rotate the camera around the target as default.
+         * Distance from the target the camera starts at, in scene units
          * @default 20
          * @minimum 0
          * @maximum Infinity
@@ -33,12 +37,12 @@ export namespace BabylonCamera {
          */
         radius = 20;
         /**
-         * Target of the arc rotate camera. Camera will look at and rotate around this point by default.
+         * The point the camera looks at and orbits around
          * @default [0, 0, 0]
          */
         target: Base.Point3 = [0, 0, 0];
         /**
-         * Defines the camera rotation along the longitudinal (horizontal) axis in degrees
+         * The camera's angle around the vertical axis, in degrees
          * @default 45
          * @minimum -360
          * @maximum 360
@@ -46,7 +50,7 @@ export namespace BabylonCamera {
          */
         alpha = 45;
         /**
-         * Defines the camera rotation along the latitudinal (vertical) axis in degrees. This is counted from top down, where 0 is looking from top straight down.
+         * The camera's angle down from straight above, in degrees; 90 is level with the target
          * @default 70
          * @minimum -360
          * @maximum 360
@@ -54,7 +58,8 @@ export namespace BabylonCamera {
          */
         beta = 70;
         /**
-         * Lower radius limit - how close can the camera be to the target
+         * The closest the camera may zoom to the target, in scene units; left out, there is no
+         * limit
          * @default undefined
          * @minimum -Infinity
          * @maximum Infinity
@@ -63,7 +68,8 @@ export namespace BabylonCamera {
          */
         lowerRadiusLimit?: number | undefined;
         /**
-         * Upper radius limit - how far can the camera be from the target
+         * The farthest the camera may zoom from the target, in scene units; left out, there is no
+         * limit
          * @default undefined
          * @minimum -Infinity
          * @maximum Infinity
@@ -72,7 +78,8 @@ export namespace BabylonCamera {
          */
         upperRadiusLimit?: number | undefined;
         /**
-         * Lower alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
+         * The smallest angle around the vertical axis the camera may orbit to, in degrees; left
+         * out, it orbits freely
          * @default undefined
          * @minimum -360
          * @maximum 360
@@ -81,7 +88,8 @@ export namespace BabylonCamera {
          */
         lowerAlphaLimit?: number | undefined;
         /**
-         * Upper alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
+         * The largest angle around the vertical axis the camera may orbit to, in degrees; left out,
+         * it orbits freely
          * @default undefined
          * @minimum -360
          * @maximum 360
@@ -90,7 +98,8 @@ export namespace BabylonCamera {
          */
         upperAlphaLimit?: number | undefined;
         /**
-         * Lower beta limit - camera rotation along the latitudinal (vertical) axis in degrees. This is counted from the top down, where 0 is looking from top straight down.
+         * How close to straight above the camera may go, in degrees down from the top; 0 would look
+         * straight down
          * @default 1
          * @minimum -360
          * @maximum 360
@@ -98,7 +107,8 @@ export namespace BabylonCamera {
          */
         lowerBetaLimit = 1;
         /**
-         * Upper beta limit - camera rotation along the longitudinal (vertical) axis in degrees. This is counted from the top down, where 180 is looking from bottom straight up.
+         * How close to straight below the camera may go, in degrees down from the top; 180 would
+         * look straight up
          * @default 179
          * @minimum -360
          * @maximum 360
@@ -106,7 +116,7 @@ export namespace BabylonCamera {
          */
         upperBetaLimit = 179;
         /**
-         * Angular sensibility along x (horizontal) axis of the camera
+         * How much pointer movement a horizontal orbit takes; lower turns faster
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -114,7 +124,7 @@ export namespace BabylonCamera {
          */
         angularSensibilityX = 1000;
         /**
-         * Angular sensibility along y (vertical) axis of the camera
+         * How much pointer movement a vertical orbit takes; lower turns faster
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -122,7 +132,7 @@ export namespace BabylonCamera {
          */
         angularSensibilityY = 1000;
         /**
-         * Panning sensibility. The lower this number gets the faster camera will move when panning.
+         * How much pointer movement a pan takes; lower pans faster, so lower it for large models
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -130,7 +140,8 @@ export namespace BabylonCamera {
          */
         panningSensibility = 1000;
         /**
-         * Wheel precision. The lower this number gets the faster camera will move when zooming.
+         * How much wheel movement a zoom step takes; lower zooms faster, so lower it for large
+         * models
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -138,7 +149,7 @@ export namespace BabylonCamera {
          */
         wheelPrecision = 3;
         /**
-         * Maximum distance the camera can see. Objects that are further away from the camera than this value will not be rendered.
+         * The farthest distance the camera draws, in scene units; anything beyond is not rendered
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -146,64 +157,77 @@ export namespace BabylonCamera {
          */
         maxZ = 1000;
     }
+    /**
+     * Feeds `babylon.camera.free.create` with where the flying camera starts and what it looks at.
+     */
     export class FreeCameraDto {
         constructor(position?: Base.Point3, target?: Base.Point3) {
             if (position !== undefined) { this.position = position; }
             if (target !== undefined) { this.target = target; }
         }
         /**
-         * Position of the free camera
+         * Where the camera starts
          * @default [20, 20, 20]
          */
         position: Base.Point3 = [20, 20, 20];
         /**
-         * Target of the free camera
+         * The point the camera looks at to begin with
          * @default [0, 0, 0]
          */
         target: Base.Point3 = [0, 0, 0];
     }
+    /**
+     * Feeds `babylon.camera.target.create` with where the fixed camera sits and what it looks at.
+     */
     export class TargetCameraDto {
         constructor(position?: Base.Point3, target?: Base.Point3) {
             if (position !== undefined) { this.position = position; }
             if (target !== undefined) { this.target = target; }
         }
         /**
-         * Position of the free camera
+         * Where the camera sits
          * @default [20, 20, 20]
          */
         position: Base.Point3 = [20, 20, 20];
         /**
-         * Target of the free camera
+         * The point the camera looks at
          * @default [0, 0, 0]
          */
         target: Base.Point3 = [0, 0, 0];
     }
+    /**
+     * Feeds `babylon.camera.setPosition` and the camera getters with a camera and the point to move
+     * it to.
+     */
     export class PositionDto {
         constructor(camera?: BABYLON.TargetCamera, position?: Base.Point3) {
             if (camera !== undefined) { this.camera = camera; }
             if (position !== undefined) { this.position = position; }
         }
         /**
-         * Target camera
+         * The camera to move or read
          */
         camera!: BABYLON.TargetCamera;
         /**
-         * Position of the free camera
+         * Where to move the camera
          * @default [20, 20, 20]
          */
         position: Base.Point3 = [20, 20, 20];
     }
+    /**
+     * Feeds `babylon.camera.setSpeed` with a camera and how fast its controls move it.
+     */
     export class SpeedDto {
         constructor(camera?: BABYLON.TargetCamera, speed?: number) {
             if (camera !== undefined) { this.camera = camera; }
             if (speed !== undefined) { this.speed = speed; }
         }
         /**
-         * Target camera
+         * The camera to change
          */
         camera!: BABYLON.TargetCamera;
         /**
-         * speed of the camera
+         * How fast the controls move the camera; 1 is the default pace
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -211,32 +235,39 @@ export namespace BabylonCamera {
          */
         speed = 1;
     }
+    /**
+     * Feeds `babylon.camera.setTarget` with a camera and the point to look at.
+     */
     export class TargetDto {
         constructor(camera?: BABYLON.TargetCamera, target?: Base.Point3) {
             if (camera !== undefined) { this.camera = camera; }
             if (target !== undefined) { this.target = target; }
         }
         /**
-         * Target camera
+         * The camera to turn
          */
         camera!: BABYLON.TargetCamera;
         /**
-         * target of the camera
+         * The point the camera is turned to look at
          * @default [0, 0, 0]
          */
         target: Base.Point3 = [0, 0, 0];
     }
+    /**
+     * Feeds `babylon.camera.setMinZ` with a camera and its near clipping distance.
+     */
     export class MinZDto {
         constructor(camera?: BABYLON.Camera, minZ?: number) {
             if (camera !== undefined) { this.camera = camera; }
             if (minZ !== undefined) { this.minZ = minZ; }
         }
         /**
-         * Free camera
+         * The camera to change
          */
         camera!: BABYLON.Camera;
         /**
-         * minZ of the camera
+         * The distance below which nothing is drawn, in scene units; keep it above 0 on large
+         * scenes for depth precision
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -244,17 +275,20 @@ export namespace BabylonCamera {
          */
         minZ = 0;
     }
+    /**
+     * Feeds `babylon.camera.setMaxZ` with a camera and its far clipping distance.
+     */
     export class MaxZDto {
         constructor(camera?: BABYLON.Camera, maxZ?: number) {
             if (camera !== undefined) { this.camera = camera; }
             if (maxZ !== undefined) { this.maxZ = maxZ; }
         }
         /**
-         * Free camera
+         * The camera to change
          */
         camera!: BABYLON.Camera;
         /**
-         * maxZ of the camera
+         * The distance beyond which nothing is drawn, in scene units
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -263,6 +297,10 @@ export namespace BabylonCamera {
         maxZ = 1000;
     }
 
+    /**
+     * Feeds `babylon.camera.makeCameraOrthographic` with a camera and the four edges of its flat,
+     * distance-free view.
+     */
     export class OrthographicDto {
         constructor(camera?: BABYLON.Camera, orthoLeft?: number, orthoRight?: number, orthoTop?: number, orthoBottom?: number) {
             if (camera !== undefined) { this.camera = camera; }
@@ -272,11 +310,11 @@ export namespace BabylonCamera {
             if (orthoBottom !== undefined) { this.orthoBottom = orthoBottom; }
         }
         /**
-         * Camera to adjust
+         * The camera to switch to orthographic projection
          */
         camera!: BABYLON.Camera;
         /**
-         * Left side limit of the orthographic camera
+         * The left edge of the view, in scene units from the camera's axis; 0 falls back to -1
          * @default -1
          * @minimum -Infinity
          * @maximum Infinity
@@ -284,7 +322,7 @@ export namespace BabylonCamera {
          */
         orthoLeft = -1;
         /**
-         * Right side limit of the orthographic camera
+         * The right edge of the view, in scene units from the camera's axis; 0 falls back to 1
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -292,7 +330,7 @@ export namespace BabylonCamera {
          */
         orthoRight = 1;
         /**
-         * Bottom side limit of the orthographic camera
+         * The bottom edge of the view, in scene units from the camera's axis; 0 falls back to -1
          * @default -1
          * @minimum -Infinity
          * @maximum Infinity
@@ -300,7 +338,7 @@ export namespace BabylonCamera {
          */
         orthoBottom = -1;
         /**
-         * Top side limit of the orthographic camera
+         * The top edge of the view, in scene units from the camera's axis; 0 falls back to 1
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -309,12 +347,16 @@ export namespace BabylonCamera {
         orthoTop = 1;
     }
 
+    /**
+     * Feeds `babylon.camera.makeCameraPerspective`, `freezeProjectionMatrix` and
+     * `unfreezeProjectionMatrix` with the one camera to change.
+     */
     export class CameraDto {
         constructor(camera?: BABYLON.Camera) {
             if (camera !== undefined) { this.camera = camera; }
         }
         /**
-         * Camera
+         * The camera to change
          */
         camera!: BABYLON.Camera;
     }

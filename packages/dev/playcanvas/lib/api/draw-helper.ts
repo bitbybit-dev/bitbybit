@@ -1056,7 +1056,7 @@ export class DrawHelper extends DrawHelperCore {
      * @param updatable - Whether to attempt updates
      * @param size - Line width. Not applied: a GL line is one pixel wide whatever this says.
      * @param opacity - Line opacity
-     * @param colours - Line colors
+     * @param colors - Line colors
      * @param colorMapStrategy - Strategy for mapping colors to polylines
      * @returns Entity containing rendered polylines, or undefined
      */

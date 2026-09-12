@@ -18,33 +18,43 @@ import { Base } from "./base-inputs";
  */
 export namespace Text {
 
+    /**
+     * One text for the single-text methods of `text`: `trim`, `toUpperCase`, `reverse`, `length`,
+     * `isEmpty` and the rest.
+     */
     export class TextDto {
         constructor(text?: string) {
             if (text !== undefined) { this.text = text; }
         }
         /**
-         * The text
+         * The text the method works on; it is not changed, a new text is returned.
          * @default Hello World
          */
         text = "Hello World";
     }
 
+    /**
+     * A text and a separator for `text.split`.
+     */
     export class TextSplitDto {
         constructor(text?: string, separator?: string) {
             if (text !== undefined) { this.text = text; }
             if (separator !== undefined) { this.separator = separator; }
         }
         /**
-         * Text to split
+         * The text to cut into pieces.
          * @default a,b,c
          */
         text = "a,b,c";
         /**
-         * Text to split by
+         * The text that marks a cut; it is dropped from the pieces.
          * @default ,
          */
         separator = ",";
     }
+    /**
+     * A text, what to look for in it and what to put in its place, for `text.replaceAll`.
+     */
     export class TextReplaceDto {
         constructor(text?: string, search?: string, replaceWith?: string) {
             if (text !== undefined) { this.text = text; }
@@ -52,92 +62,112 @@ export namespace Text {
             if (replaceWith !== undefined) { this.replaceWith = replaceWith; }
         }
         /**
-         * Text to replace
+         * The text to make the replacements in.
          * @default a-c
          */
         text = "a-c";
         /**
-         * Text to search for
+         * The text to look for; every occurrence is replaced.
          * @default -
          */
         search = "-";
         /**
-         * Text to replace found occurences
+         * The text that takes the place of each occurrence.
          * @default b
          */
         replaceWith = "b";
     }
+    /**
+     * Texts and a separator for `text.join`, which writes them one after another.
+     */
     export class TextJoinDto {
         constructor(list?: string[], separator?: string) {
             if (list !== undefined) { this.list = list; }
             if (separator !== undefined) { this.separator = separator; }
         }
         /**
-         * Text to join
+         * The texts to join, in order.
          * @default undefined
          */
         list!: string[];
         /**
-         * Text to join by
+         * The text placed between neighbors; an empty text joins them directly.
          * @default ,
          */
         separator = ",";
     }
+    /**
+     * Any value for `text.toString`, which turns it into text the way JavaScript prints it.
+     */
     export class ToStringDto<T> {
         constructor(item?: T) {
             if (item !== undefined) { this.item = item; }
         }
         /**
-         * Item to stringify
+         * The value to turn into text.
          * @default undefined
          */
         item!: T;
     }
+    /**
+     * A list of values for `text.toStringEach`, which turns each into text the way JavaScript
+     * prints it.
+     */
     export class ToStringEachDto<T> {
         constructor(list?: T[]) {
             if (list !== undefined) { this.list = list; }
         }
         /**
-         * Item to stringify
+         * The values to turn into text, one by one.
          * @default undefined
          */
         list!: T[];
     }
 
+    /**
+     * A text with numbered placeholders and the values for `text.format` to fill in.
+     */
     export class TextFormatDto {
         constructor(text?: string, values?: string[]) {
             if (text !== undefined) { this.text = text; }
             if (values !== undefined) { this.values = values; }
         }
         /**
-         * Text to format
+         * The text with placeholders such as `{0}` and `{1}`.
          * @default Hello {0}
          */
         text = "Hello {0}";
         /**
-         * Values to format
+         * The values, in placeholder order: the first fills `{0}`, the second `{1}`.
          * @default ["World"]
          */
         values = ["World"];
     }
 
+    /**
+     * A text and something to look for in it, for `text.includes`, `text.startsWith`,
+     * `text.endsWith`, `text.indexOf` and `text.lastIndexOf`.
+     */
     export class TextSearchDto {
         constructor(text?: string, search?: string) {
             if (text !== undefined) { this.text = text; }
             if (search !== undefined) { this.search = search; }
         }
         /**
-         * Text to search in
+         * The text to look in.
          * @default hello world
          */
         text = "hello world";
         /**
-         * Text to search for
+         * The text to look for, matched exactly, including case.
          * @default world
          */
         search = "world";
     }
 
+    /**
+     * A text and a range of positions for `text.substring` and `text.slice`.
+     */
     export class TextSubstringDto {
         constructor(text?: string, start?: number, end?: number) {
             if (text !== undefined) { this.text = text; }
@@ -145,12 +175,12 @@ export namespace Text {
             if (end !== undefined) { this.end = end; }
         }
         /**
-         * Text to extract from
+         * The text to take characters from.
          * @default hello world
          */
         text = "hello world";
         /**
-         * Start index
+         * Position of the first character to take, counting from 0.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -158,7 +188,8 @@ export namespace Text {
          */
         start = 0;
         /**
-         * End index
+         * Position just after the last character to take; leave it out to take everything to the
+         * end.
          * @default 5
          * @minimum 0
          * @maximum Infinity
@@ -167,18 +198,21 @@ export namespace Text {
         end?: number | undefined = 5;
     }
 
+    /**
+     * A text and a position for `text.charAt`.
+     */
     export class TextIndexDto {
         constructor(text?: string, index?: number) {
             if (text !== undefined) { this.text = text; }
             if (index !== undefined) { this.index = index; }
         }
         /**
-         * Text to get character from
+         * The text to read a character from.
          * @default hello
          */
         text = "hello";
         /**
-         * Index of character
+         * Position of the character, counting from 0.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -187,6 +221,9 @@ export namespace Text {
         index = 0;
     }
 
+    /**
+     * A text, a length and a filler for `text.padStart` and `text.padEnd`.
+     */
     export class TextPadDto {
         constructor(text?: string, length?: number, padString?: string) {
             if (text !== undefined) { this.text = text; }
@@ -194,12 +231,12 @@ export namespace Text {
             if (padString !== undefined) { this.padString = padString; }
         }
         /**
-         * Text to pad
+         * The text to lengthen.
          * @default x
          */
         text = "x";
         /**
-         * Target length
+         * The length to reach; a text already that long stays as it is.
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -207,24 +244,27 @@ export namespace Text {
          */
         length = 3;
         /**
-         * String to pad with
+         * The filler repeated until the length is reached; the last repeat is cut short if needed.
          * @default a
          */
         padString = "a";
     }
 
+    /**
+     * A text and a count for `text.repeat`.
+     */
     export class TextRepeatDto {
         constructor(text?: string, count?: number) {
             if (text !== undefined) { this.text = text; }
             if (count !== undefined) { this.count = count; }
         }
         /**
-         * Text to repeat
+         * The text that is written out again and again.
          * @default ha
          */
         text = "ha";
         /**
-         * Number of repetitions
+         * How many times the text appears in the result.
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -233,17 +273,24 @@ export namespace Text {
         count = 3;
     }
 
+    /**
+     * Texts for `text.concat`, joined with nothing between them.
+     */
     export class TextConcatDto {
         constructor(texts?: string[]) {
             if (texts !== undefined) { this.texts = texts; }
         }
         /**
-         * Texts to concatenate
+         * The texts to join, in order.
          * @default ["hello", " ", "world"]
          */
         texts = ["hello", " ", "world"];
     }
 
+    /**
+     * A text and a regular expression for `text.regexTest`, `text.regexMatch`, `text.regexSearch`
+     * and `text.regexSplit`.
+     */
     export class TextRegexDto {
         constructor(text?: string, pattern?: string, flags?: string) {
             if (text !== undefined) { this.text = text; }
@@ -251,22 +298,27 @@ export namespace Text {
             if (flags !== undefined) { this.flags = flags; }
         }
         /**
-         * Text to search in
+         * The text the pattern is applied to.
          * @default hello123world
          */
         text = "hello123world";
         /**
-         * Regular expression pattern
+         * The regular expression, written as it would be between the slashes in JavaScript, such as
+         * `[0-9]+`.
          * @default [0-9]+
          */
         pattern = "[0-9]+";
         /**
-         * Regular expression flags (g, i, m, s, u, y)
+         * The regular expression flags: `g` for every match, `i` to ignore case, `m` for
+         * line-by-line anchors, and `s`, `u`, `y` as in JavaScript.
          * @default g
          */
         flags = "g";
     }
 
+    /**
+     * A text, a regular expression and a replacement for `text.regexReplace`.
+     */
     export class TextRegexReplaceDto {
         constructor(text?: string, pattern?: string, flags?: string, replaceWith?: string) {
             if (text !== undefined) { this.text = text; }
@@ -275,27 +327,34 @@ export namespace Text {
             if (replaceWith !== undefined) { this.replaceWith = replaceWith; }
         }
         /**
-         * Text to search in
+         * The text to make the replacements in.
          * @default hello123world456
          */
         text = "hello123world456";
         /**
-         * Regular expression pattern
+         * The regular expression, written as it would be between the slashes in JavaScript, such as
+         * `[0-9]+`.
          * @default [0-9]+
          */
         pattern = "[0-9]+";
         /**
-         * Regular expression flags (g, i, m, s, u, y)
+         * The regular expression flags: `g` replaces every match instead of the first, `i` ignores
+         * case, and `m`, `s`, `u`, `y` work as in JavaScript.
          * @default g
          */
         flags = "g";
         /**
-         * Text to replace matches with
+         * The text that takes the place of each match; `$1` and the like refer to capture groups,
+         * as in JavaScript.
          * @default X
          */
         replaceWith = "X";
     }
 
+    /**
+     * One character and its size and placement for `text.vectorChar`, which draws it as stroke
+     * paths on the XZ plane.
+     */
     export class VectorCharDto {
         constructor(char?: string, xOffset?: number, yOffset?: number, height?: number, extrudeOffset?: number) {
             if (char !== undefined) { this.char = char; }
@@ -305,12 +364,13 @@ export namespace Text {
             if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
         }
         /**
-         * The text
+         * The character to draw; only its first character is used, and an unknown one is drawn as a
+         * question mark.
          * @default A
          */
         char = "A";
         /**
-         * The x offset
+         * How far to shift the strokes along X, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -318,14 +378,15 @@ export namespace Text {
          */
         xOffset?: number | undefined = 0;
         /**
-         * The y offset
+         * How far to shift the strokes along the second axis of the character plane, in model
+         * units.
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
         yOffset?: number | undefined = 0;
         /**
-         * The height of the text
+         * The height of a capital letter, in model units; the strokes are scaled to it.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -333,7 +394,8 @@ export namespace Text {
          */
         height?: number | undefined = 1;
         /**
-         * The extrude offset
+         * A margin, in model units, taken off the height and split above and below, so an extruded
+         * character keeps its full size.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -342,6 +404,10 @@ export namespace Text {
         extrudeOffset?: number | undefined = 0;
     }
     
+    /**
+     * A text and its layout for `text.vectorText`, which draws it line by line as stroke paths on
+     * the XZ plane.
+     */
     export class VectorTextDto {
         constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, centerOnOrigin?: boolean) {
             if (text !== undefined) { this.text = text; }
@@ -355,12 +421,12 @@ export namespace Text {
             if (centerOnOrigin !== undefined) { this.centerOnOrigin = centerOnOrigin; }
         }
         /**
-         * The text
+         * The text to draw; a line break starts a new line.
          * @default Hello World
          */
         text?: string | undefined;
         /**
-         * The x offset
+         * How far to shift the whole block along X, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -368,7 +434,7 @@ export namespace Text {
          */
         xOffset?: number | undefined = 0;
         /**
-         * The y offset
+         * How far to shift the whole block along the second axis of the text plane, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -376,7 +442,7 @@ export namespace Text {
          */
         yOffset?: number | undefined = 0;
         /**
-         * The height of the text
+         * The height of a capital letter, in model units.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -384,7 +450,8 @@ export namespace Text {
          */
         height?: number | undefined = 1;
         /**
-         * The line spacing
+         * The distance between lines as a multiple of the height; 1.4 leaves a little air between
+         * them.
          * @default 1.4
          * @minimum -Infinity
          * @maximum Infinity
@@ -392,7 +459,8 @@ export namespace Text {
          */
         lineSpacing?: number | undefined = 1.4;
         /**
-         * The letter spacing offset
+         * Extra space between characters as a multiple of the height; 0 uses the font's own
+         * spacing.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -400,12 +468,14 @@ export namespace Text {
          */
         letterSpacing?: number | undefined = 0;
         /**
-         * The extrude offset
+         * How lines of different length line up: at their left edge, their center or their right
+         * edge.
          * @default left
          */
         align?: Base.horizontalAlignEnum | undefined;
         /**
-         * The extrude offset
+         * A margin, in model units, taken off the height and split above and below each character,
+         * so extruded text keeps its full size.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -413,7 +483,7 @@ export namespace Text {
          */
         extrudeOffset?: number | undefined = 0;
         /**
-         * Will center text on 0, 0, 0
+         * When true, the middle of the whole text block is moved to the origin.
          * @default false
          */
         centerOnOrigin?: boolean | undefined = false;

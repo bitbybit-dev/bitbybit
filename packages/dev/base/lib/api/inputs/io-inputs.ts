@@ -44,7 +44,7 @@ export namespace IO {
          */
         center!: Base.Point2;
         /**
-         * Radius of the arc
+         * Distance from the center to the arc, in drawing units.
          * @default undefined
          */
         radius!: number;
@@ -61,7 +61,7 @@ export namespace IO {
     }
 
     /**
-     * Circle defined by center and radius
+     * A full circle in a DXF path, given by its center and radius.
      */
     export class DxfCircleSegmentDto {
         constructor(center?: Base.Point2, radius?: number) {
@@ -74,7 +74,7 @@ export namespace IO {
          */
         center!: Base.Point2;
         /**
-         * Radius of the circle
+         * Distance from the center to the circle, in drawing units.
          * @default undefined
          */
         radius!: number;
@@ -101,11 +101,9 @@ export namespace IO {
          */
         closed?: boolean | undefined = false;
         /**
-         * Bulge values for each vertex (optional)
-         * Bulge = tan(angle/4) where angle is the arc angle in radians
-         * Positive = counterclockwise, Negative = clockwise
-         * 0 = straight line segment
-         * Array length should match points length (or be undefined for all straight segments)
+         * One bulge per vertex to bend the segment after it into an arc: 0 keeps it straight,
+         * positive bends counter-clockwise, negative clockwise. Leave it out for straight segments
+         * only.
          * @default undefined
          */
         bulges?: number[] | undefined;
@@ -180,7 +178,8 @@ export namespace IO {
     }
 
     /**
-     * Main DXF model containing all path parts
+     * A whole DXF drawing: its path parts by layer and color, and the color and version format to
+     * write.
      */
     export class DxfModelDto {
         constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015") {
@@ -194,16 +193,14 @@ export namespace IO {
          */
         dxfPathsParts!: DxfPathsPartDto[];
         /**
-         * Color format to use in the DXF file
-         * - "aci": AutoCAD Color Index (1-255) - Better compatibility with older CAD software like Design CAD 3D Max
-         * - "truecolor": 24-bit RGB true color - Full color spectrum, requires newer CAD software
+         * How colors are written: `aci`, the AutoCAD color index from 1 to 255 that older
+         * software reads, or `truecolor`, full 24-bit RGB for newer software.
          * @default aci
          */
         colorFormat?: "aci" | "truecolor" | undefined = "aci";
         /**
-         * AutoCAD version format for DXF file
-         * - "AC1009": AutoCAD R12/R11 - Maximum compatibility with older CAD software (e.g., Design CAD 3D Max)
-         * - "AC1015": AutoCAD 2000 - Modern format with extended features
+         * The DXF version to write: `AC1009` (AutoCAD R12) for the widest compatibility, or
+         * `AC1015` (AutoCAD 2000) for the newer features.
          * @default AC1009
          */
         acadVersion?: "AC1009" | "AC1015" | undefined = "AC1009";

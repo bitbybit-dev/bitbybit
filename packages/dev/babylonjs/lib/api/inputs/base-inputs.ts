@@ -7,7 +7,7 @@ import { Base as CoreBase } from "@bitbybit-dev/core";
 
 /**
  * The BabylonJS build's re-export of the shared primitive types, so engine-specific code sees Point3,
- * Vector3, colours and the shared enumerations from one place.
+ * Vector3, colors and the shared enumerations from one place.
  */
 export namespace Base {
     // Re-export all types from core package (which includes base types)
@@ -102,7 +102,7 @@ export namespace Base {
         deg315 = "315deg",
     }
     /**
-     * Where the centre of a radial gradient sits, as a named position or a percentage pair. The values
+     * Where the center of a radial gradient sits, as a named position or a percentage pair. The values
      * match the CSS gradient syntax.
      */
     export enum gradientPositionEnum {

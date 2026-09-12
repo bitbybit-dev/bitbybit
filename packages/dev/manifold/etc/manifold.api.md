@@ -122,45 +122,37 @@ export namespace Base {
 
 // @public
 export namespace Color {
-    // (undocumented)
     export class HexDto {
         constructor(color?: Base.Color);
         color: Base.Color;
     }
-    // (undocumented)
     export class HexDtoMapped {
         constructor(color?: Base.Color, from?: number, to?: number);
         color: Base.Color;
         from: number;
         to: number;
     }
-    // (undocumented)
     export class InvertHexDto {
         constructor(color?: Base.Color);
         blackAndWhite: boolean;
         color: Base.Color;
     }
-    // (undocumented)
     export class Rgb1Dto {
         constructor(colorRgb?: Base.ColorRGB);
         colorRgb: Base.ColorRGB;
     }
-    // (undocumented)
     export class Rgb255Dto {
         constructor(colorRgb?: Base.ColorRGB);
         colorRgb: Base.ColorRGB;
     }
-    // (undocumented)
     export class Rgba1Dto {
         constructor(colorRgba?: Base.ColorRGBA);
         colorRgba: Base.ColorRGBA;
     }
-    // (undocumented)
     export class Rgba255Dto {
         constructor(colorRgba?: Base.ColorRGBA);
         colorRgba: Base.ColorRGBA;
     }
-    // (undocumented)
     export class RgbaAttomic1Dto {
         constructor(r?: number, g?: number, b?: number, a?: number);
         a: number;
@@ -168,7 +160,6 @@ export namespace Color {
         g: number;
         r: number;
     }
-    // (undocumented)
     export class RgbaAttomic255Dto {
         constructor(r?: number, g?: number, b?: number, a?: number);
         a: number;
@@ -176,21 +167,18 @@ export namespace Color {
         g: number;
         r: number;
     }
-    // (undocumented)
     export class RgbAttomic1Dto {
         constructor(r?: number, g?: number, b?: number);
         b: number;
         g: number;
         r: number;
     }
-    // (undocumented)
     export class RgbAttomic255Dto {
         constructor(r?: number, g?: number, b?: number);
         b: number;
         g: number;
         r: number;
     }
-    // (undocumented)
     export class RGBMinMaxDto {
         constructor(r?: number, g?: number, b?: number, min?: number, max?: number);
         b: number;
@@ -199,12 +187,10 @@ export namespace Color {
         min: number;
         r: number;
     }
-    // (undocumented)
     export class RGBObjectDto {
         constructor(rgb?: Base.ColorRGB);
         rgb: Base.ColorRGB;
     }
-    // (undocumented)
     export class RGBObjectMaxDto {
         constructor(rgb?: Base.ColorRGB, max?: number);
         max: number;
@@ -215,7 +201,6 @@ export namespace Color {
 
 // @public
 export namespace Dates {
-    // (undocumented)
     export class CreateDateDto {
         constructor(year?: number, month?: number, day?: number, hours?: number, minutes?: number, seconds?: number, milliseconds?: number);
         day: number;
@@ -226,64 +211,53 @@ export namespace Dates {
         seconds: number;
         year: number;
     }
-    // (undocumented)
     export class CreateFromUnixTimeStampDto {
         constructor(unixTimeStamp?: number);
         unixTimeStamp: number;
     }
-    // (undocumented)
     export class DateDayDto {
         constructor(date?: Date, day?: number);
         date: Date;
         day: number;
     }
-    // (undocumented)
     export class DateDto {
         constructor(date?: Date);
         date: Date;
     }
-    // (undocumented)
     export class DateHoursDto {
         constructor(date?: Date, hours?: number);
         date: Date;
         hours: number;
     }
-    // (undocumented)
     export class DateMillisecondsDto {
         constructor(date?: Date, milliseconds?: number);
         date: Date;
         milliseconds: number;
     }
-    // (undocumented)
     export class DateMinutesDto {
         constructor(date?: Date, minutes?: number);
         date: Date;
         minutes: number;
     }
-    // (undocumented)
     export class DateMonthDto {
         constructor(date?: Date, month?: number);
         date: Date;
         month: number;
     }
-    // (undocumented)
     export class DateSecondsDto {
         constructor(date?: Date, seconds?: number);
         date: Date;
         seconds: number;
     }
-    // (undocumented)
     export class DateStringDto {
         constructor(dateString?: string);
         dateString: string;
     }
-    // (undocumented)
     export class DateTimeDto {
         constructor(date?: Date, time?: number);
         date: Date;
         time: number;
     }
-    // (undocumented)
     export class DateYearDto {
         constructor(date?: Date, year?: number);
         date: Date;
@@ -342,7 +316,6 @@ export namespace IO {
 
 // @public
 export namespace Line {
-    // (undocumented)
     export class DrawLineDto<T> {
         constructor(line?: LinePointsDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, lineMesh?: T);
         colours?: string | string[] | undefined;
@@ -352,7 +325,6 @@ export namespace Line {
         size?: number | undefined;
         updatable?: boolean | undefined;
     }
-    // (undocumented)
     export class DrawLinesDto<T> {
         constructor(lines?: LinePointsDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, linesMesh?: T);
         colours?: string | string[] | undefined;
@@ -362,12 +334,10 @@ export namespace Line {
         size?: number | undefined;
         updatable?: boolean | undefined;
     }
-    // (undocumented)
     export class LineDto {
         constructor(line?: LinePointsDto);
         line: LinePointsDto;
     }
-    // (undocumented)
     export class LineLineIntersectionDto {
         constructor(line1?: LinePointsDto, line2?: LinePointsDto, tolerance?: number);
         checkSegmentsOnly?: boolean | undefined;
@@ -375,57 +345,47 @@ export namespace Line {
         line2: LinePointsDto;
         tolerance?: number | undefined;
     }
-    // (undocumented)
     export class LinePointsDto {
         constructor(start?: Base.Point3, end?: Base.Point3);
         end: Base.Point3;
         start: Base.Point3;
     }
-    // (undocumented)
     export class LinesDto {
         constructor(lines?: LinePointsDto[]);
         lines: LinePointsDto[];
     }
-    // (undocumented)
     export class LineStartEndPointsDto {
         constructor(startPoints?: Base.Point3[], endPoints?: Base.Point3[]);
         endPoints: Base.Point3[];
         startPoints: Base.Point3[];
     }
-    // (undocumented)
     export class PointOnLineDto {
         constructor(line?: LinePointsDto, param?: number);
         line: LinePointsDto;
         param?: number | undefined;
     }
-    // (undocumented)
     export class PointsLinesDto {
         constructor(points?: Base.Point3[]);
         points: Base.Point3[];
     }
-    // (undocumented)
     export class SegmentDto {
         constructor(segment?: Base.Segment3);
         segment: Base.Segment3;
     }
-    // (undocumented)
     export class SegmentsDto {
         constructor(segments?: Base.Segment3[]);
         segments: Base.Segment3[];
     }
-    // (undocumented)
     export class TransformLineDto {
         constructor(line?: LinePointsDto, transformation?: Base.TransformMatrixes);
         line: LinePointsDto;
         transformation: Base.TransformMatrixes;
     }
-    // (undocumented)
     export class TransformLinesDto {
         constructor(lines?: LinePointsDto[], transformation?: Base.TransformMatrixes);
         lines: LinePointsDto[];
         transformation: Base.TransformMatrixes;
     }
-    // (undocumented)
     export class TransformsLinesDto {
         constructor(lines?: LinePointsDto[], transformation?: Base.TransformMatrixes[]);
         lines: LinePointsDto[];
@@ -435,7 +395,6 @@ export namespace Line {
 
 // @public
 export namespace Lists {
-    // (undocumented)
     export class AddItemAtIndexDto<T> {
         constructor(list?: T[], item?: T, index?: number, clone?: boolean);
         clone?: boolean | undefined;
@@ -443,7 +402,6 @@ export namespace Lists {
         item: T;
         list: T[];
     }
-    // (undocumented)
     export class AddItemAtIndexesDto<T> {
         constructor(list?: T[], item?: T, indexes?: number[], clone?: boolean);
         clone?: boolean | undefined;
@@ -451,14 +409,12 @@ export namespace Lists {
         item: T;
         list: T[];
     }
-    // (undocumented)
     export class AddItemDto<T> {
         constructor(list?: T[], item?: T, clone?: boolean);
         clone?: boolean | undefined;
         item: T;
         list: T[];
     }
-    // (undocumented)
     export class AddItemFirstLastDto<T> {
         constructor(list?: T[], item?: T, position?: firstLastEnum, clone?: boolean);
         clone?: boolean | undefined;
@@ -466,7 +422,6 @@ export namespace Lists {
         list: T[];
         position: firstLastEnum;
     }
-    // (undocumented)
     export class AddItemsAtIndexesDto<T> {
         constructor(list?: T[], items?: T[], indexes?: number[], clone?: boolean);
         clone?: boolean | undefined;
@@ -474,7 +429,6 @@ export namespace Lists {
         items: T[];
         list: T[];
     }
-    // (undocumented)
     export class ConcatenateDto<T> {
         constructor(lists?: T[][], clone?: boolean);
         clone?: boolean | undefined;
@@ -486,18 +440,15 @@ export namespace Lists {
         // (undocumented)
         last = "last"
     }
-    // (undocumented)
     export class GetByPatternDto<T> {
         constructor(list?: T[], pattern?: boolean[]);
         list: T[];
         pattern: boolean[];
     }
-    // (undocumented)
     export class GetLongestListLength<T> {
         constructor(lists?: T[]);
         lists: T[];
     }
-    // (undocumented)
     export class GetNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean);
         clone?: boolean | undefined;
@@ -505,90 +456,76 @@ export namespace Lists {
         nth: number;
         offset: number;
     }
-    // (undocumented)
     export class GroupListDto<T> {
         constructor(list?: T[], nrElements?: number, keepRemainder?: boolean);
         keepRemainder: boolean;
         list: T[];
         nrElements: number;
     }
-    // (undocumented)
     export class IncludesDto<T> {
         constructor(list?: T[], item?: T);
         item: T;
         list: T[];
     }
-    // (undocumented)
     export class InterleaveDto<T> {
         constructor(lists?: T[][], clone?: boolean);
         clone?: boolean | undefined;
         lists: T[][];
     }
-    // (undocumented)
     export class ListCloneDto<T> {
         constructor(list?: T[], clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
     }
-    // (undocumented)
     export class ListDto<T> {
         constructor(list?: T[]);
         list: T[];
     }
-    // (undocumented)
     export class ListItemDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean);
         clone?: boolean | undefined;
         index: number;
         list: T[];
     }
-    // (undocumented)
     export class MergeElementsOfLists<T> {
         constructor(lists?: T[], level?: number);
         level: number;
         lists: T[];
     }
-    // (undocumented)
     export class MultiplyItemDto<T> {
         constructor(item?: T, times?: number);
         item: T;
         times: number;
     }
-    // (undocumented)
     export class RandomThresholdDto<T> {
         constructor(list?: T[], threshold?: number, clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
         threshold: number;
     }
-    // (undocumented)
     export class RemoveDuplicatesDto<T> {
         constructor(list?: T[], clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
     }
-    // (undocumented)
     export class RemoveDuplicatesToleranceDto<T> {
         constructor(list?: T[], clone?: boolean, tolerance?: number);
         clone?: boolean | undefined;
         list: T[];
         tolerance: number;
     }
-    // (undocumented)
     export class RemoveItemAtIndexDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean);
         clone?: boolean | undefined;
         index: number;
         list: T[];
     }
-    // (undocumented)
     export class RemoveItemsAtIndexesDto<T> {
         constructor(list?: T[], indexes?: number[], clone?: boolean);
         clone?: boolean | undefined;
         indexes: number[];
         list: T[];
     }
-    // (undocumented)
     export class RemoveNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean);
         clone?: boolean | undefined;
@@ -596,21 +533,18 @@ export namespace Lists {
         nth: number;
         offset: number;
     }
-    // (undocumented)
     export class RepeatInPatternDto<T> {
         constructor(list?: T[]);
         clone?: boolean | undefined;
         lengthLimit: number;
         list: T[];
     }
-    // (undocumented)
     export class SortDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean);
         clone?: boolean | undefined;
         list: T[];
         orderAsc: boolean;
     }
-    // (undocumented)
     export class SortJsonDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean);
         clone?: boolean | undefined;
@@ -618,7 +552,6 @@ export namespace Lists {
         orderAsc: boolean;
         property: string;
     }
-    // (undocumented)
     export class SubListDto<T> {
         constructor(list?: T[], indexStart?: number, indexEnd?: number, clone?: boolean);
         clone?: boolean | undefined;
@@ -630,12 +563,10 @@ export namespace Lists {
 
 // @public
 export namespace Logic {
-    // (undocumented)
     export class BooleanDto {
         constructor(boolean?: boolean);
         boolean: boolean;
     }
-    // (undocumented)
     export class BooleanListDto {
         constructor(booleans?: boolean[]);
         booleans: boolean[];
@@ -658,45 +589,38 @@ export namespace Logic {
         // (undocumented)
         tripleNotEqual = "!=="
     }
-    // (undocumented)
     export class ComparisonDto<T> {
         constructor(first?: T, second?: T, operator?: BooleanOperatorsEnum);
         first: T;
         operator: BooleanOperatorsEnum;
         second: T;
     }
-    // (undocumented)
     export class RandomBooleansDto {
         constructor(length?: number);
         length: number;
         trueThreshold: number;
     }
-    // (undocumented)
     export class ThresholdBooleanListDto {
         inverse: boolean;
         numbers: number[];
         threshold: number;
     }
-    // (undocumented)
     export class ThresholdGapsBooleanListDto {
         gapThresholds: Base.Vector2[];
         inverse: boolean;
         numbers: number[];
     }
-    // (undocumented)
     export class TwoThresholdRandomGradientDto {
         nrLevels: number;
         numbers: number[];
         thresholdTotalFalse: number;
         thresholdTotalTrue: number;
     }
-    // (undocumented)
     export class TwoValueGateDto<T, U> {
         constructor(value1?: T, value2?: U);
         value1?: T | undefined;
         value2?: U | undefined;
     }
-    // (undocumented)
     export class ValueGateDto<T> {
         constructor(value?: T, boolean?: boolean);
         boolean: boolean;
@@ -706,53 +630,44 @@ export namespace Logic {
 
 // @public
 export namespace Manifold {
-    // (undocumented)
     export class CalculateCurvatureDto<T> {
         constructor(manifold?: T);
         gaussianIdx: number;
         manifold: T;
         meanIdx: number;
     }
-    // (undocumented)
     export class CalculateNormalsDto<T> {
         constructor(manifold?: T, normalIdx?: number, minSharpAngle?: number);
         manifold: T;
         minSharpAngle: number;
         normalIdx: number;
     }
-    // (undocumented)
     export class CircleDto {
         constructor(radius?: number, circularSegments?: number);
         circularSegments: number;
         radius: number;
     }
-    // (undocumented)
     export class ComposeDto<T> {
         constructor(polygons?: T);
         polygons: T;
     }
-    // (undocumented)
     export class CountDto {
         constructor(count?: number);
         count: number;
     }
-    // (undocumented)
     export class CreateContourSectionDto {
         constructor(polygons?: Base.Vector2[][], fillRule?: fillRuleEnum);
         fillRule: fillRuleEnum;
         polygons: Base.Vector2[][];
     }
-    // (undocumented)
     export class CreateFromMeshDto {
         constructor(mesh?: DecomposedManifoldMeshDto);
         mesh: DecomposedManifoldMeshDto;
     }
-    // (undocumented)
     export class CrossSectionDto<T> {
         constructor(crossSection?: T);
         crossSection: T;
     }
-    // (undocumented)
     export class CrossSectionFromPolygonPointsDto {
         constructor(points?: Base.Point3[], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number);
         fillRule?: fillRuleEnum | undefined;
@@ -760,7 +675,6 @@ export namespace Manifold {
         removeDuplicates?: boolean | undefined;
         tolerance?: number | undefined;
     }
-    // (undocumented)
     export class CrossSectionFromPolygonsPointsDto {
         constructor(polygonPoints?: Base.Point3[][], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number);
         fillRule?: fillRuleEnum | undefined;
@@ -772,24 +686,20 @@ export namespace Manifold {
         hash: number;
         type: "manifold-shape";
     };
-    // (undocumented)
     export class CrossSectionsDto<T> {
         constructor(crossSections?: T[]);
         crossSections: T[];
     }
-    // (undocumented)
     export class CrossSectionWarpDto<T> {
         constructor(crossSection?: T, warpFunc?: (vert: Base.Vector2) => void);
         crossSection: T;
         warpFunc: (vert: Base.Vector2) => void;
     }
-    // (undocumented)
     export class CubeDto {
         constructor(center?: boolean, size?: number);
         center: boolean;
         size: number;
     }
-    // (undocumented)
     export class CylinderDto {
         constructor(height?: number, radiusLow?: number, radiusHigh?: number, circularSegments?: number, center?: boolean);
         center: boolean;
@@ -799,40 +709,27 @@ export namespace Manifold {
         radiusLow: number;
     }
     export class DecomposedManifoldMeshDto {
-        // (undocumented)
         faceID?: Uint32Array | undefined;
-        // (undocumented)
         halfedgeTangent?: Float32Array | undefined;
-        // (undocumented)
         mergeFromVert?: Uint32Array | undefined;
-        // (undocumented)
         mergeToVert?: Uint32Array | undefined;
-        // (undocumented)
         numProp: number;
-        // (undocumented)
         runIndex?: Uint32Array | undefined;
-        // (undocumented)
         runOriginalID?: Uint32Array | undefined;
-        // (undocumented)
         runTransform?: Float32Array | undefined;
-        // (undocumented)
         triVerts: Uint32Array;
-        // (undocumented)
         vertProperties: Float32Array;
     }
-    // (undocumented)
     export class DecomposeManifoldOrCrossSectionDto<T> {
         constructor(manifoldOrCrossSection?: T, normalIdx?: number);
         manifoldOrCrossSection: T;
         normalIdx?: number | undefined;
     }
-    // (undocumented)
     export class DecomposeManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]);
         manifoldsOrCrossSections: T[];
         normalIdx?: number[] | undefined;
     }
-    // (undocumented)
     export class DrawManifoldOrCrossSectionDto<T, M> {
         constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
         backFaceColour: Base.Color;
@@ -847,7 +744,6 @@ export namespace Manifold {
         faceOpacity: number;
         manifoldOrCrossSection?: T | undefined;
     }
-    // (undocumented)
     export class DrawManifoldsOrCrossSectionsDto<T, M> {
         constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
         backFaceColour: Base.Color;
@@ -862,7 +758,6 @@ export namespace Manifold {
         faceOpacity: number;
         manifoldsOrCrossSections?: T[] | undefined;
     }
-    // (undocumented)
     export class ExtrudeDto<T> {
         constructor(crossSection?: T);
         center: boolean;
@@ -883,17 +778,14 @@ export namespace Manifold {
         // (undocumented)
         positive = "Positive"
     }
-    // (undocumented)
     export class FromPolygonPointsDto {
         constructor(polygonPoints?: Base.Point3[][]);
         polygonPoints: Base.Point3[][];
     }
-    // (undocumented)
     export class HullPointsDto<T> {
         constructor(points?: T);
         points: T;
     }
-    // (undocumented)
     export class ManifoldDto<T> {
         constructor(manifold?: T);
         manifold: T;
@@ -908,7 +800,6 @@ export namespace Manifold {
         // (undocumented)
         square = "Square"
     }
-    // (undocumented)
     export class ManifoldOrCrossSectionDto<T> {
         constructor(manifoldOrCrossSection?: T);
         manifoldOrCrossSection: T;
@@ -917,91 +808,76 @@ export namespace Manifold {
         hash: number;
         type: "manifold-shape";
     };
-    // (undocumented)
     export class ManifoldRefineDto<T> {
         constructor(manifold?: T, number?: number);
         manifold: T;
         number: number;
     }
-    // (undocumented)
     export class ManifoldRefineLengthDto<T> {
         constructor(manifold?: T, length?: number);
         length: number;
         manifold: T;
     }
-    // (undocumented)
     export class ManifoldRefineToleranceDto<T> {
         constructor(manifold?: T, tolerance?: number);
         manifold: T;
         tolerance: number;
     }
-    // (undocumented)
     export class ManifoldsDto<T> {
         constructor(manifolds?: T[]);
         manifolds: T[];
     }
-    // (undocumented)
     export class ManifoldSetPropertiesDto<T> {
         constructor(manifold?: T, numProp?: number, propFunc?: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void);
         manifold: T;
         numProp: number;
         propFunc: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void;
     }
-    // (undocumented)
     export class ManifoldSimplifyDto<T> {
         constructor(manifold?: T, tolerance?: number);
         manifold: T;
         tolerance?: number | undefined;
     }
-    // (undocumented)
     export class ManifoldsMinGapDto<T> {
         constructor(manifold1?: T, manifold2?: T, searchLength?: number);
         manifold1: T;
         manifold2: T;
         searchLength: number;
     }
-    // (undocumented)
     export class ManifoldSmoothByNormalsDto<T> {
         constructor(manifold?: T, normalIdx?: number);
         manifold: T;
         normalIdx: number;
     }
-    // (undocumented)
     export class ManifoldSmoothOutDto<T> {
         constructor(manifold?: T, minSharpAngle?: number, minSmoothness?: number);
         manifold: T;
         minSharpAngle: number;
         minSmoothness: number;
     }
-    // (undocumented)
     export class ManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[]);
         manifoldsOrCrossSections: T[];
     }
-    // (undocumented)
     export class ManifoldsToMeshesDto<T> {
         constructor(manifolds?: T[], normalIdx?: number[]);
         manifolds: T[];
         normalIdx?: number[] | undefined;
     }
-    // (undocumented)
     export class ManifoldToMeshDto<T> {
         constructor(manifold?: T, normalIdx?: number);
         manifold: T;
         normalIdx?: number | undefined;
     }
-    // (undocumented)
     export class ManifoldWarpDto<T> {
         constructor(manifold?: T, warpFunc?: (vert: Base.Vector3) => void);
         manifold: T;
         warpFunc: (vert: Base.Vector3) => void;
     }
-    // (undocumented)
     export class MeshDto<T> {
         constructor(mesh?: T);
         mesh: T;
     }
-    // (undocumented)
     export class MeshHalfEdgeIndexDto<T> {
         constructor(mesh?: T, halfEdgeIndex?: number);
         halfEdgeIndex: number;
@@ -1011,37 +887,31 @@ export namespace Manifold {
         hash: number;
         type: "manifold-shape";
     };
-    // (undocumented)
     export class MeshTriangleIndexDto<T> {
         constructor(mesh?: T, triangleIndex?: number);
         mesh: T;
         triangleIndex: number;
     }
-    // (undocumented)
     export class MeshTriangleRunIndexDto<T> {
         constructor(mesh?: T, triangleRunIndex?: number);
         mesh: T;
         triangleRunIndex: number;
     }
-    // (undocumented)
     export class MeshVertexIndexDto<T> {
         constructor(mesh?: T, vertexIndex?: number);
         mesh: T;
         vertexIndex: number;
     }
-    // (undocumented)
     export class MirrorCrossSectionDto<T> {
         constructor(crossSection?: T, normal?: Base.Vector2);
         crossSection: T;
         normal: Base.Vector2;
     }
-    // (undocumented)
     export class MirrorDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3);
         manifold: T;
         normal: Base.Vector3;
     }
-    // (undocumented)
     export class OffsetDto<T> {
         constructor(crossSection?: T, delta?: number, joinType?: manifoldJoinTypeEnum, miterLimit?: number, circularSegments?: number);
         circularSegments: number;
@@ -1050,14 +920,12 @@ export namespace Manifold {
         joinType: manifoldJoinTypeEnum;
         miterLimit: number;
     }
-    // (undocumented)
     export class RectangleDto {
         constructor(length?: number, height?: number, center?: boolean);
         center: boolean;
         height: number;
         length: number;
     }
-    // (undocumented)
     export class RevolveDto<T> {
         constructor(crossSection?: T, revolveDegrees?: number, matchProfile?: boolean, circularSegments?: number);
         circularSegments: number;
@@ -1065,19 +933,16 @@ export namespace Manifold {
         matchProfile: boolean;
         revolveDegrees: number;
     }
-    // (undocumented)
     export class RotateCrossSectionDto<T> {
         constructor(crossSection?: T, degrees?: number);
         crossSection: T;
         degrees: number;
     }
-    // (undocumented)
     export class RotateDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3);
         manifold: T;
         vector: Base.Vector3;
     }
-    // (undocumented)
     export class RotateXYZDto<T> {
         constructor(manifold?: T, x?: number, y?: number, z?: number);
         manifold: T;
@@ -1085,118 +950,99 @@ export namespace Manifold {
         y: number;
         z: number;
     }
-    // (undocumented)
     export class Scale2DCrossSectionDto<T> {
         constructor(crossSection?: T, vector?: Base.Vector2);
         crossSection: T;
         vector: Base.Vector2;
     }
-    // (undocumented)
     export class Scale3DDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3);
         manifold: T;
         vector: Base.Vector3;
     }
-    // (undocumented)
     export class ScaleCrossSectionDto<T> {
         constructor(crossSection?: T, factor?: number);
         crossSection: T;
         factor: number;
     }
-    // (undocumented)
     export class ScaleDto<T> {
         constructor(manifold?: T, factor?: number);
         factor: number;
         manifold: T;
     }
-    // (undocumented)
     export class SimplifyDto<T> {
         constructor(crossSection?: T, epsilon?: number);
         crossSection: T;
         epsilon: number;
     }
-    // (undocumented)
     export class SliceDto<T> {
         constructor(manifold?: T);
         height: number;
         manifold: T;
     }
-    // (undocumented)
     export class SphereDto {
         constructor(radius?: number, circularSegments?: number);
         circularSegments: number;
         radius: number;
     }
-    // (undocumented)
     export class SplitByPlaneDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number);
         manifold: T;
         normal: Base.Vector3;
         originOffset: number;
     }
-    // (undocumented)
     export class SplitByPlaneOnOffsetsDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffsets?: number[]);
         manifold: T;
         normal: Base.Vector3;
         originOffsets: number[];
     }
-    // (undocumented)
     export class SplitManifoldsDto<T> {
         constructor(manifoldToSplit?: T, manifoldCutter?: T);
         manifoldCutter: T;
         manifoldToSplit: T;
     }
-    // (undocumented)
     export class SquareDto {
         constructor(center?: boolean, size?: number);
         center: boolean;
         size: number;
     }
-    // (undocumented)
     export class TransformCrossSectionDto<T> {
         constructor(crossSection?: T, transform?: Base.TransformMatrix3x3);
         crossSection: T;
         transform: Base.TransformMatrix3x3;
     }
-    // (undocumented)
     export class TransformDto<T> {
         constructor(manifold?: T, transform?: Base.TransformMatrix);
         manifold: T;
         transform: Base.TransformMatrix;
     }
-    // (undocumented)
     export class TransformsDto<T> {
         constructor(manifold?: T, transforms?: Base.TransformMatrixes);
         manifold: T;
         transforms: Base.TransformMatrixes;
     }
-    // (undocumented)
     export class TranslateByVectorsDto<T> {
         constructor(manifold?: T, vectors?: Base.Vector3[]);
         manifold: T;
         vectors: Base.Vector3[];
     }
-    // (undocumented)
     export class TranslateCrossSectionDto<T> {
         constructor(crossSection?: T, vector?: Base.Vector2);
         crossSection: T;
         vector: Base.Vector2;
     }
-    // (undocumented)
     export class TranslateDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3);
         manifold: T;
         vector: Base.Vector3;
     }
-    // (undocumented)
     export class TranslateXYCrossSectionDto<T> {
         constructor(crossSection?: T, x?: number, y?: number);
         crossSection: T;
         x: number;
         y: number;
     }
-    // (undocumented)
     export class TranslateXYZDto<T> {
         constructor(manifold?: T, x?: number, y?: number, z?: number);
         manifold: T;
@@ -1204,20 +1050,17 @@ export namespace Manifold {
         y: number;
         z: number;
     }
-    // (undocumented)
     export class TrimByPlaneDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number);
         manifold: T;
         normal: Base.Vector3;
         originOffset: number;
     }
-    // (undocumented)
     export class TwoCrossSectionsDto<T> {
         constructor(crossSection1?: T, crossSection2?: T);
         crossSection1: T;
         crossSection2: T;
     }
-    // (undocumented)
     export class TwoManifoldsDto<T> {
         constructor(manifold1?: T, manifold2?: T);
         manifold1: T;
@@ -1250,27 +1093,23 @@ export class ManifoldService {
 
 // @public
 namespace Math_2 {
-    // (undocumented)
     class ActionOnOneNumberDto {
         constructor(number?: number, operation?: mathOneNrOperatorEnum);
         number: number;
         operation: mathOneNrOperatorEnum;
     }
-    // (undocumented)
     class ActionOnTwoNumbersDto {
         constructor(first?: number, second?: number, operation?: mathTwoNrOperatorEnum);
         first: number;
         operation: mathTwoNrOperatorEnum;
         second: number;
     }
-    // (undocumented)
     class ClampDto {
         constructor(number?: number, min?: number, max?: number);
         max: number;
         min: number;
         number: number;
     }
-    // (undocumented)
     class EaseDto {
         constructor(x?: number);
         ease: easeEnum;
@@ -1340,19 +1179,16 @@ namespace Math_2 {
         // (undocumented)
         easeOutSine = "easeOutSine"
     }
-    // (undocumented)
     class EvalArithmeticDto {
         constructor(expression?: string);
         expression: string;
     }
-    // (undocumented)
     class InverseLerpDto {
         constructor(start?: number, end?: number, value?: number);
         end: number;
         start: number;
         value: number;
     }
-    // (undocumented)
     class LerpDto {
         constructor(start?: number, end?: number, t?: number);
         end: number;
@@ -1413,44 +1249,37 @@ namespace Math_2 {
         // (undocumented)
         subtract = "subtract"
     }
-    // (undocumented)
     class ModulusDto {
         constructor(number?: number, modulus?: number);
         modulus: number;
         number: number;
     }
-    // (undocumented)
     class MoveTowardsDto {
         constructor(current?: number, target?: number, maxDelta?: number);
         current: number;
         maxDelta: number;
         target: number;
     }
-    // (undocumented)
     class NumberDto {
         constructor(number?: number);
         number: number;
     }
-    // (undocumented)
     class PingPongDto {
         constructor(t?: number, length?: number);
         length: number;
         t: number;
     }
-    // (undocumented)
     class RandomNumberDto {
         constructor(low?: number, high?: number);
         high: number;
         low: number;
     }
-    // (undocumented)
     class RandomNumbersDto {
         constructor(low?: number, high?: number, count?: number);
         count: number;
         high: number;
         low: number;
     }
-    // (undocumented)
     class RemapNumberDto {
         constructor(number?: number, fromLow?: number, fromHigh?: number, toLow?: number, toHigh?: number);
         fromHigh: number;
@@ -1459,25 +1288,21 @@ namespace Math_2 {
         toHigh: number;
         toLow: number;
     }
-    // (undocumented)
     class RoundToDecimalsDto {
         constructor(number?: number, decimalPlaces?: number);
         decimalPlaces: number;
         number: number;
     }
-    // (undocumented)
     class ToFixedDto {
         constructor(number?: number, decimalPlaces?: number);
         decimalPlaces: number;
         number: number;
     }
-    // (undocumented)
     class TwoNumbersDto {
         constructor(first?: number, second?: number);
         first: number;
         second: number;
     }
-    // (undocumented)
     class WrapDto {
         constructor(number?: number, min?: number, max?: number);
         max: number;
@@ -1489,31 +1314,26 @@ export { Math_2 as Math }
 
 // @public
 export namespace Mesh {
-    // (undocumented)
     export class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number);
         mesh1: Base.Mesh3;
         mesh2: Base.Mesh3;
         tolerance?: number | undefined;
     }
-    // (undocumented)
     export class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base.Point3, plane?: Base.TrianglePlane3);
         plane: Base.TrianglePlane3;
         point: Base.Point3;
     }
-    // (undocumented)
     export class TriangleDto {
         constructor(triangle?: Base.Triangle3);
         triangle: Base.Triangle3;
     }
-    // (undocumented)
     export class TriangleToleranceDto {
         constructor(triangle?: Base.Triangle3);
         tolerance?: number | undefined;
         triangle: Base.Triangle3;
     }
-    // (undocumented)
     export class TriangleTriangleToleranceDto {
         constructor(triangle1?: Base.Triangle3, triangle2?: Base.Triangle3, tolerance?: number);
         tolerance?: number | undefined;
@@ -1524,13 +1344,11 @@ export namespace Mesh {
 
 // @public
 export namespace Point {
-    // (undocumented)
     export class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3);
         point: Base.Point3;
         points: Base.Point3[];
     }
-    // (undocumented)
     export class DrawPointDto<T> {
         constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: T);
         colours: string | string[];
@@ -1540,7 +1358,6 @@ export namespace Point {
         size: number;
         updatable: boolean;
     }
-    // (undocumented)
     export class DrawPointsDto<T> {
         constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: T);
         colours: string | string[];
@@ -1550,7 +1367,6 @@ export namespace Point {
         size: number;
         updatable: boolean;
     }
-    // (undocumented)
     export class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean);
         nrHexagonsX: number;
@@ -1559,7 +1375,6 @@ export namespace Point {
         pointsOnGround: boolean;
         radiusHexagon: number;
     }
-    // (undocumented)
     export class HexGridScaledToFitDto {
         constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean);
         centerGrid?: boolean | undefined;
@@ -1574,50 +1389,42 @@ export namespace Point {
         pointsOnGround?: boolean | undefined;
         width?: number | undefined;
     }
-    // (undocumented)
     export class MultiplyPointDto {
         constructor(point?: Base.Point3, amountOfPoints?: number);
         amountOfPoints: number;
         point: Base.Point3;
     }
-    // (undocumented)
     export class PointDto {
         constructor(point?: Base.Point3);
         point: Base.Point3;
     }
-    // (undocumented)
     export class PointsDto {
         constructor(points?: Base.Point3[]);
         points: Base.Point3[];
     }
-    // (undocumented)
     export class PointsMaxFilletsHalfLineDto {
         constructor(points?: Base.Point3[], checkLastWithFirst?: boolean, tolerance?: number);
         checkLastWithFirst?: boolean | undefined;
         points: Base.Point3[];
         tolerance?: number | undefined;
     }
-    // (undocumented)
     export class PointXYDto {
         constructor(x?: number, y?: number);
         x: number;
         y: number;
     }
-    // (undocumented)
     export class PointXYZDto {
         constructor(x?: number, y?: number, z?: number);
         x: number;
         y: number;
         z: number;
     }
-    // (undocumented)
     export class RemoveConsecutiveDuplicatesDto {
         constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean);
         checkFirstAndLast: boolean;
         points: Base.Point3[];
         tolerance?: number | undefined;
     }
-    // (undocumented)
     export class RotatePointsCenterAxisDto {
         constructor(points?: Base.Point3[], angle?: number, axis?: Base.Vector3, center?: Base.Point3);
         angle: number;
@@ -1625,14 +1432,12 @@ export namespace Point {
         center: Base.Point3;
         points: Base.Point3[];
     }
-    // (undocumented)
     export class ScalePointsCenterXYZDto {
         constructor(points?: Base.Point3[], center?: Base.Point3, scaleXyz?: Base.Vector3);
         center: Base.Point3;
         points: Base.Point3[];
         scaleXyz: Base.Vector3;
     }
-    // (undocumented)
     export class SpiralDto {
         constructor(radius?: number, numberPoints?: number, widening?: number, factor?: number, phi?: number);
         factor: number;
@@ -1641,19 +1446,16 @@ export namespace Point {
         radius: number;
         widening: number;
     }
-    // (undocumented)
     export class StartEndPointsDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3);
         endPoint: Base.Point3;
         startPoint: Base.Point3;
     }
-    // (undocumented)
     export class StartEndPointsListDto {
         constructor(startPoint?: Base.Point3, endPoints?: Base.Point3[]);
         endPoints: Base.Point3[];
         startPoint: Base.Point3;
     }
-    // (undocumented)
     export class StretchPointsDirFromCenterDto {
         constructor(points?: Base.Point3[], center?: Base.Point3, direction?: Base.Vector3, scale?: number);
         center?: Base.Point3 | undefined;
@@ -1661,7 +1463,6 @@ export namespace Point {
         points: Base.Point3[];
         scale?: number | undefined;
     }
-    // (undocumented)
     export class ThreePointsNormalDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3, reverseNormal?: boolean);
         point1: Base.Point3;
@@ -1669,7 +1470,6 @@ export namespace Point {
         point3: Base.Point3;
         reverseNormal: boolean;
     }
-    // (undocumented)
     export class ThreePointsToleranceDto {
         constructor(start?: Base.Point3, center?: Base.Point3, end?: Base.Point3, tolerance?: number);
         center: Base.Point3;
@@ -1677,37 +1477,31 @@ export namespace Point {
         start: Base.Point3;
         tolerance: number;
     }
-    // (undocumented)
     export class TransformPointDto {
         constructor(point?: Base.Point3, transformation?: Base.TransformMatrixes);
         point: Base.Point3;
         transformation: Base.TransformMatrixes;
     }
-    // (undocumented)
     export class TransformPointsDto {
         constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes);
         points: Base.Point3[];
         transformation: Base.TransformMatrixes;
     }
-    // (undocumented)
     export class TransformsForPointsDto {
         constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes[]);
         points: Base.Point3[];
         transformation: Base.TransformMatrixes[];
     }
-    // (undocumented)
     export class TranslatePointsDto {
         constructor(points?: Base.Point3[], translation?: Base.Vector3);
         points: Base.Point3[];
         translation: Base.Vector3;
     }
-    // (undocumented)
     export class TranslatePointsWithVectorsDto {
         constructor(points?: Base.Point3[], translations?: Base.Vector3[]);
         points: Base.Point3[];
         translations: Base.Vector3[];
     }
-    // (undocumented)
     export class TranslateXYZPointsDto {
         constructor(points?: Base.Point3[], x?: number, y?: number, z?: number);
         points: Base.Point3[];
@@ -1715,13 +1509,11 @@ export namespace Point {
         y: number;
         z: number;
     }
-    // (undocumented)
     export class TwoPointsDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3);
         point1: Base.Point3;
         point2: Base.Point3;
     }
-    // (undocumented)
     export class TwoPointsToleranceDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3, tolerance?: number);
         point1: Base.Point3;
@@ -1732,7 +1524,6 @@ export namespace Point {
 
 // @public
 export namespace Polyline {
-    // (undocumented)
     export class DrawPolylineDto<T> {
         constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: T);
         colours?: string | string[] | undefined;
@@ -1742,7 +1533,6 @@ export namespace Polyline {
         size?: number | undefined;
         updatable?: boolean | undefined;
     }
-    // (undocumented)
     export class DrawPolylinesDto<T> {
         constructor(polylines?: PolylinePropertiesDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylinesMesh?: T);
         colours?: string | string[] | undefined;
@@ -1752,48 +1542,40 @@ export namespace Polyline {
         size?: number | undefined;
         updatable?: boolean | undefined;
     }
-    // (undocumented)
     export class PolylineCreateDto {
         constructor(points?: Base.Point3[], isClosed?: boolean);
         isClosed?: boolean | undefined;
         points: Base.Point3[];
     }
-    // (undocumented)
     export class PolylineDto {
         constructor(polyline?: PolylinePropertiesDto);
         polyline: PolylinePropertiesDto;
     }
-    // (undocumented)
     export class PolylinePropertiesDto {
         constructor(points?: Base.Point3[], isClosed?: boolean);
         color?: string | number[] | undefined;
         isClosed?: boolean | undefined;
         points: Base.Point3[];
     }
-    // (undocumented)
     export class PolylinesDto {
         constructor(polylines?: PolylinePropertiesDto[]);
         polylines: PolylinePropertiesDto[];
     }
-    // (undocumented)
     export class PolylineToleranceDto {
         constructor(polyline?: PolylinePropertiesDto, tolerance?: number);
         polyline: PolylinePropertiesDto;
         tolerance?: number | undefined;
     }
-    // (undocumented)
     export class SegmentsToleranceDto {
         constructor(segments?: Base.Segment3[]);
         segments: Base.Segment3[];
         tolerance?: number | undefined;
     }
-    // (undocumented)
     export class TransformPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, transformation?: Base.TransformMatrixes);
         polyline: PolylinePropertiesDto;
         transformation: Base.TransformMatrixes;
     }
-    // (undocumented)
     export class TwoPolylinesToleranceDto {
         constructor(polyline1?: PolylinePropertiesDto, polyline2?: PolylinePropertiesDto, tolerance?: number);
         polyline1: PolylinePropertiesDto;
@@ -1804,49 +1586,41 @@ export namespace Polyline {
 
 // @public
 namespace Text_2 {
-    // (undocumented)
     class TextConcatDto {
         constructor(texts?: string[]);
         texts: string[];
     }
-    // (undocumented)
     class TextDto {
         constructor(text?: string);
         text: string;
     }
-    // (undocumented)
     class TextFormatDto {
         constructor(text?: string, values?: string[]);
         text: string;
         values: string[];
     }
-    // (undocumented)
     class TextIndexDto {
         constructor(text?: string, index?: number);
         index: number;
         text: string;
     }
-    // (undocumented)
     class TextJoinDto {
         constructor(list?: string[], separator?: string);
         list: string[];
         separator: string;
     }
-    // (undocumented)
     class TextPadDto {
         constructor(text?: string, length?: number, padString?: string);
         length: number;
         padString: string;
         text: string;
     }
-    // (undocumented)
     class TextRegexDto {
         constructor(text?: string, pattern?: string, flags?: string);
         flags: string;
         pattern: string;
         text: string;
     }
-    // (undocumented)
     class TextRegexReplaceDto {
         constructor(text?: string, pattern?: string, flags?: string, replaceWith?: string);
         flags: string;
@@ -1854,49 +1628,41 @@ namespace Text_2 {
         replaceWith: string;
         text: string;
     }
-    // (undocumented)
     class TextRepeatDto {
         constructor(text?: string, count?: number);
         count: number;
         text: string;
     }
-    // (undocumented)
     class TextReplaceDto {
         constructor(text?: string, search?: string, replaceWith?: string);
         replaceWith: string;
         search: string;
         text: string;
     }
-    // (undocumented)
     class TextSearchDto {
         constructor(text?: string, search?: string);
         search: string;
         text: string;
     }
-    // (undocumented)
     class TextSplitDto {
         constructor(text?: string, separator?: string);
         separator: string;
         text: string;
     }
-    // (undocumented)
     class TextSubstringDto {
         constructor(text?: string, start?: number, end?: number);
         end?: number | undefined;
         start: number;
         text: string;
     }
-    // (undocumented)
     class ToStringDto<T> {
         constructor(item?: T);
         item: T;
     }
-    // (undocumented)
     class ToStringEachDto<T> {
         constructor(list?: T[]);
         list: T[];
     }
-    // (undocumented)
     class VectorCharDto {
         constructor(char?: string, xOffset?: number, yOffset?: number, height?: number, extrudeOffset?: number);
         char: string;
@@ -1905,7 +1671,6 @@ namespace Text_2 {
         xOffset?: number | undefined;
         yOffset?: number | undefined;
     }
-    // (undocumented)
     class VectorTextDto {
         constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, centerOnOrigin?: boolean);
         align?: Base.horizontalAlignEnum | undefined;
@@ -1923,20 +1688,17 @@ export { Text_2 as Text }
 
 // @public
 export namespace Transforms {
-    // (undocumented)
     export class RotationCenterAxisDto {
         constructor(angle?: number, axis?: Base.Vector3, center?: Base.Point3);
         angle: number;
         axis: Base.Vector3;
         center: Base.Point3;
     }
-    // (undocumented)
     export class RotationCenterDto {
         constructor(angle?: number, center?: Base.Point3);
         angle: number;
         center: Base.Point3;
     }
-    // (undocumented)
     export class RotationCenterYawPitchRollDto {
         constructor(yaw?: number, pitch?: number, roll?: number, center?: Base.Point3);
         center: Base.Point3;
@@ -1944,40 +1706,33 @@ export namespace Transforms {
         roll: number;
         yaw: number;
     }
-    // (undocumented)
     export class ScaleCenterXYZDto {
         constructor(center?: Base.Point3, scaleXyz?: Base.Vector3);
         center: Base.Point3;
         scaleXyz: Base.Vector3;
     }
-    // (undocumented)
     export class ScaleXYZDto {
         constructor(scaleXyz?: Base.Vector3);
         scaleXyz: Base.Vector3;
     }
-    // (undocumented)
     export class StretchDirCenterDto {
         constructor(scale?: number, center?: Base.Point3, direction?: Base.Vector3);
         center?: Base.Point3 | undefined;
         direction?: Base.Vector3 | undefined;
         scale?: number | undefined;
     }
-    // (undocumented)
     export class TranslationsXYZDto {
         constructor(translations?: Base.Vector3[]);
         translations: Base.Vector3[];
     }
-    // (undocumented)
     export class TranslationXYZDto {
         constructor(translation?: Base.Vector3);
         translation: Base.Vector3;
     }
-    // (undocumented)
     export class UniformScaleDto {
         constructor(scale?: number);
         scale: number;
     }
-    // (undocumented)
     export class UniformScaleFromCenterDto {
         constructor(scale?: number, center?: Base.Point3);
         center: Base.Point3;
@@ -1987,46 +1742,39 @@ export namespace Transforms {
 
 // @public
 export namespace Vector {
-    // (undocumented)
     export class FractionTwoVectorsDto {
         constructor(fraction?: number, first?: Base.Vector3, second?: Base.Vector3);
         first: Base.Vector3;
         fraction: number;
         second: Base.Vector3;
     }
-    // (undocumented)
     export class RangeMaxDto {
         constructor(max?: number);
         max: number;
     }
-    // (undocumented)
     export class RayPointDto {
         constructor(point?: Base.Point3, distance?: number, vector?: number[]);
         distance: number;
         point: Base.Point3;
         vector: number[];
     }
-    // (undocumented)
     export class RemoveAllDuplicateVectorsDto {
         constructor(vectors?: number[][], tolerance?: number);
         tolerance: number;
         vectors: number[][];
     }
-    // (undocumented)
     export class RemoveConsecutiveDuplicateVectorsDto {
         constructor(vectors?: number[][], checkFirstAndLast?: boolean, tolerance?: number);
         checkFirstAndLast: boolean;
         tolerance: number;
         vectors: number[][];
     }
-    // (undocumented)
     export class SpanDto {
         constructor(step?: number, min?: number, max?: number);
         max: number;
         min: number;
         step: number;
     }
-    // (undocumented)
     export class SpanEaseItemsDto {
         constructor(nrItems?: number, min?: number, max?: number, ease?: Math_2.easeEnum);
         ease: Math_2.easeEnum;
@@ -2035,71 +1783,59 @@ export namespace Vector {
         min: number;
         nrItems: number;
     }
-    // (undocumented)
     export class SpanLinearItemsDto {
         constructor(nrItems?: number, min?: number, max?: number);
         max: number;
         min: number;
         nrItems: number;
     }
-    // (undocumented)
     export class TwoVectorsDto {
         constructor(first?: number[], second?: number[]);
         first: number[];
         second: number[];
     }
-    // (undocumented)
     export class TwoVectorsReferenceDto {
         constructor(reference?: number[], first?: Base.Vector3, second?: Base.Vector3);
         first: Base.Vector3;
         reference: number[];
         second: Base.Vector3;
     }
-    // (undocumented)
     export class Vector3Dto {
         constructor(vector?: Base.Vector3);
         vector: Base.Vector3;
     }
-    // (undocumented)
     export class VectorBoolDto {
         constructor(vector?: boolean[]);
         vector: boolean[];
     }
-    // (undocumented)
     export class VectorDto {
         constructor(vector?: number[]);
         vector: number[];
     }
-    // (undocumented)
     export class VectorScalarDto {
         constructor(scalar?: number, vector?: number[]);
         scalar: number;
         vector: number[];
     }
-    // (undocumented)
     export class VectorsDto {
         constructor(vectors?: number[][]);
         vectors: number[][];
     }
-    // (undocumented)
     export class VectorsTheSameDto {
         constructor(vec1?: number[], vec2?: number[], tolerance?: number);
         tolerance: number;
         vec1: number[];
         vec2: number[];
     }
-    // (undocumented)
     export class VectorStringDto {
         constructor(vector?: string[]);
         vector: string[];
     }
-    // (undocumented)
     export class VectorXYDto {
         constructor(x?: number, y?: number);
         x: number;
         y: number;
     }
-    // (undocumented)
     export class VectorXYZDto {
         constructor(x?: number, y?: number, z?: number);
         x: number;

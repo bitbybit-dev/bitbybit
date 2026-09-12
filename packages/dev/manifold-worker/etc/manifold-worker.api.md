@@ -9,7 +9,6 @@ import { Subject } from 'rxjs';
 // @public
 export class BitByBitManifold {
     constructor();
-    // (undocumented)
     init(manifold: Worker): void;
     // (undocumented)
     manifold: ManifoldBitByBit;

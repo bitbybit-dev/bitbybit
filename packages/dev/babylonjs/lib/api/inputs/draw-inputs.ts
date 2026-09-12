@@ -5,7 +5,7 @@ import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 /**
- * Options for drawing geometry into a BabylonJS scene: colour, opacity, size, whether the result is
+ * Options for drawing geometry into a BabylonJS scene: color, opacity, size, whether the result is
  * pickable, and the per-kind settings that control how points, lines, polylines, meshes, surfaces and
  * kernel shapes are turned into renderer objects. Passing an existing drawn object back in updates it
  * in place instead of creating a second one, which is what makes animation cheap.
@@ -158,6 +158,10 @@ export namespace Draw {
             : E extends BABYLON.TransformNode ? BABYLON.TransformNode
             : T;
 
+    /**
+     * Feeds `draw.drawAnyAsync` and `drawAny`: the entity to draw, the options for its kind and,
+     * when redrawing, the scene object from the previous draw.
+     */
     export class DrawAny<E extends Entity = Entity> {
         constructor(entity?: E, options?: DrawOptions, babylonMesh?: BABYLON.Mesh | BABYLON.LinesMesh) {
             if (entity !== undefined) { this.entity = entity; }
@@ -170,7 +174,8 @@ export namespace Draw {
          */
         entity!: E;
         /**
-         * Options that help you control how your drawn objects look like. This property is optional. In order to pick the right option you need to know which entity you are going to draw. For example if you draw points, lines, polylines or jscad meshes you can use basic geometry options, but if you want to draw OCCT shapes, use OCCT options.
+         * How the drawing looks, matched to the entity: basic options for points, lines, polylines
+         * and JSCAD meshes, OCCT options for shapes, and so on; left out, defaults are used
          * @default undefined
          * @optional true
          */
@@ -183,6 +188,10 @@ export namespace Draw {
         babylonMesh?: BABYLON.Mesh | BABYLON.LinesMesh | undefined;
     }
 
+    /**
+     * Feeds `draw.drawGridMesh`: the size of the ground grid, how its lines are spaced and
+     * weighted, and its colors and opacity.
+     */
     export class SceneDrawGridMeshDto {
         constructor(width?: number, height?: number, subdivisions?: number, majorUnitFrequency?: number, minorUnitVisibility?: number, gridRatio?: number, opacity?: number, backFaceCulling?: boolean, mainColor?: Base.Color, secondaryColor?: Base.Color) {
             if (width !== undefined) { this.width = width; }
@@ -197,7 +206,7 @@ export namespace Draw {
             if (secondaryColor !== undefined) { this.secondaryColor = secondaryColor; }
         }
         /**
-         * Width of the grid
+         * Full size of the grid along X, in scene units
          * @default 400
          * @minimum 0
          * @maximum Infinity
@@ -213,7 +222,7 @@ export namespace Draw {
          */
         height = 400;
         /**
-         * Ground subdivisions
+         * Number of cells the ground mesh is divided into along each side
          * @default 10
          * @minimum 0
          * @maximum Infinity
@@ -229,7 +238,7 @@ export namespace Draw {
          */
         majorUnitFrequency = 10;
         /**
-         * The visibility of minor units in the grid.
+         * How strongly the thin lines between the thick ones show, from 0 for hidden to 1 for full
          * @default 0.45
          * @minimum 0
          * @maximum 1
@@ -287,16 +296,13 @@ export namespace Draw {
             if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
         }
         /**
-         * Basic geometry colours to use for lines, points, polylines, surfaces, jscad meshes.
+         * Basic geometry colors to use for lines, points, polylines, surfaces, jscad meshes.
          * @default #ff0000
          */
         colours: string | string[] = "#ff0000";
         /**
-         * Strategy for mapping colors to entities when there are more entities than colors.
-         * - firstColorForAll: Uses the first color for all entities (legacy behavior)
-         * - lastColorRemainder: Maps colors 1:1, then uses last color for remaining entities
-         * - repeatColors: Cycles through colors in a repeating pattern
-         * - reversedColors: After exhausting colors, reverses direction (ping-pong pattern)
+         * How colors are spread over more entities than colors: first color for all, the last color
+         * for the remainder, colors repeating, or colors bouncing back and forth
          * @default lastColorRemainder
          */
         colorMapStrategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder;
@@ -322,7 +328,7 @@ export namespace Draw {
          */
         updatable = false;
         /**
-         * Hidden
+         * When true, the entity is drawn but not shown until it is made visible
          * @default false
          */
         hidden = false;
@@ -332,7 +338,7 @@ export namespace Draw {
          */
         drawTwoSided = true;
         /**
-         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true and drawing surfaces.
+         * Hex color string for back face color (negative side of the face). Only used when drawTwoSided is true and drawing surfaces.
          * @default #0000ff
          */
         backFaceColour: Base.Color = "#0000ff";
@@ -363,7 +369,8 @@ export namespace Draw {
     }
 
     /**
-     * Draw options for Nodes
+     * Feeds `draw.optionsBabylonNode`: the color of each axis line a drawn node gets and how long
+     * the lines are.
      */
     export class DrawNodeOptions {
         constructor(colourX?: Base.Color, colourY?: Base.Color, colourZ?: Base.Color, size?: number) {
@@ -373,17 +380,17 @@ export namespace Draw {
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * X Axis colour
+         * X Axis color
          * @default #ff0000
          */
         colorX: Base.Color = "#0000ff";
         /**
-         * Y Axis colour
+         * Y Axis color
          * @default #00ff00
          */
         colorY: Base.Color = "#00ff00";
         /**
-         * Z Axis colour
+         * Z Axis color
          * @default #0000ff
          */
         colorZ: Base.Color = "#ff0000";
@@ -395,6 +402,10 @@ export namespace Draw {
          */
         size = 2;
     }
+    /**
+     * Feeds `draw.optionsManifoldShapeMaterial`: the face color or material of a Manifold solid,
+     * the line style of a cross-section, normals and the two-sided rendering.
+     */
     export class DrawManifoldOrCrossSectionOptions {
         /**
          * Provide options without default values
@@ -420,18 +431,18 @@ export namespace Draw {
          */
         faceOpacity = 1;
         /**
-         * Hex colour string for face colour
+         * Hex color string for face color
          * @default #ff0000
          */
         faceColour: Base.Color = "#ff0000";
         /**
-         * Face material
+         * An engine material for the faces, used instead of `faceColour` when given
          * @default undefined
          * @optional true
          */
         faceMaterial?: Base.Material | undefined;
         /**
-         * Hex colour string for cross section drawing
+         * Hex color string for cross section drawing
          * @default #ff00ff
          */
         crossSectionColour: Base.Color = "#ff00ff";
@@ -459,7 +470,7 @@ export namespace Draw {
          */
         drawTwoSided = true;
         /**
-         * Hex colour string for the back face when drawing two-sided geometry
+         * Hex color string for the back face when drawing two-sided geometry
          * @default #0000ff
          */
         backFaceColour: Base.Color = "#0000ff";
@@ -473,7 +484,8 @@ export namespace Draw {
         backFaceOpacity = 1;
     }
     /**
-     * Draw options for OCCT shapes
+     * Feeds `draw.optionsOcctShape`: everything about how an OCCT shape is drawn, from meshing
+     * precision to face, edge and vertex colors, index labels, arrows and the triangulation cache.
      */
     export class DrawOcctShapeOptions {
         /**
@@ -524,12 +536,12 @@ export namespace Draw {
          */
         edgeOpacity = 1;
         /**
-         * Hex colour string for the edges
+         * Hex color string for the edges
          * @default #ffffff
          */
         edgeColour: Base.Color = "#ffffff";
         /**
-         * Hex colour string for face colour
+         * Hex color string for face color
          * @default #ff0000
          */
         faceColour: Base.Color = "#ff0000";
@@ -539,13 +551,13 @@ export namespace Draw {
          */
         vertexColour: Base.Color = "#ffaaff";
         /**
-         * Face material
+         * An engine material for the faces, used instead of `faceColour` when given
          * @default undefined
          * @optional true
          */
         faceMaterial?: Base.Material | undefined;
         /**
-         * Edge width
+         * Thickness of the drawn edge lines
          * @default 2
          * @minimum 0
          * @maximum Infinity
@@ -597,7 +609,7 @@ export namespace Draw {
          */
         edgeIndexHeight = 0.06;
         /**
-         * Edge index colour if the edges are drawn
+         * Edge index color if the edges are drawn
          * @default #ff00ff
          */
         edgeIndexColour: Base.Color = "#ff00ff";
@@ -615,7 +627,7 @@ export namespace Draw {
          */
         faceIndexHeight = 0.06;
         /**
-         * Edge index colour if the edges are drawn
+         * Edge index color if the edges are drawn
          * @default #0000ff
          */
         faceIndexColour: Base.Color = "#0000ff";
@@ -625,7 +637,7 @@ export namespace Draw {
          */
         drawTwoSided = true;
         /**
-         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * Hex color string for back face color (negative side of the face). Only used when drawTwoSided is true.
          * @default #0000ff
          */
         backFaceColour: Base.Color = "#0000ff";
@@ -671,6 +683,10 @@ export namespace Draw {
         forceFaceDeflection = false;
     }
 
+    /**
+     * Feeds `draw.optionsOcctShapeSimple`: the most used OCCT drawing options, precision, face and
+     * edge colors and the two-sided rendering, without the rest.
+     */
     export class DrawOcctShapeSimpleOptions {
         constructor(precision?: number, drawFaces?: boolean, faceColour?: Base.Color, drawEdges?: boolean, edgeColour?: Base.Color, edgeWidth?: number, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
             if (precision !== undefined) { this.precision = precision; }
@@ -684,7 +700,8 @@ export namespace Draw {
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
-         * Precision
+         * How closely the triangles follow the curved surfaces, in model units; lower is finer and
+         * heavier
          * @default 0.01
          * @minimum 0
          * @maximum Infinity
@@ -696,7 +713,7 @@ export namespace Draw {
          */
         drawFaces = true;
         /**
-         * Hex colour string for face colour
+         * Hex color string for face color
          * @default #ff0000
          */
         faceColour?: Base.Color | undefined = "#ff0000";
@@ -706,12 +723,12 @@ export namespace Draw {
         */
         drawEdges = true;
         /**
-         * Hex colour string for the edges
+         * Hex color string for the edges
          * @default #ffffff
          */
         edgeColour: Base.Color = "#ffffff";
         /**
-         * Edge width
+         * Thickness of the drawn edge lines
          * @default 2
          * @minimum 0
          * @maximum Infinity
@@ -723,7 +740,7 @@ export namespace Draw {
          */
         drawTwoSided = true;
         /**
-         * Hex colour string for the back face when drawing two-sided geometry
+         * Hex color string for the back face when drawing two-sided geometry
          * @default #0000ff
          */
         backFaceColour: Base.Color = "#0000ff";
@@ -737,6 +754,10 @@ export namespace Draw {
         backFaceOpacity = 1;
     }
 
+    /**
+     * Feeds `draw.optionsOcctShapeMaterial`: an OCCT shape drawn with a full engine material on its
+     * faces, plus the precision and the edge style.
+     */
     export class DrawOcctShapeMaterialOptions {
         constructor(precision?: number, faceMaterial?: any, drawEdges?: boolean, edgeColour?: Base.Color, edgeWidth?: number) {
             if (precision !== undefined) { this.precision = precision; }
@@ -746,14 +767,15 @@ export namespace Draw {
             if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
         }
         /**
-        * Precision
-        * @default 0.01
-        * @minimum 0
-        * @maximum Infinity
-        */
+         * How closely the triangles follow the curved surfaces, in model units; lower is finer and
+         * heavier
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         */
         precision = 0.01;
         /**
-         * Face material
+         * The engine material the faces are drawn with
          * @default undefined
          */
         faceMaterial;
@@ -764,12 +786,12 @@ export namespace Draw {
         */
         drawEdges = true;
         /**
-         * Hex colour string for the edges
+         * Hex color string for the edges
          * @default #ffffff
          */
         edgeColour: Base.Color = "#ffffff";
         /**
-         * Edge width
+         * Thickness of the drawn edge lines
          * @default 2
          * @minimum 0
          * @maximum Infinity

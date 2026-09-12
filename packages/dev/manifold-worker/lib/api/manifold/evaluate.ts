@@ -5,8 +5,9 @@ import * as Inputs from "@bitbybit-dev/manifold/lib/api/inputs";
 import { ManifoldWorkerManager } from "../../manifold-worker/manifold-worker-manager";
 
 /**
- * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
- * Thanks Manifold community for developing this kernel
+ * Measuring Manifold solids and reading their bookkeeping: surface area and volume, vertex,
+ * triangle and edge counts, the bounding box, the tolerance, the genus, the gap to another solid,
+ * and the id and status the kernel tracks for every solid. Nothing here changes the solid.
  */
 export class ManifoldEvaluate {
     constructor(
@@ -15,183 +16,240 @@ export class ManifoldEvaluate {
     }
 
     /**
-     * Get surface area of manifold
-     * @param inputs manifold
-     * @returns surface area of manifold
+     * Measures the total surface area of a solid, in square model units.
+     * @param inputs - The solid
+     * @returns The surface area
      * @group basic
      * @shortname surface area
      * @drawable false
+     * @example
+     * ```typescript
+     * const area = await bitbybit.manifold.manifold.evaluate.surfaceArea({ manifold: cube });
+     * ```
      */
     surfaceArea(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.surfaceArea", inputs);
     }
 
     /**
-     * Get volume of manifold
-     * @param inputs manifold
-     * @returns volume of manifold
+     * Measures the volume of a solid, in cubic model units.
+     * @param inputs - The solid
+     * @returns The volume
      * @group basic
      * @shortname volume
      * @drawable false
+     * @example
+     * ```typescript
+     * const volume = await bitbybit.manifold.manifold.evaluate.volume({ manifold: cube });
+     * ```
      */
     volume(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.volume", inputs);
     }
 
     /**
-     * Check if manifold contains triangles
-     * @param inputs manifold
-     * @returns boolean indicating emptyness
+     * Tells whether a solid has no triangles at all, as the result of an intersection of shapes
+     * that do not overlap would.
+     * @param inputs - The solid
+     * @returns True when the solid is empty
      * @group basic
      * @shortname is empty
      * @drawable false
+     * @example
+     * ```typescript
+     * const empty = await bitbybit.manifold.manifold.evaluate.isEmpty({ manifold: shape });
+     * ```
      */
     isEmpty(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<boolean> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.isEmpty", inputs);
     }
 
     /**
-     * Get number of vertices in manifold
-     * @param inputs manifold
-     * @returns number of vertices of manifold
+     * Counts the vertices of a solid's mesh, the corners its triangles share.
+     * @param inputs - The solid
+     * @returns The number of vertices
      * @group basic
      * @shortname num vert
      * @drawable false
+     * @example
+     * ```typescript
+     * const vertices = await bitbybit.manifold.manifold.evaluate.numVert({ manifold: shape });
+     * ```
      */
     numVert(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.numVert", inputs);
     }
 
     /**
-     * Get number of triangles in manifold
-     * @param inputs manifold
-     * @returns number of triangles of manifold
+     * Counts the triangles of a solid's mesh, which is its whole surface.
+     * @param inputs - The solid
+     * @returns The number of triangles
      * @group basic
      * @shortname num triangles
      * @drawable false
+     * @example
+     * ```typescript
+     * const triangles = await bitbybit.manifold.manifold.evaluate.numTri({ manifold: shape });
+     * ```
      */
     numTri(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.numTri", inputs);
     }
 
     /**
-     * Get number of edges in manifold
-     * @param inputs manifold
-     * @returns number of edges of manifold
+     * Counts the edges of a solid's mesh, each shared by two triangles.
+     * @param inputs - The solid
+     * @returns The number of edges
      * @group basic
      * @shortname num edges
      * @drawable false
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.manifold.manifold.evaluate.numEdge({ manifold: shape });
+     * ```
      */
     numEdge(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.numEdge", inputs);
     }
 
     /**
-     * Get number of properties in manifold
-     * @param inputs manifold
-     * @returns number of properties of manifold
+     * Counts the property channels each vertex of a solid carries; the position alone takes three.
+     * @param inputs - The solid
+     * @returns The number of properties per vertex
      * @group basic
      * @shortname num prop
      * @drawable false
+     * @example
+     * ```typescript
+     * const channels = await bitbybit.manifold.manifold.evaluate.numProp({ manifold: shape });
+     * ```
      */
     numProp(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.numProp", inputs);
     }
 
     /**
-     * The number of property vertices in the Manifold. This will always be >=
-     * numVert, as some physical vertices may be duplicated to account for
-     * different properties on different neighboring triangles.
-     * @param inputs manifold
-     * @returns number of properties of manifold
+     * Counts the property vertices of a solid, which is at least `numVert`: a vertex whose
+     * neighboring triangles carry different properties, such as a sharp edge with two normals, is
+     * stored more than once.
+     * @param inputs - The solid
+     * @returns The number of property vertices
      * @group basic
      * @shortname num prop vert
      * @drawable false
+     * @example
+     * ```typescript
+     * const propVertices = await bitbybit.manifold.manifold.evaluate.numPropVert({ manifold: shape });
+     * ```
      */
     numPropVert(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.numPropVert", inputs);
     }
 
     /**
-     * Returns the axis-aligned bounding box of all the Manifold's vertices.
-     * @param inputs manifold
-     * @returns bounding box corner vectors of manifold
+     * Finds the axis-aligned box around every vertex of a solid.
+     * @param inputs - The solid
+     * @returns The minimum corner and the maximum corner
      * @group basic
      * @shortname bounding box
      * @drawable false
+     * @example
+     * ```typescript
+     * const [min, max] = await bitbybit.manifold.manifold.evaluate.boundingBox({ manifold: shape });
+     * ```
      */
     boundingBox(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Base.Vector3[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.boundingBox", inputs);
     }
 
     /**
-     * Returns the tolerance of this Manifold's vertices, which tracks the
-     * approximate rounding error over all the transforms and operations that have
-     * led to this state. Any triangles that are colinear within this tolerance
-     * are considered degenerate and removed. This is the value of &epsilon;
-     * defining
-     * [&epsilon;-valid](https://github.com/elalish/manifold/wiki/Manifold-Library#definition-of-%CE%B5-valid).
-     * @param inputs manifold
-     * @returns tolerance of manifold
+     * Reads the tolerance of a solid, the rounding error that has built up over the transforms and
+     * operations that made it.
+     *
+     * Triangles thinner than this are treated as degenerate and removed.
+     * @param inputs - The solid
+     * @returns The tolerance in model units
      * @group basic
      * @shortname tolerance
      * @drawable false
+     * @example
+     * ```typescript
+     * const tolerance = await bitbybit.manifold.manifold.evaluate.tolerance({ manifold: shape });
+     * ```
      */
     tolerance(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.tolerance", inputs);
     }
 
     /**
-     * The genus is a topological property of the manifold, representing the
-     * number of handles. A sphere is 0, torus 1, etc. It is only meaningful for
-     * a single mesh, so it is best to call Decompose() first.
-     * @param inputs manifold
-     * @returns genus of manifold
+     * Counts the holes through a solid, the way a ring has one and a sphere none.
+     *
+     * It only makes sense for a single connected piece, so run `operations.decompose` first on a
+     * solid made of several.
+     * @param inputs - The solid
+     * @returns The number of holes through the solid
      * @group basic
      * @shortname genus
      * @drawable false
+     * @example
+     * ```typescript
+     * const holes = await bitbybit.manifold.manifold.evaluate.genus({ manifold: shape });
+     * ```
      */
     genus(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.genus", inputs);
     }
 
     /**
-     * Returns the minimum gap between two manifolds. Returns a float between
-     * 0 and searchLength.
-     * @param inputs two manifolds and search length
-     * @returns minimum
+     * Measures the smallest distance between two solids, searching no farther than `searchLength`.
+     *
+     * The result is between 0 and the search length.
+     * @param inputs - The two solids and how far to search, in model units
+     * @returns The smallest gap between them
      * @group basic
      * @shortname min gap
      * @drawable false
+     * @example
+     * ```typescript
+     * const gap = await bitbybit.manifold.manifold.evaluate.minGap({ manifold1: cube, manifold2: sphere, searchLength: 100 });
+     * ```
      */
     minGap(inputs: Inputs.Manifold.ManifoldsMinGapDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.minGap", inputs);
     }
 
     /**
-     * If this mesh is an original, this returns its ID that can be referenced
-     * by product manifolds. If this manifold is a product, this
-     * returns -1.
-     * @param inputs manifold
-     * @returns original id of manifold
+     * Reads the id of a solid that is an original, as `operations.asOriginal` or a freshly built
+     * solid makes it; a solid produced from others by an operation reports -1.
+     * @param inputs - The solid
+     * @returns The original id, or -1
      * @group basic
      * @shortname original id
      * @drawable false
+     * @example
+     * ```typescript
+     * const id = await bitbybit.manifold.manifold.evaluate.originalID({ manifold: shape });
+     * ```
      */
     originalID(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.originalID", inputs);
     }
 
     /**
-     * Returns the reason for an input Mesh producing an empty Manifold. This
-     * Status will carry on through operations like NaN propogation, ensuring an
-     * errored mesh doesn't get mysteriously lost. Empty meshes may still show
-     * NoError, for instance the intersection of non-overlapping meshes.
-     * @param inputs manifold
-     * @returns error status string (NoError, NotManifold, InvalidConstruction, etc.)
+     * Tells why a solid came out empty: `NoError`, or a reason such as `NotManifold` or
+     * `InvalidConstruction` when the mesh it was built from was not a closed surface.
+     *
+     * The status is carried through later operations, so a broken input does not get lost; an empty
+     * solid can still report `NoError`, as intersecting shapes that do not overlap does.
+     * @param inputs - The solid
+     * @returns The status name
      * @group basic
      * @shortname status
      * @drawable false
+     * @example
+     * ```typescript
+     * const status = await bitbybit.manifold.manifold.evaluate.status({ manifold: shape });
+     * ```
      */
     status(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<string> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.status", inputs);

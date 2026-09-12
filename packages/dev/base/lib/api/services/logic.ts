@@ -1,15 +1,19 @@
 import * as Inputs from "../inputs";
 
 /**
- * Contains various logic methods.
+ * Booleans and decisions: comparing values, flipping booleans, turning lists of numbers into lists
+ * of booleans by thresholds, drawing random booleans, and gating a value so it passes only when a
+ * condition holds. The threshold methods are the usual way to decide which items of a pattern get a
+ * feature and which do not.
  */
 export class Logic {
 
     /**
-     * Creates and returns a boolean value (pass-through for boolean input).
-     * Example: true → true, false → false
-     * @param inputs a true or false boolean
-     * @returns boolean
+     * Passes a boolean through unchanged, so a value can be given a name and reused.
+     *
+     * Example: true -> true
+     * @param inputs - The boolean
+     * @returns The same boolean
      * @group create
      * @shortname boolean
      * @drawable false
@@ -19,13 +23,18 @@ export class Logic {
     }
 
     /**
-     * Generates a random boolean list where each value has a threshold chance of being true.
-     * Example: length=5, threshold=0.7 → might produce [true, true, false, true, true]
-     * @param inputs a length and a threshold for randomization of true values
-     * @returns booleans
+     * Draws a list of random booleans, each true with a given probability.
+     *
+     * Example: length 5 with trueThreshold 0.7 -> perhaps [true, true, false, true, true]
+     * @param inputs - How many booleans to draw and the probability of true
+     * @returns The random booleans
      * @group create
      * @shortname random booleans
      * @drawable false
+     * @example
+     * ```typescript
+     * const flags = bitbybit.logic.randomBooleans({ length: 5, trueThreshold: 0.7 });
+     * ```
      */
     randomBooleans(inputs: Inputs.Logic.RandomBooleansDto): boolean[] {
         const booleans: boolean[] = [];
@@ -36,15 +45,26 @@ export class Logic {
     }
 
     /**
-     * Converts numbers to booleans using two thresholds with gradient randomization between them.
-     * Values below trueThreshold → always true, above falseThreshold → always false.
-     * Between thresholds → probability gradient (closer to false threshold = higher chance of false).
-     * Example: [0.1, 0.4, 0.6, 0.9] with thresholds [0.3, 0.7] → [true, gradient, gradient, false]
-     * @param inputs a length and a threshold for randomization of true values
-     * @returns booleans
+     * Turns numbers into booleans with a random blend between two thresholds.
+     *
+     * Below the first threshold a number is always true, above the second always false; in between,
+     * the chance of true falls in steps from one to the other, so a pattern fades out instead of
+     * switching sharply.
+     * Example: [0.1, 0.9] with thresholds 0.3 and 0.7 -> [true, false]
+     * @param inputs - The numbers, the two thresholds and how many steps the fade has
+     * @returns One boolean per number
      * @group create
      * @shortname 2 threshold random gradient
      * @drawable false
+     * @example
+     * ```typescript
+     * const fade = bitbybit.logic.twoThresholdRandomGradient({
+     *     numbers: [0.1, 0.4, 0.6, 0.9],
+     *     thresholdTotalTrue: 0.3,
+     *     thresholdTotalFalse: 0.7,
+     *     nrLevels: 10,
+     * });
+     * ```
      */
     twoThresholdRandomGradient(inputs: Inputs.Logic.TwoThresholdRandomGradientDto): boolean[] {
         const booleans: boolean[] = [];
@@ -70,14 +90,19 @@ export class Logic {
     }
 
     /**
-     * Converts numbers to booleans based on a threshold (below threshold → true, above → false).
-     * Can be inverted to flip the logic.
-     * Example: [0.3, 0.7, 0.5] with threshold=0.6 → [true, false, true]
-     * @param inputs a length and a threshold for randomization of true values
-     * @returns booleans
+     * Turns numbers into booleans: true below the threshold, false at or above it.
+     *
+     * `inverse` flips every result.
+     * Example: [0.3, 0.7, 0.5] with threshold 0.6 -> [true, false, true]
+     * @param inputs - The numbers, the threshold and whether to flip the result
+     * @returns One boolean per number
      * @group create
      * @shortname threshold boolean list
      * @drawable false
+     * @example
+     * ```typescript
+     * const below = bitbybit.logic.thresholdBooleanList({ numbers: [0.3, 0.7, 0.5], threshold: 0.6, inverse: false });
+     * ```
      */
     thresholdBooleanList(inputs: Inputs.Logic.ThresholdBooleanListDto): boolean[] {
         const booleans: boolean[] = [];
@@ -95,14 +120,24 @@ export class Logic {
     }
 
     /**
-     * Converts numbers to booleans using multiple range thresholds (gaps define true ranges).
-     * Values within any gap range → true, outside all gaps → false. Can be inverted.
-     * Example: [0.2, 0.5, 0.8] with gaps [[0.3, 0.6], [0.7, 0.9]] → [false, true, true]
-     * @param inputs a length and a threshold for randomization of true values
-     * @returns booleans
+     * Turns numbers into booleans: true when the number falls inside any of the given ranges, false
+     * otherwise.
+     *
+     * Each range is `[min, max]` with both ends included; `inverse` flips every result.
+     * Example: [0.2, 0.5, 0.8] with ranges [[0.3, 0.6], [0.7, 0.9]] -> [false, true, true]
+     * @param inputs - The numbers, the ranges and whether to flip the result
+     * @returns One boolean per number
      * @group create
      * @shortname threshold gaps boolean list
      * @drawable false
+     * @example
+     * ```typescript
+     * const inside = bitbybit.logic.thresholdGapsBooleanList({
+     *     numbers: [0.2, 0.5, 0.8],
+     *     gapThresholds: [[0.3, 0.6], [0.7, 0.9]],
+     *     inverse: false,
+     * });
+     * ```
      */
     thresholdGapsBooleanList(inputs: Inputs.Logic.ThresholdGapsBooleanListDto): boolean[] {
         const booleans: boolean[] = [];
@@ -128,10 +163,11 @@ export class Logic {
     }
 
     /**
-     * Applies NOT operator to flip a boolean value.
-     * Example: true → false, false → true
-     * @param inputs a true or false boolean
-     * @returns boolean
+     * Flips a boolean: true becomes false and false becomes true.
+     *
+     * Example: true -> false
+     * @param inputs - The boolean
+     * @returns The opposite boolean
      * @group edit
      * @shortname not
      * @drawable false
@@ -141,10 +177,11 @@ export class Logic {
     }
 
     /**
-     * Applies NOT operator to flip all boolean values in a list.
-     * Example: [true, false, true] → [false, true, false]
-     * @param inputs a list of true or false booleans
-     * @returns booleans
+     * Flips every boolean in a list.
+     *
+     * Example: [true, false, true] -> [false, true, false]
+     * @param inputs - The booleans
+     * @returns The flipped booleans, in the same order
      * @group edit
      * @shortname not list
      * @drawable false
@@ -154,13 +191,19 @@ export class Logic {
     }
 
     /**
-     * Compares two values using various operators (==, !=, ===, !==, <, <=, >, >=).
-     * Example: 5 > 3 → true, 'hello' === 'world' → false
-     * @param inputs two values to be compared
-     * @returns Result of the comparison
+     * Compares two values with an operator: less, less or equal, greater, greater or equal, equal
+     * or not equal, in the loose (`==`) or strict (`===`) form.
+     *
+     * Example: 5 greater than 3 -> true; 'hello' strictly equal to 'world' -> false
+     * @param inputs - The two values and the operator
+     * @returns The result of the comparison
      * @group operations
      * @shortname compare
      * @drawable false
+     * @example
+     * ```typescript
+     * const bigger = bitbybit.logic.compare({ first: 5, second: 3, operator: Bit.Inputs.Logic.BooleanOperatorsEnum.greater });
+     * ```
      */
     compare<T>(inputs: Inputs.Logic.ComparisonDto<T>): boolean {
         switch (inputs.operator) {
@@ -186,26 +229,36 @@ export class Logic {
     }
 
     /**
-     * Conditionally passes a value through if boolean is true, otherwise returns undefined.
-     * Example: value=42, boolean=true → 42, value=42, boolean=false → undefined
-     * @param inputs a value and a boolean value
-     * @returns value or undefined
+     * Lets a value through when the boolean is true and gives undefined when it is false.
+     *
+     * Example: 42 with true -> 42; 42 with false -> undefined
+     * @param inputs - The value and the boolean that opens the gate
+     * @returns The value, or undefined when the gate is closed
      * @group operations
      * @shortname value gate
      * @drawable false
+     * @example
+     * ```typescript
+     * const maybe = bitbybit.logic.valueGate({ value: 42, boolean: true });
+     * ```
      */
     valueGate<T>(inputs: Inputs.Logic.ValueGateDto<T>): T | undefined {
         return inputs.boolean ? inputs.value : undefined;
     }
 
     /**
-     * Returns the first defined (non-undefined) value from two options (fallback pattern).
-     * Example: value1=42, value2=10 → 42, value1=undefined, value2=10 → 10
-     * @param inputs two values
-     * @returns value or undefined
+     * Picks the first of two values that is defined, so the second acts as a fallback.
+     *
+     * Example: 42 and 10 -> 42; undefined and 10 -> 10
+     * @param inputs - The preferred value and the fallback
+     * @returns The first defined value, or undefined when both are missing
      * @group operations
      * @shortname first defined value gate
      * @drawable false
+     * @example
+     * ```typescript
+     * const chosen = bitbybit.logic.firstDefinedValueGate({ value1: undefined, value2: 10 });
+     * ```
      */
     firstDefinedValueGate<T, U>(inputs: Inputs.Logic.TwoValueGateDto<T, U>): T | U | undefined {
         let res;

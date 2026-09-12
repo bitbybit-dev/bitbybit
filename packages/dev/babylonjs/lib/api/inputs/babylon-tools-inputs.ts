@@ -3,11 +3,15 @@ import * as BABYLON from "@babylonjs/core";
 
 // tslint:disable-next-line: no-namespace
 /**
- * Parameters for engine utilities: screenshots, canvas sizing, colour conversion and the other helpers
+ * Parameters for engine utilities: screenshots, canvas sizing, color conversion and the other helpers
  * that sit around the scene rather than inside it.
  */
 export namespace BabylonTools {
 
+    /**
+     * Feeds `babylon.tools.createScreenshot` and `createScreenshotAndDownload`: the camera to
+     * render through, the image size, format and quality.
+     */
     export class ScreenshotDto {
         constructor(camera?: BABYLON.Camera, width?: number, height?: number, mimeType?: string, quality?: number) {
             if (camera !== undefined) { this.camera = camera; }
@@ -17,12 +21,12 @@ export namespace BabylonTools {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Camera to be used. If not set, active camera will be used
+         * The camera to render through; left out, the active camera is used
          * @default undefined
          */
         camera!: BABYLON.Camera;
         /**
-         * width of the screenshot
+         * Pixel width of the image
          * @default 1920
          * @minimum 0
          * @maximum Infinity
@@ -30,7 +34,7 @@ export namespace BabylonTools {
          */
         width = 1920;
         /**
-         * height of the screenshot
+         * Pixel height of the image
          * @default 1080
          * @minimum 0
          * @maximum Infinity
@@ -38,12 +42,12 @@ export namespace BabylonTools {
          */
         height = 1080;
         /**
-         * The mime type
+         * Image format as a MIME type, such as `image/png` or `image/jpeg`
          * @default image/png
          */
         mimeType = "image/png";
         /**
-         * quality of the screenshot
+         * Compression quality from 0 to 1 for lossy formats such as JPEG; PNG ignores it
          * @default 1
          * @minimum 0
          * @maximum Infinity

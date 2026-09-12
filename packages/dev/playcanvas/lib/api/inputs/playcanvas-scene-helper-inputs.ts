@@ -69,6 +69,10 @@ export interface InitPlayCanvasResult {
  * camera, lights, environment and ground - in one call rather than piece by piece.
  */
 export namespace PlayCanvasScene {
+    /**
+     * Feeds the `initPlayCanvas` helper that sets up a whole application in one call: the canvas,
+     * background, ground, lights, shadows and the orbit camera, sized from `sceneSize`.
+     */
     export class InitPlayCanvasDto {
         constructor(
             canvasId?: string,
@@ -187,7 +191,7 @@ export namespace PlayCanvasScene {
         directionalLightColor = "#ffffff";
 
         /**
-         * Intensity of the directional light.
+         * Brightness of the sun-like light that casts the shadows, 1 being full strength
          * @default 1.5
          * @minimum 0
          * @maximum 10
@@ -211,9 +215,8 @@ export namespace PlayCanvasScene {
         enableOrbitCamera = true;
 
         /**
-         * Options for the orbit camera. Only used if enableOrbitCamera is true.
-         * If not provided, scene-aware defaults will be computed based on sceneSize.
-         * Uses the same DTO as the standalone orbit camera creation.
+         * Settings for the orbit camera, the same as `playcanvas.camera.orbitCamera.create` takes;
+         * left out, defaults sized from `sceneSize` are used
          * @optional true
          */
         orbitCameraOptions?: PlayCanvasCamera.OrbitCameraDto | undefined;

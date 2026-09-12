@@ -7,6 +7,11 @@ import * as BABYLON from "@babylonjs/core";
  */
 export namespace BabylonWebXR {
 
+    /**
+     * Feeds `babylon.webXr.base.createDefaultXRExperienceAsync` with the engine's options for a
+     * WebXR session: which features to start, the floor meshes for teleporting, and per-feature
+     * settings.
+     */
     export class WebXRDefaultExperienceOptions {
         constructor(disableDefaultUI?: boolean) {
             if (disableDefaultUI !== undefined) { this.disableDefaultUI = disableDefaultUI; }
@@ -44,9 +49,8 @@ export namespace BabylonWebXR {
          */
         floorMeshes?: BABYLON.AbstractMesh[] | undefined;
         /**
-         * If set to true, the first frame will not be used to reset position
-         * The first frame is mainly used when copying transformation from the old camera
-         * Mainly used in AR
+         * When true, the first frame does not reset the position from the previous camera; mainly
+         * for AR
          * @optional true
          */
         ignoreNativeCameraTransformation?: boolean | undefined;
@@ -103,31 +107,42 @@ export namespace BabylonWebXR {
         optionalFeatures?: boolean | string[] | undefined;
     }
 
+    /**
+     * Feeds the `babylon.webXr.simple` teleportation experiences with the meshes the user can
+     * teleport onto.
+     */
     export class DefaultWebXRWithTeleportationDto {
         constructor(groundMeshes?: BABYLON.Mesh[]) {
             if (groundMeshes !== undefined) { this.groundMeshes = groundMeshes; }
         }
         /**
-         * Create XR experience with ground meshes
+         * The meshes the user may teleport onto, normally the floor
          */
         groundMeshes!: BABYLON.Mesh[];
     }
+    /**
+     * Feeds `babylon.webXr.base.getBaseExperience` with the default XR experience to read from.
+     */
     export class WebXRDefaultExperienceDto {
         constructor(webXRDefaultExperience?: BABYLON.WebXRDefaultExperience) {
             if (webXRDefaultExperience !== undefined) { this.webXRDefaultExperience = webXRDefaultExperience; }
         }
         /**
-         * Web XR default experience
+         * The default XR experience a create method gave back
          */
         webXRDefaultExperience!: BABYLON.WebXRDefaultExperience;
     }
 
+    /**
+     * Feeds `babylon.webXr.base.getFeatureManager` with the base experience to read the feature
+     * manager from.
+     */
     export class WebXRExperienceHelperDto {
         constructor(baseExperience?: BABYLON.WebXRExperienceHelper) {
             if (baseExperience !== undefined) { this.baseExperience = baseExperience; }
         }
         /**
-         * Base experience
+         * The base experience helper, as `getBaseExperience` reads it from the default experience
          */
         baseExperience!: BABYLON.WebXRExperienceHelper;
     }

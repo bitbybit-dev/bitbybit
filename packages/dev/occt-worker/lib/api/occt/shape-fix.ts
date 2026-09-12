@@ -4,6 +4,13 @@
 import { Inputs } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 
+/**
+ * Repairs for OpenCascade shapes that came out of a file or an operation with small defects: gaps
+ * between edges, edges too short to matter, wires whose edges point different ways, tolerances that
+ * drifted. Run `basicShapeRepair` on a shape that fails `shapes.shape.isValid` or refuses a
+ * boolean; the wire fixes clean up outlines before they become faces. Every method returns a new
+ * shape.
+ */
 export class OCCTShapeFix {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
@@ -11,36 +18,60 @@ export class OCCTShapeFix {
     }
 
     /**
-     * Performs the basic shape repair
-     * @param inputs the shape to be fixed and some options
-     * @returns OpenCascade fixed shape
+     * Runs the kernel's general repair over a shape: closes small gaps, fixes wire and face defects
+     * and brings tolerances into the given range.
+     *
+     * `precision` is the size of defect to look for, `minTolerance` and `maxTolerance` bound the
+     * tolerances the repaired shape may carry, all in model units. Try it first on any shape that
+     * fails `shapes.shape.isValid`.
+     * @param inputs - The shape and the precision and tolerance bounds
+     * @returns The repaired shape
      * @group shape
      * @shortname basic shape repair
      * @drawable true
+     * @example
+     * ```typescript
+     * const fixed = await bitbybit.occt.shapeFix.basicShapeRepair({ shape: imported, precision: 0.001, maxTolerance: 0.01, minTolerance: 0.0001 });
+     * ```
      */
     basicShapeRepair(inputs: Inputs.OCCT.BasicShapeRepairDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapeFix.basicShapeRepair", inputs);
     }
 
     /**
-     * Fix small edge on wire
-     * @param inputs the wire to be fixed and some options
-     * @returns OpenCascade fixed wire
+     * Removes edges shorter than `precsmall` from a wire and closes the gaps they leave, so a tiny
+     * sliver no longer breaks a fillet or a face.
+     *
+     * With `lockvtx` true the existing vertices are kept in place; otherwise they may move to close
+     * the gap. A `precsmall` of 0 uses the wire's own tolerance.
+     * @param inputs - The wire, whether to keep vertices fixed and the length below which an edge counts as small
+     * @returns The cleaned wire
      * @group wire
      * @shortname fix small edge
      * @drawable true
+     * @example
+     * ```typescript
+     * const clean = await bitbybit.occt.shapeFix.fixSmallEdgeOnWire({ shape: wire, lockvtx: false, precsmall: 0.001 });
+     * ```
      */
     fixSmallEdgeOnWire(inputs: Inputs.OCCT.FixSmallEdgesInWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapeFix.fixSmallEdgeOnWire", inputs);
     }
 
     /**
-     * Fix edge orientations along wire
-     * @param inputs the wire to be fixed and some options
-     * @returns OpenCascade fixed wire
+     * Rebuilds a wire so its edges run head to tail in one direction along it.
+     *
+     * A wire assembled from loose edges can hold edges pointing against the flow; this walks the
+     * wire in order and joins the edges again the right way round, which some operations need.
+     * @param inputs - The wire
+     * @returns The wire with consistently oriented edges
      * @group wire
      * @shortname fix edge orientations
      * @drawable true
+     * @example
+     * ```typescript
+     * const ordered = await bitbybit.occt.shapeFix.fixEdgeOrientationsAlongWire({ shape: wire });
+     * ```
      */
     fixEdgeOrientationsAlongWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapeFix.fixEdgeOrientationsAlongWire", inputs);

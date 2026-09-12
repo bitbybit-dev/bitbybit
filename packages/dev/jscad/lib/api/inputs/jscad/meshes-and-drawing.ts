@@ -2,25 +2,37 @@
 // directory, in the order set by scripts/inputs.config.mjs, into ../jscad-inputs.ts. Edit here, then regenerate.
 import { JSCADEntity } from "./entities-and-enums";
 
+/**
+ * Feeds `toPolygonPoints` and `shapeToMesh` on the JSCAD service with the one entity to turn into
+ * triangles or mesh data; a 2D shape is given a tiny thickness on the way.
+ */
 export class MeshDto {
     constructor(mesh?: JSCADEntity) {
         if (mesh !== undefined) { this.mesh = mesh; }
     }
     /**
-    * Solid Jscad mesh
-    */
+     * The solid to convert; a flat 2D shape works too and is given a tiny thickness first
+     */
     mesh!: JSCADEntity;
 }
 
+/**
+ * Feeds `shapesToMeshes` on the JSCAD service with the entities to turn into mesh data, one result
+ * per entry in the same order.
+ */
 export class MeshesDto {
     constructor(meshes?: JSCADEntity[]) {
         if (meshes !== undefined) { this.meshes = meshes; }
     }
     /**
-    * Solid Jscad mesh
-    */
+     * The solids to convert, in the order the results should come back; flat 2D shapes work too
+     */
     meshes!: JSCADEntity[];
 }
+/**
+ * The options `draw.drawAnyAsync` passes on when the entity is one JSCAD solid or 2D shape: color,
+ * opacity, visibility, the two-sided rendering and the mesh to reuse when redrawing.
+ */
 export class DrawSolidMeshDto<T> {
     /**
      * Provide options without default values
@@ -37,11 +49,11 @@ export class DrawSolidMeshDto<T> {
         if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
     }
     /**
-     * Solid Jscad mesh
+     * The solid or flat 2D shape to draw; it is converted to mesh data on the way
      */
     mesh!: JSCADEntity;
     /**
-     * Value between 0 and 1
+     * How opaque the faces are, from 0 for invisible to 1 for solid
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -49,39 +61,44 @@ export class DrawSolidMeshDto<T> {
      */
     opacity = 1;
     /**
-     * Hex colour string
+     * Hex color of the faces; a list uses its first entry. An entity colored with `colors.colorize`
+     * keeps its own color instead
      * @default #444444
      */
     colours: string | string[] = "#444444";
     /**
-     * Indicates wether this solid will be transformed in time
+     * When true, the drawn mesh can be refreshed in place on later draws by passing it back as
+     * `jscadMesh`
      * @default false
      */
     updatable = false;
     /**
-     * Hidden
+     * When true, the mesh is created but not shown until it is made visible
      * @default false
      */
     hidden = false;
     /**
-     * Solid mesh variable in case it already exists and needs updating
+     * A mesh from an earlier draw to refresh instead of creating a new one; used only when
+     * `updatable` is true
      * @default undefined
      * @optional true
      * @ignore true
      */
     jscadMesh?: T | undefined;
     /**
-     * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+     * When true, the back of every face is drawn as well, in `backFaceColour`, which helps to see
+     * face orientation
      * @default true
      */
     drawTwoSided = true;
     /**
-     * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+     * Hex color of the back faces, the side the face normal points away from; used only when
+     * `drawTwoSided` is true
      * @default #0000ff
      */
     backFaceColour = "#0000ff";
     /**
-     * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+     * How opaque the back faces are, from 0 to 1; used only when `drawTwoSided` is true
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -89,6 +106,10 @@ export class DrawSolidMeshDto<T> {
      */
     backFaceOpacity = 1;
 }
+/**
+ * The options `draw.drawAnyAsync` passes on when the entity is a list of JSCAD solids or 2D shapes:
+ * colors, opacity, visibility, the two-sided rendering and the parent mesh to reuse when redrawing.
+ */
 export class DrawSolidMeshesDto<T> {
     /**
      * Provide options without default values
@@ -105,13 +126,13 @@ export class DrawSolidMeshesDto<T> {
         if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
     }
     /**
-     * Solid Jscad meshes
+     * The solids or flat 2D shapes to draw, each becoming a child of one parent mesh
      * @default undefined
      * @optional true
      */
     meshes!: JSCADEntity[];
     /**
-     * Value between 0 and 1
+     * How opaque the faces are, from 0 for invisible to 1 for solid
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -119,39 +140,44 @@ export class DrawSolidMeshesDto<T> {
      */
     opacity = 1;
     /**
-     * Hex colour string
+     * Hex color of the faces; a list with one entry per entity colors each in turn, any other list
+     * uses its first entry. Colorized entities keep their own color
      * @default #444444
      */
     colours: string | string[] = "#444444";
     /**
-     * Indicates wether this solid will be transformed in time
+     * When true, the drawn meshes can be refreshed in place on later draws by passing the parent
+     * back as `jscadMesh`
      * @default false
      */
     updatable = false;
     /**
-     * Should be hidden
+     * When true, the meshes are created but not shown until they are made visible
      * @default false
      */
     hidden = false;
     /**
-     * Solid mesh variable in case it already exists and needs updating
+     * The parent mesh from an earlier draw to refresh instead of creating a new one; used only when
+     * `updatable` is true
      * @default undefined
      * @optional true
      * @ignore true
      */
     jscadMesh?: T | undefined;
     /**
-     * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+     * When true, the back of every face is drawn as well, in `backFaceColour`, which helps to see
+     * face orientation
      * @default true
      */
     drawTwoSided = true;
     /**
-     * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+     * Hex color of the back faces, the side the face normal points away from; used only when
+     * `drawTwoSided` is true
      * @default #0000ff
      */
     backFaceColour = "#0000ff";
     /**
-     * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+     * How opaque the back faces are, from 0 to 1; used only when `drawTwoSided` is true
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -159,6 +185,10 @@ export class DrawSolidMeshesDto<T> {
      */
     backFaceOpacity = 1;
 }
+/**
+ * The options `draw.drawAnyAsync` passes on when the entity is a JSCAD 2D path, drawn as a line
+ * through its points: color, opacity, line width and the line to reuse when redrawing.
+ */
 export class DrawPathDto<T> {
     /**
      * Provide options without default values
@@ -172,17 +202,17 @@ export class DrawPathDto<T> {
         if (pathMesh !== undefined) { this.pathMesh = pathMesh; }
     }
     /**
-     * 2D Path to draw         
+     * The 2D path to draw as a line; a closed path is drawn back to its first point
      * @default undefined
      */
     path!: JSCADEntity;
     /**
-     * Colour of the path
+     * Hex color of the line; a path colored with `colors.colorize` keeps its own color instead
      * @default #444444
      */
     colour = "#444444";
     /**
-     * Opacity of the path
+     * How opaque the line is, from 0 for invisible to 1 for solid
      * @default 1
      * @minimum 0
      * @maximum 1
@@ -190,7 +220,7 @@ export class DrawPathDto<T> {
      */
     opacity = 1;
     /**
-     * Width of the path
+     * Thickness of the drawn line
      * @default 10
      * @minimum 0
      * @maximum Infinity
@@ -198,12 +228,14 @@ export class DrawPathDto<T> {
      */
     width = 10;
     /**
-     * Indicates wether the path will change in time
+     * When true, the drawn line can be refreshed in place on later draws by passing it back as
+     * `pathMesh`
      * @default false
      */
     updatable = false;
     /**
-     * Path mesh variable that will be updated if updatable property is set to true
+     * A line from an earlier draw to refresh instead of creating a new one; used only when
+     * `updatable` is true
      * @default undefined
      * @optional true
      * @ignore true

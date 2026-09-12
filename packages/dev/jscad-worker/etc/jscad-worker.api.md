@@ -9,7 +9,6 @@ import { Subject } from 'rxjs';
 // @public
 export class BitByBitJSCAD {
     constructor();
-    // (undocumented)
     init(jscad: Worker): void;
     // (undocumented)
     jscad: JSCAD;

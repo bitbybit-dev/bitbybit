@@ -2,6 +2,11 @@ import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 
+/**
+ * The scale gizmo: three handles that stretch the attached mesh along X, Y or Z and a center handle
+ * that scales it evenly. Snapping scales in fixed steps, sensitivity sets how much a drag scales,
+ * and each axis handle can be reached on its own.
+ */
 export class BabylonGizmoScaleGizmo {
 
 
@@ -11,9 +16,9 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Get x gizmo
-     * @param inputs scale gizmo
-     * @returns x scale gizmo
+     * Reads the handle of a scale gizmo that stretches along X, to enable or disable it on its own.
+     * @param inputs - The scale gizmo
+     * @returns The X axis scale gizmo
      * @group get
      * @shortname get x gizmo
      */
@@ -22,9 +27,9 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Get y gizmo
-     * @param inputs position gizmo
-     * @returns y scale gizmo
+     * Reads the handle of a scale gizmo that stretches along Y, to enable or disable it on its own.
+     * @param inputs - The scale gizmo
+     * @returns The Y axis scale gizmo
      * @group get
      * @shortname get y gizmo
      */
@@ -33,9 +38,9 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Get z gizmo
-     * @param inputs scale gizmo
-     * @returns z scale gizmo
+     * Reads the handle of a scale gizmo that stretches along Z, to enable or disable it on its own.
+     * @param inputs - The scale gizmo
+     * @returns The Z axis scale gizmo
      * @group get
      * @shortname get z gizmo
      */
@@ -44,11 +49,17 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Set scale gizmo snap distance
-     * @param inputs scale gizmo
-     * @returns scale gizmo
+     * Makes a scale gizmo change the scale in steps of `snapDistance` instead of smoothly; 0 turns
+     * snapping off. `setIncrementalSnap` chooses how the steps combine.
+     * @param inputs - The scale gizmo and the step size
+     * @returns The same scale gizmo
      * @group set
      * @shortname set snap distance
+     * @example
+     * ```typescript
+     * bitbybit.babylon.gizmo.scaleGizmo.snapDistance({ scaleGizmo, snapDistance: 0.1 });
+     * bitbybit.babylon.gizmo.scaleGizmo.setIncrementalSnap({ scaleGizmo, incrementalSnap: true });
+     * ```
      */
     snapDistance(inputs: Inputs.BabylonGizmo.SetScaleGizmoSnapDistanceDto): BABYLON.IScaleGizmo {
         inputs.scaleGizmo.snapDistance = inputs.snapDistance;
@@ -56,9 +67,10 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Set scale gizmo incremental snap
-     * @param inputs scale gizmo
-     * @returns scale gizmo
+     * Chooses how a scale gizmo's snapping steps combine: incremental steps add up, 1.1 then 1.2
+     * then 1.3 for a step of 0.1, while the default multiplies, 1.1 then 1.21 then 1.33.
+     * @param inputs - The scale gizmo and the flag
+     * @returns The same scale gizmo
      * @group set
      * @shortname set incremental snap
      */
@@ -68,9 +80,10 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Set scale gizmo sensitivity
-     * @param inputs scale gizmo
-     * @returns scale gizmo
+     * Sets how much a scale gizmo changes the scale for a given drag; 1 is the default and higher
+     * values scale faster.
+     * @param inputs - The scale gizmo and the sensitivity
+     * @returns The same scale gizmo
      * @group set
      * @shortname set sensitivity
      */
@@ -80,9 +93,9 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Get incremental snap
-     * @param inputs scale gizmo
-     * @returns incremental snap
+     * Reads whether a scale gizmo's snapping steps add up rather than multiply.
+     * @param inputs - The scale gizmo
+     * @returns True when snapping is incremental
      * @group get
      * @shortname get incremental snap
      */
@@ -91,9 +104,9 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Get snap distance
-     * @param inputs scale gizmo
-     * @returns snap distance
+     * Reads the step size a scale gizmo snaps to, 0 meaning smooth scaling.
+     * @param inputs - The scale gizmo
+     * @returns The snap distance
      * @group get
      * @shortname get snap distance
      */
@@ -102,9 +115,9 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Get sensitivity
-     * @param inputs scale gizmo
-     * @returns sensitivity
+     * Reads how much a scale gizmo changes the scale for a given drag.
+     * @param inputs - The scale gizmo
+     * @returns The sensitivity
      * @group get
      * @shortname get sensitivity
      */
@@ -113,11 +126,16 @@ export class BabylonGizmoScaleGizmo {
     }
 
     /**
-     * Creates the selector of an observable for a scale gizmo
-     * @param inputs observable name
-     * @returns scale gizmo observable selector
+     * Passes through the name of a scale gizmo event, drag start, drag or drag end, as a typed
+     * selector for code that subscribes to gizmo events by name.
+     * @param inputs - The event selector
+     * @returns The same selector
      * @group create
      * @shortname scale gizmo observable selector
+     * @example
+     * ```typescript
+     * const selector = bitbybit.babylon.gizmo.scaleGizmo.createScaleGizmoObservableSelector({ selector: Bit.Inputs.BabylonGizmo.scaleGizmoObservableSelectorEnum.onDragEndObservable });
+     * ```
      */
     createScaleGizmoObservableSelector(inputs: Inputs.BabylonGizmo.ScaleGizmoObservableSelectorDto): Inputs.BabylonGizmo.scaleGizmoObservableSelectorEnum {
         return inputs.selector;

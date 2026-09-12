@@ -19,7 +19,7 @@ export type JSCADMat4 = [
 /** A plane, `[normalX, normalY, normalZ, distanceFromOrigin]`. */
 export type JSCADPlane = [number, number, number, number];
 
-/** A colour, either `[r, g, b]` or `[r, g, b, a]`, each channel from 0 to 1. */
+/** A color, either `[r, g, b]` or `[r, g, b, a]`, each channel from 0 to 1. */
 export type JSCADColor = [number, number, number] | [number, number, number, number];
 
 /** A convex polygon in 3D - the face of a solid. */
@@ -70,6 +70,11 @@ export type JSCADMeshData = {
     transforms: JSCADMat4;
 };
 
+/**
+ * A polyline as a plain list of points, the form `polygon.createFromPolyline`,
+ * `path.createFromPolyline` and `path.appendPolyline` read; only X and Y of each point are used by
+ * them.
+ */
 export class PolylinePropertiesDto {
     /**
      * Provide options without default values
@@ -79,15 +84,17 @@ export class PolylinePropertiesDto {
         if (isClosed !== undefined) { this.isClosed = isClosed; }
     }
     /**
-     * Points of the polyline
+     * The corner points in order, given in 3D; JSCAD methods use only X and Y
      */
     points!: Base.Point3[];
     /**
-     * Can contain is closed information
+     * Whether the last point joins back to the first; the JSCAD methods decide closure on their own
+     * and ignore this flag
      */
     isClosed?: boolean | undefined = false;
     /**
-     * Can contain color information
+     * A color carried along with the polyline for drawing, as a hex string or an RGB list; the
+     * JSCAD methods ignore it
      */
     color?: string | number[] | undefined;
 }

@@ -18,6 +18,13 @@ export class BitByBitOCCT {
         this.occt = new OCCT(this.occtWorkerManager);
     }
 
+    /**
+     * Connects this facade to the web worker that runs the OpenCascade kernel.
+     *
+     * Create the worker yourself from the package's worker entry, hand it over here, and wait for the
+     * kernel to report that it is loaded before making calls; without a worker every call would hang.
+     * @param occt - The worker running the OpenCascade kernel
+     */
     init(occt: Worker) {
         if (occt) {
             this.occtWorkerManager.setOccWorker(occt);

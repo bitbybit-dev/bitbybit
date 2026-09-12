@@ -56,6 +56,10 @@ export interface OrbitCameraController {
  * orbit-control settings that decide how a user moves the view.
  */
 export namespace ThreeJSCamera {
+    /**
+     * Feeds `three.camera.orbitCamera.create`: where the orbiting camera starts around its pivot,
+     * how far it may zoom and tilt, how fast it reacts and how its motion is smoothed.
+     */
     export class OrbitCameraDto {
         constructor(
             distance?: number,
@@ -91,12 +95,12 @@ export namespace ThreeJSCamera {
             if (dampingFactor !== undefined) { this.dampingFactor = dampingFactor; }
         }
         /**
-         * Pivot point of the orbit camera. Camera will look at and rotate around this point.
+         * The point the camera looks at and circles around
          * @default [0, 0, 0]
          */
         pivotPoint: Base.Point3 = [0, 0, 0];
         /**
-         * Defines the camera distance from its pivot point. This distance will be used to orbit the camera around the pivot.
+         * How far from the pivot the camera starts, in scene units
          * @default 20
          * @minimum 0
          * @maximum Infinity
@@ -104,7 +108,8 @@ export namespace ThreeJSCamera {
          */
         distance = 20;
         /**
-         * Defines the camera pitch angle (rotation along the horizontal axis) in degrees. 0 is horizontal, positive is looking up, negative is looking down.
+         * How far above or below the pivot the camera starts, in degrees; 0 is level, positive is
+         * above looking down
          * @default 30
          * @minimum -90
          * @maximum 90
@@ -112,7 +117,7 @@ export namespace ThreeJSCamera {
          */
         pitch = 30;
         /**
-         * Defines the camera yaw angle (rotation along the vertical axis) in degrees.
+         * How far around the vertical axis the camera starts, in degrees
          * @default 45
          * @minimum -360
          * @maximum 360
@@ -120,7 +125,7 @@ export namespace ThreeJSCamera {
          */
         yaw = 45;
         /**
-         * Minimum distance - how close can the camera be to the pivot point
+         * The closest the camera may zoom to the pivot, in scene units
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -128,7 +133,7 @@ export namespace ThreeJSCamera {
          */
         distanceMin = 0.1;
         /**
-         * Maximum distance - how far can the camera be from the pivot point
+         * The farthest the camera may zoom from the pivot, in scene units
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -136,7 +141,7 @@ export namespace ThreeJSCamera {
          */
         distanceMax = 1000;
         /**
-         * Minimum pitch angle in degrees
+         * The lowest the camera may tilt, in degrees; -90 looks straight up from below
          * @default -90
          * @minimum -90
          * @maximum 90
@@ -144,7 +149,7 @@ export namespace ThreeJSCamera {
          */
         pitchAngleMin = -90;
         /**
-         * Maximum pitch angle in degrees
+         * The highest the camera may tilt, in degrees; 90 looks straight down from above
          * @default 90
          * @minimum -90
          * @maximum 90
@@ -152,7 +157,7 @@ export namespace ThreeJSCamera {
          */
         pitchAngleMax = 90;
         /**
-         * Mouse orbit sensitivity (how much the camera rotates with mouse movement)
+         * How far a pointer drag turns the camera; higher turns faster
          * @default 0.3
          * @minimum 0
          * @maximum 10
@@ -160,7 +165,7 @@ export namespace ThreeJSCamera {
          */
         orbitSensitivity = 0.3;
         /**
-         * Mouse zoom sensitivity (how much the camera zooms with mouse wheel)
+         * How far a wheel step zooms the camera; higher zooms faster
          * @default 0.15
          * @minimum 0
          * @maximum 10
@@ -168,7 +173,7 @@ export namespace ThreeJSCamera {
          */
         distanceSensitivity = 0.15;
         /**
-         * Pan sensitivity (how fast the camera pans with mouse/touch)
+         * How far a pan drag moves the pivot; higher pans faster
          * @default 1
          * @minimum 0
          * @maximum 10
@@ -176,7 +181,7 @@ export namespace ThreeJSCamera {
          */
         panSensitivity = 1;
         /**
-         * Inertia factor for smooth camera movement (0 = no inertia, 1 = maximum inertia)
+         * How much the camera keeps gliding after a drag, from 0 for none to 1 for most
          * @default 0.1
          * @minimum 0
          * @maximum 1
@@ -184,22 +189,22 @@ export namespace ThreeJSCamera {
          */
         inertiaFactor = 0.1;
         /**
-         * Whether the camera should trigger automatic rendering on changes
+         * When true, the scene is rendered again whenever the camera moves
          * @default true
          */
         autoRender = true;
         /**
-         * Whether to frame the focus object on start
+         * When true and a focus object is given, the camera starts framed on it
          * @default true
          */
         frameOnStart = true;
         /**
-         * Enable damping (smooth camera transitions)
+         * When true, camera moves ease in and out instead of stopping dead
          * @default true
          */
         enableDamping = true;
         /**
-         * Damping factor for smooth transitions (lower = smoother but slower)
+         * How quickly damped moves settle; lower is smoother but slower
          * @default 0.1
          * @minimum 0.01
          * @maximum 1
@@ -207,62 +212,76 @@ export namespace ThreeJSCamera {
          */
         dampingFactor = 0.1;
         /**
-         * Optional focus object to frame the camera on. If provided, camera will adjust to view this object.
+         * An object to frame the camera on at the start, when given
          * @optional true
          */
         focusObject?: THREEJS.Object3D | undefined;
         /**
-         * Container element to attach event listeners to. If not provided, uses the renderer's DOM element.
+         * The element the pointer and touch listeners attach to; left out, the whole page
          * @optional true
          */
         domElement?: HTMLElement | undefined;
     }
 
+    /**
+     * A Three.js camera to work on; kept for camera methods that take just the camera.
+     */
     export class CameraDto {
         constructor(camera?: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera) {
             if (camera !== undefined) { this.camera = camera; }
         }
         /**
-         * ThreeJS camera
+         * The camera to work on
          * @default undefined
          */
         camera!: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera;
     }
 
+    /**
+     * A Three.js camera and the point to move it to; kept for camera methods that place the camera.
+     */
     export class PositionDto {
         constructor(camera?: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera, position?: Base.Point3) {
             if (camera !== undefined) { this.camera = camera; }
             if (position !== undefined) { this.position = position; }
         }
         /**
-         * ThreeJS camera
+         * The camera to move
          * @default undefined
          */
         camera!: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera;
         /**
-         * Position of the camera
+         * The point to move the camera to
          * @default [0, 0, 0]
          */
         position: Base.Point3 = [0, 0, 0];
     }
 
+    /**
+     * Feeds `three.camera.orbitCamera.setPivotPoint` and `getPivotPoint` with the controller and
+     * the point the camera circles around.
+     */
     export class PivotPointDto {
         constructor(orbitCamera?: OrbitCameraController, pivotPoint?: Base.Point3) {
             if (orbitCamera !== undefined) { this.orbitCamera = orbitCamera; }
             if (pivotPoint !== undefined) { this.pivotPoint = pivotPoint; }
         }
         /**
-         * Orbit camera controller instance
+         * The orbit camera controller, as `create` gave it
          * @default undefined
          */
         orbitCamera!: OrbitCameraController;
         /**
-         * Pivot point for the orbit camera
+         * The point the camera looks at and circles around
          * @default [0, 0, 0]
          */
         pivotPoint: Base.Point3 = [0, 0, 0];
     }
 
+    /**
+     * Feeds `three.camera.orbitCamera.focusOnObject` with the controller, the object to frame and
+     * how much space to leave around it.
+     */
     export class FocusObjectDto {
         constructor(orbitCamera?: OrbitCameraController, object?: THREEJS.Object3D, padding?: number) {
             if (orbitCamera !== undefined) { this.orbitCamera = orbitCamera; }
@@ -270,17 +289,18 @@ export namespace ThreeJSCamera {
             if (padding !== undefined) { this.padding = padding; }
         }
         /**
-         * Orbit camera controller instance
+         * The orbit camera controller, as `create` gave it
          * @default undefined
          */
         orbitCamera!: OrbitCameraController;
         /**
-         * Object to focus the camera on
+         * The object the camera backs off to fit in view
          * @default undefined
          */
         object!: THREEJS.Object3D;
         /**
-         * Padding multiplier for the focus distance (1 = tight fit, higher = more space around object)
+         * Space left around the object as a factor; 1 fits it tightly, 1.5 leaves half again as
+         * much room
          * @default 1.5
          * @minimum 1
          * @maximum 5
@@ -289,6 +309,10 @@ export namespace ThreeJSCamera {
         padding = 1.5;
     }
 
+    /**
+     * Feeds `three.camera.orbitCamera.resetCamera` with the controller and the angles and distance
+     * to put the camera at.
+     */
     export class ResetCameraDto {
         constructor(orbitCamera?: OrbitCameraController, yaw?: number, pitch?: number, distance?: number) {
             if (orbitCamera !== undefined) { this.orbitCamera = orbitCamera; }
@@ -297,12 +321,12 @@ export namespace ThreeJSCamera {
             if (distance !== undefined) { this.distance = distance; }
         }
         /**
-         * Orbit camera controller instance
+         * The orbit camera controller, as `create` gave it
          * @default undefined
          */
         orbitCamera!: OrbitCameraController;
         /**
-         * Yaw angle in degrees
+         * How far around the vertical axis, in degrees
          * @default 45
          * @minimum -360
          * @maximum 360
@@ -310,7 +334,7 @@ export namespace ThreeJSCamera {
          */
         yaw = 45;
         /**
-         * Pitch angle in degrees
+         * How far above or below the pivot, in degrees; positive is above looking down
          * @default 30
          * @minimum -90
          * @maximum 90
@@ -318,7 +342,7 @@ export namespace ThreeJSCamera {
          */
         pitch = 30;
         /**
-         * Distance from pivot point
+         * How far from the pivot, in scene units
          * @default 20
          * @minimum 0
          * @maximum Infinity
@@ -327,17 +351,24 @@ export namespace ThreeJSCamera {
         distance = 20;
     }
 
+    /**
+     * Feeds the `three.camera.orbitCamera` getters with the controller to read from.
+     */
     export class OrbitCameraControllerDto {
         constructor(orbitCamera?: OrbitCameraController) {
             if (orbitCamera !== undefined) { this.orbitCamera = orbitCamera; }
         }
         /**
-         * Orbit camera controller instance
+         * The orbit camera controller, as `create` gave it
          * @default undefined
          */
         orbitCamera!: OrbitCameraController;
     }
 
+    /**
+     * Feeds `three.camera.orbitCamera.setDistanceLimits` with the controller and how close and how
+     * far the camera may zoom.
+     */
     export class SetDistanceLimitsDto {
         constructor(orbitCamera?: OrbitCameraController, min?: number, max?: number) {
             if (orbitCamera !== undefined) { this.orbitCamera = orbitCamera; }
@@ -345,12 +376,12 @@ export namespace ThreeJSCamera {
             if (max !== undefined) { this.max = max; }
         }
         /**
-         * Orbit camera controller instance
+         * The orbit camera controller, as `create` gave it
          * @default undefined
          */
         orbitCamera!: OrbitCameraController;
         /**
-         * Minimum distance
+         * The closest the camera may zoom to the pivot, in scene units
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -358,7 +389,7 @@ export namespace ThreeJSCamera {
          */
         min = 0.1;
         /**
-         * Maximum distance
+         * The farthest the camera may zoom from the pivot, in scene units
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -367,6 +398,10 @@ export namespace ThreeJSCamera {
         max = 1000;
     }
 
+    /**
+     * Feeds `three.camera.orbitCamera.setPitchLimits` with the controller and how far down and up
+     * the camera may tilt.
+     */
     export class SetPitchLimitsDto {
         constructor(orbitCamera?: OrbitCameraController, min?: number, max?: number) {
             if (orbitCamera !== undefined) { this.orbitCamera = orbitCamera; }
@@ -374,12 +409,12 @@ export namespace ThreeJSCamera {
             if (max !== undefined) { this.max = max; }
         }
         /**
-         * Orbit camera controller instance
+         * The orbit camera controller, as `create` gave it
          * @default undefined
          */
         orbitCamera!: OrbitCameraController;
         /**
-         * Minimum pitch angle in degrees
+         * The lowest the camera may tilt, in degrees; 0 keeps it above the ground plane
          * @default -90
          * @minimum -90
          * @maximum 90
@@ -387,7 +422,7 @@ export namespace ThreeJSCamera {
          */
         min = -90;
         /**
-         * Maximum pitch angle in degrees
+         * The highest the camera may tilt, in degrees; 90 looks straight down
          * @default 90
          * @minimum -90
          * @maximum 90

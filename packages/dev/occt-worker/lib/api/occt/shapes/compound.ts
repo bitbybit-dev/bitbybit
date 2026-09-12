@@ -4,6 +4,12 @@
 import { Inputs } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
+/**
+ * Compounds in OpenCascade: a loose collection of shapes of any kind kept together as one shape, so
+ * a set of parts can be moved, drawn or exported in one go. The shapes stay separate inside; a
+ * compound does not fuse them. `shapes.shape` and the getters on the other shape classes take a
+ * compound apart again.
+ */
 export class OCCTCompound {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
@@ -11,24 +17,34 @@ export class OCCTCompound {
     }
 
     /**
-     * Makes the compound shape, which can include any kind of shapes
-     * @param inputs OpenCascade shapes
-     * @returns OpenCascade compounded shape
+     * Bundles any shapes into one compound so they can be handled as a single shape.
+     *
+     * The shapes are not joined or fused; they simply travel together.
+     * @param inputs - The shapes to bundle
+     * @returns The compound holding them
      * @group create
      * @shortname make
      * @drawable true
+     * @example
+     * ```typescript
+     * const group = await bitbybit.occt.shapes.compound.makeCompound({ shapes: [box, sphere] });
+     * ```
      */
     makeCompound(inputs: Inputs.OCCT.CompoundShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.compound.makeCompound", inputs);
     }
 
     /**
-     * Gets the shapes that compound is made of
-     * @param inputs OpenCascade shapes
-     * @returns OpenCascade compounded shape
+     * Takes a compound apart into the shapes it was made of, in the order they were added.
+     * @param inputs - The compound
+     * @returns The shapes inside it
      * @group get
      * @shortname get shapes of compound
      * @drawable true
+     * @example
+     * ```typescript
+     * const parts = await bitbybit.occt.shapes.compound.getShapesOfCompound({ shape: group });
+     * ```
      */
     getShapesOfCompound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSCompoundPointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.compound.getShapesOfCompound", inputs);

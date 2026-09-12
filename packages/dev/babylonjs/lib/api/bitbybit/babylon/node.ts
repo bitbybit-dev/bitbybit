@@ -6,8 +6,11 @@ import { DrawHelper } from "../../draw-helper";
 import * as Inputs from "../../inputs";
 
 /**
- * Nodes help understand the space and construct more complicated space structures. Nodes can be nested
- * together into child parent relationships to simplify the creation of 3D objects.
+ * Transform nodes: invisible points with a position and an orientation that meshes and other nodes
+ * can be parented to, so a whole group moves as one. Building a hierarchy of nodes is how complex
+ * arrangements are placed: turn the parent and every child turns with it. The methods here create
+ * nodes, read their axes and positions in world or local space, and move, rotate and reparent them;
+ * angles are in degrees.
  */
 
 export class BabylonNode {
@@ -15,8 +18,14 @@ export class BabylonNode {
     constructor(private readonly context: Context, private readonly drawHelper: DrawHelper) { }
 
     /**
-     * Draws a node of given size with given colours for every axis
-     * @param inputs Contains node data that includes size and colour information
+     * Draws the three axes of a node as colored lines of the given length, parented to it, so its
+     * position and orientation can be seen; the default colors are red for X, green for Y and blue
+     * for Z.
+     * @param inputs - The node, the axis colors and the axis length
+     * @example
+     * ```typescript
+     * bitbybit.babylon.node.drawNode({ node, colorX: "#ff0000", colorY: "#00ff00", colorZ: "#0000ff", size: 2 });
+     * ```
      */
     drawNode(inputs: Inputs.BabylonNode.DrawNodeDto): void {
         const cotAxis = this.drawHelper.localAxes(
@@ -26,8 +35,13 @@ export class BabylonNode {
     }
 
     /**
-     * Draws a nodes of given size with given colours for every axis
-     * @param inputs Contains node data that includes size and colour information
+     * Draws the three axes of several nodes as colored lines of the given length, each set parented
+     * to its node, as `drawNode` does for one.
+     * @param inputs - The nodes, the axis colors and the axis length
+     * @example
+     * ```typescript
+     * bitbybit.babylon.node.drawNodes({ nodes: [nodeA, nodeB], colorX: "#ff0000", colorY: "#00ff00", colorZ: "#0000ff", size: 2 });
+     * ```
      */
     drawNodes(inputs: Inputs.BabylonNode.DrawNodesDto): void {
         inputs.nodes.forEach(node => {
@@ -38,9 +52,14 @@ export class BabylonNode {
     }
 
     /**
-     * Creates a node on the origin with the given rotations in the parent coordinate system
-     * @param inputs Contains information for origin, rotation and parent node
-     * @returns A new node
+     * Creates a node at `origin` turned by the three `rotation` angles in degrees around X, Y and
+     * Z, inside the coordinate system of `parent` when one is given.
+     * @param inputs - The optional parent, the origin and the rotation angles in degrees
+     * @returns The new node
+     * @example
+     * ```typescript
+     * const node = bitbybit.babylon.node.createNodeFromRotation({ parent: null, origin: [0, 5, 0], rotation: [0, 45, 0] });
+     * ```
      */
     createNodeFromRotation(inputs: Inputs.BabylonNode.CreateNodeFromRotationDto): BABYLON.TransformNode {
         const transformNode = new BABYLON.TransformNode(uniqueName("node"), this.context.scene);
@@ -57,8 +76,14 @@ export class BabylonNode {
     }
 
     /**
-     * Creates a world node which has root node as his parent
-     * @returns A new node whos parent is the root node of the scene
+     * Creates a node parented to the root node of the scene, a fresh starting point for building a
+     * hierarchy at the world origin.
+     * @returns The new node, whose parent is the scene's root node
+     * @example
+     * ```typescript
+     * const world = bitbybit.babylon.node.createWorldNode();
+     * const arm = bitbybit.babylon.node.createNodeFromRotation({ parent: world, origin: [0, 5, 0], rotation: [0, 0, 30] });
+     * ```
      */
     createWorldNode(): BABYLON.TransformNode {
         const tnode = new BABYLON.TransformNode(uniqueName("root"), this.context.scene);
@@ -67,9 +92,10 @@ export class BabylonNode {
     }
 
     /**
-     * Gets the absolute forward facing vector in world space
-     * @param inputs Node from which to get the forward vector
-     * @returns Vector as an array of numbers
+     * Reads the direction a node's local Z axis points in world space, with every parent's rotation
+     * applied.
+     * @param inputs - The node
+     * @returns The forward direction as a vector
      */
     getAbsoluteForwardVector(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const dir = inputs.node.forward;
@@ -77,9 +103,10 @@ export class BabylonNode {
     }
 
     /**
-     * Gets the absolute right facing vector in world space
-     * @param inputs Node from which to get the right vector
-     * @returns Vector as an array of numbers
+     * Reads the direction a node's local X axis points in world space, with every parent's rotation
+     * applied.
+     * @param inputs - The node
+     * @returns The right direction as a vector
      */
     getAbsoluteRightVector(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const dir = inputs.node.right;
@@ -87,9 +114,10 @@ export class BabylonNode {
     }
 
     /**
-     * Gets the absolute up facing vector in world space
-     * @param inputs Node from which to get the up vector
-     * @returns Vector as an array of numbers
+     * Reads the direction a node's local Y axis points in world space, with every parent's rotation
+     * applied.
+     * @param inputs - The node
+     * @returns The up direction as a vector
      */
     getAbsoluteUpVector(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const dir = inputs.node.up;
@@ -97,9 +125,9 @@ export class BabylonNode {
     }
 
     /**
-     * Gets the absolute position of the node as origin vector in world space
-     * @param inputs Node from which to get the absolute position
-     * @returns Vector as an array of numbers indicating location of origin in world space
+     * Reads where a node's origin is in world space, with every parent's transform applied.
+     * @param inputs - The node
+     * @returns The world position as a point
      */
     getAbsolutePosition(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const position = inputs.node.getAbsolutePosition();
@@ -107,9 +135,10 @@ export class BabylonNode {
     }
 
     /**
-     * Gets the absolute rotation of the node as a transformation matrix encoded in array of 16 numbers
-     * @param inputs Node from which to get the rotation transformation
-     * @returns Transformation as an array of 16 numbers
+     * Reads the rotation of a node in world space, with every parent's rotation applied, as a 4x4
+     * matrix of 16 numbers.
+     * @param inputs - The node
+     * @returns The rotation as a matrix of 16 numbers
      */
     getAbsoluteRotationTransformation(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const rotationMatrix = new BABYLON.Matrix();
@@ -118,9 +147,10 @@ export class BabylonNode {
     }
 
     /**
-     * Gets the rotation of the node in local parent coordinate space as a transformation matrix encoded in array of 16 numbers
-     * @param inputs Node from which to get the rotation transformation
-     * @returns Transformation as an array of 16 numbers
+     * Reads the rotation of a node relative to its parent as a 4x4 matrix of 16 numbers; the node
+     * must carry a rotation quaternion, which `rotate` and `setDirection` give it.
+     * @param inputs - The node
+     * @returns The rotation as a matrix of 16 numbers
      */
     getRotationTransformation(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const rotationMatrix = new BABYLON.Matrix();
@@ -129,27 +159,28 @@ export class BabylonNode {
     }
 
     /**
-     * Gets children of the node
-     * @param inputs Node from which to get the children
-     * @returns List of children nodes in the array
+     * Lists the nodes and meshes parented directly under a node, the ones that move with it.
+     * @param inputs - The node
+     * @returns The direct children
      */
     getChildren(inputs: Inputs.BabylonNode.NodeDto): BABYLON.Node[] {
         return inputs.node.getChildren();
     }
 
     /**
-     * Gets parent of the node
-     * @param inputs Node from which to get a parent
-     * @returns Parent node
+     * Reads the node a node is parented to, the one it moves with; a top-level node has none.
+     * @param inputs - The node
+     * @returns The parent node
      */
     getParent(inputs: Inputs.BabylonNode.NodeDto): BABYLON.Node {
         return inputs.node.parent!;
     }
 
     /**
-     * Gets the position of the node expressed in local space
-     * @param inputs Node from which to get the position in local space
-     * @returns Position vector
+     * Reads a node's position measured in its own local axes rather than its parent's, which
+     * differs once the node is rotated.
+     * @param inputs - The node
+     * @returns The position as a point in the node's local space
      */
     getPositionExpressedInLocalSpace(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const position = inputs.node.getPositionExpressedInLocalSpace();
@@ -157,17 +188,17 @@ export class BabylonNode {
     }
 
     /**
-     * Gets the root node
-     * @returns Root node
+     * Gives the root node of the scene, the top of the hierarchy that `createWorldNode` parents to.
+     * @returns The root node
      */
     getRootNode(): BABYLON.TransformNode {
         return this.context.scene.getTransformNodeByID("root")!;
     }
 
     /**
-     * Gets the euler rotations
-     * @param inputs Node from which to get rotation
-     * @returns Euler rotations of x, y and z angles in the number array
+     * Reads a node's rotation relative to its parent as three angles in degrees around X, Y and Z.
+     * @param inputs - The node
+     * @returns The rotation angles in degrees
      */
     getRotation(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const vector3 = inputs.node.rotation;
@@ -179,8 +210,13 @@ export class BabylonNode {
     }
 
     /**
-     * Rotates the node around axis and given position by a given angle
-     * @param inputs Rotation around axis information
+     * Turns a node by `angle` degrees around an axis that passes through `position`, so the node
+     * orbits that point rather than spinning in place; its children follow.
+     * @param inputs - The node, the point on the axis, the axis direction and the angle in degrees
+     * @example
+     * ```typescript
+     * bitbybit.babylon.node.rotateAroundAxisWithPosition({ node, position: [0, 0, 0], axis: [0, 1, 0], angle: 90 });
+     * ```
      */
     rotateAroundAxisWithPosition(inputs: Inputs.BabylonNode.RotateAroundAxisNodeDto): void {
         inputs.node.rotateAround(
@@ -191,8 +227,13 @@ export class BabylonNode {
     }
 
     /**
-     * Rotates the node around the origin and given axis
-     * @param inputs Rotation information
+     * Turns a node by `angle` degrees around an axis through its own origin, on top of its current
+     * rotation; its children follow.
+     * @param inputs - The node, the axis direction and the angle in degrees
+     * @example
+     * ```typescript
+     * bitbybit.babylon.node.rotate({ node, axis: [0, 1, 0], angle: 45 });
+     * ```
      */
     rotate(inputs: Inputs.BabylonNode.RotateNodeDto): void {
         inputs.node.rotate(
@@ -202,8 +243,12 @@ export class BabylonNode {
     }
 
     /**
-     * Sets the absolute position of the node
-     * @param inputs Node absolute position information
+     * Moves a node to a point in world space, whatever its parents are; its children follow.
+     * @param inputs - The node and the world position
+     * @example
+     * ```typescript
+     * bitbybit.babylon.node.setAbsolutePosition({ node, position: [10, 0, 0] });
+     * ```
      */
     setAbsolutePosition(inputs: Inputs.BabylonNode.NodePositionDto): void {
         inputs.node.setAbsolutePosition(
@@ -212,8 +257,12 @@ export class BabylonNode {
     }
 
     /**
-     * Sets the direction of the node
-     * @param inputs Direction information
+     * Turns a node so its local Z axis points along `direction`; its children follow.
+     * @param inputs - The node and the direction
+     * @example
+     * ```typescript
+     * bitbybit.babylon.node.setDirection({ node, direction: [1, 0, 0] });
+     * ```
      */
     setDirection(inputs: Inputs.BabylonNode.NodeDirectionDto): void {
         inputs.node.setDirection(
@@ -222,8 +271,13 @@ export class BabylonNode {
     }
 
     /**
-     * Sets the new parent to the node
-     * @param inputs Node parent information
+     * Parents a node to another so it moves with it from then on, keeping its current place in the
+     * world; a null parent detaches it.
+     * @param inputs - The node and the new parent
+     * @example
+     * ```typescript
+     * bitbybit.babylon.node.setParent({ node: wheel, parentNode: car });
+     * ```
      */
     setParent(inputs: Inputs.BabylonNode.NodeParentDto): void {
         inputs.node.setParent(
@@ -232,8 +286,13 @@ export class BabylonNode {
     }
 
     /**
-     * Translates the node by a given direction vector and a distance
-     * @param inputs Node translation information
+     * Moves a node by `distance` scene units along `direction`, given in the node's own local axes;
+     * its children follow.
+     * @param inputs - The node, the direction and the distance
+     * @example
+     * ```typescript
+     * bitbybit.babylon.node.translate({ node, direction: [0, 1, 0], distance: 5 });
+     * ```
      */
     translate(inputs: Inputs.BabylonNode.NodeTranslationDto): void {
         inputs.node.translate(

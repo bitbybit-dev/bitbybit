@@ -9,10 +9,18 @@ export class OCCT {
 
     // last
     /**
-     * Deletes shape from the cache to keep memory usage low
-     * @param inputs shape
+     * Frees the memory a shape holds inside the kernel; the shape cannot be used afterwards. Call
+     * it for intermediate results a script no longer needs, so long sessions do not run out of
+     * memory.
+     * @param inputs - The shape to free
      * @group memory
      * @shortname delete shape
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+     * const rounded = await bitbybit.occt.fillets.filletEdges({ shape: box, radius: 1 });
+     * await bitbybit.occt.deleteShape({ shape: box });
+     * ```
      */
     async deleteShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         return await this.occWorkerManager.genericCallToWorkerPromise("deleteShape", inputs);
@@ -20,10 +28,16 @@ export class OCCT {
 
     // last
     /**
-     * Deletes shapes from the cache to keep memory usage low
-     * @param inputs shape
+     * Frees the memory several shapes hold inside the kernel; they cannot be used afterwards. Call
+     * it for intermediate results a script no longer needs, so long sessions do not run out of
+     * memory.
+     * @param inputs - The shapes to free
      * @group memory
      * @shortname delete shapes
+     * @example
+     * ```typescript
+     * await bitbybit.occt.deleteShapes({ shapes: [box, cylinder] });
+     * ```
      */
     async deleteShapes(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         return await this.occWorkerManager.genericCallToWorkerPromise("deleteShapes", inputs);
@@ -31,10 +45,15 @@ export class OCCT {
 
     // last
     /**
-     * Cleans all cache and all shapes from the memory
-     * @param inputs shape
+     * Frees every shape the kernel holds at once, including the ones your variables still point to,
+     * so nothing created before can be used afterwards. Call it when starting over rather than
+     * between steps.
      * @group memory
      * @shortname clean all cache
+     * @example
+     * ```typescript
+     * await bitbybit.occt.cleanAllCache();
+     * ```
      */
     async cleanAllCache(): Promise<void> {
         return await this.occWorkerManager.genericCallToWorkerPromise("cleanAllCache", {});

@@ -15,6 +15,13 @@ export class BitByBitManifold {
         this.manifold = new ManifoldBitByBit(this.manifoldWorkerManager);
     }
 
+    /**
+     * Connects this facade to the web worker that runs the Manifold kernel.
+     *
+     * Create the worker yourself from the package's worker entry, hand it over here, and wait for the
+     * kernel to report that it is loaded before making calls; without a worker every call would hang.
+     * @param manifold - The worker running the Manifold kernel
+     */
     init(manifold: Worker) {
         if (manifold) {
             this.manifoldWorkerManager.setManifoldWorker(manifold);

@@ -2,45 +2,53 @@
 // directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 import { Base } from "@bitbybit-dev/base";
 
-/** Straight line to `to`. */
+/**
+ * A straight segment of a path, running from the previous point to `to`.
+ */
 export class PathLineSegment {
     constructor(to?: Base.Point2) {
         if (to !== undefined) { this.to = to; }
     }
     /**
-     * Segment kind discriminator.
+     * The segment kind, always `line`.
      * @default line
      */
     type = "line" as const;
     /**
-     * End point of the line.
+     * The 2D point the segment ends at.
      * @default undefined
      */
     to!: Base.Point2;
 }
-/** Quadratic bezier with control point `c` to `to`. */
+/**
+ * A quadratic Bezier segment of a path: one control point pulls the curve on its way from the
+ * previous point to `to`.
+ */
 export class PathQuadraticSegment {
     constructor(c?: Base.Point2, to?: Base.Point2) {
         if (c !== undefined) { this.c = c; }
         if (to !== undefined) { this.to = to; }
     }
     /**
-     * Segment kind discriminator.
+     * The segment kind, always `quadratic`.
      * @default quadratic
      */
     type = "quadratic" as const;
     /**
-     * Control point.
+     * The 2D control point the curve is pulled toward.
      * @default undefined
      */
     c!: Base.Point2;
     /**
-     * End point.
+     * The 2D point the segment ends at.
      * @default undefined
      */
     to!: Base.Point2;
 }
-/** Cubic bezier with control points `c1`, `c2` to `to`. */
+/**
+ * A cubic Bezier segment of a path: two control points shape the curve on its way from the previous
+ * point to `to`.
+ */
 export class PathCubicSegment {
     constructor(c1?: Base.Point2, c2?: Base.Point2, to?: Base.Point2) {
         if (c1 !== undefined) { this.c1 = c1; }
@@ -48,27 +56,30 @@ export class PathCubicSegment {
         if (to !== undefined) { this.to = to; }
     }
     /**
-     * Segment kind discriminator.
+     * The segment kind, always `cubic`.
      * @default cubic
      */
     type = "cubic" as const;
     /**
-     * First control point.
+     * The 2D control point that shapes the curve as it leaves the previous point.
      * @default undefined
      */
     c1!: Base.Point2;
     /**
-     * Second control point.
+     * The 2D control point that shapes the curve as it arrives at `to`.
      * @default undefined
      */
     c2!: Base.Point2;
     /**
-     * End point.
+     * The 2D point the segment ends at.
      * @default undefined
      */
     to!: Base.Point2;
 }
-/** Elliptical arc in center parametrization (angles in radians). */
+/**
+ * An elliptical arc segment of a path, given by its ellipse's center, radii and rotation and the
+ * angles it sweeps; all angles are in radians.
+ */
 export class PathArcSegment {
     constructor(to?: Base.Point2, center?: Base.Point2, rx?: number, ry?: number, xAxisRotation?: number, startAngle?: number, deltaAngle?: number) {
         if (to !== undefined) { this.to = to; }
@@ -80,42 +91,42 @@ export class PathArcSegment {
         if (deltaAngle !== undefined) { this.deltaAngle = deltaAngle; }
     }
     /**
-     * Segment kind discriminator.
+     * The segment kind, always `arc`.
      * @default arc
      */
     type = "arc" as const;
     /**
-     * End point of the arc.
+     * The 2D point the arc ends at.
      * @default undefined
      */
     to!: Base.Point2;
     /**
-     * Ellipse center.
+     * The 2D center of the ellipse the arc lies on.
      * @default undefined
      */
     center!: Base.Point2;
     /**
-     * Semi-axis along the (rotated) x direction.
+     * The half-width of the ellipse along its rotated x axis.
      * @default 0
      */
     rx = 0;
     /**
-     * Semi-axis along the (rotated) y direction.
+     * The half-width of the ellipse along its rotated y axis.
      * @default 0
      */
     ry = 0;
     /**
-     * Rotation of the ellipse x-axis in radians (CCW in path space).
+     * How far the ellipse is turned in the plane, in radians, counterclockwise in path space.
      * @default 0
      */
     xAxisRotation = 0;
     /**
-     * Start angle on the ellipse in radians.
+     * The angle on the ellipse where the arc starts, in radians.
      * @default 0
      */
     startAngle = 0;
     /**
-     * Signed sweep angle in radians (negative = clockwise in path space).
+     * How far the arc sweeps from its start, in radians; negative sweeps clockwise in path space.
      * @default 0
      */
     deltaAngle = 0;
@@ -126,7 +137,10 @@ export class PathArcSegment {
  */
 export type PathSegment = PathLineSegment | PathQuadraticSegment | PathCubicSegment | PathArcSegment;
 
-/** A contiguous run of segments. The first segment starts at `start`. */
+/**
+ * One continuous run of a path: a start point, its segments in order and whether it closes back on
+ * itself.
+ */
 export class PathSubpath {
     constructor(start?: Base.Point2, segments?: PathSegment[], closed?: boolean) {
         if (start !== undefined) { this.start = start; }
@@ -134,17 +148,17 @@ export class PathSubpath {
         if (closed !== undefined) { this.closed = closed; }
     }
     /**
-     * Absolute start point of the subpath.
+     * The 2D point the first segment starts at.
      * @default undefined
      */
     start!: Base.Point2;
     /**
-     * Ordered segments; the first segment starts at `start`.
+     * The segments in order, each starting where the previous one ended.
      * @default undefined
      */
     segments!: PathSegment[];
     /**
-     * Whether the subpath is closed.
+     * When true, the run closes from its last point back to `start`.
      * @default false
      */
     closed = false;
@@ -167,8 +181,8 @@ export enum svgFaceStrategyEnum {
 }
 
 /**
- * Placement of a 2D path into 3D CAD space. Defaults map SVG user space
- * (Y down, top-left origin) onto the XY plane upright (Y up).
+ * How a 2D path is placed into 3D: scaled, flipped from SVG's downward Y to Y up, and moved to an
+ * origin. The part the path and SVG inputs share.
  */
 export class PathPlacementDto {
     constructor(scale?: number, flipY?: boolean, origin?: Base.Point3) {
@@ -177,25 +191,25 @@ export class PathPlacementDto {
         if (origin !== undefined) { this.origin = origin; }
     }
     /**
-     * Uniform scale applied to path coordinates.
+     * A factor applied to every path coordinate; 1 keeps the size.
      * @default 1
      */
     scale = 1;
     /**
-     * Negate Y so an SVG appears upright (Y up) in CAD.
+     * When true, Y is negated so a drawing made with Y pointing down, as in SVG, comes out upright.
      * @default true
      */
     flipY = true;
     /**
-     * Translation applied after scale/flip.
+     * The point the scaled and flipped drawing is moved to.
      * @default [0, 0, 0]
      */
     origin: Base.Point3 = [0, 0, 0];
 }
 
 /**
- * Generic builder input: turn one or more subpaths into wires and,
- * optionally, faces. SVG-agnostic.
+ * Subpaths and build options for `path.shapeFromPath`, which turns them into wires and, when asked,
+ * faces.
  */
 export class ShapeFromPathDto {
     constructor(subpaths?: PathSubpath[], makeFaces?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, origin?: Base.Point3) {
@@ -208,43 +222,46 @@ export class ShapeFromPathDto {
         if (origin !== undefined) { this.origin = origin; }
     }
     /**
-     * Subpaths describing the geometry.
+     * The runs of segments that describe the outline, one wire each.
      * @default undefined
      */
     subpaths!: PathSubpath[];
     /**
-     * Build faces from the (closed) subpaths in addition to wires.
+     * When true, closed subpaths become faces as well as wires.
      * @default false
      */
     makeFaces = false;
     /**
-     * Join each subpath's segments into a single curve where possible.
+     * When true, consecutive segments of a subpath are merged into a single edge where they can be.
      * @default true
      */
     joinSegments = true;
     /**
-     * Tolerance used when joining/sewing segments.
+     * How far apart segment ends may be and still join, in model units.
      * @default 1e-7
      */
     tolerance = 1e-7;
     /**
-     * Uniform scale applied to path coordinates.
+     * A factor applied to every path coordinate; 1 keeps the size.
      * @default 1
      */
     scale = 1;
     /**
-     * Negate Y so the path appears upright (Y up) in CAD.
+     * When true, Y is negated so a drawing made with Y pointing down comes out upright.
      * @default true
      */
     flipY = true;
     /**
-     * Translation applied after scale/flip.
+     * The point the scaled and flipped drawing is moved to.
      * @default [0, 0, 0]
      */
     origin: Base.Point3 = [0, 0, 0];
 }
 
-/** Options for the SVG importer. */
+/**
+ * SVG text and import options for `svg.loadSVG` and `svg.loadSVGStructured`: which elements to
+ * keep, whether to build faces, and how to scale and place the drawing.
+ */
 export class LoadSVGDto {
     constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base.basicAlignmentEnum, direction?: Base.Vector3, center?: Base.Point3) {
         if (svg !== undefined) { this.svg = svg; }
@@ -260,94 +277,127 @@ export class LoadSVGDto {
         if (center !== undefined) { this.center = center; }
     }
     /**
-     * SVG document text.
+     * The text of the SVG document.
      * @default <svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>
      */
     svg: string = '<svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>';
     /**
-     * How closed, filled shapes become faces. `none` keeps only the outline wires; `auto` honors
-     * each element's SVG fill-rule; `nonzero`/`evenOdd` force a rule; `perSubpath` makes one face
-     * per closed subpath (no holes). Falls back to the wire when a face cannot be built.
+     * How filled shapes become faces: `none` keeps only wires, `auto` follows each element's fill
+     * rule, `nonzero` and `evenOdd` force a rule, `perSubpath` makes one face per closed subpath
+     * without holes.
      * @default none
      */
     faceStrategy: svgFaceStrategyEnum = svgFaceStrategyEnum.none;
     /**
-     * Build ribbon faces from stroked paths. Not supported yet; stroked paths are returned as wires.
+     * Reserved for building ribbon faces from stroked paths; not supported yet, stroked paths stay
+     * wires.
      * @default false
      */
     makeRibbons = false;
     /**
-     * Include elements resolved as display:none / visibility:hidden.
+     * When true, elements hidden by `display: none` or `visibility: hidden` are imported too.
      * @default false
      */
     includeInvisible = false;
     /**
-     * Join each subpath's segments into a single curve where possible.
+     * When true, consecutive segments of a subpath are merged into a single edge where they can be.
      * @default true
      */
     joinSegments = true;
     /**
-     * Tolerance used when joining/sewing segments.
+     * How far apart segment ends may be and still join, in model units.
      * @default 1e-7
      */
     tolerance = 1e-7;
     /**
-     * Uniform scale applied to the SVG coordinates.
+     * A factor applied to the SVG coordinates; 1 keeps the size.
      * @default 1
      */
     scale = 1;
     /**
-     * Negate Y so the SVG appears upright (Y up) before placement.
+     * When true, Y is negated so the drawing comes out upright, since SVG has Y pointing down.
      * @default true
      */
     flipY = true;
     /**
-     * How the drawing's bounding box aligns to `center` (e.g. midMid centers it on the origin).
+     * Which point of the drawing's bounding box sits on `center`; `midMid` centers it.
      * @default midMid
      */
     alignment: Base.basicAlignmentEnum = Base.basicAlignmentEnum.midMid;
     /**
-     * Plane normal the drawing is laid onto. The default [0, 1, 0] lays it flat on the ground.
+     * The normal of the plane the drawing is laid on; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
     /**
-     * Point the aligned drawing is placed at.
+     * The point the aligned drawing is placed at.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
 }
 
-/** One imported SVG element: its geometry shape plus resolved metadata (an output, not an input). */
+/**
+ * One imported SVG element as `svg.loadSVGStructured` returns it: the built shape and the style
+ * resolved for it. An output, not an input.
+ */
 export class SVGShape<T> {
-    /** The built shape: a wire, or a face when requested. */
+    /**
+     * The built shape: a wire, or a face when one was asked for and could be built.
+     */
     shape!: T;
-    /** True when `shape` is a face, false when it is a wire. */
+    /**
+     * True when `shape` is a face, false when it is a wire.
+     */
     isFace!: boolean;
-    /** SVG tag the shape came from: "path" | "rect" | "circle" | ... */
+    /**
+     * The SVG tag the shape came from, such as `path`, `rect` or `circle`.
+     */
     elementType!: string;
-    /** Whether the source subpaths were closed. */
+    /**
+     * Whether the element's outline was closed.
+     */
     closed!: boolean;
-    /** Resolved fill colour, if any. */
+    /**
+     * The fill color that applied to the element, if any.
+     */
     fill?: string | undefined;
-    /** Resolved stroke colour, if any. */
+    /**
+     * The stroke color that applied to the element, if any.
+     */
     stroke?: string | undefined;
-    /** Stroke width (the "strength" of the line), if any. */
+    /**
+     * The stroke width that applied to the element, if any.
+     */
     strokeWidth?: number | undefined;
-    /** Combined opacity in [0, 1], if any. */
+    /**
+     * The combined opacity of the element from 0 to 1, if any was set.
+     */
     opacity?: number | undefined;
-    /** Element id, if any. */
+    /**
+     * The element's `id` attribute, if any.
+     */
     id?: string | undefined;
-    /** Element class attribute, if any. */
+    /**
+     * The element's `class` attribute, if any.
+     */
     className?: string | undefined;
 }
 
-/** Result of importing an SVG document (an output, not an input). */
+/**
+ * What `svg.loadSVGStructured` returns: one shape per drawable element, the view box and any
+ * warnings. An output, not an input.
+ */
 export class SVGResult<T> {
-    /** One entry per drawable element, in document order. */
+    /**
+     * One entry per drawable element, in document order.
+     */
     shapes!: SVGShape<T>[];
-    /** viewBox as [minX, minY, width, height] if present. */
+    /**
+     * The document's view box as `[minX, minY, width, height]`, when it has one.
+     */
     viewBox?: [number, number, number, number] | undefined;
-    /** Non-fatal parsing/building issues. */
+    /**
+     * Problems met while parsing or building that did not stop the import.
+     */
     warnings!: string[];
 }

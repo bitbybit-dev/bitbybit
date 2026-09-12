@@ -4,7 +4,7 @@ import { BabylonTexture } from "./babylon-texture-inputs";
 
 // tslint:disable-next-line: no-namespace
 /**
- * Parameters for the in-scene 2D interface: buttons, sliders, checkboxes, colour pickers, text blocks,
+ * Parameters for the in-scene 2D interface: buttons, sliders, checkboxes, color pickers, text blocks,
  * input fields, images and the containers that lay them out. Use it for controls that live inside the
  * 3D canvas rather than in the surrounding page.
  */
@@ -132,6 +132,10 @@ export namespace BabylonGui {
         onIsVisibleChangedObservable = "onIsVisibleChangedObservable"
     }
 
+    /**
+     * Feeds `babylon.gui.advancedDynamicTexture.createFullScreenUI`: the name of the full-screen
+     * GUI layer, whether it draws in front of the scene and whether it scales with pixel density.
+     */
     export class CreateFullScreenUIDto {
         constructor(name?: string, foreground?: boolean, adaptiveScaling?: boolean) {
             if (name !== undefined) { this.name = name; }
@@ -139,22 +143,27 @@ export namespace BabylonGui {
             if (adaptiveScaling !== undefined) { this.adaptiveScaling = adaptiveScaling; }
         }
         /**
-         * Name of advanced texture
+         * Name the GUI layer is known by in the scene
          * @default fullscreen
          */
         name = "fullscreen";
         /**
-         * Foreground
+         * When true, the layer is drawn in front of the scene; when false, behind it
          * @default true
          */
         foreground?: boolean | undefined;
         /**
-         * Adaptive scaling
+         * When true, the layer scales with the screen's pixel density so controls keep their size
+         * on dense displays
          * @default false
          */
         adaptiveScaling?: boolean | undefined;
     }
 
+    /**
+     * Feeds `babylon.gui.advancedDynamicTexture.createForMesh`: the mesh a GUI texture is wrapped
+     * onto, the texture size and the pointer, alpha, flip and sampling options.
+     */
     export class CreateForMeshDto {
         constructor(mesh?: BABYLON.AbstractMesh, width?: number, height?: number, supportPointerMove?: boolean, onlyAlphaTesting?: boolean, invertY?: boolean, sampling?: BabylonTexture.samplingModeEnum) {
             if (mesh !== undefined) { this.mesh = mesh; }
@@ -166,44 +175,51 @@ export namespace BabylonGui {
             if (sampling !== undefined) { this.sampling = sampling; }
         }
         /**
-         * Mesh
+         * The mesh the GUI is drawn on; it needs texture coordinates, a plane being the usual
+         * choice
          * @default undefined
          */
         mesh!: BABYLON.AbstractMesh;
         /**
-         * Width
+         * Width of the GUI texture in pixels; left out, the engine chooses
          * @default undefined
          * @optional true
          */
         width?: number | undefined;
         /**
-         * Height
+         * Height of the GUI texture in pixels; left out, the engine chooses
          * @default undefined
          * @optional true
          */
         height?: number | undefined;
         /**
-         * Support pointer move
+         * When true, controls on the mesh react to the pointer moving over them, at some extra cost
          * @default true
          */
         supportPointerMove = true;
         /**
-         * Only alpha testing
+         * When true, transparent pixels are cut out instead of blended, which avoids sorting
+         * problems
          * @default false
          */
         onlyAlphaTesting = false;
         /**
-         * Invert Y
+         * When true, the texture is flipped top to bottom; the default is right for most meshes
          * @default true
          */
         invertY = true;
         /**
-         * Sampling
+         * How texture pixels are read when scaled: nearest keeps hard pixels, bilinear and
+         * trilinear blend them
          * @default trilinear
          */
         sampling = BabylonTexture.samplingModeEnum.trilinear;
     }
 
+    /**
+     * Feeds `babylon.gui.stackPanel.createStackPanel`: the name, direction, spacing, optional sizes
+     * and colors of a panel that lines its children up.
+     */
     export class CreateStackPanelDto {
         constructor(name?: string, isVertical?: boolean, spacing?: number, width?: number | string, height?: number | string, color?: string, background?: string) {
             if (name !== undefined) { this.name = name; }
@@ -215,201 +231,252 @@ export namespace BabylonGui {
             if (background !== undefined) { this.background = background; }
         }
         /**
-         * Name of stack panel
+         * Name the panel is known by, which `control.getControlByName` finds it by
          * @default stackPanel
          */
         name = "stackPanel";
         /**
-         * Horizontal or vertical
+         * When true, children stack top to bottom; when false, left to right
          * @default true
          */
         isVertical = true;
         /**
-         * Spacing between each child in pixels
+         * Gap between neighboring children, in pixels
          * @default 0
          */
         spacing = 0;
         /**
-         * Width of the stack panel. This value should not be set when in horizontal mode as it will be computed automatically.
+         * Width as a pixel string or a fraction; give it for a vertical panel and leave it out for
+         * a horizontal one, which sizes from its children
          * @default undefined
          * @optional true
          */
         width!: number | string;
         /**
-         * Height of the stack panel. This value should not be set when in vertical mode as it will be computed automatically.
+         * Height as a pixel string or a fraction; give it for a horizontal panel and leave it out
+         * for a vertical one, which sizes from its children
          * @default undefined
          * @optional true
          */
         height!: number | string;
         /**
-        * Color of the stack panel
-        * @default #00000000
-        */
+         * CSS color of the panel's text and border; the default is fully transparent
+         * @default #00000000
+         */
         color = "#00000000";
         /**
-         * Background of the stack panel. We give transparency to the background by default so that it would be visible
+         * CSS color behind the children; the default is a translucent black so the panel can be
+         * seen
          * @default #00000055
          */
         background = "#00000055";
     }
+    /**
+     * Feeds `babylon.gui.stackPanel.setIsVertical` with a stack panel and its stacking direction.
+     */
     export class SetStackPanelIsVerticalDto {
         constructor(stackPanel?: BABYLON.GUI.StackPanel, isVertical?: boolean) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
             if (isVertical !== undefined) { this.isVertical = isVertical; }
         }
         /**
-         * Stack panel to update
+         * The stack panel to change in place
          * @default undefined
          */
         stackPanel!: BABYLON.GUI.StackPanel;
         /**
-         * Is vertical
+         * When true, children stack top to bottom; when false, left to right
          * @default true
          */
         isVertical = true;
     }
+    /**
+     * Feeds `babylon.gui.stackPanel.setSpacing` with a stack panel and the gap between its
+     * children.
+     */
     export class SetStackPanelSpacingDto {
         constructor(stackPanel?: BABYLON.GUI.StackPanel, spacing?: number) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
             if (spacing !== undefined) { this.spacing = spacing; }
         }
         /**
-         * Stack panel to update
+         * The stack panel to change in place
          * @default undefined
          */
         stackPanel!: BABYLON.GUI.StackPanel;
         /**
-         * Spacing between each child in pixels
+         * Gap between neighboring children, in pixels
          * @default 0
          */
         spacing = 0;
     }
+    /**
+     * Feeds `babylon.gui.stackPanel.setWidth` with a stack panel and its new width.
+     */
     export class SetStackPanelWidthDto {
         constructor(stackPanel?: BABYLON.GUI.StackPanel, width?: number | string) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
             if (width !== undefined) { this.width = width; }
         }
         /**
-         * Stack panel to update
+         * The stack panel to change in place
          * @default undefined
          */
         stackPanel!: BABYLON.GUI.StackPanel;
         /**
-         * Width of the stack panel
+         * Width as a pixel string such as `300px` or a fraction of the parent from 0 to 1
          * @default undefined
          * @optional true
          */
         width!: number | string;
     }
+    /**
+     * Feeds `babylon.gui.stackPanel.setHeight` with a stack panel and its new height.
+     */
     export class SetStackPanelHeightDto {
         constructor(stackPanel?: BABYLON.GUI.StackPanel, height?: number | string) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Stack panel to update
+         * The stack panel to change in place
          * @default undefined
          */
         stackPanel!: BABYLON.GUI.StackPanel;
         /**
-         * Height of the stack panel.
+         * Height as a pixel string such as `300px` or a fraction of the parent from 0 to 1
          * @default undefined
          * @optional true
          */
         height!: number | string;
     }
+    /**
+     * Feeds the `babylon.gui.stackPanel` getters with the stack panel to read from.
+     */
     export class StackPanelDto {
         constructor(stackPanel?: BABYLON.GUI.StackPanel) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
         }
         /**
-         * Stack panel to update
+         * The stack panel to read from
          * @default undefined
          */
         stackPanel!: BABYLON.GUI.StackPanel;
     }
+    /**
+     * Feeds the slider observable selector method with the name of the slider event to select.
+     */
     export class SliderObservableSelectorDto {
         constructor(selector: sliderObservableSelectorEnum) {
             this.selector = selector;
         }
         /**
-         * Selector for the observable
+         * Which slider event, by its observable name
          * @default onValueChangedObservable
          */
         selector: sliderObservableSelectorEnum;
     }
+    /**
+     * Feeds the color picker observable selector method with the name of the color picker event to
+     * select.
+     */
     export class ColorPickerObservableSelectorDto {
         constructor(selector: colorPickerObservableSelectorEnum) {
             this.selector = selector;
         }
         /**
-         * Selector for the observable
+         * Which color picker event, by its observable name
          * @default onValueChangedObservable
          */
         selector: colorPickerObservableSelectorEnum;
     }
+    /**
+     * Feeds the text field observable selector method with the name of the text field event to
+     * select.
+     */
     export class InputTextObservableSelectorDto {
         constructor(selector: inputTextObservableSelectorEnum) {
             this.selector = selector;
         }
         /**
-         * Selector for the observable
+         * Which text field event, by its observable name
          * @default onTextChangedObservable
          */
         selector: inputTextObservableSelectorEnum;
     }
+    /**
+     * Feeds the radio button observable selector method with the name of the radio button event to
+     * select.
+     */
     export class RadioButtonObservableSelectorDto {
         constructor(selector: radioButtonObservableSelectorEnum) {
             this.selector = selector;
         }
         /**
-         * Selector for the observable
+         * Which radio button event, by its observable name
          * @default onIsCheckedChangedObservable
          */
         selector: radioButtonObservableSelectorEnum;
     }
 
+    /**
+     * Feeds the checkbox observable selector method with the name of the checkbox event to select.
+     */
     export class CheckboxObservableSelectorDto {
         constructor(selector: checkboxObservableSelectorEnum) {
             this.selector = selector;
         }
         /**
-         * Selector for the observable
+         * Which checkbox event, by its observable name
          * @default onIsCheckedChangedObservable
          */
         selector: checkboxObservableSelectorEnum;
     }
 
+    /**
+     * Feeds the control observable selector method with the name of the control event to select.
+     */
     export class ControlObservableSelectorDto {
         constructor(selector: controlObservableSelectorEnum) {
             this.selector = selector;
         }
         /**
-         * Selector for the observable
+         * Which control event, by its observable name
          * @default onPointerClickObservable
          */
         selector: controlObservableSelectorEnum;
     }
+    /**
+     * Feeds the text block observable selector method with the name of the text block event to
+     * select.
+     */
     export class TextBlockObservableSelectorDto {
         constructor(selector: textBlockObservableSelectorEnum) {
             this.selector = selector;
         }
         /**
-         * Selector for the observable
+         * Which text block event, by its observable name
          * @default onTextChangedObservable
          */
         selector: textBlockObservableSelectorEnum;
     }
+    /**
+     * Feeds the `babylon.gui.container` getters with the container to read from.
+     */
     export class ContainerDto {
         constructor(container?: BABYLON.GUI.Container) {
             if (container !== undefined) { this.container = container; }
         }
         /**
-         * Container to update
+         * The container to read from, a stack panel or the root of a GUI texture
          * @default undefined
          */
         container!: BABYLON.GUI.Container;
     }
+    /**
+     * Feeds `babylon.gui.container.addControls`: the container, the controls to put in it and
+     * whether to empty it first.
+     */
     export class AddControlsToContainerDto {
         constructor(container?: BABYLON.GUI.StackPanel, controls?: BABYLON.GUI.Control[], clearControlsFirst?: boolean) {
             if (container !== undefined) { this.container = container; }
@@ -417,85 +484,102 @@ export namespace BabylonGui {
             if (clearControlsFirst !== undefined) { this.clearControlsFirst = clearControlsFirst; }
         }
         /**
-         * Container to add control to
+         * The panel or root that receives the controls as its children
          * @default undefined
          */
         container!: BABYLON.GUI.Container;
         /**
-         * Controls to add
+         * The controls to add, in the order they should appear
          * @default undefined
          */
         controls!: BABYLON.GUI.Control[];
         /**
-         * Clear controls first. That will preserve the order of the controls.
+         * When true, the container is emptied first, so the order is exactly the list's
          * @default true
          */
         clearControlsFirst = true;
     }
+    /**
+     * Feeds `babylon.gui.control.getControlByName` with the container to search and the name to
+     * look for.
+     */
     export class GetControlByNameDto {
         constructor(container?: BABYLON.GUI.Container, name?: string) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
         }
         /**
-         * Container to get control from
+         * The container searched, children included
          * @default undefined
          */
         container!: BABYLON.GUI.Container;
         /**
-         * Name of the control
+         * The name the control was created with
          * @default controlName
          */
         name = "controlName";
     }
+    /**
+     * Feeds `babylon.gui.control.setIsVisible` with a control and whether it is shown.
+     */
     export class SetControlIsVisibleDto {
         constructor(control?: BABYLON.GUI.Control, isVisible?: boolean) {
             if (control !== undefined) { this.control = control; }
             if (isVisible !== undefined) { this.isVisible = isVisible; }
         }
         /**
-         * Control to update
+         * The control to change in place
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Is visible
+         * When true, the control is shown; when false, hidden while keeping its place in the layout
          * @default true
          */
         isVisible = true;
     }
+    /**
+     * Feeds `babylon.gui.control.setIsReadonly` with a control and whether it ignores input.
+     */
     export class SetControlIsReadonlyDto {
         constructor(control?: BABYLON.GUI.Control, isReadOnly?: boolean) {
             if (control !== undefined) { this.control = control; }
             if (isReadOnly !== undefined) { this.isReadOnly = isReadOnly; }
         }
         /**
-         * Control to update
+         * The control to change in place
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Is readonly
+         * When true, the control is shown normally but ignores input
          * @default false
          */
         isReadOnly = false;
     }
+    /**
+     * Feeds `babylon.gui.control.setIsEnabled` with a control and whether it is active.
+     */
     export class SetControlIsEnabledDto {
         constructor(control?: BABYLON.GUI.Control, isEnabled?: boolean) {
             if (control !== undefined) { this.control = control; }
             if (isEnabled !== undefined) { this.isEnabled = isEnabled; }
         }
         /**
-         * Control to update
+         * The control to change in place
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Is enabled
+         * When true, the control is active; when false, it is drawn dimmed and ignores input
          * @default true
          */
         isEnabled = true;
     }
+    /**
+     * Feeds `babylon.gui.image.createImage`: the name, the picture's address, a color and the
+     * optional size of an image control.
+     */
     export class CreateImageDto {
         constructor(name?: string, url?: string, color?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
@@ -505,59 +589,72 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Name of the image
+         * Name the image is known by, which `control.getControlByName` finds it by
          * @default imageName
          */
         name = "imageName";
         /**
-         * Link to the image
+         * Address the picture is loaded from
          * @default undefined
          */
         url!: string;
         /**
-         * Color of the image
+         * CSS color of the control, used for its border
          * @default black
          */
         color = "black";
         /**
-         * Width of the image
+         * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         width?: number | string | undefined;
         /**
-         * Height of the image
+         * Height, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         height?: number | string | undefined;
     }
+    /**
+     * Feeds `babylon.gui.image.setSourceUrl` with an image control and the address of its new
+     * picture.
+     */
     export class SetImageUrlDto {
         constructor(image?: BABYLON.GUI.Image, url?: string) {
             if (image !== undefined) { this.image = image; }
             if (url !== undefined) { this.url = url; }
         }
         /**
-         * Image to update
+         * The image control to change in place
          * @default undefined
          */
         image!: BABYLON.GUI.Image;
         /**
-         * Link to the image
+         * Address the new picture is loaded from
          * @default undefined
          */
         url!: string;
     }
+    /**
+     * Feeds `babylon.gui.image.getSourceUrl` with the image control to read from.
+     */
     export class ImageDto {
         constructor(image?: BABYLON.GUI.Image) {
             if (image !== undefined) { this.image = image; }
         }
         /**
-         * Image to update
+         * The image control to read from
          * @default undefined
          */
         image!: BABYLON.GUI.Image;
     }
+    /**
+     * Feeds `babylon.gui.button.createSimpleButton`: the name, label, colors, optional size and
+     * font size of a button.
+     */
     export class CreateButtonDto {
         constructor(name?: string, label?: string, color?: string, background?: string, width?: number | string, height?: number | string, fontSize?: number) {
             if (name !== undefined) { this.name = name; }
@@ -569,70 +666,82 @@ export namespace BabylonGui {
             if (fontSize !== undefined) { this.fontSize = fontSize; }
         }
         /**
-         * Name of the button
+         * Name the button is known by, which `control.getControlByName` finds it by
          * @default buttonName
          */
         name = "buttonName";
         /**
-         * Text of the button
+         * The text shown on the button
          * @default Click me!
          */
         label = "Click me!";
         /**
-         * Color of the button
+         * CSS color of the label text
          * @default black
          */
         color = "black";
         /**
-         * Background of the button
+         * CSS color of the button's face
          * @default #f0cebb
          */
         background = "#f0cebb";
         /**
-         * Width of the button
+         * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         width?: number | string | undefined;
         /**
-         * Height of the button
+         * Height, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         height?: number | string | undefined;
         /**
-         * Font size of the button
+         * Font size of the label, in pixels
          * @default 24
          */
         fontSize = 24;
     }
+    /**
+     * Feeds `babylon.gui.button.setButtonText` with a button and its new label.
+     */
     export class SetButtonTextDto {
         constructor(button?: BABYLON.GUI.Button, text?: string) {
             if (button !== undefined) { this.button = button; }
             if (text !== undefined) { this.text = text; }
         }
         /**
-         * Button to update
+         * The button to change in place
          * @default undefined
          */
         button!: BABYLON.GUI.Button;
         /**
-         * Text of the button
+         * The text shown on the button from then on
          * @default Click me!
          */
         text = "Click me!";
     }
+    /**
+     * Feeds `babylon.gui.button.getButtonText` with the button to read from.
+     */
     export class ButtonDto {
         constructor(button?: BABYLON.GUI.Button) {
             if (button !== undefined) { this.button = button; }
         }
         /**
-         * Button to update
+         * The button to read from
          * @default undefined
          */
         button!: BABYLON.GUI.Button;
     }
 
+    /**
+     * Feeds `babylon.gui.colorPicker.createColorPicker`: the name, starting color and optional
+     * sizes of a color picker.
+     */
     export class CreateColorPickerDto {
         constructor(name?: string, defaultColor?: string, color?: string, width?: number | string, height?: number | string, size?: number | string) {
             if (name !== undefined) { this.name = name; }
@@ -643,82 +752,96 @@ export namespace BabylonGui {
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Name of the color picker
+         * Name the color picker is known by, which `control.getControlByName` finds it by
          * @default colorPickerName
          */
         name = "colorPickerName";
         /**
-         * Default color of the color picker
+         * Hex color the picker starts on
          * @default #f0cebb
          */
         defaultColor = "#f0cebb";
         /**
-         * Color of the color picker
+         * CSS color of the control's border
          * @default #f0cebb
          */
         color = "#f0cebb";
         /**
-         * Width of the color picker
+         * Width as a pixel string or a fraction; left out, 300 pixels
          * @default undefined
          * @optional true
          */
         width?: number | string | undefined;
         /**
-         * Height of the color picker
+         * Height as a pixel string or a fraction; left out, 300 pixels
          * @default undefined
          * @optional true
          */
         height?: number | string | undefined;
         /**
-         * Size of the color picker
+         * Width and height together, as a pixel string or a fraction; it overrides both when given
          * @default 300px
          * @optional true
          */
         size?: number | string | undefined;
     }
+    /**
+     * Feeds `babylon.gui.colorPicker.setColorPickerValue` with a color picker and the color to move
+     * it to.
+     */
     export class SetColorPickerValueDto {
         constructor(colorPicker?: BABYLON.GUI.ColorPicker, color?: string) {
             if (colorPicker !== undefined) { this.colorPicker = colorPicker; }
             if (color !== undefined) { this.color = color; }
         }
         /**
-         * Color picker to update
+         * The color picker to change in place
          * @default undefined
          */
         colorPicker!: BABYLON.GUI.ColorPicker;
         /**
-         * Value of the color picker
+         * Hex color the picker is set to
          * @default undefined
          */
         color!: string;
     }
+    /**
+     * Feeds `babylon.gui.colorPicker.setColorPickerSize` with a color picker and its new size.
+     */
     export class SetColorPickerSizeDto {
         constructor(colorPicker?: BABYLON.GUI.ColorPicker, size?: number | string) {
             if (colorPicker !== undefined) { this.colorPicker = colorPicker; }
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Color picker to update
+         * The color picker to change in place
          * @default undefined
          */
         colorPicker!: BABYLON.GUI.ColorPicker;
         /**
-         * Size of the color picker
+         * Width and height together, as a pixel string or a fraction
          * @default 300px
          * @optional true
          */
         size?: number | string | undefined;
     }
+    /**
+     * Feeds the `babylon.gui.colorPicker` getters with the color picker to read from.
+     */
     export class ColorPickerDto {
         constructor(colorPicker?: BABYLON.GUI.ColorPicker) {
             if (colorPicker !== undefined) { this.colorPicker = colorPicker; }
         }
         /**
-         * Color picker to update
+         * The color picker to read from
          * @default undefined
          */
         colorPicker!: BABYLON.GUI.ColorPicker;
     }
+    /**
+     * Feeds `babylon.gui.checkbox.createCheckbox`: the name, starting state, mark size, colors and
+     * optional size of a checkbox.
+     */
     export class CreateCheckboxDto {
         constructor(name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
@@ -730,17 +853,17 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Name of the checkbox
+         * Name the checkbox is known by, which `control.getControlByName` finds it by
          * @default checkboxName
          */
         name = "checkboxName";
         /**
-         * Is checked
+         * When true, the checkbox starts checked
          * @default false
          */
         isChecked = false;
         /**
-         * Check size ratio
+         * How much of the square the inner mark fills, from 0 to 1
          * @default 0.8
          * @minimum 0
          * @maximum 1
@@ -748,153 +871,180 @@ export namespace BabylonGui {
          */
         checkSizeRatio = 0.8;
         /**
-         * Color of the checkbox
+         * CSS color of the mark and the border
          * @default #f0cebb
          */
         color = "#f0cebb";
         /**
-         * Background of the checkbox
+         * CSS color of the square behind the mark
          * @default black
          */
         background = "black";
         /**
-         * Width of the checkbox
+         * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         width?: number | string | undefined;
         /**
-         * Height of the checkbox
+         * Height, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         height?: number | string | undefined;
     }
 
+    /**
+     * Feeds `babylon.gui.control.setFontSize` with a control and the font size of its text.
+     */
     export class SetControlFontSizeDto {
         constructor(control?: BABYLON.GUI.Control, fontSize?: number) {
             if (control !== undefined) { this.control = control; }
             if (fontSize !== undefined) { this.fontSize = fontSize; }
         }
         /**
-         * Control to update
+         * The control to change in place
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Font size of the button
+         * Font size of the control's text, in pixels
          * @default 24
          */
         fontSize = 24;
     }
+    /**
+     * Feeds `babylon.gui.control.setHeight` with a control and its new height.
+     */
     export class SetControlHeightDto {
         constructor(control?: BABYLON.GUI.Control, height?: number | string) {
             if (control !== undefined) { this.control = control; }
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Control to update
+         * The control to change in place
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Height of the checkbox
+         * Height as a pixel string such as `40px` or a fraction of the parent from 0 to 1
          * @default undefined
          */
         height!: number | string;
     }
+    /**
+     * Feeds `babylon.gui.control.setWidth` with a control and its new width.
+     */
     export class SetControlWidthDto {
         constructor(control?: BABYLON.GUI.Control, width?: number | string) {
             if (control !== undefined) { this.control = control; }
             if (width !== undefined) { this.width = width; }
         }
         /**
-         * Control to update
+         * The control to change in place
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Width of the checkbox
+         * Width as a pixel string such as `200px` or a fraction of the parent from 0 to 1
          * @default undefined
          */
         width!: number | string;
     }
+    /**
+     * Feeds `babylon.gui.control.setColor` with a control and its new main color.
+     */
     export class SetControlColorDto {
         constructor(control?: BABYLON.GUI.Control, color?: string) {
             if (control !== undefined) { this.control = control; }
             if (color !== undefined) { this.color = color; }
         }
         /**
-         * Control to update
+         * The control to change in place
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Color of the checkbox
+         * CSS color of the control's text or fill, depending on its kind
          * @default #f0cebb
          */
         color = "#f0cebb";
     }
+    /**
+     * Feeds `babylon.gui.container.setBackground` with a container and its new background color.
+     */
     export class SetContainerBackgroundDto {
         constructor(container?: BABYLON.GUI.Container, background?: string) {
             if (container !== undefined) { this.container = container; }
             if (background !== undefined) { this.background = background; }
         }
         /**
-         * Container to update
+         * The container to change in place
          * @default undefined
          */
         container!: BABYLON.GUI.Container;
         /**
-         * Background of the checkbox
+         * CSS color behind the container's children; an eight-digit hex makes it translucent
          * @default black
          */
         background = "black";
     }
+    /**
+     * Feeds `babylon.gui.container.setIsReadonly` with a container and whether it and its children
+     * ignore input.
+     */
     export class SetContainerIsReadonlyDto {
         constructor(container?: BABYLON.GUI.Container, isReadOnly?: boolean) {
             if (container !== undefined) { this.container = container; }
             if (isReadOnly !== undefined) { this.isReadOnly = isReadOnly; }
         }
         /**
-         * Container to update
+         * The container to change in place
          * @default undefined
          */
         container!: BABYLON.GUI.Container;
         /**
-         * Is readonly
+         * When true, the container and everything in it are shown normally but ignore input
          * @default false
          */
         isReadOnly = false;
     }
+    /**
+     * Feeds `babylon.gui.checkbox.setBackground` with a checkbox and the color of its square.
+     */
     export class SetCheckboxBackgroundDto {
         constructor(checkbox?: BABYLON.GUI.Checkbox, background?: string) {
             if (checkbox !== undefined) { this.checkbox = checkbox; }
             if (background !== undefined) { this.background = background; }
         }
         /**
-         * Checkbox to update
+         * The checkbox to change in place
          * @default undefined
          */
         checkbox!: BABYLON.GUI.Checkbox;
         /**
-         * Background of the checkbox
+         * CSS color of the square behind the mark
          * @default black
          */
         background = "black";
     }
+    /**
+     * Feeds `babylon.gui.checkbox.setCheckSizeRatio` with a checkbox and how large its mark is.
+     */
     export class SetCheckboxCheckSizeRatioDto {
         constructor(checkbox?: BABYLON.GUI.Checkbox, checkSizeRatio?: number) {
             if (checkbox !== undefined) { this.checkbox = checkbox; }
             if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
         }
         /**
-         * Checkbox to update
+         * The checkbox to change in place
          * @default undefined
          */
         checkbox!: BABYLON.GUI.Checkbox;
         /**
-         * Check size ratio
+         * How much of the square the inner mark fills, from 0 to 1
          * @default 0.8
          * @minimum 0
          * @maximum 1
@@ -903,45 +1053,58 @@ export namespace BabylonGui {
         checkSizeRatio = 0.8;
     }
 
+    /**
+     * Feeds the `babylon.gui.checkbox` getters with the checkbox to read from.
+     */
     export class CheckboxDto {
         constructor(checkbox?: BABYLON.GUI.Checkbox) {
             if (checkbox !== undefined) { this.checkbox = checkbox; }
         }
         /**
-         * Checkbox to update
+         * The checkbox to read from
          * @default undefined
          */
         checkbox!: BABYLON.GUI.Checkbox;
     }
 
+    /**
+     * Feeds the `babylon.gui.control` getters with the control to read from, of any kind.
+     */
     export class ControlDto {
         constructor(control?: BABYLON.GUI.Control) {
             if (control !== undefined) { this.control = control; }
         }
         /**
-         * Control to update
+         * The control to read from, of any kind
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
     }
 
+    /**
+     * Feeds `babylon.gui.checkbox.setIsChecked` with a checkbox and its new state.
+     */
     export class SetCheckboxIsCheckedDto {
         constructor(checkbox?: BABYLON.GUI.Checkbox, isChecked?: boolean) {
             if (checkbox !== undefined) { this.checkbox = checkbox; }
             if (isChecked !== undefined) { this.isChecked = isChecked; }
         }
         /**
-         * Checkbox to update
+         * The checkbox to change in place
          * @default undefined
          */
         checkbox!: BABYLON.GUI.Checkbox;
         /**
-         * Is checked
+         * When true, the checkbox becomes checked; the change fires its event like a click
          * @default false
          */
         isChecked = false;
     }
 
+    /**
+     * Feeds `babylon.gui.inputText.createInputText`: the name, starting text, placeholder, colors
+     * and optional size of a text field.
+     */
     export class CreateInputTextDto {
         constructor(name?: string, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
@@ -951,102 +1114,120 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Name of the button
+         * Name the text field is known by, which `control.getControlByName` finds it by
          * @default inputName
          */
         name = "inputName";
         /**
-         * Text of the input
+         * The text the field starts with; empty shows the placeholder
          * @default
          */
         text!: string;
         /**
-         * Placeholder of the input
+         * The hint shown while the field is empty
          * @default
          */
         placeholder!: string;
         /**
-         * Color of the button
+         * CSS color of the typed text
          * @default #f0cebb
          */
         color = "#f0cebb";
         /**
-         * Background of the button
+         * CSS color behind the text
          * @default black
          */
         background = "black";
         /**
-         * Width of the button
+         * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         width?: number | string | undefined;
         /**
-         * Height of the button
+         * Height, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         height?: number | string | undefined;
     }
+    /**
+     * Feeds `babylon.gui.inputText.setBackground` with a text field and its new background color.
+     */
     export class SetInputTextBackgroundDto {
         constructor(inputText?: BABYLON.GUI.InputText, background?: string) {
             if (inputText !== undefined) { this.inputText = inputText; }
             if (background !== undefined) { this.background = background; }
         }
         /**
-         * Input text to update
+         * The text field to change in place
          * @default undefined
          */
         inputText!: BABYLON.GUI.InputText;
         /**
-         * Background of the input text
+         * CSS color behind the text
          * @default black
          */
         background = "black";
     }
+    /**
+     * Feeds `babylon.gui.inputText.setText` with a text field and the text to put in it.
+     */
     export class SetInputTextTextDto {
         constructor(inputText?: BABYLON.GUI.InputText, text?: string) {
             if (inputText !== undefined) { this.inputText = inputText; }
             if (text !== undefined) { this.text = text; }
         }
         /**
-         * Input text to update
+         * The text field to change in place
          * @default undefined
          */
         inputText!: BABYLON.GUI.InputText;
         /**
-         * Text of the input text
+         * The text the field holds from then on; the change fires its event like typing
          * @default
          */
         text!: string;
     }
+    /**
+     * Feeds `babylon.gui.inputText.setPlaceholder` with a text field and its new hint.
+     */
     export class SetInputTextPlaceholderDto {
         constructor(inputText?: BABYLON.GUI.InputText, placeholder?: string) {
             if (inputText !== undefined) { this.inputText = inputText; }
             if (placeholder !== undefined) { this.placeholder = placeholder; }
         }
         /**
-         * Input text to update
+         * The text field to change in place
          * @default undefined
          */
         inputText!: BABYLON.GUI.InputText;
         /**
-         * Placeholder of the input text
+         * The hint shown while the field is empty
          * @default
          */
         placeholder!: string;
     }
+    /**
+     * Feeds the `babylon.gui.inputText` getters with the text field to read from.
+     */
     export class InputTextDto {
         constructor(inputText?: BABYLON.GUI.InputText) {
             if (inputText !== undefined) { this.inputText = inputText; }
         }
         /**
-         * Input text to update
+         * The text field to read from
          * @default undefined
          */
         inputText!: BABYLON.GUI.InputText;
     }
 
+    /**
+     * Feeds `babylon.gui.radioButton.createRadioButton`: the name, group, starting state, dot size,
+     * colors and optional size of a radio button.
+     */
     export class CreateRadioButtonDto {
         constructor(name?: string, group?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
@@ -1059,23 +1240,23 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Name of the button
+         * Name the radio button is known by, which `control.getControlByName` finds it by
          * @default radioBtnName
          */
         name = "radioBtnName";
         /**
-         * Group of the radio button which is used when multiple radio buttons needs to be split into separate groups
+         * Radio buttons sharing a group let only one of them be checked at a time
          * @default
          * @optional true
          */
         group!: string;
         /**
-         * Is checked
+         * When true, the radio button starts checked
          * @default false
          */
         isChecked = false;
         /**
-         * Check size ratio
+         * How much of the circle the inner dot fills, from 0 to 1
          * @default 0.8
          * @minimum 0
          * @maximum 1
@@ -1083,40 +1264,46 @@ export namespace BabylonGui {
          */
         checkSizeRatio = 0.8;
         /**
-         * Color of the button
+         * CSS color of the dot and the border
          * @default #f0cebb
          */
         color = "#f0cebb";
         /**
-         * Background of the button
+         * CSS color of the circle behind the dot
          * @default black
          */
         background = "black";
         /**
-         * Width of the button
+         * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         width?: number | string | undefined;
         /**
-         * Height of the button
+         * Height, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         height?: number | string | undefined;
     }
+    /**
+     * Feeds `babylon.gui.radioButton.setCheckSizeRatio` with a radio button and how large its dot
+     * is.
+     */
     export class SetRadioButtonCheckSizeRatioDto {
         constructor(radioButton?: BABYLON.GUI.RadioButton, checkSizeRatio?: number) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
             if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
         }
         /**
-         * Radio button to update
+         * The radio button to change in place
          * @default undefined
          */
         radioButton!: BABYLON.GUI.RadioButton;
         /**
-         * Check size ratio
+         * How much of the circle the inner dot fills, from 0 to 1
          * @default 0.8
          * @minimum 0
          * @maximum 1
@@ -1124,48 +1311,62 @@ export namespace BabylonGui {
          */
         checkSizeRatio = 0.8;
     }
+    /**
+     * Feeds `babylon.gui.radioButton.setGroup` with a radio button and the group it joins.
+     */
     export class SetRadioButtonGroupDto {
         constructor(radioButton?: BABYLON.GUI.RadioButton, group?: string) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
             if (group !== undefined) { this.group = group; }
         }
         /**
-         * Radio button to update
+         * The radio button to change in place
          * @default undefined
          */
         radioButton!: BABYLON.GUI.RadioButton;
         /**
-         * Group of the radio button
+         * The group joined; only one radio button per group can be checked
          * @default
          */
         group!: string;
     }
+    /**
+     * Feeds `babylon.gui.radioButton.setBackground` with a radio button and the color of its
+     * circle.
+     */
     export class SetRadioButtonBackgroundDto {
         constructor(radioButton?: BABYLON.GUI.RadioButton, background?: string) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
             if (background !== undefined) { this.background = background; }
         }
         /**
-         * Radio button to update
+         * The radio button to change in place
          * @default undefined
          */
         radioButton!: BABYLON.GUI.RadioButton;
         /**
-         * Background of the radio button
+         * CSS color of the circle behind the dot
          * @default black
          */
         background = "black";
     }
+    /**
+     * Feeds the `babylon.gui.radioButton` getters with the radio button to read from.
+     */
     export class RadioButtonDto {
         constructor(radioButton?: BABYLON.GUI.RadioButton) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
         }
         /**
-         * Radio button to update
+         * The radio button to read from
          * @default undefined
          */
         radioButton!: BABYLON.GUI.RadioButton;
     }
+    /**
+     * Feeds `babylon.gui.slider.createSlider`: the name, range, starting value, step, direction,
+     * colors, optional size and thumb of a slider.
+     */
     export class CreateSliderDto {
         constructor(name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean) {
             if (name !== undefined) { this.name = name; }
@@ -1181,12 +1382,12 @@ export namespace BabylonGui {
             if (displayThumb !== undefined) { this.displayThumb = displayThumb; }
         }
         /**
-         * Name of the button
+         * Name the slider is known by, which `control.getControlByName` finds it by
          * @default sliderName
          */
         name = "sliderName";
         /**
-         * Minimum value of the slider
+         * The value at the left or bottom end
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1194,7 +1395,7 @@ export namespace BabylonGui {
          */
         minimum = 0;
         /**
-         * Maximum value of the slider
+         * The value at the right or top end
          * @default 10
          * @minimum -Infinity
          * @maximum Infinity
@@ -1202,7 +1403,7 @@ export namespace BabylonGui {
          */
         maximum = 10;
         /**
-         * Value of the slider
+         * The value the slider starts at, between the minimum and maximum
          * @default 5
          * @minimum -Infinity
          * @maximum Infinity
@@ -1210,7 +1411,7 @@ export namespace BabylonGui {
          */
         value = 5;
         /**
-         * Step of the slider
+         * The increment the value moves in; 1 gives whole numbers, 0 moves smoothly
          * @default 0.01
          * @minimum -Infinity
          * @maximum Infinity
@@ -1218,38 +1419,44 @@ export namespace BabylonGui {
          */
         step = 0.01;
         /**
-         * Is slider vertical
+         * When true, the slider runs bottom to top; when false, left to right
          * @default false
          */
         isVertical = false;
         /**
-         * Color of the button
+         * CSS color of the filled part of the track
          * @default #f0cebb
          */
         color = "#f0cebb";
         /**
-         * Background of the button
+         * CSS color of the unfilled part of the track
          * @default black
          */
         background = "black";
         /**
-         * Width of the button
+         * Width as a pixel string or a fraction; left out, a horizontal slider fills the parent and
+         * a vertical one is 42 pixels
          * @default undefined
          * @optional true
          */
         width?: number | string | undefined;
         /**
-         * Height of the button
+         * Height as a pixel string or a fraction; left out, a vertical slider fills the parent and
+         * a horizontal one is 42 pixels
          * @default undefined
          * @optional true
          */
         height?: number | string | undefined;
         /**
-         * Should display thumb
+         * When true, the draggable thumb is drawn; when false, only the track
          * @default true
          */
         displayThumb = true;
     }
+    /**
+     * Feeds `babylon.gui.textBlock.createTextBlock`: the name, text, color, optional size and font
+     * size of a text block.
+     */
     export class CreateTextBlockDto {
         constructor(name?: string, text?: string, color?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
@@ -1259,115 +1466,139 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Name of the text block
+         * Name the text block is known by, which `control.getControlByName` finds it by
          * @default textBlockName
          */
         name = "textBlockName";
         /**
-        * Text of the block
-        * @default Hello World!
-        */
+         * The text shown
+         * @default Hello World!
+         */
         text = "Hello World!";
         /**
-         * Color of the  text block
+         * CSS color of the text
          * @default #f0cebb
          */
         color = "#f0cebb";
         /**
-         * Width of the  text block
+         * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         width?: number | string | undefined;
         /**
-         * Height of the  text block
+         * Height, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
+         * out, the engine chooses
          * @default undefined
          * @optional true
          */
         height?: number | string | undefined;
         /**
-         * Font size of the text block
+         * Font size of the text, in pixels
          * @default 24
          */
         fontSize = 24;
     }
 
+    /**
+     * Feeds `babylon.gui.textBlock.setText` with a text block and its new text.
+     */
     export class SetTextBlockTextDto {
         constructor(textBlock?: BABYLON.GUI.TextBlock, text?: string) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (text !== undefined) { this.text = text; }
         }
         /**
-         * Text block to update
+         * The text block to change in place
          * @default undefined
          */
         textBlock!: BABYLON.GUI.TextBlock;
         /**
-         * Text of the block
+         * The text shown from then on
          * @default undefined
          */
         text!: string;
     }
 
+    /**
+     * Feeds `babylon.gui.textBlock.setRsizeToFit` with a text block and whether it sizes itself to
+     * its text.
+     */
     export class SetTextBlockResizeToFitDto {
         constructor(textBlock?: BABYLON.GUI.TextBlock, resizeToFit?: boolean) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (resizeToFit !== undefined) { this.resizeToFit = resizeToFit; }
         }
         /**
-         * Text block to update
+         * The text block to change in place
          * @default undefined
          */
         textBlock!: BABYLON.GUI.TextBlock;
         /**
-         * Resize to fit
+         * When true, the block grows or shrinks to fit its text instead of keeping its set size
          * @default false
          */
         resizeToFit = false;
     }
+    /**
+     * Feeds `babylon.gui.textBlock.setTextWrapping` with a text block and how it handles text wider
+     * than itself.
+     */
     export class SetTextBlockTextWrappingDto {
         constructor(textBlock?: BABYLON.GUI.TextBlock, textWrapping?: boolean) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (textWrapping !== undefined) { this.textWrapping = textWrapping; }
         }
         /**
-         * Text block to update
+         * The text block to change in place
          * @default undefined
          */
         textBlock!: BABYLON.GUI.TextBlock;
         /**
-         * Text wrapping
+         * True wraps onto new lines, false clips, or one of the engine's modes such as ellipsis
          * @default undefined
          */
         textWrapping!: boolean | BABYLON.GUI.TextWrapping;
     }
+    /**
+     * Feeds `babylon.gui.textBlock.setLineSpacing` with a text block and the extra space between
+     * its lines.
+     */
     export class SetTextBlockLineSpacingDto {
         constructor(textBlock?: BABYLON.GUI.TextBlock, lineSpacing?: string | number) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (lineSpacing !== undefined) { this.lineSpacing = lineSpacing; }
         }
         /**
-         * Text block to update
+         * The text block to change in place
          * @default undefined
          */
         textBlock!: BABYLON.GUI.TextBlock;
         /**
-         * Line spacing of the text
+         * Extra space between lines, as pixels or a string such as `4px`
          * @default undefined
          */
         lineSpacing!: string | number;
     }
+    /**
+     * Feeds the `babylon.gui.textBlock` getters with the text block to read from.
+     */
     export class TextBlockDto {
         constructor(textBlock?: BABYLON.GUI.TextBlock) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
         }
         /**
-         * Text block to update
+         * The text block to read from
          * @default undefined
          */
         textBlock!: BABYLON.GUI.TextBlock;
     }
 
+    /**
+     * Feeds `babylon.gui.slider.changeSliderThumb`: the slider and the shape, color, width,
+     * clamping and visibility of its thumb.
+     */
     export class SliderThumbDto {
         constructor(slider?: BABYLON.GUI.Slider, isThumbCircle?: boolean, thumbColor?: string, thumbWidth?: string | number, isThumbClamped?: boolean, displayThumb?: boolean) {
             if (slider !== undefined) { this.slider = slider; }
@@ -1378,91 +1609,107 @@ export namespace BabylonGui {
             if (displayThumb !== undefined) { this.displayThumb = displayThumb; }
         }
         /**
-         * Slider for which the thumb needs to be updated
+         * The slider whose thumb is restyled in place
          * @default undefined
          */
         slider!: BABYLON.GUI.Slider;
         /**
-         * Is thumb circle
+         * When true, the thumb is round; when false, square
          * @default false
          */
         isThumbCircle = false;
         /**
-         * Color of the thumb
+         * CSS color of the thumb
          * @default white
          */
         thumbColor = "white";
         /**
-         * Thumb width
+         * Width of the thumb as a pixel string or a fraction; left out, the engine chooses
          * @default undefined
          * @optional true
          */
         thumbWidth?: string | number | undefined;
         /**
-         * Is thumb clamped
+         * When true, the thumb stays inside the track at the ends instead of overhanging it
          * @default false
          */
         isThumbClamped = false;
         /**
-         * Should display thumb
+         * When true, the thumb is drawn; when false, only the track
          * @default true
          */
         displayThumb = true;
     }
+    /**
+     * Feeds the `babylon.gui.slider` getters with the slider to read from.
+     */
     export class SliderDto {
         constructor(slider?: BABYLON.GUI.Slider) {
             if (slider !== undefined) { this.slider = slider; }
         }
         /**
-         * Slider for which the thumb needs to be updated
+         * The slider to read from
          * @default undefined
          */
         slider!: BABYLON.GUI.Slider;
     }
+    /**
+     * Feeds `babylon.gui.slider.setBorderColor` with a slider and the color of the line around its
+     * track.
+     */
     export class SliderBorderColorDto {
         constructor(slider?: BABYLON.GUI.Slider, borderColor?: string) {
             if (slider !== undefined) { this.slider = slider; }
             if (borderColor !== undefined) { this.borderColor = borderColor; }
         }
         /**
-         * Slider for which the thumb needs to be updated
+         * The slider to change in place
          * @default undefined
          */
         slider!: BABYLON.GUI.Slider;
         /**
-         * Border color of the slider
+         * CSS color of the line around the track
          * @default white
          */
         borderColor = "white";
     }
+    /**
+     * Feeds `babylon.gui.slider.setBackgroundColor` with a slider and the color of the unfilled
+     * track.
+     */
     export class SliderBackgroundColorDto {
         constructor(slider?: BABYLON.GUI.Slider, backgroundColor?: string) {
             if (slider !== undefined) { this.slider = slider; }
             if (backgroundColor !== undefined) { this.backgroundColor = backgroundColor; }
         }
         /**
-         * Slider for which the thumb needs to be updated
+         * The slider to change in place
          * @default undefined
          */
         slider!: BABYLON.GUI.Slider;
         /**
-         * Background color of the slider
+         * CSS color of the unfilled part of the track
          * @default black
          */
         backgroundColor = "black";
     }
+    /**
+     * Feeds `babylon.gui.slider.setValue`, `setMinimum`, `setMaximum` and `setStep` with a slider
+     * and the number to set.
+     */
     export class SetSliderValueDto {
         constructor(slider?: BABYLON.GUI.Slider, value?: number) {
             if (slider !== undefined) { this.slider = slider; }
             if (value !== undefined) { this.value = value; }
         }
         /**
-         * Slider for which the thumb needs to be updated
+         * The slider to change in place
          * @default undefined
          */
         slider!: BABYLON.GUI.Slider;
         /**
-         * Value of the slider
+         * The number set: the current value, the minimum, the maximum or the step, depending on the
+         * method
          * @default 5
          * @minimum -Infinity
          * @maximum Infinity
@@ -1470,6 +1717,10 @@ export namespace BabylonGui {
          */
         value: number = 5;
     }
+    /**
+     * Feeds `babylon.gui.control.changeControlPadding` with a control and the space kept clear on
+     * each side of it.
+     */
     export class PaddingLeftRightTopBottomDto {
         constructor(control?: BABYLON.GUI.Control, paddingLeft?: number | string, paddingRight?: number | string, paddingTop?: number | string, paddingBottom?: number | string) {
             if (control !== undefined) { this.control = control; }
@@ -1479,35 +1730,42 @@ export namespace BabylonGui {
             if (paddingBottom !== undefined) { this.paddingBottom = paddingBottom; }
         }
         /**
-         * Control to change the padding
+         * The control to change in place
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Padding left of the stack panel
+         * Space kept clear on the left, as a pixel string or a fraction; left out, it stays as it
+         * is
          * @default undefined
          * @optional true
          */
         paddingLeft!: number | string;
         /**
-         * Padding right of the stack panel
+         * Space kept clear on the right, as a pixel string or a fraction; left out, it stays as it
+         * is
          * @default undefined
          * @optional true
          */
         paddingRight!: number | string;
         /**
-         * Padding top of the stack panel
+         * Space kept clear at the top, as a pixel string or a fraction; left out, it stays as it is
          * @default undefined
          * @optional true
          */
         paddingTop!: number | string;
         /**
-         * Padding bottom of the stack panel
+         * Space kept clear at the bottom, as a pixel string or a fraction; left out, it stays as it
+         * is
          * @default undefined
          * @optional true
          */
         paddingBottom!: number | string;
     }
+    /**
+     * Feeds `babylon.gui.control.cloneControl`: the control to copy, the container the copy goes
+     * into, its name and its host texture.
+     */
     export class CloneControlDto {
         constructor(control?: BABYLON.GUI.Control, container?: BABYLON.GUI.Container, name?: string, host?: BABYLON.GUI.AdvancedDynamicTexture) {
             if (control !== undefined) { this.control = control; }
@@ -1516,28 +1774,32 @@ export namespace BabylonGui {
             if (host !== undefined) { this.host = host; }
         }
         /**
-         * Control to clone
+         * The control to copy; it stays as it is
          * @default undefined
          */
         control!: BABYLON.GUI.Control;
         /**
-         * Use container to which the cloned control will be added
+         * The container the copy is added to; left out, the copy is not placed anywhere yet
          * @default undefined
          * @optional true
          */
         container?: BABYLON.GUI.Container | undefined;
         /**
-         * Name of the cloned control
+         * Name the copy is known by
          * @default clonedControl
          */
         name = "clonedControl";
         /**
-         * Host of the cloned control
+         * The GUI texture the copy belongs to; left out, the original's host is used
          * @default undefined
          * @optional true
          */
         host?: BABYLON.GUI.AdvancedDynamicTexture | undefined;
     }
+    /**
+     * Feeds `babylon.gui.control.changeControlAlignment` and `textBlock.alignText` with a control
+     * and where it sits inside its parent.
+     */
     export class AlignmentDto<T> {
         constructor(control?: T, horizontalAlignment?: horizontalAlignmentEnum, verticalAlignment?: verticalAlignmentEnum) {
             if (control !== undefined) { this.control = control; }
@@ -1545,22 +1807,26 @@ export namespace BabylonGui {
             if (verticalAlignment !== undefined) { this.verticalAlignment = verticalAlignment; }
         }
         /**
-         * Control to change the padding
+         * The control to align in place
          * @default undefined
          */
         control!: T;
         /**
-         * Alignment horizontal
+         * Left, center or right inside the parent
          * @default center
          */
         horizontalAlignment: horizontalAlignmentEnum = horizontalAlignmentEnum.center;
         /**
-         * Alignment horizontal
+         * Top, center or bottom inside the parent
          * @default center
          */
         verticalAlignment: verticalAlignmentEnum = verticalAlignmentEnum.center;
     }
 
+    /**
+     * Feeds `babylon.gui.textBlock.setTextOutline` with a text block and the width and color of the
+     * outline around its letters.
+     */
     export class SetTextBlockTextOutlineDto {
         constructor(textBlock?: BABYLON.GUI.TextBlock, outlineWidth?: number, outlineColor?: string) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
@@ -1568,12 +1834,12 @@ export namespace BabylonGui {
             if (outlineColor !== undefined) { this.outlineColor = outlineColor; }
         }
         /**
-         * Control to change the padding
+         * The text block to change in place
          * @default undefined
          */
         textBlock!: BABYLON.GUI.TextBlock;
         /**
-         * Alignment horizontal
+         * Width of the outline around the letters, in pixels; 0 removes it
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -1581,7 +1847,7 @@ export namespace BabylonGui {
          */
         outlineWidth: number = 0;
         /**
-         * Outline color
+         * CSS color of the outline
          * @default white
          */
         outlineColor = "white";

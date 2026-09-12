@@ -3,6 +3,10 @@ import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 
+/**
+ * The flying camera: it sits at a position, looks at a target and moves freely with the keyboard
+ * and pointer, for walking through a scene rather than looking at one object.
+ */
 export class BabylonFreeCamera {
 
     constructor(
@@ -10,11 +14,17 @@ export class BabylonFreeCamera {
     ) { }
 
     /**
-     * Creates a free camera
-     * @param inputs Describes the free camera
-     * @returns BabylonJS free camera
+     * Creates a camera at `position` looking at `target` that the keyboard and pointer fly around,
+     * and adds it to the scene without activating it.
+     * @param inputs - The position and the target
+     * @returns The free camera
      * @group create
      * @shortname new free camera
+     * @example
+     * ```typescript
+     * const camera = bitbybit.babylon.camera.free.create({ position: [20, 20, 20], target: [0, 0, 0] });
+     * bitbybit.babylon.scene.activateCamera({ camera });
+     * ```
      */
     create(inputs: Inputs.BabylonCamera.FreeCameraDto): BABYLON.FreeCamera {
         const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);

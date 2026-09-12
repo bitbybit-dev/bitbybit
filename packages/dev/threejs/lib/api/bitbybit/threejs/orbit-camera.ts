@@ -35,6 +35,12 @@ interface OrbitCameraConfig {
     frameOnStart: boolean;
 }
 
+/**
+ * The orbiting camera for Three.js: it looks at a pivot point from a distance and turns around it
+ * with `yaw` around the vertical axis and `pitch` up or down, both in degrees. The controller it
+ * gives back carries the camera and its input handlers; the methods here move the pivot, frame an
+ * object, reset the view and fence the distance and pitch.
+ */
 export class ThreeJSOrbitCamera {
 
     constructor(
@@ -42,11 +48,19 @@ export class ThreeJSOrbitCamera {
     ) { }
 
     /**
-     * Creates an orbit camera controller that allows rotating around a pivot point. This camera is suitable for 3D object inspection and scene navigation.
-     * @param inputs Describes the orbit camera configuration
-     * @returns Orbit camera controller instance with mouse, touch, and keyboard input handlers
+     * Creates an orbit camera that circles `pivotPoint` at `distance`, placed by `yaw` and `pitch`
+     * in degrees, with mouse, touch and keyboard controls attached to `domElement` or the page.
+     *
+     * The limits fence how far it can zoom and tilt, damping and inertia smooth its motion, and
+     * with `focusObject` and `frameOnStart` it starts framed on that object.
+     * @param inputs - The pivot, distance, angles, limits, sensitivities, smoothing and start options
+     * @returns The orbit camera controller holding the camera and its input handlers
      * @group create
      * @shortname new orbit camera
+     * @example
+     * ```typescript
+     * const orbit = bitbybit.three.camera.orbitCamera.create({ pivotPoint: [0, 0, 0], distance: 20, pitch: 30, yaw: 45, distanceMin: 0.1, distanceMax: 1000, pitchAngleMin: -90, pitchAngleMax: 90, orbitSensitivity: 0.3, distanceSensitivity: 0.15, panSensitivity: 1, inertiaFactor: 0.1, autoRender: true, frameOnStart: true, enableDamping: true, dampingFactor: 0.1 });
+     * ```
      */
     create(inputs: Inputs.ThreeJSCamera.OrbitCameraDto): OrbitCameraController {
         if (!this.context.scene) {
@@ -125,10 +139,14 @@ export class ThreeJSOrbitCamera {
     }
 
     /**
-     * Sets the pivot point of the orbit camera
-     * @param inputs Orbit camera and pivot point
+     * Moves the point an orbit camera looks at and circles around, keeping its distance and angles.
+     * @param inputs - The orbit camera controller and the new pivot point
      * @group adjust
      * @shortname set pivot point
+     * @example
+     * ```typescript
+     * bitbybit.three.camera.orbitCamera.setPivotPoint({ orbitCamera: orbit, pivotPoint: [0, 5, 0] });
+     * ```
      */
     setPivotPoint(inputs: Inputs.ThreeJSCamera.PivotPointDto): void {
         const pivotVec = new THREEJS.Vector3(inputs.pivotPoint[0], inputs.pivotPoint[1], inputs.pivotPoint[2]);
@@ -136,9 +154,9 @@ export class ThreeJSOrbitCamera {
     }
 
     /**
-     * Gets the pivot point of the orbit camera
-     * @param inputs Orbit camera instance
-     * @returns Pivot point as [x, y, z]
+     * Reads the point an orbit camera looks at and circles around.
+     * @param inputs - The orbit camera controller
+     * @returns The pivot point
      * @group get
      * @shortname get pivot point
      */
@@ -148,29 +166,39 @@ export class ThreeJSOrbitCamera {
     }
 
     /**
-     * Focus the camera on an object, adjusting distance to frame it properly
-     * @param inputs Orbit camera and object to focus on
+     * Turns an orbit camera toward an object and backs off until the whole object fits the view,
+     * with `padding` above 1 leaving space around it.
+     * @param inputs - The orbit camera controller, the object and the padding factor
      * @group adjust
      * @shortname focus on object
+     * @example
+     * ```typescript
+     * bitbybit.three.camera.orbitCamera.focusOnObject({ orbitCamera: orbit, object: drawn, padding: 1.5 });
+     * ```
      */
     focusOnObject(inputs: Inputs.ThreeJSCamera.FocusObjectDto): void {
         inputs.orbitCamera.orbitCamera.focus(inputs.object, inputs.padding);
     }
 
     /**
-     * Reset camera to specific yaw, pitch and distance
-     * @param inputs Orbit camera and reset parameters
+     * Puts an orbit camera at the given `yaw` and `pitch` in degrees and `distance` from its pivot,
+     * discarding whatever the user has done with it.
+     * @param inputs - The orbit camera controller, the two angles and the distance
      * @group adjust
      * @shortname reset camera
+     * @example
+     * ```typescript
+     * bitbybit.three.camera.orbitCamera.resetCamera({ orbitCamera: orbit, yaw: 45, pitch: 30, distance: 20 });
+     * ```
      */
     resetCamera(inputs: Inputs.ThreeJSCamera.ResetCameraDto): void {
         inputs.orbitCamera.orbitCamera.reset(inputs.yaw, inputs.pitch, inputs.distance);
     }
 
     /**
-     * Gets the current distance from pivot point
-     * @param inputs Orbit camera controller
-     * @returns Current distance
+     * Reads how far an orbit camera currently is from its pivot point, in scene units.
+     * @param inputs - The orbit camera controller
+     * @returns The distance
      * @group get
      * @shortname get distance
      */
@@ -179,8 +207,9 @@ export class ThreeJSOrbitCamera {
     }
 
     /**
-     * Sets the distance from pivot point
-     * @param inputs Orbit camera controller and distance
+     * Moves an orbit camera to `distance` scene units from its pivot point, within its distance
+     * limits; the angles in the same input are ignored.
+     * @param inputs - The orbit camera controller and the distance
      * @group adjust
      * @shortname set distance
      */
@@ -189,9 +218,9 @@ export class ThreeJSOrbitCamera {
     }
 
     /**
-     * Gets the current yaw angle in degrees
-     * @param inputs Orbit camera controller
-     * @returns Current yaw angle
+     * Reads the angle an orbit camera has turned around the vertical axis, in degrees.
+     * @param inputs - The orbit camera controller
+     * @returns The yaw in degrees
      * @group get
      * @shortname get yaw
      */
@@ -200,9 +229,10 @@ export class ThreeJSOrbitCamera {
     }
 
     /**
-     * Gets the current pitch angle in degrees
-     * @param inputs Orbit camera controller
-     * @returns Current pitch angle
+     * Reads how far an orbit camera looks up or down, in degrees; 0 is level, positive looks down
+     * from above.
+     * @param inputs - The orbit camera controller
+     * @returns The pitch in degrees
      * @group get
      * @shortname get pitch
      */
@@ -211,10 +241,14 @@ export class ThreeJSOrbitCamera {
     }
 
     /**
-     * Sets distance limits for the orbit camera
-     * @param inputs Orbit camera and min/max distance
+     * Fences how close to and how far from its pivot an orbit camera may zoom, in scene units.
+     * @param inputs - The orbit camera controller and the minimum and maximum distance
      * @group adjust
      * @shortname set distance limits
+     * @example
+     * ```typescript
+     * bitbybit.three.camera.orbitCamera.setDistanceLimits({ orbitCamera: orbit, min: 5, max: 100 });
+     * ```
      */
     setDistanceLimits(inputs: Inputs.ThreeJSCamera.SetDistanceLimitsDto): void {
         inputs.orbitCamera.orbitCamera.distanceMin = inputs.min;
@@ -222,10 +256,15 @@ export class ThreeJSOrbitCamera {
     }
 
     /**
-     * Sets pitch angle limits for the orbit camera
-     * @param inputs Orbit camera and min/max pitch angles
+     * Fences how far up and down an orbit camera may tilt, in degrees, so it cannot go below the
+     * ground or over the top.
+     * @param inputs - The orbit camera controller and the minimum and maximum pitch
      * @group adjust
      * @shortname set pitch limits
+     * @example
+     * ```typescript
+     * bitbybit.three.camera.orbitCamera.setPitchLimits({ orbitCamera: orbit, min: 0, max: 89 });
+     * ```
      */
     setPitchLimits(inputs: Inputs.ThreeJSCamera.SetPitchLimitsDto): void {
         inputs.orbitCamera.orbitCamera.pitchAngleMin = inputs.min;

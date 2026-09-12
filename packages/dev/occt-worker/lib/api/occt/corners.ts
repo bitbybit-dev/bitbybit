@@ -4,6 +4,13 @@
 import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 
+/**
+ * Rounding and beveling single corners of an OpenCascade shell or solid, picked by a point near
+ * them rather than by edge index: the corner nearest each point is found, classified and treated on
+ * its own, leaving the rest of the shape untouched. A corner is where several edges meet at one
+ * vertex. `classifyCornerByPoint` reports what kind of corner a point would pick, and
+ * `cornerByPointReport` explains what a fillet did or why it was skipped.
+ */
 export class OCCTCorners {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
@@ -11,48 +18,105 @@ export class OCCTCorners {
     }
 
     /**
-     * Rounds (fillets) the corner(s) of a shell or solid nearest the given point(s), affecting the corner only
-     * @param inputs Shape, points near corners, radius, taper factor, snap tolerance and mode
-     * @returns OpenCascade shape with rounded corner(s)
+     * Rounds the corner nearest each given point on a shell or solid, touching only that corner.
+     *
+     * `radius` is the rounding size; `taperFactor`, for 3D corners, sets how far the rounding
+     * reaches along the meeting edges, 0 for the tightest, 1 for the full reach. `snapTolerance`
+     * caps the point-to-vertex distance, 0 accepting the nearest; `mode` `planarOnly` skips 3D
+     * corners.
+     * @param inputs - The shape, the points near the corners, the radius, the taper factor, the snap tolerance and the mode
+     * @returns The shape with rounded corners
      * @group by point
      * @shortname fillet corner by point
      * @drawable true
+     * @example
+     * ```typescript
+     * const rounded = await bitbybit.occt.corners.filletCornerByPoint({
+     *     shape: box,
+     *     points: [[5, 5, 5]],
+     *     radius: 1,
+     *     taperFactor: 1,
+     *     snapTolerance: 0,
+     *     mode: Bit.Inputs.OCCT.cornerModeEnum.auto,
+     * });
+     * ```
      */
     filletCornerByPoint(inputs: Inputs.OCCT.FilletCornerByPointDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("corners.filletCornerByPoint", inputs);
     }
 
     /**
-     * Bevels (chamfers) the corner(s) of a shell or solid nearest the given point(s), affecting the corner only
-     * @param inputs Shape, points near corners, distance, angle, snap tolerance and mode
-     * @returns OpenCascade shape with beveled corner(s)
+     * Bevels the corner nearest each given point on a shell or solid, touching only that corner.
+     *
+     * `distance` is how far the bevel reaches from the corner and `angle` its slope in degrees.
+     * `snapTolerance` caps how far a point may be from a vertex, 0 accepting the nearest; `mode`
+     * `planarOnly` skips 3D corners. A corner that cannot be beveled throws.
+     * @param inputs - The shape, the points near the corners, the distance, the angle, the snap tolerance and the mode
+     * @returns The shape with beveled corners
      * @group by point
      * @shortname chamfer corner by point
      * @drawable true
+     * @example
+     * ```typescript
+     * const beveled = await bitbybit.occt.corners.chamferCornerByPoint({
+     *     shape: box,
+     *     points: [[5, 5, 5]],
+     *     distance: 1,
+     *     angle: 45,
+     *     snapTolerance: 0,
+     *     mode: Bit.Inputs.OCCT.cornerModeEnum.auto,
+     * });
+     * ```
      */
     chamferCornerByPoint(inputs: Inputs.OCCT.ChamferCornerByPointDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("corners.chamferCornerByPoint", inputs);
     }
 
     /**
-     * Classifies the corner(s) nearest the given point(s) without modifying the shape
-     * @param inputs Shape, points near corners and snap tolerance
-     * @returns Per-point classification report
+     * Looks up the corner nearest each given point and reports what kind it is, without changing
+     * the shape.
+     *
+     * Each entry says where the corner is, how far it was from the point, how many edges and faces
+     * meet there and whether it is planar, developable or a true 3D corner, or why none was found.
+     * It shows what `filletCornerByPoint` picks.
+     * @param inputs - The shape, the points near the corners and the snap tolerance
+     * @returns The report with one entry per point
      * @group by point
      * @shortname classify corner by point
      * @drawable false
+     * @example
+     * ```typescript
+     * const report = await bitbybit.occt.corners.classifyCornerByPoint({ shape: box, points: [[5, 5, 5]], snapTolerance: 0 });
+     * console.log(report.results[0].classification);
+     * ```
      */
     classifyCornerByPoint(inputs: Inputs.OCCT.ClassifyCornerByPointDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.CornerByPointReport> {
         return this.occWorkerManager.genericCallToWorkerPromise("corners.classifyCornerByPoint", inputs);
     }
 
     /**
-     * Runs the corner fillet and returns a per-point diagnostic report alongside it
-     * @param inputs Shape, points near corners, radius, taper factor, snap tolerance and mode
-     * @returns Per-point corner report
+     * Runs the same corner rounding as `filletCornerByPoint` and returns a report instead of the
+     * shape: for each point, which corner was found, how it was classified, what was done and
+     * whether it succeeded.
+     *
+     * Handy for finding out why a fillet was skipped before changing the radius or the points.
+     * @param inputs - The shape, the points near the corners, the radius, the taper factor, the snap tolerance and the mode
+     * @returns The report with one entry per point
      * @group by point
      * @shortname corner by point report
      * @drawable false
+     * @example
+     * ```typescript
+     * const report = await bitbybit.occt.corners.cornerByPointReport({
+     *     shape: box,
+     *     points: [[5, 5, 5]],
+     *     radius: 1,
+     *     taperFactor: 1,
+     *     snapTolerance: 0,
+     *     mode: Bit.Inputs.OCCT.cornerModeEnum.auto,
+     * });
+     * console.log(report.results[0].applied, report.results[0].message);
+     * ```
      */
     cornerByPointReport(inputs: Inputs.OCCT.FilletCornerByPointDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.CornerByPointReport> {
         return this.occWorkerManager.genericCallToWorkerPromise("corners.cornerByPointReport", inputs);

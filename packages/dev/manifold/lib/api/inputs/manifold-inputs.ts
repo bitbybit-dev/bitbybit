@@ -60,17 +60,55 @@ export namespace Manifold {
      * WebAssembly for rendering or export.
      */
     export class DecomposedManifoldMeshDto {
+        /**
+         * How many numbers each vertex carries in `vertProperties`; the position takes the first three.
+         */
         numProp!: number;
+        /**
+         * All vertex properties in one flat list, `numProp` numbers per vertex, position first.
+         */
         vertProperties!: Float32Array;
+        /**
+         * The triangles as a flat list of vertex indexes, three per triangle.
+         */
         triVerts!: Uint32Array;
+        /**
+         * For each merged vertex, the index of the property vertex that is merged away; pairs with
+         * `mergeToVert`.
+         */
         mergeFromVert?: Uint32Array | undefined;
+        /**
+         * For each merged vertex, the index of the property vertex it is merged into; pairs with
+         * `mergeFromVert`.
+         */
         mergeToVert?: Uint32Array | undefined;
+        /**
+         * Where each triangle run starts in `triVerts`, one entry per run plus a final end marker.
+         */
         runIndex?: Uint32Array | undefined;
+        /**
+         * The id of the original shape each run of triangles came from, one per run.
+         */
         runOriginalID?: Uint32Array | undefined;
+        /**
+         * The placement of each run as 12 numbers of a column-major 3x4 matrix, one per run.
+         */
         runTransform?: Float32Array | undefined;
+        /**
+         * For each triangle, the id of the flat face it belongs to, so coplanar triangles can be
+         * grouped.
+         */
         faceID?: Uint32Array | undefined;
+        /**
+         * The smoothing tangent of each half-edge as four numbers, direction and weight, when the solid
+         * was smoothed.
+         */
         halfedgeTangent?: Float32Array | undefined;
     }
+    /**
+     * A solid or cross-section and how to draw it, for the renderer packages: face color, opacity and
+     * material for a solid, line color and width for a cross-section.
+     */
     export class DrawManifoldOrCrossSectionDto<T, M> {
         /**
          * Provide options without default values
@@ -89,12 +127,12 @@ export namespace Manifold {
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
-         * Manifold geometry
+         * The solid or cross-section to draw.
          * @default undefined
          */
         manifoldOrCrossSection?: T | undefined;
         /**
-         * Face opacity value between 0 and 1
+         * How opaque the faces are, from 0 for invisible to 1 for solid.
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -102,28 +140,28 @@ export namespace Manifold {
          */
         faceOpacity = 1;
         /**
-         * Face material
+         * A material for the faces from the rendering engine; when given it replaces the face color.
          * @default undefined
          * @optional true
          */
         faceMaterial?: M | undefined;
         /**
-         * Hex colour string for face colour
+         * The color of the faces as a hex string such as `#ff0000`.
          * @default #ff0000
          */
         faceColour: Base.Color = "#ff0000";
         /**
-         * Hex colour string for cross section drawing
+         * The color of a cross-section's lines as a hex string.
          * @default #ff00ff
          */
         crossSectionColour: Base.Color = "#ff00ff";
         /**
-         * Width of cross section lines
+         * How thick a cross-section's lines are drawn.
          * @default 2
          */
         crossSectionWidth = 2;
         /**
-         * Cross section opacity value between 0 and 1
+         * How opaque a cross-section's lines are, from 0 to 1.
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -131,22 +169,23 @@ export namespace Manifold {
          */
         crossSectionOpacity = 1;
         /**
-         * Compute normals for the shape
+         * When true, normals are computed for the mesh so it shades smoothly.
          * @default false
          */
         computeNormals = false;
         /**
-         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * When true, the back of each face is drawn in its own color, which shows which way faces
+         * point.
          * @default true
          */
         drawTwoSided = true;
         /**
-         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
          * @default #0000ff
          */
         backFaceColour: Base.Color = "#0000ff";
         /**
-         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -154,6 +193,10 @@ export namespace Manifold {
          */
         backFaceOpacity = 1;
     }
+    /**
+     * Solids or cross-sections and how to draw them, for the renderer packages: the same options as
+     * `DrawManifoldOrCrossSectionDto`, applied to every shape in the list.
+     */
     export class DrawManifoldsOrCrossSectionsDto<T, M> {
         /**
          * Provide options without default values
@@ -172,23 +215,23 @@ export namespace Manifold {
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
         }
         /**
-         * Manifold geometry
+         * The solids or cross-sections to draw with the same options.
          * @default undefined
          */
         manifoldsOrCrossSections?: T[] | undefined;
         /**
-         * Face material
+         * A material for the faces from the rendering engine; when given it replaces the face color.
          * @default undefined
          * @optional true
          */
         faceMaterial?: M | undefined;
         /**
-         * Hex colour string for face colour
+         * The color of the faces as a hex string such as `#ff0000`.
          * @default #ff0000
          */
         faceColour: Base.Color = "#ff0000";
         /**
-         * Face opacity value between 0 and 1
+         * How opaque the faces are, from 0 for invisible to 1 for solid.
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -196,17 +239,17 @@ export namespace Manifold {
          */
         faceOpacity = 1;
         /**
-         * Hex colour string for cross section drawing
+         * The color of a cross-section's lines as a hex string.
          * @default #ff00ff
          */
         crossSectionColour: Base.Color = "#ff00ff";
         /**
-         * Width of cross section lines
+         * How thick a cross-section's lines are drawn.
          * @default 2
          */
         crossSectionWidth = 2;
         /**
-         * Cross section opacity value between 0 and 1
+         * How opaque a cross-section's lines are, from 0 to 1.
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -214,22 +257,23 @@ export namespace Manifold {
          */
         crossSectionOpacity = 1;
         /**
-         * Compute normals for the shape
+         * When true, normals are computed for the meshes so they shade smoothly.
          * @default false
          */
         computeNormals = false;
         /**
-         * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
+         * When true, the back of each face is drawn in its own color, which shows which way faces
+         * point.
          * @default true
          */
         drawTwoSided = true;
         /**
-         * Hex colour string for back face colour (negative side of the face). Only used when drawTwoSided is true.
+         * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
          * @default #0000ff
          */
         backFaceColour: Base.Color = "#0000ff";
         /**
-         * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
+         * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
          * @default 1
          * @minimum 0
          * @maximum 1
@@ -237,24 +281,34 @@ export namespace Manifold {
          */
         backFaceOpacity = 1;
     }
+    /**
+     * Mesh data for `manifold.shapes.manifoldFromMesh`, which builds a solid from it.
+     */
     export class CreateFromMeshDto {
         constructor(mesh?: DecomposedManifoldMeshDto) {
             if (mesh !== undefined) { this.mesh = mesh; }
         }
         /**
-         * Mesh definition
+         * The mesh data, in the form `manifoldToMesh` hands out; it must describe a closed,
+         * consistently oriented surface.
          */
         mesh!: DecomposedManifoldMeshDto;
     }
+    /**
+     * Triangles as points for `manifold.shapes.fromPolygonPoints`, which builds a solid from them.
+     */
     export class FromPolygonPointsDto {
         constructor(polygonPoints?: Base.Point3[][]) {
             if (polygonPoints !== undefined) { this.polygonPoints = polygonPoints; }
         }
         /**
-         * Points describing polygons
+         * The triangles, each three points, together forming a closed surface.
          */
         polygonPoints!: Base.Point3[][];
     }
+    /**
+     * One polygon as points and the fill options for `crossSection.crossSectionFromPoints`.
+     */
     export class CrossSectionFromPolygonPointsDto {
         constructor(points?: Base.Point3[], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number) {
             if (points !== undefined) { this.points = points; }
@@ -263,25 +317,31 @@ export namespace Manifold {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * Points describing a single polygon
+         * The polygon's points in order; only X and Y are used.
          */
         points!: Base.Point3[];
         /**
-         * Fill rule for polygon interpretation
+         * Which regions of a self-crossing polygon count as inside: even-odd, non-zero, positive or
+         * negative winding.
          * @default positive
          */
         fillRule?: fillRuleEnum | undefined = fillRuleEnum.positive;
         /**
-         * Remove consecutive duplicate points before creating polygon
+         * When true, consecutive repeated points, the last and first included, are dropped before
+         * building.
          * @default false
          */
         removeDuplicates?: boolean | undefined = false;
         /**
-         * Tolerance for duplicate removal
+         * How close two points must be to count as repeated, in model units.
          * @default 1e-7
          */
         tolerance?: number | undefined = 1e-7;
     }
+    /**
+     * Several polygons as points and the fill options for `crossSection.crossSectionFromPolygons`, for
+     * outlines with holes.
+     */
     export class CrossSectionFromPolygonsPointsDto {
         constructor(polygonPoints?: Base.Point3[][], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number) {
             if (polygonPoints !== undefined) { this.polygonPoints = polygonPoints; }
@@ -290,37 +350,43 @@ export namespace Manifold {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * Points describing multiple polygons
+         * One list of points per polygon; only X and Y are used.
          */
         polygonPoints!: Base.Point3[][];
         /**
-         * Fill rule for polygon interpretation
+         * Which regions count as inside where polygons overlap: even-odd, non-zero, positive or
+         * negative winding.
          * @default positive
          */
         fillRule?: fillRuleEnum | undefined = fillRuleEnum.positive;
         /**
-         * Remove consecutive duplicate points before creating polygons
+         * When true, consecutive repeated points in each polygon, the last and first included, are
+         * dropped before building.
          * @default false
          */
         removeDuplicates?: boolean | undefined = false;
         /**
-         * Tolerance for duplicate removal
+         * How close two points must be to count as repeated, in model units.
          * @default 1e-7
          */
         tolerance?: number | undefined = 1e-7;
     }
+    /**
+     * A size and a placement for `manifold.shapes.cube`.
+     */
     export class CubeDto {
         constructor(center?: boolean, size?: number) {
             if (center !== undefined) { this.center = center; }
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Place cube on the center
+         * When true, the box is centered on the origin; when false its corner sits there and it extends
+         * along the positive axes.
          * @default true
          */
         center = true;
         /**
-         * Size of the cube
+         * The side length, one number for a cube or three for a box along X, Y and Z, in model units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -328,34 +394,42 @@ export namespace Manifold {
          */
         size = 1;
     }
+    /**
+     * Polygons as 2D points and a fill rule for `crossSection.shapes.create`.
+     */
     export class CreateContourSectionDto {
         constructor(polygons?: Base.Vector2[][], fillRule?: fillRuleEnum) {
             if (polygons !== undefined) { this.polygons = polygons; }
             if (fillRule !== undefined) { this.fillRule = fillRule; }
         }
         /**
-         * Polygons to use for the contour section
+         * The polygons, each a list of 2D points; overlapping ones are fused.
          * @default undefined
          */
         polygons!: Base.Vector2[][];
         /**
-         * Fill rule for the contour section
+         * Which regions count as inside where polygons overlap: even-odd, non-zero, positive or
+         * negative winding.
          * @default EvenOdd
          */
         fillRule: fillRuleEnum = fillRuleEnum.evenOdd;
     }
+    /**
+     * A side length and a placement for `crossSection.shapes.square`.
+     */
     export class SquareDto {
         constructor(center?: boolean, size?: number) {
             if (center !== undefined) { this.center = center; }
             if (size !== undefined) { this.size = size; }
         }
         /**
-         * Place cube on the center
+         * When true, the square is centered on the origin; when false its corner sits there.
          * @default false
          */
         center = false;
         /**
-         * Size of the cube
+         * The side length, one number for a square or two for a rectangle along X and Y, in model
+         * units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -363,13 +437,16 @@ export namespace Manifold {
          */
         size = 1;
     }
+    /**
+     * A radius and a segment count for `manifold.shapes.sphere`.
+     */
     export class SphereDto {
         constructor(radius?: number, circularSegments?: number) {
             if (radius !== undefined) { this.radius = radius; }
             if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
         }
         /**
-         * Radius of the sphere
+         * The distance from the center to the surface, in model units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -377,14 +454,18 @@ export namespace Manifold {
          */
         radius = 1;
         /**
-          * Circular segments of the sphere
-          * @default 32
-          * @minimum 0
-          * @maximum Infinity
-          * @step 1
-          */
+         * How many segments go around the sphere; rounded up to a multiple of four.
+         * @default 32
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
         circularSegments: number = 32;
     }
+    /**
+     * The size and placement of a cylinder or cone for `manifold.shapes.cylinder`, which stands it
+     * along Z.
+     */
     export class CylinderDto {
         constructor(height?: number, radiusLow?: number, radiusHigh?: number, circularSegments?: number, center?: boolean) {
             if (height !== undefined) { this.height = height; }
@@ -394,7 +475,7 @@ export namespace Manifold {
             if (center !== undefined) { this.center = center; }
         }
         /**
-         * Height of the cylinder
+         * The height along Z, in model units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -402,7 +483,7 @@ export namespace Manifold {
          */
         height = 1;
         /**
-         * Radius of the cylinder
+         * The radius of the bottom circle, in model units; must be above 0.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -410,7 +491,8 @@ export namespace Manifold {
          */
         radiusLow = 1;
         /**
-         * Radius of the cylinder
+         * The radius of the top circle, in model units: equal to `radiusLow` for a cylinder, smaller
+         * for a truncated cone, 0 for a pointed cone.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -418,7 +500,7 @@ export namespace Manifold {
          */
         radiusHigh = 1;
         /**
-         * Circular segments of the cylinder
+         * How many flat sides go around the cylinder; more is rounder.
          * @default 32
          * @minimum 0
          * @maximum Infinity
@@ -426,18 +508,21 @@ export namespace Manifold {
          */
         circularSegments = 32;
         /**
-         * Place cylinder on the center
+         * When true, the cylinder is centered on the origin; when false it stands on the XY plane.
          * @default true
          */
         center = true;
     }
+    /**
+     * A radius and a segment count for `crossSection.shapes.circle`.
+     */
     export class CircleDto {
         constructor(radius?: number, circularSegments?: number) {
             if (radius !== undefined) { this.radius = radius; }
             if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
         }
         /**
-         * Radius of the cylinder
+         * The distance from the center to the outline, in model units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -445,7 +530,7 @@ export namespace Manifold {
          */
         radius = 1;
         /**
-         * Circular segments of the cylinder
+         * How many straight sides the circle is drawn with; more is rounder.
          * @default 32
          * @minimum 0
          * @maximum Infinity
@@ -453,6 +538,9 @@ export namespace Manifold {
          */
         circularSegments = 32;
     }
+    /**
+     * Two sides and a placement for `crossSection.shapes.rectangle`.
+     */
     export class RectangleDto {
         constructor(length?: number, height?: number, center?: boolean) {
             if (length !== undefined) { this.length = length; }
@@ -460,7 +548,7 @@ export namespace Manifold {
             if (center !== undefined) { this.center = center; }
         }
         /**
-         * Length of the rectangle
+         * The side along X, in model units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -468,7 +556,7 @@ export namespace Manifold {
          */
         length = 1;
         /**
-         * Height of the rectangle
+         * The side along Y, in model units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -476,20 +564,27 @@ export namespace Manifold {
          */
         height = 1;
         /**
-         * Place rectangle on the center
+         * When true, the rectangle is centered on the origin; when false its corner sits there.
          * @default false
          */
         center = false;
     }
+    /**
+     * One solid for the methods that take nothing else, such as `manifold.evaluate.volume` or
+     * `manifold.operations.hull`.
+     */
     export class ManifoldDto<T> {
         constructor(manifold?: T) {
             if (manifold !== undefined) { this.manifold = manifold; }
         }
         /**
-         * Manifold shape
+         * The solid to work on; it is not changed.
          */
         manifold!: T;
     }
+    /**
+     * A solid, a channel and a sharp angle for `manifold.operations.calculateNormals`.
+     */
     export class CalculateNormalsDto<T> {
         constructor(manifold?: T, normalIdx?: number, minSharpAngle?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -497,14 +592,12 @@ export namespace Manifold {
             if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
         }
         /**
-         * Manifold shape
+         * The solid to compute normals for.
          */
         manifold!: T;
         /**
-         * The property channel in which to store the X
-        * values of the normals. The X, Y, and Z channels will be sequential. The
-        * property set will be automatically expanded to include up through normalIdx
-        * + 2.
+         * The property channel that receives the X of each normal; Y and Z follow in the next two, and
+         * channels are added as needed.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -512,12 +605,8 @@ export namespace Manifold {
          */
         normalIdx = 0;
         /**
-         * Any edges with angles greater than this value will
-         * remain sharp, getting different normal vector properties on each side of
-         * the edge. By default, no edges are sharp and all normals are shared. With a
-         * value of zero, the model is faceted and all normals match their triangle
-         * normals, but in this case it would be better not to calculate normals at
-         * all. The value is in degrees.
+         * Edges bent more than this, in degrees, get separate normals on each side and stay crisp; at 0
+         * every triangle keeps its own normal.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -525,19 +614,20 @@ export namespace Manifold {
          */
         minSharpAngle = 0;
     }
+    /**
+     * A solid and two channels for `manifold.operations.calculateCurvature`.
+     */
     export class CalculateCurvatureDto<T> {
         constructor(manifold?: T) {
             if (manifold !== undefined) { this.manifold = manifold; }
         }
         /**
-         * Manifold shape
+         * The solid to compute curvature for.
          */
         manifold!: T;
         /**
-         * The property channel index in which to store the
-         * Gaussian curvature. An index < 0 will be ignored (stores nothing). The
-         * property set will be automatically expanded to include the channel
-         * index specified.
+         * The property channel that receives the Gaussian curvature, the product of the two principal
+         * curvatures; below 0 skips it.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -545,10 +635,8 @@ export namespace Manifold {
          */
         gaussianIdx: number = 0;
         /**
-         * The property channel index in which to store the mean
-         * curvature. An index < 0 will be ignored (stores nothing). The property
-         * set will be automatically expanded to include the channel index
-         * specified. The mean curvature is a scalar value that describes the
+         * The property channel that receives the mean curvature, the sum of the two principal
+         * curvatures; below 0 skips it.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -556,15 +644,21 @@ export namespace Manifold {
          */
         meanIdx: number = 1;
     }
+    /**
+     * A count for `manifold.operations.reserveIds`, which reserves that many mesh ids.
+     */
     export class CountDto {
         constructor(count?: number) {
             if (count !== undefined) { this.count = count; }
         }
         /**
-         * Nr to count
+         * How many ids to reserve.
          */
         count!: number;
     }
+    /**
+     * Two solids and a search distance for `manifold.evaluate.minGap`.
+     */
     export class ManifoldsMinGapDto<T> {
         constructor(manifold1?: T, manifold2?: T, searchLength?: number) {
             if (manifold1 !== undefined) { this.manifold1 = manifold1; }
@@ -572,15 +666,15 @@ export namespace Manifold {
             if (searchLength !== undefined) { this.searchLength = searchLength; }
         }
         /**
-         * Manifold shape
+         * The first solid.
          */
         manifold1!: T;
         /**
-         * Manifold shape
+         * The second solid.
          */
         manifold2!: T;
         /**
-         * Length of the search gap
+         * How far apart the solids may be before the search gives up, in model units.
          * @default 100
          * @minimum 0
          * @maximum Infinity
@@ -588,19 +682,22 @@ export namespace Manifold {
          */
         searchLength = 100;
     }
+    /**
+     * A solid and a tolerance for `manifold.operations.refineToTolerance` and
+     * `manifold.operations.setTolerance`.
+     */
     export class ManifoldRefineToleranceDto<T> {
         constructor(manifold?: T, tolerance?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * Manifold shape
+         * The solid to work on.
          */
         manifold!: T;
         /**
-         * The desired maximum distance between the faceted mesh
-         * produced and the exact smoothly curving surface. All vertices are exactly
-         * on the surface, within rounding error.
+         * The largest distance allowed between the triangles and the smooth surface they stand for, in
+         * model units.
          * @default 1e-6
          * @minimum 0
          * @maximum Infinity
@@ -608,17 +705,20 @@ export namespace Manifold {
          */
         tolerance = 1e-6;
     }
+    /**
+     * A solid and an edge length for `manifold.operations.refineToLength`.
+     */
     export class ManifoldRefineLengthDto<T> {
         constructor(manifold?: T, length?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (length !== undefined) { this.length = length; }
         }
         /**
-         * Manifold shape
+         * The solid to refine.
          */
         manifold!: T;
         /**
-         * Length of the manifold
+         * The rough length every edge is split down to, in model units.
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -626,17 +726,20 @@ export namespace Manifold {
          */
         length = 0.1;
     }
+    /**
+     * A solid and a count for `manifold.operations.refine`.
+     */
     export class ManifoldRefineDto<T> {
         constructor(manifold?: T, number?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (number !== undefined) { this.number = number; }
         }
         /**
-         * Manifold shape
+         * The solid to refine.
          */
         manifold!: T;
         /**
-         * The number of pieces to split every edge into. Must be > 1.
+         * How many pieces every edge is split into; must be more than 1 to change anything.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -644,19 +747,21 @@ export namespace Manifold {
          */
         number = 1;
     }
+    /**
+     * A solid and a normal channel for `manifold.operations.smoothByNormals`.
+     */
     export class ManifoldSmoothByNormalsDto<T> {
         constructor(manifold?: T, normalIdx?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
         }
         /**
-         * Manifold shape
+         * The solid to mark for smoothing.
          */
         manifold!: T;
         /**
-         * The first property channel of the normals. NumProp must be
-         * at least normalIdx + 3. Any vertex where multiple normals exist and don't
-         * agree will result in a sharp edge.
+         * The first of the three property channels holding the normals; the solid must have at least
+         * that many plus three.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -664,19 +769,21 @@ export namespace Manifold {
          */
         normalIdx = 0;
     }
+    /**
+     * A solid and a tolerance for `manifold.operations.simplify`.
+     */
     export class ManifoldSimplifyDto<T> {
         constructor(manifold?: T, tolerance?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * Manifold shape
+         * The solid to simplify.
          */
         manifold!: T;
         /**
-         * The maximum distance between the original and simplified meshes. 
-         * If not given or is less than the current tolerance, the current tolerance is used.
-         * The result will contain a subset of the original verts and all surfaces will have moved by less than tolerance.
+         * How far surfaces may move while vertices are removed, in model units; left out or below the
+         * solid's own tolerance, that tolerance is used.
          * @default undefined
          * @minimum 0
          * @maximum Infinity
@@ -684,6 +791,9 @@ export namespace Manifold {
          */
         tolerance?: number | undefined;
     }
+    /**
+     * A solid, a property count and a fill function for `manifold.operations.setProperties`.
+     */
     export class ManifoldSetPropertiesDto<T> {
         constructor(manifold?: T, numProp?: number, propFunc?: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -691,11 +801,11 @@ export namespace Manifold {
             if (propFunc !== undefined) { this.propFunc = propFunc; }
         }
         /**
-         * Manifold shape
+         * The solid whose vertex properties are rewritten.
          */
         manifold!: T;
         /**
-         * The new number of properties per vertex
+         * How many properties each vertex has afterwards.
          * @default 3
          * @minimum 3
          * @maximum Infinity
@@ -703,12 +813,15 @@ export namespace Manifold {
          */
         numProp = 3;
         /**
-         * A function that modifies the properties of a given vertex.
-         * Note: undefined behavior will result if you read past the number of input properties or write past the number of output properties.
+         * A function that receives the new property array, the vertex position and the old properties,
+         * and fills the new array in place.
          * @default undefined
          */
         propFunc!: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void;
     }
+    /**
+     * A solid and the smoothing settings for `manifold.operations.smoothOut`.
+     */
     export class ManifoldSmoothOutDto<T> {
         constructor(manifold?: T, minSharpAngle?: number, minSmoothness?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -716,15 +829,12 @@ export namespace Manifold {
             if (minSmoothness !== undefined) { this.minSmoothness = minSmoothness; }
         }
         /**
-         * Manifold shape
+         * The solid to mark for smoothing.
          */
         manifold!: T;
         /**
-         * Any edges with angles greater
-         * than this value will remain sharp. The rest will be smoothed to G1
-         * continuity, with the caveat that flat faces of three or more triangles will
-         * always remain flat. With a value of zero, the model is faceted, but in this
-         * case there is no point in smoothing.
+         * Edges bent more than this, in degrees, stay sharp; the rest are smoothed. At 0 nothing is
+         * smoothed.
          * @default 60
          * @minimum -Infinity
          * @maximum Infinity
@@ -732,10 +842,7 @@ export namespace Manifold {
          */
         minSharpAngle = 60;
         /**
-         * The smoothness applied to
-         * sharp angles. The default gives a hard edge, while values > 0 will give a
-         * small fillet on these sharp edges. A value of 1 is equivalent to a
-         * minSharpAngle of 180 - all edges will be smooth.
+         * How much the sharp edges are rounded, from 0 for a hard edge to 1 for fully smooth.
          * @default 0
          * @minimum 0
          * @maximum 1
@@ -743,25 +850,31 @@ export namespace Manifold {
          */
         minSmoothness = 0;
     }
+    /**
+     * Points and solids for `manifold.operations.hullPoints`, which wraps them all in one convex hull.
+     */
     export class HullPointsDto<T> {
         constructor(points?: T) {
             if (points !== undefined) { this.points = points; }
         }
         /**
-         * Points to hull
+         * The points and solids to wrap, in any mix.
          */
         points!: T;
     }
+    /**
+     * A solid and a height for `manifold.operations.slice`.
+     */
     export class SliceDto<T> {
         constructor(manifold?: T) {
             if (manifold !== undefined) { this.manifold = manifold; }
         }
         /**
-         * Manifold shape
+         * The solid to cut.
          */
         manifold!: T;
         /**
-         * Height of the slice
+         * The Z height of the cutting plane, which is parallel to the XY plane.
          * @default 0.5
          * @minimum 0
          * @maximum Infinity
@@ -769,27 +882,34 @@ export namespace Manifold {
          */
         height = 0.5;
     }
+    /**
+     * Mesh data for the methods that read it whole, such as `mesh.evaluate.numTri` and
+     * `mesh.operations.merge`.
+     */
     export class MeshDto<T> {
         constructor(mesh?: T) {
             if (mesh !== undefined) { this.mesh = mesh; }
         }
         /**
-         * Mesh
+         * The mesh data, as `manifoldToMesh` hands it out.
          */
         mesh!: T;
     }
 
+    /**
+     * Mesh data and a vertex index for `mesh.evaluate.position` and `mesh.evaluate.extras`.
+     */
     export class MeshVertexIndexDto<T> {
         constructor(mesh?: T, vertexIndex?: number) {
             if (mesh !== undefined) { this.mesh = mesh; }
             if (vertexIndex !== undefined) { this.vertexIndex = vertexIndex; }
         }
         /**
-         * Mesh
+         * The mesh data to read.
          */
         mesh!: T;
         /**
-         * Vertex index
+         * The position of the vertex, counting from 0.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -797,17 +917,20 @@ export namespace Manifold {
          */
         vertexIndex: number = 0;
     }
+    /**
+     * Mesh data and a run index for `mesh.evaluate.transform`.
+     */
     export class MeshTriangleRunIndexDto<T> {
         constructor(mesh?: T, triangleRunIndex?: number) {
             if (mesh !== undefined) { this.mesh = mesh; }
             if (triangleRunIndex !== undefined) { this.triangleRunIndex = triangleRunIndex; }
         }
         /**
-         * Mesh
+         * The mesh data to read.
          */
         mesh!: T;
         /**
-         * Triangle run index
+         * The position of the triangle run, counting from 0.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -815,17 +938,20 @@ export namespace Manifold {
          */
         triangleRunIndex: number = 0;
     }
+    /**
+     * Mesh data and a half-edge index for `mesh.evaluate.tangent`.
+     */
     export class MeshHalfEdgeIndexDto<T> {
         constructor(mesh?: T, halfEdgeIndex?: number) {
             if (mesh !== undefined) { this.mesh = mesh; }
             if (halfEdgeIndex !== undefined) { this.halfEdgeIndex = halfEdgeIndex; }
         }
         /**
-         * Mesh
+         * The mesh data to read.
          */
         mesh!: T;
         /**
-         * Half edge index
+         * The position of the half-edge, counting from 0: three per triangle, in triangle order.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -833,17 +959,20 @@ export namespace Manifold {
          */
         halfEdgeIndex: number = 0;
     }
+    /**
+     * Mesh data and a triangle index for `mesh.evaluate.verts`.
+     */
     export class MeshTriangleIndexDto<T> {
         constructor(mesh?: T, triangleIndex?: number) {
             if (mesh !== undefined) { this.mesh = mesh; }
             if (triangleIndex !== undefined) { this.triangleIndex = triangleIndex; }
         }
         /**
-         * Mesh
+         * The mesh data to read.
          */
         mesh!: T;
         /**
-         * Triangle index
+         * The position of the triangle, counting from 0.
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -851,34 +980,45 @@ export namespace Manifold {
          */
         triangleIndex: number = 0;
     }
+    /**
+     * One cross-section for the methods that take nothing else, such as `crossSection.evaluate.area` or
+     * `crossSection.operations.hull`.
+     */
     export class CrossSectionDto<T> {
         constructor(crossSection?: T) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
         }
         /**
-         * Cross section
+         * The cross-section to work on; it is not changed.
          */
         crossSection!: T;
     }
+    /**
+     * Several cross-sections for the methods that take a list, such as `crossSection.booleans.union`.
+     */
     export class CrossSectionsDto<T> {
         constructor(crossSections?: T[]) {
             if (crossSections !== undefined) { this.crossSections = crossSections; }
         }
         /**
-         * Cross sections
+         * The cross-sections, in the order the method uses them.
          */
         crossSections!: T[];
     }
+    /**
+     * A cross-section and the sweep settings for `crossSection.operations.extrude`, which grows it
+     * along Z into a solid.
+     */
     export class ExtrudeDto<T> {
         constructor(crossSection?: T) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
         }
         /**
-         * Extrude cross section shape
+         * The flat outline to extrude.
          */
         crossSection!: T;
         /**
-         * Height of the extrusion
+         * How far the outline is swept along Z, in model units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -886,7 +1026,8 @@ export namespace Manifold {
          */
         height = 1;
         /**
-         * Number of divisions
+         * How many extra copies of the outline are inserted along the way; more keeps a twist or taper
+         * smooth.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -894,7 +1035,7 @@ export namespace Manifold {
          */
         nDivisions = 1;
         /**
-         * Twist degrees
+         * How far the top is turned against the bottom, in degrees.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -902,7 +1043,7 @@ export namespace Manifold {
          */
         twistDegrees = 0;
         /**
-         * Scale top
+         * How much the top is scaled along X; 1 keeps it, 0 with `scaleTopY` at 0 makes a cone.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -910,7 +1051,7 @@ export namespace Manifold {
          */
         scaleTopX = 1;
         /**
-         * Scale top
+         * How much the top is scaled along Y; 1 keeps it, 0 with `scaleTopX` at 0 makes a cone.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -918,12 +1059,16 @@ export namespace Manifold {
          */
         scaleTopY = 1;
         /**
-         * Center the extrusion
+         * When true, the solid is centered on the XY plane; when false it stands on it.
          * @default true
-        */
+         */
         center = true;
     }
 
+    /**
+     * A cross-section and the turn settings for `crossSection.operations.revolve`, which spins it into
+     * a solid.
+     */
     export class RevolveDto<T> {
         constructor(crossSection?: T, revolveDegrees?: number, matchProfile?: boolean, circularSegments?: number) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
@@ -932,11 +1077,11 @@ export namespace Manifold {
             if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
         }
         /**
-         * Revolve cross section shape
+         * The flat profile to spin; only the part on the positive X side is used.
          */
         crossSection!: T;
         /**
-         * Extrude cross section shape
+         * How far to spin, in degrees; 360 gives a full turn.
          * @default 360
          * @minimum 0
          * @maximum Infinity
@@ -944,12 +1089,13 @@ export namespace Manifold {
          */
         revolveDegrees: number = 360;
         /**
-         * Default manifold library will adjust profile when generating revolved shape. We prefer it to be matching the profile by default. Set to false to use default manifold library behavior.
+         * When true, the result is turned back to keep the profile's orientation; when false it stands
+         * along Z as the kernel makes it.
          * @default true
          */
         matchProfile = true;
         /**
-         * Circular segments
+         * How many segments go around the turn; more is rounder.
          * @default 32
          * @minimum 0
          * @maximum Infinity
@@ -957,6 +1103,9 @@ export namespace Manifold {
          */
         circularSegments = 32;
     }
+    /**
+     * A cross-section and the offset settings for `crossSection.operations.offset`.
+     */
     export class OffsetDto<T> {
         constructor(crossSection?: T, delta?: number, joinType?: manifoldJoinTypeEnum, miterLimit?: number, circularSegments?: number) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
@@ -966,13 +1115,12 @@ export namespace Manifold {
             if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
         }
         /**
-         * Revolve cross section shape
+         * The outline to offset.
          */
         crossSection!: T;
         /**
-         * Positive deltas will cause the expansion of outlining contours
-         * to expand, and retraction of inner (hole) contours. Negative deltas will
-         * have the opposite effect.
+         * How far the outline moves, in model units: positive grows outer contours and shrinks holes,
+         * negative does the opposite.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -980,18 +1128,13 @@ export namespace Manifold {
          */
         delta: number = 1;
         /**
-         * The join type specifying the treatment of contour joins
-         * (corners).
+         * How corners are treated: `round`, `square`, `miter` or `bevel`.
          * @default round
          */
         joinType: manifoldJoinTypeEnum = manifoldJoinTypeEnum.round;
         /**
-         * The maximum distance in multiples of delta that vertices
-         * can be offset from their original positions with before squaring is
-         * applied, **when the join type is Miter** (default is 2, which is the
-         * minimum allowed). See the [Clipper2
-         * MiterLimit](http://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
-         * page for a visual example.
+         * For `miter` joins, how far a corner may reach as a multiple of `delta` before it is squared
+         * off; 2 is the smallest allowed.
          * @default 2
          * @minimum 2
          * @maximum Infinity
@@ -999,10 +1142,7 @@ export namespace Manifold {
          */
         miterLimit = 2;
         /**
-         * Number of segments per 360 degrees of
-         * <B>JoinType::Round</B> corners (roughly, the number of vertices that
-         * will be added to each contour). Default is calculated by the static Quality
-         * defaults according to the radius.
+         * For `round` joins, how many segments a full circle of rounding gets.
          * @default 32
          * @minimum 0
          * @maximum Infinity
@@ -1011,17 +1151,20 @@ export namespace Manifold {
         circularSegments = 32;
     }
 
+    /**
+     * A cross-section and a distance for `crossSection.operations.simplify`.
+     */
     export class SimplifyDto<T> {
         constructor(crossSection?: T, epsilon?: number) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (epsilon !== undefined) { this.epsilon = epsilon; }
         }
         /**
-         * Revolve cross section shape
+         * The outline to simplify.
          */
         crossSection!: T;
         /**
-         * Extrude cross section shape
+         * Points closer than this, in model units, to the line between their neighbors are dropped.
          * @default 1e-6
          * @minimum 0
          * @maximum Infinity
@@ -1030,71 +1173,87 @@ export namespace Manifold {
         epsilon = 1e-6;
     }
 
+    /**
+     * Cross-sections or polygons for `crossSection.operations.compose`, which packs them into one
+     * cross-section.
+     */
     export class ComposeDto<T> {
         constructor(polygons?: T) {
             if (polygons !== undefined) { this.polygons = polygons; }
         }
         /**
-         * Polygons to compose
+         * The cross-sections or polygons to pack together.
          */
         polygons!: T;
     }
+    /**
+     * A cross-section and a direction for `crossSection.transforms.mirror`.
+     */
     export class MirrorCrossSectionDto<T> {
         constructor(crossSection?: T, normal?: Base.Vector2) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (normal !== undefined) { this.normal = normal; }
         }
         /**
-         * Manifold shape
+         * The outline to mirror.
          */
         crossSection!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The normal of the mirror line through the origin; `[1, 0]` mirrors left to right.
          * @default [1,0]
          */
         normal: Base.Vector2 = [1, 0];
     }
+    /**
+     * A cross-section and two factors for `crossSection.transforms.scale2D`.
+     */
     export class Scale2DCrossSectionDto<T> {
         constructor(crossSection?: T, vector?: Base.Vector2) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (vector !== undefined) { this.vector = vector; }
         }
         /**
-         * Manifold shape
+         * The outline to scale.
          */
         crossSection!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The factors along X and Y, about the origin; 1 keeps an axis as it is.
          * @default [2,2]
          */
         vector: Base.Vector2 = [2, 2];
     }
+    /**
+     * A cross-section and a vector for `crossSection.transforms.translate`.
+     */
     export class TranslateCrossSectionDto<T> {
         constructor(crossSection?: T, vector?: Base.Vector2) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (vector !== undefined) { this.vector = vector; }
         }
         /**
-         * Manifold shape
+         * The outline to move.
          */
         crossSection!: T;
         /**
-         * The translation vector
+         * The 2D vector the outline moves by, in model units.
          * @default undefined
          */
         vector!: Base.Vector2;
     }
+    /**
+     * A cross-section and an angle for `crossSection.transforms.rotate`.
+     */
     export class RotateCrossSectionDto<T> {
         constructor(crossSection?: T, degrees?: number) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (degrees !== undefined) { this.degrees = degrees; }
         }
         /**
-         * Manifold shape
+         * The outline to rotate.
          */
         crossSection!: T;
         /**
-         * The rotation vector in eulers
+         * The rotation about the origin, in degrees, counterclockwise.
          * @default 45
          * @minimum -Infinity
          * @maximum Infinity
@@ -1102,21 +1261,27 @@ export namespace Manifold {
          */
         degrees: number = 45;
     }
+    /**
+     * A cross-section and a factor for `crossSection.transforms.scale`.
+     */
     export class ScaleCrossSectionDto<T> {
         constructor(crossSection?: T, factor?: number) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (factor !== undefined) { this.factor = factor; }
         }
         /**
-         * Manifold shape
+         * The outline to scale.
          */
         crossSection!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The uniform scale about the origin; 2 doubles every size.
          * @default 2
          */
         factor = 2;
     }
+    /**
+     * A cross-section and two distances for `crossSection.transforms.translateXY`.
+     */
     export class TranslateXYCrossSectionDto<T> {
         constructor(crossSection?: T, x?: number, y?: number) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
@@ -1124,11 +1289,11 @@ export namespace Manifold {
             if (y !== undefined) { this.y = y; }
         }
         /**
-         * Manifold shape
+         * The outline to move.
          */
         crossSection!: T;
         /**
-         * The translation X axis
+         * How far to move along X, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1136,7 +1301,7 @@ export namespace Manifold {
          */
         x = 0;
         /**
-         * The translation Y axis
+         * How far to move along Y, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1145,112 +1310,137 @@ export namespace Manifold {
         y = 0;
     }
 
+    /**
+     * A cross-section and a 3x3 matrix for `crossSection.transforms.transform`.
+     */
     export class TransformCrossSectionDto<T> {
         constructor(crossSection?: T, transform?: Base.TransformMatrix3x3) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (transform !== undefined) { this.transform = transform; }
         }
         /**
-         * Cross section
+         * The outline to transform.
          */
         crossSection!: T;
         /**
-         * The transform matrix to apply
+         * The 3x3 matrix as 9 numbers, any combination of move, turn, scale and shear in the plane.
          * @default undefined
          */
         transform!: Base.TransformMatrix3x3;
     }
+    /**
+     * A cross-section and a function for `crossSection.transforms.warp`.
+     */
     export class CrossSectionWarpDto<T> {
         constructor(crossSection?: T, warpFunc?: (vert: Base.Vector2) => void) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (warpFunc !== undefined) { this.warpFunc = warpFunc; }
         }
         /**
-         * Cross section
+         * The outline to warp.
          */
         crossSection!: T;
         /**
-         * A function that modifies a given vertex position
+         * A function that receives each 2D point and changes it in place.
          * @default undefined
          */
         warpFunc!: (vert: Base.Vector2) => void;
     }
+    /**
+     * A solid and a plane normal for `manifold.transforms.mirror`.
+     */
     export class MirrorDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (normal !== undefined) { this.normal = normal; }
         }
         /**
-         * Manifold shape
+         * The solid to mirror.
          */
         manifold!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The normal of the mirror plane through the origin; a zero vector gives an empty solid.
          * @default [1,0,0]
          */
         normal: Base.Vector3 = [1, 0, 0];
     }
+    /**
+     * A solid and three factors for `manifold.transforms.scale3D` and `manifold.transforms.scale`.
+     */
     export class Scale3DDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (vector !== undefined) { this.vector = vector; }
         }
         /**
-         * Manifold shape
+         * The solid to scale.
          */
         manifold!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The factors along X, Y and Z, about the origin; 1 keeps an axis as it is, 2 doubles it.
          * @default [2,2,2]
          */
         vector: Base.Vector3 = [2, 2, 2];
     }
+    /**
+     * A solid and a vector for `manifold.transforms.translate`.
+     */
     export class TranslateDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (vector !== undefined) { this.vector = vector; }
         }
         /**
-         * Manifold shape
+         * The solid to move.
          */
         manifold!: T;
         /**
-         * The translation vector
+         * The vector the solid moves by, in model units.
          * @default undefined
          */
         vector!: Base.Vector3;
     }
 
+    /**
+     * A solid and several vectors for `manifold.transforms.translateByVectors`, one moved copy per
+     * vector.
+     */
     export class TranslateByVectorsDto<T> {
         constructor(manifold?: T, vectors?: Base.Vector3[]) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (vectors !== undefined) { this.vectors = vectors; }
         }
         /**
-         * Manifold shape
+         * The solid to copy and move.
          */
         manifold!: T;
         /**
-         * The translation vector
+         * One vector per copy, in model units.
          * @default undefined
          */
         vectors!: Base.Vector3[];
     }
+    /**
+     * A solid and three angles for `manifold.transforms.rotate`.
+     */
     export class RotateDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (vector !== undefined) { this.vector = vector; }
         }
         /**
-         * Manifold shape
+         * The solid to rotate.
          */
         manifold!: T;
         /**
-         * The rotation vector in eulers
+         * The Euler angles about X, Y and Z in degrees, applied in that order about the origin.
          * @default undefined
          */
         vector!: Base.Vector3;
     }
+    /**
+     * A solid and three separate angles for `manifold.transforms.rotateXYZ`.
+     */
     export class RotateXYZDto<T> {
         constructor(manifold?: T, x?: number, y?: number, z?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -1259,11 +1449,11 @@ export namespace Manifold {
             if (z !== undefined) { this.z = z; }
         }
         /**
-         * Manifold shape
+         * The solid to rotate.
          */
         manifold!: T;
         /**
-         * The rotation vector in eulers on X axis
+         * The rotation about the X axis in degrees, applied first.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1271,7 +1461,7 @@ export namespace Manifold {
          */
         x = 0;
         /**
-         * The rotation vector in eulers on Y axis
+         * The rotation about the Y axis in degrees, applied second.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1279,7 +1469,7 @@ export namespace Manifold {
          */
         y = 0;
         /**
-         * The rotation vector in eulers on Z axis
+         * The rotation about the Z axis in degrees, applied last.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1287,21 +1477,28 @@ export namespace Manifold {
          */
         z = 0;
     }
+    /**
+     * A solid and a factor for uniform scaling; currently unused by the library, which scales through
+     * `Scale3DDto`.
+     */
     export class ScaleDto<T> {
         constructor(manifold?: T, factor?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (factor !== undefined) { this.factor = factor; }
         }
         /**
-         * Manifold shape
+         * The solid to scale.
          */
         manifold!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The uniform scale about the origin; 2 doubles every size.
          * @default 2
          */
         factor = 2;
     }
+    /**
+     * A solid and three distances for `manifold.transforms.translateXYZ`.
+     */
     export class TranslateXYZDto<T> {
         constructor(manifold?: T, x?: number, y?: number, z?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -1310,11 +1507,11 @@ export namespace Manifold {
             if (z !== undefined) { this.z = z; }
         }
         /**
-         * Manifold shape
+         * The solid to move.
          */
         manifold!: T;
         /**
-         * The translation X axis
+         * How far to move along X, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1322,7 +1519,7 @@ export namespace Manifold {
          */
         x = 0;
         /**
-         * The translation Y axis
+         * How far to move along Y, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1330,7 +1527,7 @@ export namespace Manifold {
          */
         y = 0;
         /**
-         * The translation Z axis
+         * How far to move along Z, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1338,93 +1535,115 @@ export namespace Manifold {
          */
         z = 0;
     }
+    /**
+     * A solid and a 4x4 matrix for `manifold.transforms.transform`.
+     */
     export class TransformDto<T> {
         constructor(manifold?: T, transform?: Base.TransformMatrix) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (transform !== undefined) { this.transform = transform; }
         }
         /**
-         * Manifold shape
+         * The solid to transform.
          */
         manifold!: T;
         /**
-         * The transform matrix to apply
+         * The column-major 4x4 matrix of 16 numbers; the translation sits at indexes 12 to 14.
          * @default undefined
          */
         transform!: Base.TransformMatrix;
     }
+    /**
+     * A solid and several 4x4 matrices for `manifold.transforms.transforms`, applied first to last.
+     */
     export class TransformsDto<T> {
         constructor(manifold?: T, transforms?: Base.TransformMatrixes) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (transforms !== undefined) { this.transforms = transforms; }
         }
         /**
-         * Manifold shape
+         * The solid to transform.
          */
         manifold!: T;
         /**
-         * The transform matrixes to apply
+         * The column-major matrices, applied one after another; the list must not be empty.
          * @default undefined
          */
         transforms!: Base.TransformMatrixes;
     }
+    /**
+     * A solid and a function for `manifold.transforms.warp`.
+     */
     export class ManifoldWarpDto<T> {
         constructor(manifold?: T, warpFunc?: (vert: Base.Vector3) => void) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (warpFunc !== undefined) { this.warpFunc = warpFunc; }
         }
         /**
-         * Manifold shape
+         * The solid to warp.
          */
         manifold!: T;
         /**
-         * A function that modifies a given vertex position
+         * A function that receives each vertex position and changes it in place.
          * @default undefined
          */
         warpFunc!: (vert: Base.Vector3) => void;
     }
+    /**
+     * Two cross-sections for the pairwise methods of `crossSection.booleans`.
+     */
     export class TwoCrossSectionsDto<T> {
         constructor(crossSection1?: T, crossSection2?: T) {
             if (crossSection1 !== undefined) { this.crossSection1 = crossSection1; }
             if (crossSection2 !== undefined) { this.crossSection2 = crossSection2; }
         }
         /**
-         * Manifold shape
+         * The first cross-section; for a subtraction, the one cut from.
          */
         crossSection1!: T;
         /**
-         * Manifold shape
+         * The second cross-section; for a subtraction, the one cut with.
          */
         crossSection2!: T;
     }
+    /**
+     * Two solids for the pairwise methods of `manifold.booleans`.
+     */
     export class TwoManifoldsDto<T> {
         constructor(manifold1?: T, manifold2?: T) {
             if (manifold1 !== undefined) { this.manifold1 = manifold1; }
             if (manifold2 !== undefined) { this.manifold2 = manifold2; }
         }
         /**
-         * Manifold shape
+         * The first solid; for a subtraction, the one cut from.
          */
         manifold1!: T;
         /**
-         * Manifold shape
+         * The second solid; for a subtraction, the one cut with.
          */
         manifold2!: T;
     }
+    /**
+     * A solid and a cutter for `manifold.booleans.split`.
+     */
     export class SplitManifoldsDto<T> {
         constructor(manifoldToSplit?: T, manifoldCutter?: T) {
             if (manifoldToSplit !== undefined) { this.manifoldToSplit = manifoldToSplit; }
             if (manifoldCutter !== undefined) { this.manifoldCutter = manifoldCutter; }
         }
         /**
-         * Manifold that will be split
+         * The solid that is cut in two.
          */
         manifoldToSplit!: T;
         /**
-         * Manifold cutter
+         * The solid that does the cutting; the pieces are what lies inside it and outside it.
          */
         manifoldCutter!: T;
     }
+    /**
+     * A solid and a plane for `manifold.booleans.trimByPlane`, which keeps the part on the normal's
+     * side.
+     */
     export class TrimByPlaneDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -1432,16 +1651,17 @@ export namespace Manifold {
             if (originOffset !== undefined) { this.originOffset = originOffset; }
         }
         /**
-         * Manifold that will be trimmed
+         * The solid to trim.
          */
         manifold!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The normal of the cutting plane; the kept part lies on the side it points to, and its length
+         * does not matter.
          * @default [1,0,0]
          */
         normal: Base.Vector3 = [1, 0, 0];
         /**
-         * The offset from the origin
+         * How far the plane sits from the origin along the normal, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1449,6 +1669,9 @@ export namespace Manifold {
          */
         originOffset = 0;
     }
+    /**
+     * A solid and a plane for `manifold.booleans.splitByPlane`, which keeps both pieces.
+     */
     export class SplitByPlaneDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -1456,16 +1679,17 @@ export namespace Manifold {
             if (originOffset !== undefined) { this.originOffset = originOffset; }
         }
         /**
-         * Manifold that will be split
+         * The solid to split.
          */
         manifold!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The normal of the cutting plane; the first piece lies on the side it points to, and its
+         * length does not matter.
          * @default [1,0,0]
          */
         normal: Base.Vector3 = [1, 0, 0];
         /**
-         * The offset from the origin
+         * How far the plane sits from the origin along the normal, in model units.
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
@@ -1473,6 +1697,10 @@ export namespace Manifold {
          */
         originOffset = 0;
     }
+    /**
+     * A solid, a plane normal and several distances for `manifold.booleans.splitByPlaneOnOffsets`,
+     * which cuts the solid into slabs.
+     */
     export class SplitByPlaneOnOffsetsDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffsets?: number[]) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -1480,101 +1708,125 @@ export namespace Manifold {
             if (originOffsets !== undefined) { this.originOffsets = originOffsets; }
         }
         /**
-         * Manifold that will be split
+         * The solid to cut into slabs.
          */
         manifold!: T;
         /**
-         * The normal vector of the plane to be mirrored over
+         * The normal shared by every cutting plane; its length does not matter.
          * @default [1,0,0]
          */
         normal: Base.Vector3 = [1, 0, 0];
         /**
-         * The offsets from the origin
+         * How far each plane sits from the origin along the normal, in model units, in increasing
+         * order.
          * @default [0]
          */
         originOffsets = [0];
     }
+    /**
+     * Several solids for the methods that take a list, such as `manifold.booleans.union` or
+     * `manifold.operations.compose`.
+     */
     export class ManifoldsDto<T> {
         constructor(manifolds?: T[]) {
             if (manifolds !== undefined) { this.manifolds = manifolds; }
         }
         /**
-         * Manifolds
+         * The solids, in the order the method uses them.
          */
         manifolds!: T[];
     }
 
+    /**
+     * A solid and an optional normal channel for `manifold.manifoldToMesh`.
+     */
     export class ManifoldToMeshDto<T> {
         constructor(manifold?: T, normalIdx?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
         }
         /**
-         * Manifold shape
+         * The solid to turn into mesh data.
          */
         manifold!: T;
         /**
-         * Optional normal index
+         * The property channel holding the normals, when the solid carries them.
          */
         normalIdx?: number | undefined;
     }
+    /**
+     * Several solids and optional normal channels for `manifold.manifoldsToMeshes`.
+     */
     export class ManifoldsToMeshesDto<T> {
         constructor(manifolds?: T[], normalIdx?: number[]) {
             if (manifolds !== undefined) { this.manifolds = manifolds; }
             if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
         }
         /**
-         * Manifold shape
+         * The solids to turn into mesh data, one mesh each.
          */
         manifolds!: T[];
         /**
-         * Optional normal indexes
+         * One normal channel per solid, when they carry normals.
          */
         normalIdx?: number[] | undefined;
     }
+    /**
+     * A solid or cross-section and an optional normal channel for `decomposeManifoldOrCrossSection`.
+     */
     export class DecomposeManifoldOrCrossSectionDto<T> {
         constructor(manifoldOrCrossSection?: T, normalIdx?: number) {
             if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
             if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
         }
         /**
-         * Manifold shape
+         * The solid or cross-section to turn into plain data.
          */
         manifoldOrCrossSection!: T;
         /**
-         * Optional normal index
+         * The property channel holding the normals of a solid, when it carries them.
          */
         normalIdx?: number | undefined;
     }
+    /**
+     * One solid or cross-section for the methods that accept either.
+     */
     export class ManifoldOrCrossSectionDto<T> {
         constructor(manifoldOrCrossSection?: T) {
             if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
         }
         /**
-         * Manifold or cross section
+         * The solid or cross-section to work on.
          */
         manifoldOrCrossSection!: T;
     }
+    /**
+     * Several solids or cross-sections for the methods that accept either kind in a list.
+     */
     export class ManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[]) {
             if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
         }
         /**
-         * Manifolds or cross sections
+         * The solids or cross-sections, in the order the method uses them.
          */
         manifoldsOrCrossSections!: T[];
     }
+    /**
+     * Several solids or cross-sections and optional normal channels for
+     * `decomposeManifoldsOrCrossSections`.
+     */
     export class DecomposeManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]) {
             if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
             if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
         }
         /**
-         * Manifold shape
+         * The solids or cross-sections to turn into plain data, one result each.
          */
         manifoldsOrCrossSections!: T[];
         /**
-         * Optional normal indexes
+         * One normal channel per shape, for the solids that carry normals.
          */
         normalIdx?: number[] | undefined;
     }

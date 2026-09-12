@@ -31,6 +31,10 @@ export interface InitBabylonJSResult {
  * camera, lights, environment and ground - in one call rather than piece by piece.
  */
 export namespace BabylonJSScene {
+    /**
+     * Feeds the `initBabylonJS` helper that sets up a whole scene in one call: the canvas,
+     * background, ground, lights, shadows and the default orbiting camera, sized from `sceneSize`.
+     */
     export class InitBabylonJSDto {
         constructor(
             canvasId?: string,
@@ -142,7 +146,7 @@ export namespace BabylonJSScene {
         hemisphereLightGroundColor = "#444444";
 
         /**
-         * Intensity of the hemisphere light.
+         * Brightness of the soft light from above and below, 1 being full strength
          * @default 1
          * @minimum 0
          * @maximum 10
@@ -157,7 +161,7 @@ export namespace BabylonJSScene {
         directionalLightColor = "#ffffff";
 
         /**
-         * Intensity of the directional light.
+         * Brightness of the sun-like light that casts the shadows, 1 being full strength
          * @default 1.5
          * @minimum 0
          * @maximum 10
@@ -181,9 +185,8 @@ export namespace BabylonJSScene {
         enableArcRotateCamera = true;
 
         /**
-         * Options for the arc rotate camera. Only used if enableArcRotateCamera is true.
-         * If not provided, scene-aware defaults will be computed based on sceneSize.
-         * Uses the same DTO as the standalone arc rotate camera creation.
+         * Settings for the orbiting camera, the same as `babylon.camera.arcRotate.create` takes;
+         * left out, defaults sized from `sceneSize` are used
          * @optional true
          */
         arcRotateCameraOptions?: BabylonCamera.ArcRotateCameraDto | undefined;

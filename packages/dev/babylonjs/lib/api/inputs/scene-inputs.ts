@@ -3,11 +3,14 @@ import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 /**
- * Parameters for the scene itself: background and clear colour, fog, environment and skybox settings,
+ * Parameters for the scene itself: background and clear color, fog, environment and skybox settings,
  * active camera, and the scene-level options that affect everything drawn into it.
  */
 export namespace BabylonScene {
 
+    /**
+     * Feeds `babylon.scene.backgroundColour` with the one plain color to fill the background with.
+     */
     export class SceneBackgroundColourDto {
         /**
          * Provide options without default values
@@ -16,11 +19,15 @@ export namespace BabylonScene {
             if (colour !== undefined) { this.colour = colour; }
         }
         /**
-         * Hex colour string for the scene background colour
+         * Hex color the whole background is painted in
          * @default #ffffff
          */
         colour: Base.Color = "#ffffff";
     }
+    /**
+     * Feeds `babylon.scene.setAndAttachScene` with the scene this library should draw into from
+     * then on.
+     */
     export class SceneDto {
         /**
          * Provide scene
@@ -29,21 +36,28 @@ export namespace BabylonScene {
             if (scene !== undefined) { this.scene = scene; }
         }
         /**
-         * The babylonjs scene
+         * The scene to draw into; it gets the shadow bookkeeping and root node this library expects
          * @default undefined
          */
         scene!: BABYLON.Scene;
     }
+    /**
+     * Feeds `babylon.scene.enablePhysics` with the gravity that bodies fall under.
+     */
     export class EnablePhysicsDto {
         constructor(vector?: Base.Vector3) {
             if (vector !== undefined) { this.vector = vector; }
         }
         /**
-         * The gravity vector
+         * The gravity as a vector, `[0, -9.81, 0]` being Earth's pull downward along Y
          * @default [0, -9.81, 0]
          */
         vector: Base.Vector3 = [0, -9.81, 0];
     }
+    /**
+     * Feeds `babylon.scene.drawPointLight`: where the bulb sits, its colors and brightness, the
+     * size of its visible sphere and the shadow settings.
+     */
     export class PointLightDto {
         constructor(position?: Base.Point3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, transparencyShadow?: boolean, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number, shadowRefreshRate?: number) {
             if (position !== undefined) { this.position = position; }
@@ -64,12 +78,12 @@ export namespace BabylonScene {
             if (shadowRefreshRate !== undefined) { this.shadowRefreshRate = shadowRefreshRate; }
         }
         /**
-         * Position of the point light
+         * Where the light shines from
          * @default [0, 0, 0]
          */
         position: Base.Point3 = [0, 0, 0];
         /**
-         * Intensity of the point light, value between 0 and 1
+         * Brightness as luminous power, so values in the thousands are normal; 0 gives no light
          * @default 2000
          * @minimum 0
          * @maximum Infinity
@@ -77,17 +91,17 @@ export namespace BabylonScene {
          */
         intensity = 2000;
         /**
-         * Diffuse colour of the point light
+         * Hex color of the light on surfaces
          * @default #ffffff
          */
         diffuse: Base.Color = "#ffffff";
         /**
-         * Specular colour of the point light
+         * Hex color of the highlights the light makes on shiny surfaces
          * @default #ffffff
          */
         specular: Base.Color = "#ffffff";
         /**
-         * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
+         * Radius of the glowing sphere drawn at the light's position, in scene units; 0 draws none
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -95,7 +109,7 @@ export namespace BabylonScene {
          */
         radius = 0.1;
         /**
-         * The map size for shadow generator texture if shadows are enabled
+         * Resolution of the shadow map in pixels; higher gives sharper shadows at more GPU cost
          * @default 1024
          * @minimum 0
          * @maximum Infinity
@@ -103,12 +117,12 @@ export namespace BabylonScene {
          */
         shadowGeneratorMapSize?: number | undefined = 1024;
         /**
-         * Enables shadows
+         * When true, the light casts shadows from every mesh in the scene
          * @default true
          */
         enableShadows?: boolean | undefined = true;
         /**
-         * Shadow darkness
+         * How light the shadows are, from 0 for fully dark to 1 for invisible
          * @default 0
          * @minimum 0
          * @maximum 1
@@ -116,17 +130,19 @@ export namespace BabylonScene {
          */
         shadowDarkness?: number | undefined = 0;
         /**
-         * Sets the ability to have transparent shadow (useful for Gaussian Splatting Meshes)
+         * When true, transparent parts of meshes let light through the shadow, which Gaussian
+         * splats need
          * @default false
          */
         transparencyShadow = false;
         /**
-         * Use percentage closer filtering
+         * When true, shadow edges are softened by sampling the map several times
          * @default true
          */
         shadowUsePercentageCloserFiltering = true;
         /**
-         * Shadow contact hardening light size UV ratio - only applies if usePercentageCloserFiltering is true
+         * How much shadow edges blur with distance from the caster when filtering is on; larger
+         * blurs more
          * @default 0.2
          * @minimum 0
          * @maximum Infinity
@@ -134,7 +150,8 @@ export namespace BabylonScene {
          */
         shadowContactHardeningLightSizeUVRatio = 0.2;
         /**
-         * Shadow bias
+         * Small depth offset that stops surfaces from shadowing themselves in stripes; raise it if
+         * stripes appear
          * @default 0.0001
          * @minimum 0
          * @maximum Infinity
@@ -142,7 +159,7 @@ export namespace BabylonScene {
          */
         shadowBias = 0.0001;
         /**
-         * Shadow normal bias
+         * Extra offset along surface normals against self-shadowing, in scene units
          * @default 0.002
          * @minimum 0
          * @maximum Infinity
@@ -150,7 +167,7 @@ export namespace BabylonScene {
          */
         shadowNormalBias = 0.002;
         /**
-         * Shadow max Z
+         * The farthest distance from the light that shadows are computed for, in scene units
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -158,15 +175,15 @@ export namespace BabylonScene {
          */
         shadowMaxZ = 1000;
         /**
-        * Shadow min Z
-        * @default 0.1
-        * @minimum 0
-        * @maximum Infinity
-        * @step 50
-        */
+         * The nearest distance from the light that shadows are computed for, in scene units
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 50
+         */
         shadowMinZ = 0.1;
         /**
-         * Shadow refresh rate
+         * How often the shadow map is redrawn: 1 every frame, 0 once only, 2 every second frame
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -174,25 +191,38 @@ export namespace BabylonScene {
          */
         shadowRefreshRate = 1;
     }
+    /**
+     * Feeds `babylon.scene.activateCamera` with the camera the scene should render through.
+     */
     export class ActiveCameraDto {
         constructor(camera?: BABYLON.Camera) {
             if (camera !== undefined) { this.camera = camera; }
         }
         /**
-         * Camera to activate
+         * The camera that becomes active
          * @default undefined
          */
         camera!: BABYLON.Camera;
     }
+    /**
+     * Feeds `babylon.scene.useRightHandedSystem` with the choice between the two coordinate
+     * handednesses.
+     */
     export class UseRightHandedSystemDto {
         constructor(use?: boolean) {
             if (use !== undefined) { this.use = use; }
         }
-        /** Indicates to use right handed system
+        /**
+         * When true, the scene uses the right-handed system of most CAD tools and glTF; when false,
+         * the engine's default left-handed one
          * @default true
          */
         use = true;
     }
+    /**
+     * Feeds `babylon.scene.drawDirectionalLight`: the direction the sun-like light shines in, its
+     * colors and brightness and the shadow settings.
+     */
     export class DirectionalLightDto {
         constructor(direction?: Base.Vector3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number, shadowRefreshRate?: number) {
             if (direction !== undefined) { this.direction = direction; }
@@ -211,12 +241,13 @@ export namespace BabylonScene {
             if (shadowRefreshRate !== undefined) { this.shadowRefreshRate = shadowRefreshRate; }
         }
         /**
-         * Direction of the directional light
+         * The direction the light travels in; `[-100, -100, -100]` shines down and diagonally, and
+         * only the direction matters, not the length
          * @default [-100, -100, -100]
          */
         direction: Base.Vector3 = [-100, -100, -100];
         /**
-         * Intensity of the point light, value between 0 and 1
+         * Brightness as a plain factor, 1 being full strength
          * @default 0.5
          * @minimum 0
          * @maximum Infinity
@@ -224,17 +255,17 @@ export namespace BabylonScene {
          */
         intensity = 0.5;
         /**
-         * Diffuse colour of the point light
+         * Hex color of the light on surfaces
          * @default #ffffff
          */
         diffuse: Base.Color = "#ffffff";
         /**
-         * Specular colour of the point light
+         * Hex color of the highlights the light makes on shiny surfaces
          * @default #ffffff
          */
         specular: Base.Color = "#ffffff";
         /**
-         * The map size for shadow generator texture if shadows are enabled
+         * Resolution of the shadow map in pixels; higher gives sharper shadows at more GPU cost
          * @default 1024
          * @minimum 0
          * @maximum Infinity
@@ -242,12 +273,12 @@ export namespace BabylonScene {
          */
         shadowGeneratorMapSize?: number | undefined = 1024;
         /**
-         * Enables shadows
+         * When true, the light casts shadows from every mesh in the scene
          * @default true
          */
         enableShadows?: boolean | undefined = true;
         /**
-         * Shadow darkness
+         * How light the shadows are, from 0 for fully dark to 1 for invisible
          * @default 0
          * @minimum 0
          * @maximum 1
@@ -255,17 +286,19 @@ export namespace BabylonScene {
          */
         shadowDarkness?: number | undefined = 0;
         /**
-         * Use percentage closer filtering
+         * When true, shadow edges are softened by sampling the map several times
          * @default true
          */
         shadowUsePercentageCloserFiltering = true;
         /**
-         * Sets the ability to have transparent shadow (useful for Gaussian Splatting Meshes)
+         * When true, transparent parts of meshes let light through the shadow, which Gaussian
+         * splats need
          * @default false
          */
         transparencyShadow = false;
         /**
-         * Shadow contact hardening light size UV ratio - only applies if usePercentageCloserFiltering is true
+         * How much shadow edges blur with distance from the caster when filtering is on; larger
+         * blurs more
          * @default 0.2
          * @minimum 0
          * @maximum Infinity
@@ -273,7 +306,8 @@ export namespace BabylonScene {
          */
         shadowContactHardeningLightSizeUVRatio = 0.2;
         /**
-         * Shadow bias
+         * Small depth offset that stops surfaces from shadowing themselves in stripes; raise it if
+         * stripes appear
          * @default 0.0001
          * @minimum 0
          * @maximum Infinity
@@ -281,7 +315,7 @@ export namespace BabylonScene {
          */
         shadowBias = 0.0001;
         /**
-         * Shadow normal bias
+         * Extra offset along surface normals against self-shadowing, in scene units
          * @default 0.002
          * @minimum 0
          * @maximum Infinity
@@ -289,7 +323,7 @@ export namespace BabylonScene {
          */
         shadowNormalBias = 0.002;
         /**
-         * Shadow max Z
+         * The farthest distance from the light that shadows are computed for, in scene units
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -297,15 +331,15 @@ export namespace BabylonScene {
          */
         shadowMaxZ = 1000;
         /**
-        * Shadow min Z
-        * @default 0
-        * @minimum 0
-        * @maximum Infinity
-        * @step 50
-        */
+         * The nearest distance from the light that shadows are computed for, in scene units
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 50
+         */
         shadowMinZ = 0;
         /**
-         * Shadow refresh rate
+         * How often the shadow map is redrawn: 1 every frame, 0 once only, 2 every second frame
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -313,6 +347,10 @@ export namespace BabylonScene {
          */
         shadowRefreshRate = 1;
     }
+    /**
+     * Feeds `babylon.scene.adjustActiveArcRotateCamera`: where the default orbiting camera goes,
+     * what it looks at, and its optional limits and sensitivities.
+     */
     export class CameraConfigurationDto {
         constructor(position?: Base.Point3, lookAt?: Base.Point3, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, maxZ?: number, panningSensibility?: number, wheelPrecision?: number) {
             if (position !== undefined) { this.position = position; }
@@ -330,17 +368,17 @@ export namespace BabylonScene {
             if (wheelPrecision !== undefined) { this.wheelPrecision = wheelPrecision; }
         }
         /**
-         * Position of the point light
+         * Where the camera is placed; its orbit radius becomes the distance to `lookAt`
          * @default [10, 10, 10]
-         * 
          */
         position: Base.Point3 = [10, 10, 10];
         /**
-         * Look at
+         * The point the camera looks at and orbits around
          */
         lookAt: Base.Point3 = [0, 0, 0];
         /**
-         * Lower radius limit - how close can the camera be to the target
+         * The closest the camera may zoom to the target, in scene units; left out, it is not
+         * changed
          * @default undefined
          * @minimum -Infinity
          * @maximum Infinity
@@ -349,7 +387,8 @@ export namespace BabylonScene {
          */
         lowerRadiusLimit?: number | undefined;
         /**
-         * Upper radius limit - how far can the camera be from the target
+         * The farthest the camera may zoom from the target, in scene units; left out, it is not
+         * changed
          * @default undefined
          * @minimum -Infinity
          * @maximum Infinity
@@ -358,7 +397,8 @@ export namespace BabylonScene {
          */
         upperRadiusLimit?: number | undefined;
         /**
-         * Lower alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
+         * The smallest angle around the vertical axis the camera may orbit to, in degrees; left
+         * out, it is not changed
          * @default undefined
          * @minimum -360
          * @maximum 360
@@ -367,7 +407,8 @@ export namespace BabylonScene {
          */
         lowerAlphaLimit?: number | undefined;
         /**
-         * Upper alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
+         * The largest angle around the vertical axis the camera may orbit to, in degrees; left out,
+         * it is not changed
          * @default undefined
          * @minimum -360
          * @maximum 360
@@ -376,7 +417,8 @@ export namespace BabylonScene {
          */
         upperAlphaLimit?: number | undefined;
         /**
-         * Lower beta limit - camera rotation along the latitudinal (vertical) axis in degrees. This is counted from the top down, where 0 is looking from top straight down.
+         * How close to straight above the camera may go, in degrees down from the top; 0 would look
+         * straight down
          * @default 1
          * @minimum -360
          * @maximum 360
@@ -384,7 +426,8 @@ export namespace BabylonScene {
          */
         lowerBetaLimit = 1;
         /**
-         * Upper beta limit - camera rotation along the longitudinal (vertical) axis in degrees. This is counted from the top down, where 180 is looking from bottom straight up.
+         * How close to straight below the camera may go, in degrees down from the top; 180 would
+         * look straight up
          * @default 179
          * @minimum -360
          * @maximum 360
@@ -392,7 +435,7 @@ export namespace BabylonScene {
          */
         upperBetaLimit = 179;
         /**
-         * Angular sensibility along x (horizontal) axis of the camera. The lower this number, the faster the camera will move.
+         * How much pointer movement a horizontal orbit takes; lower turns faster
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -400,7 +443,7 @@ export namespace BabylonScene {
          */
         angularSensibilityX = 1000;
         /**
-         * Angular sensibility along y (vertical) axis of the camera. The lower this number, the faster the camera will move.
+         * How much pointer movement a vertical orbit takes; lower turns faster
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -408,7 +451,7 @@ export namespace BabylonScene {
          */
         angularSensibilityY = 1000;
         /**
-         * Change how far the camera can see
+         * The farthest distance the camera draws, in scene units; anything beyond is not rendered
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -416,7 +459,7 @@ export namespace BabylonScene {
          */
         maxZ = 1000;
         /**
-         * Panning sensibility. If large units are used for the model, this number needs to get smaller
+         * How much pointer movement a pan takes; lower pans faster, so lower it for large models
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -424,7 +467,8 @@ export namespace BabylonScene {
          */
         panningSensibility = 1000;
         /**
-         * Zoom precision of the wheel. If large units are used, this number needs to get smaller
+         * How much wheel movement a zoom step takes; lower zooms faster, so lower it for large
+         * models
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -432,6 +476,10 @@ export namespace BabylonScene {
          */
         wheelPrecision = 3;
     }
+    /**
+     * Feeds `babylon.scene.enableSkybox`: which built-in sky to use, how big and blurred it is, how
+     * much it lights the scene and whether it is shown.
+     */
     export class SkyboxDto {
         constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean) {
             if (skybox !== undefined) { this.skybox = skybox; }
@@ -441,12 +489,13 @@ export namespace BabylonScene {
             if (hideSkybox !== undefined) { this.hideSkybox = hideSkybox; }
         }
         /**
-         * Skybox type
+         * The built-in sky to surround the scene with
          * @default clearSky
          */
         skybox: Base.skyboxEnum = Base.skyboxEnum.clearSky;
         /**
-         * Skybox size
+         * Edge length of the sky cube, in scene units; make it larger than the scene so nothing
+         * pokes through
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -454,7 +503,8 @@ export namespace BabylonScene {
          */
         size = 1000;
         /**
-         * Identifies if skybox texture should affect scene environment
+         * How much the visible sky is blurred, from 0 for sharp to 1 for fully soft; the lighting
+         * is unaffected
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -462,7 +512,8 @@ export namespace BabylonScene {
          */
         blur = 0.1;
         /**
-         * Identifies if skybox texture should affect scene environment
+         * How strongly the sky lights the scene through reflections and ambient light; 1 is full
+         * strength
          * @default 0.7
          * @minimum 0
          * @maximum Infinity
@@ -470,12 +521,16 @@ export namespace BabylonScene {
          */
         environmentIntensity = 0.7;
         /**
-         * Hides the skybox mesh but keeps the environment texture
+         * When true, the sky is not drawn but still lights the scene
          * @default false
          */
         hideSkybox?: boolean | undefined = false;
     }
 
+    /**
+     * Feeds `babylon.scene.enableSkyboxCustomTexture`: your own sky texture by URL, its size, and
+     * the same size, blur, intensity and visibility options as the built-in skies.
+     */
     export class SkyboxCustomTextureDto {
         constructor(textureUrl?: string, textureSize?: number, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean) {
             if (textureUrl !== undefined) { this.textureUrl = textureUrl; }
@@ -486,19 +541,21 @@ export namespace BabylonScene {
             if (hideSkybox !== undefined) { this.hideSkybox = hideSkybox; }
         } 
         /**
-         * Skybox texture URL pointing to .hdr, .env or root of the cubemap images
+         * Address of an `.hdr` file, an `.env` file or the root of six cube face images; nothing
+         * happens without it
          * @default undefined
          * @optional true
          */
         textureUrl?: string | undefined;
         /**
-         * Skybox texture size (only applies to custom URL texture)
+         * Resolution the sky texture is loaded at, in pixels per face; used for `.hdr` files
          * @default 512
          * @optional true
          */
         textureSize?: number | undefined = 512;
         /**
-         * Skybox size
+         * Edge length of the sky cube, in scene units; make it larger than the scene so nothing
+         * pokes through
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -506,7 +563,8 @@ export namespace BabylonScene {
          */
         size = 1000;
         /**
-         * Identifies if skybox texture should affect scene environment
+         * How much the visible sky is blurred, from 0 for sharp to 1 for fully soft; the lighting
+         * is unaffected
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -514,7 +572,8 @@ export namespace BabylonScene {
          */
         blur = 0.1;
         /**
-         * Identifies if skybox texture should affect scene environment
+         * How strongly the sky lights the scene through reflections and ambient light; 1 is full
+         * strength
          * @default 0.7
          * @minimum 0
          * @maximum Infinity
@@ -522,19 +581,26 @@ export namespace BabylonScene {
          */
         environmentIntensity = 0.7;
         /**
-         * Hides the skybox mesh but keeps the environment texture
+         * When true, the sky is not drawn but still lights the scene
          * @default false
          */
         hideSkybox?: boolean | undefined = false;
     }
 
     /**
-     * A pointer event in the scene: which button, where on the canvas, and what was under it. The
-     * input side of picking, as opposed to the geometric result the pick returns.
+     * Feeds `babylon.scene.onPointerDown`, `onPointerUp` and `onPointerMove` with the function to
+     * run on that pointer event.
      */
     export class PointerDto {
+        /**
+         * The function to run each time the event happens; it takes no arguments
+         */
         statement_update!: () => void;
     }
+    /**
+     * Feeds `babylon.scene.fog`: the fog mode, its color, how dense it is and, for linear fog,
+     * where it starts and ends.
+     */
     export class FogDto {
         constructor(mode?: Base.fogModeEnum, color?: Base.Color, density?: number, start?: number, end?: number) {
             if (mode !== undefined) { this.mode = mode; }
@@ -544,17 +610,18 @@ export namespace BabylonScene {
             if (end !== undefined) { this.end = end; }
         }
         /**
-         * Fog mode
+         * `none` turns fog off, `linear` fades between `start` and `end`, `exponential` and
+         * `exponentialSquared` fade by `density`
          * @default none
          */
         mode: Base.fogModeEnum = Base.fogModeEnum.none;
         /**
-         * Fog color
+         * Hex color distant geometry fades into, normally the background color
          * @default #ffffff
          */
         color: Base.Color = "#ffffff";
         /**
-         * Fog density
+         * How quickly the exponential modes thicken with distance; ignored by linear fog
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
@@ -562,7 +629,7 @@ export namespace BabylonScene {
          */
         density = 0.1;
         /**
-         * Fog start
+         * Distance from the camera where linear fog begins, in scene units
          * @default 0
          * @minimum 0
          * @maximum Infinity
@@ -570,7 +637,7 @@ export namespace BabylonScene {
          */
         start: number = 0;
         /**
-         * Fog end
+         * Distance from the camera where linear fog hides everything, in scene units
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -578,6 +645,10 @@ export namespace BabylonScene {
          */
         end: number = 1000;
     }
+    /**
+     * Feeds `babylon.scene.canvasCSSBackgroundImage` with any CSS background image value to paint
+     * behind the scene.
+     */
     export class SceneCanvasCSSBackgroundImageDto {
         /**
          * Provide options without default values
@@ -586,12 +657,16 @@ export namespace BabylonScene {
             if (cssBackgroundImage !== undefined) { this.cssBackgroundImage = cssBackgroundImage; }
         }
         /**
-         * CSS background image string
+         * A CSS `background-image` value, such as a gradient function or `url(...)`
          * @default linear-gradient(to top, #1a1c1f 0%, #93aacd 100%)
          */
         cssBackgroundImage = "linear-gradient(to top, #1a1c1f 0%, #93aacd 100%)";
     }
 
+    /**
+     * Feeds `babylon.scene.twoColorLinearGradientBackground`: the two colors, the direction the
+     * gradient runs in and where each color stops.
+     */
     export class SceneTwoColorLinearGradientDto {
         constructor(colorFrom?: Base.Color, colorTo?: Base.Color, direction?: Base.gradientDirectionEnum, stopFrom?: number, stopTo?: number) {
             if (colorFrom !== undefined) { this.colorFrom = colorFrom; }
@@ -601,22 +676,22 @@ export namespace BabylonScene {
             if (stopTo !== undefined) { this.stopTo = stopTo; }
         }
         /**
-         * Starting color in hex format
+         * Hex color the gradient starts with
          * @default #1a1c1f
          */
         colorFrom: Base.Color = "#1a1c1f";
         /**
-         * Ending color in hex format
+         * Hex color the gradient ends with
          * @default #93aacd
          */
         colorTo: Base.Color = "#93aacd";
         /**
-         * Gradient direction
+         * Which way the gradient runs, such as to the top or to the bottom right
          * @default toBottom
          */
         direction: Base.gradientDirectionEnum = Base.gradientDirectionEnum.toBottom;
         /**
-         * Starting color stop percentage
+         * Where the first color is still pure, as a percentage along the gradient
          * @default 0
          * @minimum 0
          * @maximum 100
@@ -624,7 +699,7 @@ export namespace BabylonScene {
          */
         stopFrom = 0;
         /**
-         * Ending color stop percentage
+         * Where the second color becomes pure, as a percentage along the gradient
          * @default 100
          * @minimum 0
          * @maximum 100
@@ -633,6 +708,10 @@ export namespace BabylonScene {
         stopTo = 100;
     }
 
+    /**
+     * Feeds `babylon.scene.twoColorRadialGradientBackground`: the two colors, where the gradient
+     * spreads from, its shape and where each color stops.
+     */
     export class SceneTwoColorRadialGradientDto {
         constructor(colorFrom?: Base.Color, colorTo?: Base.Color, position?: Base.gradientPositionEnum, stopFrom?: number, stopTo?: number, shape?: Base.gradientShapeEnum) {
             if (colorFrom !== undefined) { this.colorFrom = colorFrom; }
@@ -643,22 +722,22 @@ export namespace BabylonScene {
             if (shape !== undefined) { this.shape = shape; }
         }
         /**
-         * Starting color in hex format
+         * Hex color at the center of the gradient
          * @default #1a1c1f
          */
         colorFrom: Base.Color = "#1a1c1f";
         /**
-         * Ending color in hex format
+         * Hex color at the outer edge of the gradient
          * @default #93aacd
          */
         colorTo: Base.Color = "#93aacd";
         /**
-         * Gradient position
+         * Where the center of the gradient sits on the canvas
          * @default center
          */
         position: Base.gradientPositionEnum = Base.gradientPositionEnum.center;
         /**
-         * Starting color stop percentage
+         * How far from the center the first color is still pure, as a percentage
          * @default 0
          * @minimum 0
          * @maximum 100
@@ -666,7 +745,7 @@ export namespace BabylonScene {
          */
         stopFrom = 0;
         /**
-         * Ending color stop percentage
+         * How far from the center the second color becomes pure, as a percentage
          * @default 100
          * @minimum 0
          * @maximum 100
@@ -674,12 +753,16 @@ export namespace BabylonScene {
          */
         stopTo = 100;
         /**
-         * Gradient shape
+         * Whether the gradient spreads as a circle or stretches into an ellipse with the canvas
          * @default circle
          */
         shape: Base.gradientShapeEnum = Base.gradientShapeEnum.circle;
     }
 
+    /**
+     * Feeds `babylon.scene.multiColorLinearGradientBackground`: the colors, one stop each, and the
+     * direction the gradient runs in.
+     */
     export class SceneMultiColorLinearGradientDto {
         constructor(colors?: Base.Color[], stops?: number[], direction?: Base.gradientDirectionEnum) {
             if (colors !== undefined) { this.colors = colors; }
@@ -687,22 +770,26 @@ export namespace BabylonScene {
             if (direction !== undefined) { this.direction = direction; }
         }
         /**
-         * Array of colors in hex format
+         * The hex colors in order; the list must be as long as `stops`
          * @default ["#1a1c1f", "#93aacd"]
          */
         colors: Base.Color[] = ["#1a1c1f", "#93aacd"];
         /**
-         * Array of stop percentages for each color
+         * Where each color is pure, as percentages along the gradient, one per color
          * @default [0, 100]
          */
         stops: number[] = [0, 100];
         /**
-         * Gradient direction
+         * Which way the gradient runs, such as to the top or to the bottom right
          * @default toTop
          */
         direction: Base.gradientDirectionEnum = Base.gradientDirectionEnum.toTop;
     }
 
+    /**
+     * Feeds `babylon.scene.multiColorRadialGradientBackground`: the colors, one stop each, where
+     * the gradient spreads from and its shape.
+     */
     export class SceneMultiColorRadialGradientDto {
         constructor(colors?: Base.Color[], stops?: number[], position?: Base.gradientPositionEnum, shape?: Base.gradientShapeEnum) {
             if (colors !== undefined) { this.colors = colors; }
@@ -711,27 +798,31 @@ export namespace BabylonScene {
             if (shape !== undefined) { this.shape = shape; }
         }
         /**
-         * Array of colors in hex format
+         * The hex colors from the center outward; the list must be as long as `stops`
          * @default ["#1a1c1f", "#93aacd"]
          */
         colors: Base.Color[] = ["#1a1c1f", "#93aacd"];
         /**
-         * Array of stop percentages for each color
+         * How far from the center each color is pure, as percentages, one per color
          * @default [0, 100]
          */
         stops: number[] = [0, 100];
         /**
-         * Gradient position
+         * Where the center of the gradient sits on the canvas
          * @default center
          */
         position: Base.gradientPositionEnum = Base.gradientPositionEnum.center;
         /**
-         * Gradient shape
+         * Whether the gradient spreads as a circle or stretches into an ellipse with the canvas
          * @default circle
          */
         shape: Base.gradientShapeEnum = Base.gradientShapeEnum.circle;
     }
 
+    /**
+     * Feeds `babylon.scene.canvasBackgroundImage`: the image to show behind the scene and the CSS
+     * options for how it repeats, scales, sits and scrolls.
+     */
     export class SceneCanvasBackgroundImageDto {
         constructor(imageUrl?: string, repeat?: Base.backgroundRepeatEnum, size?: Base.backgroundSizeEnum, position?: Base.gradientPositionEnum, attachment?: Base.backgroundAttachmentEnum, origin?: Base.backgroundOriginClipEnum, clip?: Base.backgroundOriginClipEnum) {
             if (imageUrl !== undefined) { this.imageUrl = imageUrl; }
@@ -743,37 +834,40 @@ export namespace BabylonScene {
             if (clip !== undefined) { this.clip = clip; }
         }
         /**
-         * URL of the background image
+         * Address of the image to show behind the scene
          * @default undefined
          */
         imageUrl?: string | undefined;
         /**
-         * How the background image should repeat
+         * Whether the image tiles across the canvas, in one direction or not at all
          * @default noRepeat
          */
         repeat: Base.backgroundRepeatEnum = Base.backgroundRepeatEnum.noRepeat;
         /**
-         * Size of the background image (enum values or specific values like '100px 50px')
+         * How the image is scaled: cover fills the canvas, contain shows all of it, or a CSS size
+         * such as `100px 50px`
          * @default cover
          */
         size: Base.backgroundSizeEnum = Base.backgroundSizeEnum.cover;
         /**
-         * Position of the background image (enum values or specific values like '50% 50%')
+         * Where the image sits on the canvas, such as the center or a corner, or a CSS position
+         * such as `50% 50%`
          * @default center
          */
         position: Base.gradientPositionEnum = Base.gradientPositionEnum.center;
         /**
-         * Background attachment
+         * Whether the image scrolls with the page or stays fixed to the viewport
          * @default scroll
          */
         attachment: Base.backgroundAttachmentEnum = Base.backgroundAttachmentEnum.scroll;
         /**
-         * Background origin
+         * Which box of the canvas the image is positioned against: its padding, border or content
+         * box
          * @default paddingBox
          */
         origin: Base.backgroundOriginClipEnum = Base.backgroundOriginClipEnum.paddingBox;
         /**
-         * Background clip
+         * Which box of the canvas the image is clipped to: its padding, border or content box
          * @default borderBox
          */
         clip: Base.backgroundOriginClipEnum = Base.backgroundOriginClipEnum.borderBox;

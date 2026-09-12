@@ -3,17 +3,28 @@ import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
 
+/**
+ * Color pickers: a color wheel with a square for lightness and saturation, giving a hex color.
+ * Subscribe to the value changed event to react to the user.
+ */
 export class BabylonGuiColorPicker {
 
     constructor(_context: Context) { }
 
     /**
-     * Creates color picker
-     * @param inputs color picker properties
-     * @returns color picker
+     * Creates a color picker starting at `defaultColor`; `size` sets both its width and height, as
+     * a pixel string or a fraction, and defaults to 300 pixels.
+     * @param inputs - The name, the starting color, the color, the optional width, height and size
+     * @returns The color picker
      * @group create
      * @shortname color picker
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const picker = bitbybit.babylon.gui.colorPicker.createColorPicker({ name: "faceColor", defaultColor: "#f0cebb", color: "#f0cebb", size: "200px" });
+     * panel.addControl(picker);
+     * picker.onValueChangedObservable.add((color) => { console.log(color.toHexString()); });
+     * ```
      */
     createColorPicker(inputs: Inputs.BabylonGui.CreateColorPickerDto): BABYLON.GUI.ColorPicker {
         const colorPicker = new BABYLON.GUI.ColorPicker(inputs.name);
@@ -40,9 +51,10 @@ export class BabylonGuiColorPicker {
     }
 
     /**
-     * Sets color picker value color
-     * @param inputs color picker and color
-     * @returns color picker
+     * Moves a color picker to a hex color, which fires its value changed event like a user pick
+     * would.
+     * @param inputs - The color picker and the hex color
+     * @returns The same color picker
      * @group set
      * @shortname set colo picker value
      */
@@ -52,9 +64,10 @@ export class BabylonGuiColorPicker {
     }
 
     /**
-     * Sets color picker size (width and height)
-     * @param inputs color picker and size
-     * @returns color picker
+     * Sets the width and height of a color picker together, as a pixel string or a fraction of the
+     * parent.
+     * @param inputs - The color picker and the size
+     * @returns The same color picker
      * @group set
      * @shortname set color picker size
      */
@@ -64,9 +77,9 @@ export class BabylonGuiColorPicker {
     }
 
     /**
-     * Gets color picker value color
-     * @param inputs color picker
-     * @returns color
+     * Reads the color a color picker currently holds, as a hex string.
+     * @param inputs - The color picker
+     * @returns The hex color
      * @group get
      * @shortname get color picker value
      */
@@ -75,9 +88,9 @@ export class BabylonGuiColorPicker {
     }
 
     /**
-     * Gets color picker size
-     * @param inputs color picker
-     * @returns size
+     * Reads the size of a color picker, its width and height together.
+     * @param inputs - The color picker
+     * @returns The size
      * @group get
      * @shortname get color picker size
      */
@@ -86,12 +99,13 @@ export class BabylonGuiColorPicker {
     }
 
     /**
-    * Creates the selector of an observable for color picker
-    * @param inputs observable name
-    * @returns color picker observable selector
-    * @group create
-    * @shortname color picker observable selector
-    */
+     * Passes through the name of a color picker event, its value changing, as a typed selector for
+     * code that subscribes to color picker events by name.
+     * @param inputs - The event selector
+     * @returns The same selector
+     * @group create
+     * @shortname color picker observable selector
+     */
     createColorPickerObservableSelector(inputs: Inputs.BabylonGui.ColorPickerObservableSelectorDto): Inputs.BabylonGui.colorPickerObservableSelectorEnum {
         return inputs.selector;
     }
