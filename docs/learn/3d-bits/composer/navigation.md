@@ -67,7 +67,19 @@ You then choose what it should frame:
 - **Parts to frame (glTF nodes)** picks individual parts inside a model, once you have parsed that model's structure. The two selections add together.
 - Leave both empty and it frames the whole scene.
 
-Two things to know. Hidden geometry still counts towards the bounds, so a part switched off by a condition does not shrink the shot. And the measurement is taken **at the moment the focal fires**: if a transform variant is moving something with an animated transition at that instant, the focal frames where it started, not where it is going. For anything a focal tracks, an instant transition gives the correct shot.
+Only visible geometry counts. A part switched off by a condition, or a whole model hidden by its variant rules, does not take part in the measurement. That is what lets one focal serve every version of a product: if a bracket exists as three copies, one per frame length, list all three under **Parts to frame** and the focal frames whichever copy is currently shown. Without this you would need a focal per frame length, each with its own condition.
+
+The measurement is taken **at the moment the focal fires**: if a transform variant is moving something with an animated transition at that instant, the focal frames where it started, not where it is going. For anything a focal tracks, an instant transition gives the correct shot.
+
+#### Distance
+
+A fitted focal lands where the framed parts just fill the view, with a small margin. **Distance** scales that: `1` is the tight fit, `2` puts the camera twice as far away, `0.7` crops in closer (however small the value, the camera stops just outside the framed parts rather than entering them). Because it is relative to the framed geometry rather than a fixed number of metres, one value looks right at every size the product can take - a focal that stands "one and a half times back" from a rail does so whether the rail is 60 cm or 2 m long.
+
+#### Camera direction
+
+By default a fitted focal keeps the angle you authored with its Camera Position and Camera Target, and only recomputes distance and target. Set **Camera direction** to **Shopper's current view** and it keeps the angle the shopper is looking from instead: the camera stays where they turned it and only moves in or out to frame the part. This is the gentler behaviour when a shopper is already examining the product and changes an option - the view does not swing round on them - and it pairs well with Distance. If there is no live camera to read (it always exists in Play and on the storefront), the authored angle is used.
+
+In edit mode, **Preview focal** frames every copy of a listed part, because edit mode shows all geometry regardless of conditions. Press Play to see the focal frame only what the shopper sees.
 
 ## Both are edit-time invisible
 
