@@ -8,9 +8,9 @@ import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
  * Rounding and beveling the edges of OpenCascade shapes: a fillet replaces a sharp edge with a
  * rounded surface of a given radius, a chamfer with a flat bevel of a given distance. Edges are
  * chosen by 0-based index in the order `shapes.edge.getEdges` lists them, or passed in directly;
- * flat outlines and faces are rounded at their corners with `fillet2d`, which counts corners from
- * 1. A radius that does not fit, for instance larger than a neighbouring face, makes the kernel
- * fail, so start small. Every method returns a new shape.
+ * flat outlines and faces are rounded at their corners with `fillet2d`, whose corner indexes
+ * start at 1. A radius that does not fit, for instance larger than a neighbouring face, makes
+ * the kernel fail, so start small. Every method returns a new shape.
  */
 export class OCCTFillets {
     constructor(
